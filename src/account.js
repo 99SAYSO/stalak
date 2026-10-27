@@ -23,6 +23,7 @@
      projects.list() / get(id) / save(id, name, state[, fileIds]) / remove(id)
      projects.listAll()   -> Promise<{projects, storage: {available, used, quota, partSize, maxFile}}>
      projects.rename(id, name)
+     projects.setCover(id, blob) -> Promise<{coverUrl}>  (the Galerie's picture; listAll() gives each project's coverUrl)
      cloud.available()    -> Promise<bool>  (the server has its R2 storage: online saving with media)
      cloud.fingerprint(file) -> Promise<id>  (same file = same id: not sent twice)
      cloud.upload(projectId, file, fileId, {onProgress(bytes), onRetry(n, err), signal}) -> Promise<{fileId, skipped}>
@@ -277,6 +278,8 @@
     projects: {
       list: function () { return api('GET', 'projects').then(function (d) { return d.projects; }); },
       get: function (id) { return api('GET', 'projects/' + encodeURIComponent(id)); },
+      // the Galerie's cover: a small JPEG / WebP picture (64 KB at most) → {coverUrl}
+      setCover: function (id, blob) { return api('PUT', 'projects/' + encodeURIComponent(id) + '/cover', blob, blob.type || 'image/jpeg'); },
       save: function (id, name, projectState, fileIds) {
         var b = { name: name, state: projectState }; if (fileIds) b.files = fileIds;
         return api('PUT', 'projects/' + encodeURIComponent(id), b);

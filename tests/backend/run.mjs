@@ -2315,6 +2315,83 @@ test('payments and refunds from Paddle → revenue, Pro by plan and day-by-day s
   assert.equal(r.data.days.length, 120);
 });
 
+// ---- Galerie: project covers in R2 (cloud.js projectCover) — domaine Comptes, paiements & serveur ----
+const COVER_JPEG = (n = 2000) => { const b = new Uint8Array(n); b.set([0xff, 0xd8, 0xff, 0xe0]); for (let i = 4; i < n; i++) b[i] = i % 251; return b; };
+const putCover = (env, cookie, id, data, type = 'image/jpeg', extra = {}) => call(env, 'PUT', `/api/projects/${id}/cover`, { cookie, raw: data, ct: type,
+  headers: { 'Content-Length': String(data.length) }, ...extra });
+
+test('galerie: covers saved next to the project (Pro, owner only), listed with their address, gone with the project and the account', async () => {
+  const media = createR2(), env = makeEnv({ MEDIA: media });
+  const pro = await proUser(env, 'gallery@example.com');
+  let r = await call(env, 'PUT', '/api/projects/proj_one', { cookie: pro.cookie, body: { name: 'Mon son', state: { app: 'stalak' } } });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  // no cover yet
+  r = await call(env, 'GET', '/api/projects', { cookie: pro.cookie });
+  assert.equal(r.data.projects[0].coverUrl, null);
+  r = await call(env, 'GET', '/api/projects/proj_one/cover', { cookie: pro.cookie });
+  assert.equal(r.status, 404);
+  // a COVER_JPEG of 2 KB
+  const img = COVER_JPEG();
+  r = await putCover(env, pro.cookie, 'proj_one', img);
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.match(r.data.coverUrl, /^\/api\/projects\/proj_one\/cover\?v=\d+$/);
+  r = await call(env, 'GET', '/api/projects', { cookie: pro.cookie });
+  const url = r.data.projects[0].coverUrl;
+  assert.match(url, /\?v=\d+$/);
+  const h = new Headers({ Cookie: pro.cookie, 'CF-Connecting-IP': '10.50.0.1' });
+  let res = await onRequest({ request: new Request('https://stalak.app' + url, { headers: h }), env, params: {}, waitUntil() {} });
+  assert.equal(res.status, 200); assert.equal(res.headers.get('Content-Type'), 'image/jpeg');
+  assert.equal(res.headers.get('Cache-Control'), 'private, max-age=31536000, immutable'); assert.equal(res.headers.get('X-Content-Type-Options'), 'nosniff');
+  assert.deepEqual(new Uint8Array(await res.arrayBuffer()), img);
+  // a new cover replaces the old one and gets a new address
+  await new Promise((ok) => setTimeout(ok, 5));
+  r = await putCover(env, pro.cookie, 'proj_one', COVER_JPEG(3000));
+  assert.notEqual(r.data.coverUrl, url);
+
+  // checks: type from the first bytes, size, CSRF, unknown project, other people
+  r = await putCover(env, pro.cookie, 'proj_one', new TextEncoder().encode('<svg onload=alert(1)>' + 'x'.repeat(100)));
+  assert.equal(r.status, 415); assert.equal(r.data.error, 'invalid_image');
+  r = await putCover(env, pro.cookie, 'proj_one', COVER_JPEG(100), 'image/png');
+  assert.equal(r.status, 415);
+  r = await putCover(env, pro.cookie, 'proj_one', COVER_JPEG(70 * 1024));
+  assert.equal(r.status, 413);
+  r = await putCover(env, pro.cookie, 'proj_one', COVER_JPEG(70 * 1024), 'image/jpeg', { headers: {} });   // size not announced
+  assert.equal(r.status, 413);
+  r = await putCover(env, pro.cookie, 'proj_one', COVER_JPEG(), 'image/jpeg', { origin: 'https://evil.example' });
+  assert.equal(r.status, 403); assert.equal(r.data.error, 'bad_origin');
+  r = await putCover(env, pro.cookie, 'nope_project', COVER_JPEG());
+  assert.equal(r.status, 404);
+  r = await putCover(env, pro.cookie, '..%2Fother', COVER_JPEG());
+  assert.ok([400, 404].includes(r.status));
+  const other = await proUser(env, 'other-gallery@example.com');
+  r = await call(env, 'GET', '/api/projects/proj_one/cover', { cookie: other.cookie });
+  assert.equal(r.status, 404, 'another account sees nothing');
+  r = await putCover(env, other.cookie, 'proj_one', COVER_JPEG());
+  assert.equal(r.status, 404);
+  const free = await login(env, 'free-gallery@example.com');
+  r = await putCover(env, free.cookie, 'proj_one', COVER_JPEG());
+  assert.equal(r.status, 403); assert.equal(r.data.error, 'pro_required');
+  r = await call(env, 'GET', '/api/projects/proj_one/cover');
+  assert.equal(r.status, 401);
+
+  // deleting the project deletes its cover
+  r = await call(env, 'PUT', '/api/projects/proj_two', { cookie: pro.cookie, body: { name: 'Deux', state: { app: 'stalak' } } });
+  await putCover(env, pro.cookie, 'proj_two', COVER_JPEG());
+  assert.ok(await media.get(`u/${pro.user.id}/p/proj_two/cover`));
+  r = await call(env, 'DELETE', '/api/projects/proj_two', { cookie: pro.cookie });
+  assert.equal(r.status, 200);
+  assert.equal(await media.get(`u/${pro.user.id}/p/proj_two/cover`), null);
+  // Pro ends: no access (the cover is kept with the project); the account goes: everything goes
+  const sid = env.DB.raw.prepare('SELECT id, customer_id FROM subscriptions WHERE user_id = ?').get(pro.user.id);
+  await webhook(env, subEvent('subscription.canceled', sub(pro.user.id, { id: sid.id, customer_id: sid.customer_id, status: 'canceled' })));
+  r = await call(env, 'GET', '/api/projects/proj_one/cover', { cookie: pro.cookie });
+  assert.equal(r.status, 403); assert.equal(r.data.error, 'pro_required');
+  assert.ok(await media.get(`u/${pro.user.id}/p/proj_one/cover`), 'kept while the project is kept');
+  r = await call(env, 'DELETE', '/api/account', { cookie: pro.cookie, body: { confirm: true } });
+  assert.equal(r.status, 200);
+  assert.equal(await media.get(`u/${pro.user.id}/p/proj_one/cover`), null);
+});
+
 // ---- runner --------------------------------------------------------------------------
 let failed = 0;
 for (const t of tests) {

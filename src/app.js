@@ -860,7 +860,6 @@ const I18N_EN = /*@EN*/{
   "hd.price": "Stalak Pro",
   "cl.save": "Save online",
   "cl.save.tip": "Keeps this project (song, takes, lyrics, edit) in your account, to open it again later on any device.",
-  "cl.mine": "My projects",
   "cl.soonP": "Soon, your projects (song, takes, lyrics and edit) will be saved here, to open them again on any device.",
   "cl.saveNow": "Save the current project",
   "cl.nameL": "Project name",
@@ -881,7 +880,7 @@ const I18N_EN = /*@EN*/{
   "cl.f.got": "received",
   "cl.retrying": "Connection lost, trying again ({n})…",
   "cl.finishing": "Saving the project…",
-  "cl.saved": "Project saved online. You’ll find it in Account → My projects.",
+  "cl.saved": "Project saved online. You’ll find it in your Gallery (account menu, top right).",
   "cl.savedNote": "Saved online at {t}",
   "cl.stopped": "Saving cancelled.",
   "cl.stoppedOpen": "Opening cancelled.",
@@ -913,7 +912,7 @@ const I18N_EN = /*@EN*/{
   "cl.wait": "Wait until your takes are analysed, then save.",
   "cl.soonSt": "Online saving is coming soon.",
   "cl.e.noName": "Give the project a name.",
-  "cl.e.quota": "Your online storage is full ({used} of {quota}). Delete an old project in Account → My projects, then try again.",
+  "cl.e.quota": "Your online storage is full ({used} of {quota}). Delete an old project in your Gallery, then try again.",
   "cl.e.big": "One of your files is too big to be saved (4 GB max per file).",
   "cl.e.type": "One of your files is neither a song nor a video: it can’t be saved.",
   "cl.e.pro": "Online saving is part of Stalak Pro.",
@@ -959,7 +958,22 @@ const I18N_EN = /*@EN*/{
   "p1.dropHere": "Drop your file here",
   "bars.n": "{n} bars",
   "grip.start": "Start of the part",
-  "grip.end": "End of the part"
+  "grip.end": "End of the part",
+  "_bloc.compte.galerie": "Comptes, paiements & serveur : menu du compte et Galerie",
+  "am.gallery": "Gallery",
+  "am.account": "My account",
+  "am.pro": "Stalak Pro",
+  "am.manage": "Manage my subscription",
+  "am.help": "Help",
+  "gal.t": "Gallery",
+  "gal.cardP": "Your projects saved online, to open again on any device.",
+  "gal.open": "Open the Gallery",
+  "gal.lock": "Online saving is part of Stalak Pro.",
+  "gal.lockFree": "With Stalak Pro, every project (song, takes, lyrics, edit) is saved here, with its cover, and opens again on any device.",
+  "gal.lockEx": "Your projects saved online are kept for 6 months after Stalak Pro ends, and come back as soon as you take it again.",
+  "gal.pro": "Discover Stalak Pro",
+  "gal.empty": "No project yet. At the Edit step, tap “Save online”: it will show up here with its cover.",
+  "gal.moreA": "More for “{name}”: rename, delete"
 }/*EN@*/;
 const I18N_FR = /*@FR*/{
   "kind.hint.reel": "Une vidéo verticale 9:16, de tout le son ou de quelques mesures.",
@@ -1280,7 +1294,7 @@ const I18N_FR = /*@FR*/{
   "lyr.vox.bad": "Je n’arrive pas à lire ce fichier. Essaie un autre format (mp3, m4a, wav).",
   "lyr.vox.off": "Voix seule retirée : la transcription écoutera ton son.",
   "lang.sw": "Langue",
-  "acct.btn": "Connexion",
+  "acct.btn": "Se connecter",
   "acct.btn.in": "Compte",
   "acct.btn.pro": "Pro",
   "acct.t": "Ton compte Stalak",
@@ -1407,7 +1421,7 @@ const I18N_FR = /*@FR*/{
   "cl.f.got": "reçu",
   "cl.retrying": "Connexion perdue, nouvel essai ({n})…",
   "cl.finishing": "Enregistrement du projet…",
-  "cl.saved": "Projet sauvegardé en ligne. Tu le retrouveras dans Compte → Mes projets.",
+  "cl.saved": "Projet sauvegardé en ligne. Tu le retrouveras dans ta Galerie (menu du compte, en haut à droite).",
   "cl.savedNote": "Sauvegardé en ligne à {t}",
   "cl.stopped": "Sauvegarde annulée.",
   "cl.stoppedOpen": "Ouverture annulée.",
@@ -1439,7 +1453,7 @@ const I18N_FR = /*@FR*/{
   "cl.wait": "Attends que tes prises aient fini d’être analysées, puis sauvegarde.",
   "cl.soonSt": "La sauvegarde en ligne arrive bientôt.",
   "cl.e.noName": "Donne un nom au projet.",
-  "cl.e.quota": "Ton espace en ligne est plein ({used} sur {quota}). Supprime un ancien projet dans Compte → Mes projets, puis réessaie.",
+  "cl.e.quota": "Ton espace en ligne est plein ({used} sur {quota}). Supprime un ancien projet dans ta Galerie, puis réessaie.",
   "cl.e.big": "Un de tes fichiers est trop lourd pour être sauvegardé (4 Go au plus par fichier).",
   "cl.e.type": "Un de tes fichiers n’est ni un son ni une vidéo : il ne peut pas être sauvegardé.",
   "cl.e.pro": "La sauvegarde en ligne fait partie de Stalak Pro.",
@@ -1484,7 +1498,14 @@ const I18N_FR = /*@FR*/{
   "p1.dropHere": "Lâche ton fichier ici",
   "bars.n": "{n} mesures",
   "grip.start": "Début du passage",
-  "grip.end": "Fin du passage"
+  "grip.end": "Fin du passage",
+  "_bloc.compte.galerie": "Comptes, paiements & serveur : menu du compte et Galerie",
+  "am.pro": "Stalak Pro",
+  "am.manage": "Gérer mon abonnement",
+  "gal.lockFree": "Avec Stalak Pro, chaque projet (son, prises, paroles, montage) est gardé ici, avec sa couverture, et se rouvre sur n’importe quel appareil.",
+  "gal.lockEx": "Tes projets sauvegardés en ligne sont gardés 6 mois après la fin de Stalak Pro, et reviennent dès que tu le reprends.",
+  "gal.empty": "Aucun projet pour l’instant. À l’étape Montage, touche « Sauvegarder en ligne » : il apparaîtra ici avec sa couverture.",
+  "gal.moreA": "Plus pour « {name} » : renommer, supprimer"
 }/*FR@*/;
 let STATIC_FR = /*@STATIC_FR*/null/*STATIC_FR@*/;
 const LANGS = ['fr', 'en'];
@@ -7728,7 +7749,7 @@ LE SITE, EN 4 ÉTAPES (onglets en haut : 1 Son, 2 Prises, 3 Paroles, 4 Montage)
 - L'aperçu est allégé pour rester fluide ; la vidéo exportée est en pleine qualité, à partir des vidéos originales.
 - Pendant l'export, un écran montre la mascotte qui construit un igloo : il avance avec l'export, « Annuler » l'arrête.
 - « Exporter la vidéo », ou un pack de 5, 10 ou 30 vidéos toutes différentes (« Générer le pack », avec Stalak Pro sur stalak.app), puis « Enregistrer sur l'appareil ».
-- « Sauvegarder en ligne » (Stalak Pro, sur stalak.app ; à l'étape Montage, ou Compte → Mes projets) : garde le projet entier (son, prises, paroles et leurs temps, montage, format, style du texte) dans le compte, 20 Go au plus. Il se rouvre tel quel sur n'importe quel appareil depuis Compte → Mes projets (Ouvrir, Renommer, Supprimer). Un fichier déjà en ligne n'est pas renvoyé ; après une coupure, « Réessayer » reprend où l'envoi s'était arrêté. Espace plein : supprimer un ancien projet. Un projet non ouvert depuis 6 mois est supprimé, après un e-mail de rappel. Sans Stalak Pro, le bouton porte un badge PRO ; sur la page claude.ai, ce n'est pas disponible.
+- « Sauvegarder en ligne » (Stalak Pro, sur stalak.app ; à l'étape Montage, ou Galerie dans le menu du compte en haut à droite) : garde le projet entier (son, prises, paroles et leurs temps, montage, format, style du texte) dans le compte, 20 Go au plus. Il se rouvre tel quel sur n'importe quel appareil depuis la Galerie (menu du compte en haut à droite : toucher un projet pour l'ouvrir ; appui long ou « … » pour Renommer, Supprimer). Un fichier déjà en ligne n'est pas renvoyé ; après une coupure, « Réessayer » reprend où l'envoi s'était arrêté. Espace plein : supprimer un ancien projet. Un projet non ouvert depuis 6 mois est supprimé, après un e-mail de rappel. Sans Stalak Pro, le bouton porte un badge PRO ; sur la page claude.ai, ce n'est pas disponible.
 - Les vidéos gratuites se terminent par 3 secondes avec le logo Stalak.
 - « Poster ta vidéo » : sur téléphone, « Partager vers TikTok, Insta, YouTube… » ouvre la liste de partage du téléphone. Sinon, enregistrer la vidéo puis toucher TikTok, Instagram ou YouTube Shorts pour ouvrir la page d'ajout. La publication automatique sans passer par l'appli n'existe pas encore.
 - Toucher le logo Stalak en haut à gauche : nouveau projet (tout est effacé, après confirmation).
@@ -7780,7 +7801,7 @@ THE SITE, IN 4 STEPS (tabs at the top: 1 Sound, 2 Takes, 3 Lyrics, 4 Edit)
 - The preview is lighter so it stays smooth; the exported video is full quality, from the original videos.
 - During the export, a screen shows the mascot building an igloo: it moves along with the export, "Cancel" stops it.
 - "Export video", or a pack of 5, 10 or 30 all-different videos ("Make the pack", with Stalak Pro on stalak.app), then "Save to device".
-- "Save online" (Stalak Pro, on stalak.app; at the Edit step, or Account → My projects): keeps the whole project (song, takes, lyrics and their timing, edit, format, text style) in the account, up to 20 GB. It opens again as it was on any device from Account → My projects (Open, Rename, Delete). A file already online isn't sent again; after a connection drop, "Try again" resumes where the upload stopped. Storage full: delete an old project. A project not opened for 6 months is deleted, after a reminder email. Without Stalak Pro, the button has a PRO badge; on the claude.ai page, it isn't available.
+- "Save online" (Stalak Pro, on stalak.app; at the Edit step, or Gallery in the account menu at the top right): keeps the whole project (song, takes, lyrics and their timing, edit, format, text style) in the account, up to 20 GB. It opens again as it was on any device from the Gallery (tap to open; long press or "…" to Rename, Delete). A file already online isn't sent again; after a connection drop, "Try again" resumes where the upload stopped. Storage full: delete an old project. A project not opened for 6 months is deleted, after a reminder email. Without Stalak Pro, the button has a PRO badge; on the claude.ai page, it isn't available.
 - Free videos end with 3 seconds of the Stalak logo.
 - "Post your video": on a phone, "Share to TikTok, Insta, YouTube…" opens the phone's share sheet. Otherwise, save the video then tap TikTok, Instagram or YouTube Shorts to open their upload page. Automatic posting without going through the app doesn't exist yet.
 - Tapping the Stalak logo at the top left: new project (everything is cleared, after confirming).
@@ -8023,8 +8044,8 @@ helpInit();
    Sign in (e-mail + password, a code by e-mail on a new browser) or create an account (e-mail + password, then a code),
    forgotten password (e-mail, code, new password), Google / Apple / Microsoft when the server has them;
    profile (pseudo, photo), password, Stalak Pro through Paddle. ---------- */
-const AP_HASH = { login: 'connexion', account: 'compte', pro: 'pro' };
-const AP_FROM_HASH = { connexion: 'login', signin: 'login', inscription: 'signup', signup: 'signup', compte: 'account', account: 'account', pro: 'pro' };
+const AP_HASH = { login: 'connexion', account: 'compte', pro: 'pro', gallery: 'galerie' };
+const AP_FROM_HASH = { connexion: 'login', signin: 'login', inscription: 'signup', signup: 'signup', compte: 'account', account: 'account', pro: 'pro', galerie: 'gallery', gallery: 'gallery' };
 const AP_PERSON = '<svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>';
 let apView = null, apDepth = 0, apBack = null, apBusy = false, acctWasPro = false, apMsgTimer = 0;
 /* apMode: 'in' (sign in) | 'up' (create an account); apStep: 'form' | 'code' | 'forgot' | 'newpw'; apCodeFor: 'signup' | 'login' | 'reset' */
@@ -8183,8 +8204,8 @@ function apSubLine(){
 function apRender(){
   if (!ACCT || !apView) return;
   const st = ACCT.state, u = st.user, pro = acctPro(), v = apView;
-  $('#apLogin').hidden = v !== 'login'; $('#apAccount').hidden = v !== 'account'; $('#apPro').hidden = v !== 'pro';
-  $('#acctPage').setAttribute('aria-labelledby', v === 'login' ? 'apLoginT' : v === 'account' ? 'apAccT' : 'apProT');
+  $('#apLogin').hidden = v !== 'login'; $('#apAccount').hidden = v !== 'account'; $('#apPro').hidden = v !== 'pro'; $('#apGallery').hidden = v !== 'gallery'; $('#acctPage').classList.toggle('ap-wide', v === 'gallery');
+  $('#acctPage').setAttribute('aria-labelledby', v === 'login' ? 'apLoginT' : v === 'account' ? 'apAccT' : v === 'gallery' ? 'apGalT' : 'apProT');
   if (v === 'login'){
     const stp = apStep, up = apMode === 'up';
     $('#apStepForm').hidden = stp !== 'form'; $('#apCodeF').hidden = stp !== 'code'; $('#apForgotF').hidden = stp !== 'forgot'; $('#apNewPwF').hidden = stp !== 'newpw';
@@ -8236,6 +8257,9 @@ function acctSync(){
   acctAvatar($('#acctAv'), u);
   const lbl = u ? _t('ap.btnAria', { name: acctName(u) }) + (pro ? ' · Stalak Pro' : '') : _t('acct.btn');
   b.setAttribute('aria-label', lbl); b.title = lbl;
+  // signed in: the button opens the account menu; signed out: « Se connecter »
+  b.setAttribute('aria-haspopup', u ? 'menu' : 'dialog'); b.setAttribute('aria-controls', u ? 'acctMenu' : 'acctPage');
+  if (!u) acctMenu(false); else setT('#amProT', pro ? 'am.manage' : 'am.pro');
   const cb = $('#kindSeg button[data-v="clip"]'); if (cb) cb.classList.toggle('protag', !pro);
   const pb = $('#packBtn'); if (pb) pb.classList.toggle('protag', !pro);
   textGate();
@@ -8254,7 +8278,7 @@ function apHashView(){ let h = ''; try { h = decodeURIComponent(location.hash.sl
 function apResolve(v){
   const u = ACCT.state.user;
   // the Pro offer can be seen signed out (the buy buttons ask to sign in); the account page needs it
-  if (!u && v === 'account'){ apAfter = v; return 'login'; }
+  if (!u && (v === 'account' || v === 'gallery')){ apAfter = v; return 'login'; }
   if (u && v === 'login') return apAfter || 'account';
   return v;
 }
@@ -8270,6 +8294,7 @@ function apGo(view, o = {}){
   const v = apResolve(view), page = $('#acctPage'), first = !isShown(page);
   // Stalak Pro asked while signed out: « Créer un compte » first for someone never signed in on this browser
   if (v === 'login' && !o.mode && apView !== 'login' && view !== 'login') o.mode = (apWhyK || view === 'pro') && !store.get('stalak:hadAcct') ? 'up' : apMode;
+  acctMenu(false);
   if (first){
     apBack = document.activeElement; layerIn(page); modalOn(true); $('#acctBtn').setAttribute('aria-expanded', 'true');
     ACCT.me().catch(() => {});
@@ -8285,9 +8310,9 @@ function apGo(view, o = {}){
   if (!o.keepMsg) apSay(null);
   apRender();
   if (changed || first) page.scrollTop = 0;
-  if (v === 'account' && (changed || first)) clLoadList();
+  if (v === 'gallery' && (changed || first)) clLoadList();
   if (o.noFocus) return;
-  const f = v === 'login' ? $('#apLoginT') : v === 'account' ? $('#apAccT') : $('#apProT');
+  const f = v === 'login' ? $('#apLoginT') : v === 'account' ? $('#apAccT') : v === 'gallery' ? $('#apGalT') : $('#apProT');
   setTimeout(() => { try { f.focus({ preventScroll: true }); } catch(e){} }, 40);
 }
 /* « Retour », Escape, the back gesture: one page back, then the app */
@@ -8304,6 +8329,51 @@ function acctOpen(why){
   // signed out: the header button opens « Se connecter »; a Pro feature opens « Créer un compte » for someone never signed in here
   const mode = ACCT.state.user ? null : why && !store.get('stalak:hadAcct') ? 'up' : 'in';
   apGo(why ? 'pro' : ACCT.state.user ? 'account' : 'login', { why: why || null, mode });
+}
+
+/* ---- the account menu (domaine Comptes, paiements & serveur): Galerie, Mon compte, Stalak Pro / Gérer mon abonnement, Aide,
+   Se déconnecter. Opened by the account button when signed in; a tap outside, Escape or Tab closes it; arrows move in it. ---- */
+let amOpen = false, apPortal = null;
+const amItems = () => $$('#acctMenu [role=menuitem]');
+function acctMenu(on, focusFirst){
+  const m = $('#acctMenu'), b = $('#acctBtn'); if (!m || !b) return;
+  on = !!on; if (on === amOpen) return;
+  amOpen = on; m.hidden = !on; b.setAttribute('aria-expanded', on ? 'true' : 'false');
+  if (on){
+    setT('#amProT', acctPro() ? 'am.manage' : 'am.pro');
+    const it = amItems()[0]; if (it) try { it.focus({ preventScroll: true }); } catch(e){}
+    if (!focusFirst) m.classList.add('am-touch'); else m.classList.remove('am-touch');
+  }
+}
+async function acctLogout(){
+  try { await ACCT.logout(); diag('compte : déconnecté'); say('acct.outDone'); }
+  catch(e){ say('acct.e.other'); }
+}
+function amInit(){
+  const m = $('#acctMenu'), b = $('#acctBtn'); if (!m) return;
+  // a tap or a click anywhere else closes it (iPhone included: pointer events)
+  document.addEventListener('pointerdown', e => { if (amOpen && !m.contains(e.target) && !b.contains(e.target)) acctMenu(false); }, true);
+  window.addEventListener('resize', () => acctMenu(false));
+  m.addEventListener('keydown', e => {
+    const it = amItems(), i = it.indexOf(document.activeElement);
+    if (e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); acctMenu(false); b.focus(); }
+    else if (e.key === 'ArrowDown'){ e.preventDefault(); it[(i + 1) % it.length].focus(); }
+    else if (e.key === 'ArrowUp'){ e.preventDefault(); it[(i - 1 + it.length) % it.length].focus(); }
+    else if (e.key === 'Home'){ e.preventDefault(); it[0].focus(); }
+    else if (e.key === 'End'){ e.preventDefault(); it[it.length - 1].focus(); }
+    else if (e.key === 'Tab'){ acctMenu(false); }
+    e.stopPropagation();   // the page's own keys (space = play…) stay out
+  });
+  m.addEventListener('click', e => {
+    const it = e.target.closest('[data-am]'); if (!it) return;
+    const k = it.dataset.am; acctMenu(false); b.focus({ preventScroll: true });
+    if (S.exporting || askDone) return;
+    if (k === 'gallery') apGo('gallery');
+    else if (k === 'account') apGo('account');
+    else if (k === 'pro'){ if (acctPro() && apPortal) apPortal(); else apGo('pro'); }
+    else if (k === 'help') helpOpen(true);
+    else if (k === 'out') acctLogout();
+  });
 }
 
 /* ---- the profile photo: cropped to a centred square and made small here (256 × 256, WebP or JPEG, 60 KB at most) ---- */
@@ -8395,7 +8465,8 @@ function ptClose(){
 if (ACCT){
   // the mascot's faces (only here: the claude.ai page has no /emoji/ folder)
   $$('img[data-emo]').forEach(i => { i.src = '/emoji/' + i.dataset.emo + '.webp?v=2'; });
-  $('#acctBtn').onclick = () => acctOpen();
+  $('#acctBtn').onclick = e => { if (!ACCT.state.user){ acctMenu(false); acctOpen(); return; } acctMenu(!amOpen, e.detail === 0); };
+  amInit();
   $('#outroPro').onclick = () => acctOpen('outro');
   $('#apBack').onclick = apBackBtn;
   $('#acctPage').addEventListener('keydown', e => { if (e.key === 'Escape'){ e.stopPropagation(); e.preventDefault(); apBackBtn(); } });
@@ -8622,7 +8693,9 @@ if (ACCT){
   }).then(() => { if (!u && w) w.close(); }); };
   $('#priceBtn').onclick = () => { if (!S.exporting && !askDone) apGo('pro'); };
   $('#apSubGo').onclick = () => { if (acctPro()) portal(); else apGo('pro'); };
-  $('#apManage').onclick = portal;
+  $('#apManage').onclick = portal; apPortal = portal;
+  $('#apGalGo').onclick = () => apGo('gallery');
+  $('#galPro').onclick = () => apGo('pro', { why: 'cloud' });
   $('#apOut').onclick = () => apRun(async () => { await ACCT.logout(); diag('compte : déconnecté'); apMode = 'in'; apGo('login', { replace: true, mode: 'in' }); apSay('acct.outDone'); });
   $('#apDel').onclick = async () => {
     if (apBusy) return;
@@ -8679,7 +8752,7 @@ if (ACCT){
 /* ---------- online saving (stalak.app, Stalak Pro): the whole project (the song, every take, the lyrics and their times,
    the edit, the effects, the format and the text style) in the account, to open again later on any device.
    The files go to the server part by part (account.js); a file already online is not sent again. The server says whether its
-   storage is there (config.features.cloudSave): without it the button stays hidden and « Mes projets » says « bientôt ».
+   storage is there (config.features.cloudSave): without it the button stays hidden and the Galerie says « bientôt ».
    Opening a project while another one is on screen reloads the page first, so that nothing of the old one is left. ---------- */
 var CL = null;   // var: updateNav() runs before this point at start-up
 if (ACCT) CL = { avail: null, busy: false, cur: null, list: null, listErr: false, storage: null, ctl: null, files: [], renaming: null, lang: null, back: null, retry: null, fp: new WeakMap() };
@@ -8697,14 +8770,17 @@ function clCheck(){
 /* the button of the Montage step, the account card (not the list itself: see clRenderList) */
 function clSync(){
   if (!CL) return;
-  const pro = acctPro(), u = ACCT.state.user, soon = CL.avail === false;
+  const pro = acctPro(), st = ACCT.state, u = st.user, soon = CL.avail === false;
   // another person signed in (or signed out): their own list, nothing of the previous one
   const uid = u ? u.id : null;
   if (uid !== CL.uid){ CL.uid = uid; CL.list = null; CL.storage = null; CL.cur = null; CL.renaming = null; CL.lang = null; }
   $('#cloudRow').hidden = !CL.avail || !S.song;
   $('#cloudSaveBtn').classList.toggle('protag', !pro);
   $('#cloudSaveBtn').disabled = CL.busy || S.exporting;
-  const card = $('#apProjects'); card.hidden = !u;
+  // the Galerie: the grid for Pro; « Réservé à Stalak Pro » otherwise (an ex-Pro: his projects are kept 6 months)
+  const locked = !!u && (!pro || !!CL.locked);
+  $('#apProjects').hidden = !u || locked; $('#galLock').hidden = !locked;
+  if (locked) setT('#galLockP', st.subscription ? 'gal.lockEx' : 'gal.lockFree');
   $('#clSoon').hidden = !soon; $('#clSoonP').hidden = !soon;
   $('#clActions').hidden = soon || CL.avail == null || !S.song;
   $('#clSaveHere').classList.toggle('protag', !pro); $('#clSaveHere').disabled = CL.busy;
@@ -8736,40 +8812,100 @@ async function clLoadList(){
 }
 function clRenderList(){
   if (!CL) return;
-  const ul = $('#clList'), empty = $('#clEmpty'); ul.textContent = '';
+  const ul = $('#clList'), empty = $('#clEmpty'); ul.textContent = ''; galMenuClose();
   if (CL.avail === false){ empty.hidden = true; return; }
-  if (CL.locked){ empty.hidden = false; setT(empty, 'cl.locked'); return; }
+  if (CL.locked){ empty.hidden = true; return; }   // the « Réservé à Stalak Pro » card says it (clSync)
   const list = CL.list;
-  if (!list || !list.length){ empty.hidden = false; setT(empty, CL.listErr ? 'cl.listErr' : !list ? 'cl.loading' : 'cl.empty'); return; }
+  if (!list || !list.length){ empty.hidden = false; setT(empty, CL.listErr ? 'cl.listErr' : !list ? 'cl.loading' : 'gal.empty'); return; }
   empty.hidden = true;
   const mk = (tag, cls, key, vars) => { const e = document.createElement(tag); if (cls) e.className = cls; if (key) setT(e, key, vars); return e; };
+  // most recent first (the server sorts them by last save)
   for (const p of list){
-    const li = mk('li', 'cl-item'); li.dataset.id = p.id; if (CL.cur && CL.cur.id === p.id) li.classList.add('cur');
+    const li = mk('li', 'gal-item'); li.dataset.id = p.id; if (CL.cur && CL.cur.id === p.id) li.classList.add('cur');
     const name = p.name || _t('cl.noName');
     if (CL.renaming === p.id){
+      li.classList.add('gal-ren');
       const f = mk('form', 'cl-ren'); f.noValidate = true;
-      const lab = mk('label', 'vh', 'cl.nameL'), inp = document.createElement('input'), id = 'clRen-' + p.id;
+      const lab = mk('label', null, 'cl.nameL'), inp = document.createElement('input'), id = 'clRen-' + p.id;
       lab.htmlFor = id; inp.id = id; inp.type = 'text'; inp.maxLength = 120; inp.value = p.name || ''; inp.autocomplete = 'off';
       const btns = mk('div', 'cl-btns'), ok = mk('button', 'btn primary', 'ap.save'), no = mk('button', 'btn', 'cancel');
       ok.type = 'submit'; no.type = 'button';
-      no.onclick = () => { CL.renaming = null; clRenderList(); const b = $('#clList [data-id="' + p.id + '"] .cl-ren-btn'); if (b) b.focus(); };
+      no.onclick = () => { CL.renaming = null; clRenderList(); const b = $('#clList [data-id="' + p.id + '"] .gal-more'); if (b) b.focus(); };
       f.onsubmit = e => { e.preventDefault(); clRename(p, inp.value); };
       inp.addEventListener('keydown', e => { if (e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); no.click(); } });
       btns.append(ok, no); f.append(lab, inp, btns); li.append(f); ul.append(li);
       setTimeout(() => { try { inp.focus(); inp.select(); } catch(e){} }, 30);
       continue;
     }
-    const n = mk('p', 'cl-name'); n.textContent = name;
-    const meta = mk('p', 'cl-meta', 'cl.meta', { d: acctDate(p.updatedAt), size: clFmtBytes((p.mediaBytes || 0) + (p.size || 0)) });
-    const btns = mk('div', 'cl-btns');
-    const open = mk('button', 'btn primary cl-open', 'cl.open'), ren = mk('button', 'btn cl-ren-btn', 'cl.rename'), del = mk('button', 'btn cl-del', 'cl.del');
-    [open, ren, del].forEach(b => { b.type = 'button'; });
-    open.setAttribute('aria-label', _t('cl.openA', { name })); ren.setAttribute('aria-label', _t('cl.renameA', { name })); del.setAttribute('aria-label', _t('cl.delA', { name }));
-    open.onclick = () => clOpenAsk(p);
-    ren.onclick = () => { if (CL.busy) return; CL.renaming = p.id; clRenderList(); };
-    del.onclick = () => clDelete(p);
-    btns.append(open, ren, del); li.append(n, meta, btns); ul.append(li);
+    const open = mk('button', 'gal-open'), th = mk('span', 'gal-thumb'), nm = mk('span', 'gal-name');
+    open.type = 'button'; open.setAttribute('aria-label', _t('cl.openA', { name }));
+    if (p.coverUrl){
+      const img = new Image(); img.alt = ''; img.loading = 'lazy'; img.decoding = 'async'; img.draggable = false;
+      img.onerror = () => { img.remove(); th.classList.add('none'); }; img.src = p.coverUrl; th.append(img);
+    } else th.classList.add('none');
+    nm.textContent = name; open.append(th, nm);
+    const more = mk('button', 'gal-more'); more.type = 'button';
+    more.setAttribute('aria-label', _t('gal.moreA', { name })); more.setAttribute('aria-haspopup', 'menu'); more.setAttribute('aria-expanded', 'false');
+    more.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="5.5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="18.5" cy="12" r="1.9"/></svg>';
+    // a tap opens it; a long press (or a right click) shows « Renommer » and « Supprimer », like the « … » button
+    let tmr = 0, sx = 0, sy = 0, long = false;
+    const cancel = () => clearTimeout(tmr);
+    open.addEventListener('pointerdown', e => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      long = false; sx = e.clientX; sy = e.clientY; cancel();
+      tmr = setTimeout(() => { long = true; try { navigator.vibrate && navigator.vibrate(10); } catch(x){} galMenuOpen(p, more); }, 500);
+    });
+    open.addEventListener('pointermove', e => { if (Math.hypot(e.clientX - sx, e.clientY - sy) > 10) cancel(); });
+    for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) open.addEventListener(ev, cancel);
+    open.addEventListener('contextmenu', e => { e.preventDefault(); cancel(); long = true; galMenuOpen(p, more); });
+    open.onclick = () => { if (long){ long = false; return; } clOpenAsk(p); };
+    more.onclick = () => galMenuOpen(p, more);
+    li.append(open, more); ul.append(li);
   }
+}
+/* the small menu of a project (« … » or a long press): Renommer, Supprimer; placed by the project, inside the screen */
+let galMenuEl = null, galMenuFor = null;
+function galMenuClose(focusBack){
+  if (!galMenuEl || galMenuEl.hidden) return;
+  galMenuEl.hidden = true;
+  const b = galMenuFor && galMenuFor.btn; galMenuFor = null;
+  if (b){ b.setAttribute('aria-expanded', 'false'); if (focusBack && b.isConnected) try { b.focus(); } catch(e){} }
+}
+function galMenuOpen(p, btn){
+  if (!CL || CL.busy || apBusy) return;
+  if (!galMenuEl){
+    const m = galMenuEl = document.createElement('div'); m.className = 'gal-menu'; m.setAttribute('role', 'menu'); m.hidden = true;
+    const it = (k, cls) => { const b = document.createElement('button'); b.type = 'button'; b.setAttribute('role', 'menuitem'); b.tabIndex = -1; b.dataset.k = k; if (cls) b.className = cls; return b; };
+    m.append(it('rename'), it('del', 'gal-del'));
+    m.addEventListener('click', e => {
+      const b = e.target.closest('[data-k]'); if (!b || !galMenuFor) return;
+      const q = galMenuFor.p, k = b.dataset.k; galMenuClose();
+      if (k === 'rename'){ CL.renaming = q.id; clRenderList(); } else clDelete(q);
+    });
+    m.addEventListener('keydown', e => {
+      const items = [...m.querySelectorAll('[role=menuitem]')], i = items.indexOf(document.activeElement);
+      if (e.key === 'Escape'){ e.preventDefault(); galMenuClose(true); }
+      else if (e.key === 'ArrowDown' || e.key === 'ArrowUp'){ e.preventDefault(); items[(i + (e.key === 'ArrowDown' ? 1 : items.length - 1)) % items.length].focus(); }
+      else if (e.key === 'Tab') galMenuClose();
+      e.stopPropagation();
+    });
+    document.addEventListener('pointerdown', e => { if (galMenuEl && !galMenuEl.hidden && !galMenuEl.contains(e.target) && !(galMenuFor && galMenuFor.btn.contains(e.target))) galMenuClose(); }, true);
+    $('#acctPage').addEventListener('scroll', () => galMenuClose(), { passive: true });
+    window.addEventListener('resize', () => galMenuClose());
+    document.body.append(m);
+  }
+  const m = galMenuEl;
+  if (galMenuFor && galMenuFor.p.id === p.id && !m.hidden){ galMenuClose(true); return; }
+  galMenuClose();
+  setT(m.querySelector('[data-k=rename]'), 'cl.rename'); setT(m.querySelector('[data-k=del]'), 'cl.del');
+  m.setAttribute('aria-label', p.name || _t('cl.noName'));
+  galMenuFor = { p, btn }; btn.setAttribute('aria-expanded', 'true');
+  m.hidden = false;
+  const r = btn.getBoundingClientRect(), mw = m.offsetWidth, mh = m.offsetHeight, pad = 8;
+  const left = Math.max(pad, Math.min(innerWidth - mw - pad, r.right - mw));
+  const top = r.bottom + 6 + mh > innerHeight - pad ? Math.max(pad, r.top - mh - 6) : r.bottom + 6;
+  m.style.left = left + 'px'; m.style.top = top + 'px';
+  try { m.querySelector('[role=menuitem]').focus({ preventScroll: true }); } catch(e){}
 }
 async function clRename(p, v){
   const name = String(v || '').replace(/\s+/g, ' ').trim().slice(0, 120);
@@ -8777,8 +8913,8 @@ async function clRename(p, v){
   apRun(async () => {
     await ACCT.projects.rename(p.id, name);
     p.name = name; if (CL.cur && CL.cur.id === p.id) CL.cur.name = name;
-    CL.renaming = null; clRenderList(); apSay('cl.renamed'); diag('mes projets : renommé');
-    const b = $('#clList [data-id="' + p.id + '"] .cl-ren-btn'); if (b) b.focus();
+    CL.renaming = null; clRenderList(); apSay('cl.renamed'); diag('galerie : renommé');
+    const b = $('#clList [data-id="' + p.id + '"] .gal-more'); if (b) b.focus();
   });
 }
 async function clDelete(p){
@@ -8788,8 +8924,8 @@ async function clDelete(p){
     const r = await ACCT.projects.remove(p.id);
     if (CL.cur && CL.cur.id === p.id) CL.cur = null;
     CL.list = (CL.list || []).filter(x => x.id !== p.id); if (r && r.storage) CL.storage = r.storage;
-    clSync(); clRenderList(); apSay('cl.deleted'); diag('mes projets : supprimé');
-    try { $('#clList .cl-open') ? $('#clList .cl-open').focus() : $('#apAccT').focus(); } catch(e){}
+    clSync(); clRenderList(); apSay('cl.deleted'); diag('galerie : supprimé');
+    try { $('#clList .gal-open') ? $('#clList .gal-open').focus() : $('#apGalT').focus(); } catch(e){}
   });
 }
 
@@ -8897,6 +9033,27 @@ async function clCollect(){
   };
   return { state: JSON.parse(JSON.stringify(state)), media };
 }
+/* the Galerie's cover: the middle of the first shot that shows a sung take, with the lyrics, without the take's name; 300 px wide */
+async function clCoverBlob(){
+  if (!S.cuts.length || S.exporting) return null;
+  const c = S.cuts.find(x => x.take && x.take.kind === 'video' && !x.broll) || S.cuts[0], tk = c.take;
+  if (!tk) return null;
+  const t = (c.t0 + c.t1) / 2, lt = Math.max(0, Math.min((tk.duration || 1) - 0.05, t - (tk.offset || 0)));
+  const view = $('#view'), big = document.createElement('canvas'); big.width = view.width; big.height = view.height;
+  let src;
+  try {
+    if (tk.kind === 'video' && tk.live){ await liveWait(tk, lt); const ls = liveSrc(tk, lt, 0.25); if (ls) src = { img: ls.img, w: ls.w, h: ls.h, rot: 0 }; }
+    else if (tk.kind === 'video'){ tk.el.pause(); await seekTo(tk.el, lt); }
+    drawFrame(big.getContext('2d'), c, t, false, src);
+  } finally { if (!S.playing && !S.exporting) showFrame(S.cursor); }   // the preview back where it was
+  const w = 300, h = Math.max(1, Math.round(big.height * w / big.width)), sm = document.createElement('canvas');
+  sm.width = w; sm.height = h; const cx = sm.getContext('2d'); cx.imageSmoothingQuality = 'high'; cx.drawImage(big, 0, 0, w, h);
+  const blob = (type, q) => new Promise(r => { try { sm.toBlob(r, type, q); } catch(e){ r(null); } });
+  let b = await blob('image/webp', 0.8);
+  if (!b || b.type !== 'image/webp') b = await blob('image/jpeg', 0.82);
+  if (b && b.size > 60000) b = await blob('image/jpeg', 0.6);
+  return b && b.size <= 64 * 1024 ? b : null;
+}
 async function clSaveRun(name){
   if (CL.busy) return;
   CL.busy = true; CL.mode = 'save'; CL.ctl = new AbortController(); CL.retry = () => clSaveRun(name); clSync();
@@ -8917,6 +9074,9 @@ async function clSaveRun(name){
     clMsg('cl.finishing');
     const res = await ACCT.projects.save(id, name, state, media.map(m => m.id));
     CL.cur = { id, name }; if (res && res.storage) CL.storage = res.storage;
+    // the Galerie's cover: a picture of the edit, small (300 px wide); never blocks the save
+    try { const cover = await clCoverBlob(); if (cover) await ACCT.projects.setCover(id, cover); }
+    catch(e){ diag('galerie : couverture non envoyée (' + (e && (e.code || e.message)) + ')'); }
     CL.files.forEach(f => { f.ok = true; f.done = f.size; }); clProgUi();
     $('#clAllBar').firstElementChild.style.width = '100%';
     clMsg('cl.saved'); clBtns('done'); $('#clDone').focus();

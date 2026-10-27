@@ -9,7 +9,16 @@
       <li><button type="button" data-go="3" data-i18n="step.3"><b>3</b>Paroles</button></li>
       <li><button type="button" data-go="4" data-i18n="step.4"><b>4</b>Montage</button></li>
     </ol>
-    <div class="hdtools"><button class="pricebtn" id="priceBtn" type="button" hidden aria-controls="acctPage"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.5v19M3.8 7.25l16.4 9.5M3.8 16.75l16.4-9.5"/></svg><span data-i18n="hd.price">Stalak Pro</span></button><button class="acctbtn" id="acctBtn" type="button" hidden aria-haspopup="dialog" aria-controls="acctPage"><span class="acctav" id="acctAv" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></span><span class="acctlbl" id="acctLbl">Connexion</span><span class="acctpro" id="acctProTag" hidden>PRO</span></button></div>
+    <div class="hdtools"><button class="pricebtn" id="priceBtn" type="button" hidden aria-controls="acctPage"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.5v19M3.8 7.25l16.4 9.5M3.8 16.75l16.4-9.5"/></svg><span data-i18n="hd.price">Stalak Pro</span></button><button class="acctbtn" id="acctBtn" type="button" hidden aria-haspopup="dialog" aria-controls="acctPage"><span class="acctav" id="acctAv" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></span><span class="acctlbl" id="acctLbl">Se connecter</span><span class="acctpro" id="acctProTag" hidden>PRO</span></button>
+    <!-- account menu (signed in; domaine Comptes, paiements & serveur): opened by the account button, closed by a tap outside or Escape -->
+    <div class="acctmenu" id="acctMenu" role="menu" aria-labelledby="acctBtn" hidden>
+      <button type="button" role="menuitem" tabindex="-1" data-am="gallery"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.6"/></svg><span data-i18n="am.gallery">Galerie</span></button>
+      <button type="button" role="menuitem" tabindex="-1" data-am="account"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg><span data-i18n="am.account">Mon compte</span></button>
+      <button type="button" role="menuitem" tabindex="-1" data-am="pro"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.5v19M3.8 7.25l16.4 9.5M3.8 16.75l16.4-9.5"/></svg><span id="amProT">Stalak Pro</span></button>
+      <button type="button" role="menuitem" tabindex="-1" data-am="help"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.3a2.5 2.5 0 1 1 3.4 2.3c-.7.3-1 .9-1 1.6v.6M12 17.2v.3"/></svg><span data-i18n="am.help">Aide</span></button>
+      <span class="am-sep" role="separator"></span>
+      <button type="button" role="menuitem" tabindex="-1" data-am="out" class="am-out"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4M9.5 16.5 5 12l4.5-4.5M5 12h10"/></svg><span data-i18n="acct.out">Se déconnecter</span></button>
+    </div></div>
   </header>
   <div class="status" id="status" role="status" aria-live="polite"></div>
 
@@ -608,16 +617,10 @@
         <p class="ap-sub" id="apSub"><span id="apSubT"></span> <button class="linkbtn ap-subgo" type="button" id="apSubGo"></button></p>
       </div>
 
-      <div class="card ap-card cl-card" id="apProjects" hidden>
-        <h3><span data-i18n="cl.mine">Mes projets</span><span class="soon" id="clSoon" hidden data-i18n="pr.soon">bientôt</span></h3>
-        <p class="hint" id="clSoonP" hidden data-i18n="cl.soonP">Bientôt, tes projets (son, prises, paroles et montage) seront sauvegardés ici, pour les rouvrir sur n’importe quel appareil.</p>
-        <div class="cl-quota" id="clQuota" hidden>
-          <div class="cl-bar" id="clQuotaBar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-labelledby="clQuotaT"><i></i></div>
-          <p class="hint" id="clQuotaT"></p>
-        </div>
-        <ul class="cl-list" id="clList" aria-live="polite"></ul>
-        <p class="hint" id="clEmpty" hidden></p>
-        <div class="cl-actions" id="clActions" hidden><button class="btn" type="button" id="clSaveHere" data-i18n="cl.saveNow">Sauvegarder le projet en cours</button></div>
+      <div class="card ap-card ap-galcard">
+        <h3 data-i18n="gal.t">Galerie</h3>
+        <p class="hint" data-i18n="gal.cardP">Tes projets sauvegardés en ligne, à rouvrir sur n’importe quel appareil.</p>
+        <button class="btn" type="button" id="apGalGo" data-i18n="gal.open">Ouvrir la Galerie</button>
       </div>
 
       <div class="card ap-card">
@@ -630,6 +633,27 @@
         <a class="ap-small" href="/tarifs" data-i18n="ap.pricing" data-i18n-attr="href:ap.pricingHref">Tarifs</a>
       </div>
       <div class="ap-danger"><button class="linkbtn" type="button" id="apDel" data-i18n="acct.del">Supprimer mon compte</button></div>
+    </section>
+
+    <!-- Galerie (#galerie; domaine Comptes, paiements & serveur): the projects saved online in a grid, like the iPhone's Photos -->
+    <section class="ap-view ap-galview" id="apGallery" hidden>
+      <h2 id="apGalT" tabindex="-1"><span data-i18n="gal.t">Galerie</span><span class="soon" id="clSoon" hidden data-i18n="pr.soon">bientôt</span></h2>
+      <p class="hint" id="clSoonP" hidden data-i18n="cl.soonP">Bientôt, tes projets (son, prises, paroles et montage) seront sauvegardés ici, pour les rouvrir sur n’importe quel appareil.</p>
+      <div class="card ap-card gal-lock" id="galLock" hidden>
+        <img class="ap-emo" data-emo="cool" alt="" width="104" height="104">
+        <p class="gal-lockT" data-i18n="gal.lock">La sauvegarde en ligne est réservée à Stalak Pro.</p>
+        <p class="hint" id="galLockP"></p>
+        <button class="btn primary" type="button" id="galPro" data-i18n="gal.pro">Découvrir Stalak Pro</button>
+      </div>
+      <div class="card ap-card gal-body" id="apProjects" hidden>
+        <div class="cl-quota" id="clQuota" hidden>
+          <div class="cl-bar" id="clQuotaBar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-labelledby="clQuotaT"><i></i></div>
+          <p class="hint" id="clQuotaT"></p>
+        </div>
+        <ul class="gal-grid" id="clList" aria-live="polite"></ul>
+        <p class="hint" id="clEmpty" hidden></p>
+        <div class="cl-actions" id="clActions" hidden><button class="btn" type="button" id="clSaveHere" data-i18n="cl.saveNow">Sauvegarder le projet en cours</button></div>
+      </div>
     </section>
 
     <section class="ap-view ap-proview" id="apPro" hidden>

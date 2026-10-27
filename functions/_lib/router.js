@@ -6,7 +6,7 @@ import { updateProfile, avatar, avatarUrl, AVATAR_TYPES } from './profile.js';
 import { entitlementsFor, requirePro } from './entitlements.js';
 import { handleWebhook, portalLinks, cancelSubscriptionNow } from './paddle.js';
 import { social, socialWebhook, isSocialWebhook, socialProviders, deleteSocialAccounts } from './social.js';
-import { projectFiles, storageInfo, checkProjectFiles, dropUnusedFiles, readyFiles, deleteProjectMedia, deleteUserMedia, maybeCleanup, cleanupCloud, cloudAvailable } from './cloud.js';
+import { projectCover, coverUrl, COVER_TYPES, projectFiles, storageInfo, checkProjectFiles, dropUnusedFiles, readyFiles, deleteProjectMedia, deleteUserMedia, maybeCleanup, cleanupCloud, cloudAvailable } from './cloud.js';
 import { timingSafeEqual } from './crypto.js';
 import { transcribe } from './lyrics.js';
 import { helpChat } from './help.js';
@@ -71,16 +71,18 @@ async function projects(request, env, method, rest, ctx) {
   if (!id) {
     if (method !== 'GET') throw new HttpError(405, 'method_not_allowed', 'Method not allowed.');
     const { results } = await env.DB.prepare(
-      'SELECT id, name, size, media_bytes, created_at, updated_at, opened_at FROM projects WHERE user_id = ?1 ORDER BY updated_at DESC'
+      'SELECT id, name, size, media_bytes, created_at, updated_at, opened_at, cover_at FROM projects WHERE user_id = ?1 ORDER BY updated_at DESC'
     ).bind(user.id).all();
     const storage = await storageInfo(env, user.id);
     await maybeCleanup(env, ctx);   // the 6-month rule, at most every 6 hours (cloud.js)
     return json({ projects: results.map((p) => ({ id: p.id, name: p.name, size: p.size, mediaBytes: p.media_bytes || 0,
       createdAt: new Date(p.created_at).toISOString(), updatedAt: new Date(p.updated_at).toISOString(),
-      openedAt: new Date(p.opened_at || p.updated_at).toISOString() })), storage });
+      openedAt: new Date(p.opened_at || p.updated_at).toISOString(), coverUrl: coverUrl(p.id, p.cover_at) })), storage });
   }
   if (!PROJECT_ID.test(id)) throw new HttpError(400, 'invalid_id', 'Project id: 1-64 letters, digits, - or _.');
   if (rest[1] === 'files') return projectFiles(request, env, method, user, id, rest.slice(2));
+  // the Galerie's cover (cloud.js)
+  if (rest[1] === 'cover' && rest.length === 2) return projectCover(request, env, method, user, id);
   if (rest.length > 1) throw new HttpError(404, 'not_found', 'Unknown API route.');
 
   if (method === 'GET') {
@@ -220,7 +222,8 @@ async function dispatch(request, env, ctx) {
     }
     // raw media bytes (project files): application/octet-stream, which a plain cross-site form cannot send either
     const rawUpload = method === 'PUT' && parts[0] === 'projects' && parts[2] === 'files' && parts.length >= 4;
-    if (STATE_CHANGING.has(method)) checkCsrf(request, env, route === 'me/avatar' && method === 'PUT' ? AVATAR_TYPES : rawUpload ? ['application/octet-stream'] : []);
+    const coverUpload = method === 'PUT' && parts[0] === 'projects' && parts[2] === 'cover' && parts.length === 3;
+    if (STATE_CHANGING.has(method)) checkCsrf(request, env, route === 'me/avatar' && method === 'PUT' ? AVATAR_TYPES : rawUpload ? ['application/octet-stream'] : coverUpload ? COVER_TYPES : []);
 
     switch (route) {
       case 'config':

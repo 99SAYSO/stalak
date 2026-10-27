@@ -34,9 +34,11 @@
   - glaçon : « Parler à un humain » (direct si le propriétaire est disponible, sinon e-mail du visiteur et réponse par e-mail) ;
   - migration 0006 appliquée ; reste au propriétaire : 2 secrets (`ACCESS_AUD`, `ADMIN_EMAILS`), domaine personnalisé admin.stalak.app sur Pages, événements Paddle `adjustment.*` (BACKEND.md, étape 13). L'équipe Access est déjà dans `wrangler.toml`.
 
+- **Menu du compte + Galerie** (branche `compte/menu-galerie`, compte rendu `docs/handoff/compte-menu-galerie.md`, Statut : PRÊT) : un appui sur le compte en haut à droite ouvre un menu (Galerie, Mon compte, Stalak Pro ou « Gérer mon abonnement », Aide, Se déconnecter) ; la Galerie remplace « Mes projets » : grille avec couverture (image du montage, 300 px, rangée dans R2 avec le projet), nom dessous, appui = ouvrir, appui long ou « … » = renommer / supprimer. Sans Pro : « La sauvegarde en ligne est réservée à Stalak Pro ». **Migration 0007 à appliquer avant de publier.**
+
 ## Base de données D1
 - Migrations appliquées : 0001, 0002, 0003, 0004_lyrics_usage, 0004_cloud_save, 0005_social_accounts (27/10), 0006_admin_support (27/10).
-- En attente : aucune.
+- En attente : **0007_project_covers** (branche `compte/menu-galerie`, une ligne : `ALTER TABLE projects ADD COLUMN cover_at INTEGER;`), à coller dans la console D1 avant de publier cette branche.
 
 ## À faire, par rôle
 
@@ -63,7 +65,7 @@
 ### Comptes, paiements & serveur
 - Paddle en réel une fois la structure créée : nouveaux produits, prix, clés et webhook, puis `PADDLE_ENV=production`.
 - Microsoft (création du compte bloquée, à retenter) et Apple (programme développeur à 99 $/an).
-- Ménage quotidien automatique des projets (Worker `workers/cloud-cleanup`, à déployer avec wrangler depuis un ordinateur). Pour l'instant, le ménage se fait quand quelqu'un ouvre « Mes projets ».
+- Ménage quotidien automatique des projets (Worker `workers/cloud-cleanup`, à déployer avec wrangler depuis un ordinateur). Pour l'instant, le ménage se fait quand quelqu'un ouvre la Galerie.
 - Assistant IA de la bulle d'aide : fait (branche `compte/assistant-aide`). Après la mise en ligne : poser quelques vraies questions pour juger les réponses ; ajuster `HELP_DAILY_MAX` si besoin.
 - Assistant d'aide, réponses vides (1 sur 3 en ligne) : corrigé sur `compte/assistant-reponses-vides`. Après la mise en ligne : poser une dizaine de questions et regarder les journaux Cloudflare (lignes `[stalak] help ai empty`, qui donnent la raison sans le texte).
 - Assistant d'aide : la correction des réponses vides est en ligne depuis le 27/10. Test en ligne : 8 questions sur 8 ont reçu une réponse, en 1,5 à 5 s, justes en FR et en EN.
@@ -73,6 +75,7 @@
 - Si des faux messages arrivent : Cloudflare Turnstile sur « Parler à un humain ».
 - Tableau de bord et « Parler à un humain » : fusionnés et en ligne le 27/10, migration 0006 appliquée. Le tableau de bord est en marche (connexion du propriétaire vérifiée le 27/10). Les chiffres Pro et revenu viennent pour l'instant des abonnements de test Paddle (sandbox).
   - À regarder (Comptes) : dans l'espace de travail du Chef de projet, `tests/ui/support_ui.py` s'arrête après 17 PASS, à l'étape « reply e-mailed to the visitor who left » (attente de « envoyé par e-mail » dépassée après 50 s). C'est pareil sur la branche seule, donc la fusion n'y est pour rien. Les tests serveur (62/62) couvrent le même parcours.
+- Galerie : les projets sauvegardés avant cette version n'ont pas de couverture (carré de couleur avec un numéro) ; ils en reçoivent une à la prochaine sauvegarde.
 - Plus tard : saler l'empreinte des IP des compteurs (paroles, aide, visites, messages) avec `AUTH_SECRET`.
 - Plus de 210 minutes de transcription par jour : passer au forfait Workers payant (5 $/mois).
 

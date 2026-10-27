@@ -14,6 +14,7 @@
 import { HttpError, json, readJson, isDev } from './http.js';
 import { requirePro } from './entitlements.js';
 import { limit, hit } from './ratelimit.js';
+import { sniffImage } from './profile.js';
 
 export const PART_SIZE = 8 * 1024 * 1024;                 // 8 MiB: above R2's 5 MiB minimum, far below the 100 MB body limit
 export const MAX_FILE_BYTES = 4 * 1024 * 1024 * 1024;     // 4 GiB per file (512 parts)
@@ -107,6 +108,65 @@ export async function deleteProjectMedia(env, userId, projectId) {
   await dropFiles(env, userId, projectId, results);
   if (cloudAvailable(env)) await deletePrefix(env, `u/${userId}/p/${projectId}/`);
 }
+
+// ---- covers of the Galerie: a small picture of the edit (made by the page at save time), next to the project's files ----
+// PUT  /api/projects/:id/cover   raw image/jpeg or image/webp, 64 KB at most, checked by its first bytes; the project must exist
+// GET  /api/projects/:id/cover?v= the picture, for its owner only (the router asks for Stalak Pro on every /api/projects route)
+export const COVER_MAX_BYTES = 64 * 1024;
+export const COVER_TYPES = ['image/jpeg', 'image/webp'];
+const coverKey = (userId, projectId) => `u/${userId}/p/${projectId}/cover`;   // never a file id: those have 8-64 characters
+
+export async function projectCover(request, env, method, user, projectId) {
+  if (!cloudAvailable(env)) throw new HttpError(503, 'cloud_unavailable', 'Online saving is not available right now.');
+  const p = await env.DB.prepare('SELECT cover_at FROM projects WHERE user_id = ?1 AND id = ?2').bind(user.id, projectId).first();
+  if (!p) throw new HttpError(404, 'not_found', 'Project not found.');
+  if (method === 'GET') {
+    const obj = p.cover_at ? await env.MEDIA.get(coverKey(user.id, projectId)) : null;
+    if (!obj) throw new HttpError(404, 'not_found', 'No cover.');
+    const type = obj.httpMetadata && COVER_TYPES.includes(obj.httpMetadata.contentType) ? obj.httpMetadata.contentType : 'image/jpeg';
+    return new Response(obj.body, { status: 200, headers: {
+      'Content-Type': type,
+      // the URL carries the version (?v=cover_at): a new cover gets a new URL
+      'Cache-Control': 'private, max-age=31536000, immutable',
+      'X-Content-Type-Options': 'nosniff',
+      'Content-Security-Policy': "default-src 'none'; sandbox",
+      'Cross-Origin-Resource-Policy': 'same-origin',
+    } });
+  }
+  if (method === 'PUT') {
+    await limit(env, `cover:${user.id}`, 120, 3600e3, 'Too many covers, try again later.');
+    const type = (request.headers.get('Content-Type') || '').split(';')[0].trim().toLowerCase();
+    if (!COVER_TYPES.includes(type)) throw new HttpError(415, 'invalid_image', 'The cover must be a JPEG or WebP image.');
+    const len = Number(request.headers.get('Content-Length') || 0);
+    if (len > COVER_MAX_BYTES) throw new HttpError(413, 'too_large', `The cover must be at most ${COVER_MAX_BYTES / 1024} KB.`);
+    const bytes = await readCapped(request, COVER_MAX_BYTES);   // stops reading past the limit, even without Content-Length
+    if (!bytes) throw new HttpError(413, 'too_large', `The cover must be at most ${COVER_MAX_BYTES / 1024} KB.`);
+    if (bytes.length < 16 || sniffImage(bytes) !== type) throw new HttpError(415, 'invalid_image', 'This file is not a valid JPEG or WebP image.');
+    await env.MEDIA.put(coverKey(user.id, projectId), bytes, { httpMetadata: { contentType: type } });
+    const now = Date.now();
+    await env.DB.prepare('UPDATE projects SET cover_at = ?3 WHERE user_id = ?1 AND id = ?2').bind(user.id, projectId, now).run();
+    return json({ ok: true, coverAt: new Date(now).toISOString(), coverUrl: coverUrl(projectId, now) });
+  }
+  throw new HttpError(405, 'method_not_allowed', 'Method not allowed.');
+}
+// The body, or null as soon as it passes `max` bytes (a body without Content-Length is not read in full).
+async function readCapped(request, max) {
+  if (!request.body) return new Uint8Array(0);
+  const reader = request.body.getReader(), chunks = [];
+  let n = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    n += value.byteLength;
+    if (n > max) { try { await reader.cancel(); } catch (e) { /* already closed */ } return null; }
+    chunks.push(value);
+  }
+  const out = new Uint8Array(n);
+  let o = 0;
+  for (const c of chunks) { out.set(c, o); o += c.byteLength; }
+  return out;
+}
+export const coverUrl = (projectId, at) => (at ? `/api/projects/${encodeURIComponent(projectId)}/cover?v=${at}` : null);
 
 // Everything a user has in R2 (account deletion). Rows are removed by the caller's batch.
 export async function deleteUserMedia(env, userId) {

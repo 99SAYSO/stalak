@@ -340,7 +340,9 @@ adresse de retour mal recopiée (une lettre ou un `/` de trop), secret expiré (
 ## 11. Sauvegarde en ligne (Stalak Pro, stockage R2)
 
 Un abonné Pro peut sauvegarder un projet entier (son, prises, paroles et leurs temps, montage, effets, format, style du texte)
-avec « Sauvegarder en ligne » (étape Montage, ou Compte → Mes projets), puis le rouvrir sur n'importe quel appareil.
+avec « Sauvegarder en ligne » (étape Montage, ou Galerie dans le menu du compte), puis le rouvrir sur n'importe quel appareil.
+La **Galerie** montre les projets en grille, chacun avec sa couverture : une image du montage (300 px de large, 64 Ko au plus),
+faite par la page à chaque sauvegarde et rangée dans R2 à côté du projet (`u/<compte>/p/<projet>/cover`).
 Le petit état du projet (JSON) est dans D1 ; le son et les vidéos sont dans **Cloudflare R2**, dans le bucket privé `stalak-media`.
 
 | Règle | Valeur |
@@ -350,15 +352,17 @@ Le petit état du projet (JSON) est dans D1 ; le son et les vidéos sont dans **
 | Projets | 200 au plus par compte, 64 fichiers au plus par projet. |
 | Fichier déjà envoyé | Pas renvoyé : chaque fichier a une empreinte (nom, taille, date, début et fin du fichier). |
 | Coupure réseau | Chaque morceau est réessayé (6 fois, attente croissante) ; « Réessayer » reprend où l'envoi s'était arrêté. |
-| Sans Pro | On peut encore voir, rouvrir et supprimer ses projets ; sauvegarder demande Pro. Un clip rouvert sans Pro s'ouvre en TikTok / Reels. |
+| Sans Pro | Aucun accès : la Galerie affiche « La sauvegarde en ligne est réservée à Stalak Pro » (bouton vers la page Pro). Un ex-Pro retrouve ses projets s'il reprend Pro ; ils sont gardés (règle des 6 mois). |
 | 6 mois | Un projet ni ouvert ni sauvegardé depuis 6 mois est supprimé avec ses fichiers, **après un e-mail de rappel** envoyé au moins 14 jours avant. Sans e-mail envoyé, rien n'est supprimé. |
-| Suppression | Supprimer un projet efface ses fichiers R2 ; supprimer son compte efface tout (et arrête les envois en cours). |
+| Suppression | Supprimer un projet efface ses fichiers R2 et sa couverture ; supprimer son compte efface tout (et arrête les envois en cours). |
 
 ### 11.1 Mise en route (à faire une fois)
 1. **R2** : dans Cloudflare, **R2 Object Storage** (un moyen de paiement doit être enregistré, R2 a une offre gratuite de 10 Go-mois).
    Crée le bucket `stalak-media`, accès public **désactivé** (aucun domaine public, aucune « r2.dev URL »). C'est fait.
 2. **Base** : dans la **Console** de la base D1 `stalak`, colle **tout** `migrations/0004_cloud_save.sql` et clique sur **Execute** (une seule fois),
    **avant** de publier cette version (sinon la page Compte et la sauvegarde répondent une erreur).
+   Pour la Galerie (couvertures), colle de même `migrations/0007_project_covers.sql` (une ligne) **avant** de publier la version
+   qui l'utilise : sans elle, la Galerie répond une erreur.
 3. **Liaison** : `wrangler.toml` contient déjà
    ```toml
    [[r2_buckets]]
@@ -368,7 +372,7 @@ Le petit état du projet (JSON) est dans D1 ; le son et les vidéos sont dans **
    Cloudflare relie le bucket au site à la publication suivante. Vérifie ensuite <https://stalak.app/api/config> : `"cloudSave":true`.
    Pour couper la fonction, mets ces 3 lignes en commentaire : le site affiche alors « bientôt » à la place, rien d'autre ne change.
 4. **Le rappel des 6 mois** : Pages Functions n'a pas de tâche planifiée. Trois façons, au choix (elles peuvent coexister) :
-   - rien à faire : le site lance le nettoyage lui-même, au plus toutes les 6 heures, quand quelqu'un ouvre « Mes projets » ;
+   - rien à faire : le site lance le nettoyage lui-même, au plus toutes les 6 heures, quand quelqu'un ouvre la Galerie ;
    - **conseillé** : le petit Worker planifié `workers/cloud-cleanup` (tous les jours à 3 h 17 UTC) :
      `npx wrangler deploy -c workers/cloud-cleanup/wrangler.toml`, puis `npx wrangler secret put RESEND_API_KEY -c workers/cloud-cleanup/wrangler.toml` ;
    - ou un service de cron externe qui appelle `POST https://stalak.app/api/cron/cloud-cleanup` avec l'en-tête
@@ -501,10 +505,12 @@ Toutes les réponses sont en JSON. Les erreurs ont la forme `{"error":"code","me
 | `POST /api/auth/logout` | Supprime la session. |
 | `POST /api/paddle/webhook` | Pour Paddle uniquement (signature vérifiée). |
 | `POST /api/paddle/portal` | `{url, cancelUrl, updatePaymentUrl}` : liens temporaires vers l'espace client Paddle. |
-| `GET /api/projects` | `{projects: [{id, name, size, mediaBytes, createdAt, updatedAt, openedAt}], storage: {available, used, quota, partSize, maxFile}}` (sans le contenu). `available` = le bucket R2 est relié. |
+| `GET /api/projects` | `{projects: [{id, name, size, mediaBytes, createdAt, updatedAt, openedAt, coverUrl}], storage: {available, used, quota, partSize, maxFile}}` (sans le contenu). `available` = le bucket R2 est relié. |
 | `GET /api/projects/:id` | `{id, name, state, updatedAt, mediaBytes, files: [{id, name, type, size}]}`. Compte comme une ouverture (règle des 6 mois). |
 | `PUT /api/projects/:id` | `{name, state, files?}`, 256 Ko maximum, 200 projets maximum. **Pro uniquement** : sinon `403 pro_required`. `files` = les ids des fichiers de cette version : tous doivent être envoyés (`409 files_missing`, avec `missing`) ; les autres fichiers du projet sont effacés. Sans `files`, les fichiers ne changent pas. |
-| `PATCH /api/projects/:id` | `{name}` : renomme (sans Pro). |
+| `PATCH /api/projects/:id` | `{name}` : renomme. |
+| `PUT /api/projects/:id/cover` | Couverture de la Galerie : corps brut `image/jpeg` ou `image/webp`, 64 Ko au plus (`413 too_large`), vérifiée par ses premiers octets (`415 invalid_image`), 120 par heure. Répond `{coverAt, coverUrl}`. |
+| `GET /api/projects/:id/cover?v=` | L'image, **pour son propriétaire seulement** ; `?v=` change à chaque nouvelle couverture (`Cache-Control: private, immutable`, `nosniff`, `CSP sandbox`). `404` s'il n'y en a pas. |
 | `DELETE /api/projects/:id` | Supprime un projet et ses fichiers R2. |
 | `POST /api/projects/:id/files` | `{fileId, name, type, size}` (**Pro**, R2). Réserve la place dans l'espace de 20 Go (`413 quota_exceeded` avec `used`, `quota`, `needed`). `type` : `audio/*` ou `video/*` (`415 invalid_media_type`), 4 Go au plus (`413 file_too_large`). Répond `{status: 'ready'}` si le fichier est déjà là, sinon `{status: 'uploading', multipart, partSize, parts, uploadedParts}`. |
 | `PUT /api/projects/:id/files/:fileId` | Corps brut (`Content-Type: application/octet-stream`, `Content-Length` = la taille annoncée) : un fichier de 8 Mo au plus, d'un coup. |

@@ -31,7 +31,7 @@ LE SITE, EN 4 ÉTAPES (onglets en haut : 1 Son, 2 Prises, 3 Paroles, 4 Montage)
 - Toucher un plan : « Changer de prise », « Garder ce plan », « Exclure ce passage », « Ajouter un plan ».
 - L'aperçu est allégé pour rester fluide ; la vidéo exportée est en pleine qualité.
 - « Exporter la vidéo », ou un pack de 5, 10 ou 30 vidéos toutes différentes (« Générer le pack », Stalak Pro), puis « Enregistrer sur l'appareil ». Pendant l'export, la mascotte construit un igloo ; « Annuler » l'arrête.
-- « Sauvegarder en ligne » (Stalak Pro ; à l'étape Montage, ou Compte → Mes projets) : garde le projet entier dans le compte, 20 Go au plus, et le rouvre sur n'importe quel appareil depuis Compte → Mes projets (Ouvrir, Renommer, Supprimer). Après une coupure, « Réessayer » reprend l'envoi. Un projet non ouvert depuis 6 mois est supprimé, après un e-mail de rappel 14 jours avant.
+- « Sauvegarder en ligne » (Stalak Pro ; à l'étape Montage, ou Galerie dans le menu du compte en haut à droite) : garde le projet entier dans le compte, 20 Go au plus, et le rouvre sur n'importe quel appareil depuis la Galerie (menu du compte en haut à droite : toucher un projet pour l'ouvrir ; appui long ou « … » pour Renommer, Supprimer). Après une coupure, « Réessayer » reprend l'envoi. Un projet non ouvert depuis 6 mois est supprimé, après un e-mail de rappel 14 jours avant.
 - Les vidéos gratuites se terminent par 3 secondes avec le logo Stalak.
 - « Poster ta vidéo » : sur téléphone, « Partager vers TikTok, Insta, YouTube… » ouvre la liste de partage. Sinon, enregistrer la vidéo puis toucher TikTok, Instagram ou YouTube Shorts. La publication automatique n'existe pas encore.
 - Toucher le logo Stalak en haut à gauche : nouveau projet (tout est effacé, après confirmation). Le bouton FR / EN change la langue.
@@ -46,7 +46,7 @@ COMPTE ET STALAK PRO
 - Paiement sécurisé par Paddle (revendeur officiel, qui envoie le reçu). Après le paiement, le compte passe en Pro en quelques secondes.
 - Résilier, changer de carte, factures : Compte → Abonnement → « Gérer » (ou « Gérer mon abonnement » sur la page Stalak Pro). Après une résiliation, Pro reste actif jusqu'à la fin de la période payée.
 - Remboursement intégral sur demande dans les 14 jours après un paiement, sans justification : écrire à l'équipe Stalak avec l'e-mail du compte, ou répondre à l'e-mail de reçu de Paddle.
-- Sans Pro (ou après la fin de Pro), les projets en ligne ne sont plus accessibles ; ils restent gardés (jusqu'à la règle des 6 mois) et reviennent si on reprend Pro.
+- Sans Pro (ou après la fin de Pro), la Galerie affiche « La sauvegarde en ligne est réservée à Stalak Pro » et les projets en ligne ne sont plus accessibles ; ils restent gardés (jusqu'à la règle des 6 mois) et reviennent si on reprend Pro.
 - « Supprimer mon compte » (page Compte) efface le compte et les projets en ligne, et arrête l'abonnement tout de suite.
 
 PROBLÈMES CONNUS ET SOLUTIONS
@@ -95,7 +95,7 @@ THE SITE, IN 4 STEPS (tabs at the top: 1 Sound, 2 Takes, 3 Lyrics, 4 Edit)
 - Tapping a shot: "Swap take", "Keep this shot", "Exclude this part", "Add a shot".
 - The preview is lighter so it stays smooth; the exported video is full quality.
 - "Export video", or a pack of 5, 10 or 30 all-different videos ("Make the pack", Stalak Pro), then "Save to device". During the export, the mascot builds an igloo; "Cancel" stops it.
-- "Save online" (Stalak Pro; at the Edit step, or Account → My projects): keeps the whole project in the account, up to 20 GB, and opens it again on any device from Account → My projects (Open, Rename, Delete). After a connection drop, "Try again" resumes the upload. A project not opened for 6 months is deleted, after a reminder email 14 days before.
+- "Save online" (Stalak Pro; at the Edit step, or Gallery in the account menu at the top right): keeps the whole project in the account, up to 20 GB, and opens it again on any device from the Gallery (account menu at the top right: tap a project to open it; long press or "…" to Rename, Delete). After a connection drop, "Try again" resumes the upload. A project not opened for 6 months is deleted, after a reminder email 14 days before.
 - Free videos end with 3 seconds of the Stalak logo.
 - "Post your video": on a phone, "Share to TikTok, Insta, YouTube…" opens the share sheet. Otherwise, save the video then tap TikTok, Instagram or YouTube Shorts. Automatic posting doesn't exist yet.
 - Tapping the Stalak logo at the top left: new project (everything is cleared, after confirming). The FR / EN switch changes the language.
@@ -110,7 +110,7 @@ ACCOUNT AND STALAK PRO
 - Secure payment by Paddle (the official reseller, which sends the receipt). After paying, the account switches to Pro in a few seconds.
 - Cancel, change card, invoices: Account → Subscription → "Manage" (or "Manage my subscription" on the Stalak Pro page). After cancelling, Pro stays on until the end of the paid period.
 - Full refund on request within 14 days of a payment, no questions asked: write to the Stalak team with the account's email, or reply to Paddle's receipt email.
-- Without Pro (or once Pro ends), online projects can't be opened; they're kept (until the 6-month rule) and come back if you take Pro again.
+- Without Pro (or once Pro ends), the Gallery says online saving is part of Stalak Pro and online projects can't be opened; they're kept (until the 6-month rule) and come back if you take Pro again.
 - "Delete my account" (Account page) erases the account and online projects, and stops the subscription right away.
 
 KNOWN PROBLEMS AND FIXES

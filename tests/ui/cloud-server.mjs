@@ -3,7 +3,7 @@
 // Serves the built site (python3 build_site.py, in a copy of the repo) and runs the real Pages Function
 // (functions/api/[[path]].js) on an in-memory SQLite "D1" and an in-memory fake R2 bucket.
 // Test-only helpers under /__test/ (never part of the site):
-//   GET /__test/login?email=…&pro=1  -> creates the account if needed (Pro with pro=1), signs in (cookie), redirects to ?to=
+//   GET /__test/login?email=…&pro=1  -> creates the account if needed (Pro with pro=1, ex-Pro with pro=ex), signs in (cookie), redirects to ?to=
 //   POST /__test/r2?on=0|1           -> removes / puts back the MEDIA binding (R2 not configured)
 //   POST /__test/quota?bytes=N       -> per-user quota (default: 20 GB)
 //   GET /__test/stats                -> {objects, uploads, files, projects}
@@ -45,6 +45,10 @@ async function testRoute(req, url, res) {
     if (q.get('pro') === '1') {
       env.DB.raw.prepare(`INSERT OR REPLACE INTO subscriptions (id, user_id, customer_id, status, price_id, current_period_end, last_event_at, updated_at)
         VALUES (?, ?, ?, 'active', 'pri_month', ?, ?, ?)`).run('sub_' + u.id, u.id, 'ctm_' + u.id, now + 30 * 864e5, now, now);
+    } else if (q.get('pro') === 'ex') {
+      // Stalak Pro has ended (the subscription stays, canceled): an ex-Pro
+      env.DB.raw.prepare(`INSERT OR REPLACE INTO subscriptions (id, user_id, customer_id, status, price_id, current_period_end, last_event_at, updated_at)
+        VALUES (?, ?, ?, 'canceled', 'pri_month', ?, ?, ?)`).run('sub_' + u.id, u.id, 'ctm_' + u.id, now - 864e5, now, now);
     } else if (q.get('pro') === '0') {
       env.DB.raw.prepare('DELETE FROM subscriptions WHERE user_id = ?').run(u.id);
     }
