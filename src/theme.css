@@ -659,3 +659,6 @@ header .stepper{margin-left:auto}
 
 /* the pack button carries a PRO tag for free accounts (gating in app.js: exportPack) */
 #packBtn.protag::after{content:"PRO";font:700 10px/1 var(--body);letter-spacing:.04em;margin-left:8px;padding:3px 5px;border-radius:6px;background:var(--ink);color:#fff;vertical-align:2px}
+
+/* text size / appearance reserved to Stalak Pro */
+#stSize button.protag::after,#stAnim button.protag::after{content:"PRO";font:700 9px/1 var(--body);letter-spacing:.04em;margin-left:5px;padding:2px 4px;border-radius:5px;background:var(--ink);color:#fff;vertical-align:1px}

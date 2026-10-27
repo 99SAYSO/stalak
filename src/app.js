@@ -20,7 +20,7 @@ const S = {
   step:1, song:null, takes:[], startBar:0, nBars:0, pace:'normal', mode:'auto', brollAmt:'peu', fmt:'916', seed:1, version:1,
   kind:'reel', clipEnd:null, listenAt:null, tlZoom:false,
   bestTake:true, cuts:[], locks:[], sel:-1, segStart:0, segEnd:0, playing:false, exporting:false, cancel:false, cursor:0, click:false,
-  lyrics:{ mode:'paste', lines:[], style:{ pos:'mid', font:'tiktok', color:'#ffffff', deco:'outline', size:'m', anim:'word', hl:'auto' } },
+  lyrics:{ mode:'paste', lines:[], style:{ pos:'mid', font:'tiktok', color:'#ffffff', deco:'outline', size:'m', anim:'line', hl:'auto' } },
   // effects and transitions (Clip only): level, effects placed by the site, the user's own choices, the one selected
   fxLevel:'sobre', fxAuto:[], fxUser:[], fxSelT:null, fxVer:0, fxMusic:null, fx:[],
   // Pro account (to come with the real site): true = the exported videos end without the 3 s Stalak ending
@@ -745,7 +745,9 @@ const I18N_EN = /*@EN*/{
   "ap.oauth.not_enabled": "This sign-in option isn’t available yet.",
   "ap.oauth.oauth_failed": "Sign-in didn’t work. Try again, or use your email.",
   "acct.why.pack": "Video packs are part of Stalak Pro.",
-  "ap.whyIn.pack": "Video packs are part of Stalak Pro. Sign in or create an account to get it."
+  "ap.whyIn.pack": "Video packs are part of Stalak Pro. Sign in or create an account to get it.",
+  "acct.perk6": "Every text size and style: word by word, karaoke",
+  "acct.why.text": "These text sizes and styles are part of Stalak Pro."
 }/*EN@*/;
 const I18N_FR = /*@FR*/{
   "kind.hint.reel": "Une vidéo verticale 9:16, de tout le son ou de quelques mesures.",
@@ -1146,7 +1148,9 @@ const I18N_FR = /*@FR*/{
   "ap.oauth.not_enabled": "Ce mode de connexion n’est pas encore disponible.",
   "ap.oauth.oauth_failed": "La connexion n’a pas marché. Réessaie, ou utilise ton e-mail.",
   "acct.why.pack": "Les packs de vidéos font partie de Stalak Pro.",
-  "ap.whyIn.pack": "Les packs de vidéos font partie de Stalak Pro. Connecte-toi ou crée un compte pour en profiter."
+  "ap.whyIn.pack": "Les packs de vidéos font partie de Stalak Pro. Connecte-toi ou crée un compte pour en profiter.",
+  "acct.perk6": "Toutes les tailles et apparitions du texte : mot par mot, karaoké",
+  "acct.why.text": "Ces tailles et apparitions du texte font partie de Stalak Pro."
 }/*FR@*/;
 let STATIC_FR = /*@STATIC_FR*/null/*STATIC_FR@*/;
 const LANGS = ['fr', 'en'];
@@ -6291,8 +6295,8 @@ function initPickers(){
   bindSeg('#stColor', v => { S.lyrics.style.color = v; styleChanged(); });
   bindSeg('#stPos', v => { S.lyrics.style.pos = v; styleChanged(); });
   bindSeg('#stDeco', v => { S.lyrics.style.deco = v; styleChanged(); });
-  bindSeg('#stSize', v => { S.lyrics.style.size = v; styleChanged(); });
-  bindSeg('#stAnim', v => { S.lyrics.style.anim = v; hlView(); styleChanged();
+  bindSeg('#stSize', v => { if (!textFree('size', v)){ textPressed(); acctOpen('text'); return; } S.lyrics.style.size = v; styleChanged(); });
+  bindSeg('#stAnim', v => { if (!textFree('anim', v)){ textPressed(); acctOpen('text'); return; } S.lyrics.style.anim = v; hlView(); styleChanged();
     // karaoke: show a line half sung, so the effect is seen at once
     if (v === 'kara' && !S.playing && !S.exporting && timedLines().length) showFrame(lyricShowTime()); });
   const hp = $('#stHl');
@@ -6320,6 +6324,20 @@ function initPickers(){
     say(() => v === 'aucun' ? _t('fxl.st.none') + (mine ? _t('fxl.st.mine') : '') : _t(v === 'sobre' ? 'fxl.st.sobre' : 'fxl.st.intense') + tn('fxl.st.n', n));
     if (was) play(startPoint());
   });
+}
+/* free plan (stalak.app only): text size M and « phrase entière »; the other sizes and appearances come with Stalak Pro */
+const TEXT_FREE = { size: 'm', anim: 'line' };
+let acctKnown = false;
+function textFree(k, v){ return !ACCT || acctPro() || v === TEXT_FREE[k]; }
+function textPressed(){ $$('#stSize button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === S.lyrics.style.size))); $$('#stAnim button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === S.lyrics.style.anim))); }
+function textGate(){
+  if (!ACCT) return;
+  const pro = acctPro();
+  $$('#stSize button, #stAnim button').forEach(b => { const k = b.closest('#stSize') ? 'size' : 'anim'; b.classList.toggle('protag', !pro && b.dataset.v !== TEXT_FREE[k]); });
+  // only once the account is known (a Pro member's style is not reset while the page is still asking)
+  if (!pro && acctKnown && !S.exporting && (S.lyrics.style.size !== TEXT_FREE.size || S.lyrics.style.anim !== TEXT_FREE.anim)){
+    S.lyrics.style.size = TEXT_FREE.size; S.lyrics.style.anim = TEXT_FREE.anim; textPressed(); hlView(); styleChanged();
+  }
 }
 function hlView(){ const on = S.lyrics.style.anim === 'kara'; $('#hlLbl').hidden = !on; $('#stHl').hidden = !on; }
 function styleChanged(){
@@ -7148,6 +7166,7 @@ function acctSync(){
   b.setAttribute('aria-label', lbl); b.title = lbl;
   const cb = $('#kindSeg button[data-v="clip"]'); if (cb) cb.classList.toggle('protag', !pro);
   const pb = $('#packBtn'); if (pb) pb.classList.toggle('protag', !pro);
+  textGate();
   if (!pro && isClip() && !S.exporting) setKind('reel', true);
   if (pro && !acctWasPro && store.get('stalak:kind') === 'clip' && !isClip() && !S.song && !S.exporting) setKind('clip', true);
   if (pro) apWhyK = null;
@@ -7567,7 +7586,7 @@ if (ACCT){
     const v = apHashView(); if (!v) return;
     try { history.replaceState(null, '', location.pathname + location.search); } catch(e){}
     apGo(v); };
-  ACCT.me().then(boot, e => { diag('compte : serveur injoignable (' + (e && (e.code || e.message)) + ')'); boot(); });
+  ACCT.me().then(() => { acctKnown = true; acctSync(); boot(); }, e => { diag('compte : serveur injoignable (' + (e && (e.code || e.message)) + ')'); boot(); });
 }
 
 /* ---------- FR / EN: everything on screen is written again in the other language, the work stays as it is ---------- */
