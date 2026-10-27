@@ -458,3 +458,20 @@ header .stepper{margin-left:auto}
 .acctmsg.err{color:#b3261e}
 #kindSeg button.protag::after{content:"PRO";font:700 10px/1 var(--body);letter-spacing:.04em;margin-left:6px;padding:3px 5px;border-radius:6px;background:var(--ink);color:#fff;vertical-align:2px}
 .outro-note .linkbtn{background:none;border:0;padding:0;font:inherit;color:inherit;text-decoration:underline;cursor:pointer;font-weight:600}
+
+/* ---- camera ---- */
+.recbox .reccd{position:absolute;inset:0;z-index:2;display:grid;place-items:center;background:rgba(10,20,40,.28);font:400 150px/1 var(--display);color:#fff;-webkit-text-stroke:0;text-shadow:0 6px 0 var(--ink),4px 0 0 var(--ink),-4px 0 0 var(--ink),0 -4px 0 var(--ink);pointer-events:none}
+.recbox .reccd[hidden],.recbox .recn[hidden],.recbox .recdone[hidden]{display:none}
+.recbox .reccd.pop{animation:cam-pop .95s ease-out both}
+@keyframes cam-pop{0%{transform:scale(1.7);opacity:0}14%{transform:scale(1);opacity:1}100%{transform:scale(.92);opacity:.9}}
+.recbox .recn{position:absolute;top:12px;right:12px;z-index:1;background:var(--snow,#fff);color:var(--ink);font:700 13px var(--body);border:2px solid var(--ink);border-radius:99px;padding:3px 10px}
+.recbox .recdone{position:absolute;left:10px;right:10px;bottom:10px;z-index:1;padding:10px 12px;background:#dcf5e3;color:var(--ink);border:2.5px solid var(--ok);border-radius:16px;font:700 15px/1.35 var(--body);text-align:center;overflow-wrap:anywhere;box-shadow:0 3px 0 var(--ink);animation:cam-in .35s ease-out both}
+@keyframes cam-in{0%{transform:translateY(12px);opacity:0}100%{transform:none;opacity:1}}
+.rectimer{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px 10px;margin-top:14px}
+.rectimer-l{font-weight:700;color:var(--ink)}
+.rectimer .seg button{min-width:52px}
+#recTimerSeg button[aria-pressed="true"]{background:var(--sky-deep);color:#fff}
+#recPanel.busy .rectimer{opacity:.55}
+#recGo.again{animation:cam-again .8s ease-out 2}
+@keyframes cam-again{0%{box-shadow:0 0 0 0 rgba(17,128,74,.55)}100%{box-shadow:0 0 0 14px rgba(17,128,74,0)}}
+@media (prefers-reduced-motion:reduce){.recbox .reccd.pop,.recbox .recdone,#recGo.again{animation:none}}

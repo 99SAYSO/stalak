@@ -106,9 +106,18 @@
         </button>
       </div>
       <div id="recPanel" hidden>
-        <div class="recbox"><video id="recVideo" muted playsinline></video><div class="count" id="recCount"></div><div class="rt" id="recTime" hidden></div></div>
+        <div class="recbox"><video id="recVideo" muted playsinline></video><div class="count" id="recCount"></div><div class="rt" id="recTime" hidden></div><div class="recn" id="recN" hidden></div><div class="reccd" id="recCd" hidden aria-live="assertive"></div><div class="recdone" id="recDone" hidden role="status"><span id="recDoneT"></span></div></div>
+        <div class="rectimer">
+          <span class="rectimer-l" data-i18n="rec.timer">Minuteur</span>
+          <div class="seg" role="group" aria-label="Minuteur avant la prise" data-i18n-attr="aria-label:rec.timer.aria" id="recTimerSeg">
+            <button type="button" data-v="0" aria-pressed="true" data-i18n="rec.timer.off">Sans</button>
+            <button type="button" data-v="3" aria-pressed="false">3 s</button>
+            <button type="button" data-v="5" aria-pressed="false">5 s</button>
+          </div>
+        </div>
         <div class="row" style="justify-content:center;margin-top:12px">
           <button class="btn primary big" id="recGo" type="button" data-i18n="rec.go">● Lancer la prise</button>
+          <button class="btn big" id="recCancel" type="button" hidden data-i18n="rec.cancel">✕ Annuler</button>
           <button class="btn big" id="recStop" type="button" hidden data-i18n="rec.stop">■ Arrêter</button>
           <button class="btn" id="recFlip" type="button" aria-label="Changer de caméra" data-i18n="rec.flip" data-i18n-attr="aria-label:rec.flip.aria">⇄ Caméra avant / arrière</button>
           <button class="btn" id="recClose" type="button" data-i18n="rec.close">Fermer la caméra</button>
