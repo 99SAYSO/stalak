@@ -1,4 +1,4 @@
-# Scheduled Worker "stalak-cloud-cleanup": the 6-month rule of online saving (see index.js and BACKEND.md, step 10).
+# Scheduled Worker "stalak-cloud-cleanup": the 6-month rule of online saving (see index.js and BACKEND.md, step 11).
 # Separate from the Pages project; deploy it with:  npx wrangler deploy -c workers/cloud-cleanup/wrangler.toml
 name = "stalak-cloud-cleanup"
 main = "index.js"

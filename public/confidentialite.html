@@ -15,7 +15,7 @@ footer{max-width:760px;margin:18px auto 0;color:#fff;font-size:13px;text-align:c
 <link rel="stylesheet" href="/site.css?v=8a517651"></head><body>
 <a class="back" href="/">← Retour à Stalak</a>
 <main><h1>Confidentialité</h1>
-<p><strong>En bref : Stalak ne reçoit pas tes vidéos ni ton son.</strong> Tout le montage et l’export se font dans ton navigateur, sur ton appareil. Si tu crées un compte, nous gardons seulement ce qu’il faut pour le faire marcher.</p>
+<p><strong>En bref : Stalak ne reçoit pas tes vidéos ni ton son</strong> (sauf le son d’un passage quand tu utilises « Transcription auto », voir plus bas). Tout le montage et l’export se font dans ton navigateur, sur ton appareil. Si tu crées un compte, nous gardons seulement ce qu’il faut pour le faire marcher.</p>
 <h2>Ce qui reste sur ton appareil</h2>
 <p>Ton son, tes prises, tes paroles et les vidéos exportées. Le site garde quelques réglages dans ton navigateur (stockage local) :
 le style des paroles, les paroles calées de chaque son, le mode choisi, la langue, quelques options techniques. Tu peux les effacer en vidant les données du site dans ton navigateur.</p>
@@ -25,13 +25,14 @@ le style des paroles, les paroles calées de chaque son, le mode choisi, la lang
 <p>Ces données servent uniquement à faire marcher ton compte et ton abonnement (exécution du contrat). Elles sont gardées tant que ton compte existe ; quand tu supprimes ton compte depuis la page Compte, elles sont effacées immédiatement.</p>
 <h2>Nos prestataires</h2>
 <ul>
-<li><strong>Cloudflare</strong> : hébergement du site et de la base de données des comptes.</li>
+<li><strong>Cloudflare</strong> : hébergement du site et de la base de données des comptes ; transcription des paroles (Workers AI).</li>
 <li><strong>Resend</strong> : envoi des e-mails de connexion (ton adresse e-mail et le code).</li>
 <li><strong>Paddle.com</strong> : paiement, taxes et factures, en tant que revendeur officiel. Paddle traite tes informations de paiement selon sa propre <a href="https://www.paddle.com/legal/privacy">politique de confidentialité</a> et garde les données de facturation le temps imposé par la loi.</li>
 </ul>
 <p>Certains de ces prestataires sont situés aux États-Unis ; les transferts sont encadrés par les garanties prévues par le RGPD (clauses contractuelles types ou Data Privacy Framework).</p>
 <h2>Ce qui passe par nos services</h2>
 <p>Le site est hébergé par Cloudflare, qui traite les informations techniques nécessaires pour afficher les pages (adresse IP, navigateur), comme pour tout site web.</p>
+<p><strong>Paroles automatiques (Stalak Pro).</strong> Quand tu touches « Écrire mes paroles », le son du passage choisi (en mono, qualité réduite, sans les vidéos) est envoyé à Cloudflare Workers AI pour écrire les paroles, qui reviennent sur ton appareil. Ni le son ni les paroles ne sont gardés par Stalak ; nous comptons seulement, par jour, le nombre de transcriptions et de secondes de son (pour les limites d’usage), effacé avec ton compte.</p>
 <p>Le site n’utilise aucun cookie publicitaire ni de pistage, et ne vend aucune donnée.</p>
 <h2>Aide</h2>
 <p>Si tu nous écris pour de l’aide, tu peux nous envoyer les « infos techniques » (bouton dans la bulle d’aide) : elles contiennent le type de navigateur,

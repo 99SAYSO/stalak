@@ -699,6 +699,8 @@ header .stepper{margin-left:auto}
 
 /* text size / appearance reserved to Stalak Pro */
 #stSize button.protag::after,#stAnim button.protag::after{content:"PRO";font:700 9px/1 var(--body);letter-spacing:.04em;margin-left:5px;padding:2px 4px;border-radius:5px;background:var(--ink);color:#fff;vertical-align:1px}
+/* « Transcription auto » (automatic lyrics): Stalak Pro on stalak.app */
+#lyrMode button.protag::after{content:"PRO";font:700 9px/1 var(--body);letter-spacing:.04em;margin-left:5px;padding:2px 4px;border-radius:5px;background:var(--ink);color:#fff;vertical-align:1px}
 /* ---- Stalak Pro page: wider than the other account pages, room for three plans side by side ---- */
 .acctpage:has(#apPro:not([hidden])) .ap-in{max-width:1060px}
 .ap-proview{gap:22px}

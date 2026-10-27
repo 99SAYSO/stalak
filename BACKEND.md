@@ -19,7 +19,7 @@ Compte environ 1 h 30 la première fois, plus le délai de validation de Paddle 
 | Session | Un cookie `stalak_s` sécurisé (HttpOnly, Secure, SameSite=Lax) qui reste valable 60 jours. |
 | Abonnement Pro | 9,99 € / mois ou 79 € / an, payé via **Paddle**. Paddle est le revendeur officiel : c'est lui qui encaisse, gère la TVA et envoie les factures. |
 | Avantages Pro | Pas d'outro Stalak à la fin des exports, mode Clip (16:9, chanson entière), packs de vidéos (5, 10 ou 30 vidéos différentes d'un coup), sauvegarde des projets en ligne (son et vidéos compris) et transcription automatique des paroles (à venir). |
-| Sauvegarde en ligne | Pro : un projet entier (son, prises, paroles, montage) gardé dans le compte, 20 Go par compte, rouvert sur n'importe quel appareil (étape 10). |
+| Sauvegarde en ligne | Pro : un projet entier (son, prises, paroles, montage) gardé dans le compte, 20 Go par compte, rouvert sur n'importe quel appareil (étape 11). |
 | Gérer / résilier | Un lien vers l'espace client Paddle. |
 | Supprimer son compte | Le compte et toutes ses données sont effacés, et l'abonnement en cours est arrêté. Les boutiques d'apps, Meta et TikTok l'exigent. |
 | Publication TikTok / Instagram | Seulement préparée, **désactivée**. Rien à faire pour l'instant. |
@@ -67,7 +67,7 @@ Fichiers ajoutés :
    **À faire avant de publier la version « comptes v3 »**, sinon l'inscription et la connexion répondent une erreur.
    Les comptes et les sessions existants continuent de marcher ; les comptes créés avec un code seul choisissent un mot de passe avec « Mot de passe oublié ? ».
 
-> La sauvegarde en ligne demande en plus `migrations/0004_cloud_save.sql` et le bucket R2 `stalak-media` : voir l'étape 10.
+> La sauvegarde en ligne demande en plus `migrations/0004_cloud_save.sql` et le bucket R2 `stalak-media` : voir l'étape 11.
 
 ---
 
@@ -317,7 +317,27 @@ adresse de retour mal recopiée (une lettre ou un `/` de trop), secret expiré (
 
 ---
 
-## 10. Sauvegarde en ligne (Stalak Pro, stockage R2)
+## 10. Paroles automatiques (Stalak Pro, Cloudflare Workers AI)
+
+« Transcription auto » (étape 3 Paroles) envoie le son du passage choisi, découpé en morceaux de 30 s au plus
+(WAV mono 16 kHz), à `POST /api/lyrics/transcribe`, qui le fait écrire par le modèle Whisper
+`@cf/openai/whisper-large-v3-turbo` de **Cloudflare Workers AI** et renvoie les mots avec leurs temps.
+
+1. Rien à créer : `wrangler.toml` contient déjà `[ai] binding = "AI"`, la mise en ligne branche Workers AI tout seul.
+   (Si le déploiement refuse ce réglage : **Workers & Pages → stalak-site → Settings → Bindings → Add → Workers AI**,
+   nom de variable `AI`, puis redéployer.)
+2. Colle une fois `migrations/0004_lyrics_usage.sql` dans la console D1 (**Execute**), comme les autres migrations.
+3. Coût : 10 000 « neurons » gratuits par jour pour tout le compte Cloudflare, soit environ 210 minutes de son par jour
+   (46,63 neurons par minute de son, 0,0005 $ la minute). Au-delà, il faut le forfait **Workers Paid** (5 $ / mois),
+   sinon les transcriptions échouent jusqu'au lendemain (message « pas disponible pour le moment »).
+4. Limites par compte Pro : 20 transcriptions et 90 minutes de son par jour (UTC), 8 minutes au plus par transcription ;
+   300 requêtes par heure par connexion, 200 par heure par compte. Elles se règlent en haut de `functions/_lib/lyrics.js`.
+   Le son n'est jamais gardé ; seule la table `lyrics_usage` compte transcriptions et secondes par jour.
+5. Sans le binding `AI`, la route répond `503 ai_unavailable` et l'app affiche « pas disponible pour le moment ».
+
+---
+
+## 11. Sauvegarde en ligne (Stalak Pro, stockage R2)
 
 Un abonné Pro peut sauvegarder un projet entier (son, prises, paroles et leurs temps, montage, effets, format, style du texte)
 avec « Sauvegarder en ligne » (étape Montage, ou Compte → Mes projets), puis le rouvrir sur n'importe quel appareil.
@@ -334,7 +354,7 @@ Le petit état du projet (JSON) est dans D1 ; le son et les vidéos sont dans **
 | 6 mois | Un projet ni ouvert ni sauvegardé depuis 6 mois est supprimé avec ses fichiers, **après un e-mail de rappel** envoyé au moins 14 jours avant. Sans e-mail envoyé, rien n'est supprimé. |
 | Suppression | Supprimer un projet efface ses fichiers R2 ; supprimer son compte efface tout (et arrête les envois en cours). |
 
-### 10.1 Mise en route (à faire une fois)
+### 11.1 Mise en route (à faire une fois)
 1. **R2** : dans Cloudflare, **R2 Object Storage** (un moyen de paiement doit être enregistré, R2 a une offre gratuite de 10 Go-mois).
    Crée le bucket `stalak-media`, accès public **désactivé** (aucun domaine public, aucune « r2.dev URL »). C'est fait.
 2. **Base** : dans la **Console** de la base D1 `stalak`, colle **tout** `migrations/0004_cloud_save.sql` et clique sur **Execute** (une seule fois),
