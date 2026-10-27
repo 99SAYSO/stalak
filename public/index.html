@@ -1014,6 +1014,14 @@ header .stepper{margin-left:auto}
 @media (max-width:640px){ .pricebtn{min-height:44px;padding:0 11px 0 9px} }
 @media (max-width:350px){ .pricebtn svg{display:none} }
 
+/* « Stalak Pro » in the header: a light blue glint sweeps across it every 5 s */
+.pricebtn{position:relative;overflow:hidden;isolation:isolate}
+.pricebtn::after{content:"";position:absolute;top:-20%;bottom:-20%;left:0;width:55%;z-index:-1;pointer-events:none;
+  background:linear-gradient(100deg,rgba(120,190,255,0) 0%,rgba(120,190,255,.55) 45%,rgba(214,236,255,.85) 52%,rgba(120,190,255,0) 100%);
+  transform:translateX(-140%) skewX(-18deg);animation:pro-glint 5s ease-in-out 1.2s infinite}
+@keyframes pro-glint{0%{transform:translateX(-140%) skewX(-18deg)}16%,100%{transform:translateX(260%) skewX(-18deg)}}
+@media (prefers-reduced-motion:reduce){ .pricebtn::after{animation:none;display:none} }
+
 /* ---- pricing: promo, plan cards, trust line, comparison, FAQ ----
    One component for the Stalak Pro page in the app (#pro, appended to the theme by build.py / build_site.py) and the
    static pages /tarifs and /en/pricing (served as /pricing.css). Tokens: the theme's (--ink, --sky-deep, --ice, --fur…).
