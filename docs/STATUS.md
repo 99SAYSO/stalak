@@ -34,12 +34,12 @@
   - glaçon : « Parler à un humain » (direct si le propriétaire est disponible, sinon e-mail du visiteur et réponse par e-mail) ;
   - migration 0006 appliquée ; reste au propriétaire : 2 secrets (`ACCESS_AUD`, `ADMIN_EMAILS`), domaine personnalisé admin.stalak.app sur Pages, événements Paddle `adjustment.*` (BACKEND.md, étape 13). L'équipe Access est déjà dans `wrangler.toml`.
 
-- **Menu du compte + Galerie** (branche `compte/menu-galerie`, compte rendu `docs/handoff/compte-menu-galerie.md`, Statut : PRÊT) : un appui sur le compte en haut à droite ouvre un menu (Galerie, Mon compte, Stalak Pro ou « Gérer mon abonnement », Aide, Se déconnecter) ; la Galerie remplace « Mes projets » : grille avec couverture (image du montage, 300 px, rangée dans R2 avec le projet), nom dessous, appui = ouvrir, appui long ou « … » = renommer / supprimer. Sans Pro : « La sauvegarde en ligne est réservée à Stalak Pro ». **Migration 0007 à appliquer avant de publier.**
+- **Menu du compte + Galerie** (en ligne le 28/10) : un appui sur le compte en haut à droite ouvre un menu (Galerie, Mon compte, Stalak Pro ou « Gérer mon abonnement », Aide, Se déconnecter) ; la Galerie remplace « Mes projets » : grille avec couverture (image du montage, 300 px, rangée dans R2 avec le projet), nom dessous, appui = ouvrir, appui long ou « … » = renommer / supprimer. Sans Pro : « La sauvegarde en ligne est réservée à Stalak Pro ». Migration 0007 appliquée. À vérifier par le propriétaire sur iPhone : sauvegarder en ligne, puis voir la couverture dans la Galerie.
 - **« Parler à un humain » réservé à Stalak Pro** (branche `compte/humain-pro`, compte rendu `docs/handoff/compte-humain-pro.md`, Statut : PRÊT) : création et écriture réservées à Pro côté serveur ; sans Pro, écran « Réservé à Stalak Pro » (page Pro + contact@stalak.app) ; un ex-Pro garde les réponses reçues ; réponse « sous 24 h » par e-mail quand tu n'es pas là ; badge Pro dans le tableau de bord. Textes de vente : `marketing/chat-pro`, à fusionner ensemble. Aucune migration.
 
 ## Base de données D1
-- Migrations appliquées : 0001, 0002, 0003, 0004_lyrics_usage, 0004_cloud_save, 0005_social_accounts (27/10), 0006_admin_support (27/10).
-- En attente : **0007_project_covers** (branche `compte/menu-galerie`, une ligne : `ALTER TABLE projects ADD COLUMN cover_at INTEGER;`), à coller dans la console D1 avant de publier cette branche.
+- Migrations appliquées : 0001, 0002, 0003, 0004_lyrics_usage, 0004_cloud_save, 0005_social_accounts (27/10), 0006_admin_support (27/10), 0007_project_covers (28/10).
+- En attente : aucune.
 
 ## À faire, par rôle
 
