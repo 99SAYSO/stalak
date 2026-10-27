@@ -36,9 +36,9 @@
 
 ### App & montage
 - Test caméra iPhone par le propriétaire (27/10) : son après le décompte OK, sens du selfie OK ; **lecture saccadée** et **export lent**.
-- En cours (branche `app/apercu-iphone`) : diagnostic. Le journal de l'iPhone montre « Decoder failure » sur les prises filmées dans Stalak (aperçu, copie légère et analyse d'image) ; l'aperçu retombe alors sur le lecteur vidéo de Safari, d'où la saccade. L'export lent vient sans doute de la même panne (repli sur l'enregistrement en temps réel).
-- Hors de cause : la « remise en ordre » MP4 après le tournage (vérifiée identique à l'original, image par image et son).
-- À décider : baisser la qualité d'export (720p) seulement si l'export reste lent une fois le décodage réparé.
+- Prêt (branche `app/apercu-iphone`) : prises filmées sur iPhone réparées. Cause : le fichier en morceaux de Safari ne dit pas où commencent les données de chaque piste (cas prévu par la norme) ; la bibliothèque MP4Box les lisait au mauvais endroit, d'où des vidéos abîmées dès le tournage (« Decoder failure » dans l'aperçu, la copie légère, l'analyse et l'export, sur les 10 façons de décoder testées). Le site recalcule maintenant lui-même la place de chaque image et de chaque son (`fragSamples` / `fragFix`). Nouveau test `tests/ui/remux_frag.py`.
+- À vérifier après mise en ligne : nouveau test caméra sur iPhone (lecture fluide, vitesse d'export, ligne « échantillons repris au bon endroit » dans les infos techniques).
+- À décider ensuite : baisser la qualité d'export (720p) seulement si l'export reste lent une fois le décodage réparé.
 
 ### Comptes, paiements & serveur
 - Paddle en réel une fois la structure créée : nouveaux produits, prix, clés et webhook, puis `PADDLE_ENV=production`.

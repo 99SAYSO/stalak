@@ -4452,6 +4452,80 @@ function mp3Header(b){
   }
   return null;
 }
+/* ---------- fragmented MP4s (what the recorders write) ----------
+   Each fragment (moof) holds one piece (traf) per track, then the bytes (mdat). When a piece does not say where its bytes start
+   (no base offset, no « counted from the moof »), the standard says: the first piece's bytes start at the moof, each next piece's
+   right after the previous piece's bytes. Safari on iPhone writes such files, and the MP4 library read every piece from the moof,
+   so the second track came out as garbage (« Decoder failure » on every take filmed on an iPhone). This reads the fragments
+   itself and gives, for each track, where each sample is, how long it is and whether it is a key picture. */
+function fragSamples(buf){
+  const dv = new DataView(buf), n = buf.byteLength, out = new Map(), trex = new Map();
+  const str = o => String.fromCharCode(dv.getUint8(o), dv.getUint8(o+1), dv.getUint8(o+2), dv.getUint8(o+3));
+  const u64 = o => dv.getUint32(o) * 4294967296 + dv.getUint32(o + 4);
+  // the boxes between a and b: [type, start, header length, end]
+  const boxes = (a, b) => { const r = []; for (let o = a; o + 8 <= b; ){
+      let size = dv.getUint32(o), hdr = 8; const type = str(o + 4);
+      if (size === 1){ if (o + 16 > b) break; size = u64(o + 8); hdr = 16; } else if (size === 0) size = b - o;
+      if (size < hdr || o + size > b) break;
+      r.push([type, o, hdr, o + size]); o += size; }
+    return r; };
+  const top = boxes(0, n); if (!top.some(x => x[0] === 'moof')) return null;
+  const moov = top.find(x => x[0] === 'moov');
+  if (moov) for (const m of boxes(moov[1] + moov[2], moov[3])) if (m[0] === 'mvex')
+    for (const t of boxes(m[1] + m[2], m[3])) if (t[0] === 'trex'){ const o = t[1] + t[2] + 4;
+      trex.set(dv.getUint32(o), { dur: dv.getUint32(o + 8), size: dv.getUint32(o + 12), flags: dv.getUint32(o + 16) }); }
+  for (const mf of top){
+    if (mf[0] !== 'moof') continue;
+    let prevEnd = mf[1], first = true;
+    for (const tf of boxes(mf[1] + mf[2], mf[3])){
+      if (tf[0] !== 'traf') continue;
+      const kids = boxes(tf[1] + tf[2], tf[3]), hd = kids.find(x => x[0] === 'tfhd'); if (!hd) continue;
+      let o = hd[1] + hd[2]; const hf = dv.getUint32(o) & 0xffffff, id = dv.getUint32(o + 4); o += 8;
+      const dft = Object.assign({ dur: 0, size: 0, flags: 0 }, trex.get(id) || {});
+      let base = hf & 1 ? u64(o) : (hf & 0x20000) || first ? mf[1] : prevEnd; if (hf & 1) o += 8;
+      if (hf & 2) o += 4;
+      if (hf & 8){ dft.dur = dv.getUint32(o); o += 4; }
+      if (hf & 0x10){ dft.size = dv.getUint32(o); o += 4; }
+      if (hf & 0x20){ dft.flags = dv.getUint32(o); o += 4; }
+      const list = out.get(id) || []; out.set(id, list);
+      let at = base, end = base;
+      for (const tr of kids){
+        if (tr[0] !== 'trun') continue;
+        let p = tr[1] + tr[2]; const rf = dv.getUint32(p) & 0xffffff, cnt = dv.getUint32(p + 4); p += 8;
+        // a run that does not say where it starts follows the previous run of the same piece
+        if (rf & 1){ at = base + dv.getInt32(p); p += 4; }
+        let ff = null; if (rf & 4){ ff = dv.getUint32(p); p += 4; }
+        for (let i=0; i<cnt; i++){
+          if (rf & 0x100) p += 4;
+          const size = rf & 0x200 ? dv.getUint32(p) : dft.size; if (rf & 0x200) p += 4;
+          let fl = i === 0 && ff != null ? ff : dft.flags; if (rf & 0x400){ fl = dv.getUint32(p); p += 4; }
+          if (rf & 0x800) p += 4;
+          list.push({ off: at, size, sync: !((fl >> 16) & 1) }); at += size; end = Math.max(end, at);
+        }
+      }
+      prevEnd = end; first = false;
+    }
+  }
+  return out;
+}
+/* puts the right bytes on the samples the library handed over (only for the samples that come from fragments) */
+function fragFix(buf, mp4, tracks){
+  const fr = fragSamples(buf); if (!fr) return;
+  let moved = 0;
+  for (const [t, list] of tracks){
+    if (!t || !list.length) continue;
+    const got = fr.get(t.id); if (!got || !got.length) continue;
+    const st = mp4.getTrackById(t.id).mdia.minf.stbl, inMoov = (st.stsz && st.stsz.sample_count) || 0;
+    if (list.length !== inMoov + got.length){ diag('lecture MP4 : piste ' + t.id + ', ' + list.length + ' échantillons lus pour ' + (inMoov + got.length) + ' annoncés (morceaux laissés tels quels)'); continue; }
+    for (let i=0; i<got.length; i++){
+      const x = list[inMoov + i], g = got[i];
+      if (g.off < 0 || g.off + g.size > buf.byteLength) throw new Error('échantillon hors du fichier');
+      if (x.offset !== g.off) moved++;
+      x.data = new Uint8Array(buf, g.off, g.size); x.size = g.size; x.offset = g.off; x.is_sync = g.sync;
+    }
+  }
+  if (moved) diag('lecture MP4 : ' + moved + ' échantillons repris au bon endroit (fichier en morceaux sans position de départ)');
+}
 async function readMp4(file, want){
   if (!window.MP4Box || !isMp4Like(file)) return null;
   let buf; try { buf = await file.arrayBuffer(); } catch(e){ return null; }
@@ -4473,6 +4547,8 @@ async function readMp4(file, want){
     if (vOk && aOk) break; await sleep(25);
   }
   const out = { vt, at, vS, aS, rot: 0, aPriming: 0, tracks: info.tracks || [] };
+  // a fragmented file (a take just filmed): each sample's bytes are taken where the standard says they are (see fragSamples)
+  try { fragFix(buf, mp4, [[vt, vS], [at, aS]]); } catch(e){ diag('lecture MP4 : morceaux non vérifiés (' + (e && e.message) + ')'); }
   try {
     if (vt){
       const trak = mp4.getTrackById(vt.id), e = trak.mdia.minf.stbl.stsd.entries[0], box = e && (e.avcC || e.hvcC || e.av1C);
