@@ -11,6 +11,7 @@ import { hmacSha256Hex, sha256Hex, base64url } from '../../functions/_lib/crypto
 import { verifySignature } from '../../functions/_lib/paddle.js';
 import { verifyJwtSignature, decodeJwt } from '../../functions/_lib/jwt.js';
 import { resetJwksCache } from '../../functions/_lib/oauth.js';
+import { cleanPrompt, songPrompt, PROMPT_MAX } from '../../functions/_lib/lyrics.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const ORIGIN = 'https://stalak.app';
@@ -1457,9 +1458,32 @@ test('lyrics transcribe: signed in + Pro only; Workers AI called with the docume
   assert.deepEqual(r.data.segments[0].words[0], { word: 'Je', start: 1.2, end: 1.4 });
   assert.equal(r.data.segments[1].words[3].end, 20, 'times clamped to the piece');
   assert.equal(r.data.usage.jobs, 1); assert.equal(r.data.usage.seconds, 20);
+  assert.equal(input.initial_prompt, 'Paroles de chanson.', 'the song prompt alone when no context is sent');
   // "auto": no language hint
   await transcribe(env, pro.cookie, { job: 'job_second01' });
   assert.equal('language' in AI.calls[1].input, false);
+  assert.equal(AI.calls[1].input.initial_prompt, 'Song lyrics. Paroles de chanson.');
+  // context of the previous piece: cleaned, after the song prompt; the model's own conditioning stays off
+  r = await transcribe(env, pro.cookie, { job: 'job_second01', part: 1, parts: 2, language: 'fr', prompt: 'la ville dort encore,\n<b>mon cœur</b> bat\u0000 fort ✨' });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.equal(AI.calls[2].input.initial_prompt, 'Paroles de chanson. la ville dort encore, b mon cœur /b bat fort');
+  assert.equal(AI.calls[2].input.condition_on_previous_text, false);
+  r = await transcribe(env, pro.cookie, { job: 'job_second01', part: 1, parts: 2, language: 'en', prompt: '   ' });
+  assert.equal(AI.calls[3].input.initial_prompt, 'Song lyrics.', 'an empty context adds nothing');
+});
+
+test('lyrics prompt: context text capped (Whisper reads ≤ 224 prompt tokens) and stripped to letters, digits, punctuation, spaces', () => {
+  assert.equal(cleanPrompt(undefined), ''); assert.equal(cleanPrompt(42), ''); assert.equal(cleanPrompt('?! …'), '');
+  assert.equal(cleanPrompt('Je t\u2019aime\u200b, \u202edis-le\t\r\n'), 'Je t’aime , dis-le');
+  assert.equal(cleanPrompt('a < b > c {d} [e] \\ f `g` $h | i'), 'a b c d e f g h i');
+  assert.equal(cleanPrompt('e\u0301te\u0301'), 'été', 'NFC');
+  const long = Array.from({ length: 80 }, (_, i) => 'mot' + i).join(' ');
+  const c = cleanPrompt(long);
+  assert.ok(c.length <= PROMPT_MAX && long.endsWith(c) && c.startsWith('mot'), 'the end is kept, cut at a word');
+  const cjk = cleanPrompt('日本語の歌詞'.repeat(100));
+  assert.ok(cjk.length <= PROMPT_MAX && new TextEncoder().encode(cjk).length <= 320, 'byte cap for scripts with many tokens per char');
+  assert.ok(songPrompt('fr', long).length <= 'Paroles de chanson. '.length + PROMPT_MAX);
+  assert.equal(songPrompt('de', ''), 'Song lyrics. Paroles de chanson.');
 });
 
 test('lyrics transcribe: audio checked (WAV mono 16 kHz, ≤ 31 s per piece, ≤ 16 pieces), body size limit', async () => {
@@ -1481,11 +1505,16 @@ test('lyrics transcribe: audio checked (WAV mono 16 kHz, ≤ 31 s per piece, ≤
   await bad({ part: '0' }, 400, 'invalid_part');
   await bad({ job: 'x' }, 400, 'invalid_job');
   await bad({ language: 'français' }, 400, 'invalid_language');
+  await bad({ prompt: 12 }, 400, 'invalid_prompt');
+  await bad({ prompt: ['a'] }, 400, 'invalid_prompt');
+  await bad({ prompt: 'x'.repeat(2001) }, 400, 'invalid_prompt');
   // a body far over the limit is refused
   const r = await call(env, 'POST', '/api/lyrics/transcribe', { cookie: pro.cookie, raw: JSON.stringify(piece({ audio: wavB64(60) })) });
   assert.equal(r.status, 413);
   assert.equal(AI.calls.length, 0, 'nothing invalid reaches Workers AI');
   await bad({ audio: wavB64(30.9) }, 200);
+  await bad({ audio: wavB64(30.9), prompt: '\u00e9'.repeat(2000) }, 200);   // the longest piece with the longest prompt still fits
+  assert.ok(AI.calls[1].input.initial_prompt.length <= 'Song lyrics. Paroles de chanson. '.length + PROMPT_MAX);
 });
 
 test('lyrics transcribe: daily quota, failures not counted, no binding → 503, odd outputs, rate limit, rows go with the account', async () => {

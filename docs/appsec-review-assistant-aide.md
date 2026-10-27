@@ -1,6 +1,6 @@
 # AppSec review — assistant d'aide (branche `compte/assistant-aide`)
 
-Scope / authority: dépôt `99SAYSO/stalak`, base `main` @ `030928d`, cible = branche `compte/assistant-aide` (arbre de travail).
+Scope / authority: dépôt `99SAYSO/stalak`, base `main` @ `f3e38fc` (fusionné dans la branche), cible = branche `compte/assistant-aide` (arbre de travail).
 Revue défensive locale (tests Node + Playwright sur faux D1 / faux Workers AI). Aucun service réel appelé. Exclus : le reste de l'API (inchangé), Cloudflare lui-même, la qualité des réponses du vrai modèle.
 
 Threat model:
@@ -25,13 +25,13 @@ Secrets hygiene: aucun secret ajouté ; recherche de motifs de clés sur le dép
 
 | Check | Statut | Commande | Résultat |
 |---|---|---|---|
-| Tests serveur | PASS | `node tests/backend/run.mjs` | 50/50 (2 nouveaux) |
+| Tests serveur | PASS | `node tests/backend/run.mjs` | 51/51 après fusion de `main` (2 nouveaux) |
 | Interface téléphone + ordinateur, FR + EN | PASS | `tests/ui/help_ui.py` sur `tests/ui/server.mjs` | 42/42 |
 | Version claude.ai se charge | PASS | idem (fichier `shuffle-lab.html`) | aide ouverte, aucune erreur |
 | Syntaxe `src/app.js`, `build.py`, `build_site.py` | PASS | `node --check`, builds | OK |
-| Paroles auto (interface) | FAIL **préexistant** | `tests/ui/lyrics_ui.py` | 59/61 : le test attend `vad_filter` activé alors que `lyrics.js` (sur `main`) le coupe exprès. Test à mettre à jour. |
+| Paroles auto (interface), après fusion de `main` | PASS | `tests/ui/lyrics_ui.py` | 85/85 |
 | Vrai modèle Gemma 4 | NOT RUN | — | Pas d'accès à Workers AI ici : qualité des réponses à vérifier après mise en ligne. |
 
 Coverage / residual risk: qualité réelle des réponses (fausses infos possibles malgré les consignes ; l'avertissement « IA » est affiché) ; comportement du modèle si Cloudflare change son format de sortie (lecture tolérante, 502 sinon).
 
-Handoff: Chef de projet (fusion, vérification sur stalak.app) ; Juridique (relire le paragraphe ajouté à la politique de confidentialité) ; Comptes (H4 plus tard ; mise à jour du test des paroles).
+Handoff: Chef de projet (fusion, vérification sur stalak.app) ; Juridique (relire le paragraphe ajouté à la politique de confidentialité) ; Comptes (H4 plus tard).

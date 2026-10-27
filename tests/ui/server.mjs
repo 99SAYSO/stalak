@@ -26,10 +26,23 @@ const AI = {
     }
     const bytes = Buffer.from(input.audio, 'base64');
     const dur = (bytes.length - 44) / 32000;
-    aiCalls.push({ model, language: input.language || null, vad: input.vad_filter, seconds: Math.round(dur * 100) / 100,
-      wav: bytes.toString('latin1', 0, 4) + bytes.toString('latin1', 8, 12), rate: bytes.readUInt32LE(24), channels: bytes.readUInt16LE(22) });
+    let ss = 0, pk = 0; for (let i = 44; i + 1 < bytes.length; i += 2) { const v = bytes.readInt16LE(i) / 32768; ss += v * v; pk = Math.max(pk, Math.abs(v)); }
+    const call = { model, language: input.language || null, vad: input.vad_filter, seconds: Math.round(dur * 100) / 100,
+      wav: bytes.toString('latin1', 0, 4) + bytes.toString('latin1', 8, 12), rate: bytes.readUInt32LE(24), channels: bytes.readUInt16LE(22),
+      prompt: input.initial_prompt, conditioned: input.condition_on_previous_text, rms: Math.sqrt(ss / Math.max(1, (bytes.length - 44) / 2)), peak: pk, t0: Date.now() };
+    aiCalls.push(call);
+    await new Promise((r) => setTimeout(r, 60));   // a little like the real model: takes some time
+    call.t1 = Date.now();
     // a 4-word phrase every 2.5 s, then a silence hallucination that must be dropped
     const segments = []; let k = 0;
+    // with context (the previous piece's end), the model "repeats" its last 4 words squeezed at the start: a duplicate at the
+    // cut that the client must remove
+    const ctxWords = /^(Paroles de chanson\.|Song lyrics\.)( Paroles de chanson\.)? (.+)$/.exec(input.initial_prompt || '');
+    if (ctxWords) {
+      const last = ctxWords[3].split(' ').slice(-4);
+      segments.push({ start: 0.05, end: 0.45, text: ' ' + last.join(' '), temperature: 0, avg_logprob: -0.5, compression_ratio: 1, no_speech_prob: 0.1,
+        words: last.map((w, i) => ({ word: ' ' + w, start: +(0.05 + i * 0.1).toFixed(2), end: +(0.13 + i * 0.1).toFixed(2) })) });
+    }
     for (let t = 0.6; t + 2 < dur; t += 2.5) {
       const words = [0, 1, 2, 3].map((i) => ({ word: ' ' + WORDS[(k * 4 + i) % WORDS.length] + (i === 3 ? '.' : ''), start: +(t + i * 0.4).toFixed(2), end: +(t + i * 0.4 + 0.35).toFixed(2) }));
       segments.push({ start: words[0].start, end: words[3].end, text: words.map((w) => w.word).join(''), temperature: 0, avg_logprob: -0.3, compression_ratio: 1.2, no_speech_prob: 0.02, words });

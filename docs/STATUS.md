@@ -19,11 +19,7 @@
 - Pages : tarifs, conditions, remboursement, confidentialité, mentions légales (FR/EN), avec des animations glacées.
 
 ## En cours
-- **Précision des paroles auto** (branche `lyrics-accuracy`) :
-  - voix mise en avant avant l'envoi ;
-  - contexte transmis d'un morceau à l'autre ;
-  - import de la voix seule (a cappella).
-
+- Rien. La précision des paroles auto est en ligne : voix mise en avant, contexte entre les morceaux, import de la voix seule. Seuils à vérifier sur de vraies chansons via les infos techniques (« centre / mix »).
 - **Assistant IA de la bulle d'aide** (branche `compte/assistant-aide`, prête à fusionner) :
   - le glaçon d'aide répond sur stalak.app (route `POST /api/help/chat`, Workers AI, modèle Gemma 4 26B) ;
   - ouvert à tous, sans compte ; rien n'est gardé ; message « IA, peut se tromper » ;
@@ -37,7 +33,7 @@
 ## À faire, par rôle
 
 ### Chef de projet
-- Fusionner `lyrics-accuracy`, puis mettre en ligne.
+- Fusionner `compte/assistant-aide`, puis mettre en ligne (aucune migration) et poser une question au glaçon sur stalak.app, en FR et en EN.
 - Supprimer l'ancien projet Cloudflare « stalak » en double.
 
 ### App & montage
@@ -48,7 +44,6 @@
 - Microsoft (création du compte bloquée, à retenter) et Apple (programme développeur à 99 $/an).
 - Ménage quotidien automatique des projets (Worker `workers/cloud-cleanup`, à déployer avec wrangler depuis un ordinateur). Pour l'instant, le ménage se fait quand quelqu'un ouvre « Mes projets ».
 - Assistant IA de la bulle d'aide : fait (branche `compte/assistant-aide`). Après la mise en ligne : poser quelques vraies questions pour juger les réponses ; ajuster `HELP_DAILY_MAX` si besoin.
-- Mettre à jour le test `tests/ui/lyrics_ui.py` (il attend `vad_filter` activé, `lyrics.js` le coupe exprès) : 2 vérifications en échec, déjà sur `main`.
 - Plus tard : saler l'empreinte des IP des compteurs (paroles et aide) avec `AUTH_SECRET`.
 - Plus de 210 minutes de transcription par jour : passer au forfait Workers payant (5 $/mois).
 
