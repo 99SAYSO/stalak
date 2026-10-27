@@ -3740,9 +3740,20 @@ let recStream = null, recRec = null, recTimer = 0, recStopReq = false;
 let camFacing = 'user';
 async function camStream(facing){
   const audio = { echoCancellation:false, noiseSuppression:false, autoGainControl:false };
-  // sizes given the camera's own way (landscape): iPhones then give the whole picture, turned upright, instead of a cropped one
-  try { return await navigator.mediaDevices.getUserMedia({ video:{ facingMode:{ ideal:facing }, width:{ ideal:1920 }, height:{ ideal:1080 } }, audio }); }
-  catch(e){ if (e && e.name === 'NotAllowedError') throw e; return await navigator.mediaDevices.getUserMedia({ video:{ facingMode:{ ideal:facing } }, audio }); }
+  // from the best to the simplest: sizes given the camera's own way (landscape: iPhones then give the whole picture, upright,
+  // not a cropped one), then the camera alone, then anything; a refusal by the person stops at once
+  const tries = [
+    { video:{ facingMode:{ ideal:facing }, width:{ ideal:1920 }, height:{ ideal:1080 } }, audio },
+    { video:{ facingMode:facing }, audio },
+    { video:{ facingMode:facing }, audio:true },
+    { video:true, audio:true },
+  ];
+  let last = null;
+  for (const c of tries){
+    try { return await navigator.mediaDevices.getUserMedia(c); }
+    catch(e){ last = e; diag('caméra : essai refusé (' + (e && (e.name + (e.message ? ' — ' + e.message : '')) || e) + ')'); if (e && (e.name === 'NotAllowedError' || e.name === 'SecurityError')) break; }
+  }
+  throw last;
 }
 function camZoomOut(){
   // the widest view the camera allows (some phones start a little zoomed in)
@@ -3768,8 +3779,14 @@ async function openCamera(){
   try {
     recStream = await camStream(camFacing);
   } catch(e){
-    diag('caméra refusée (' + (e && e.name) + ')');
-    status('La caméra n’est pas accessible dans cet aperçu. Elle marchera sur le site en ligne. En attendant, filme avec ton téléphone (son en haut-parleur) et importe les vidéos.');
+    const why = e && e.name || 'erreur';
+    diag('caméra refusée (' + why + ')');
+    if (window.claude) status('La caméra n’est pas accessible dans cet aperçu. Elle marche sur stalak.app. En attendant, filme avec ton téléphone (son en haut-parleur) et importe les vidéos.');
+    else if (why === 'NotAllowedError') status(/iPhone|iPad|iPod/.test(navigator.userAgent)
+      ? 'La caméra est bloquée pour Stalak. Dans Safari, touche « aA » (ou l’icône à gauche de l’adresse) → Réglages du site web → Caméra et Micro : « Autoriser », puis recharge la page.'
+      : 'La caméra est bloquée pour Stalak. Autorise la caméra et le micro pour ce site dans ton navigateur (icône à gauche de l’adresse), puis recharge la page.');
+    else if (why === 'NotReadableError') status('La caméra est déjà utilisée par une autre app. Ferme-la puis réessaie.');
+    else status('La caméra ne s’ouvre pas (' + why + '). Réessaie, ou filme avec ton téléphone (son en haut-parleur) et importe les vidéos.');
     return;
   }
   camShow();
