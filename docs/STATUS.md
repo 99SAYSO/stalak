@@ -40,6 +40,9 @@
 - À vérifier après mise en ligne : nouveau test caméra sur iPhone (lecture fluide, vitesse d'export, ligne « échantillons repris au bon endroit » dans les infos techniques).
 - À regarder : `tests/ui/lyrics_ui.py` s'arrête au bout de 15 s d'attente, déjà sur `main` avant cette branche.
 - À décider ensuite : baisser la qualité d'export (720p) seulement si l'export reste lent une fois le décodage réparé.
+- En cours (branche `app/copie-legere-export`) :
+  - Fait : croix ✕ pour supprimer une ligne de paroles. Elle est dans la liste des lignes calées, à l'étape « Paroles », la seule où les lignes sont listées. Le message propose « Annuler ». Sur téléphone, le texte de la ligne passe sous les boutons. Test `tests/ui/paroles_suppr.py`.
+  - À faire : prises filmées sur iPhone. Le propriétaire signale un export qui saccade et plus lent, et une qualité d'aperçu qui ne baisse pas (pas de copie légère). Piste : le décodage échoue encore et le site retombe sur le lecteur vidéo de Safari. Journal iPhone demandé au propriétaire.
 
 ### Comptes, paiements & serveur
 - Paddle en réel une fois la structure créée : nouveaux produits, prix, clés et webhook, puis `PADDLE_ENV=production`.
