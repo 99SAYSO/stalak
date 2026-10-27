@@ -89,6 +89,6 @@ for name in ['mentions-legales.html', 'confidentialite.html']:
     p = out / name
     p.write_text(p.read_text(encoding='utf-8').replace('{{EMAIL}}', EMAIL or '[ADRESSE E-MAIL]').replace('{{URL}}', URL), encoding='utf-8')
 (out / 'robots.txt').write_text(f'User-agent: *\nAllow: /\nSitemap: {URL}/sitemap.xml\n', encoding='utf-8')
-(out / 'sitemap.xml').write_text(f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>{URL}/</loc></url></urlset>\n', encoding='utf-8')
+(out / 'sitemap.xml').write_text(f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>{URL}/</loc><lastmod>{__import__('datetime').date.today().isoformat()}</lastmod></url></urlset>\n', encoding='utf-8')
 n = sum(1 for _ in out.rglob('*') if _.is_file()); size = sum(f.stat().st_size for f in out.rglob('*') if f.is_file())
 print('site built in', out, '·', n, 'files ·', round(size / 1048576, 1), 'MB')
