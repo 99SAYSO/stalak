@@ -436,7 +436,11 @@ Toutes les réponses sont en JSON. Les erreurs ont la forme `{"error":"code","me
 | `POST /api/help/chat` | `{lang: 'fr'\|'en', messages: [{role: 'user'\|'assistant', content}], context}` (sans compte). 10 derniers tours, 6 000 caractères au plus, le dernier de l'utilisateur ; `context` (4 000 caractères) = ce que montre la page. Renvoie `{answer}` (texte simple). Erreurs `invalid_messages`, `rate_limited` (429, `retryAfter`), `help_busy` (503, budget du jour épuisé), `ai_unavailable` (503), `help_failed` (502). |
 | `POST /api/cron/cloud-cleanup` | Règle des 6 mois, pour un cron externe : `Authorization: Bearer <CRON_SECRET>` (sinon `404`). |
 | `DELETE /api/account` | `{confirm:true}`. Arrête l'abonnement Paddle, puis efface toutes les données (dont le pseudo, la photo et le mot de passe, qui sont dans la ligne `users`). |
-| `GET /api/connect/{tiktok,instagram}/{start,callback}` | Ébauches : `404 not_enabled` tant que `SOCIAL_CONNECT_ENABLED` ne vaut pas `"1"`, puis `501`. |
+| `GET /api/connect` | Comptes TikTok / Instagram reliés : `{providers, accounts: [{provider, username, displayName, avatarUrl, accountType, status, connectedAt}]}` (jamais les jetons). Tout `/api/connect…` répond `404 not_enabled` tant que `SOCIAL_CONNECT_ENABLED` ne vaut pas `"1"`. |
+| `GET /api/connect/{tiktok,instagram}/start?return=/en/&popup=1` | Navigation : `302` vers TikTok / Instagram (state, cookie `stalak_c`). Retour sur l'app : `#social-ok-<réseau>` ou `#social-err-<code>` (`not_signed_in`, `not_enabled`, `state_mismatch`, `cancelled`, `missing_permission`, `connect_failed`). Avec `popup=1`, petite page qui prévient l'app (`BroadcastChannel('stalak-social')`) et se ferme. |
+| `GET /api/connect/{tiktok,instagram}/callback` | Retour de TikTok / Instagram : jetons échangés côté serveur et rangés **chiffrés** (table `social_accounts`, clé `SOCIAL_TOKEN_KEY`). |
+| `DELETE /api/connect/{tiktok,instagram}` | Délie le compte (TikTok : jeton révoqué aussi). |
+| `POST /api/connect/instagram/{deauthorize,data-deletion}` | Appels de Meta, signés (`signed_request`, secret `INSTAGRAM_APP_SECRET`) : efface le compte Instagram relié. `GET /api/connect/instagram/deletion?code=` : page de suivi demandée par Meta. |
 
 Sans le bucket R2 (`MEDIA`), les routes de fichiers répondent `503 cloud_unavailable` ; le reste marche (dont l'ancien `PUT` sans `files`).
 

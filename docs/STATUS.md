@@ -29,6 +29,7 @@
 
 ## Base de données D1
 - Migrations appliquées : 0001, 0002, 0003, 0004_lyrics_usage, 0004_cloud_save.
+- En attente : 0005_social_accounts (branche `social/connexion-comptes`).
 
 ## À faire, par rôle
 
@@ -48,9 +49,15 @@
 - Plus de 210 minutes de transcription par jour : passer au forfait Workers payant (5 $/mois).
 
 ### Réseaux sociaux
-- Comptes Instagram (passé en professionnel) et TikTok de Stalak.
-- Comptes développeur TikTok et Meta.
-- Publication directe : connexion des comptes, adresse vidéo temporaire sur R2, dossiers de validation, vidéo de démo.
+- **Fait (branche `social/connexion-comptes`, pas encore fusionnée)** : connexion des comptes TikTok et Instagram côté serveur.
+  - `functions/_lib/social.js` : relier / délier un compte, jetons chiffrés en base, renouvellement automatique, appels de suppression de Meta.
+  - Migration **`0005_social_accounts.sql`** à lancer dans la console D1 **avant** la fusion.
+  - 7 nouveaux tests serveur (55/55 passent). Revue sécurité : `docs/appsec-review-social-connect.md`.
+  - La fonction reste éteinte (`SOCIAL_CONNECT_ENABLED = "0"`).
+  - Compte rendu : `docs/handoff/social-connexion-comptes.md` (Statut : PRÊT).
+- **Au propriétaire** : créer les applis TikTok et Meta en suivant `docs/SOCIAL_SETUP.md`, puis saisir 5 secrets dans Cloudflare (`TIKTOK_CLIENT_KEY`, `TIKTOK_CLIENT_SECRET`, `INSTAGRAM_APP_ID`, `INSTAGRAM_APP_SECRET`, `SOCIAL_TOKEN_KEY`).
+- Reste à faire : boutons « Relier TikTok / Instagram » et écran « Publier » dans l'app, envoi de la vidéo (adresse temporaire sur R2), page de confidentialité à compléter (TikTok / Instagram), dossiers de validation, vidéo de démo.
+- À décider : la publication directe est-elle réservée à Stalak Pro ou ouverte à tous ? Meta risque de demander une vérification d'entreprise (lien avec la LLC).
 
 ### Marketing & croissance
 - **Fait (branche `marketing/audit-site`)** : audit SEO et textes de l'accueil et des Tarifs, FR/EN. Détail dans `docs/marketing/AUDIT_SITE.md`. Descriptions raccourcies, aperçus de partage sur Tarifs, limites Pro affichées, FAQ « données envoyées » corrigée (paroles auto), karaoké marqué Pro, section « comment faire un playback » sur l'accueil.
