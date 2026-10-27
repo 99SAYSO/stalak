@@ -953,8 +953,6 @@ const I18N_EN = /*@EN*/{
   "help.h.proMail": "You can still write to {mail} anytime.",
   "acct.why.support": "“Talk to a human” is part of Stalak Pro.",
   "ap.whyIn.support": "“Talk to a human” is part of Stalak Pro. Sign in or create an account to get it.",
-  "acct.perk7": "Talk to a human: an answer live, or by email within 24 hours",
-  "pr.r.human": "Talk to a human (live answer, or by email within 24 hours)",
   "help.h.fail": "Your message didn’t go through. Try again in a moment.",
   "help.h.failMail": "Your message didn’t go through. Try again in a moment, or write to {mail}.",
   "_bloc.app.son": "App & montage : étape Son (glisser-déposer, poignées du passage)",
