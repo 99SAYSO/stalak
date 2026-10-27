@@ -2,3 +2,4 @@ __pycache__/
 .DS_Store
 shuffle-lab.html
 .claude/
+.dev.vars
