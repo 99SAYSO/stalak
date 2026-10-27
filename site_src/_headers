@@ -34,3 +34,9 @@
 
 /emoji/*
   Cache-Control: public, max-age=86400
+
+/pricing.css
+  Cache-Control: no-cache
+
+/site.css
+  Cache-Control: no-cache

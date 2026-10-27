@@ -179,6 +179,13 @@ def page(lang, body):
 if out.exists(): shutil.rmtree(out)
 shutil.copytree(extra, out)
 (out / 'pricing.css').write_text(PRICING_CSS, encoding='utf-8')
+# the stylesheets of the static pages get a version in their address: a browser never keeps an old one
+import hashlib
+_v = {n: hashlib.sha1((out / n).read_bytes()).hexdigest()[:8] for n in ('pricing.css', 'site.css') if (out / n).exists()}
+for f in list(out.glob('*.html')) + list((out / 'en').glob('*.html')):
+    t = f.read_text(encoding='utf-8'); t2 = t
+    for n, v in _v.items(): t2 = t2.replace('href="/' + n + '"', 'href="/' + n + '?v=' + v + '"')
+    if t2 != t: f.write_text(t2, encoding='utf-8')
 (out / 'index.html').write_text(page('fr', markup), encoding='utf-8')
 (out / 'en').mkdir(exist_ok=True)
 (out / 'en' / 'index.html').write_text(page('en', markup_en), encoding='utf-8')
