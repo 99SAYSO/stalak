@@ -810,3 +810,8 @@ header .stepper{margin-left:auto}
 .pricebtn::after{content:"";position:absolute;left:calc(12px + 21.5px);top:calc(100% + 12px);width:4px;height:5px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:#bfe3ff;border:1px solid var(--ink);opacity:0;pointer-events:none;animation:pro-drop 5s ease-in 2.4s infinite}
 @keyframes pro-drop{0%,70%{opacity:0;transform:translateY(-4px) scale(.6)}74%{opacity:1;transform:translateY(0) scale(1)}92%{opacity:1;transform:translateY(16px) scale(1)}100%{opacity:0;transform:translateY(22px) scale(.8)}}
 @media (prefers-reduced-motion:reduce){ .pricebtn{animation:none} .pricebtn::before{animation:none} .pricebtn::after{display:none} }
+/* « voix seule » link under « Écrire mes paroles » */
+.voxpick{margin-top:6px}
+.voxpick .btn.link{color:var(--ink);font-weight:500;white-space:normal;text-align:left;padding:6px 0;min-height:44px;font-size:14px;text-decoration-thickness:1px;text-underline-offset:3px}
+.voxpick #lyVoxOn{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px}
+.voxpick #lyVoxOn[hidden]{display:none}
