@@ -1,4 +1,4 @@
-Statut : PRÊT
+Statut : FUSIONNÉ (en ligne le 27/10/2026 ; correction des réponses vides : docs/handoff/compte-assistant-reponses-vides.md)
 Branche : compte/assistant-aide
 Conversation : 3. Comptes, paiements & serveur
 
