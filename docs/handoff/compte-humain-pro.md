@@ -21,15 +21,15 @@ Décision du propriétaire (27/10) : « Parler à un humain » devient une fonct
   - la conversation gardée sur l'appareil porte l'id du compte : un autre compte sur le même appareil ne la voit pas.
 - Tableau de bord : badge « Pro », « ex-Pro » ou « invité » sur chaque conversation (liste et conversation ouverte),
   calculé avec la même règle que le site.
-- Page Stalak Pro de l'app : ligne « Parler à un humain (réponse en direct, ou par e-mail sous 24 h) » dans le tableau
-  Gratuit / Pro, et dans la liste « Tu es Pro ».
+- Page Stalak Pro de l'app et Tarifs : textes laissés à Marketing (branche `marketing/chat-pro`, même clé `acct.perk7` ;
+  je n'ajoute rien de mon côté pour éviter les doublons). À fusionner ensemble.
 - Guide de l'assistant IA (FR/EN) : il sait que la fonction est Pro et renvoie vers contact@stalak.app sinon.
 - Politique de confidentialité FR/EN : paragraphe « Parler à un humain (Stalak Pro) », adresse du compte.
 
 Skills utilisés : `appsec-review` (`docs/appsec-review-humain-pro.md` : contrôles serveur confirmés, aucun nouveau problème).
 
 Fichiers touchés : `functions/_lib/support.js`, `functions/_lib/admin.js`, `functions/_lib/admin-page.js`,
-`functions/_lib/help-guide.js`, `src/app.js`, `src/markup.html`, `src/theme.css`, `site_src/confidentialite.html`,
+`functions/_lib/help-guide.js`, `src/app.js`, `src/theme.css`, `site_src/confidentialite.html`,
 `site_src/en/privacy.html`, `tests/backend/run.mjs` (tests « Parler à un humain » réécrits), `tests/ui/support_ui.py`
 (scénario réécrit), `tests/ui/server.mjs` (route de test `/__test/unpro`), `BACKEND.md`, `docs/STATUS.md`,
 `docs/appsec-review-humain-pro.md`, `docs/handoff/compte-humain-pro.md`, `public/` (reconstruit).
@@ -47,6 +47,7 @@ Reste au propriétaire : rien.
 
 À signaler :
 - Chef de projet : l'offre Stalak Pro change → mettre à jour STALAK_CONTEXTE.md, section 2 (« Parler à un humain »).
-- Marketing : page Tarifs du site (`site_src/tarifs.html` et `en/pricing.html`) à compléter avec cette ligne Pro ; la page Pro
-  de l'app l'a déjà.
+- Marketing (`marketing/chat-pro`) : la réponse `pr.a.chat` dit « laisse ton message et ton e-mail » / « leave your message
+  and your email ». Un membre Pro n'a plus d'e-mail à donner : la réponse part à l'adresse de son compte. Proposition :
+  « laisse ton message : on te répond par e-mail sous 24 h » / « leave your message: we reply by email within 24 h ».
 - Juridique : paragraphe de confidentialité modifié (« Stalak Pro », adresse du compte).
