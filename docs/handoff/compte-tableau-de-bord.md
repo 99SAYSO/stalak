@@ -43,7 +43,8 @@ Fichiers touchés :
 - modifiés : `functions/_lib/router.js` (routes admin, support, presence ; compteur de sauvegarde ; suppression de compte),
   `functions/_lib/paddle.js` (paiements, remboursements, événements `adjustment.*`), `functions/_lib/help.js` (compteurs),
   `functions/_lib/help-guide.js` (Clip mode), `functions/_lib/oauth.js` (`jwksFor` exporté), `src/app.js` (bloc d'aide :
-  « Parler à un humain », signe de vie ; clés `help.h.*` et `help.human` à la fin des dictionnaires), `src/markup.html`
+  « Parler à un humain », signe de vie ; clés `help.h.*` et `help.human` à la fin des dictionnaires, précédées de la clé repère
+  `_bloc.compte.aide`, comme le bloc `_bloc.app.son`), `src/markup.html`
   (1 bouton), `src/theme.css` (styles avec commentaire du domaine), `site_src/confidentialite.html`, `site_src/en/privacy.html`,
   `wrangler.toml` (`ADMIN_HOST`), `BACKEND.md` (étape 13 + routes + sources), `docs/STATUS.md`, `tests/backend/run.mjs`,
   `tests/backend/fake-d1.mjs`, `tests/ui/server.mjs` (Access imité pour les tests), `public/` (reconstruit)
@@ -52,12 +53,12 @@ Migration SQL : **oui, `migrations/0006_admin_support.sql`**, à coller en entie
 Elle ne fait que créer des tables (`payments`, `refunds`, `visits`, `daily_counts`, `tickets`, `ticket_messages`,
 `admin_state`) et des index, avec `IF NOT EXISTS` : sans danger pour l'existant. Le SQL complet est dans le fichier.
 
-Tests (branche partie de main d997e9b) :
+Tests (sur la branche, après fusion de main 2c83c01) :
 - `node tests/backend/run.mjs` : 62/62 (5 nouveaux : accès admin, conversation complète avec e-mails, compte et limites,
   visites, paiements et statistiques)
 - `tests/ui/support_ui.py` : 34/34 (visiteur FR 390 px sans personne, tableau de bord 1280 px et 390 px, réponse par e-mail,
   direct en EN 1280 px, reprise après rechargement, pas de tableau de bord sans Access, version claude.ai)
-- `tests/ui/help_ui.py` : 42/42 ; `tests/ui/lyrics_ui.py` : 85/85
+- `tests/ui/help_ui.py` : 42/42 ; `tests/ui/lyrics_ui.py` : 85/85 ; `tests/ui/son_passage.py` (App) : 62/62
 - sans défilement horizontal, sans erreur de page (CSP stricte comprise), FR et EN
 - non lancé : `tests/ui/test_cloud.py` (vidéos VP9 absentes du dépôt ; le seul ajout côté sauvegarde est un compteur,
   couvert par les tests serveur) ; vrai Cloudflare Access (à vérifier une fois configuré)

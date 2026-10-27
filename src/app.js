@@ -96,7 +96,7 @@ const I18N_EN = /*@EN*/{
   "bars.8": "8 bars",
   "bars.12": "12 bars",
   "bars.end": "To the end",
-  "wave.hint.reel": "Tap the waveform to pick the part for your video and hear it.",
+  "wave.hint.reel": "Drag the handles to pick where the part starts and ends. Tap the waveform to move it and hear it.",
   "wave.hint.clip": "Tap the waveform to listen from there. Drag the handles to trim the start or the end of the video.",
   "beat.sum": "Cuts not on the beat?",
   "beat.hint": "Tap <b>TAP</b> along with the music, starting on a strong beat.",
@@ -933,6 +933,7 @@ const I18N_EN = /*@EN*/{
   "help.s.busy": "The assistant answered a lot today and is taking a break. Try again tomorrow, or tap “Copy info for the team” just below",
   "help.s.fail": "Oops, I couldn’t answer. Try again in a moment, or tap “Copy info for the team” just below",
   "help.s.net": "No connection to Stalak. Check your internet and try again.",
+  "_bloc.compte.aide": "Comptes, paiements & serveur : bulle d’aide (« Parler à un humain »)",
   "help.human": "Talk to a human",
   "help.h.check": "Checking if someone from the team is around…",
   "help.h.live": "Someone from the team is here! Write your message below: the answer will show up right here.",
@@ -947,12 +948,19 @@ const I18N_EN = /*@EN*/{
   "help.h.needMail": "Leave your email so we can send you the answer.",
   "help.h.badMail": "That email doesn’t look right. Check it and send again.",
   "help.h.fail": "Your message didn’t go through. Try again in a moment.",
-  "help.h.failMail": "Your message didn’t go through. Try again in a moment, or write to {mail}."
+  "help.h.failMail": "Your message didn’t go through. Try again in a moment, or write to {mail}.",
+  "_bloc.app.son": "App & montage : étape Son (glisser-déposer, poignées du passage)",
+  "listen.seg": "▶ Play the part",
+  "listen.segStop": "❚❚ Stop",
+  "p1.dropHere": "Drop your file here",
+  "bars.n": "{n} bars",
+  "grip.start": "Start of the part",
+  "grip.end": "End of the part"
 }/*EN@*/;
 const I18N_FR = /*@FR*/{
   "kind.hint.reel": "Une vidéo verticale 9:16, de tout le son ou de quelques mesures.",
   "kind.hint.clip": "Le morceau entier, en paysage 16:9 pour YouTube. Tu peux couper le début et la fin.",
-  "wave.hint.reel": "Touche la forme d’onde pour choisir le passage de ta vidéo et l’écouter.",
+  "wave.hint.reel": "Tire les poignées pour choisir le début et la fin du passage. Touche l’onde pour déplacer le passage et l’écouter.",
   "wave.hint.clip": "Touche la forme d’onde pour écouter à partir de là. Tire les poignées pour couper le début ou la fin du clip.",
   "exp.q": "Pleine qualité, à partir de tes vidéos originales.",
   "exp.q.clip": "Pleine qualité, à partir de tes vidéos originales. Un clip de quelques minutes prend quelques minutes à exporter.",
@@ -1447,6 +1455,7 @@ const I18N_FR = /*@FR*/{
   "help.s.busy": "L’assistant a beaucoup répondu aujourd’hui et fait une pause. Réessaie demain, ou touche « Copier les infos pour l’équipe » juste en dessous",
   "help.s.fail": "Oups, je n’ai pas pu répondre. Réessaie dans un instant, ou touche « Copier les infos pour l’équipe » juste en dessous",
   "help.s.net": "Pas de connexion à Stalak. Vérifie ton internet et réessaie.",
+  "_bloc.compte.aide": "Comptes, paiements & serveur : bulle d’aide (« Parler à un humain »)",
   "help.h.check": "Je regarde si quelqu’un de l’équipe est là…",
   "help.h.live": "Quelqu’un de l’équipe est là ! Écris ton message ci-dessous : la réponse arrivera ici même.",
   "help.h.away": "Personne de l’équipe n’est disponible pour l’instant. Écris ton message et laisse ton e-mail : la réponse t’arrivera par e-mail.",
@@ -1460,7 +1469,14 @@ const I18N_FR = /*@FR*/{
   "help.h.needMail": "Laisse ton e-mail pour qu’on puisse t’envoyer la réponse.",
   "help.h.badMail": "Cet e-mail n’a pas l’air bon. Vérifie-le et renvoie.",
   "help.h.fail": "Ton message n’est pas parti. Réessaie dans un instant.",
-  "help.h.failMail": "Ton message n’est pas parti. Réessaie dans un instant, ou écris à {mail}."
+  "help.h.failMail": "Ton message n’est pas parti. Réessaie dans un instant, ou écris à {mail}.",
+  "_bloc.app.son": "App & montage : étape Son (glisser-déposer, poignées du passage)",
+  "listen.seg": "▶ Écouter le passage",
+  "listen.segStop": "❚❚ Stop",
+  "p1.dropHere": "Lâche ton fichier ici",
+  "bars.n": "{n} mesures",
+  "grip.start": "Début du passage",
+  "grip.end": "Fin du passage"
 }/*FR@*/;
 let STATIC_FR = /*@STATIC_FR*/null/*STATIC_FR@*/;
 const LANGS = ['fr', 'en'];
@@ -2669,7 +2685,13 @@ function updateSegment(){
 /* the duration menu shows what is chosen: « Tout le son » is the whole song; moved off the start, it reads « Jusqu'à la fin » */
 function barsSync(){
   if (isClip()) return; const sel = $('#barsSel'), v = S.nBars === 0 ? (S.startBar === 0 ? 'all' : '0') : String(S.nBars);
-  sel.querySelector('option[value="0"]').hidden = v !== '0'; if (sel.value !== v) sel.value = v;
+  sel.querySelector('option[value="0"]').hidden = v !== '0';
+  // a length set with the handles (not 4, 8 or 12 bars): one more line in the menu, « 6 mesures »
+  let own = sel.querySelector('option[data-own]');
+  const fixed = [...sel.options].some(o => !o.dataset.own && o.value === v);
+  if (!fixed){ if (!own){ own = document.createElement('option'); own.dataset.own = '1'; sel.append(own); } own.value = v; own.textContent = _t('bars.n', { n: S.nBars }); own.hidden = false; }
+  else if (own) own.hidden = true;
+  if (sel.value !== v) sel.value = v;
 }
 
 /* ---------- takes ---------- */
@@ -5620,7 +5642,7 @@ function stop(silent){
   waStop();
   try { if (!player.paused) player.pause(); player.volume = 1; } catch(e){}
   S.takes.forEach(t => t.el && !t.live && !t.el.paused && t.el.pause());
-  const was = S.playing; S.playing = false; $('#playBtn').textContent = _t('play.play'); $('#songPlay').textContent = _t('listen.play');
+  const was = S.playing; S.playing = false; $('#playBtn').textContent = _t('play.play'); $('#songPlay').textContent = _t('listen.play'); $('#segPlay').textContent = _t('listen.seg');
   const h = endHook; endHook = null;
   if (was && h) h();
   S.takes.forEach(t => { if (t.proxyWaiting && !S.exporting) applyProxy(t); });
@@ -6992,7 +7014,7 @@ function kindUI(){
   const clip = isClip();
   $$('#kindSeg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === S.kind));
   $('#kindHint').textContent = _t(clip ? 'kind.hint.clip' : 'kind.hint.reel');
-  $('#endBox').hidden = !clip; $('#barsSel').hidden = $('#barsLbl').hidden = clip;
+  $('#endBox').hidden = false; $('#barsSel').hidden = $('#barsLbl').hidden = clip;
   $('#waveHint').textContent = _t(clip ? 'wave.hint.clip' : 'wave.hint.reel');
   // formats: 16:9 or 9:16 for a clip, the vertical / feed / square ones for TikTok and Reels
   $$('#fmtSeg button').forEach(b => { b.hidden = clip ? !['169', '916'].includes(b.dataset.v) : b.dataset.v === '169'; });
@@ -7027,24 +7049,27 @@ function setKind(k, quiet){
 /* ---------- step 1: listening to the song (the whole song, from the playhead on the waveform) ----------
    It goes through play() like every playback (Web Audio on Safari). While it plays, the edit is set aside (no shot, no take
    is driven: nothing but the sound) and the passage is the whole song, so play() goes on to the end. */
-let listenRaf = 0, listenOn = false;
-function listenStart(from){
+let listenRaf = 0, listenOn = false, listenSeg = false;
+/* seg: only the passage chosen (it stops at its end), for « Écouter le passage » */
+function listenStart(from, seg){
   if (!S.song || !songURL || S.exporting) return;
   stop(true);
   const sg = S.song, keep = S.cuts, none = [];
   // with the click on the beats, the passage is played with its click track (as before)
-  if (S.click) from = S.segStart;
+  if (S.click || seg) from = S.segStart;
   else { S.segStart = 0; S.segEnd = sg.duration; }
+  listenSeg = !!seg;
   from = Math.max(0, Math.min(sg.duration - 0.05, from));
   S.cuts = none; listenOn = true; S.listenAt = from;
   play(from, { onEnd: () => {
-    listenOn = false; cancelAnimationFrame(listenRaf); if (beatOn) beatTestEnd();
+    listenOn = false; listenSeg = false; cancelAnimationFrame(listenRaf); if (beatOn) beatTestEnd();
     if (S.cuts === none) S.cuts = keep;
     updateSegment();
     if (S.listenAt != null && S.listenAt >= sg.duration - 0.3) S.listenAt = null;
     waveHead();
   } });
-  $('#songPlay').textContent = '❚❚ Pause';
+  if (seg){ $('#segPlay').textContent = _t('listen.segStop'); $('#songPlay').textContent = _t('listen.play'); }
+  else $('#songPlay').textContent = '❚❚ Pause';
   const tick = () => { if (!listenOn || !S.playing) return; S.listenAt = audioStarted() ? songNow() : from; waveHead(); if (beatOn) beatDots(audioStarted() ? S.listenAt : -1); listenRaf = requestAnimationFrame(tick); };
   tick();
 }
@@ -7057,26 +7082,54 @@ function waveHead(){
   $('#listenTime').textContent = mmss(t); $('#listenDur').textContent = mmss(sg.duration);
 }
 function waveOverlay(){
-  const sg = S.song; if (!sg) return; const clip = isClip();
-  $('#gripL').hidden = $('#gripR').hidden = !clip;
-  if (clip){ $('#gripL').style.left = (S.segStart / sg.duration * 100) + '%'; $('#gripR').style.left = (S.segEnd / sg.duration * 100) + '%'; $('#endLbl').textContent = fmt(S.segEnd); }
+  const sg = S.song; if (!sg) return;
+  // the two handles, in both modes: the start and the end of the passage
+  $('#gripL').hidden = $('#gripR').hidden = false;
+  $('#gripL').style.left = (S.segStart / sg.duration * 100) + '%'; $('#gripR').style.left = (S.segEnd / sg.duration * 100) + '%';
+  segLabels();
   if (!listenOn) waveHead();
 }
-/* waveform: a touch plays from there (TikTok / Reels: the passage first moves to the bar touched); in a clip,
-   the two handles cut the start and the end, bar by bar */
+/* start, end and length of the passage, written under the waveform (also while a handle is dragged) */
+function segLabels(){
+  if (!S.song) return;
+  $('#startLbl').textContent = fmt(S.segStart); $('#endLbl').textContent = fmt(S.segEnd);
+  $('#lenLbl').textContent = '≈ ' + (isClip() && S.segEnd - S.segStart >= 60 ? mmss(S.segEnd - S.segStart) : (S.segEnd - S.segStart).toFixed(1) + ' s');
+}
+/* waveform: a touch plays from there (TikTok / Reels: the passage first moves to the bar touched); the two handles set
+   the start and the end of the passage, bar by bar (the edit cuts on the bars). TikTok / Reels: the end is S.startBar + S.nBars
+   (S.nBars = 0: up to the end of the song); clip: S.clipEnd (null: up to the end). */
 let waveDrag = null;
 function waveT(e){ const r = $('#wave').getBoundingClientRect(); return Math.max(0, Math.min(1, (e.clientX - r.left) / Math.max(1, r.width))) * S.song.duration; }
 function nearestBar(t, lo, hi){ let best = lo; for (let b=lo; b<=hi; b++) if (Math.abs(barTime(b) - t) < Math.abs(barTime(best) - t)) best = b; return best; }
+/* the bar where the passage ends now (totalBars() when it goes on to the end of the song) */
+function segEndBar(){ return isClip() ? clipEndBar() : Math.min(totalBars(), S.startBar + barsInSnippet()); }
+/* moves one end of the passage to bar b (the other end stays where it is); true when something changed */
+function segMove(side, b){
+  const tb = totalBars(), end = segEndBar(), start = S.startBar;
+  if (side === 'l'){
+    b = Math.max(0, Math.min(b, end - 1)); if (b === start) return false;
+    S.startBar = b; if (!isClip()) S.nBars = end >= tb ? 0 : end - b;
+  } else {
+    b = Math.max(start + 1, Math.min(b, tb));
+    if (isClip()){ const v = b >= tb ? null : b; if (v === S.clipEnd) return false; S.clipEnd = v; }
+    else { if (b === end) return false; S.nBars = b >= tb ? 0 : b - start; }
+  }
+  S.locks = []; return true;
+}
 $('#waveBox').addEventListener('pointerdown', e => {
   if (!S.song || S.exporting || (e.pointerType === 'mouse' && e.button !== 0)) return;
   e.preventDefault();
-  const r = $('#wave').getBoundingClientRect(), x = e.clientX - r.left, tol = Math.max(14, r.width * 0.015);
-  if (isClip()){
-    const xl = S.segStart / S.song.duration * r.width, xr = S.segEnd / S.song.duration * r.width;
-    const side = Math.abs(x - xl) <= tol && Math.abs(x - xl) <= Math.abs(x - xr) ? 'l' : Math.abs(x - xr) <= tol ? 'r' : null;
-    if (side){ waveDrag = { id: e.pointerId, side }; try { e.currentTarget.setPointerCapture(e.pointerId); } catch(err){} stop(true); return; }
-    S.listenAt = waveT(e); listenStart(S.listenAt); return;
+  const r = $('#wave').getBoundingClientRect(), x = e.clientX - r.left;
+  // a handle is taken by its wide touch zone, or near enough to it (a finger is wider than a mouse)
+  const tol = Math.max(e.pointerType === 'touch' ? 26 : 14, r.width * 0.015), g = e.target.closest && e.target.closest('.wgrip');
+  const xl = S.segStart / S.song.duration * r.width, xr = S.segEnd / S.song.duration * r.width;
+  const side = g ? (g.id === 'gripL' ? 'l' : 'r') : Math.abs(x - xl) <= tol && Math.abs(x - xl) <= Math.abs(x - xr) ? 'l' : Math.abs(x - xr) <= tol ? 'r' : null;
+  if (side){
+    waveDrag = { id: e.pointerId, side, moved: false }; $('#waveBox').classList.add('dragging');
+    try { $('#waveBox').setPointerCapture(e.pointerId); } catch(err){}
+    stop(true); return;
   }
+  if (isClip()){ S.listenAt = waveT(e); listenStart(S.listenAt); return; }
   const t = waveT(e); let best = 0; for (let b=0; b<=maxStart(); b++) if (barTime(b) <= t) best = b;
   S.startBar = best; S.locks = []; stop(true); rebuild(false);
   S.listenAt = S.segStart; listenStart(S.segStart);
@@ -7084,11 +7137,20 @@ $('#waveBox').addEventListener('pointerdown', e => {
 $('#waveBox').addEventListener('pointermove', e => {
   if (!waveDrag || e.pointerId !== waveDrag.id) return;
   const t = waveT(e), tb = totalBars();
-  if (waveDrag.side === 'l'){ const b = nearestBar(t, 0, clipEndBar() - 1); if (b !== S.startBar){ S.startBar = b; S.locks = []; rebuild(false); } }
-  else { const b = nearestBar(t, S.startBar + 1, tb), end = b >= tb && t > barTime(tb) - 0.5 * (barTime(tb) - barTime(tb - 1)) ? null : Math.min(b, tb); if (end !== S.clipEnd){ S.clipEnd = end; S.locks = []; rebuild(false); } }
+  // the end handle past the middle of the last bar: up to the very end of the song
+  const b = waveDrag.side === 'r' && t > barTime(tb) - 0.5 * (barTime(tb) - barTime(tb - 1)) ? tb : nearestBar(t, 0, tb);
+  // while the finger moves, only the passage is drawn again (light, smooth on a phone); the edit is made once, on release
+  if (segMove(waveDrag.side, b)){ waveDrag.moved = true; updateSegment(); renderWave(); }
 });
-const waveUp = e => { if (!waveDrag || e.pointerId !== waveDrag.id) return; waveDrag = null; S.listenAt = null; waveHead(); };
+const waveUp = e => {
+  if (!waveDrag || e.pointerId !== waveDrag.id) return;
+  const moved = waveDrag.moved; waveDrag = null; $('#waveBox').classList.remove('dragging');
+  if (moved) rebuild(false);
+  S.listenAt = null; waveHead();
+};
 $('#waveBox').addEventListener('pointerup', waveUp); $('#waveBox').addEventListener('pointercancel', waveUp);
+/* « Écouter le passage »: the passage chosen, from its start, and it stops at its end */
+$('#segPlay').onclick = () => { if (!S.song) return; if (S.playing && listenSeg){ stop(true); return; } listenStart(S.segStart, true); };
 
 /* ---------- style pickers ---------- */
 function bindSeg(sel, fn){ $(sel).onclick = e => { const b = e.target.closest('button'); if (!b || b.disabled) return; $$(sel + ' button').forEach(x => x.setAttribute('aria-pressed', x === b)); fn(b.dataset.v); }; }
@@ -7161,8 +7223,9 @@ function togglePlay(){ if (S.exporting) return; if (S.playing) stop(); else play
 $('#playBtn').onclick = togglePlay;
 $('#songPlay').onclick = listenToggle;
 bindSeg('#kindSeg', k => { if (k === 'clip' && ACCT && !acctPro()){ kindUI(); acctOpen('clip'); return; } setKind(k); });
-$('#endPrev').onclick = () => { if (!S.song) return; const e = clipEndBar(); if (e - 1 > S.startBar){ S.clipEnd = e - 1; S.locks = []; stop(true); rebuild(false); } };
-$('#endNext').onclick = () => { if (!S.song || S.clipEnd == null) return; S.clipEnd = S.clipEnd + 1 >= totalBars() ? null : S.clipEnd + 1; S.locks = []; stop(true); rebuild(false); };
+// the end of the passage, one bar earlier or later (both modes: the same as the end handle)
+$('#endPrev').onclick = () => { if (!S.song) return; if (segMove('r', segEndBar() - 1)){ stop(true); rebuild(false); } };
+$('#endNext').onclick = () => { if (!S.song) return; if (segMove('r', segEndBar() + 1)){ stop(true); rebuild(false); } };
 $('#shuffleBtn').onclick = () => { const was = S.playing; stop(true); rebuild(true); if (S.locks.length) say('shuffle.st'); else status(''); if (was) play(startPoint()); };
 $('#exportBtn').onclick = exportOne;
 $('#packBtn').onclick = exportPack;
@@ -7373,7 +7436,11 @@ async function songFromFile(f){
 }
 $('#songFile').onchange = async e => {
   const f = e.target.files[0]; if (!f) return;
-  if (demoLoading){ e.target.value = ''; say('demo.wait'); return; }
+  try { await loadSongFile(f); } finally { e.target.value = ''; }
+};
+/* the song from a file: picked with the button or dropped on the import square */
+async function loadSongFile(f){
+  if (demoLoading){ say('demo.wait'); return; }
   stop(true);
   say('song.analyse');
   try {
@@ -7389,8 +7456,20 @@ $('#songFile').onchange = async e => {
     $('#songBox').hidden = false; setT($('#songDrop').querySelector('strong'), 'song.change');
     rebuild(false); say('song.tempo', { bpm: S.song.bpm.toFixed(1) });
   } catch(err){ diag('son : ' + (err && err.message || err)); say(err && err.noSound ? 'song.nosound' : 'song.bad'); }
-  e.target.value = '';
-};
+}
+/* computer: the file can be dropped on the import square (it turns to ice while a file is over it) */
+{
+  const box = $('#songDrop'); let depth = 0;
+  const hasFile = e => !!(e.dataTransfer && [...(e.dataTransfer.types || [])].includes('Files'));
+  const off = () => { depth = 0; box.classList.remove('over'); };
+  box.addEventListener('dragenter', e => { if (!hasFile(e)) return; e.preventDefault(); depth++; box.dataset.over = _t('p1.dropHere'); box.classList.add('over'); });
+  box.addEventListener('dragover', e => { if (!hasFile(e)) return; e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; });
+  box.addEventListener('dragleave', e => { if (!hasFile(e)) return; if (--depth <= 0) off(); });
+  box.addEventListener('drop', e => { if (!hasFile(e)) return; e.preventDefault(); off(); const f = e.dataTransfer.files && e.dataTransfer.files[0]; if (f) loadSongFile(f); });
+  // a file dropped next to the square does not make the browser leave the page to open it
+  window.addEventListener('dragover', e => { if (hasFile(e) && !e.defaultPrevented) e.preventDefault(); });
+  window.addEventListener('drop', e => { if (hasFile(e) && !e.defaultPrevented){ e.preventDefault(); off(); } });
+}
 $('#takeFiles').onchange = async e => {
   const files = [...e.target.files]; if (!files.length) return;
   if (demoLoading){ e.target.value = ''; say('demo.wait'); return; }
@@ -8969,7 +9048,8 @@ function applyLang(){
   // what is written from here: drawn again as it is now
   kindUI(); renderTakes(); renderLines(); tapShow(); if (tapping) tapUi();
   $('#playBtn').textContent = S.playing ? '■ Stop' : _t('play.play');
-  $('#songPlay').textContent = S.playing ? (listenOn ? '❚❚ Pause' : '■ Stop') : _t('listen.play');
+  $('#songPlay').textContent = S.playing && !listenSeg ? (listenOn ? '❚❚ Pause' : '■ Stop') : _t('listen.play');
+  $('#segPlay').textContent = _t(S.playing && listenSeg ? 'listen.segStop' : 'listen.seg');
   $('#beatTest').textContent = _t(beatOn ? 'beat.stop' : 'beat.test');
   $$('#stFont button').forEach(b => { b.textContent = _t('font.' + b.dataset.v); });
   $$('#stColor button').forEach(b => b.setAttribute('aria-label', _t('st.colorN', { c: b.dataset.v })));
