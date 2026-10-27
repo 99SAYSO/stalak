@@ -6,6 +6,8 @@ import { updateProfile, avatar, avatarUrl, AVATAR_TYPES } from './profile.js';
 import { entitlementsFor, requirePro } from './entitlements.js';
 import { handleWebhook, portalLinks, cancelSubscriptionNow } from './paddle.js';
 import { social } from './social.js';
+import { projectFiles, storageInfo, checkProjectFiles, dropUnusedFiles, readyFiles, deleteProjectMedia, deleteUserMedia, maybeCleanup, cleanupCloud, cloudAvailable } from './cloud.js';
+import { timingSafeEqual } from './crypto.js';
 
 const PROJECT_MAX_BYTES = 256 * 1024; // ~200 KB of project JSON + envelope
 const PROJECT_MAX_COUNT = 200;
@@ -48,28 +50,38 @@ function config(env) {
     plans: {
       pro: { month: { amount: '9.99', currency: 'EUR' }, year: { amount: '79.00', currency: 'EUR' } },
     },
-    features: { socialConnect: env.SOCIAL_CONNECT_ENABLED === '1' },
+    features: { socialConnect: env.SOCIAL_CONNECT_ENABLED === '1', cloudSave: cloudAvailable(env) },
     // sign-in with Google / Apple / Microsoft: only the providers whose keys are set (the buttons show only those)
     auth: { providers: enabledProviders(env), passwordMin: 8 },
   };
 }
 
-async function projects(request, env, method, id) {
+// Saved projects: the JSON state here (D1), their media files in R2 (cloud.js: /api/projects/:id/files/...).
+async function projects(request, env, method, rest, ctx) {
   const user = await requireUser(request, env);
+  const id = rest[0];
   if (!id) {
     if (method !== 'GET') throw new HttpError(405, 'method_not_allowed', 'Method not allowed.');
     const { results } = await env.DB.prepare(
-      'SELECT id, name, size, created_at, updated_at FROM projects WHERE user_id = ?1 ORDER BY updated_at DESC'
+      'SELECT id, name, size, media_bytes, created_at, updated_at, opened_at FROM projects WHERE user_id = ?1 ORDER BY updated_at DESC'
     ).bind(user.id).all();
-    return json({ projects: results.map((p) => ({ id: p.id, name: p.name, size: p.size,
-      createdAt: new Date(p.created_at).toISOString(), updatedAt: new Date(p.updated_at).toISOString() })) });
+    const storage = await storageInfo(env, user.id);
+    await maybeCleanup(env, ctx);   // the 6-month rule, at most every 6 hours (cloud.js)
+    return json({ projects: results.map((p) => ({ id: p.id, name: p.name, size: p.size, mediaBytes: p.media_bytes || 0,
+      createdAt: new Date(p.created_at).toISOString(), updatedAt: new Date(p.updated_at).toISOString(),
+      openedAt: new Date(p.opened_at || p.updated_at).toISOString() })), storage });
   }
   if (!PROJECT_ID.test(id)) throw new HttpError(400, 'invalid_id', 'Project id: 1-64 letters, digits, - or _.');
+  if (rest[1] === 'files') return projectFiles(request, env, method, user, id, rest.slice(2));
+  if (rest.length > 1) throw new HttpError(404, 'not_found', 'Unknown API route.');
 
   if (method === 'GET') {
     const p = await env.DB.prepare('SELECT * FROM projects WHERE user_id = ?1 AND id = ?2').bind(user.id, id).first();
     if (!p) throw new HttpError(404, 'not_found', 'Project not found.');
-    return json({ id: p.id, name: p.name, state: JSON.parse(p.data), updatedAt: new Date(p.updated_at).toISOString() });
+    // opened: the 6-month clock starts again
+    await env.DB.prepare('UPDATE projects SET opened_at = ?3, warned_at = NULL WHERE user_id = ?1 AND id = ?2').bind(user.id, id, Date.now()).run();
+    return json({ id: p.id, name: p.name, state: JSON.parse(p.data), updatedAt: new Date(p.updated_at).toISOString(),
+      mediaBytes: p.media_bytes || 0, files: await readyFiles(env, user.id, id) });
   }
   if (method === 'PUT') {
     await requirePro(env, user, HttpError);
@@ -79,6 +91,9 @@ async function projects(request, env, method, id) {
     if (!body || typeof body !== 'object' || body.state === undefined) throw new HttpError(400, 'invalid_project', 'Body must be {name, state}.');
     const name = String(body.name || '').slice(0, 120);
     const data = JSON.stringify(body.state);
+    // with media: body.files = the ids of the uploaded files this version uses (all must be there); the others are erased
+    const withFiles = body.files !== undefined;
+    const mediaBytes = withFiles ? await checkProjectFiles(env, user.id, id, body.files) : null;
     const now = Date.now();
     const exists = await env.DB.prepare('SELECT 1 AS x FROM projects WHERE user_id = ?1 AND id = ?2').bind(user.id, id).first();
     if (!exists) {
@@ -86,16 +101,36 @@ async function projects(request, env, method, id) {
       if (c.n >= PROJECT_MAX_COUNT) throw new HttpError(409, 'too_many_projects', `At most ${PROJECT_MAX_COUNT} saved projects.`);
     }
     await env.DB.prepare(
-      `INSERT INTO projects (user_id, id, name, data, size, created_at, updated_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?6)
-       ON CONFLICT(user_id, id) DO UPDATE SET name = ?3, data = ?4, size = ?5, updated_at = ?6`
-    ).bind(user.id, id, name, data, data.length, now).run();
-    return json({ ok: true, id, updatedAt: new Date(now).toISOString() });
+      `INSERT INTO projects (user_id, id, name, data, size, created_at, updated_at, opened_at, media_bytes) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?6, ?6, COALESCE(?7, 0))
+       ON CONFLICT(user_id, id) DO UPDATE SET name = ?3, data = ?4, size = ?5, updated_at = ?6, opened_at = ?6, warned_at = NULL,
+         media_bytes = COALESCE(?7, media_bytes)`
+    ).bind(user.id, id, name, data, data.length, now, mediaBytes).run();
+    if (withFiles) await dropUnusedFiles(env, user.id, id, body.files);
+    return json({ ok: true, id, updatedAt: new Date(now).toISOString(), mediaBytes: mediaBytes || 0, storage: await storageInfo(env, user.id) });
+  }
+  if (method === 'PATCH') {
+    // rename only (Pro not needed: it is the user's own data)
+    const body = await readJson(request);
+    const name = String(body.name || '').replace(/\s+/g, ' ').trim().slice(0, 120);
+    if (!name) throw new HttpError(400, 'invalid_name', 'The name cannot be empty.');
+    const r = await env.DB.prepare('UPDATE projects SET name = ?3 WHERE user_id = ?1 AND id = ?2').bind(user.id, id, name).run();
+    if (!r.meta.changes) throw new HttpError(404, 'not_found', 'Project not found.');
+    return json({ ok: true, id, name });
   }
   if (method === 'DELETE') {
+    await deleteProjectMedia(env, user.id, id);
     await env.DB.prepare('DELETE FROM projects WHERE user_id = ?1 AND id = ?2').bind(user.id, id).run();
-    return json({ ok: true });
+    return json({ ok: true, storage: await storageInfo(env, user.id) });
   }
   throw new HttpError(405, 'method_not_allowed', 'Method not allowed.');
+}
+
+// An outside cron (or a person) runs the 6-month rule: POST with "Authorization: Bearer <CRON_SECRET>".
+async function cronCleanup(request, env) {
+  const want = env.CRON_SECRET || '';
+  const got = (request.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '');
+  if (want.length < 16 || !timingSafeEqual(got, want)) throw new HttpError(404, 'not_found', 'Unknown API route.');
+  return json({ ok: true, ...(await cleanupCloud(env)) });
 }
 
 // Signed in: the session cookie (and the trusted-device cookie), then the same answer as GET /api/me.
@@ -112,7 +147,11 @@ async function deleteAccount(request, env) {
     "SELECT id FROM subscriptions WHERE user_id = ?1 AND status IN ('active','trialing','past_due','paused')"
   ).bind(user.id).all();
   for (const s of results) await cancelSubscriptionNow(env, s.id);
+  // the media files saved online (R2), then their rows with the rest
+  await deleteUserMedia(env, user.id);
   await env.DB.batch([
+    env.DB.prepare('DELETE FROM file_parts WHERE user_id = ?1').bind(user.id),
+    env.DB.prepare('DELETE FROM project_files WHERE user_id = ?1').bind(user.id),
     env.DB.prepare('DELETE FROM projects WHERE user_id = ?1').bind(user.id),
     env.DB.prepare('DELETE FROM sessions WHERE user_id = ?1').bind(user.id),
     env.DB.prepare('DELETE FROM subscriptions WHERE user_id = ?1').bind(user.id),
@@ -128,15 +167,15 @@ async function deleteAccount(request, env) {
   return json({ ok: true, deleted: true }, 200, { 'Set-Cookie': clearSessionCookie() });
 }
 
-export async function handle(request, env) {
+export async function handle(request, env, ctx) {
   try {
-    return await dispatch(request, env);
+    return await dispatch(request, env, ctx);
   } catch (e) {
     return errorResponse(e);
   }
 }
 
-async function dispatch(request, env) {
+async function dispatch(request, env, ctx) {
     if (!env.DB) throw new HttpError(500, 'not_configured', 'D1 binding DB is missing.');
     const url = new URL(request.url);
     const method = request.method.toUpperCase();
@@ -156,7 +195,13 @@ async function dispatch(request, env) {
       }
       if (parts[3] === 'callback') return oauthCallback(request, env, parts[2], method);
     }
-    if (STATE_CHANGING.has(method)) checkCsrf(request, env, route === 'me/avatar' && method === 'PUT' ? AVATAR_TYPES : []);
+    if (route === 'cron/cloud-cleanup') {
+      if (method !== 'POST') throw new HttpError(405, 'method_not_allowed', 'Method not allowed.');
+      return cronCleanup(request, env);
+    }
+    // raw media bytes (project files): application/octet-stream, which a plain cross-site form cannot send either
+    const rawUpload = method === 'PUT' && parts[0] === 'projects' && parts[2] === 'files' && parts.length >= 4;
+    if (STATE_CHANGING.has(method)) checkCsrf(request, env, route === 'me/avatar' && method === 'PUT' ? AVATAR_TYPES : rawUpload ? ['application/octet-stream'] : []);
 
     switch (route) {
       case 'config':
@@ -209,7 +254,7 @@ async function dispatch(request, env) {
         if (method !== 'DELETE') break;
         return deleteAccount(request, env);
       default:
-        if (parts[0] === 'projects' && parts.length <= 2) return projects(request, env, method, parts[1]);
+        if (parts[0] === 'projects' && parts.length <= 6) return projects(request, env, method, parts.slice(1), ctx);
         if (parts[0] === 'connect' && parts.length === 3) return social(request, env, parts[1], parts[2]);
         throw new HttpError(404, 'not_found', 'Unknown API route.');
     }

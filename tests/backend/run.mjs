@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import assert from 'node:assert/strict';
 import { createD1 } from './fake-d1.mjs';
+import { createR2 } from './fake-r2.mjs';
 import { onRequest } from '../../functions/api/[[path]].js';
 import { hmacSha256Hex, sha256Hex, base64url } from '../../functions/_lib/crypto.js';
 import { verifySignature } from '../../functions/_lib/paddle.js';
@@ -1069,6 +1070,310 @@ test('oauth Apple: form_post callback, ES256 and RS256 keys, client secret = ES2
   // the form post must be a form
   r = await call(env, 'POST', '/api/auth/oauth/apple/callback', { raw: '{}', ct: 'application/json', origin: 'https://appleid.apple.com' });
   assert.equal(r.status, 415);
+});
+
+// ---- online saving with media (R2, migration 0004) ------------------------------------------------
+const MiB = 1024 * 1024;
+let proN = 0;
+async function proUser(env, email) {
+  const u = await login(env, email);
+  proN++;
+  await webhook(env, subEvent('subscription.created', sub(u.user.id, { id: 'sub_c' + proN, customer_id: 'ctm_c' + proN })));
+  return u;
+}
+function bytes(n, seed = 1) { const b = new Uint8Array(n); let x = seed; for (let i = 0; i < n; i++) { x = (x * 1103515245 + 12345) >>> 0; b[i] = x >>> 24; } return b; }
+const putRaw = (env, path, cookie, data, extra = {}) => call(env, 'PUT', path, { cookie, raw: data, ct: 'application/octet-stream',
+  headers: { 'Content-Length': String(data.length), ...(extra.headers || {}) }, ...extra });
+async function getBytes(env, path, cookie, headers = {}) {
+  const h = new Headers(headers); if (cookie) h.set('Cookie', cookie);
+  const res = await onRequest({ request: new Request('https://stalak.app' + path, { headers: h }), env, params: {}, waitUntil() {} });
+  return { status: res.status, headers: res.headers, body: new Uint8Array(await res.arrayBuffer()) };
+}
+// uploads a whole file the way the app does: create, then one PUT or the parts, then complete
+async function upload(env, cookie, pid, fileId, data, type = 'video/mp4', name = 'take.mp4') {
+  let r = await call(env, 'POST', `/api/projects/${pid}/files`, { cookie, body: { fileId, name, type, size: data.length } });
+  assert.ok(r.status === 200 || r.status === 201, JSON.stringify(r.data));
+  if (r.data.status === 'ready') return r;
+  if (!r.data.multipart) { r = await putRaw(env, `/api/projects/${pid}/files/${fileId}`, cookie, data); assert.equal(r.status, 200, JSON.stringify(r.data)); return r; }
+  for (let n = 1; n <= r.data.parts; n++) {
+    if (r.data.uploadedParts.includes(n)) continue;
+    const p = await putRaw(env, `/api/projects/${pid}/files/${fileId}/parts/${n}`, cookie, data.subarray((n - 1) * r.data.partSize, n * r.data.partSize));
+    assert.equal(p.status, 200, JSON.stringify(p.data));
+  }
+  r = await call(env, 'POST', `/api/projects/${pid}/files/${fileId}/complete`, { cookie, body: {} });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  return r;
+}
+const r2Keys = (env) => [...env.MEDIA.objects.keys()].sort();
+
+test('cloud: without the R2 binding everything still works, media routes say cloud_unavailable', async () => {
+  const env = makeEnv();
+  let r = await call(env, 'GET', '/api/config');
+  assert.equal(r.data.features.cloudSave, false);
+  const pro = await proUser(env, 'nor2@example.com');
+  r = await call(env, 'GET', '/api/projects', { cookie: pro.cookie });
+  assert.equal(r.status, 200); assert.equal(r.data.storage.available, false); assert.equal(r.data.storage.quota, 20 * 1024 ** 3);
+  r = await call(env, 'POST', '/api/projects/p1/files', { cookie: pro.cookie, body: { fileId: 'abcdefgh', name: 'a.mp4', type: 'video/mp4', size: 10 } });
+  assert.equal(r.status, 503); assert.equal(r.data.error, 'cloud_unavailable');
+  // the JSON-only save of before, and a save with an empty file list, still work
+  r = await call(env, 'PUT', '/api/projects/p1', { cookie: pro.cookie, body: { name: 'x', state: { a: 1 } } });
+  assert.equal(r.status, 200);
+  r = await call(env, 'PUT', '/api/projects/p1', { cookie: pro.cookie, body: { name: 'x', state: { a: 1 }, files: [] } });
+  assert.equal(r.status, 200);
+  r = await call(env, 'PUT', '/api/projects/p1', { cookie: pro.cookie, body: { name: 'x', state: { a: 1 }, files: ['abcdefgh'] } });
+  assert.equal(r.status, 503);
+  r = await call(env, 'DELETE', '/api/projects/p1', { cookie: pro.cookie });
+  assert.equal(r.status, 200);
+  r = await call(env, 'DELETE', '/api/account', { cookie: pro.cookie, body: { confirm: true } });
+  assert.equal(r.status, 200);
+});
+
+test('cloud: small file in one go, dedup on re-save, download with Range, project with files', async () => {
+  const env = makeEnv({ MEDIA: createR2() });
+  let r = await call(env, 'GET', '/api/config');
+  assert.equal(r.data.features.cloudSave, true);
+  const pro = await proUser(env, 'cloud1@example.com');
+  const song = bytes(300000, 7);
+  r = await call(env, 'POST', '/api/projects/p1/files', { cookie: pro.cookie, body: { fileId: 'song0001', name: 'Mon son.wav', type: 'audio/wav', size: song.length } });
+  assert.equal(r.status, 201); assert.equal(r.data.status, 'uploading'); assert.equal(r.data.multipart, false);
+  // wrong length, wrong content type, no Origin
+  r = await putRaw(env, '/api/projects/p1/files/song0001', pro.cookie, song.subarray(0, 10));
+  assert.equal(r.status, 400); assert.equal(r.data.error, 'size_mismatch');
+  r = await call(env, 'PUT', '/api/projects/p1/files/song0001', { cookie: pro.cookie, raw: song, ct: 'text/plain', headers: { 'Content-Length': String(song.length) } });
+  assert.equal(r.status, 415);
+  r = await putRaw(env, '/api/projects/p1/files/song0001', pro.cookie, song, { origin: 'https://evil.example' });
+  assert.equal(r.status, 403); assert.equal(r.data.error, 'bad_origin');
+  r = await putRaw(env, '/api/projects/p1/files/song0001', pro.cookie, song);
+  assert.equal(r.status, 200); assert.equal(r.data.status, 'ready');
+  assert.deepEqual(r2Keys(env), [`u/${pro.user.id}/p/p1/song0001`]);
+  assert.equal(env.MEDIA.objects.get(`u/${pro.user.id}/p/p1/song0001`).httpMetadata.contentType, 'audio/wav');
+  // same file again: already there, nothing reserved twice
+  r = await call(env, 'POST', '/api/projects/p1/files', { cookie: pro.cookie, body: { fileId: 'song0001', name: 'Mon son.wav', type: 'audio/wav', size: song.length } });
+  assert.equal(r.status, 200); assert.equal(r.data.status, 'ready');
+  r = await putRaw(env, '/api/projects/p1/files/song0001', pro.cookie, song);
+  assert.equal(r.status, 409); assert.equal(r.data.error, 'already_uploaded');
+  // the project needs its files to be there
+  r = await call(env, 'PUT', '/api/projects/p1', { cookie: pro.cookie, body: { name: 'Clip', state: { v: 1 }, files: ['song0001', 'take0001'] } });
+  assert.equal(r.status, 409); assert.equal(r.data.error, 'files_missing'); assert.deepEqual(r.data.missing, ['take0001']);
+  r = await call(env, 'PUT', '/api/projects/p1', { cookie: pro.cookie, body: { name: 'Clip', state: { v: 1 }, files: ['song0001'] } });
+  assert.equal(r.status, 200, JSON.stringify(r.data)); assert.equal(r.data.mediaBytes, song.length);
+  r = await call(env, 'GET', '/api/projects', { cookie: pro.cookie });
+  assert.equal(r.data.projects[0].mediaBytes, song.length);
+  assert.equal(r.data.storage.used, song.length + r.data.projects[0].size);
+  r = await call(env, 'GET', '/api/projects/p1', { cookie: pro.cookie });
+  assert.deepEqual(r.data.files, [{ id: 'song0001', name: 'Mon son.wav', type: 'audio/wav', size: song.length }]);
+  // download: whole, ranges, suffix, unsatisfiable
+  let d = await getBytes(env, '/api/projects/p1/files/song0001', pro.cookie);
+  assert.equal(d.status, 200); assert.deepEqual(d.body, song);
+  assert.equal(d.headers.get('Content-Type'), 'audio/wav'); assert.equal(d.headers.get('Accept-Ranges'), 'bytes');
+  assert.equal(d.headers.get('X-Content-Type-Options'), 'nosniff'); assert.match(d.headers.get('Content-Security-Policy'), /sandbox/);
+  assert.match(d.headers.get('Cache-Control'), /private/);
+  d = await getBytes(env, '/api/projects/p1/files/song0001', pro.cookie, { Range: 'bytes=100-199' });
+  assert.equal(d.status, 206); assert.equal(d.headers.get('Content-Range'), `bytes 100-199/${song.length}`); assert.deepEqual(d.body, song.subarray(100, 200));
+  d = await getBytes(env, '/api/projects/p1/files/song0001', pro.cookie, { Range: 'bytes=299990-' });
+  assert.equal(d.status, 206); assert.equal(d.body.length, 10);
+  d = await getBytes(env, '/api/projects/p1/files/song0001', pro.cookie, { Range: 'bytes=-5' });
+  assert.equal(d.status, 206); assert.deepEqual(d.body, song.subarray(song.length - 5));
+  d = await getBytes(env, '/api/projects/p1/files/song0001', pro.cookie, { Range: 'bytes=999999-' });
+  assert.equal(d.status, 416); assert.equal(d.headers.get('Content-Range'), `bytes */${song.length}`);
+  // rename
+  r = await call(env, 'PATCH', '/api/projects/p1', { cookie: pro.cookie, body: { name: '  Nouveau   nom ' } });
+  assert.equal(r.status, 200); assert.equal(r.data.name, 'Nouveau nom');
+  r = await call(env, 'PATCH', '/api/projects/p1', { cookie: pro.cookie, body: { name: ' ' } });
+  assert.equal(r.data.error, 'invalid_name');
+  r = await call(env, 'PATCH', '/api/projects/zz', { cookie: pro.cookie, body: { name: 'x' } });
+  assert.equal(r.status, 404);
+});
+
+test('cloud: big file in parts (multipart), resume after a cut, missing parts, wrong part size', async () => {
+  const env = makeEnv({ MEDIA: createR2() });
+  const pro = await proUser(env, 'cloud2@example.com');
+  const vid = bytes(17 * MiB + 12345, 3);
+  let r = await call(env, 'POST', '/api/projects/p2/files', { cookie: pro.cookie, body: { fileId: 'take0002', name: 'prise.mov', type: 'video/quicktime', size: vid.length } });
+  assert.equal(r.status, 201); assert.equal(r.data.multipart, true); assert.equal(r.data.parts, 3); assert.equal(r.data.partSize, 8 * MiB);
+  const ps = r.data.partSize;
+  r = await putRaw(env, '/api/projects/p2/files/take0002', pro.cookie, vid);
+  assert.equal(r.data.error, 'use_multipart');
+  r = await putRaw(env, '/api/projects/p2/files/take0002/parts/1', pro.cookie, vid.subarray(0, ps - 1));
+  assert.equal(r.status, 400); assert.equal(r.data.error, 'size_mismatch');
+  r = await putRaw(env, '/api/projects/p2/files/take0002/parts/4', pro.cookie, vid.subarray(0, 10));
+  assert.equal(r.data.error, 'invalid_part');
+  r = await putRaw(env, '/api/projects/p2/files/take0002/parts/1', pro.cookie, vid.subarray(0, ps));
+  assert.equal(r.status, 200);
+  r = await putRaw(env, '/api/projects/p2/files/take0002/parts/3', pro.cookie, vid.subarray(2 * ps));
+  assert.equal(r.status, 200);
+  r = await call(env, 'POST', '/api/projects/p2/files/take0002/complete', { cookie: pro.cookie, body: {} });
+  assert.equal(r.status, 409); assert.deepEqual(r.data.missing, [2]);
+  // the connection dropped: asking again says which parts are already there
+  r = await call(env, 'POST', '/api/projects/p2/files', { cookie: pro.cookie, body: { fileId: 'take0002', name: 'prise.mov', type: 'video/quicktime', size: vid.length } });
+  assert.equal(r.status, 200); assert.deepEqual(r.data.uploadedParts, [1, 3]);
+  r = await upload(env, pro.cookie, 'p2', 'take0002', vid, 'video/quicktime', 'prise.mov');
+  assert.equal(r.data.status, 'ready');
+  assert.equal(env.MEDIA.uploads.size, 0);
+  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM file_parts').get().n, 0);
+  const d = await getBytes(env, '/api/projects/p2/files/take0002', pro.cookie, { Range: `bytes=${8 * MiB - 2}-${8 * MiB + 1}` });
+  assert.equal(d.status, 206); assert.deepEqual(d.body, vid.subarray(8 * MiB - 2, 8 * MiB + 2));
+  const full = await getBytes(env, '/api/projects/p2/files/take0002', pro.cookie);
+  assert.equal(full.body.length, vid.length); assert.deepEqual(full.body, vid);
+  // aborting an upload in progress
+  const v2 = bytes(9 * MiB, 9);
+  r = await call(env, 'POST', '/api/projects/p2/files', { cookie: pro.cookie, body: { fileId: 'take0003', name: 'b.mp4', type: 'video/mp4', size: v2.length } });
+  assert.equal(env.MEDIA.uploads.size, 1);
+  r = await call(env, 'DELETE', '/api/projects/p2/files/take0003', { cookie: pro.cookie });
+  assert.equal(r.status, 200); assert.equal(env.MEDIA.uploads.size, 0);
+});
+
+test('cloud: a user only reaches their own files; Pro, type, size and id checks', async () => {
+  const env = makeEnv({ MEDIA: createR2() });
+  const a = await proUser(env, 'owner@example.com');
+  const b = await proUser(env, 'other@example.com');
+  const free = await login(env, 'freeloader@example.com');
+  const data = bytes(1000);
+  await upload(env, a.cookie, 'p1', 'file0001', data);
+  await call(env, 'PUT', '/api/projects/p1', { cookie: a.cookie, body: { name: 'A', state: {}, files: ['file0001'] } });
+  // another user: same project id and file id, nothing found; their own upload goes under their own prefix
+  let d = await getBytes(env, '/api/projects/p1/files/file0001', b.cookie);
+  assert.equal(d.status, 404);
+  let r = await call(env, 'GET', '/api/projects/p1', { cookie: b.cookie });
+  assert.equal(r.status, 404);
+  r = await call(env, 'DELETE', '/api/projects/p1/files/file0001', { cookie: b.cookie });
+  assert.equal(r.status, 200);
+  assert.ok(env.MEDIA.objects.has(`u/${a.user.id}/p/p1/file0001`), 'not touched by another user');
+  r = await call(env, 'DELETE', '/api/projects/p1', { cookie: b.cookie });
+  assert.ok(env.MEDIA.objects.has(`u/${a.user.id}/p/p1/file0001`), 'not touched by another user');
+  await upload(env, b.cookie, 'p1', 'file0001', bytes(50, 2));
+  r = await call(env, 'PUT', '/api/projects/p1/files/file0001/parts/1', { cookie: b.cookie });
+  d = await getBytes(env, '/api/projects/p1/files/file0001', a.cookie);
+  assert.deepEqual(d.body, data, 'each user sees their own file');
+  // signed out
+  d = await getBytes(env, '/api/projects/p1/files/file0001', null);
+  assert.equal(d.status, 401);
+  // not Pro: cannot upload, but can still download and delete what was saved before
+  r = await call(env, 'POST', '/api/projects/p9/files', { cookie: free.cookie, body: { fileId: 'file0009', name: 'a.mp4', type: 'video/mp4', size: 10 } });
+  assert.equal(r.status, 403); assert.equal(r.data.error, 'pro_required');
+  // checks on what is declared
+  const bad = async (body, code, status) => {
+    const x = await call(env, 'POST', '/api/projects/p1/files', { cookie: a.cookie, body: { fileId: 'file0002', name: 'x.mp4', type: 'video/mp4', size: 10, ...body } });
+    assert.equal(x.data.error, code, JSON.stringify(x.data)); if (status) assert.equal(x.status, status);
+  };
+  await bad({ type: 'text/html', name: 'x.html' }, 'invalid_media_type', 415);
+  await bad({ type: 'image/svg+xml' }, 'invalid_media_type', 415);
+  await bad({ type: 'application/octet-stream', name: 'evil.html' }, 'invalid_media_type', 415);
+  await bad({ size: 0 }, 'invalid_size');
+  await bad({ size: 1.5 }, 'invalid_size');
+  await bad({ size: 5 * 1024 ** 3 }, 'file_too_large', 413);
+  await bad({ fileId: '../../x' }, 'invalid_file_id');
+  await bad({ fileId: 'short' }, 'invalid_file_id');
+  r = await call(env, 'POST', '/api/projects/p1/files', { cookie: a.cookie, body: { fileId: 'file0003', name: 'IMG_0001.MOV', type: '', size: 10 } });
+  assert.equal(r.status, 201, 'no type but a video name: accepted');
+  d = await getBytes(env, '/api/projects/p1/files/..%2F..%2Fx', a.cookie);
+  assert.equal(d.status, 400);
+  r = await call(env, 'GET', '/api/projects/p1/files/file0001/extra/x', { cookie: a.cookie });
+  assert.equal(r.status, 404);
+  r = await call(env, 'PUT', '/api/projects/p1', { cookie: a.cookie, body: { name: 'A', state: {}, files: ['../x'] } });
+  assert.equal(r.data.error, 'invalid_files');
+});
+
+test('cloud: 20 GB quota (413 quota_exceeded), old files of a project erased on re-save, project delete', async () => {
+  const env = makeEnv({ MEDIA: createR2(), CLOUD_QUOTA_BYTES: String(100000) });
+  const pro = await proUser(env, 'quota@example.com');
+  await upload(env, pro.cookie, 'p1', 'file000a', bytes(60000, 1));
+  let r = await call(env, 'POST', '/api/projects/p1/files', { cookie: pro.cookie, body: { fileId: 'file000b', name: 'b.mp4', type: 'video/mp4', size: 50000 } });
+  assert.equal(r.status, 413); assert.equal(r.data.error, 'quota_exceeded'); assert.equal(r.data.quota, 100000); assert.equal(r.data.used, 60000);
+  await upload(env, pro.cookie, 'p1', 'file000c', bytes(30000, 2));
+  r = await call(env, 'PUT', '/api/projects/p1', { cookie: pro.cookie, body: { name: 'v1', state: {}, files: ['file000a', 'file000c'] } });
+  assert.equal(r.status, 200); assert.equal(r.data.mediaBytes, 90000);
+  // the next version only uses c: a is erased, its room given back
+  r = await call(env, 'PUT', '/api/projects/p1', { cookie: pro.cookie, body: { name: 'v2', state: {}, files: ['file000c'] } });
+  assert.equal(r.data.mediaBytes, 30000);
+  assert.deepEqual(r2Keys(env), [`u/${pro.user.id}/p/p1/file000c`]);
+  assert.ok(r.data.storage.used < 40000);
+  r = await call(env, 'POST', '/api/projects/p1/files', { cookie: pro.cookie, body: { fileId: 'file000b', name: 'b.mp4', type: 'video/mp4', size: 50000 } });
+  assert.equal(r.status, 201);
+  // deleting the project erases everything under it, unfinished uploads too
+  r = await call(env, 'DELETE', '/api/projects/p1', { cookie: pro.cookie });
+  assert.equal(r.status, 200); assert.equal(r2Keys(env).length, 0);
+  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM project_files').get().n, 0);
+  assert.equal(r.data.storage.used, 0);
+});
+
+test('cloud: deleting the account erases all its media (and stops uploads in progress), not the others’', async () => {
+  const env = makeEnv({ MEDIA: createR2() });
+  const a = await proUser(env, 'leaving@example.com');
+  const b = await proUser(env, 'staying@example.com');
+  await upload(env, a.cookie, 'p1', 'file0001', bytes(100));
+  await upload(env, a.cookie, 'p2', 'file0002', bytes(200));
+  await call(env, 'PUT', '/api/projects/p1', { cookie: a.cookie, body: { name: 'A', state: {}, files: ['file0001'] } });
+  await call(env, 'POST', '/api/projects/p3/files', { cookie: a.cookie, body: { fileId: 'file0003', name: 'big.mp4', type: 'video/mp4', size: 9 * MiB } });
+  await upload(env, b.cookie, 'p1', 'file0001', bytes(100));
+  assert.equal(env.MEDIA.uploads.size, 1);
+  const r = await call(env, 'DELETE', '/api/account', { cookie: a.cookie, body: { confirm: true } });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.deepEqual(r2Keys(env), [`u/${b.user.id}/p/p1/file0001`]);
+  assert.equal(env.MEDIA.uploads.size, 0);
+  for (const t of ['projects', 'project_files', 'file_parts']) {
+    assert.equal(env.DB.raw.prepare(`SELECT COUNT(*) AS n FROM ${t} WHERE user_id = ?`).get(a.user.id).n, 0, t);
+  }
+});
+
+test('cloud: 6-month rule: e-mail warning first, deletion 14 days later; opening keeps the project; stale uploads and orphans', async () => {
+  const { cleanupCloud, maybeCleanup, KEEP_MS, WARN_BEFORE_MS } = await import('../../functions/_lib/cloud.js');
+  const env = makeEnv({ MEDIA: createR2() });
+  const pro = await proUser(env, 'sleepy@example.com');
+  await upload(env, pro.cookie, 'old', 'file0001', bytes(100));
+  await call(env, 'PUT', '/api/projects/old', { cookie: pro.cookie, body: { name: 'Vieux clip', state: {}, files: ['file0001'] } });
+  await upload(env, pro.cookie, 'kept', 'file0002', bytes(100));
+  await call(env, 'PUT', '/api/projects/kept', { cookie: pro.cookie, body: { name: 'Gardé', state: {}, files: ['file0002'] } });
+  await call(env, 'PUT', '/api/projects/new', { cookie: pro.cookie, body: { name: 'Récent', state: {} } });
+  const DAY = 864e5, now = Date.now();
+  env.DB.raw.prepare("UPDATE projects SET opened_at = ?, updated_at = ? WHERE id IN ('old', 'kept')").run(now - 175 * DAY, now - 175 * DAY);
+  const mails = mailCount('sleepy@example.com');
+  let out = await cleanupCloud(env, now);
+  assert.equal(out.warned, 2); assert.equal(out.deleted, 0);
+  assert.equal(mailCount('sleepy@example.com'), mails + 1, 'one e-mail for both');
+  const m = lastMail('sleepy@example.com');
+  assert.match(m.body.subject, /supprimés/); assert.match(m.body.text, /Vieux clip/); assert.match(m.body.text, /Gardé/);
+  out = await cleanupCloud(env, now + DAY);
+  assert.equal(out.warned, 0, 'warned once'); assert.equal(out.deleted, 0, 'not before 6 months');
+  // the user opens one: it is kept
+  let r = await call(env, 'GET', '/api/projects/kept', { cookie: pro.cookie });
+  assert.equal(r.status, 200);
+  out = await cleanupCloud(env, now + 9 * DAY);
+  assert.equal(out.deleted, 0, '14 days after the warning only');
+  out = await cleanupCloud(env, now + 15 * DAY);
+  assert.equal(out.deleted, 1);
+  r = await call(env, 'GET', '/api/projects', { cookie: pro.cookie });
+  assert.deepEqual(r.data.projects.map((p) => p.id).sort(), ['kept', 'new']);
+  assert.deepEqual(r2Keys(env), [`u/${pro.user.id}/p/kept/file0002`]);
+  // stale upload and a file whose project was never saved
+  await call(env, 'POST', '/api/projects/x/files', { cookie: pro.cookie, body: { fileId: 'file0009', name: 'b.mp4', type: 'video/mp4', size: 9 * MiB } });
+  await upload(env, pro.cookie, 'never', 'file0008', bytes(10));
+  out = await cleanupCloud(env, Date.now() + 7 * DAY);
+  assert.equal(out.staleUploads + out.orphans, 2);
+  assert.equal(env.MEDIA.uploads.size, 0);
+  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM project_files').get().n, 1);
+  // without a way to send the e-mail (production, no Resend key): no warning, so never any deletion
+  const env2 = makeEnv({ MEDIA: createR2(), RESEND_API_KEY: undefined });
+  env2.DB.raw.prepare("INSERT INTO users (id, email, lang, created_at) VALUES ('u1', 'x@example.com', 'en', 0)").run();
+  env2.DB.raw.prepare("INSERT INTO projects (user_id, id, name, data, size, created_at, updated_at, opened_at) VALUES ('u1', 'p', 'n', '{}', 2, 0, 0, 0)").run();
+  out = await cleanupCloud(env2, Date.now());
+  assert.equal(out.warned, 0); assert.equal(out.deleted, 0);
+  // lazy run: at most once per 6 hours (GET /api/projects above already used this window)
+  assert.equal(await maybeCleanup(env, null), false);
+  env.DB.raw.exec("DELETE FROM rate_limits WHERE key = 'cron:cloud-cleanup'");
+  assert.equal(await maybeCleanup(env, null), true);
+  assert.equal(await maybeCleanup(env, null), false);
+  assert.ok(KEEP_MS > WARN_BEFORE_MS);
+});
+
+test('cloud: cron endpoint needs CRON_SECRET', async () => {
+  let r = await call(makeEnv({ MEDIA: createR2() }), 'POST', '/api/cron/cloud-cleanup', { origin: null, headers: { Authorization: 'Bearer whatever' } });
+  assert.equal(r.status, 404);
+  const env = makeEnv({ MEDIA: createR2(), CRON_SECRET: 'a-long-cron-secret-123' });
+  r = await call(env, 'POST', '/api/cron/cloud-cleanup', { origin: null, headers: { Authorization: 'Bearer nope' } });
+  assert.equal(r.status, 404);
+  r = await call(env, 'POST', '/api/cron/cloud-cleanup', { origin: null, headers: { Authorization: 'Bearer a-long-cron-secret-123' } });
+  assert.equal(r.status, 200); assert.equal(r.data.ok, true); assert.equal(r.data.deleted, 0);
 });
 
 // ---- runner --------------------------------------------------------------------------

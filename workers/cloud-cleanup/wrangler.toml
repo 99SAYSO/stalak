@@ -1,0 +1,21 @@
+# Scheduled Worker "stalak-cloud-cleanup": the 6-month rule of online saving (see index.js and BACKEND.md, step 10).
+# Separate from the Pages project; deploy it with:  npx wrangler deploy -c workers/cloud-cleanup/wrangler.toml
+name = "stalak-cloud-cleanup"
+main = "index.js"
+compatibility_date = "2026-06-01"
+
+[triggers]
+crons = ["17 3 * * *"]   # every day at 03:17 UTC
+
+[vars]
+APP_ORIGIN = "https://stalak.app"
+
+# The same database and bucket as the site (wrangler.toml at the root).
+[[d1_databases]]
+binding = "DB"
+database_name = "stalak"
+database_id = "fc4c8647-2357-4f7e-821c-e360c861a712"
+
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "stalak-media"

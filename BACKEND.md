@@ -18,7 +18,8 @@ Compte environ 1 h 30 la première fois, plus le délai de validation de Paddle 
 | Profil | Un pseudo (2 à 30 caractères) et une photo (recadrée et réduite à 256 × 256 dans le navigateur, 80 Ko maximum côté serveur). |
 | Session | Un cookie `stalak_s` sécurisé (HttpOnly, Secure, SameSite=Lax) qui reste valable 60 jours. |
 | Abonnement Pro | 9,99 € / mois ou 79 € / an, payé via **Paddle**. Paddle est le revendeur officiel : c'est lui qui encaisse, gère la TVA et envoie les factures. |
-| Avantages Pro | Pas d'outro Stalak à la fin des exports, mode Clip (16:9, chanson entière), packs de vidéos (5, 10 ou 30 vidéos différentes d'un coup), sauvegarde des projets en ligne et transcription automatique des paroles (à venir). |
+| Avantages Pro | Pas d'outro Stalak à la fin des exports, mode Clip (16:9, chanson entière), packs de vidéos (5, 10 ou 30 vidéos différentes d'un coup), sauvegarde des projets en ligne (son et vidéos compris) et transcription automatique des paroles (à venir). |
+| Sauvegarde en ligne | Pro : un projet entier (son, prises, paroles, montage) gardé dans le compte, 20 Go par compte, rouvert sur n'importe quel appareil (étape 10). |
 | Gérer / résilier | Un lien vers l'espace client Paddle. |
 | Supprimer son compte | Le compte et toutes ses données sont effacés, et l'abonnement en cours est arrêté. Les boutiques d'apps, Meta et TikTok l'exigent. |
 | Publication TikTok / Instagram | Seulement préparée, **désactivée**. Rien à faire pour l'instant. |
@@ -26,7 +27,8 @@ Compte environ 1 h 30 la première fois, plus le délai de validation de Paddle 
 Fichiers ajoutés :
 
 - `functions/` contient le code serveur (Cloudflare Pages Functions). Il est placé **à la racine du dépôt** et non dans `public/`, comme Cloudflare le demande : « Make sure that the `/functions` directory is at the root of your Pages project (and not in the static root) » ([doc Cloudflare](https://developers.cloudflare.com/pages/functions/get-started/)).
-- `migrations/0001_init.sql` crée les tables de la base de données ; `0002_…` et `0003_…` les complètent.
+- `migrations/0001_init.sql` crée les tables de la base de données ; `0002_…`, `0003_…` et `0004_cloud_save.sql` (sauvegarde en ligne) les complètent.
+- `functions/_lib/cloud.js` : la sauvegarde en ligne (fichiers dans R2, espace de 20 Go, règle des 6 mois) ; `workers/cloud-cleanup/` : le Worker planifié de la règle des 6 mois.
 - `wrangler.toml` contient la configuration Cloudflare (base `DB`, réglages publics).
 - `src/account.js` est le petit module côté site (`window.StalakAccount`).
 - `tests/backend/` contient les tests automatiques.
@@ -65,8 +67,7 @@ Fichiers ajoutés :
    **À faire avant de publier la version « comptes v3 »**, sinon l'inscription et la connexion répondent une erreur.
    Les comptes et les sessions existants continuent de marcher ; les comptes créés avec un code seul choisissent un mot de passe avec « Mot de passe oublié ? ».
 
-> Le stockage R2 (`MEDIA`), qui servira plus tard aux vidéos, est volontairement laissé en commentaire dans `wrangler.toml`.
-> Ne l'active que le jour où on en aura besoin : il faudra d'abord créer un bucket `stalak-media`.
+> La sauvegarde en ligne demande en plus `migrations/0004_cloud_save.sql` et le bucket R2 `stalak-media` : voir l'étape 10.
 
 ---
 
@@ -316,6 +317,46 @@ adresse de retour mal recopiée (une lettre ou un `/` de trop), secret expiré (
 
 ---
 
+## 10. Sauvegarde en ligne (Stalak Pro, stockage R2)
+
+Un abonné Pro peut sauvegarder un projet entier (son, prises, paroles et leurs temps, montage, effets, format, style du texte)
+avec « Sauvegarder en ligne » (étape Montage, ou Compte → Mes projets), puis le rouvrir sur n'importe quel appareil.
+Le petit état du projet (JSON) est dans D1 ; le son et les vidéos sont dans **Cloudflare R2**, dans le bucket privé `stalak-media`.
+
+| Règle | Valeur |
+|---|---|
+| Espace par compte | 20 Go (son + prises + projets). Réglable avec la variable `CLOUD_QUOTA_BYTES` (en octets). |
+| Taille d'un fichier | 4 Go au plus. Au-delà de 8 Mo, il est envoyé en morceaux de 8 Mo (envoi « multipart » de R2). |
+| Projets | 200 au plus par compte, 64 fichiers au plus par projet. |
+| Fichier déjà envoyé | Pas renvoyé : chaque fichier a une empreinte (nom, taille, date, début et fin du fichier). |
+| Coupure réseau | Chaque morceau est réessayé (6 fois, attente croissante) ; « Réessayer » reprend où l'envoi s'était arrêté. |
+| Sans Pro | On peut encore voir, rouvrir et supprimer ses projets ; sauvegarder demande Pro. Un clip rouvert sans Pro s'ouvre en TikTok / Reels. |
+| 6 mois | Un projet ni ouvert ni sauvegardé depuis 6 mois est supprimé avec ses fichiers, **après un e-mail de rappel** envoyé au moins 14 jours avant. Sans e-mail envoyé, rien n'est supprimé. |
+| Suppression | Supprimer un projet efface ses fichiers R2 ; supprimer son compte efface tout (et arrête les envois en cours). |
+
+### 10.1 Mise en route (à faire une fois)
+1. **R2** : dans Cloudflare, **R2 Object Storage** (un moyen de paiement doit être enregistré, R2 a une offre gratuite de 10 Go-mois).
+   Crée le bucket `stalak-media`, accès public **désactivé** (aucun domaine public, aucune « r2.dev URL »). C'est fait.
+2. **Base** : dans la **Console** de la base D1 `stalak`, colle **tout** `migrations/0004_cloud_save.sql` et clique sur **Execute** (une seule fois),
+   **avant** de publier cette version (sinon la page Compte et la sauvegarde répondent une erreur).
+3. **Liaison** : `wrangler.toml` contient déjà
+   ```toml
+   [[r2_buckets]]
+   binding = "MEDIA"
+   bucket_name = "stalak-media"
+   ```
+   Cloudflare relie le bucket au site à la publication suivante. Vérifie ensuite <https://stalak.app/api/config> : `"cloudSave":true`.
+   Pour couper la fonction, mets ces 3 lignes en commentaire : le site affiche alors « bientôt » à la place, rien d'autre ne change.
+4. **Le rappel des 6 mois** : Pages Functions n'a pas de tâche planifiée. Trois façons, au choix (elles peuvent coexister) :
+   - rien à faire : le site lance le nettoyage lui-même, au plus toutes les 6 heures, quand quelqu'un ouvre « Mes projets » ;
+   - **conseillé** : le petit Worker planifié `workers/cloud-cleanup` (tous les jours à 3 h 17 UTC) :
+     `npx wrangler deploy -c workers/cloud-cleanup/wrangler.toml`, puis `npx wrangler secret put RESEND_API_KEY -c workers/cloud-cleanup/wrangler.toml` ;
+   - ou un service de cron externe qui appelle `POST https://stalak.app/api/cron/cloud-cleanup` avec l'en-tête
+     `Authorization: Bearer <CRON_SECRET>` (secret `CRON_SECRET` de 16 caractères ou plus, à ajouter dans Cloudflare).
+   Les e-mails partent de `login@stalak.app` (Resend). Sans `RESEND_API_KEY`, aucun rappel ne part, donc aucun projet n'est supprimé.
+
+---
+
 ## Pour le développeur
 
 ### Routes (`/api/…`)
@@ -342,14 +383,24 @@ Toutes les réponses sont en JSON. Les erreurs ont la forme `{"error":"code","me
 | `POST /api/auth/logout` | Supprime la session. |
 | `POST /api/paddle/webhook` | Pour Paddle uniquement (signature vérifiée). |
 | `POST /api/paddle/portal` | `{url, cancelUrl, updatePaymentUrl}` : liens temporaires vers l'espace client Paddle. |
-| `GET /api/projects` | Liste des projets (sans leur contenu). |
-| `GET /api/projects/:id` | `{id, name, state, updatedAt}`. |
-| `PUT /api/projects/:id` | `{name, state}`, 256 Ko maximum, 200 projets maximum. **Pro uniquement** : sinon `403 pro_required`. |
-| `DELETE /api/projects/:id` | Supprime un projet. |
+| `GET /api/projects` | `{projects: [{id, name, size, mediaBytes, createdAt, updatedAt, openedAt}], storage: {available, used, quota, partSize, maxFile}}` (sans le contenu). `available` = le bucket R2 est relié. |
+| `GET /api/projects/:id` | `{id, name, state, updatedAt, mediaBytes, files: [{id, name, type, size}]}`. Compte comme une ouverture (règle des 6 mois). |
+| `PUT /api/projects/:id` | `{name, state, files?}`, 256 Ko maximum, 200 projets maximum. **Pro uniquement** : sinon `403 pro_required`. `files` = les ids des fichiers de cette version : tous doivent être envoyés (`409 files_missing`, avec `missing`) ; les autres fichiers du projet sont effacés. Sans `files`, les fichiers ne changent pas. |
+| `PATCH /api/projects/:id` | `{name}` : renomme (sans Pro). |
+| `DELETE /api/projects/:id` | Supprime un projet et ses fichiers R2. |
+| `POST /api/projects/:id/files` | `{fileId, name, type, size}` (**Pro**, R2). Réserve la place dans l'espace de 20 Go (`413 quota_exceeded` avec `used`, `quota`, `needed`). `type` : `audio/*` ou `video/*` (`415 invalid_media_type`), 4 Go au plus (`413 file_too_large`). Répond `{status: 'ready'}` si le fichier est déjà là, sinon `{status: 'uploading', multipart, partSize, parts, uploadedParts}`. |
+| `PUT /api/projects/:id/files/:fileId` | Corps brut (`Content-Type: application/octet-stream`, `Content-Length` = la taille annoncée) : un fichier de 8 Mo au plus, d'un coup. |
+| `PUT /api/projects/:id/files/:fileId/parts/:n` | Corps brut : le morceau `n` (1, 2, …) d'un gros fichier ; tous font 8 Mo sauf le dernier. |
+| `POST /api/projects/:id/files/:fileId/complete` | Termine un envoi en morceaux (`409 parts_missing` avec `missing`). |
+| `GET /api/projects/:id/files/:fileId` | Le fichier, lu depuis R2, **pour son propriétaire seulement** ; accepte `Range` (réponse `206`, `416` hors limites). `Cache-Control: private, no-store`, `nosniff`, `Content-Security-Policy: sandbox`, `Content-Disposition: attachment`. |
+| `DELETE /api/projects/:id/files/:fileId` | Abandonne un envoi ou efface un fichier. |
+| `POST /api/cron/cloud-cleanup` | Règle des 6 mois, pour un cron externe : `Authorization: Bearer <CRON_SECRET>` (sinon `404`). |
 | `DELETE /api/account` | `{confirm:true}`. Arrête l'abonnement Paddle, puis efface toutes les données (dont le pseudo, la photo et le mot de passe, qui sont dans la ligne `users`). |
 | `GET /api/connect/{tiktok,instagram}/{start,callback}` | Ébauches : `404 not_enabled` tant que `SOCIAL_CONNECT_ENABLED` ne vaut pas `"1"`, puis `501`. |
 
-Codes d'erreur : `not_logged_in` (401), `pro_required` (403), `bad_origin` (403), `json_required` (415), `rate_limited` (429, avec `retryAfter`),
+Sans le bucket R2 (`MEDIA`), les routes de fichiers répondent `503 cloud_unavailable` ; le reste marche (dont l'ancien `PUT` sans `files`).
+
+Codes d'erreur : `not_logged_in` (401), `pro_required` (403), `cloud_unavailable` (503), `quota_exceeded` (413), `file_too_large` (413), `invalid_media_type` (415), `files_missing` (409), `parts_missing` (409), `size_mismatch`, `length_required` (411), `bad_origin` (403), `json_required` (415), `rate_limited` (429, avec `retryAfter`),
 `invalid_code` (avec `attemptsLeft`), `code_expired`, `too_many_attempts`, `email_taken` (409), `invalid_login` (401), `invalid_email`, `invalid_name`,
 `invalid_signature`, `too_large` (413), `not_found`, `method_not_allowed`, `gone` (410).
 
@@ -400,8 +451,12 @@ Si une politique CSP est ajoutée un jour, il faudra autoriser `cdn.paddle.com` 
 ```
 node tests/backend/run.mjs
 ```
-Il faut Node 22.5 ou plus récent, sans aucune installation. Les tests utilisent la base SQLite intégrée à Node à la place de D1, et simulent Resend, Paddle
+Il faut Node 22.5 ou plus récent, sans aucune installation. Les tests utilisent la base SQLite intégrée à Node à la place de D1, un faux bucket R2
+en mémoire (`tests/backend/fake-r2.mjs` : envoi en morceaux compris), et simulent Resend, Paddle
 et Google / Apple / Microsoft (clés RSA et EC créées pour le test, `id_token` signés, client secret Apple vérifié).
+
+Tests de l'interface de la sauvegarde en ligne (Python + Playwright) : voir l'en-tête de `tests/ui/test_cloud.py`
+(un petit serveur Node, `tests/ui/cloud-server.mjs`, sert le site construit et les vraies Functions sur SQLite + faux R2).
 
 ### Développement local (facultatif)
 `npx wrangler pages dev`, avec un fichier `.dev.vars` (`DEV_MODE=1`, `APP_ORIGIN=http://localhost:8788`, etc.).
@@ -415,6 +470,11 @@ Pour la base locale : `npx wrangler d1 migrations apply stalak --local`.
 - Espace client (`POST /customers/{customer_id}/portal-sessions`, `urls.general.overview`) : <https://developer.paddle.com/api-reference/customer-portals/create-customer-portal-session>
 - Paiement en fenêtre superposée avec Paddle.js (`Paddle.Environment.set`, `Paddle.Initialize({token})`, `Paddle.Checkout.open`) : <https://developer.paddle.com/build/checkout/build-overlay-checkout>
 - Emplacement du dossier `functions/` : <https://developers.cloudflare.com/pages/functions/get-started/>
+- R2 depuis un Worker (`get` avec `range`, `put`, `delete` de 1000 clés au plus, `list`, `createMultipartUpload` / `resumeMultipartUpload`, `uploadPart`, `complete`, `abort`) : <https://developers.cloudflare.com/r2/api/workers/workers-api-reference/>, <https://developers.cloudflare.com/r2/api/workers/workers-multipart-usage/>
+- Limites de l'envoi en morceaux (5 Mio minimum sauf le dernier, morceaux de même taille, 10 000 au plus, envois inachevés abandonnés après 7 jours) : <https://developers.cloudflare.com/r2/objects/multipart-objects/>
+- Taille maximale d'une requête (100 Mo en offre Free et Pro) : <https://developers.cloudflare.com/workers/platform/limits/>
+- Limites D1 (2 Mo par ligne, 100 paramètres, 1000 requêtes par appel en offre payante, 50 en Free) : <https://developers.cloudflare.com/d1/platform/limits/>
+- Liaison R2 d'un projet Pages (`context.env.<BINDING>`) : <https://developers.cloudflare.com/pages/functions/bindings/>
 - Configuration `wrangler.toml` pour Pages (`pages_build_output_dir`, D1) : <https://developers.cloudflare.com/pages/functions/wrangler-configuration/>
 - Envoi d'e-mail avec Resend : <https://resend.com/docs/api-reference/emails/send-email>
 - OpenID Connect chez Google (points d'accès, `id_token`, `email_verified`) : <https://developers.google.com/identity/openid-connect/openid-connect>

@@ -20,7 +20,13 @@
      checkout(plan)       -> opens the Paddle overlay; plan = 'month' | 'year'
      portal()             -> Promise<{url, cancelUrl, updatePaymentUrl}> (manage / cancel)
      deleteAccount()
-     projects.list() / get(id) / save(id, name, state) / remove(id)
+     projects.list() / get(id) / save(id, name, state[, fileIds]) / remove(id)
+     projects.listAll()   -> Promise<{projects, storage: {available, used, quota, partSize, maxFile}}>
+     projects.rename(id, name)
+     cloud.available()    -> Promise<bool>  (the server has its R2 storage: online saving with media)
+     cloud.fingerprint(file) -> Promise<id>  (same file = same id: not sent twice)
+     cloud.upload(projectId, file, fileId, {onProgress(bytes), onRetry(n, err), signal}) -> Promise<{fileId, skipped}>
+     cloud.download(projectId, {id, name, type, size, lastModified}, {onProgress(bytes), onRetry, signal}) -> Promise<File>
      onChange(cb)         -> unsubscribe function; cb(state) on every state change
      checkoutOpen         -> true while Paddle's checkout window is open
      state                -> last known state
@@ -129,6 +135,112 @@
     });
   }
 
+  /* ---- online saving: the media files of a project (Stalak Pro). Big files go part by part (file.slice: never the whole
+     file in memory), each request is tried again after a network error; downloads come back in 8 MB pieces (Range). ---- */
+  var TRIES = 6, CHUNK = 8 * 1024 * 1024;
+  function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+  function aborted() { return Object.assign(new Error('aborted'), { code: 'aborted', status: 0 }); }
+  function retriable(e) { return !e || e.code === 'network' || !e.status || e.status >= 500 || e.status === 429 || e.status === 408; }
+  function withRetry(fn, o) {
+    var n = 0;
+    function attempt() {
+      if (o.signal && o.signal.aborted) return Promise.reject(aborted());
+      return fn().catch(function (e) {
+        if ((e && e.code === 'aborted') || (o.signal && o.signal.aborted)) throw aborted();
+        if (++n >= TRIES || !retriable(e)) throw e;
+        if (o.onRetry) try { o.onRetry(n, e); } catch (x) {}
+        return wait(Math.min(15000, 1000 * Math.pow(2, n - 1))).then(attempt);
+      });
+    }
+    return attempt();
+  }
+  function httpErr(status, d) {
+    var err = new Error((d && d.message) || ('HTTP ' + status));
+    err.code = (d && d.error) || (status ? 'http_' + status : 'network'); err.status = status; err.data = d || {};
+    return err;
+  }
+  // PUT of raw bytes with XMLHttpRequest: its upload progress events give the bytes sent (fetch cannot)
+  function xhrPut(path, blob, onProg, signal) {
+    return new Promise(function (resolve, reject) {
+      if (signal && signal.aborted) { reject(aborted()); return; }
+      var x = new XMLHttpRequest(), stop = function () { x.abort(); };
+      x.open('PUT', '/api/' + path);
+      x.setRequestHeader('Content-Type', 'application/octet-stream');
+      x.setRequestHeader('Accept', 'application/json');
+      x.upload.onprogress = function (e) { if (onProg) onProg(e.loaded); };
+      var done = function () { if (signal) signal.removeEventListener('abort', stop); };
+      x.onload = function () {
+        done(); var d = {}; try { d = JSON.parse(x.responseText); } catch (e) {}
+        if (x.status >= 200 && x.status < 300) resolve(d); else reject(httpErr(x.status, d));
+      };
+      x.onerror = x.ontimeout = function () { done(); reject(httpErr(0, { error: 'network' })); };
+      x.onabort = function () { done(); reject(aborted()); };
+      if (signal) signal.addEventListener('abort', stop);
+      x.send(blob);
+    });
+  }
+  function hex(buf) { return Array.prototype.map.call(new Uint8Array(buf), function (b) { return ('0' + b.toString(16)).slice(-2); }).join(''); }
+  // name, size, date and the first and last 64 KB: enough to know the same file again, without reading it all
+  function fingerprint(file) {
+    var K = 65536, head = file.slice(0, K), tail = file.size > K ? file.slice(Math.max(K, file.size - K)) : new Blob([]);
+    return Promise.all([head.arrayBuffer(), tail.arrayBuffer()]).then(function (b) {
+      var meta = new TextEncoder().encode([file.name, file.size, file.lastModified || 0, file.type || ''].join('|'));
+      var all = new Uint8Array(meta.length + b[0].byteLength + b[1].byteLength);
+      all.set(meta, 0); all.set(new Uint8Array(b[0]), meta.length); all.set(new Uint8Array(b[1]), meta.length + b[0].byteLength);
+      return crypto.subtle.digest('SHA-256', all);
+    }).then(function (d) { return 'f' + hex(d).slice(0, 39); });
+  }
+  function upload(projectId, file, fileId, o) {
+    o = o || {};
+    var base = 'projects/' + encodeURIComponent(projectId) + '/files', fpath = base + '/' + encodeURIComponent(fileId), done = 0;
+    var report = function (extra) { if (o.onProgress) o.onProgress(Math.min(file.size, done + (extra || 0))); };
+    function run(again) {
+      return withRetry(function () { return api('POST', base, { fileId: fileId, name: file.name, type: file.type || '', size: file.size }); }, o).then(function (st) {
+        if (st.status === 'ready') { done = file.size; report(); return { fileId: fileId, skipped: true }; }
+        if (!st.multipart) {
+          return withRetry(function () { return xhrPut(fpath, file, report, o.signal); }, o).then(function () { done = file.size; report(); return { fileId: fileId }; });
+        }
+        var have = st.uploadedParts || [], ps = st.partSize, n = st.parts, k = 0;
+        done = have.reduce(function (s, p) { return s + Math.min(ps, file.size - (p - 1) * ps); }, 0); report();
+        function next() {
+          k++;
+          if (k > n) return withRetry(function () { return api('POST', fpath + '/complete', {}); }, o);
+          if (have.indexOf(k) >= 0) return next();
+          var blob = file.slice((k - 1) * ps, Math.min(file.size, k * ps));
+          return withRetry(function () { return xhrPut(fpath + '/parts/' + k, blob, report, o.signal); }, o)
+            .then(function () { done += blob.size; report(); return next(); });
+        }
+        return next().then(function () { return { fileId: fileId }; });
+      }).catch(function (e) {
+        // the upload was dropped on the server side (too old): once more from the start
+        if (!again && e && (e.code === 'not_found' || e.code === 'parts_missing' || e.code === 'already_uploaded')) { done = 0; return run(true); }
+        throw e;
+      });
+    }
+    return run(false);
+  }
+  function download(projectId, f, o) {
+    o = o || {};
+    var url = '/api/projects/' + encodeURIComponent(projectId) + '/files/' + encodeURIComponent(f.id), parts = [], off = 0;
+    function piece() {
+      if (off >= f.size) return Promise.resolve(new File(parts, f.name, { type: f.type === 'application/octet-stream' ? '' : f.type, lastModified: f.lastModified || Date.now() }));
+      var end = Math.min(f.size, off + CHUNK) - 1;
+      return withRetry(function () {
+        return fetch(url, { credentials: 'same-origin', cache: 'no-store', signal: o.signal, headers: { Range: 'bytes=' + off + '-' + end } })
+          .catch(function (e) { throw (o.signal && o.signal.aborted) ? aborted() : httpErr(0, { error: 'network' }); })
+          .then(function (res) {
+            if (res.status !== 206 && res.status !== 200) return res.json().catch(function () { return {}; }).then(function (d) { throw httpErr(res.status, d); });
+            return res.blob().then(function (b) { return { b: b, whole: res.status === 200 }; });
+          });
+      }, o).then(function (r) {
+        if (r.whole) { parts = [r.b]; off = f.size; } else { if (!r.b.size) throw httpErr(0, { error: 'network' }); parts.push(r.b); off += r.b.size; }
+        if (o.onProgress) o.onProgress(Math.min(off, f.size));
+        return piece();
+      });
+    }
+    return piece();
+  }
+
   window.StalakAccount = {
     get state() { return state; },
     get checkoutOpen() { return checkoutOpen; },
@@ -165,8 +277,19 @@
     projects: {
       list: function () { return api('GET', 'projects').then(function (d) { return d.projects; }); },
       get: function (id) { return api('GET', 'projects/' + encodeURIComponent(id)); },
-      save: function (id, name, projectState) { return api('PUT', 'projects/' + encodeURIComponent(id), { name: name, state: projectState }); },
-      remove: function (id) { return api('DELETE', 'projects/' + encodeURIComponent(id)); }
+      save: function (id, name, projectState, fileIds) {
+        var b = { name: name, state: projectState }; if (fileIds) b.files = fileIds;
+        return api('PUT', 'projects/' + encodeURIComponent(id), b);
+      },
+      remove: function (id) { return api('DELETE', 'projects/' + encodeURIComponent(id)); },
+      listAll: function () { return api('GET', 'projects'); },
+      rename: function (id, name) { return api('PATCH', 'projects/' + encodeURIComponent(id), { name: name }); }
+    },
+    cloud: {
+      available: function () { return config().then(function (c) { return !!(c.features && c.features.cloudSave); }); },
+      fingerprint: fingerprint,
+      upload: upload,
+      download: download
     },
     onChange: function (cb) {
       listeners.push(cb);

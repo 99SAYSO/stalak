@@ -558,7 +558,7 @@ const I18N_EN = /*@EN*/{
   "acct.proT": "Stalak Pro",
   "acct.perk1": "No Stalak logo at the end of your videos",
   "acct.perk2": "Music video mode: the whole song in 16:9",
-  "acct.perk3": "Your projects saved online <span class=\"soon\">soon</span>",
+  "acct.perk3": "Your projects saved online",
   "acct.perk4": "Lyrics synced automatically <span class=\"soon\">soon</span>",
   "acct.month": "€9.99 a month",
   "acct.year": "€79 a year <small>(−34%)</small>",
@@ -633,7 +633,7 @@ const I18N_EN = /*@EN*/{
   "pt.s1p": "Your videos end on you, without the 3 Stalak seconds.",
   "pt.s2t": "Music video mode",
   "pt.s2p": "The whole song in 16:9, with effects. Pick “Music video” at the Sound step.",
-  "pt.s3t": "Cloud saving <span class=\"soon\">soon</span>",
+  "pt.s3t": "Cloud saving",
   "pt.s3p": "Your projects will follow you from one device to another.",
   "pt.s4t": "Automatic lyrics <span class=\"soon\">soon</span>",
   "pt.s4p": "Stalak will sync your lyrics to your voice, all by itself.",
@@ -762,7 +762,7 @@ const I18N_EN = /*@EN*/{
   "pr.f.clip": "<strong>Your YouTube video, edited for you.</strong> The whole song in 16:9, cut to the beat, with effects. Ready to post.",
   "pr.f.pack": "<strong>A month of content in one click.</strong> 5, 10 or 30 all-different videos from the same song, to post every day.",
   "pr.f.text": "<strong>Lyrics that grab attention.</strong> Word by word or karaoke that follows your voice, in size S, M or L.",
-  "pr.f.cloud": "<strong>Your projects everywhere:</strong> start on your phone, finish on your computer. <span class=\"soon\">soon</span>",
+  "pr.f.cloud": "<strong>Your projects everywhere:</strong> start on your phone, finish on your computer.",
   "pr.f.auto": "<strong>Your lyrics written for you:</strong> Stalak listens to your voice and syncs them by itself. <span class=\"soon\">soon</span>",
   "pr.month.n": "Pro monthly",
   "pr.month.amt": "€9.99",
@@ -814,7 +814,7 @@ const I18N_EN = /*@EN*/{
   "pr.q.pay": "How do I pay?",
   "pr.a.pay": "By card, Apple Pay, Google Pay or PayPal. Payments are handled by Paddle.com, our authorized reseller, which also sends the invoices. Prices shown include VAT in Europe.",
   "pr.q.videos": "Are my videos sent to your servers?",
-  "pr.a.videos": "No: editing and export happen on your device.",
+  "pr.a.videos": "No: editing and export happen on your device. Only the projects you choose to save online (Stalak Pro) are kept in your account, privately.",
   "pr.w.t": "What Pro does for you",
   "pr.w1t": "Your music video, ready for YouTube",
   "pr.w1p": "No more hours in editing software. Import your song and your takes, and Stalak edits the whole track in 16:9: cuts on the beat, lips perfectly in sync, effects. All that’s left is to post.",
@@ -824,7 +824,79 @@ const I18N_EN = /*@EN*/{
   "pr.w3p": "Without the Stalak logo, your videos end on you. It looks pro, and your name is the one people remember.",
   "pr.w4t": "Lyrics people sing along to",
   "pr.w4p": "Karaoke lights up with your voice, word after word, big or subtle. Viewers read along, sing with you and remember your hook.",
-  "hd.price": "Stalak Pro"
+  "hd.price": "Stalak Pro",
+  "cl.save": "Save online",
+  "cl.save.tip": "Keeps this project (song, takes, lyrics, edit) in your account, to open it again later on any device.",
+  "cl.mine": "My projects",
+  "cl.soonP": "Soon, your projects (song, takes, lyrics and edit) will be saved here, to open them again on any device.",
+  "cl.saveNow": "Save the current project",
+  "cl.nameL": "Project name",
+  "cl.go": "Save",
+  "cl.retry": "Try again",
+  "cl.ok": "OK",
+  "cl.saveT": "Save online",
+  "cl.savingT": "Saving “{name}”",
+  "cl.openingT": "Opening “{name}”",
+  "cl.sizeT": "{n} file(s), at most {size} to send. Files already online aren’t sent again.",
+  "cl.sizeT0": "Nothing heavy to send: just the edit.",
+  "cl.prep": "Getting ready…",
+  "cl.pct": "{pct}% · {done} of {total}",
+  "cl.pct0": "{pct}%",
+  "cl.f.wait": "waiting",
+  "cl.f.skip": "already online",
+  "cl.f.sent": "sent",
+  "cl.f.got": "received",
+  "cl.retrying": "Connection lost, trying again ({n})…",
+  "cl.finishing": "Saving the project…",
+  "cl.saved": "Project saved online. You’ll find it in Account → My projects.",
+  "cl.savedNote": "Saved online at {t}",
+  "cl.stopped": "Saving cancelled.",
+  "cl.stoppedOpen": "Opening cancelled.",
+  "cl.fetching": "Reading the project…",
+  "cl.restoring": "Putting your edit back together…",
+  "cl.opened": "“{name}” is open, just as you left it.",
+  "cl.clipNoPro": "“{name}” is a music video: music video mode is part of Stalak Pro, so it opens as a TikTok / Reels.",
+  "cl.openAskT": "Open this project?",
+  "cl.openAskP": "The current project will be replaced. Save it first if you want to keep it.",
+  "cl.openYes": "Open",
+  "cl.delAskT": "Delete “{name}”?",
+  "cl.delAskP": "The project and its online files will be erased for good. The files on your device stay where they are.",
+  "cl.delYes": "Delete",
+  "cl.deleted": "Project deleted.",
+  "cl.renamed": "Name saved.",
+  "cl.open": "Open",
+  "cl.rename": "Rename",
+  "cl.del": "Delete",
+  "cl.openA": "Open {name}",
+  "cl.renameA": "Rename {name}",
+  "cl.delA": "Delete {name}",
+  "cl.meta": "{d} · {size}",
+  "cl.quota": "{used} used of {quota}",
+  "cl.empty": "No saved project yet. At the Edit step, tap “Save online”.",
+  "cl.loading": "Loading your projects…",
+  "cl.listErr": "Couldn’t load your projects. Check your connection.",
+  "cl.noName": "Untitled",
+  "cl.nothing": "Import a song first (or try the example): there’s nothing to save yet.",
+  "cl.wait": "Wait until your takes are analysed, then save.",
+  "cl.soonSt": "Online saving is coming soon.",
+  "cl.e.noName": "Give the project a name.",
+  "cl.e.quota": "Your online storage is full ({used} of {quota}). Delete an old project in Account → My projects, then try again.",
+  "cl.e.big": "One of your files is too big to be saved (4 GB max per file).",
+  "cl.e.type": "One of your files is neither a song nor a video: it can’t be saved.",
+  "cl.e.pro": "Online saving is part of Stalak Pro.",
+  "cl.e.unavail": "Online saving isn’t available right now.",
+  "cl.e.many": "You already have 200 projects online: delete one to save a new one.",
+  "cl.e.state": "This project is too big to be saved (lyrics or edit too long).",
+  "cl.e.net": "Connection lost. Check your internet, then tap “Try again”: what’s already sent won’t be sent again.",
+  "cl.e.netOpen": "Connection lost. Check your internet, then tap “Try again”.",
+  "cl.e.missing": "Some files of this project are missing online: it can’t be opened.",
+  "cl.e.gone": "This project doesn’t exist any more.",
+  "cl.e.bad": "This project can’t be opened.",
+  "cl.e.nosong": "The song file isn’t there any more: import your song again, then save.",
+  "cl.e.other": "That didn’t work. Try again in a moment.",
+  "acct.why.cloud": "Online saving is part of Stalak Pro.",
+  "ap.whyIn.cloud": "Online saving is part of Stalak Pro. Sign in or create an account to get it.",
+  "cl.close": "Close"
 }/*EN@*/;
 const I18N_FR = /*@FR*/{
   "kind.hint.reel": "Une vidéo verticale 9:16, de tout le son ou de quelques mesures.",
@@ -1227,7 +1299,71 @@ const I18N_FR = /*@FR*/{
   "acct.why.pack": "Les packs de vidéos font partie de Stalak Pro.",
   "ap.whyIn.pack": "Les packs de vidéos font partie de Stalak Pro. Connecte-toi ou crée un compte pour en profiter.",
   "acct.perk6": "Toutes les tailles et apparitions du texte : mot par mot, karaoké",
-  "acct.why.text": "Ces tailles et apparitions du texte font partie de Stalak Pro."
+  "acct.why.text": "Ces tailles et apparitions du texte font partie de Stalak Pro.",
+  "cl.ok": "OK",
+  "cl.saveT": "Sauvegarder en ligne",
+  "cl.savingT": "Sauvegarde de « {name} »",
+  "cl.openingT": "Ouverture de « {name} »",
+  "cl.sizeT": "{n} fichier(s), {size} au plus à envoyer. Les fichiers déjà en ligne ne sont pas renvoyés.",
+  "cl.sizeT0": "Rien de lourd à envoyer : seulement le montage.",
+  "cl.prep": "Préparation…",
+  "cl.pct": "{pct} % · {done} sur {total}",
+  "cl.pct0": "{pct} %",
+  "cl.f.wait": "en attente",
+  "cl.f.skip": "déjà en ligne",
+  "cl.f.sent": "envoyé",
+  "cl.f.got": "reçu",
+  "cl.retrying": "Connexion perdue, nouvel essai ({n})…",
+  "cl.finishing": "Enregistrement du projet…",
+  "cl.saved": "Projet sauvegardé en ligne. Tu le retrouveras dans Compte → Mes projets.",
+  "cl.savedNote": "Sauvegardé en ligne à {t}",
+  "cl.stopped": "Sauvegarde annulée.",
+  "cl.stoppedOpen": "Ouverture annulée.",
+  "cl.fetching": "Lecture du projet…",
+  "cl.restoring": "Remise en place du montage…",
+  "cl.opened": "« {name} » est ouvert, comme tu l’avais laissé.",
+  "cl.clipNoPro": "« {name} » est un clip : le mode Clip fait partie de Stalak Pro, il s’ouvre donc en TikTok / Reels.",
+  "cl.openAskT": "Ouvrir ce projet ?",
+  "cl.openAskP": "Le projet en cours sera remplacé. Sauvegarde-le d’abord si tu veux le garder.",
+  "cl.openYes": "Ouvrir",
+  "cl.delAskT": "Supprimer « {name} » ?",
+  "cl.delAskP": "Le projet et ses fichiers en ligne seront effacés pour de bon. Les fichiers de ton appareil ne bougent pas.",
+  "cl.delYes": "Supprimer",
+  "cl.deleted": "Projet supprimé.",
+  "cl.renamed": "Nom enregistré.",
+  "cl.open": "Ouvrir",
+  "cl.rename": "Renommer",
+  "cl.del": "Supprimer",
+  "cl.openA": "Ouvrir {name}",
+  "cl.renameA": "Renommer {name}",
+  "cl.delA": "Supprimer {name}",
+  "cl.meta": "{d} · {size}",
+  "cl.quota": "{used} utilisés sur {quota}",
+  "cl.empty": "Aucun projet sauvegardé pour l’instant. À l’étape Montage, touche « Sauvegarder en ligne ».",
+  "cl.loading": "Chargement de tes projets…",
+  "cl.listErr": "Impossible de charger tes projets. Vérifie ta connexion.",
+  "cl.noName": "Sans nom",
+  "cl.nothing": "Importe d’abord un son (ou essaie l’exemple) : il n’y a encore rien à sauvegarder.",
+  "cl.wait": "Attends que tes prises aient fini d’être analysées, puis sauvegarde.",
+  "cl.soonSt": "La sauvegarde en ligne arrive bientôt.",
+  "cl.e.noName": "Donne un nom au projet.",
+  "cl.e.quota": "Ton espace en ligne est plein ({used} sur {quota}). Supprime un ancien projet dans Compte → Mes projets, puis réessaie.",
+  "cl.e.big": "Un de tes fichiers est trop lourd pour être sauvegardé (4 Go au plus par fichier).",
+  "cl.e.type": "Un de tes fichiers n’est ni un son ni une vidéo : il ne peut pas être sauvegardé.",
+  "cl.e.pro": "La sauvegarde en ligne fait partie de Stalak Pro.",
+  "cl.e.unavail": "La sauvegarde en ligne n’est pas disponible pour le moment.",
+  "cl.e.many": "Tu as déjà 200 projets en ligne : supprimes-en un pour en sauvegarder un nouveau.",
+  "cl.e.state": "Ce projet est trop gros pour être sauvegardé (paroles ou montage trop longs).",
+  "cl.e.net": "Connexion perdue. Vérifie ton internet, puis touche « Réessayer » : ce qui est déjà envoyé ne sera pas renvoyé.",
+  "cl.e.netOpen": "Connexion perdue. Vérifie ton internet, puis touche « Réessayer ».",
+  "cl.e.missing": "Des fichiers de ce projet manquent en ligne : il ne peut pas être ouvert.",
+  "cl.e.gone": "Ce projet n’existe plus.",
+  "cl.e.bad": "Ce projet ne peut pas être ouvert.",
+  "cl.e.nosong": "Le fichier du son n’est plus là : réimporte ton son, puis sauvegarde.",
+  "cl.e.other": "Ça n’a pas marché. Réessaie dans un instant.",
+  "acct.why.cloud": "La sauvegarde en ligne fait partie de Stalak Pro.",
+  "ap.whyIn.cloud": "La sauvegarde en ligne fait partie de Stalak Pro. Connecte-toi ou crée un compte pour en profiter.",
+  "cl.close": "Fermer"
 }/*FR@*/;
 let STATIC_FR = /*@STATIC_FR*/null/*STATIC_FR@*/;
 const LANGS = ['fr', 'en'];
@@ -2502,6 +2638,7 @@ async function addBroll(file){
 function brollReady(tk){
   renderTakes();
   if (!S.song || S.brollAmt === 'aucun' || S.playing || S.exporting) return;
+  if (S.keepEdit){ renderTimeline(); return; }   // a project opened from the account keeps its edit as it was saved
   rebuild(false);
   if (S.step === 4) say('st.brollReady');
 }
@@ -2816,6 +2953,7 @@ function signature(cuts){ const sg = S.song, out = []; for (const bt of sg.beats
 function rebuild(newSeed){
   if (!S.song) return;
   if (S.exporting){ S.rebuildLater = true; return; }
+  S.keepEdit = false;   // the edit is made again: a project opened from the account is now edited like any other
   if (newSeed){ S.seed++; S.version++; }
   updateSegment();
   // a clip also gets its effects (same seed), and the cuts they need; TikTok / Reels: the edit only, as always
@@ -3487,6 +3625,7 @@ setInterval(() => {
   const sg = S.song; if (!sg || !isClip() || S.fxLevel === 'aucun' || S.playing || S.exporting || preparing || S.step < 3 || !S.cuts.length) return;
   const m = sg.music && sg.music.ready ? sg.music : null;
   if (m === S.fxMusic || tlDrag || scrubBusy || typing(document.activeElement)) return;
+  if (S.keepEdit){ S.fxMusic = m; return; }   // a project opened from the account: its effects stay as saved
   rebuild(false); diag('effets : analyse de la musique reçue, effets replacés');
 }, 1000);
 
@@ -4586,7 +4725,7 @@ async function runQual(){
   } finally { qualBusy = false; }
 }
 function qualApply(){
-  if (!S.bestTake || !S.song || !S.cuts.length){ S.qualDirty = false; return; }
+  if (!S.bestTake || !S.song || !S.cuts.length || S.keepEdit){ S.qualDirty = false; return; }
   if (!qualIdle() || scrubBusy || tlDrag || typing(document.activeElement)) return;
   S.qualDirty = false; rebuild(false);
   if (S.step === 4) status('Analyse des prises finie : les plus belles images sont maintenant choisies en priorité.');
@@ -5903,7 +6042,7 @@ function modalOn(on){
 }
 document.addEventListener('keydown', e => {
   if (e.key !== 'Tab') return;
-  const box = isShown($('#proThx')) ? $('#proThx') : !$('#homeAsk').hidden ? $('#homeAsk') : isShown($('#acctPage')) ? $('#acctPage') : !$('#expScreen').hidden ? $('#expScreen') : null; if (!box) return;
+  const box = isShown($('#proThx')) ? $('#proThx') : !$('#homeAsk').hidden ? $('#homeAsk') : !$('#cloudDlg').hidden ? $('#cloudDlg') : isShown($('#acctPage')) ? $('#acctPage') : !$('#expScreen').hidden ? $('#expScreen') : null; if (!box) return;
   const f = [...box.querySelectorAll('button:not([disabled]),input:not([tabindex="-1"]),a[href]')].filter(x => x.offsetParent && !x.closest('[inert]')); if (!f.length) return;
   const i = f.indexOf(document.activeElement);
   if (i < 0){ e.preventDefault(); f[0].focus(); return; }
@@ -6244,6 +6383,7 @@ function updateNav(){
   if (gap){ const n = (gap < 10 ? gap.toFixed(1) : Math.round(gap)) + ' s';
     $('#coverNote').textContent = _t(isClip() ? 'cover.clip' : 'cover.reel', { n }); }
   renderModeUI();
+  clSync();
 }
 /* seconds of the passage that no sung take covers (TikTok / Reels: shown black) */
 function uncovered(){
@@ -6677,6 +6817,7 @@ $('#songFile').onchange = async e => {
     const buf = await songFromFile(f);
     if (S.song && S.song.demo){ S.takes = []; S.lyrics.lines = []; }
     await setSong(buf, f.name.replace(/\.[^.]+$/, ''), false);
+    S.song.file = f;   // kept for the online saving (Pro)
     S.takes.forEach(alignTake);
     const prevLines = S.lyrics.lines;
     const saved = store.get(lyricsKey()); S.lyrics.lines = Array.isArray(saved) && saved.length ? saved : prevLines.filter(l => l.text && l.text.trim()).map(l => ({ text: l.text, t: null }));
@@ -7285,6 +7426,7 @@ function acctSync(){
   acctWasPro = pro;
   apRender(); updateNav();
   proThanksMaybe();
+  clSync();
 }
 
 /* ---- the pages and the browser history: each page is an entry (#connexion, #compte, #pro), Back goes back ---- */
@@ -7324,6 +7466,7 @@ function apGo(view, o = {}){
   if (!o.keepMsg) apSay(null);
   apRender();
   if (changed || first) page.scrollTop = 0;
+  if (v === 'account' && (changed || first)) clLoadList();
   if (o.noFocus) return;
   const f = v === 'login' ? $('#apLoginT') : v === 'account' ? $('#apAccT') : $('#apProT');
   setTimeout(() => { try { f.focus({ preventScroll: true }); } catch(e){} }, 40);
@@ -7711,7 +7854,391 @@ if (ACCT){
     const v = apHashView(); if (!v) return;
     try { history.replaceState(null, '', location.pathname + location.search); } catch(e){}
     apGo(v); };
-  ACCT.me().then(() => { acctKnown = true; acctSync(); boot(); }, e => { diag('compte : serveur injoignable (' + (e && (e.code || e.message)) + ')'); boot(); });
+  ACCT.me().then(() => { acctKnown = true; acctSync(); boot(); clBoot(); }, e => { diag('compte : serveur injoignable (' + (e && (e.code || e.message)) + ')'); boot(); });
+}
+
+/* ---------- online saving (stalak.app, Stalak Pro): the whole project (the song, every take, the lyrics and their times,
+   the edit, the effects, the format and the text style) in the account, to open again later on any device.
+   The files go to the server part by part (account.js); a file already online is not sent again. The server says whether its
+   storage is there (config.features.cloudSave): without it the button stays hidden and « Mes projets » says « bientôt ».
+   Opening a project while another one is on screen reloads the page first, so that nothing of the old one is left. ---------- */
+var CL = null;   // var: updateNav() runs before this point at start-up
+if (ACCT) CL = { avail: null, busy: false, cur: null, list: null, listErr: false, storage: null, ctl: null, files: [], renaming: null, lang: null, back: null, retry: null, fp: new WeakMap() };
+const CL_OPEN_KEY = 'stalak:openProject';
+function clFmtBytes(n){
+  const u = LANG === 'en' ? ['B', 'KB', 'MB', 'GB'] : ['o', 'Ko', 'Mo', 'Go']; let i = 0; n = Math.max(0, n || 0);
+  while (n >= 1024 && i < 3){ n /= 1024; i++; }
+  const v = i === 0 ? String(Math.round(n)) : n.toLocaleString(LANG === 'en' ? 'en-GB' : 'fr-FR', { maximumFractionDigits: n < 10 ? 1 : 0 });
+  return v + ' ' + u[i];
+}
+function clCheck(){
+  if (!CL) return Promise.resolve(false);
+  return ACCT.cloud.available().then(a => { CL.avail = a; clSync(); return a; }, () => { clSync(); return false; });
+}
+/* the button of the Montage step, the account card (not the list itself: see clRenderList) */
+function clSync(){
+  if (!CL) return;
+  const pro = acctPro(), u = ACCT.state.user, soon = CL.avail === false;
+  // another person signed in (or signed out): their own list, nothing of the previous one
+  const uid = u ? u.id : null;
+  if (uid !== CL.uid){ CL.uid = uid; CL.list = null; CL.storage = null; CL.cur = null; CL.renaming = null; CL.lang = null; }
+  $('#cloudRow').hidden = !CL.avail || !S.song;
+  $('#cloudSaveBtn').classList.toggle('protag', !pro);
+  $('#cloudSaveBtn').disabled = CL.busy || S.exporting;
+  const card = $('#apProjects'); card.hidden = !u;
+  $('#clSoon').hidden = !soon; $('#clSoonP').hidden = !soon;
+  $('#clActions').hidden = soon || CL.avail == null || !S.song;
+  $('#clSaveHere').classList.toggle('protag', !pro); $('#clSaveHere').disabled = CL.busy;
+  const stg = CL.storage, q = $('#clQuota');
+  q.hidden = soon || !stg;
+  if (stg){
+    const pct = Math.min(100, stg.quota ? stg.used / stg.quota * 100 : 0);
+    $('#clQuotaBar').firstElementChild.style.width = pct.toFixed(1) + '%'; $('#clQuotaBar').classList.toggle('full', pct >= 90);
+    $('#clQuotaBar').setAttribute('aria-valuenow', String(Math.round(pct)));
+    setT('#clQuotaT', 'cl.quota', { used: clFmtBytes(stg.used), quota: clFmtBytes(stg.quota) });
+  }
+  if (CL.lang !== LANG){ CL.lang = LANG; clRenderList(); }
+}
+async function clLoadList(){
+  if (!CL || !ACCT.state.user) return;
+  CL.listErr = false;
+  try {
+    const d = await ACCT.projects.listAll();
+    CL.list = d.projects || []; CL.storage = d.storage || null;
+    if (d.storage) CL.avail = !!d.storage.available;
+  } catch(e){ CL.listErr = true; diag('mes projets : ' + (e && (e.code || e.message))); }
+  clSync(); clRenderList();
+}
+function clRenderList(){
+  if (!CL) return;
+  const ul = $('#clList'), empty = $('#clEmpty'); ul.textContent = '';
+  if (CL.avail === false){ empty.hidden = true; return; }
+  const list = CL.list;
+  if (!list || !list.length){ empty.hidden = false; setT(empty, CL.listErr ? 'cl.listErr' : !list ? 'cl.loading' : 'cl.empty'); return; }
+  empty.hidden = true;
+  const mk = (tag, cls, key, vars) => { const e = document.createElement(tag); if (cls) e.className = cls; if (key) setT(e, key, vars); return e; };
+  for (const p of list){
+    const li = mk('li', 'cl-item'); li.dataset.id = p.id; if (CL.cur && CL.cur.id === p.id) li.classList.add('cur');
+    const name = p.name || _t('cl.noName');
+    if (CL.renaming === p.id){
+      const f = mk('form', 'cl-ren'); f.noValidate = true;
+      const lab = mk('label', 'vh', 'cl.nameL'), inp = document.createElement('input'), id = 'clRen-' + p.id;
+      lab.htmlFor = id; inp.id = id; inp.type = 'text'; inp.maxLength = 120; inp.value = p.name || ''; inp.autocomplete = 'off';
+      const btns = mk('div', 'cl-btns'), ok = mk('button', 'btn primary', 'ap.save'), no = mk('button', 'btn', 'cancel');
+      ok.type = 'submit'; no.type = 'button';
+      no.onclick = () => { CL.renaming = null; clRenderList(); const b = $('#clList [data-id="' + p.id + '"] .cl-ren-btn'); if (b) b.focus(); };
+      f.onsubmit = e => { e.preventDefault(); clRename(p, inp.value); };
+      inp.addEventListener('keydown', e => { if (e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); no.click(); } });
+      btns.append(ok, no); f.append(lab, inp, btns); li.append(f); ul.append(li);
+      setTimeout(() => { try { inp.focus(); inp.select(); } catch(e){} }, 30);
+      continue;
+    }
+    const n = mk('p', 'cl-name'); n.textContent = name;
+    const meta = mk('p', 'cl-meta', 'cl.meta', { d: acctDate(p.updatedAt), size: clFmtBytes((p.mediaBytes || 0) + (p.size || 0)) });
+    const btns = mk('div', 'cl-btns');
+    const open = mk('button', 'btn primary cl-open', 'cl.open'), ren = mk('button', 'btn cl-ren-btn', 'cl.rename'), del = mk('button', 'btn cl-del', 'cl.del');
+    [open, ren, del].forEach(b => { b.type = 'button'; });
+    open.setAttribute('aria-label', _t('cl.openA', { name })); ren.setAttribute('aria-label', _t('cl.renameA', { name })); del.setAttribute('aria-label', _t('cl.delA', { name }));
+    open.onclick = () => clOpenAsk(p);
+    ren.onclick = () => { if (CL.busy) return; CL.renaming = p.id; clRenderList(); };
+    del.onclick = () => clDelete(p);
+    btns.append(open, ren, del); li.append(n, meta, btns); ul.append(li);
+  }
+}
+async function clRename(p, v){
+  const name = String(v || '').replace(/\s+/g, ' ').trim().slice(0, 120);
+  if (!name){ apSay('cl.e.noName', null, true, 'think'); return; }
+  apRun(async () => {
+    await ACCT.projects.rename(p.id, name);
+    p.name = name; if (CL.cur && CL.cur.id === p.id) CL.cur.name = name;
+    CL.renaming = null; clRenderList(); apSay('cl.renamed'); diag('mes projets : renommé');
+    const b = $('#clList [data-id="' + p.id + '"] .cl-ren-btn'); if (b) b.focus();
+  });
+}
+async function clDelete(p){
+  if (CL.busy || apBusy) return;
+  if (!await askSure(_t('cl.delAskT', { name: p.name || _t('cl.noName') }), _t('cl.delAskP'), _t('cl.delYes'))) return;
+  apRun(async () => {
+    const r = await ACCT.projects.remove(p.id);
+    if (CL.cur && CL.cur.id === p.id) CL.cur = null;
+    CL.list = (CL.list || []).filter(x => x.id !== p.id); if (r && r.storage) CL.storage = r.storage;
+    clSync(); clRenderList(); apSay('cl.deleted'); diag('mes projets : supprimé');
+    try { $('#clList .cl-open') ? $('#clList .cl-open').focus() : $('#apAccT').focus(); } catch(e){}
+  });
+}
+
+/* ---- the window: a name, then the progress of every file ---- */
+function clSay(key, vars, err){ if (isShown($('#acctPage'))) apSay(key, vars, err); else say(key, vars); }
+function clDlgOpen(titleKey, vars){
+  const d = $('#cloudDlg'); CL.back = document.activeElement;
+  setT('#clDlgT', titleKey, vars); d.hidden = false; modalOn(true);
+  $('#clMsg').classList.remove('err'); setT('#clMsg', null);
+}
+function clDlgClose(){
+  const d = $('#cloudDlg'); if (d.hidden) return;
+  d.hidden = true; modalOn(false); CL.retry = null;
+  try { (CL.back && CL.back.isConnected && !CL.back.closest('#cloudDlg') ? CL.back : $('#cloudSaveBtn')).focus(); } catch(e){}
+}
+function clMsg(key, vars, err){ const m = $('#clMsg'); m.classList.toggle('err', !!err); setT(m, key, vars); }
+function clBtns(st){ $('#clStop').hidden = st !== 'run'; $('#clRetry').hidden = st !== 'fail'; $('#clDone').hidden = st === 'run'; setT('#clDone', st === 'fail' ? 'cl.close' : 'cl.ok'); }
+function clFilesUi(){
+  const ul = $('#clFiles'); ul.textContent = '';
+  CL.files.forEach((f, i) => {
+    const li = document.createElement('li'), b = document.createElement('b'), s = document.createElement('span'), bar = document.createElement('div');
+    b.textContent = f.label; bar.className = 'cl-bar'; bar.append(document.createElement('i')); bar.setAttribute('aria-hidden', 'true');
+    li.append(b, s, bar); ul.append(li); f.el = li;
+  });
+  clProgUi();
+}
+function clProgUi(){
+  const tot = CL.files.reduce((a, f) => a + f.size, 0), done = CL.files.reduce((a, f) => a + Math.min(f.size, f.done), 0);
+  const pct = tot ? Math.floor(done / tot * 100) : (CL.files.every(f => f.ok) ? 100 : 0);
+  $('#clAllBar').firstElementChild.style.width = pct + '%'; $('#clAllBar').setAttribute('aria-valuenow', String(pct));
+  setT('#clAllT', tot ? 'cl.pct' : 'cl.pct0', { pct, done: clFmtBytes(done), total: clFmtBytes(tot) });
+  for (const f of CL.files){
+    if (!f.el) continue;
+    const p = f.size ? Math.floor(Math.min(f.size, f.done) / f.size * 100) : 100;
+    f.el.querySelector('.cl-bar i').style.width = p + '%';
+    f.el.classList.toggle('ok', !!f.ok);
+    setT(f.el.querySelector('span'), f.skip ? 'cl.f.skip' : f.ok ? (CL.mode === 'open' ? 'cl.f.got' : 'cl.f.sent') : f.done ? 'pct' : 'cl.f.wait', { n: p });
+  }
+}
+function clErr(e, opening){
+  const c = e && e.code, d = (e && e.data) || {};
+  const map = { quota_exceeded: 'cl.e.quota', file_too_large: 'cl.e.big', invalid_media_type: 'cl.e.type', pro_required: 'cl.e.pro',
+    cloud_unavailable: 'cl.e.unavail', too_many_projects: 'cl.e.many', too_large: 'cl.e.state', not_logged_in: 'acct.e.not_logged_in',
+    files_missing: opening ? 'cl.e.missing' : 'cl.e.other', bad_project: 'cl.e.bad', no_song_file: 'cl.e.nosong', not_found: opening ? 'cl.e.gone' : 'cl.e.other',
+    rate_limited: 'acct.e.rate_limited' };
+  const net = !c || c === 'network' || c === 'http_0' || e instanceof TypeError || (e && e.status >= 500);
+  const k = map[c] || (net ? (opening ? 'cl.e.netOpen' : 'cl.e.net') : 'cl.e.other');
+  diag('sauvegarde en ligne : erreur ' + (c || (e && e.message)));
+  if (c === 'not_logged_in') ACCT.me().catch(() => {});
+  return [k, { used: clFmtBytes(d.used), quota: clFmtBytes(d.quota), need: clFmtBytes(d.needed) }];
+}
+
+/* ---- saving ---- */
+function clDefaultName(){
+  const sg = S.song, base = !sg ? 'Stalak' : sg.demo ? _t('demo.song') : sg.name;
+  return base + ' · ' + new Date().toLocaleDateString(LANG === 'en' ? 'en-GB' : 'fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+function clMediaFiles(){
+  const out = [], seen = new Set(), add = f => { if (f && !seen.has(f)){ seen.add(f); out.push(f); } };
+  if (S.song && !S.song.demo) add(S.song.file);
+  for (const tk of S.takes) if (tk.kind === 'video') add(tk.file);
+  return out;
+}
+function clSaveAsk(){
+  if (!CL || CL.busy || S.exporting || askDone) return;
+  if (!acctPro()){ if (isShown($('#acctPage'))) apGo('pro', { why: 'cloud' }); else acctOpen('cloud'); return; }
+  if (!CL.avail){ clSay('cl.soonSt'); return; }
+  if (!S.song){ clSay('cl.nothing'); return; }
+  if (S.takes.some(t => t.status === 'pending')){ clSay('cl.wait'); return; }
+  stop(true);
+  clDlgOpen('cl.saveT');
+  $('#clNameF').hidden = false; $('#clProg').hidden = true;
+  $('#clName').value = CL.cur ? CL.cur.name : clDefaultName();
+  const files = clMediaFiles(), size = files.reduce((a, f) => a + f.size, 0);
+  if (files.length) setT('#clSizeT', 'cl.sizeT', { n: files.length, size: clFmtBytes(size) }); else setT('#clSizeT', 'cl.sizeT0');
+  setTimeout(() => { try { $('#clName').focus(); $('#clName').select(); } catch(e){} }, 40);
+}
+async function clFingerprint(f){ let id = CL.fp.get(f); if (!id){ id = await ACCT.cloud.fingerprint(f); CL.fp.set(f, id); } return id; }
+const clFileRef = (f, id) => ({ id, name: f.name, type: f.type || '', size: f.size, lastModified: f.lastModified || 0 });
+/* what is saved: everything that makes the project, the take objects replaced by their place in the list */
+async function clCollect(){
+  const sg = S.song, media = [], ids = new Map();
+  const ref = async f => {
+    if (!f) throw Object.assign(new Error('no file'), { code: 'no_song_file' });
+    let id = ids.get(f); if (!id){ id = await clFingerprint(f); ids.set(f, id); if (!media.some(m => m.id === id)) media.push({ id, file: f }); }
+    return clFileRef(f, id);
+  };
+  const song = { name: sg.name, demo: !!sg.demo, duration: sg.duration, beats: sg.beats, down: sg.down, bpm: sg.bpm, lyr: sg.lyr || null };
+  if (!sg.demo) song.file = await ref(sg.file);
+  const takes = [];
+  for (const tk of S.takes){
+    const o = { name: tk.name, kind: tk.kind, broll: !!tk.broll, offset: tk.offset, duration: tk.duration, status: tk.status, excl: tk.excl || [],
+      mirror: !!tk.mirror, conf: tk.conf == null ? null : tk.conf, cands: tk.cands || null, ci: tk.ci || 0, look: tk.look || null };
+    if (tk.kind === 'video') o.file = await ref(tk.file);
+    takes.push(o);
+  }
+  const cut = c => { const tk = c.take, o = { t0: c.t0, t1: c.t1, ti: S.takes.indexOf(baseOf(tk)) };
+    if (c.locked) o.locked = true; if (c.broll) o.broll = true; if (tk && tk.view) o.vo = tk.offset; return o; };
+  const state = {
+    app: 'stalak', v: 1, savedAt: new Date().toISOString(), lang: LANG, song, takes,
+    set: { kind: S.kind, fmt: S.fmt, clipFmt: S.clipFmt || null, startBar: S.startBar, nBars: S.nBars, clipEnd: S.clipEnd, pace: S.pace, mode: S.mode,
+      brollAmt: S.brollAmt, bestTake: S.bestTake, fxLevel: S.fxLevel, seed: S.seed, version: S.version, reelStart: S.reelStart || 0, lyrUser: !!S.lyrUser },
+    lyrics: { mode: S.lyrics.mode, lines: S.lyrics.lines, style: S.lyrics.style },
+    cuts: S.cuts.map(cut), locks: S.locks.map(cut), fxUser: S.fxUser, fxAuto: S.fxAuto,
+  };
+  return { state: JSON.parse(JSON.stringify(state)), media };
+}
+async function clSaveRun(name){
+  if (CL.busy) return;
+  CL.busy = true; CL.mode = 'save'; CL.ctl = new AbortController(); CL.retry = () => clSaveRun(name); clSync();
+  $('#clNameF').hidden = true; $('#clProg').hidden = false; clBtns('run');
+  setT('#clDlgT', 'cl.savingT', { name }); clMsg('cl.prep'); CL.files = []; clFilesUi();
+  const signal = CL.ctl.signal;
+  try {
+    const { state, media } = await clCollect();
+    const id = (CL.cur && CL.cur.id) || ('p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8));
+    CL.files = media.map(m => ({ label: m.file.name, size: m.file.size, done: 0 })); clFilesUi();
+    for (let i = 0; i < media.length; i++){
+      const m = media[i], f = CL.files[i];
+      clMsg(null);
+      const r = await ACCT.cloud.upload(id, m.file, m.id, { signal, onProgress: b => { f.done = b; clProgUi(); }, onRetry: n => clMsg('cl.retrying', { n }) });
+      f.done = f.size; f.ok = true; f.skip = !!(r && r.skipped); clProgUi();
+    }
+    if (signal.aborted) throw Object.assign(new Error('aborted'), { code: 'aborted' });
+    clMsg('cl.finishing');
+    const res = await ACCT.projects.save(id, name, state, media.map(m => m.id));
+    CL.cur = { id, name }; if (res && res.storage) CL.storage = res.storage;
+    CL.files.forEach(f => { f.ok = true; f.done = f.size; }); clProgUi();
+    $('#clAllBar').firstElementChild.style.width = '100%';
+    clMsg('cl.saved'); clBtns('done'); $('#clDone').focus();
+    setT('#cloudSaveNote', 'cl.savedNote', { t: new Date().toLocaleTimeString(LANG === 'en' ? 'en-GB' : 'fr-FR', { hour: '2-digit', minute: '2-digit' }) });
+    diag('sauvegarde en ligne : ' + media.length + ' fichier(s), ' + media.filter((m, i) => CL.files[i].skip).length + ' déjà en ligne');
+    clLoadList();
+  } catch(e){
+    if (e && e.code === 'aborted'){ CL.busy = false; clDlgClose(); clSay('cl.stopped'); }
+    else { const [k, v] = clErr(e, false); clMsg(k, v, true); clBtns('fail'); $('#clRetry').focus(); }
+  } finally { CL.busy = false; CL.ctl = null; clSync(); }
+}
+
+/* ---- opening ---- */
+async function clOpenAsk(p){
+  if (!CL || CL.busy || S.exporting || askDone || apBusy) return;
+  if (S.song || S.takes.length){
+    if (!await askSure(_t('cl.openAskT'), _t('cl.openAskP'), _t('cl.openYes'))) return;
+    // a clean page first: the project is opened again right after the reload (clBoot)
+    try { sessionStorage.setItem(CL_OPEN_KEY, JSON.stringify({ id: p.id, name: p.name })); } catch(e){ return; }
+    S.cancel = true; try { stop(true); } catch(e){}
+    try { history.replaceState(null, '', location.pathname + location.search); } catch(e){}
+    location.reload(); return;
+  }
+  clOpenRun(p);
+}
+function clBoot(){
+  if (!CL) return;
+  let p = null; try { p = JSON.parse(sessionStorage.getItem(CL_OPEN_KEY) || 'null'); sessionStorage.removeItem(CL_OPEN_KEY); } catch(e){}
+  if (p && typeof p.id === 'string' && ACCT.state.user) clOpenRun(p);
+}
+async function clOpenRun(p){
+  if (CL.busy) return;
+  CL.busy = true; CL.mode = 'open'; CL.ctl = new AbortController(); CL.retry = () => clOpenAsk(p); clSync();
+  clDlgOpen('cl.openingT', { name: p.name || _t('cl.noName') });
+  $('#clNameF').hidden = true; $('#clProg').hidden = false; clBtns('run'); clMsg('cl.fetching'); CL.files = []; clFilesUi();
+  const signal = CL.ctl.signal;
+  try {
+    const d = await ACCT.projects.get(p.id);
+    const st = d.state;
+    if (!st || st.app !== 'stalak' || !st.song || !Array.isArray(st.takes)) throw Object.assign(new Error('bad project'), { code: 'bad_project' });
+    const online = new Map((d.files || []).map(f => [f.id, f])), refs = [];
+    for (const r of [st.song.file].concat(st.takes.map(t => t.file))) if (r && !refs.some(x => x.id === r.id)) refs.push(r);
+    const missing = refs.filter(r => !online.has(r.id));
+    if (missing.length) throw Object.assign(new Error('files missing'), { code: 'files_missing' });
+    CL.files = refs.map(r => ({ label: r.name, size: online.get(r.id).size, done: 0 })); clFilesUi();
+    const files = new Map();
+    for (let i = 0; i < refs.length; i++){
+      const r = refs[i], o = online.get(r.id), f = CL.files[i];
+      clMsg(null);
+      const file = await ACCT.cloud.download(p.id, { id: r.id, name: r.name, type: r.type || o.type, size: o.size, lastModified: r.lastModified },
+        { signal, onProgress: b => { f.done = b; clProgUi(); }, onRetry: n => clMsg('cl.retrying', { n }) });
+      CL.fp.set(file, r.id);   // the same file saved again later: recognised at once, not sent again
+      files.set(r.id, file); f.ok = true; f.done = f.size; clProgUi();
+    }
+    if (signal.aborted) throw Object.assign(new Error('aborted'), { code: 'aborted' });
+    clMsg('cl.restoring'); $('#clStop').hidden = true;
+    const gated = await clApply(st, files);
+    CL.cur = { id: p.id, name: d.name };
+    CL.busy = false; clDlgClose(); apHide();
+    say(gated ? 'cl.clipNoPro' : 'cl.opened', { name: d.name || _t('cl.noName') });
+    diag('sauvegarde en ligne : projet ouvert (' + refs.length + ' fichier(s))');
+  } catch(e){
+    if (e && e.code === 'aborted'){ CL.busy = false; clDlgClose(); clSay('cl.stoppedOpen'); }
+    else { const [k, v] = clErr(e, true); clMsg(k, v, true); clBtns('fail'); try { $('#clRetry').focus(); } catch(x){} }
+  } finally { CL.busy = false; CL.ctl = null; clSync(); }
+}
+/* puts everything back as it was saved; returns true when a clip had to open as a TikTok / Reels (no Pro any more) */
+async function clApply(st, files){
+  stop(true);
+  const set = st.set || {}, wantClip = set.kind === 'clip', clip = wantClip && (!ACCT || acctPro());
+  // the song (its beat grid as it was, with any change made by hand)
+  if (st.song.demo) await setSong(await makeDemoSong(), _t('demo.song'), true);
+  else { const f = files.get(st.song.file.id); await setSong(await songFromFile(f), st.song.name, false); S.song.file = f; }
+  const sg = S.song;
+  if (Array.isArray(st.song.beats) && st.song.beats.length > 1){ sg.beats = st.song.beats; sg.down = st.song.down | 0; sg.bpm = st.song.bpm || sg.bpm; }
+  if ('lyr' in st.song) sg.lyr = st.song.lyr;
+  // what is made and its settings
+  S.kind = clip ? 'clip' : 'reel'; S.reelSave = null; S.clipFmt = set.clipFmt || null; S.lyrUser = !!set.lyrUser;
+  S.pace = set.pace || S.pace; S.mode = set.mode || S.mode; S.brollAmt = set.brollAmt || S.brollAmt; S.fxLevel = set.fxLevel || S.fxLevel;
+  S.bestTake = set.bestTake !== false; S.seed = set.seed || 1; S.version = set.version || 1;
+  if (clip || !wantClip){ S.startBar = set.startBar || 0; S.nBars = set.nBars || 0; S.clipEnd = set.clipEnd == null ? null : set.clipEnd; S.reelStart = set.reelStart || 0; }
+  else { S.startBar = set.reelStart || 0; S.nBars = 0; S.clipEnd = null; S.reelStart = S.startBar; }
+  kindUI();
+  const fmt = FORMATS[set.fmt] ? set.fmt : '916';
+  setFormat(clip ? fmt : (fmt === '169' ? '916' : fmt));
+  // lyrics, their times and their look
+  const ly = st.lyrics || {};
+  S.lyrics.mode = ly.mode || S.lyrics.mode;
+  S.lyrics.lines = Array.isArray(ly.lines) ? ly.lines : [];
+  if (ly.style && typeof ly.style === 'object') Object.assign(S.lyrics.style, ly.style);
+  $('#lyText').value = S.lyrics.lines.map(l => l.text).join('\n');
+  $('#songBox').hidden = false; setT($('#songDrop').querySelector('strong'), 'song.change');
+  // the takes, in their order, with their offsets and settings
+  S.takes = []; renderTakes();
+  for (const t of st.takes){
+    if (t.kind === 'demo'){
+      S.takes.push({ id: ++takeId, name: t.name, kind: 'demo', look: t.look, duration: t.duration || sg.duration, offset: t.offset || 0, status: 'demo', color: COLORS[S.takes.length % COLORS.length], excl: t.excl || [] });
+      continue;
+    }
+    const f = files.get(t.file && t.file.id); if (!f) continue;
+    const p = t.broll ? addBroll(f) : addVideo(f, { mirror: !!t.mirror, duration: t.duration });
+    const tk = S.takes[S.takes.length - 1];
+    await p;
+    Object.assign(tk, { name: t.name || tk.name, excl: Array.isArray(t.excl) ? t.excl : [] });
+    if (!t.broll){
+      if (typeof t.offset === 'number') tk.offset = t.offset;
+      if (t.status && t.status !== 'pending') tk.status = t.status;
+      tk.conf = t.conf == null ? tk.conf : t.conf; tk.cands = t.cands || null; tk.ci = t.ci || 0;
+      if (!tk.duration && t.duration) tk.duration = t.duration;
+    }
+    renderTakes(); await nextFrame();
+  }
+  // the edit: generated once (passage, words), then the saved one put back as it was
+  S.locks = []; S.fxUser = Array.isArray(st.fxUser) ? st.fxUser : [];
+  rebuild(false);
+  if (clip || !wantClip){
+    const takeOf = c => { const b = S.takes[c.ti]; if (!b) return null; return c.vo != null && b.broll ? brollView(b, c.vo) : b; };
+    const back = list => (Array.isArray(list) ? list : []).map(c => { const tk = takeOf(c); if (!tk) return null;
+      const o = { t0: c.t0, t1: c.t1, take: tk }; if (c.locked) o.locked = true; if (c.broll) o.broll = true; return o; }).filter(Boolean);
+    const cuts = back(st.cuts);
+    if (cuts.length){ S.cuts = cuts; S.locks = back(st.locks); S.fxAuto = isClip() && Array.isArray(st.fxAuto) ? st.fxAuto : []; S.fxVer++; S.keepEdit = true; }
+  } else S.fxUser = [];
+  S.version = set.version || S.version; S.sel = -1;
+  // the pickers show what is set
+  const pr = (sel, v) => $$(sel + ' button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === v)));
+  const sty = S.lyrics.style;
+  pr('#paceSeg', S.pace); pr('#brollSeg', S.brollAmt); pr('#fxSeg', S.fxLevel); pr('#fmtSeg', S.fmt);
+  pr('#stFont', sty.font); pr('#stColor', sty.color); pr('#stPos', sty.pos); pr('#stDeco', sty.deco); pr('#stSize', sty.size); pr('#stAnim', sty.anim); pr('#stHl', sty.hl || 'auto');
+  $('#bestChk').checked = S.bestTake; hlView(); barsSync();
+  $('#verLbl').textContent = 'Version ' + S.version;
+  renderTakes(); renderWave(); renderTimeline(); renderCutBar(); renderFxBar(); songMeta(); renderLines();
+  try { waveOverlay(); } catch(e){}
+  S.cursor = S.segStart;
+  go(4);
+  acctSync();   // Pro features of the project (text sizes…) follow the account as it is now
+  return wantClip && !clip;
+}
+
+if (CL){
+  $('#cloudSaveBtn').onclick = clSaveAsk;
+  $('#clSaveHere').onclick = clSaveAsk;
+  $('#clNameF').onsubmit = e => { e.preventDefault(); const v = $('#clName').value.replace(/\s+/g, ' ').trim().slice(0, 120); clSaveRun(v || clDefaultName()); };
+  $('#clNo').onclick = clDlgClose;
+  $('#clStop').onclick = () => { if (CL.ctl) CL.ctl.abort(); };
+  $('#clRetry').onclick = () => { const r = CL.retry; if (!r) return; if (CL.mode === 'open'){ clDlgClose(); } r(); };
+  $('#clDone').onclick = clDlgClose;
+  $('#cloudDlg').addEventListener('keydown', e => { if (e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); if (CL.busy){ if (CL.ctl) CL.ctl.abort(); } else clDlgClose(); } });
+  clCheck();
 }
 
 /* ---------- FR / EN: everything on screen is written again in the other language, the work stays as it is ---------- */

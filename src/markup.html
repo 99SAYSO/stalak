@@ -333,6 +333,10 @@
           </div>
           </div>
           <p class="note cover-note" id="coverNote" hidden></p>
+          <div class="cl-row" id="cloudRow" hidden>
+            <button class="btn tip" id="cloudSaveBtn" type="button" data-tip="Garde ce projet (son, prises, paroles, montage) dans ton compte, pour le rouvrir plus tard sur n’importe quel appareil." data-i18n="cl.save" data-i18n-attr="data-tip:cl.save.tip">Sauvegarder en ligne</button>
+            <span class="note" id="cloudSaveNote"></span>
+          </div>
           <p class="note outro-note" id="outroNote"><span data-i18n="outro">Les vidéos gratuites se terminent par 3 secondes avec le logo Stalak.</span> <button class="linkbtn" id="outroPro" type="button" hidden data-i18n="acct.outroPro">L’enlever avec Stalak Pro</button></p>
           <div class="result" id="result" hidden>
             <video id="resultVideo" controls playsinline hidden></video>
@@ -406,6 +410,26 @@
     <div class="row">
       <button class="btn" id="homeNo" type="button" data-i18n="cancel">Annuler</button>
       <button class="btn primary" id="homeYes" type="button" data-i18n="home.title">Nouveau projet</button>
+    </div>
+  </div>
+</div>
+
+<!-- online saving (stalak.app, Stalak Pro): the name of the project, then the upload or download with its progress -->
+<div class="askbox cl-dlg" id="cloudDlg" role="dialog" aria-modal="true" aria-labelledby="clDlgT" hidden>
+  <div class="card">
+    <h2 id="clDlgT"></h2>
+    <form id="clNameF" novalidate>
+      <label for="clName" data-i18n="cl.nameL">Nom du projet</label>
+      <input id="clName" type="text" maxlength="120" autocomplete="off" spellcheck="false">
+      <p class="hint" id="clSizeT"></p>
+      <div class="row"><button class="btn" type="button" id="clNo" data-i18n="cancel">Annuler</button><button class="btn primary" type="submit" id="clGo" data-i18n="cl.go">Sauvegarder</button></div>
+    </form>
+    <div class="cl-prog" id="clProg" hidden>
+      <div class="cl-bar big" id="clAllBar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-labelledby="clAllT"><i></i></div>
+      <p class="cl-pct" id="clAllT"></p>
+      <ul class="cl-files" id="clFiles"></ul>
+      <p class="cl-msg" id="clMsg" role="status" aria-live="polite"></p>
+      <div class="row"><button class="btn" type="button" id="clStop" data-i18n="cancel">Annuler</button><button class="btn primary" type="button" id="clRetry" hidden data-i18n="cl.retry">Réessayer</button><button class="btn primary" type="button" id="clDone" hidden data-i18n="cl.ok">OK</button></div>
     </div>
   </div>
 </div>
@@ -560,6 +584,18 @@
         <p class="ap-sub" id="apSub"><span id="apSubT"></span> <button class="linkbtn ap-subgo" type="button" id="apSubGo"></button></p>
       </div>
 
+      <div class="card ap-card cl-card" id="apProjects" hidden>
+        <h3><span data-i18n="cl.mine">Mes projets</span><span class="soon" id="clSoon" hidden data-i18n="pr.soon">bientôt</span></h3>
+        <p class="hint" id="clSoonP" hidden data-i18n="cl.soonP">Bientôt, tes projets (son, prises, paroles et montage) seront sauvegardés ici, pour les rouvrir sur n’importe quel appareil.</p>
+        <div class="cl-quota" id="clQuota" hidden>
+          <div class="cl-bar" id="clQuotaBar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-labelledby="clQuotaT"><i></i></div>
+          <p class="hint" id="clQuotaT"></p>
+        </div>
+        <ul class="cl-list" id="clList" aria-live="polite"></ul>
+        <p class="hint" id="clEmpty" hidden></p>
+        <div class="cl-actions" id="clActions" hidden><button class="btn" type="button" id="clSaveHere" data-i18n="cl.saveNow">Sauvegarder le projet en cours</button></div>
+      </div>
+
       <div class="card ap-card">
         <h3 data-i18n="ap.lang">Langue</h3>
         <div class="langsw" role="group" aria-label="Langue · Language"><button type="button" data-lang="fr" lang="fr" aria-pressed="true" title="Français"><svg class="flag" viewBox="0 0 3 2" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path fill="#002654" d="M0 0h1v2H0z"/><path fill="#fff" d="M1 0h1v2H1z"/><path fill="#ce1126" d="M2 0h1v2H2z"/></svg><span>Français</span></button><button type="button" data-lang="en" lang="en" aria-pressed="false" title="English"><svg class="flag" viewBox="0 0 60 30" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><path fill="#012169" d="M0 0h60v30H0z"/><path stroke="#fff" stroke-width="6" d="M0 0l60 30M60 0L0 30"/><path stroke="#c8102e" stroke-width="2.4" d="M0 0l60 30M60 0L0 30"/><path stroke="#fff" stroke-width="10" d="M30 0v30M0 15h60"/><path stroke="#c8102e" stroke-width="6" d="M30 0v30M0 15h60"/></svg><span>English</span></button></div>
@@ -594,7 +630,7 @@
               <li data-i18n="pr.f.clip"><strong>Ton clip YouTube, monté tout seul.</strong> Le morceau entier en 16:9, coupé sur le rythme, avec effets. Prêt à poster.</li>
               <li data-i18n="pr.f.pack"><strong>Un mois de contenu en un clic.</strong> 5, 10 ou 30 vidéos toutes différentes du même son, pour poster chaque jour.</li>
               <li data-i18n="pr.f.text"><strong>Des paroles qui accrochent.</strong> Mot par mot ou en karaoké qui suit ta voix, en taille S, M ou L.</li>
-              <li class="is-soon" data-i18n="pr.f.cloud"><strong>Tes projets partout :</strong> commence sur ton téléphone, finis sur ton ordi. <span class="soon">bientôt</span></li>
+              <li data-i18n="pr.f.cloud"><strong>Tes projets partout :</strong> commence sur ton téléphone, finis sur ton ordi.</li>
               <li class="is-soon" data-i18n="pr.f.auto"><strong>Tes paroles écrites pour toi :</strong> Stalak écoute ta voix et les cale tout seul. <span class="soon">bientôt</span></li>
             </ul>
           </article>
@@ -612,7 +648,7 @@
               <li data-i18n="pr.f.clip"><strong>Ton clip YouTube, monté tout seul.</strong> Le morceau entier en 16:9, coupé sur le rythme, avec effets. Prêt à poster.</li>
               <li data-i18n="pr.f.pack"><strong>Un mois de contenu en un clic.</strong> 5, 10 ou 30 vidéos toutes différentes du même son, pour poster chaque jour.</li>
               <li data-i18n="pr.f.text"><strong>Des paroles qui accrochent.</strong> Mot par mot ou en karaoké qui suit ta voix, en taille S, M ou L.</li>
-              <li class="is-soon" data-i18n="pr.f.cloud"><strong>Tes projets partout :</strong> commence sur ton téléphone, finis sur ton ordi. <span class="soon">bientôt</span></li>
+              <li data-i18n="pr.f.cloud"><strong>Tes projets partout :</strong> commence sur ton téléphone, finis sur ton ordi.</li>
               <li class="is-soon" data-i18n="pr.f.auto"><strong>Tes paroles écrites pour toi :</strong> Stalak écoute ta voix et les cale tout seul. <span class="soon">bientôt</span></li>
             </ul>
           </article>
@@ -654,7 +690,7 @@
               <tr><th scope="row" data-i18n="pr.r.nologo">Vidéos sans logo Stalak</th><td><i class="pr-no" role="img" aria-label="Non" data-i18n-attr="aria-label:pr.no"></i></td><td class="pr-colpro"><i class="pr-yes" role="img" aria-label="Oui" data-i18n-attr="aria-label:pr.yes"></i></td></tr>
               <tr><th scope="row" data-i18n="pr.r.clip">Clip YouTube 16:9 monté automatiquement, avec effets</th><td><i class="pr-no" role="img" aria-label="Non" data-i18n-attr="aria-label:pr.no"></i></td><td class="pr-colpro"><i class="pr-yes" role="img" aria-label="Oui" data-i18n-attr="aria-label:pr.yes"></i></td></tr>
               <tr><th scope="row" data-i18n="pr.r.pack">Packs de 5, 10 ou 30 vidéos différentes en un clic</th><td><i class="pr-no" role="img" aria-label="Non" data-i18n-attr="aria-label:pr.no"></i></td><td class="pr-colpro"><i class="pr-yes" role="img" aria-label="Oui" data-i18n-attr="aria-label:pr.yes"></i></td></tr>
-              <tr><th scope="row" data-i18n="pr.r.cloud">Sauvegarde en ligne</th><td><i class="pr-no" role="img" aria-label="Non" data-i18n-attr="aria-label:pr.no"></i></td><td class="pr-colpro"><span class="soon" data-i18n="pr.soon">bientôt</span></td></tr>
+              <tr><th scope="row" data-i18n="pr.r.cloud">Sauvegarde en ligne</th><td><i class="pr-no" role="img" aria-label="Non" data-i18n-attr="aria-label:pr.no"></i></td><td class="pr-colpro"><i class="pr-yes" role="img" aria-label="Oui" data-i18n-attr="aria-label:pr.yes"></i></td></tr>
               <tr><th scope="row" data-i18n="pr.r.autoly">Paroles écrites et calées automatiquement</th><td><i class="pr-no" role="img" aria-label="Non" data-i18n-attr="aria-label:pr.no"></i></td><td class="pr-colpro"><span class="soon" data-i18n="pr.soon">bientôt</span></td></tr>
             </tbody>
             <tfoot><tr><th scope="row" data-i18n="pr.r.price">Prix</th><td class="pr-v" data-i18n="pr.free.amt">0 €</td><td class="pr-colpro pr-v" data-i18n="pr.v.from">dès 6,58 €/mois</td></tr></tfoot>
@@ -667,7 +703,7 @@
           <details><summary data-i18n="pr.q.stop">Je peux arrêter quand je veux ?</summary><p data-i18n="pr.a.stop">Oui. Tu arrêtes en deux clics depuis ton compte : tu gardes Pro jusqu’à la fin de la période payée, puis tu repasses en gratuit sans rien perdre.</p></details>
           <details><summary data-i18n="pr.q.refund">Et si ça ne me plaît pas ?</summary><p data-i18n="pr.a.refund">Tu es remboursé intégralement si tu le demandes dans les 14 jours après un paiement. Voir la <a href="/remboursement">politique de remboursement</a>.</p></details>
           <details><summary data-i18n="pr.q.pay">Comment je paie ?</summary><p data-i18n="pr.a.pay">Par carte bancaire, Apple Pay, Google Pay ou PayPal. Le paiement est géré par Paddle.com, notre revendeur officiel, qui envoie aussi les factures. Les prix affichés incluent la TVA en Europe.</p></details>
-          <details><summary data-i18n="pr.q.videos">Mes vidéos sont-elles envoyées sur vos serveurs ?</summary><p data-i18n="pr.a.videos">Non : le montage et l’export se font sur ton appareil.</p></details>
+          <details><summary data-i18n="pr.q.videos">Mes vidéos sont-elles envoyées sur vos serveurs ?</summary><p data-i18n="pr.a.videos">Non : le montage et l’export se font sur ton appareil. Seuls les projets que tu choisis de sauvegarder en ligne (Stalak Pro) sont gardés dans ton compte, en privé.</p></details>
         </section>
         <p class="ap-legal pr-legal"><a href="/conditions" data-i18n="ap.terms" data-i18n-attr="href:ap.termsHref">Conditions</a> · <a href="/remboursement" data-i18n="ap.refunds" data-i18n-attr="href:ap.refundsHref">Remboursement</a> · <a href="/tarifs" data-i18n="ap.pricing" data-i18n-attr="href:ap.pricingHref">Tarifs</a></p>
       </div>
@@ -680,7 +716,7 @@
           <li data-i18n="acct.perk2">Le mode Clip : le morceau entier en 16:9</li>
           <li data-i18n="acct.perk5">Les packs : 5, 10 ou 30 vidéos toutes différentes d’un coup</li>
           <li data-i18n="acct.perk6">Toutes les tailles et apparitions du texte : mot par mot, karaoké</li>
-          <li data-i18n="acct.perk3">Tes projets sauvegardés en ligne <span class="soon">bientôt</span></li>
+          <li data-i18n="acct.perk3">Tes projets sauvegardés en ligne</li>
           <li data-i18n="acct.perk4">Les paroles calées automatiquement <span class="soon">bientôt</span></li>
         </ul>
         <button class="btn" id="apManage" type="button" data-i18n="acct.manage">Gérer mon abonnement</button>
@@ -701,7 +737,7 @@
       <section class="pt-slide" aria-roledescription="diapositive" data-i18n-attr="aria-roledescription:pt.slide"><img data-emo="hype" alt="" width="112" height="112"><h3 data-i18n="pt.s1t">Plus de logo à la fin</h3><p data-i18n="pt.s1p">Tes vidéos se terminent sur toi, sans les 3 secondes Stalak.</p></section>
       <section class="pt-slide" aria-roledescription="diapositive" data-i18n-attr="aria-roledescription:pt.slide"><img data-emo="cool" alt="" width="112" height="112"><h3 data-i18n="pt.s2t">Le mode Clip</h3><p data-i18n="pt.s2p">Le morceau entier en 16:9, avec les effets. Choisis « Clip » à l’étape Son.</p></section>
       <section class="pt-slide" aria-roledescription="diapositive" data-i18n-attr="aria-roledescription:pt.slide"><img data-emo="focus" alt="" width="112" height="112"><h3 data-i18n="pt.s5t">Les packs</h3><p data-i18n="pt.s5p">5, 10 ou 30 vidéos toutes différentes d’un coup, pour poster tous les jours. À l’étape Montage.</p></section>
-      <section class="pt-slide" aria-roledescription="diapositive" data-i18n-attr="aria-roledescription:pt.slide"><img data-emo="coffee" alt="" width="112" height="112"><h3 data-i18n="pt.s3t">Sauvegarde en ligne <span class="soon">bientôt</span></h3><p data-i18n="pt.s3p">Tes projets te suivront d’un appareil à l’autre.</p></section>
+      <section class="pt-slide" aria-roledescription="diapositive" data-i18n-attr="aria-roledescription:pt.slide"><img data-emo="coffee" alt="" width="112" height="112"><h3 data-i18n="pt.s3t">Sauvegarde en ligne</h3><p data-i18n="pt.s3p">Tes projets te suivront d’un appareil à l’autre.</p></section>
       <section class="pt-slide" aria-roledescription="diapositive" data-i18n-attr="aria-roledescription:pt.slide"><img data-emo="gg" alt="" width="112" height="112"><h3 data-i18n="pt.s4t">Paroles automatiques <span class="soon">bientôt</span></h3><p data-i18n="pt.s4p">Stalak calera tes paroles sur ta voix, tout seul.</p></section>
     </div>
     <p class="vh" id="ptLive" aria-live="polite"></p>

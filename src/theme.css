@@ -328,6 +328,43 @@ body::after{animation:al-snow-near 13s linear infinite}
 .askbox[hidden]{display:none}
 .askbox .card{max-width:420px;width:100%;animation:al-pop .18s var(--soft)}
 .askbox .row{justify-content:flex-end;gap:10px;margin-top:6px}
+/* online saving (stalak.app, Pro): the button of the Montage step, the save / open window, « Mes projets » in the account */
+.cl-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-top:10px}
+.cl-row[hidden],.cl-prog[hidden],#clNameF[hidden],.cl-quota[hidden],.cl-actions[hidden]{display:none}
+#cloudSaveBtn.protag::after,#clSaveHere.protag::after{content:"PRO";font:700 10px/1 var(--body);letter-spacing:.04em;margin-left:8px;padding:3px 5px;border-radius:6px;background:var(--ink);color:#fff;vertical-align:2px}
+.cl-dlg .card{max-width:460px;max-height:calc(100dvh - 32px);overflow:auto;display:flex;flex-direction:column;gap:10px}
+.cl-dlg h2{margin:0;overflow-wrap:anywhere}
+.cl-dlg form{display:flex;flex-direction:column;gap:8px;margin:0}
+.cl-dlg label{font-weight:600}
+.cl-dlg input[type=text],.cl-item input[type=text]{box-sizing:border-box;width:100%;min-height:50px;font:500 17px var(--body);padding:10px 14px;border:2.5px solid var(--ink);border-radius:14px;background:#fff;color:var(--ink)}
+.cl-dlg input:focus-visible,.cl-item input:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
+.cl-dlg .row{flex-wrap:wrap}
+.cl-prog{display:flex;flex-direction:column;gap:12px}
+.cl-prog .cl-pct{margin-top:-4px}
+.cl-bar{position:relative;height:12px;border:2px solid var(--ink);border-radius:99px;background:var(--frost);overflow:hidden}
+.cl-bar.big{height:18px}
+.cl-bar > i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--sky);border-radius:99px;transition:width .25s linear}
+.cl-bar.full > i{background:var(--tongue)}
+.cl-pct{margin:0;font:700 15px var(--body);font-variant-numeric:tabular-nums}
+.cl-files{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.cl-files li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center;font-size:14px}
+.cl-files li b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cl-files li span{font-variant-numeric:tabular-nums;color:var(--muted,#555)}
+.cl-files li .cl-bar{grid-column:1 / -1;height:8px;border-width:1.5px}
+.cl-files li.ok span{color:var(--ok)}
+.cl-msg{margin:0;font-weight:600;min-height:1.3em}
+.cl-msg.err{color:#b3261e}
+.cl-card h3{display:flex;align-items:center;flex-wrap:wrap;gap:4px}
+.cl-quota{display:flex;flex-direction:column;gap:6px}
+.cl-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.cl-item{display:flex;flex-direction:column;gap:8px;padding:12px 0}
+.cl-item + .cl-item{border-top:2px solid var(--frost)}
+.cl-item .cl-name{font:700 16px/1.25 var(--body);overflow-wrap:anywhere;margin:0}
+.cl-item .cl-meta{font-size:13.5px;color:var(--muted,#555);margin:0}
+.cl-item .cl-btns{display:flex;flex-wrap:wrap;gap:8px}
+.cl-item .cl-btns .btn{min-height:40px;padding:6px 14px}
+.cl-item .cl-btns .cl-del{color:#b3261e}
+.cl-item.cur .cl-name::after{content:"•";color:var(--tongue);margin-left:6px}
 /* ---- posting ---- */
 .post{margin-top:14px;display:flex;flex-direction:column;gap:8px}
 .post .label{margin:0}

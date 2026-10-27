@@ -26,11 +26,13 @@ database_name = "stalak"
 database_id = "fc4c8647-2357-4f7e-821c-e360c861a712"
 migrations_dir = "migrations"
 
-# R2 bucket for media, for later (social posting needs public video URLs).
-# Left commented: a binding to a bucket that does not exist makes the deployment fail.
-# [[r2_buckets]]
-# binding = "MEDIA"
-# bucket_name = "stalak-media"
+# R2 bucket for the media of projects saved online (Stalak Pro): the song and the takes, keys u/<userId>/p/<projectId>/<fileId>.
+# The bucket "stalak-media" must exist (private, no public access): a binding to a missing bucket makes the deployment fail.
+# To turn online saving off, comment these 3 lines: the code then answers "cloud_unavailable" and the app shows « bientôt ».
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "stalak-media"
+# Optional: CLOUD_QUOTA_BYTES (default 21474836480 = 20 GB per user) and the secret CRON_SECRET (see BACKEND.md, step 10).
 
 # Preview deployments (branches other than main) use the same values and the same database.
 # To isolate them later, add [env.preview.vars] and [[env.preview.d1_databases]] sections.
