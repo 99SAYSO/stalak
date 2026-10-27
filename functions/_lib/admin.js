@@ -165,7 +165,16 @@ async function ticketList(env, status) {
      FROM tickets t ${where} ORDER BY t.updated_at DESC LIMIT 100`
   ).all();
   const now = Date.now();
-  return results.map((t) => ({ id: t.id, email: t.email, lang: t.lang, status: t.status, account: !!t.user_id,
+  // « Pro » badge: the account's subscription gives Pro now (same rule as the site)
+  const ids = [...new Set(results.map((t) => t.user_id).filter(Boolean))];
+  const proIds = new Set();
+  if (ids.length) {
+    const { results: subs } = await env.DB.prepare(
+      `SELECT user_id, status, current_period_end FROM subscriptions WHERE user_id IN (SELECT DISTINCT user_id FROM tickets WHERE user_id IS NOT NULL)`
+    ).all();
+    for (const sb of subs) if (subscriptionGivesPro(sb, now)) proIds.add(sb.user_id);
+  }
+  return results.map((t) => ({ id: t.id, email: t.email, lang: t.lang, status: t.status, account: !!t.user_id, pro: proIds.has(t.user_id),
     createdAt: new Date(t.created_at).toISOString(), updatedAt: new Date(t.updated_at).toISOString(),
     visitorLive: !!t.user_seen_at && t.user_seen_at > now - 15e3, lastFrom: t.last_from, lastText: t.last_text || '', messages: t.n,
     unread: t.last_from === 'user' && (!t.admin_read_at || t.admin_read_at < t.updated_at) }));
