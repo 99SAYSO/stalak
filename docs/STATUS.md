@@ -69,6 +69,32 @@
 - **Fait et en ligne** : logo 120 × 120 sur l'écran de connexion Google. Envoyé dans Google Cloud → Stalak → Branding par le Chef de projet le 27/10 ; marque vérifiée et publiée par Google.
 - **À décider** : boutons Pro de la page Tarifs pendant que Paddle est en sandbox (« bientôt » ou Paddle réel) avant toute promo.
 - **À demander** : case « recevoir les nouveautés » à l'inscription (Comptes) ; mots « montage de playback » dans le H1 et JS/CSS en fichiers cachés (App).
+- **Fait (branche `marketing/idees-croissance`)** : recherche « idées de croissance » (concurrents, fonctions, Stalak Pro, acquisition), classée par impact et effort. Document « Stalak — idées de croissance » dans claude.ai ; résumé dans `docs/marketing/IDEES_CROISSANCE.md`.
+
+## Idées de croissance recommandées (à répartir par le propriétaire)
+
+> Issues de la recherche du 27/10/2026. Impact et effort estimés, pas mesurés sur Stalak. Le rôle proposé est une suggestion. Les codes (A1, P1, F1…) renvoient au document.
+
+**À faire d'abord (fort impact, peu d'effort)**
+1. **A1 — Outro lisible et légende à copier.** Les 3 s de fin affichent « stalak.app » en grand ; bouton « copier la légende » (avec @stalak.app) à l'export ; lien `stalak.app/?ref=outro` pour mesurer. → App & montage (écran d'export) + Marketing (textes).
+2. **P1 — Présenter Pro juste après le premier export réussi.** La même vidéo sans logo et en karaoké, bouton « Continuer en gratuit » bien visible, une fois par session au plus. → Comptes (page Pro) + App (moment d'affichage) + Marketing (textes).
+3. **F1 + F2 — Texte hook / POV et hook choisi une fois.** Une phrase en haut de l'écran dès la 1re seconde, qui change d'une vidéo à l'autre dans un pack ; l'artiste choisit une fois son passage de 15-30 s et le pack fait toutes ses variantes dessus, avec une boucle propre. → App & montage.
+4. **A2 + A3 — Vidéos de fondateur et bêta Discord.** Avant / après, « je monte ton snippet », défi de la semaine dans #stalak-beta. → Propriétaire + Marketing (déjà dans le plan de lancement).
+
+**Ensuite**
+5. **P2 — Nouveaux formats dans Pro** : F4 mode pochette / visualiseur (sans filmer), F5 export multi-plateforme (TikTok / Reels / Shorts en un clic), F6 export Spotify Canvas (boucle 3-8 s). → App & montage.
+6. **F7 — Looks préréglés** (VHS, film, glitch, et un look « glace » maison). → App & montage.
+7. **A4 — Parrainage à deux** : 1 mois de Pro chacun, donné après le premier export de l'ami ; seulement quand Paddle est en réel. → Comptes.
+8. **F3 — Calendrier de sortie** (avant / pendant / après la sortie, rappels le soir), puis publication programmée réservée à Pro. → Réseaux sociaux + Comptes.
+
+**À trancher par le propriétaire (change l'offre déjà décidée)**
+- P3 : pack de sortie à l'unité sans abonnement (par exemple 10 vidéos d'un son, 4,99 à 7,99 €).
+- P4 : Pro complet offert sur le premier son, sans carte (demande un compte).
+- P7 : annuel plus bas ou essai de 7 jours avec carte sur l'annuel.
+
+**Plus tard** : P6 prix locaux via Paddle (Comptes) ; A6 affiliation après Pro ; A7 dizaine de pages SEO FR/EN (Marketing) ; A8 Product Hunt un dimanche (Marketing) ; F9 détourage, F10 stats par variante, F11 modèles partagés.
+
+**À mesurer dès la bêta** : visites → premier export → affichage de Pro → achat, et visites venues de `?ref=outro`.
 
 ### Juridique & business
 - **Fait (branche `legal/etat-des-lieux`)** : état des lieux du statut, de Paddle en réel et des pages légales (infos pour décider, pas un avis juridique).
