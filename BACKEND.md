@@ -11,7 +11,9 @@ Compte environ 1 h 30 la première fois, plus le délai de validation de Paddle 
 
 | Fonction | Comment |
 |---|---|
-| Connexion sans mot de passe | L'utilisateur tape son e-mail et reçoit un code à 6 chiffres, valable 10 min, avec 5 essais au maximum. L'e-mail part en français ou en anglais. |
+| Connexion par code | L'utilisateur tape son e-mail et reçoit un code à 6 chiffres, valable 10 min, avec 5 essais au maximum. L'e-mail part en français ou en anglais. |
+| Mot de passe (facultatif) | Depuis la page Compte, l'utilisateur peut choisir un mot de passe (8 caractères minimum) et se connecter ensuite avec. « Mot de passe oublié ? » = connexion par code, puis choix d'un nouveau mot de passe. |
+| Profil | Un pseudo (2 à 30 caractères) et une photo (recadrée et réduite à 256 × 256 dans le navigateur, 80 Ko maximum côté serveur). |
 | Session | Un cookie `stalak_s` sécurisé (HttpOnly, Secure, SameSite=Lax) qui reste valable 60 jours. |
 | Abonnement Pro | 9,99 € / mois ou 79 € / an, payé via **Paddle**. Paddle est le revendeur officiel : c'est lui qui encaisse, gère la TVA et envoie les factures. |
 | Avantages Pro | Pas d'outro Stalak à la fin des exports, sauvegarde des projets en ligne, mode Clip (16:9, chanson entière) et transcription automatique des paroles (à venir). |
@@ -52,6 +54,9 @@ Fichiers ajoutés :
 4. Dans le fichier `wrangler.toml`, remplace `REPLACE-WITH-D1-DATABASE-ID` par cet identifiant.
 5. Crée les tables : sur la page de la base, ouvre l'onglet **Console**. Colle **tout** le contenu de `migrations/0001_init.sql`, puis clique sur **Execute**.
    Vérifie ensuite dans l'onglet **Tables** que tu vois `users`, `login_codes`, `sessions`, `rate_limits`, `subscriptions`, `webhook_events` et `projects`.
+6. Puis, toujours dans la **Console**, colle **tout** le contenu de `migrations/0002_profile_password.sql` et clique sur **Execute** (une seule fois :
+   relancer ce fichier donne l'erreur « duplicate column name », sans danger). Il ajoute le pseudo, la photo et le mot de passe.
+   **À faire avant de publier la version qui contient la page Compte**, sinon `/api/me` répond une erreur.
 
 > Le stockage R2 (`MEDIA`), qui servira plus tard aux vidéos, est volontairement laissé en commentaire dans `wrangler.toml`.
 > Ne l'active que le jour où on en aura besoin : il faudra d'abord créer un bucket `stalak-media`.
@@ -178,9 +183,15 @@ Toutes les réponses sont en JSON. Les erreurs ont la forme `{"error":"code","me
 | Méthode et chemin | Rôle |
 |---|---|
 | `GET /api/config` | Réglages publics : `paddle.environment`, `paddle.clientToken`, `paddle.prices.month` et `.year`. |
-| `GET /api/me` | `{user, entitlements, subscription}`. `entitlements` = `{plan, outro, cloudSave, clipMode, autoLyrics}`. |
+| `GET /api/me` | `{user, session, entitlements, subscription}`. `user` = `{id, email, lang, createdAt, displayName, avatarUrl, hasPassword, passwordSetAt}` ; `session` = `{method: 'code' \| 'password', recentCode}` ; `entitlements` = `{plan, outro, cloudSave, clipMode, autoLyrics}`. |
+| `PATCH /api/me` | `{displayName}` : 2 à 30 caractères (espaces regroupés, caractères invisibles retirés), `null` ou `""` pour l'effacer. Renvoie la même chose que `/api/me`. Erreur `invalid_name`. |
+| `PUT /api/me/avatar` | Corps = l'image brute, `Content-Type: image/jpeg`, `image/webp` ou `image/png` (vérifié avec les premiers octets du fichier), 80 Ko maximum, 20 changements par heure. Renvoie `{avatarUrl}`. Erreurs `invalid_image` (415), `too_large` (413). |
+| `GET /api/me/avatar?v=…` | La photo, **seulement pour la personne connectée** (sinon 401 / 404). `Cache-Control: private, max-age=31536000, immutable` : l'adresse change à chaque nouvelle photo (`v` = date de mise à jour). |
+| `DELETE /api/me/avatar` | Retire la photo. |
 | `POST /api/auth/send-code` | `{email, lang}`. Limites : 1 code toutes les 30 s et 5 par heure pour un même e-mail, 20 par heure pour une même IP. |
 | `POST /api/auth/verify` | `{email, code}`. Pose le cookie et renvoie la même chose que `/api/me`. Limite : 30 essais par IP toutes les 10 min. |
+| `POST /api/auth/login` | `{email, password}`. Pose le cookie et renvoie la même chose que `/api/me`. Réponse unique `401 invalid_login` (« Wrong email or password. ») que l'e-mail existe ou non, ait un mot de passe ou non. Limites : 30 essais par IP et 10 par e-mail toutes les 10 min ; après 5 mauvais mots de passe d'affilée pour un e-mail, `429 too_many_attempts` pendant 15 min (même pour un e-mail inconnu). |
+| `POST /api/auth/password` | `{password, currentPassword?}` (connecté). Choisir ou changer le mot de passe : 8 à 200 caractères, refusé s'il fait partie des mots de passe les plus courants ou s'il est égal à l'e-mail. Changer un mot de passe existant demande `currentPassword`, **sauf** si la session a été ouverte avec un code e-mail il y a moins de 15 min (cas « mot de passe oublié »). Les autres sessions de l'utilisateur sont fermées. Erreurs `password_too_short`, `password_too_common`, `password_too_long`, `reauth_required` (403), `wrong_password`, `too_many_attempts`. |
 | `POST /api/auth/logout` | Supprime la session. |
 | `POST /api/paddle/webhook` | Pour Paddle uniquement (signature vérifiée). |
 | `POST /api/paddle/portal` | `{url, cancelUrl, updatePaymentUrl}` : liens temporaires vers l'espace client Paddle. |
@@ -188,13 +199,13 @@ Toutes les réponses sont en JSON. Les erreurs ont la forme `{"error":"code","me
 | `GET /api/projects/:id` | `{id, name, state, updatedAt}`. |
 | `PUT /api/projects/:id` | `{name, state}`, 256 Ko maximum, 200 projets maximum. **Pro uniquement** : sinon `403 pro_required`. |
 | `DELETE /api/projects/:id` | Supprime un projet. |
-| `DELETE /api/account` | `{confirm:true}`. Arrête l'abonnement Paddle, puis efface toutes les données. |
+| `DELETE /api/account` | `{confirm:true}`. Arrête l'abonnement Paddle, puis efface toutes les données (dont le pseudo, la photo et le mot de passe, qui sont dans la ligne `users`). |
 | `GET /api/connect/{tiktok,instagram}/{start,callback}` | Ébauches : `404 not_enabled` tant que `SOCIAL_CONNECT_ENABLED` ne vaut pas `"1"`, puis `501`. |
 
 Codes d'erreur : `not_logged_in` (401), `pro_required` (403), `bad_origin` (403), `json_required` (415), `rate_limited` (429, avec `retryAfter`),
 `invalid_code` (avec `attemptsLeft`), `code_expired`, `too_many_attempts`, `invalid_signature`, `too_large` (413), `not_found`, `method_not_allowed`.
 
-Protection CSRF : sur POST, PUT et DELETE, le serveur exige `Content-Type: application/json` et un en-tête `Origin` égal à `APP_ORIGIN` (`https://stalak.app`).
+Protection CSRF : sur POST, PUT, PATCH et DELETE, le serveur exige `Content-Type: application/json` (ou une image pour `PUT /api/me/avatar`) et un en-tête `Origin` égal à `APP_ORIGIN` (`https://stalak.app`).
 Des origines supplémentaires peuvent être autorisées avec `EXTRA_ORIGINS` (liste séparée par des virgules). `localhost` n'est accepté qu'en mode dev
 (`DEV_MODE=1`, ou `APP_ORIGIN` en `http://localhost…`). En mode dev, sans `RESEND_API_KEY`, le code est écrit dans la console et renvoyé dans `devCode`.
 
@@ -207,6 +218,12 @@ Choix à connaître :
 - Le lien entre un paiement et un compte se fait par `customData.user_id`, transmis au paiement. Si ce champ manque, le lien se fait par `customer_id`.
 - La signature du webhook est acceptée avec un écart de 5 minutes au maximum (les SDK de Paddle utilisent 5 s par défaut). Plusieurs `h1` sont acceptés, pour la rotation des clés.
 - Lire et supprimer ses projets reste possible après la fin du Pro, pour que l'utilisateur récupère ses données. Seul l'enregistrement exige Pro.
+- Mots de passe : PBKDF2-SHA256 (WebCrypto), 100 000 itérations (le maximum accepté par Cloudflare Workers), sel aléatoire de 16 octets, comparaison en temps constant.
+  Le nombre d'itérations est enregistré avec chaque hash (`password_iter`) : on pourra l'augmenter plus tard sans casser les anciens.
+  Un essai de connexion calcule toujours un PBKDF2, même si le compte n'existe pas, pour que la durée de la réponse ne trahisse rien.
+  Le compteur d'échecs est dans `rate_limits` (clé `pwfail:` + e-mail haché).
+- La photo est stockée en base64 dans `users.avatar` (80 Ko maximum, en pratique moins de 60 Ko). Pas de R2 nécessaire.
+- `sessions.method` retient si la session vient d'un code ou d'un mot de passe (les sessions d'avant la migration ont `NULL`).
 
 ### Intégrer `src/account.js` au site
 `build_site.py` ne le connaît pas encore. Il faut soit l'insérer dans le `<script>` de la page, soit le copier dans `public/account.js` et ajouter

@@ -41,9 +41,11 @@ export function allowedOrigins(env) {
 }
 
 // CSRF protection for state-changing requests: JSON content type + same Origin.
-export function checkCsrf(request, env) {
+// `otherTypes`: further content types accepted on that route (e.g. image/jpeg for the photo upload; like JSON,
+// they cannot be sent cross-site by a plain form).
+export function checkCsrf(request, env, otherTypes = []) {
   const ct = (request.headers.get('Content-Type') || '').toLowerCase();
-  if (!ct.startsWith('application/json')) {
+  if (!ct.startsWith('application/json') && !otherTypes.includes(ct.split(';')[0].trim())) {
     throw new HttpError(415, 'json_required', 'Content-Type must be application/json.');
   }
   const origin = request.headers.get('Origin');

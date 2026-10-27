@@ -9,8 +9,7 @@
       <li><button type="button" data-go="3" data-i18n="step.3"><b>3</b>Paroles</button></li>
       <li><button type="button" data-go="4" data-i18n="step.4"><b>4</b>Montage</button></li>
     </ol>
-    <div class="hdtools"><button class="acctbtn" id="acctBtn" type="button" hidden aria-haspopup="dialog" aria-controls="acctBox"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg><span id="acctLbl">Connexion</span></button>
-    <div class="langsw" id="langSw" role="group" aria-label="Langue · Language"><button type="button" data-lang="fr" lang="fr" aria-pressed="true" title="Français">FR</button><button type="button" data-lang="en" lang="en" aria-pressed="false" title="English">EN</button></div></div>
+    <div class="hdtools"><button class="acctbtn" id="acctBtn" type="button" hidden aria-haspopup="dialog" aria-controls="acctPage"><span class="acctav" id="acctAv" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></span><span class="acctlbl" id="acctLbl">Connexion</span><span class="acctpro" id="acctProTag" hidden>PRO</span></button></div>
   </header>
   <div class="status" id="status" role="status" aria-live="polite"></div>
 
@@ -364,6 +363,7 @@
     <button class="hp-x" id="installX" type="button" aria-label="Fermer" data-i18n-attr="aria-label:close">×</button>
   </div>
   <div class="byalaska" id="byAlaska">by Alaska</div>
+  <footer class="sitefoot" id="siteFoot"><div class="langsw" id="langSw" role="group" aria-label="Langue · Language"><button type="button" data-lang="fr" lang="fr" aria-pressed="true" title="Français"><svg class="flag" viewBox="0 0 3 2" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path fill="#002654" d="M0 0h1v2H0z"/><path fill="#fff" d="M1 0h1v2H1z"/><path fill="#ce1126" d="M2 0h1v2H2z"/></svg><span>Français</span></button><button type="button" data-lang="en" lang="en" aria-pressed="false" title="English"><svg class="flag" viewBox="0 0 60 30" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><path fill="#012169" d="M0 0h60v30H0z"/><path stroke="#fff" stroke-width="6" d="M0 0l60 30M60 0L0 30"/><path stroke="#c8102e" stroke-width="2.4" d="M0 0l60 30M60 0L0 30"/><path stroke="#fff" stroke-width="10" d="M30 0v30M0 15h60"/><path stroke="#c8102e" stroke-width="6" d="M30 0v30M0 15h60"/></svg><span>English</span></button></div></footer>
 </div>
 
 
@@ -401,47 +401,144 @@
   </div>
 </div>
 
-<!-- account (stalak.app only): sign in with an e-mail code, Stalak Pro -->
-<div class="askbox" id="acctBox" role="dialog" aria-modal="true" aria-labelledby="acctT" hidden>
-  <div class="card acctcard">
-    <button class="acctx" id="acctX" type="button" aria-label="Fermer" data-i18n-attr="aria-label:acct.close">×</button>
-    <h2 id="acctT">Ton compte Stalak</h2>
-    <p class="acctwhy" id="acctWhy" hidden></p>
-    <form id="acctMail" novalidate>
-      <label for="acctEmail" data-i18n="acct.email">Ton e-mail</label>
-      <input id="acctEmail" type="email" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" required>
-      <button class="btn primary" type="submit" data-i18n="acct.send">Recevoir le code</button>
-      <p class="hint" data-i18n="acct.mailHint">Pas de mot de passe : on t’envoie un code à 6 chiffres par e-mail.</p>
-    </form>
-    <form id="acctCode" novalidate hidden>
-      <label for="acctCodeIn" id="acctCodeL">Code reçu par e-mail</label>
-      <input id="acctCodeIn" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required>
-      <div class="row"><button class="btn" type="button" id="acctBack" data-i18n="acct.otherMail">Changer d’e-mail</button><button class="btn primary" type="submit" data-i18n="acct.verify">Valider</button></div>
-      <p class="hint" data-i18n="acct.codeHint">Pense à regarder dans les spams. Le code marche 10 minutes.</p>
-    </form>
-    <div id="acctIn" hidden>
-      <p class="acctwho" id="acctWho"></p>
-      <div id="acctFree">
-        <h3 data-i18n="acct.proT">Stalak Pro</h3>
-        <ul class="acctperks">
+<!-- account (stalak.app only): a full page over the app (#connexion, #compte, #pro); the work under it stays as it is -->
+<div class="acctpage" id="acctPage" role="dialog" aria-modal="true" aria-labelledby="apLoginT" hidden>
+  <div class="ap-in">
+    <div class="ap-top">
+      <button class="ap-back" id="apBack" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7"/></svg><span data-i18n="ap.back">Retour</span></button>
+    </div>
+
+    <section class="ap-view" id="apLogin" hidden>
+      <img class="ap-emo" data-emo="hello" alt="" width="104" height="104">
+      <h2 id="apLoginT" tabindex="-1" data-i18n="ap.login.t">Connecte-toi à Stalak</h2>
+      <p class="ap-why" id="apWhy" hidden></p>
+      <div class="card ap-card">
+        <form id="apSignF" novalidate>
+          <label for="apEmail" data-i18n="acct.email">Ton e-mail</label>
+          <input id="apEmail" type="email" autocomplete="username" inputmode="email" autocapitalize="off" spellcheck="false" required>
+          <div class="ap-pw" id="apPwBox" hidden>
+            <label for="apPw" data-i18n="ap.pw">Mot de passe</label>
+            <div class="ap-pwrow"><input id="apPw" type="password" autocomplete="current-password"><button class="ap-eye" type="button" data-eye="apPw" aria-pressed="false" data-i18n="ap.show">Afficher</button></div>
+          </div>
+          <div class="ap-choice" id="apChoice">
+            <button class="btn primary" type="submit" id="apCodeBtn" data-i18n="ap.byCode">Recevoir un code par e-mail</button>
+            <button class="btn" type="button" id="apPwBtn" data-i18n="ap.byPw">Mot de passe</button>
+          </div>
+          <div class="ap-choice" id="apPwGo" hidden>
+            <button class="btn primary" type="submit" data-i18n="ap.signIn">Se connecter</button>
+            <div class="ap-links"><button class="linkbtn" type="button" id="apForgot" data-i18n="ap.forgot">Mot de passe oublié ?</button><button class="linkbtn" type="button" id="apUseCode" data-i18n="ap.useCode">Recevoir un code à la place</button></div>
+          </div>
+          <p class="hint" id="apMailHint" data-i18n="ap.mailHint">Avec un code, pas besoin de mot de passe : tu le reçois par e-mail, il marche 10 minutes.</p>
+        </form>
+        <form id="apCodeF" novalidate hidden>
+          <label for="apCode" id="apCodeL">Code reçu par e-mail</label>
+          <input id="apCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required>
+          <div class="ap-choice">
+            <button class="btn primary" type="submit" data-i18n="acct.verify">Valider</button>
+            <button class="linkbtn" type="button" id="apOtherMail" data-i18n="acct.otherMail">Changer d’e-mail</button>
+          </div>
+          <p class="hint" data-i18n="acct.codeHint">Pense à regarder dans les spams. Le code marche 10 minutes.</p>
+        </form>
+      </div>
+    </section>
+
+    <section class="ap-view" id="apAccount" hidden>
+      <h2 id="apAccT" tabindex="-1" data-i18n="ap.acc.t">Ton compte</h2>
+      <div class="card ap-card">
+        <h3 data-i18n="ap.profile">Profil</h3>
+        <div class="ap-prof">
+          <div class="ap-avwrap">
+            <span class="ap-av" id="apAv" aria-hidden="true"></span>
+            <label class="ap-avbtn" for="apAvIn" title="Changer la photo" data-i18n-attr="title:ap.photo"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span class="vh" data-i18n="ap.photo">Changer la photo</span></label>
+            <input id="apAvIn" type="file" accept="image/*">
+          </div>
+          <form class="ap-name" id="apNameF" novalidate>
+            <label for="apName" data-i18n="ap.name">Ton pseudo</label>
+            <div class="ap-namerow"><input id="apName" type="text" autocomplete="nickname" maxlength="30" spellcheck="false" placeholder="Alaska" data-i18n-attr="placeholder:ap.namePh"><button class="btn" type="submit" id="apNameSave" data-i18n="ap.save">Enregistrer</button></div>
+            <button class="linkbtn ap-avdel" type="button" id="apAvDel" hidden data-i18n="ap.photoDel">Retirer la photo</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="card ap-card">
+        <h3 data-i18n="ap.sec">Connexion et sécurité</h3>
+        <div class="ap-line"><span class="ap-k" data-i18n="ap.mail">E-mail</span><span class="ap-v" id="apMailV"></span></div>
+        <div class="ap-line"><span class="ap-k" data-i18n="ap.pw">Mot de passe</span><span class="ap-v" id="apPwV"></span><button class="btn" type="button" id="apPwEdit" aria-expanded="false" aria-controls="apPwF"></button></div>
+        <form class="ap-pwf" id="apPwF" novalidate hidden>
+          <input type="email" id="apPwUser" autocomplete="username" tabindex="-1" aria-hidden="true" class="vh" readonly>
+          <div class="ap-pw" id="apCurBox"><label for="apCur" data-i18n="ap.cur">Mot de passe actuel</label>
+            <div class="ap-pwrow"><input id="apCur" type="password" autocomplete="current-password"><button class="ap-eye" type="button" data-eye="apCur" aria-pressed="false" data-i18n="ap.show">Afficher</button></div></div>
+          <div class="ap-pw"><label for="apNew" data-i18n="ap.new">Nouveau mot de passe</label>
+            <div class="ap-pwrow"><input id="apNew" type="password" autocomplete="new-password" minlength="8" aria-describedby="apNewHint"><button class="ap-eye" type="button" data-eye="apNew" aria-pressed="false" data-i18n="ap.show">Afficher</button></div></div>
+          <p class="hint" id="apNewHint" data-i18n="ap.newHint">8 caractères minimum. Une petite phrase, c’est parfait.</p>
+          <div class="ap-choice"><button class="btn primary" type="submit" data-i18n="ap.pwSave">Enregistrer le mot de passe</button><button class="linkbtn" type="button" id="apPwCancel" data-i18n="cancel">Annuler</button></div>
+          <p class="hint" id="apCurHint" data-i18n="ap.curHint">Mot de passe oublié ? Déconnecte-toi, puis reconnecte-toi avec un code par e-mail : tu pourras en choisir un nouveau.</p>
+        </form>
+      </div>
+
+      <div class="card ap-card">
+        <h3 data-i18n="ap.sub">Abonnement</h3>
+        <p class="ap-sub" id="apSub"><span id="apSubT"></span> <button class="linkbtn ap-subgo" type="button" id="apSubGo"></button></p>
+      </div>
+
+      <div class="card ap-card">
+        <h3 data-i18n="ap.lang">Langue</h3>
+        <div class="langsw" role="group" aria-label="Langue · Language"><button type="button" data-lang="fr" lang="fr" aria-pressed="true" title="Français"><svg class="flag" viewBox="0 0 3 2" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path fill="#002654" d="M0 0h1v2H0z"/><path fill="#fff" d="M1 0h1v2H1z"/><path fill="#ce1126" d="M2 0h1v2H2z"/></svg><span>Français</span></button><button type="button" data-lang="en" lang="en" aria-pressed="false" title="English"><svg class="flag" viewBox="0 0 60 30" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><path fill="#012169" d="M0 0h60v30H0z"/><path stroke="#fff" stroke-width="6" d="M0 0l60 30M60 0L0 30"/><path stroke="#c8102e" stroke-width="2.4" d="M0 0l60 30M60 0L0 30"/><path stroke="#fff" stroke-width="10" d="M30 0v30M0 15h60"/><path stroke="#c8102e" stroke-width="6" d="M30 0v30M0 15h60"/></svg><span>English</span></button></div>
+      </div>
+
+      <div class="ap-foot">
+        <button class="btn" type="button" id="apOut" data-i18n="acct.out">Se déconnecter</button>
+        <a class="ap-small" href="/tarifs" data-i18n="ap.pricing" data-i18n-attr="href:ap.pricingHref">Tarifs</a>
+      </div>
+      <div class="ap-danger"><button class="linkbtn" type="button" id="apDel" data-i18n="acct.del">Supprimer mon compte</button></div>
+    </section>
+
+    <section class="ap-view" id="apPro" hidden>
+      <img class="ap-emo" data-emo="cool" alt="" width="104" height="104">
+      <h2 id="apProT" tabindex="-1" data-i18n="acct.proT">Stalak Pro</h2>
+      <p class="ap-why" id="apProWhy" hidden></p>
+      <div class="card ap-card">
+        <ul class="ap-perks">
           <li data-i18n="acct.perk1">Pas de logo Stalak à la fin de tes vidéos</li>
           <li data-i18n="acct.perk2">Le mode Clip : le morceau entier en 16:9</li>
           <li data-i18n="acct.perk3">Tes projets sauvegardés en ligne <span class="soon">bientôt</span></li>
           <li data-i18n="acct.perk4">Les paroles calées automatiquement <span class="soon">bientôt</span></li>
         </ul>
-        <div class="acctbuy">
-          <button class="btn primary" id="acctMonth" type="button" data-i18n="acct.month">9,99 € par mois</button>
-          <button class="btn primary" id="acctYear" type="button" data-i18n="acct.year">79 € par an <small>(−34 %)</small></button>
+        <div class="ap-buyall" id="apBuy">
+          <div class="ap-buy">
+            <button class="btn primary" id="apMonth" type="button" data-i18n="acct.month">9,99 € par mois</button>
+            <button class="btn primary" id="apYear" type="button" data-i18n="acct.year">79 € par an <small>(−34 %)</small></button>
+          </div>
+          <p class="hint" data-i18n="acct.buyHint">Paiement sécurisé par Paddle. Tu arrêtes quand tu veux.</p>
+          <p class="ap-legal"><a href="/conditions" data-i18n="ap.terms" data-i18n-attr="href:ap.termsHref">Conditions</a> · <a href="/remboursement" data-i18n="ap.refunds" data-i18n-attr="href:ap.refundsHref">Remboursement</a> · <a href="/tarifs" data-i18n="ap.pricing" data-i18n-attr="href:ap.pricingHref">Tarifs</a></p>
         </div>
-        <p class="hint" data-i18n="acct.buyHint">Paiement sécurisé par Paddle. Tu arrêtes quand tu veux.</p>
+        <div class="ap-ispro" id="apIsPro" hidden>
+          <img class="ap-emo sm" data-emo="money" alt="" width="72" height="72">
+          <p class="ap-prook" id="apProTxt"></p>
+          <button class="btn" id="apManage" type="button" data-i18n="acct.manage">Gérer mon abonnement</button>
+          <p class="ap-legal"><a href="/tarifs" data-i18n="ap.pricing" data-i18n-attr="href:ap.pricingHref">Tarifs</a></p>
+        </div>
       </div>
-      <div id="acctPro" hidden>
-        <p id="acctProTxt"></p>
-        <button class="btn" id="acctManage" type="button" data-i18n="acct.manage">Gérer mon abonnement</button>
-      </div>
-      <div class="row acctfoot"><button class="btn sm" id="acctOut" type="button" data-i18n="acct.out">Se déconnecter</button><button class="btn sm acctdel" id="acctDel" type="button" data-i18n="acct.del">Supprimer mon compte</button></div>
+    </section>
+
+    <p class="ap-msg" id="apMsg" role="status" aria-live="polite"><img class="ap-msgemo" id="apMsgEmo" alt="" width="40" height="40" hidden><span id="apMsgT"></span></p>
+  </div>
+</div>
+
+<!-- Stalak Pro just bought: « Merci ! » then what is unlocked, once per account -->
+<div class="prothx" id="proThx" role="dialog" aria-modal="true" aria-labelledby="ptT" tabindex="-1" hidden>
+  <div class="pt-burst" id="ptBurst" aria-hidden="true"></div>
+  <div class="pt-hello" id="ptHello"><img data-emo="love" alt="" width="150" height="150"><p class="pt-merci" id="ptT" data-i18n="pt.merci">Merci !</p></div>
+  <div class="pt-card card" id="ptCard" hidden>
+    <div class="pt-track" id="ptTrack" aria-roledescription="carrousel" aria-label="Ce que Stalak Pro t’apporte" data-i18n-attr="aria-roledescription:pt.carousel;aria-label:pt.aria">
+      <section class="pt-slide" aria-roledescription="diapositive" data-i18n-attr="aria-roledescription:pt.slide"><img data-emo="hype" alt="" width="112" height="112"><h3 data-i18n="pt.s1t">Plus de logo à la fin</h3><p data-i18n="pt.s1p">Tes vidéos se terminent sur toi, sans les 3 secondes Stalak.</p></section>
+      <section class="pt-slide" aria-roledescription="diapositive" data-i18n-attr="aria-roledescription:pt.slide"><img data-emo="cool" alt="" width="112" height="112"><h3 data-i18n="pt.s2t">Le mode Clip</h3><p data-i18n="pt.s2p">Le morceau entier en 16:9, avec les effets. Choisis « Clip » à l’étape Son.</p></section>
+      <section class="pt-slide" aria-roledescription="diapositive" data-i18n-attr="aria-roledescription:pt.slide"><img data-emo="coffee" alt="" width="112" height="112"><h3 data-i18n="pt.s3t">Sauvegarde en ligne <span class="soon">bientôt</span></h3><p data-i18n="pt.s3p">Tes projets te suivront d’un appareil à l’autre.</p></section>
+      <section class="pt-slide" aria-roledescription="diapositive" data-i18n-attr="aria-roledescription:pt.slide"><img data-emo="gg" alt="" width="112" height="112"><h3 data-i18n="pt.s4t">Paroles automatiques <span class="soon">bientôt</span></h3><p data-i18n="pt.s4p">Stalak calera tes paroles sur ta voix, tout seul.</p></section>
     </div>
-    <p class="acctmsg" id="acctMsg" role="status" aria-live="polite"></p>
+    <p class="vh" id="ptLive" aria-live="polite"></p>
+    <div class="pt-dots" id="ptDots"></div>
+    <div class="pt-nav"><button class="linkbtn" type="button" id="ptSkip" data-i18n="pt.skip">Passer</button><button class="btn primary" type="button" id="ptNext" data-i18n="pt.next">Suivant</button></div>
   </div>
 </div>
 
