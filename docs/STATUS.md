@@ -35,7 +35,10 @@
 - Supprimer l'ancien projet Cloudflare « stalak » en double.
 
 ### App & montage
-- Faire tester la caméra iPhone par le propriétaire : son après le décompte, sens du selfie, lecture fluide, vitesse d'export.
+- Test caméra iPhone par le propriétaire (27/10) : son après le décompte OK, sens du selfie OK ; **lecture saccadée** et **export lent**.
+- En cours (branche `app/apercu-iphone`) : diagnostic. Le journal de l'iPhone montre « Decoder failure » sur les prises filmées dans Stalak (aperçu, copie légère et analyse d'image) ; l'aperçu retombe alors sur le lecteur vidéo de Safari, d'où la saccade. L'export lent vient sans doute de la même panne (repli sur l'enregistrement en temps réel).
+- Hors de cause : la « remise en ordre » MP4 après le tournage (vérifiée identique à l'original, image par image et son).
+- À décider : baisser la qualité d'export (720p) seulement si l'export reste lent une fois le décodage réparé.
 
 ### Comptes, paiements & serveur
 - Paddle en réel une fois la structure créée : nouveaux produits, prix, clés et webhook, puis `PADDLE_ENV=production`.
