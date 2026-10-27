@@ -49,3 +49,10 @@ Reste au propriétaire :
 - rien d'obligatoire ;
 - après la mise en ligne, poser 4 ou 5 vraies questions pour juger la qualité des réponses ;
 - plus tard, si l'aide affiche souvent « pause » : passer au forfait Workers à 5 $/mois, puis monter `HELP_DAILY_MAX`.
+
+À signaler au Chef de projet (hors de mon domaine, non modifié) :
+- `docs/handoff/check.sh` ne trouve aucun compte rendu « PRÊT » quand la langue du système n'est pas UTF-8
+  (cas de l'espace de travail de Claude : `LANG` vide). Le `Ê` de `PR[ÊE]T` y est lu comme deux octets.
+  Contournement : `LC_ALL=C.UTF-8 sh docs/handoff/check.sh` (il trouve alors compte/assistant-aide, legal/etat-des-lieux,
+  marketing/audit-site et social/connexion-comptes). Correction possible : `export LC_ALL=C.UTF-8` en tête du script,
+  ou chercher `Statut *: *PR` puis `T` sans accent dans le motif.
