@@ -202,6 +202,17 @@ textarea::placeholder{color:#6d7f9e}
 .lines{gap:8px}
 .lines .tm{font:700 13px var(--body);font-variant-numeric:tabular-nums;color:var(--sky-deep)}
 .lines .tm.none{color:var(--warn)}
+/* App & montage : bouton ✕ pour supprimer une ligne de paroles */
+.lines .lyact{display:flex;gap:4px}
+.lines .lydel{color:var(--warn);font-weight:700}
+.lines .lydel:hover{background:#ffe9e0;border-color:var(--warn)}
+#status .lyundo{display:inline;padding:0 2px;min-height:0;vertical-align:baseline;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+/* phone: the line's text gets the whole width, under its time and its buttons */
+@media (max-width:520px){
+  .lines li{grid-template-columns:auto auto 1fr auto;row-gap:6px;padding-bottom:8px;border-bottom:1.5px dashed var(--ice)}
+  .lines li .ly{grid-column:1 / -1;grid-row:2}
+  .lines li .lyact{grid-column:4}
+}
 input.ly{background:var(--frost);border:2px solid var(--ice-2);border-radius:12px;color:var(--ink);padding:8px 10px;font-size:15px}
 .grid2{gap:14px 18px}
 

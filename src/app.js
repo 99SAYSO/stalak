@@ -354,6 +354,10 @@ const I18N_EN = /*@EN*/{
   "ly.earlier": "Show the line a little earlier",
   "ly.later": "Show the line a little later",
   "ly.listen": "Listen from this line",
+  "_bloc.app.paroles": "App & montage : supprimer une ligne de paroles",
+  "ly.del": "Delete line {n}",
+  "ly.removed": "Line deleted: “{text}”.",
+  "ly.undo": "Undo",
   "ly.st.paste": "Paste your lyrics first, one line per row.",
   "tap.nextLine": "Next line: {text}",
   "tap.allDone": "All the lines are synced.",
@@ -1036,6 +1040,10 @@ const I18N_FR = /*@FR*/{
   "ly.earlier": "Afficher la phrase un peu plus tôt",
   "ly.later": "Afficher la phrase un peu plus tard",
   "ly.listen": "Écouter à partir de cette phrase",
+  "_bloc.app.paroles": "App & montage : supprimer une ligne de paroles",
+  "ly.del": "Supprimer la ligne {n}",
+  "ly.removed": "Ligne supprimée : « {text} ».",
+  "ly.undo": "Annuler",
   "ly.st.paste": "Colle d’abord tes paroles, une phrase par ligne.",
   "tap.nextLine": "Prochaine phrase : {text}",
   "tap.allDone": "Toutes les phrases sont calées.",
@@ -3837,10 +3845,30 @@ function renderLines(){
     const nd = li.querySelector('.nudge');
     nd.append(mkBtn('−', _t('ly.earlier'), () => { if (l.t != null){ l.t = Math.max(0, l.t - 0.05); l.chk = false; afterLyricEdit(i); } }),
               mkBtn('+', _t('ly.later'), () => { if (l.t != null){ l.t += 0.05; l.chk = false; afterLyricEdit(i); } }));
+    li.lastElementChild.className = 'lyact';
     li.lastElementChild.append(mkBtn('▶', _t('ly.listen'), () => { if (l.t != null){ stop(true); play(Math.max(0, l.t - 0.6)); } }));
+    const del = mkBtn('✕', _t('ly.del', { n: i+1 }), () => lyricRemove(i)); del.classList.add('lydel'); li.lastElementChild.append(del);
     li.querySelector('input').oninput = e => { l.text = e.target.value; saveLyrics(); redraw(); };
     ul.append(li);
   });
+}
+/* « ✕ » on a line: the line is taken out of the lyrics (with « Annuler » in the message, a finger can slip on a phone) */
+function lyricRemove(i){
+  const L = S.lyrics.lines, gone = L[i]; if (!gone) return;
+  L.splice(i, 1); lyricsChanged();
+  say('ly.removed', { text: gone.text.length > 40 ? gone.text.slice(0, 40) + '…' : gone.text });
+  const st = $('#status'), u = document.createElement('button'); u.type = 'button'; u.className = 'btn link sm lyundo'; u.textContent = _t('ly.undo');
+  u.onclick = () => { if (S.lyrics.lines !== L) return; L.splice(Math.min(i, L.length), 0, gone); lyricsChanged(); status(''); };
+  st.append(' ', u);
+  // the focus stays on the list (the next line's ✕, or the previous one), not lost at the top of the page
+  const next = $$('#lyLines .lydel')[Math.min(i, L.length - 1)]; if (next) next.focus({ preventScroll: true });
+}
+/* the lines changed (one taken out or put back): saved, listed again, the text box, the picture and the edit by words follow */
+function lyricsChanged(){
+  saveLyrics(); renderLines(); lyricsView();
+  $('#lyText').value = S.lyrics.lines.map(l => l.text).join('\n');
+  if (S.step === 4) renderLyState();
+  if (S.mode === 'mots' && S.cuts.length && S.genWords !== wordsKey()){ stop(true); rebuild(false); } else if (!S.playing) redraw();
 }
 function afterLyricEdit(i){ saveLyrics(); renderLines(); const l = S.lyrics.lines[i]; if (!S.playing && l && l.t != null) showFrame(l.t + 0.4); }
 function lyricsView(){

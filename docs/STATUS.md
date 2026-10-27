@@ -40,13 +40,16 @@
 - À vérifier après mise en ligne : nouveau test caméra sur iPhone (lecture fluide, vitesse d'export, ligne « échantillons repris au bon endroit » dans les infos techniques).
 - À regarder : `tests/ui/lyrics_ui.py` s'arrête au bout de 15 s d'attente, déjà sur `main` avant cette branche.
 - À décider ensuite : baisser la qualité d'export (720p) seulement si l'export reste lent une fois le décodage réparé.
-- Prêt (branche `app/son-passage`) : étape Son.
+- En ligne (27/10, branche `app/son-passage`) : étape Son.
   - Sur ordinateur, on peut glisser le fichier audio sur le carré d'import, qui passe en « givre » avec « Lâche ton fichier ici » pendant le survol. Un fichier lâché à côté n'ouvre plus le fichier à la place du site.
   - Deux poignées sur l'onde, en TikTok/Reels comme en Clip, pour le début et la fin du passage. Elles s'accrochent aux mesures. Au doigt, chaque poignée a une zone tactile de 44 px.
   - Le menu Durée affiche les longueurs choisies avec les poignées (« 7 mesures »), et les boutons « Fin ‹ › » marchent aussi en TikTok/Reels.
   - Nouveau bouton « ▶ Écouter le passage » : il joue la partie choisie et s'arrête à sa fin.
   - Nouveau test `tests/ui/son_passage.py`.
 - À regarder (non corrigé) : sur téléphone, la bulle d'aide fixée en bas à droite peut couvrir la poignée de fin quand l'onde est tout en bas de l'écran.
+- En ligne (27/10, branche `app/copie-legere-export`) : croix ✕ pour supprimer une ligne de paroles. Elle est dans la liste des lignes calées, à l'étape « Paroles », la seule où les lignes sont listées. Le message propose « Annuler ». Sur téléphone, le texte de la ligne passe sous les boutons. Test `tests/ui/paroles_suppr.py`.
+- Confirmé sur iPhone par le journal du 27/10 à 23 h : prises filmées lisibles, copie légère 360×640 faite en 3 s, son des prises lu (calage automatique), lecture sans image lente, export de 25 s en 7,7 s par WebCodecs (aucun repli sur le lecteur vidéo).
+- En cours : « un peu de lag » dans la vidéo exportée, signalé par le propriétaire. La cause n'est pas visible dans le journal. Vidéo exportée et précisions demandées au propriétaire : saccade continue, à chaque coupe, ou lèvres en retard.
 
 ### Comptes, paiements & serveur
 - Paddle en réel une fois la structure créée : nouveaux produits, prix, clés et webhook, puis `PADDLE_ENV=production`.
