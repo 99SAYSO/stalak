@@ -815,3 +815,15 @@ header .stepper{margin-left:auto}
 .voxpick .btn.link{color:var(--ink);font-weight:500;white-space:normal;text-align:left;padding:6px 0;min-height:44px;font-size:14px;text-decoration-thickness:1px;text-underline-offset:3px}
 .voxpick #lyVoxOn{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px}
 .voxpick #lyVoxOn[hidden]{display:none}
+/* App & montage : étape Son — dépôt du fichier et poignées du passage */
+.drop.over{background:var(--ice);border-color:var(--ink);border-style:solid;transform:scale(1.015);box-shadow:0 0 0 4px var(--frost),0 0 0 calc(4px + var(--stroke)) var(--ink)}
+.drop.over > *{visibility:hidden}
+.drop.over::after{content:attr(data-over);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:400 21px/1.15 var(--display);color:var(--ink);animation:al-shiver .5s ease-in-out infinite;pointer-events:none}
+.drop.over::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(135deg,transparent 0 14px,rgba(255,255,255,.55) 14px 16px);animation:al-fade .2s ease-out;pointer-events:none}
+.listen #segPlay{justify-content:center}
+.wavebox .wgrip{width:18px;margin-left:-9px;top:-6px;bottom:-6px;border-radius:9px;border-width:var(--stroke);pointer-events:auto;touch-action:none;cursor:ew-resize;z-index:2;transition:transform .12s}
+/* a finger-sized zone around each handle (44 px), invisible */
+.wavebox .wgrip::before{content:"";position:absolute;top:-8px;bottom:-8px;left:50%;width:44px;margin-left:-22px}
+.wavebox .wgrip:hover,.wavebox.dragging .wgrip{transform:scaleX(1.15)}
+.wavebox.dragging{cursor:ew-resize}
+@media (prefers-reduced-motion:reduce){.drop.over::after{animation:none}.drop.over{transform:none}}
