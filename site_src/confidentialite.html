@@ -26,7 +26,7 @@ le style des paroles, les paroles calées de chaque son, le mode choisi, la lang
 <p>Ces données servent uniquement à faire marcher ton compte et ton abonnement (exécution du contrat). Elles sont gardées tant que ton compte existe ; quand tu supprimes ton compte depuis la page Compte, elles sont effacées immédiatement.</p>
 <h2>Nos prestataires</h2>
 <ul>
-<li><strong>Cloudflare</strong> : hébergement du site, de la base de données des comptes et des projets sauvegardés en ligne (stockage R2) ; transcription des paroles (Workers AI).</li>
+<li><strong>Cloudflare</strong> : hébergement du site, de la base de données des comptes et des projets sauvegardés en ligne (stockage R2) ; transcription des paroles et assistant d’aide (Workers AI).</li>
 <li><strong>Resend</strong> : envoi des e-mails de connexion (ton adresse e-mail et le code).</li>
 <li><strong>Paddle.com</strong> : paiement, taxes et factures, en tant que revendeur officiel. Paddle traite tes informations de paiement selon sa propre <a href="https://www.paddle.com/legal/privacy">politique de confidentialité</a> et garde les données de facturation le temps imposé par la loi.</li>
 </ul>
@@ -34,6 +34,7 @@ le style des paroles, les paroles calées de chaque son, le mode choisi, la lang
 <h2>Ce qui passe par nos services</h2>
 <p>Le site est hébergé par Cloudflare, qui traite les informations techniques nécessaires pour afficher les pages (adresse IP, navigateur), comme pour tout site web.</p>
 <p><strong>Paroles automatiques (Stalak Pro).</strong> Quand tu touches « Écrire mes paroles », le son du passage choisi (en mono, qualité réduite, sans les vidéos) est envoyé à Cloudflare Workers AI pour écrire les paroles, qui reviennent sur ton appareil. Ni le son ni les paroles ne sont gardés par Stalak ; nous comptons seulement, par jour, le nombre de transcriptions et de secondes de son (pour les limites d’usage), effacé avec ton compte.</p>
+<p><strong>Assistant d’aide.</strong> Quand tu poses une question au glaçon d’aide, ta question, les derniers messages de la conversation et quelques infos sur l’écran (étape, messages affichés, noms de fichiers, type de navigateur, fin du journal technique) sont envoyés à Cloudflare Workers AI, qui écrit la réponse. Stalak ne garde ni les questions ni les réponses ; seuls des compteurs (par connexion, sans l’adresse IP en clair, gardés peu de temps, en général un à deux jours) servent aux limites d’usage. Les réponses sont écrites par une IA et peuvent se tromper : n’y écris jamais de mot de passe ni de code.</p>
 <p>Le site n’utilise aucun cookie publicitaire ni de pistage, et ne vend aucune donnée.</p>
 <h2>Aide</h2>
 <p>Si tu nous écris pour de l’aide, tu peux nous envoyer les « infos techniques » (bouton dans la bulle d’aide) : elles contiennent le type de navigateur,

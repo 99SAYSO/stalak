@@ -9,6 +9,7 @@ import { social } from './social.js';
 import { projectFiles, storageInfo, checkProjectFiles, dropUnusedFiles, readyFiles, deleteProjectMedia, deleteUserMedia, maybeCleanup, cleanupCloud, cloudAvailable } from './cloud.js';
 import { timingSafeEqual } from './crypto.js';
 import { transcribe } from './lyrics.js';
+import { helpChat } from './help.js';
 
 const PROJECT_MAX_BYTES = 256 * 1024; // ~200 KB of project JSON + envelope
 const PROJECT_MAX_COUNT = 200;
@@ -260,6 +261,10 @@ async function dispatch(request, env, ctx) {
         // « Paroles automatiques » (Stalak Pro): one piece of the song's voice → timed words (functions/_lib/lyrics.js)
         if (method !== 'POST') break;
         return transcribe(request, env);
+      case 'help/chat':
+        // the help assistant of the ice cube (functions/_lib/help.js): open to everyone, signed in or not
+        if (method !== 'POST') break;
+        return helpChat(request, env);
       default:
         if (parts[0] === 'projects' && parts.length <= 6) return projects(request, env, method, parts.slice(1), ctx);
         if (parts[0] === 'connect' && parts.length === 3) return social(request, env, parts[1], parts[2]);

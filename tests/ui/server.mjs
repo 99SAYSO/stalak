@@ -1,7 +1,8 @@
 // UI test server: node tests/ui/server.mjs <built site dir> <port>
 // Serves a built site (python3 build_site.py, public/) and runs the real Pages Functions for /api/* on an in-memory
 // SQLite "D1", with a fake Workers AI binding (env.AI) that answers in the documented Whisper output shape.
-// Test-only routes: POST /__test/user {pro} → a signed-in user (session token); GET /__test/ai → the AI calls seen.
+// Test-only routes: POST /__test/user {pro} → a signed-in user (session token); GET /__test/ai → the AI calls seen;
+// GET /__test/helpmax?n=N → the help assistant's daily budget.
 import http from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { join, extname, dirname, normalize } from 'node:path';
@@ -16,6 +17,13 @@ const WORDS = ['je', 'rentre', 'tard', 'ce', 'soir', 'la', 'ville', 'dort', 'enc
 const aiCalls = [];
 const AI = {
   async run(model, input) {
+    // the help assistant (POST /api/help/chat): a chat model, answered in the chat-completion shape
+    if (Array.isArray(input.messages)) {
+      const sys = input.messages[0].content, q = input.messages[input.messages.length - 1].content;
+      aiCalls.push({ model, help: true, en: sys.includes('ANSWER RULES'), turns: input.messages.length - 1, question: q });
+      const content = sys.includes('ANSWER RULES') ? 'Tap **“Export video”** at the Edit step.' : 'Touche **« Exporter la vidéo »** à l’étape Montage.';
+      return { id: 'c1', object: 'chat.completion', choices: [{ index: 0, message: { role: 'assistant', content } }] };
+    }
     const bytes = Buffer.from(input.audio, 'base64');
     const dur = (bytes.length - 44) / 32000;
     let ss = 0, pk = 0; for (let i = 44; i + 1 < bytes.length; i += 2) { const v = bytes.readInt16LE(i) / 32768; ss += v * v; pk = Math.max(pk, Math.abs(v)); }
@@ -61,6 +69,8 @@ http.createServer(async (req, res) => {
     const chunks = []; for await (const c of req) chunks.push(c);
     const body = Buffer.concat(chunks);
     if (url.pathname === '/__test/user') { const u = await testUser(JSON.parse(body.toString() || '{}').pro); res.writeHead(200, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify(u)); }
+    // the site-wide daily budget of the help assistant (HELP_DAILY_MAX)
+    if (url.pathname === '/__test/helpmax') { env.HELP_DAILY_MAX = url.searchParams.get('n'); res.writeHead(200); return res.end('{}'); }
     if (url.pathname === '/__test/ai') { res.writeHead(200, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify(aiCalls)); }
     if (url.pathname.startsWith('/api/')) {
       const headers = new Headers(); for (const [k, v] of Object.entries(req.headers)) headers.set(k, Array.isArray(v) ? v.join(', ') : v);

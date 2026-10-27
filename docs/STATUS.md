@@ -1,7 +1,7 @@
 # Stalak — état du projet
 
 > Tenu à jour par le Chef de projet. Chaque conversation le lit avant de commencer et met à jour sa section sur sa branche à la fin de chaque tâche.
-> Dernière mise à jour : 27/10/2026.
+> Dernière mise à jour : 27/10/2026 (section Comptes : assistant d'aide).
 
 ## En ligne (stalak.app)
 - App de montage FR/EN : son, prises, paroles, montage, export, packs, effets, mode Clip.
@@ -20,6 +20,12 @@
 
 ## En cours
 - Rien. La précision des paroles auto est en ligne : voix mise en avant, contexte entre les morceaux, import de la voix seule. Seuils à vérifier sur de vraies chansons via les infos techniques (« centre / mix »).
+- **Assistant IA de la bulle d'aide** (branche `compte/assistant-aide`, compte rendu `docs/handoff/compte-assistant-aide.md`, Statut : PRÊT) :
+  - le glaçon d'aide répond sur stalak.app (route `POST /api/help/chat`, Workers AI, modèle Gemma 4 26B) ;
+  - ouvert à tous, sans compte ; rien n'est gardé ; message « IA, peut se tromper » ;
+  - limites : 15 questions / 10 min et 60 / jour par connexion, 60 / jour pour tout le site (`HELP_DAILY_MAX`) ;
+  - aucune migration ; politique de confidentialité FR/EN complétée ;
+  - revue de sécurité : `docs/appsec-review-assistant-aide.md`.
 
 ## Base de données D1
 - Migrations appliquées : 0001, 0002, 0003, 0004_lyrics_usage, 0004_cloud_save.
@@ -27,6 +33,7 @@
 ## À faire, par rôle
 
 ### Chef de projet
+- Fusionner `compte/assistant-aide`, puis mettre en ligne (aucune migration) et poser une question au glaçon sur stalak.app, en FR et en EN.
 - Supprimer l'ancien projet Cloudflare « stalak » en double.
 
 ### App & montage
@@ -36,7 +43,8 @@
 - Paddle en réel une fois la structure créée : nouveaux produits, prix, clés et webhook, puis `PADDLE_ENV=production`.
 - Microsoft (création du compte bloquée, à retenter) et Apple (programme développeur à 99 $/an).
 - Ménage quotidien automatique des projets (Worker `workers/cloud-cleanup`, à déployer avec wrangler depuis un ordinateur). Pour l'instant, le ménage se fait quand quelqu'un ouvre « Mes projets ».
-- Assistant IA de la bulle d'aide sur stalak.app (aujourd'hui seulement un e-mail).
+- Assistant IA de la bulle d'aide : fait (branche `compte/assistant-aide`). Après la mise en ligne : poser quelques vraies questions pour juger les réponses ; ajuster `HELP_DAILY_MAX` si besoin.
+- Plus tard : saler l'empreinte des IP des compteurs (paroles et aide) avec `AUTH_SECRET`.
 - Plus de 210 minutes de transcription par jour : passer au forfait Workers payant (5 $/mois).
 
 ### Réseaux sociaux
