@@ -25,7 +25,7 @@
 - Rien.
 - **Assistant d'aide, réponses vides** (branche `compte/assistant-reponses-vides`, compte rendu `docs/handoff/compte-assistant-reponses-vides.md`, Statut : PRÊT) : réflexion de Gemma 4 coupée, place de réponse 450 → 700 jetons, un deuxième essai si la réponse est vide (compté dans le budget du jour), erreur en 503 au lieu de 502, raison des réponses vides dans les journaux. Aucune migration.
 
-- **Tableau de bord privé + « Parler à un humain »** (en ligne le 27/10, éteint tant que l'installation n'est pas finie) :
+- **Tableau de bord privé + « Parler à un humain »** (**en marche depuis le 27/10 à 23 h 34** : connexion du propriétaire vérifiée ; domaine, secrets et événements Paddle `adjustment.*` en place) :
   - `https://admin.stalak.app/admin/`, réservé à l'e-mail du propriétaire par Cloudflare Access (jeton vérifié aussi par le serveur) : inscrits, Pro mensuels/annuels, revenu, visiteurs en direct, jour par jour, usage des fonctions, messages ;
   - glaçon : « Parler à un humain » (direct si le propriétaire est disponible, sinon e-mail du visiteur et réponse par e-mail) ;
   - migration 0006 appliquée ; reste au propriétaire : 2 secrets (`ACCESS_AUD`, `ADMIN_EMAILS`), domaine personnalisé admin.stalak.app sur Pages, événements Paddle `adjustment.*` (BACKEND.md, étape 13). L'équipe Access est déjà dans `wrangler.toml`.
@@ -67,7 +67,7 @@
 - **Tableau de bord privé : la protection est prête (27/10).** Cloudflare Zero Trust Free est activé (équipe `small-band-a6ef`, donc `small-band-a6ef.cloudflareaccess.com`). L'application Access « admin » protège `admin.stalak.app` : seul le propriétaire peut l'ouvrir, avec un code reçu par e-mail. Le tableau de bord est branché sur ce nom par `compte/tableau-de-bord` (ligne suivante). Côté serveur, les routes d'administration doivent vérifier l'en-tête `Cf-Access-Jwt-Assertion` (clés publiques de l'équipe + « AUD » de l'application « admin », visible dans Zero Trust → Access controls → Applications → admin). Ne jamais s'en remettre au seul fait d'être sur ce nom de domaine.
 - Tableau de bord + « Parler à un humain » : fait sur `compte/tableau-de-bord` (le jeton Access est vérifié par le serveur : hôte, signature des clés de l'équipe, AUD, e-mail). Reste : 2 secrets, domaine personnalisé, événements Paddle `adjustment.*` (BACKEND.md, étape 13).
 - Si des faux messages arrivent : Cloudflare Turnstile sur « Parler à un humain ».
-- Tableau de bord et « Parler à un humain » : fusionnés et en ligne le 27/10, migration 0006 appliquée. Le tableau de bord reste éteint en attendant la fin de l'installation par le propriétaire : domaine `admin.stalak.app` à activer, secrets `ACCESS_AUD` et `ADMIN_EMAILS`, événements Paddle `adjustment.*`.
+- Tableau de bord et « Parler à un humain » : fusionnés et en ligne le 27/10, migration 0006 appliquée. Le tableau de bord est en marche (connexion du propriétaire vérifiée le 27/10). Les chiffres Pro et revenu viennent pour l'instant des abonnements de test Paddle (sandbox).
   - À regarder (Comptes) : dans l'espace de travail du Chef de projet, `tests/ui/support_ui.py` s'arrête après 17 PASS, à l'étape « reply e-mailed to the visitor who left » (attente de « envoyé par e-mail » dépassée après 50 s). C'est pareil sur la branche seule, donc la fusion n'y est pour rien. Les tests serveur (62/62) couvrent le même parcours.
 - Plus tard : saler l'empreinte des IP des compteurs (paroles, aide, visites, messages) avec `AUTH_SECRET`.
 - Plus de 210 minutes de transcription par jour : passer au forfait Workers payant (5 $/mois).
