@@ -12,9 +12,9 @@ compatibility_date = "2026-06-01"
 [vars]
 APP_ORIGIN = "https://stalak.app"
 PADDLE_ENV = "sandbox"             # switch to "production" once Paddle has approved the account
-PADDLE_CLIENT_TOKEN = ""           # client-side token: test_... (sandbox) or live_... (production)
-PADDLE_PRICE_MONTH = ""            # pri_... for 9.99 EUR / month
-PADDLE_PRICE_YEAR = ""             # pri_... for 79 EUR / year
+PADDLE_CLIENT_TOKEN = "test_6ba61e76a40fdce6b9d25c3eb9a"           # client-side token: test_... (sandbox) or live_... (production)
+PADDLE_PRICE_MONTH = "pri_01m5ygermd2pjw66mgdsh4f4rw"            # pri_... for 9.99 EUR / month
+PADDLE_PRICE_YEAR = "pri_01m5ygfwqdq8h2ax297c6qagjs"             # pri_... for 79 EUR / year
 SOCIAL_CONNECT_ENABLED = "0"       # TikTok / Instagram posting: not implemented, keep "0"
 
 # D1 database. Create it first (BACKEND.md, step 2) and paste its id below:
