@@ -1,0 +1,132 @@
+/* ---- pricing: promo, plan cards, trust line, comparison, FAQ ----
+   One component for the Stalak Pro page in the app (#pro, appended to the theme by build.py / build_site.py) and the
+   static pages /tarifs and /en/pricing (served as /pricing.css). Tokens: the theme's (--ink, --sky-deep, --ice, --fur…).
+   Direction: snow cards with an ink outline; the recommended plan wears the parka's fur trim and the one pink touch. */
+.pr-promo{align-self:center;display:inline-flex;align-items:center;gap:10px;margin:0 auto;max-width:100%;box-sizing:border-box;padding:6px 18px 6px 6px;background:var(--fur);color:var(--ink);border:2.5px solid var(--ink);border-radius:99px;box-shadow:0 4px 0 var(--ink);font:600 15px/1.3 var(--body);text-align:left}
+.pr-promo[hidden],.pr-sub[hidden],.pr[hidden]{display:none}
+.pr-promo b{font-weight:800;white-space:nowrap}
+.pr-flake{flex:none;width:34px;height:34px;box-sizing:border-box;padding:5px;border-radius:50%;background:var(--sky-deep);border:2px solid var(--ink);fill:none;stroke:#fff;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.pr-sub{margin:-8px auto 0;max-width:44ch;text-align:center;color:#fff;font-weight:600;font-size:16.5px;line-height:1.45;text-shadow:0 1px 0 rgba(10,13,20,.35)}
+.pr{display:flex;flex-direction:column;gap:26px}
+
+/* the plans: stacked on a phone (recommended first), side by side from 880 px (free · yearly · monthly) */
+.pr-plans{display:grid;grid-template-columns:minmax(0,1fr);gap:78px;padding-top:60px}
+.pr-plan{position:relative;display:flex;flex-direction:column;align-items:center;min-width:0;box-sizing:border-box;text-align:center;color:var(--ink);background:#fff;border:3px solid var(--ink);border-radius:26px;box-shadow:0 6px 0 var(--ink);padding:74px 20px 24px}
+.pr-plan::before{content:"";position:absolute;top:0;left:22px;right:22px;height:24px;background:var(--icicles) left top/64px 26px repeat-x;pointer-events:none;transform-origin:top center}
+.pr-plan.is-best{box-shadow:0 0 0 6px var(--fur),0 0 0 9px var(--ink),0 13px 0 6px var(--ink)}
+.pr-glint{position:absolute;inset:0;border-radius:23px;overflow:hidden;pointer-events:none}
+.pr-glint::before{content:"";position:absolute;top:-10%;bottom:-10%;left:0;width:45%;background:linear-gradient(100deg,rgba(214,236,255,0) 10%,rgba(214,236,255,.9) 50%,rgba(214,236,255,0) 90%);transform:translateX(-170%) skewX(-14deg);opacity:0}
+.pr-ribbon{position:absolute;top:-24px;right:-6px;z-index:2;margin:0;padding:7px 11px 5px;background:var(--tongue);color:var(--ink);border:2.5px solid var(--ink);border-radius:11px;box-shadow:0 3px 0 var(--ink);font:400 14.5px/1 var(--display);letter-spacing:.01em;transform:rotate(6deg);white-space:nowrap}
+/* the mascot sits in a round of ice that rises above the card's top edge */
+.pr-art{position:absolute;top:-70px;left:50%;width:128px;height:128px;margin-left:-64px;z-index:1;pointer-events:none}
+.pr-art::before{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 32% 26%,#fff 0 14%,var(--ice) 52%,var(--ice-2) 100%);border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink)}
+.pr-art img{position:absolute;left:6px;top:4px;display:block;width:116px;height:116px}
+.pr-art img:not([src]){visibility:hidden}
+.pr-name{margin:0 0 6px;font:400 28px/1.1 var(--display);letter-spacing:.01em}
+.pr-free .pr-name{color:#3f5170}
+.pr-month .pr-name{color:var(--sky-deep)}
+.pr-year .pr-name{color:#c8186a}
+.pr-price{margin:0;display:flex;align-items:baseline;justify-content:center;gap:3px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pr-amt{font:400 60px/1 var(--display);letter-spacing:-.01em}
+.pr-per{font:700 18px var(--body);color:var(--muted)}
+.pr-bill{margin:8px 0 0;color:var(--muted);font-size:14.5px;font-weight:500;line-height:1.35}
+.pr-pill{margin:12px 0 0;display:inline-flex;align-items:center;min-height:28px;box-sizing:border-box;padding:2px 12px;border-radius:99px;border:2px solid var(--ink);background:var(--frost);font:700 13.5px/1.2 var(--body)}
+.pr-save{background:#d9f5e4;color:#0b5a33}
+.pr-now{background:#fff;color:var(--muted)}
+.pr-cta{width:100%;justify-content:center;margin:20px 0 0;min-height:56px;font-size:17px;text-decoration:none;display:inline-flex;align-items:center;box-sizing:border-box}
+.pr-cta.primary{margin-bottom:12px}
+.pr-same{margin:14px 0 0;color:var(--muted);font-size:14.5px;line-height:1.4}
+.pr-feats{list-style:none;align-self:stretch;margin:20px 0 0;padding:18px 0 0;border-top:2.5px dashed var(--ice-2);display:flex;flex-direction:column;gap:11px;text-align:left}
+.pr-feats li{position:relative;padding-left:34px;font-weight:500;font-size:15px;line-height:1.4}
+.pr-feats li::before{content:"";position:absolute;left:0;top:-1px;width:24px;height:24px;box-sizing:border-box;border-radius:50%;border:2px solid var(--ink);background:var(--sky-deep) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px no-repeat}
+.pr-feats li.pr-plus{padding-left:0;font-weight:700}
+.pr-feats li.pr-plus::before{display:none}
+.pr-feats li.is-soon::before{background:var(--frost) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='7.5' fill='none' stroke='%230a0d14' stroke-width='2.4'/%3E%3Cpath d='M12 8v4.3l2.8 1.8' fill='none' stroke='%230a0d14' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/16px no-repeat}
+.pr-feats li.is-minus{color:var(--muted)}
+.pr-feats li.is-minus::before{border-color:#9aa8bf;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 12h10' stroke='%239aa8bf' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E") center/14px no-repeat}
+.pr-feats .soon{vertical-align:1px;margin-left:4px}
+.pr-dup{display:none}
+@media (min-width:880px){
+  .pr-plans{grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;align-items:stretch;padding-top:70px}
+  .pr-free{order:1}.pr-year{order:2;top:-14px}.pr-month{order:3}
+  .pr-ribbon{top:12px;right:-20px}
+  .pr-same{display:none}
+  .pr-dup{display:flex}
+}
+
+/* the reassurance line */
+.pr-trust{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:10px 12px}
+.pr-trust li{display:inline-flex;align-items:center;gap:8px;padding:5px 15px 5px 5px;background:#fff;color:var(--ink);border:2.5px solid var(--ink);border-radius:99px;box-shadow:0 3px 0 var(--ink);font:600 14.5px/1.2 var(--body)}
+.pr-trust svg{flex:none;width:30px;height:30px;box-sizing:border-box;padding:4px;border-radius:50%;background:var(--ice);fill:none;stroke:var(--ink);stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:620px){
+  /* a phone: three equal ice tiles, the icon above the words */
+  .pr-trust{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  .pr-trust li{flex-direction:column;justify-content:flex-start;gap:6px;padding:10px 6px 11px;border-radius:18px;text-align:center;font-size:13px;line-height:1.25}
+  .pr-trust svg{width:34px;height:34px}
+}
+.pr-pay{margin:-12px 0 0;text-align:center;color:#fff;font-size:14px;font-weight:500;text-shadow:0 1px 0 rgba(10,13,20,.3)}
+
+/* comparison and FAQ: snow cards */
+.pr-compare,.pr-faq{position:relative;box-sizing:border-box;width:100%;max-width:760px;align-self:center;color:var(--ink);background:#fff;border:3px solid var(--ink);border-radius:26px;box-shadow:0 6px 0 var(--ink)}
+.pr-compare::before,.pr-faq::before{content:"";position:absolute;top:0;left:22px;right:22px;height:24px;background:var(--icicles) left top/64px 26px repeat-x;pointer-events:none;transform-origin:top center}
+.pr-compare{padding:38px 0 6px}
+.pr-compare > :is(h2,h3),.pr-faq > :is(h2,h3){margin:0 20px 14px;text-align:center;font:400 28px/1.1 var(--display);color:var(--ink)}
+.pr-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:15px;line-height:1.35}
+.pr-table th,.pr-table td{padding:12px 8px;border-top:2px solid var(--frost);text-align:center;vertical-align:middle}
+.pr-table th:first-child{width:52%}
+.pr-table thead th{border-top:0;padding:4px 8px 12px;font:400 21px/1.1 var(--display)}
+.pr-table thead th.pr-colpro{color:#c8186a;border-radius:16px 16px 0 0}
+.pr-table tbody th,.pr-table tfoot th{text-align:left;font-weight:600;padding-left:22px}
+.pr-table .pr-colpro{background:rgba(214,236,255,.5)}
+.pr-table tfoot th,.pr-table tfoot td{border-top:2.5px solid var(--ink);font-weight:700}
+.pr-table tfoot .pr-colpro{border-radius:0 0 16px 16px}
+.pr-v{font-weight:700;font-size:14px}
+.pr-yes{display:inline-block;vertical-align:middle;width:26px;height:26px;box-sizing:border-box;border-radius:50%;border:2px solid var(--ink);background:var(--sky-deep) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/15px no-repeat}
+.pr-no{display:inline-block;vertical-align:middle;width:16px;height:3px;border-radius:2px;background:#9aa8bf}
+.pr-table .soon{margin:0}
+@media (max-width:520px){
+  .pr-table{font-size:14px}
+  .pr-table th:first-child{width:50%}
+  .pr-table tbody th,.pr-table tfoot th{padding-left:14px}
+  .pr-table th,.pr-table td{padding:11px 6px}
+  .pr-v{font-size:13px}
+  .pr-amt{font-size:54px}
+}
+.pr-faq{padding:38px 18px 18px;display:flex;flex-direction:column;gap:10px}
+.pr-faq > :is(h2,h3){margin:0 0 6px}
+.pr-faq details{margin:0;padding:0;border:2.5px solid var(--ink);border-radius:16px;background:var(--frost);box-shadow:0 3px 0 var(--ink)}
+.pr-faq details[open]{background:#fff}
+.pr-faq summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0;padding:10px 12px 10px 16px;min-height:50px;box-sizing:border-box;color:var(--ink);font:700 15.5px/1.35 var(--body)}
+.pr-faq details[open] summary{margin:0}
+.pr-faq summary::-webkit-details-marker{display:none}
+.pr-faq summary::after{content:"";flex:none;width:28px;height:28px;box-sizing:border-box;border-radius:50%;border:2px solid var(--ink);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 9.5l6 6 6-6' fill='none' stroke='%230a0d14' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px no-repeat;transition:transform .3s var(--slide)}
+.pr-faq details[open] summary::after{transform:rotate(180deg);background-color:var(--ice)}
+.pr-faq summary:focus-visible{outline:3px solid var(--sky-deep);outline-offset:2px;border-radius:14px}
+.pr-faq details p{margin:0;padding:0 16px 14px;color:#26344d;line-height:1.5}
+.pr-faq a{color:var(--sky-deep);font-weight:600}
+.pr-legal{text-align:center;color:#fff}
+.pr-legal a{color:#fff}
+
+/* ---- motion: the cards slide in on the ice and settle, the mascots drop in, icicles grow, a frost glint on the
+   recommended plan; FAQ answers melt in. Transform / opacity / filter only; prefers-reduced-motion stops all of it. ---- */
+.pr-plan{animation:pr-in .56s var(--soft) both}
+.pr-plans > :nth-child(1){animation-delay:.03s}
+.pr-plans > :nth-child(2){animation-delay:.09s}
+.pr-plans > :nth-child(3){animation-delay:.15s}
+.pr-art{animation:pr-drop .6s var(--slide) .16s both}
+.pr-plan::before,.pr-compare::before,.pr-faq::before{animation:pr-icicles .5s var(--slide) .3s both}
+.pr-ribbon{animation:pr-ribbon .5s var(--slide) .42s both}
+.pr-glint::before{animation:pr-glint 1.1s var(--soft) .75s 1 both}
+.pr-trust,.pr-pay,.pr-compare,.pr-faq{animation:pr-up .5s var(--soft) .22s both}
+.pr-faq details[open] p{animation:pr-melt .34s var(--soft) both}
+@keyframes pr-in{0%{opacity:0;transform:translateY(30px) scale(.97);filter:blur(5px)}55%{opacity:1;filter:blur(0)}80%{transform:translateY(-3px) scale(1.004)}100%{opacity:1;transform:none;filter:none}}
+@keyframes pr-drop{0%{opacity:0;transform:translateY(-26px) rotate(-9deg) scale(.82)}60%{opacity:1;transform:translateY(4px) rotate(2deg) scale(1.02)}100%{opacity:1;transform:none}}
+@keyframes pr-icicles{0%{transform:scaleY(0)}70%{transform:scaleY(1.12)}100%{transform:none}}
+@keyframes pr-ribbon{0%{opacity:0;transform:rotate(18deg) scale(.5)}100%{opacity:1;transform:rotate(6deg)}}
+@keyframes pr-glint{0%{opacity:0;transform:translateX(-170%) skewX(-14deg)}12%{opacity:1}100%{opacity:0;transform:translateX(330%) skewX(-14deg)}}
+@keyframes pr-up{0%{opacity:0;transform:translateY(18px)}100%{opacity:1;transform:none}}
+@keyframes pr-melt{0%{opacity:0;transform:translateY(-6px);filter:blur(3px)}100%{opacity:1;transform:none;filter:none}}
+@media (prefers-reduced-motion:reduce){
+  .pr-plan,.pr-art,.pr-plan::before,.pr-compare::before,.pr-faq::before,.pr-ribbon,.pr-glint::before,.pr-trust,.pr-pay,.pr-compare,.pr-faq,.pr-faq details[open] p{animation:none!important}
+  .pr-faq summary::after{transition:none}
+}

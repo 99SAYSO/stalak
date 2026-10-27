@@ -5,6 +5,8 @@ head = (src/'head.html').read_text(encoding='utf-8')
 css = (src/'style.css').read_text(encoding='utf-8')
 theme = src/'theme.css'
 if theme.exists(): css += '\n/* ---- theme ---- */\n' + theme.read_text(encoding='utf-8')
+pricing = src/'pricing.css'   # the plan cards of the Stalak Pro page (shared with /tarifs on the site)
+if pricing.exists(): css += '\n' + pricing.read_text(encoding='utf-8')
 markup = (src/'markup.html').read_text(encoding='utf-8')
 js = (src/'app.js').read_text(encoding='utf-8')
 out = head + '<style>' + css + '</style>' + markup + '<script>' + js + '</script>\n'
