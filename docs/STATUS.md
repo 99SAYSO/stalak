@@ -1,7 +1,7 @@
 # Stalak — état du projet
 
 > Tenu à jour par le Chef de projet. Chaque conversation le lit avant de commencer et met à jour sa section sur sa branche à la fin de chaque tâche.
-> Dernière mise à jour : 27/10/2026 (section Comptes : assistant d'aide).
+> Dernière mise à jour : 27/10/2026 (fusion et mise en ligne : assistant d'aide, connexion TikTok/Instagram éteinte, état des lieux juridique).
 
 ## En ligne (stalak.app)
 - App de montage FR/EN : son, prises, paroles, montage, export, packs, effets, mode Clip.
@@ -16,25 +16,21 @@
   - un ancien Pro perd l'accès à ses projets en ligne.
 - Paroles automatiques (Workers AI, Whisper large-v3-turbo) : marchent bien sur de vraies chansons.
 - Sauvegarde en ligne (R2 `stalak-media`) : en place, à faire tester par le propriétaire.
+- Assistant IA de la bulle d'aide (Workers AI, Gemma 4) : ouvert à tous, 60 questions par jour pour tout le site (`HELP_DAILY_MAX`).
+- Connexion TikTok / Instagram côté serveur : en place mais **éteinte** (`SOCIAL_CONNECT_ENABLED = "0"`), en attente des applis TikTok/Meta et des 5 secrets.
 - Pages : tarifs, conditions, remboursement, confidentialité, mentions légales (FR/EN), avec des animations glacées.
 
 ## En cours
 - Rien. La précision des paroles auto est en ligne : voix mise en avant, contexte entre les morceaux, import de la voix seule. Seuils à vérifier sur de vraies chansons via les infos techniques (« centre / mix »).
-- **Assistant IA de la bulle d'aide** (branche `compte/assistant-aide`, compte rendu `docs/handoff/compte-assistant-aide.md`, Statut : PRÊT) :
-  - le glaçon d'aide répond sur stalak.app (route `POST /api/help/chat`, Workers AI, modèle Gemma 4 26B) ;
-  - ouvert à tous, sans compte ; rien n'est gardé ; message « IA, peut se tromper » ;
-  - limites : 15 questions / 10 min et 60 / jour par connexion, 60 / jour pour tout le site (`HELP_DAILY_MAX`) ;
-  - aucune migration ; politique de confidentialité FR/EN complétée ;
-  - revue de sécurité : `docs/appsec-review-assistant-aide.md`.
+- Branche `app/apercu-iphone` (App & montage) : sur GitHub, pas encore de compte rendu « PRÊT ».
 
 ## Base de données D1
-- Migrations appliquées : 0001, 0002, 0003, 0004_lyrics_usage, 0004_cloud_save.
-- En attente : 0005_social_accounts (branche `social/connexion-comptes`).
+- Migrations appliquées : 0001, 0002, 0003, 0004_lyrics_usage, 0004_cloud_save, 0005_social_accounts (27/10).
+- En attente : aucune.
 
 ## À faire, par rôle
 
 ### Chef de projet
-- Fusionner `compte/assistant-aide`, puis mettre en ligne (aucune migration) et poser une question au glaçon sur stalak.app, en FR et en EN.
 - Supprimer l'ancien projet Cloudflare « stalak » en double.
 
 ### App & montage
@@ -49,9 +45,9 @@
 - Plus de 210 minutes de transcription par jour : passer au forfait Workers payant (5 $/mois).
 
 ### Réseaux sociaux
-- **Fait (branche `social/connexion-comptes`, pas encore fusionnée)** : connexion des comptes TikTok et Instagram côté serveur.
+- **Fait et en ligne (éteint)** : connexion des comptes TikTok et Instagram côté serveur.
   - `functions/_lib/social.js` : relier / délier un compte, jetons chiffrés en base, renouvellement automatique, appels de suppression de Meta.
-  - Migration **`0005_social_accounts.sql`** à lancer dans la console D1 **avant** la fusion.
+  - Migration `0005_social_accounts.sql` appliquée le 27/10.
   - 7 nouveaux tests serveur (55/55 passent). Revue sécurité : `docs/appsec-review-social-connect.md`.
   - La fonction reste éteinte (`SOCIAL_CONNECT_ENABLED = "0"`).
   - Compte rendu : `docs/handoff/social-connexion-comptes.md` (Statut : PRÊT).
