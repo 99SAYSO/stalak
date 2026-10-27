@@ -116,6 +116,11 @@
 - P4 : Pro complet offert sur le premier son, sans carte (demande un compte).
 - P7 : annuel plus bas ou essai de 7 jours avec carte sur l'annuel.
 
+**Nouveau concurrent direct (27/10) : camrip** (camrip.app). Il fait déjà le montage automatique de 1 à 4 prises coupées sur le temps, avec la synchro. Détail dans `docs/marketing/IDEES_CROISSANCE.md`.
+- À mettre en avant (Marketing) : ce que camrip n'a pas (paroles à l'écran, karaoké, paroles écrites automatiquement, packs, clip 16:9, français) et le prix (Pro à 9,99 € sans limite de vidéos, contre 14,99 $ pour 30 vidéos chez camrip).
+- À étudier (App & montage) : choisir automatiquement la meilleure prise à chaque coupe (visage net et bien cadré), et des zooms automatiques sur les plans qui durent.
+- Renforce P3 (pack à l'unité) : camrip vend 5 vidéos 4,99 $ sans abonnement.
+
 **Plus tard** : P6 prix locaux via Paddle (Comptes) ; A6 affiliation après Pro ; A7 dizaine de pages SEO FR/EN (Marketing) ; A8 Product Hunt un dimanche (Marketing) ; F9 détourage, F10 stats par variante, F11 modèles partagés.
 
 **À mesurer dès la bêta** : visites → premier export → affichage de Pro → achat, et visites venues de `?ref=outro`.
