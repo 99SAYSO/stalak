@@ -1,0 +1,70 @@
+// UI test server: node tests/ui/server.mjs <built site dir> <port>
+// Serves a built site (python3 build_site.py, public/) and runs the real Pages Functions for /api/* on an in-memory
+// SQLite "D1", with a fake Workers AI binding (env.AI) that answers in the documented Whisper output shape.
+// Test-only routes: POST /__test/user {pro} → a signed-in user (session token); GET /__test/ai → the AI calls seen.
+import http from 'node:http';
+import { readFile, stat } from 'node:fs/promises';
+import { join, extname, dirname, normalize } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { createD1 } from '../backend/fake-d1.mjs';
+import { onRequest } from '../../functions/api/[[path]].js';
+import { sha256Hex, base64url } from '../../functions/_lib/crypto.js';
+
+const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
+const siteDir = process.argv[2], port = Number(process.argv[3] || 8787), origin = `http://localhost:${port}`;
+const WORDS = ['je', 'rentre', 'tard', 'ce', 'soir', 'la', 'ville', 'dort', 'encore', 'mon', 'cœur', 'bat', 'fort', 'sous', 'la', 'neige'];
+const aiCalls = [];
+const AI = {
+  async run(model, input) {
+    const bytes = Buffer.from(input.audio, 'base64');
+    const dur = (bytes.length - 44) / 32000;
+    aiCalls.push({ model, language: input.language || null, vad: input.vad_filter, seconds: Math.round(dur * 100) / 100,
+      wav: bytes.toString('latin1', 0, 4) + bytes.toString('latin1', 8, 12), rate: bytes.readUInt32LE(24), channels: bytes.readUInt16LE(22) });
+    // a 4-word phrase every 2.5 s, then a silence hallucination that must be dropped
+    const segments = []; let k = 0;
+    for (let t = 0.6; t + 2 < dur; t += 2.5) {
+      const words = [0, 1, 2, 3].map((i) => ({ word: ' ' + WORDS[(k * 4 + i) % WORDS.length] + (i === 3 ? '.' : ''), start: +(t + i * 0.4).toFixed(2), end: +(t + i * 0.4 + 0.35).toFixed(2) }));
+      segments.push({ start: words[0].start, end: words[3].end, text: words.map((w) => w.word).join(''), temperature: 0, avg_logprob: -0.3, compression_ratio: 1.2, no_speech_prob: 0.02, words });
+      k++;
+    }
+    segments.push({ start: Math.max(0, dur - 1), end: dur, text: ' Sous-titres réalisés par la communauté d\'Amara.org', temperature: 0, avg_logprob: -0.6, compression_ratio: 1.1, no_speech_prob: 0.5, words: [] });
+    return { transcription_info: { language: input.language || 'fr', language_probability: 0.9, duration: dur, duration_after_vad: dur }, text: segments.map((s) => s.text).join(''), word_count: k * 4, segments, vtt: 'WEBVTT' };
+  },
+};
+const env = { DB: createD1(join(root, 'migrations')), APP_ORIGIN: origin, PADDLE_ENV: 'sandbox', PADDLE_CLIENT_TOKEN: 'test_x', PADDLE_PRICE_MONTH: 'pri_month', PADDLE_PRICE_YEAR: 'pri_year', AI };
+let userN = 0;
+async function testUser(pro) {
+  const id = 'u_ui' + (++userN), now = Date.now(), token = base64url(crypto.getRandomValues(new Uint8Array(32)));
+  env.DB.raw.prepare('INSERT INTO users (id, email, lang, created_at, last_login_at, email_verified_at) VALUES (?, ?, ?, ?, ?, ?)').run(id, `ui${userN}@example.com`, 'fr', now, now, now);
+  env.DB.raw.prepare('INSERT INTO sessions (token_hash, user_id, created_at, expires_at, method) VALUES (?, ?, ?, ?, ?)').run(await sha256Hex(token), id, now, now + 864e5, 'password');
+  if (pro) env.DB.raw.prepare("INSERT INTO subscriptions (id, user_id, customer_id, status, price_id, current_period_end, last_event_at, updated_at) VALUES (?, ?, ?, 'active', 'pri_month', ?, ?, ?)").run('sub_ui' + userN, id, 'ctm_ui' + userN, now + 30 * 864e5, now, now);
+  return { id, token };
+}
+const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.webmanifest': 'application/manifest+json', '.txt': 'text/plain' };
+
+http.createServer(async (req, res) => {
+  try {
+    const url = new URL(req.url, origin);
+    const chunks = []; for await (const c of req) chunks.push(c);
+    const body = Buffer.concat(chunks);
+    if (url.pathname === '/__test/user') { const u = await testUser(JSON.parse(body.toString() || '{}').pro); res.writeHead(200, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify(u)); }
+    if (url.pathname === '/__test/ai') { res.writeHead(200, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify(aiCalls)); }
+    if (url.pathname.startsWith('/api/')) {
+      const headers = new Headers(); for (const [k, v] of Object.entries(req.headers)) headers.set(k, Array.isArray(v) ? v.join(', ') : v);
+      headers.set('CF-Connecting-IP', '127.0.0.1');
+      const r = await onRequest({ request: new Request(origin + req.url, { method: req.method, headers, body: ['GET', 'HEAD'].includes(req.method) ? undefined : body }), env, params: {}, waitUntil() {} });
+      const h = {}; r.headers.forEach((v, k) => { if (k !== 'set-cookie') h[k] = v; });
+      const sc = r.headers.getSetCookie(); if (sc.length) h['set-cookie'] = sc;
+      res.writeHead(r.status, h); return res.end(Buffer.from(await r.arrayBuffer()));
+    }
+    let p = normalize(decodeURIComponent(url.pathname)).replace(/^(\.\.[/\\])+/, '');
+    let f = join(siteDir, p);
+    try { if ((await stat(f)).isDirectory()) f = join(f, 'index.html'); } catch { if (!extname(f)) f += '.html'; }
+    let data = await readFile(f);
+    // test probe: the app lives in a closure; __ev(code) evaluates code inside it (test server only, never in the build)
+    if (extname(f) === '.html') data = Buffer.from(data.toString('utf8').replace(/applyLang\(\);\n\}\)\(\);/, 'applyLang();\nwindow.__ev = (s) => eval(s);\n})();'));
+    res.writeHead(200, { 'Content-Type': TYPES[extname(f)] || 'application/octet-stream' }); res.end(data);
+  } catch (e) {
+    res.writeHead(e.code === 'ENOENT' ? 404 : 500, { 'Content-Type': 'text/plain' }); res.end(String(e.code === 'ENOENT' ? 'not found' : e.stack));
+  }
+}).listen(port, () => console.log('ui test server on ' + origin));

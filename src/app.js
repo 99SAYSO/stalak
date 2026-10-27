@@ -124,7 +124,7 @@ const I18N_EN = /*@EN*/{
   "pvnote": "Lighter preview so it stays smooth. Your exported video will be full quality.",
   "p3.title": "Lyrics on screen",
   "ly.paste": "Paste my lyrics",
-  "ly.auto": "Auto transcription<span class=\"soon\">soon</span>",
+  "ly.auto": "Auto transcription",
   "ly.none": "No lyrics",
   "ly.clipHint": "In a music video, on-screen lyrics are rare, so it’s “No lyrics” by default. You can still paste yours.",
   "ly.pasteHint": "Paste the lyrics of this part, one line per row.",
@@ -138,7 +138,7 @@ const I18N_EN = /*@EN*/{
   "ly.editHint": "Fix the text or nudge a line with − and +.",
   "ly.autoAgain": "Re-sync automatically",
   "ly.tapAgain": "Re-sync by tapping",
-  "ly.autoInfo": "Writing the lyrics by itself isn’t possible here yet (it would need to download a voice recognition model). Paste your lyrics: the “Sync automatically” button finds when each line is sung.",
+  "ly.autoInfo": "Automatic transcription works on stalak.app, with Stalak Pro. Here, paste your lyrics: the “Sync automatically” button finds when each line is sung.",
   "st.title": "Text style",
   "st.pos": "Position",
   "st.top": "Top",
@@ -549,6 +549,26 @@ const I18N_EN = /*@EN*/{
   "rec.count": "{n} take filmed",
   "rec.count_p": "{n} takes filmed",
   "rec.goN": "● Start take {n}",
+  "ly.trHint": "Stalak listens to the voice in the part you picked and writes the lyrics, already synced to your voice. You can fix any word afterwards.",
+  "ly.trLang": "Sung language",
+  "ly.trAuto": "Auto",
+  "ly.trNote": "<strong>Lyrics written by Stalak.</strong> Read them over and fix a word by tapping the line. Listen with ▶ and nudge with − / + if a line comes too early or too late.",
+  "ly.trGo": "Write my lyrics",
+  "ly.trAgain": "Write them again",
+  "lyr.busy": "Listening…",
+  "lyr.listen": "Stalak is listening to your voice…",
+  "lyr.done": "{n} line written and synced. Read it over and fix what’s needed",
+  "lyr.done_p": "{n} lines written and synced. Read them over and fix what’s needed",
+  "lyr.empty": "I couldn’t hear any lyrics in this part. Check the part chosen in step 1, or paste your lyrics.",
+  "lyr.e.network": "No connection to Stalak: check your internet, then try again.",
+  "lyr.e.long": "This part is too long for automatic lyrics (8 minutes max). Pick a shorter part in step 1.",
+  "lyr.e.quota": "You’ve reached today’s limit for automatic lyrics. Try again tomorrow, or paste your lyrics.",
+  "lyr.e.busy": "Too many requests at once: wait a little, then try again.",
+  "lyr.e.pro": "Automatic lyrics are part of Stalak Pro.",
+  "lyr.e.unavail": "Automatic lyrics aren’t available right now. Try again later, or paste your lyrics.",
+  "lyr.e.fail": "The transcription didn’t work. Try again, or paste your lyrics.",
+  "acct.why.lyrics": "Automatic lyrics are part of Stalak Pro.",
+  "ap.whyIn.lyrics": "Automatic lyrics are part of Stalak Pro. Sign in or create an account to get it.",
   "lang.sw": "Language",
   "acct.close": "Close",
   "acct.email": "Your email",
@@ -559,7 +579,7 @@ const I18N_EN = /*@EN*/{
   "acct.perk1": "No Stalak logo at the end of your videos",
   "acct.perk2": "Music video mode: the whole song in 16:9",
   "acct.perk3": "Your projects saved online <span class=\"soon\">soon</span>",
-  "acct.perk4": "Lyrics synced automatically <span class=\"soon\">soon</span>",
+  "acct.perk4": "Your lyrics written and synced automatically",
   "acct.month": "€9.99 a month",
   "acct.year": "€79 a year <small>(−34%)</small>",
   "acct.buyHint": "Secure payment by Paddle. Cancel anytime.",
@@ -635,8 +655,8 @@ const I18N_EN = /*@EN*/{
   "pt.s2p": "The whole song in 16:9, with effects. Pick “Music video” at the Sound step.",
   "pt.s3t": "Cloud saving <span class=\"soon\">soon</span>",
   "pt.s3p": "Your projects will follow you from one device to another.",
-  "pt.s4t": "Automatic lyrics <span class=\"soon\">soon</span>",
-  "pt.s4p": "Stalak will sync your lyrics to your voice, all by itself.",
+  "pt.s4t": "Automatic lyrics",
+  "pt.s4p": "“Auto transcription”: Stalak listens to your voice, writes your lyrics and syncs them all by itself.",
   "pt.skip": "Skip",
   "pt.next": "Next",
   "ap.hide": "Hide",
@@ -763,7 +783,7 @@ const I18N_EN = /*@EN*/{
   "pr.f.pack": "<strong>A month of content in one click.</strong> 5, 10 or 30 all-different videos from the same song, to post every day.",
   "pr.f.text": "<strong>Lyrics that grab attention.</strong> Word by word or karaoke that follows your voice, in size S, M or L.",
   "pr.f.cloud": "<strong>Your projects everywhere:</strong> start on your phone, finish on your computer. <span class=\"soon\">soon</span>",
-  "pr.f.auto": "<strong>Your lyrics written for you:</strong> Stalak listens to your voice and syncs them by itself. <span class=\"soon\">soon</span>",
+  "pr.f.auto": "<strong>Your lyrics written for you:</strong> Stalak listens to your voice, writes them and syncs them by itself.",
   "pr.month.n": "Pro monthly",
   "pr.month.amt": "€9.99",
   "pr.month.bill": "Billed every month",
@@ -1115,6 +1135,22 @@ const I18N_FR = /*@FR*/{
   "rec.count": "{n} prise filmée",
   "rec.count_p": "{n} prises filmées",
   "rec.goN": "● Lancer la prise {n}",
+  "ly.trGo": "Écrire mes paroles",
+  "ly.trAgain": "Les réécrire",
+  "lyr.busy": "J’écoute…",
+  "lyr.listen": "Stalak écoute ta voix…",
+  "lyr.done": "{n} phrase écrite et calée. Relis-la et corrige si besoin",
+  "lyr.done_p": "{n} phrases écrites et calées. Relis-les et corrige si besoin",
+  "lyr.empty": "Je n’ai pas entendu de paroles dans ce passage. Vérifie le passage choisi à l’étape 1, ou colle tes paroles.",
+  "lyr.e.network": "Pas de connexion avec Stalak : vérifie ton internet, puis réessaie.",
+  "lyr.e.long": "Ce passage est trop long pour les paroles automatiques (8 minutes au plus). Choisis un passage plus court à l’étape 1.",
+  "lyr.e.quota": "Tu as atteint la limite du jour pour les paroles automatiques. Réessaie demain, ou colle tes paroles.",
+  "lyr.e.busy": "Trop de demandes d’un coup : attends un peu, puis réessaie.",
+  "lyr.e.pro": "Les paroles automatiques font partie de Stalak Pro.",
+  "lyr.e.unavail": "Les paroles automatiques ne sont pas disponibles pour le moment. Réessaie plus tard, ou colle tes paroles.",
+  "lyr.e.fail": "La transcription n’a pas marché. Réessaie, ou colle tes paroles.",
+  "acct.why.lyrics": "Les paroles automatiques font partie de Stalak Pro.",
+  "ap.whyIn.lyrics": "Les paroles automatiques font partie de Stalak Pro. Connecte-toi ou crée un compte pour en profiter.",
   "lang.sw": "Langue",
   "acct.btn": "Connexion",
   "acct.btn.in": "Compte",
@@ -3618,11 +3654,15 @@ function renderLines(){
 function afterLyricEdit(i){ saveLyrics(); renderLines(); const l = S.lyrics.lines[i]; if (!S.playing && l && l.t != null) showFrame(l.t + 0.4); }
 function lyricsView(){
   const mode = S.lyrics.mode, has = S.lyrics.lines.length > 0, timed = S.lyrics.lines.some(l => l.t != null);
+  // « Transcription auto » (Pro, stalak.app): the lines written by Stalak are edited there like pasted ones
+  const edit = mode === 'paste' || (mode === 'auto' && trAvail());
   $('#lyPaste').hidden = mode !== 'paste' || (has && timed) || tapping;
-  $('#lyEdit').hidden = mode !== 'paste' || !has || !timed || tapping;
-  $('#autoNote').hidden = !S.lyrics.lines.some(l => l.auto && l.t != null);
+  $('#lyEdit').hidden = !edit || !has || !timed || tapping;
+  $('#autoNote').hidden = !S.lyrics.lines.some(l => l.auto && !l.tr && l.t != null);
+  $('#trNote').hidden = !S.lyrics.lines.some(l => l.tr && l.t != null);
   $('#tapZone').hidden = !tapping;
-  $('#lyAuto').hidden = mode !== 'auto';
+  $('#lyAuto').hidden = mode !== 'auto' || tapping;
+  trUi();
   $('#lyStyle').hidden = mode === 'none';
   $('#lyClipHint').hidden = !isClip() || mode !== 'none';
   $$('#lyrMode button').forEach(b => b.setAttribute('aria-pressed', b.dataset.mode === mode));
@@ -3707,6 +3747,139 @@ async function autoSync(fromLines){
     showFrame(lyricShowTime());
   } catch(e){ diag('calage auto : erreur ' + (e && e.message || e)); say('auto.fail'); }
   finally { autoBusy = false; progress(null); ['#autoStart', '#autoAgain', '#tapStart', '#tapAgain'].forEach(q => $(q).disabled = false); }
+}
+
+/* « Paroles automatiques » (Stalak Pro, stalak.app only): the voice of the chosen passage is written by Whisper on the server
+   (POST /api/lyrics/transcribe, Cloudflare Workers AI). The passage is made small here: mono, 16 kHz, 16-bit WAV, cut into
+   pieces of at most 30 s in quiet spots; each piece gives words with their times, which become lines already timed. */
+const TR_SR = 16000, TR_PIECE = 30, TR_MAX = 8 * 60;
+let trBusy = false, trLang = 'auto';
+const trAvail = () => !!ACCT;   // the claude.ai page has no server: the feature is shown as available on stalak.app only
+/* the passage (with a little margin) as 16 kHz mono samples; averaging over each output sample's span = a light anti-alias filter */
+function trSamples(buf, a, b){
+  const sr = buf.sampleRate, i0 = Math.max(0, Math.floor(a * sr)), i1 = Math.min(buf.length, Math.ceil(b * sr));
+  const chs = []; for (let c = 0; c < buf.numberOfChannels; c++) chs.push(buf.getChannelData(c));
+  const n = Math.max(0, Math.floor((i1 - i0) * TR_SR / sr)), out = new Float32Array(n), step = sr / TR_SR;
+  for (let k = 0; k < n; k++){
+    const s0 = i0 + Math.floor(k * step), s1 = Math.max(s0 + 1, Math.min(i1, i0 + Math.floor((k + 1) * step)));
+    let v = 0; for (const d of chs) for (let i = s0; i < s1; i++) v += d[i];
+    out[k] = v / ((s1 - s0) * chs.length);
+  }
+  return out;
+}
+/* pieces of ≤ 30 s, each one ending at the quietest 50 ms between 20 and 30 s (so a word is not cut in two) */
+function trPieces(x){
+  const hop = TR_SR / 20, max = TR_PIECE * TR_SR, out = []; let a = 0;
+  while (a < x.length){
+    if (x.length - a <= max){ out.push([a, x.length]); break; }
+    let best = a + max, bestE = Infinity;
+    for (let s = a + 20 * TR_SR; s + hop <= a + max; s += hop){ let e = 0; for (let i = s; i < s + hop; i++) e += x[i] * x[i]; if (e < bestE){ bestE = e; best = s + (hop >> 1); } }
+    out.push([a, best]); a = best;
+  }
+  return out.filter(([p, q]) => q - p >= TR_SR * 0.5);
+}
+function trWav(x){
+  const n = x.length, b = new ArrayBuffer(44 + n * 2), v = new DataView(b), w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+  w(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); w(8, 'WAVEfmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, TR_SR, true); v.setUint32(28, TR_SR * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36, 'data'); v.setUint32(40, n * 2, true);
+  for (let i = 0; i < n; i++){ const s = Math.max(-1, Math.min(1, x[i])); v.setInt16(44 + i * 2, s < 0 ? s * 0x8000 : s * 0x7fff, true); }
+  const u = new Uint8Array(b); let bin = ''; for (let i = 0; i < u.length; i += 0x8000) bin += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000));
+  return btoa(bin);
+}
+/* words heard (absolute times) → lines: a new line on a pause, at the end of a sentence, or when the line gets long */
+function trLines(segs){
+  const lines = []; let cur = null;
+  const flush = () => { if (cur && cur.w.length){ const t = cur.w[0].s; lines.push({ text: cur.w.map(w => w.w).join(' '), t: +t.toFixed(3),
+    wo: cur.w.map(w => +(w.s - t).toFixed(3)), d: +(Math.max(cur.w[cur.w.length-1].e, cur.w[cur.w.length-1].s + 0.2) - t).toFixed(3), auto: true, tr: true, chk: false }); } cur = null; };
+  for (const sg of segs){
+    const ws = (sg.words || []).map(w => ({ w: String(w.word).replace(/\s+/g, ''), s: w.start, e: w.end })).filter(w => w.w);
+    if (!ws.length){
+      // no word times: the whole segment as one line, its words spread by syllables
+      flush(); const text = String(sg.text || '').replace(/\s+/g, ' ').trim(); if (text) lines.push({ text, t: +sg.start.toFixed(3), d: +Math.max(0.3, sg.end - sg.start).toFixed(3), auto: true, tr: true, chk: false });
+      continue;
+    }
+    if (cur && cur.w.length >= 3) flush();
+    for (const w of ws){
+      if (!cur) cur = { w: [] };
+      const last = cur.w[cur.w.length - 1], chars = cur.w.reduce((n, x) => n + x.w.length + 1, 0);
+      if (last && (w.s - last.e > 0.7 || cur.w.length >= 9 || chars + w.w.length > 42 || (/[.!?…]$/.test(last.w) && cur.w.length >= 3))){ flush(); cur = { w: [] }; }
+      // a lone punctuation mark goes with the word before
+      if (!/[\p{L}\p{N}]/u.test(w.w) && cur.w.length){ cur.w[cur.w.length - 1].w += w.w; continue; }
+      cur.w.push(w);
+    }
+  }
+  flush();
+  return lines.filter(l => /[\p{L}\p{N}]/u.test(l.text));
+}
+function trError(code, status){
+  if (code === 'pro_required' || code === 'not_logged_in') return 'lyr.e.pro';
+  if (code === 'quota_exceeded') return 'lyr.e.quota';
+  if (code === 'rate_limited') return 'lyr.e.busy';
+  if (code === 'too_long' || status === 413) return 'lyr.e.long';
+  if (code === 'network') return 'lyr.e.network';
+  if (code === 'ai_unavailable') return 'lyr.e.unavail';
+  return 'lyr.e.fail';
+}
+async function trPost(body){
+  let res;
+  try { res = await fetch('/api/lyrics/transcribe', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); }
+  catch(e){ throw Object.assign(new Error('network'), { code: 'network' }); }
+  let data = {}; try { data = await res.json(); } catch(e){}
+  if (!res.ok) throw Object.assign(new Error(data.message || 'HTTP ' + res.status), { code: data.error || (res.status >= 500 ? 'server' : 'http'), status: res.status });
+  return data;
+}
+async function transcribeLyrics(){
+  if (!S.song || trBusy || autoBusy || S.exporting) return;
+  if (!trAvail()) return;
+  if (!acctPro()){ acctOpen('lyrics'); return; }
+  const a = Math.max(0, S.segStart - 1), b = Math.min(S.song.duration, S.segEnd + 1);
+  if (b - a > TR_MAX + 2){ say('lyr.e.long'); return; }
+  if (typeof navigator !== 'undefined' && navigator.onLine === false){ say('lyr.e.network'); return; }
+  const songAt = S.song, t0 = performance.now();
+  stop(true); if (tapping){ tapping = false; }
+  trBusy = true; trUi(); say('lyr.listen'); progress(0); await nextFrame();
+  try {
+    const x = trSamples(S.song.buffer, a, b); await nextFrame();
+    const pieces = trPieces(x), job = 'j' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+    if (!pieces.length){ say('lyr.empty'); return; }
+    if (pieces.length > 16){ say('lyr.e.long'); return; }
+    const results = new Array(pieces.length); let lang = trLang, done = 0;
+    const send = async k => {
+      const [p, q] = pieces[k];
+      const r = await trPost({ audio: trWav(x.subarray(p, q)), job, part: k, parts: pieces.length, language: lang });
+      results[k] = (r.segments || []).map(sg => ({ ...sg, start: sg.start + a + p / TR_SR, end: sg.end + a + p / TR_SR,
+        words: (sg.words || []).map(w => ({ word: w.word, start: w.start + a + p / TR_SR, end: w.end + a + p / TR_SR })) }));
+      progress(Math.min(0.97, ++done / pieces.length));
+      return r;
+    };
+    // the first piece alone (it counts the transcription; with « Auto », its language is kept for the others), then 3 at a time
+    const r0 = await send(0); if (lang === 'auto' && r0.language) lang = r0.language;
+    let next = 1;
+    await Promise.all([0, 1, 2].map(async () => { while (next < pieces.length){ const k = next++; await send(k); } }));
+    if (S.song !== songAt){ say('auto.changed'); return; }
+    const lines = trLines(results.flat());
+    diag('paroles auto : ' + pieces.length + ' morceau(x), ' + fmt(a) + '–' + fmt(b) + ', langue ' + lang + ', ' + lines.length + ' phrases, ' + Math.round(performance.now() - t0) + ' ms');
+    if (!lines.length){ say('lyr.empty'); return; }
+    S.lyrics.lines = lines; S.lyrics.mode = 'auto'; S.lyrUser = true; $('#lyText').value = lines.map(l => l.text).join('\n');
+    saveLyrics(); renderLines(); lyricsView();
+    say(() => tn('lyr.done', lines.length));
+    showFrame(lyricShowTime());
+  } catch(e){
+    const k = trError(e && e.code, e && e.status);
+    diag('paroles auto : erreur ' + ((e && (e.code + ' ' + (e.status || ''))) || e) + ' ' + (e && e.message || ''));
+    say(k);
+    if (k === 'lyr.e.pro') acctOpen('lyrics');
+  } finally { trBusy = false; progress(null); trUi(); }
+}
+/* the « Transcription auto » panel: Pro tag, the button's words, busy state; on the claude.ai page, the « stalak.app only » note */
+function trUi(){
+  const avail = trAvail(), pro = acctPro(), ab = $('#lyrMode button[data-mode="auto"]');
+  if (ab) ab.classList.toggle('protag', avail && !pro);
+  $('#lyTr').hidden = !avail; $('#lyTrNA').hidden = avail;
+  const has = S.lyrics.lines.some(l => l.t != null);
+  setT($('#lyTrGo'), trBusy ? 'lyr.busy' : has ? 'ly.trAgain' : 'ly.trGo');
+  $('#lyTrGo').disabled = trBusy;
+  $$('#lyTrLang button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.v === trLang)));
 }
 
 /* ---------- drawing ---------- */
@@ -6632,6 +6805,12 @@ $('#tapStart').onclick = startTap;
 $('#autoStart').onclick = () => autoSync(false);
 $('#autoAgain').onclick = () => autoSync(true);
 $('#autoToPaste').onclick = () => { S.lyrics.mode = 'paste'; lyricsView(); };
+$('#lyTrGo').onclick = () => transcribeLyrics();
+bindSeg('#lyTrLang', v => { trLang = v; });
+/* « Transcription auto » is Stalak Pro on stalak.app: a PRO tag, and the Pro page (« why ») instead of the panel for the others */
+$('#lyrMode').addEventListener('click', e => { const b = e.target.closest('button[data-mode="auto"]'); if (b && trAvail() && !acctPro()){ e.stopPropagation(); acctOpen('lyrics'); } }, true);
+if (ACCT) ACCT.onChange(() => trUi());
+trUi();
 $('#tapAgain').onclick = () => { $('#lyText').value = S.lyrics.lines.map(l => l.text).join('\n'); startTap(); };
 $('#tapBtn').onclick = e => { doTap(); e.currentTarget.blur(); };
 $('#tapCancel').onclick = () => { stop(true); endTap(); };
@@ -6906,7 +7085,7 @@ LE SITE, EN 4 ÉTAPES (onglets en haut : 1 Son, 2 Prises, 3 Paroles, 4 Montage)
 3. Paroles
 - « Coller mes paroles » (une phrase par ligne), « Importer un .txt », ou « Sans paroles » (par défaut en Clip).
 - « Caler automatiquement » écoute la voix et place chaque phrase ; c'est une proposition : écouter chaque phrase avec ▶ et la décaler avec − / + ; les phrases « à vérifier » sont les moins sûres. « Caler au tap » : toucher TAP (ou la barre espace) au début de chaque phrase.
-- La transcription automatique n'existe pas encore (« bientôt »).
+- « Transcription auto » (Stalak Pro, sur stalak.app) : choisir la langue chantée (Auto, Français, English), puis « Écrire mes paroles » : Stalak écoute la voix du passage choisi à l'étape 1 et écrit les paroles, déjà calées (karaoké et mot par mot compris). Ensuite on relit : toucher une phrase pour corriger un mot, ▶ pour écouter, − / + pour décaler. « Les réécrire » recommence. Limites : 8 minutes de passage au plus, 20 transcriptions par jour. Sans Stalak Pro, le bouton porte un badge PRO et ouvre la page Stalak Pro. Sur la page claude.ai, la transcription n'est pas disponible : coller ses paroles.
 - Style : position (haut, milieu, bas), police, couleur, contour, taille S/M/L, apparition (mot par mot, phrase entière, karaoké, surlignage).
 4. Montage
 - Coupes : Auto, Sur les mots, Par mesure. Rythme : Posé, Normal, Nerveux. Ambiance (plans d'ambiance) : Aucun, Un peu, Beaucoup.
@@ -6929,7 +7108,7 @@ PROBLÈMES CONNUS ET SOLUTIONS
 - Les coupes ne tombent pas en rythme : étape Son, « Les coupes ne tombent pas en rythme ? », puis TAP en rythme et « Valider ».
 - « L'enregistrement n'est pas disponible dans cette vue » : ouvrir le site directement sur claude.ai (pas dans un aperçu), puis réessayer ; sinon clic droit sur la vidéo pour l'enregistrer.
 - Export lent : normal pour un long clip ou un gros pack ; laisser l'onglet ouvert au premier plan. Si c'est anormalement lent, toucher « Copier les infos pour l'équipe » (dans cette fenêtre d'aide) et les envoyer à l'équipe.
-- Le montage et l'export se font dans le navigateur : les vidéos restent sur l'appareil. Seule cette aide envoie à l'assistant ta question et quelques infos sur l'écran (étape, messages, noms de fichiers) pour pouvoir répondre.
+- Le montage et l'export se font dans le navigateur : les vidéos restent sur l'appareil. Seules cette aide (ta question et quelques infos sur l'écran : étape, messages, noms de fichiers) et « Transcription auto » (le son du passage, sans les vidéos, pas gardé) passent par un serveur.
 
 RÈGLES DE RÉPONSE
 - Réponds dans la langue de l'utilisateur (français par défaut), en tutoyant, avec des mots très simples : un enfant doit comprendre.
@@ -6957,7 +7136,7 @@ THE SITE, IN 4 STEPS (tabs at the top: 1 Sound, 2 Takes, 3 Lyrics, 4 Edit)
 3. Lyrics
 - "Paste my lyrics" (one line per row), "Import a .txt", or "No lyrics" (the default for a music video).
 - "Sync automatically" listens to the voice and places each line; it's a suggestion: listen to each line with ▶ and nudge it with − / +; lines marked "check" are the least sure. "Sync by tapping": tap TAP (or the space bar) at the start of each line.
-- Automatic transcription doesn't exist yet ("soon").
+- "Auto transcription" (Stalak Pro, on stalak.app): pick the sung language (Auto, Français, English), then "Write my lyrics": Stalak listens to the voice in the part picked in step 1 and writes the lyrics, already synced (karaoke and word by word included). Then read them over: tap a line to fix a word, ▶ to listen, − / + to nudge. "Write them again" starts over. Limits: a part of 8 minutes at most, 20 transcriptions a day. Without Stalak Pro, the button has a PRO badge and opens the Stalak Pro page. On the claude.ai page, transcription isn't available: paste the lyrics.
 - Style: position (top, middle, bottom), font, color, outline, size S/M/L, reveal (word by word, whole line, karaoke, highlight).
 4. Edit
 - Cuts: Auto, On the words, Every bar. Pace: Chill, Normal, Punchy. B-roll: None, A little, A lot.
@@ -6980,7 +7159,7 @@ KNOWN PROBLEMS AND FIXES
 - Cuts not on the beat: Sound step, "Cuts not on the beat?", then TAP in time and "Apply".
 - "Saving isn't available here": open the site directly on claude.ai (not in a preview), then try again; otherwise right-click the video to save it.
 - Slow export: normal for a long music video or a big pack; keep the tab open in front. If it's unusually slow, tap "Copy info for the team" (in this help window) and send it to the team.
-- The edit and the export happen in the browser: the videos stay on the device. Only this help sends the assistant your question and a little info about the screen (step, messages, file names) so it can answer.
+- The edit and the export happen in the browser: the videos stay on the device. Only this help (your question and a little info about the screen: step, messages, file names) and "Auto transcription" (the sound of the part, without the videos, not kept) go through a server.
 
 ANSWER RULES
 - Answer in the user's language (English by default), casually, with very simple words: a child should understand.

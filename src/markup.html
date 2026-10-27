@@ -159,7 +159,7 @@
           <h2 data-i18n="p3.title">Les paroles à l'écran</h2>
           <div class="seg" role="group" aria-label="Paroles" data-i18n-attr="aria-label:p3.mode.aria" id="lyrMode">
             <button type="button" data-mode="paste" aria-pressed="true" data-i18n="ly.paste">Coller mes paroles</button>
-            <button type="button" data-mode="auto" aria-pressed="false" data-i18n="ly.auto">Transcription auto<span class="soon">bientôt</span></button>
+            <button type="button" data-mode="auto" aria-pressed="false" data-i18n="ly.auto">Transcription auto</button>
             <button type="button" data-mode="none" aria-pressed="false" data-i18n="ly.none">Sans paroles</button>
           </div>
 
@@ -176,6 +176,27 @@
             <p class="hint" style="margin-top:8px" data-i18n="ly.syncHint">« Caler automatiquement » écoute la voix dans ton son et place chaque phrase toute seule. « Caler au tap » : tu touches un bouton en rythme au début de chaque phrase.</p>
           </div>
 
+          <div id="lyAuto" hidden>
+            <div id="lyTr">
+              <p class="hint" data-i18n="ly.trHint">Stalak écoute la voix du passage choisi et écrit les paroles, déjà calées sur ta voix. Tu pourras corriger chaque mot ensuite.</p>
+              <div class="row" style="margin-top:10px;align-items:center;gap:8px">
+                <span class="label" data-i18n="ly.trLang">Langue chantée</span>
+                <div class="seg" role="group" aria-label="Langue chantée" data-i18n-attr="aria-label:ly.trLang" id="lyTrLang">
+                  <button type="button" data-v="auto" aria-pressed="true" data-i18n="ly.trAuto">Auto</button>
+                  <button type="button" data-v="fr" aria-pressed="false" lang="fr">Français</button>
+                  <button type="button" data-v="en" aria-pressed="false" lang="en">English</button>
+                </div>
+              </div>
+              <div class="row" style="margin-top:10px">
+                <button class="btn primary" id="lyTrGo" type="button">Écrire mes paroles</button>
+              </div>
+            </div>
+            <div id="lyTrNA" hidden>
+              <p class="hint" data-i18n="ly.autoInfo">La transcription automatique marche sur stalak.app, avec Stalak Pro. Ici, colle tes paroles : le bouton « Caler automatiquement » trouve tout seul quand chaque phrase est chantée.</p>
+              <button class="btn primary" id="autoToPaste" type="button" style="margin-top:10px" data-i18n="ly.paste">Coller mes paroles</button>
+            </div>
+          </div>
+
           <div class="tapzone" id="tapZone" hidden>
             <p class="hint" data-i18n="tap.hint">Le son se lance. Touche le bouton (ou la barre espace) au moment où chaque phrase commence.</p>
             <div class="tapnow" id="tapNow"></div>
@@ -186,6 +207,7 @@
 
           <div id="lyEdit" hidden>
             <p class="autonote" id="autoNote" hidden data-i18n="ly.autoNote"><strong>Calage automatique : c’est une proposition.</strong> Écoute chaque phrase avec ▶ et décale-la avec − / + si elle arrive trop tôt ou trop tard. Les phrases marquées <span class="chk">à vérifier</span> sont les moins sûres.</p>
+            <p class="autonote" id="trNote" hidden data-i18n="ly.trNote"><strong>Paroles écrites par Stalak.</strong> Relis-les et corrige un mot en touchant la phrase. Écoute avec ▶ et décale avec − / + si une phrase arrive trop tôt ou trop tard.</p>
             <div class="row" style="justify-content:space-between;margin-bottom:8px">
               <span class="hint" data-i18n="ly.editHint">Corrige le texte ou décale une phrase avec − et +.</span>
               <span class="row" style="gap:6px">
@@ -196,10 +218,6 @@
             <ul class="lines" id="lyLines"></ul>
           </div>
 
-          <div id="lyAuto" hidden>
-            <p class="hint" data-i18n="ly.autoInfo">Écrire les paroles tout seul n’est pas encore possible ici (il faudrait télécharger un modèle de reconnaissance de la voix). Colle tes paroles : le bouton « Caler automatiquement » trouve tout seul quand chaque phrase est chantée.</p>
-            <button class="btn primary" id="autoToPaste" type="button" style="margin-top:10px" data-i18n="ly.paste">Coller mes paroles</button>
-          </div>
         </div>
 
         <div class="card" id="lyStyle">
@@ -595,7 +613,7 @@
               <li data-i18n="pr.f.pack"><strong>Un mois de contenu en un clic.</strong> 5, 10 ou 30 vidéos toutes différentes du même son, pour poster chaque jour.</li>
               <li data-i18n="pr.f.text"><strong>Des paroles qui accrochent.</strong> Mot par mot ou en karaoké qui suit ta voix, en taille S, M ou L.</li>
               <li class="is-soon" data-i18n="pr.f.cloud"><strong>Tes projets partout :</strong> commence sur ton téléphone, finis sur ton ordi. <span class="soon">bientôt</span></li>
-              <li class="is-soon" data-i18n="pr.f.auto"><strong>Tes paroles écrites pour toi :</strong> Stalak écoute ta voix et les cale tout seul. <span class="soon">bientôt</span></li>
+              <li data-i18n="pr.f.auto"><strong>Tes paroles écrites pour toi :</strong> Stalak écoute ta voix, les écrit et les cale tout seul.</li>
             </ul>
           </article>
           <article class="pr-plan pr-month" aria-labelledby="apMonthN">
@@ -613,7 +631,7 @@
               <li data-i18n="pr.f.pack"><strong>Un mois de contenu en un clic.</strong> 5, 10 ou 30 vidéos toutes différentes du même son, pour poster chaque jour.</li>
               <li data-i18n="pr.f.text"><strong>Des paroles qui accrochent.</strong> Mot par mot ou en karaoké qui suit ta voix, en taille S, M ou L.</li>
               <li class="is-soon" data-i18n="pr.f.cloud"><strong>Tes projets partout :</strong> commence sur ton téléphone, finis sur ton ordi. <span class="soon">bientôt</span></li>
-              <li class="is-soon" data-i18n="pr.f.auto"><strong>Tes paroles écrites pour toi :</strong> Stalak écoute ta voix et les cale tout seul. <span class="soon">bientôt</span></li>
+              <li data-i18n="pr.f.auto"><strong>Tes paroles écrites pour toi :</strong> Stalak écoute ta voix, les écrit et les cale tout seul.</li>
             </ul>
           </article>
           <article class="pr-plan pr-free" aria-labelledby="apFreeN">
@@ -655,7 +673,7 @@
               <tr><th scope="row" data-i18n="pr.r.clip">Clip YouTube 16:9 monté automatiquement, avec effets</th><td><i class="pr-no" role="img" aria-label="Non" data-i18n-attr="aria-label:pr.no"></i></td><td class="pr-colpro"><i class="pr-yes" role="img" aria-label="Oui" data-i18n-attr="aria-label:pr.yes"></i></td></tr>
               <tr><th scope="row" data-i18n="pr.r.pack">Packs de 5, 10 ou 30 vidéos différentes en un clic</th><td><i class="pr-no" role="img" aria-label="Non" data-i18n-attr="aria-label:pr.no"></i></td><td class="pr-colpro"><i class="pr-yes" role="img" aria-label="Oui" data-i18n-attr="aria-label:pr.yes"></i></td></tr>
               <tr><th scope="row" data-i18n="pr.r.cloud">Sauvegarde en ligne</th><td><i class="pr-no" role="img" aria-label="Non" data-i18n-attr="aria-label:pr.no"></i></td><td class="pr-colpro"><span class="soon" data-i18n="pr.soon">bientôt</span></td></tr>
-              <tr><th scope="row" data-i18n="pr.r.autoly">Paroles écrites et calées automatiquement</th><td><i class="pr-no" role="img" aria-label="Non" data-i18n-attr="aria-label:pr.no"></i></td><td class="pr-colpro"><span class="soon" data-i18n="pr.soon">bientôt</span></td></tr>
+              <tr><th scope="row" data-i18n="pr.r.autoly">Paroles écrites et calées automatiquement</th><td><i class="pr-no" role="img" aria-label="Non" data-i18n-attr="aria-label:pr.no"></i></td><td class="pr-colpro"><i class="pr-yes" role="img" aria-label="Oui" data-i18n-attr="aria-label:pr.yes"></i></td></tr>
             </tbody>
             <tfoot><tr><th scope="row" data-i18n="pr.r.price">Prix</th><td class="pr-v" data-i18n="pr.free.amt">0 €</td><td class="pr-colpro pr-v" data-i18n="pr.v.from">dès 6,58 €/mois</td></tr></tfoot>
           </table>
@@ -681,7 +699,7 @@
           <li data-i18n="acct.perk5">Les packs : 5, 10 ou 30 vidéos toutes différentes d’un coup</li>
           <li data-i18n="acct.perk6">Toutes les tailles et apparitions du texte : mot par mot, karaoké</li>
           <li data-i18n="acct.perk3">Tes projets sauvegardés en ligne <span class="soon">bientôt</span></li>
-          <li data-i18n="acct.perk4">Les paroles calées automatiquement <span class="soon">bientôt</span></li>
+          <li data-i18n="acct.perk4">Tes paroles écrites et calées automatiquement</li>
         </ul>
         <button class="btn" id="apManage" type="button" data-i18n="acct.manage">Gérer mon abonnement</button>
         <p class="ap-legal"><a href="/tarifs" data-i18n="ap.pricing" data-i18n-attr="href:ap.pricingHref">Tarifs</a></p>
@@ -702,7 +720,7 @@
       <section class="pt-slide" aria-roledescription="diapositive" data-i18n-attr="aria-roledescription:pt.slide"><img data-emo="cool" alt="" width="112" height="112"><h3 data-i18n="pt.s2t">Le mode Clip</h3><p data-i18n="pt.s2p">Le morceau entier en 16:9, avec les effets. Choisis « Clip » à l’étape Son.</p></section>
       <section class="pt-slide" aria-roledescription="diapositive" data-i18n-attr="aria-roledescription:pt.slide"><img data-emo="focus" alt="" width="112" height="112"><h3 data-i18n="pt.s5t">Les packs</h3><p data-i18n="pt.s5p">5, 10 ou 30 vidéos toutes différentes d’un coup, pour poster tous les jours. À l’étape Montage.</p></section>
       <section class="pt-slide" aria-roledescription="diapositive" data-i18n-attr="aria-roledescription:pt.slide"><img data-emo="coffee" alt="" width="112" height="112"><h3 data-i18n="pt.s3t">Sauvegarde en ligne <span class="soon">bientôt</span></h3><p data-i18n="pt.s3p">Tes projets te suivront d’un appareil à l’autre.</p></section>
-      <section class="pt-slide" aria-roledescription="diapositive" data-i18n-attr="aria-roledescription:pt.slide"><img data-emo="gg" alt="" width="112" height="112"><h3 data-i18n="pt.s4t">Paroles automatiques <span class="soon">bientôt</span></h3><p data-i18n="pt.s4p">Stalak calera tes paroles sur ta voix, tout seul.</p></section>
+      <section class="pt-slide" aria-roledescription="diapositive" data-i18n-attr="aria-roledescription:pt.slide"><img data-emo="gg" alt="" width="112" height="112"><h3 data-i18n="pt.s4t">Paroles automatiques</h3><p data-i18n="pt.s4p">« Transcription auto » : Stalak écoute ta voix, écrit tes paroles et les cale tout seul.</p></section>
     </div>
     <p class="vh" id="ptLive" aria-live="polite"></p>
     <div class="pt-dots" id="ptDots"></div>

@@ -316,6 +316,26 @@ adresse de retour mal recopiée (une lettre ou un `/` de trop), secret expiré (
 
 ---
 
+## 10. Paroles automatiques (Stalak Pro, Cloudflare Workers AI)
+
+« Transcription auto » (étape 3 Paroles) envoie le son du passage choisi, découpé en morceaux de 30 s au plus
+(WAV mono 16 kHz), à `POST /api/lyrics/transcribe`, qui le fait écrire par le modèle Whisper
+`@cf/openai/whisper-large-v3-turbo` de **Cloudflare Workers AI** et renvoie les mots avec leurs temps.
+
+1. Rien à créer : `wrangler.toml` contient déjà `[ai] binding = "AI"`, la mise en ligne branche Workers AI tout seul.
+   (Si le déploiement refuse ce réglage : **Workers & Pages → stalak-site → Settings → Bindings → Add → Workers AI**,
+   nom de variable `AI`, puis redéployer.)
+2. Colle une fois `migrations/0004_lyrics_usage.sql` dans la console D1 (**Execute**), comme les autres migrations.
+3. Coût : 10 000 « neurons » gratuits par jour pour tout le compte Cloudflare, soit environ 210 minutes de son par jour
+   (46,63 neurons par minute de son, 0,0005 $ la minute). Au-delà, il faut le forfait **Workers Paid** (5 $ / mois),
+   sinon les transcriptions échouent jusqu'au lendemain (message « pas disponible pour le moment »).
+4. Limites par compte Pro : 20 transcriptions et 90 minutes de son par jour (UTC), 8 minutes au plus par transcription ;
+   300 requêtes par heure par connexion, 200 par heure par compte. Elles se règlent en haut de `functions/_lib/lyrics.js`.
+   Le son n'est jamais gardé ; seule la table `lyrics_usage` compte transcriptions et secondes par jour.
+5. Sans le binding `AI`, la route répond `503 ai_unavailable` et l'app affiche « pas disponible pour le moment ».
+
+---
+
 ## Pour le développeur
 
 ### Routes (`/api/…`)

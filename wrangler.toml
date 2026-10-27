@@ -18,6 +18,11 @@ PADDLE_PRICE_YEAR = "pri_01m5ygfwqdq8h2ax297c6qagjs"             # pri_... for 7
 SOCIAL_CONNECT_ENABLED = "0"
 GOOGLE_CLIENT_ID = "912353079416-aq4ljmd2n7ijcfl92025egde3r5nhnc9.apps.googleusercontent.com"   # public; the secret GOOGLE_CLIENT_SECRET is set in Cloudflare       # TikTok / Instagram posting: not implemented, keep "0"
 
+# Workers AI (« Paroles automatiques », Stalak Pro): the Whisper model that writes the lyrics, on env.AI.
+# Nothing to create: the binding uses the account's Workers AI (10,000 free neurons a day, then the Workers Paid plan).
+[ai]
+binding = "AI"
+
 # D1 database. Create it first (BACKEND.md, step 2) and paste its id below:
 # a wrong id makes the Pages deployment fail.
 [[d1_databases]]

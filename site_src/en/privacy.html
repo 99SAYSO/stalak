@@ -16,7 +16,7 @@ footer{max-width:760px;margin:18px auto 0;color:#fff;font-size:13px;text-align:c
 <a class="back" href="/en/">← Back to Stalak</a>
 <main><h1>Privacy</h1>
 <p><em>This is a translation of the French <a href="/confidentialite">politique de confidentialité</a>, which is the reference version.</em></p>
-<p><strong>In short: Stalak does not receive your videos or your sound.</strong> All the editing and the export happen in your browser, on your device. If you create an account, we only keep what is needed to run it.</p>
+<p><strong>In short: Stalak does not receive your videos or your sound</strong> (except the sound of a part when you use “Auto transcription”, see below). All the editing and the export happen in your browser, on your device. If you create an account, we only keep what is needed to run it.</p>
 <h2>What stays on your device</h2>
 <p>Your sound, your takes, your lyrics and the exported videos. The site keeps a few settings in your browser (local storage):
 the lyrics style, the synced lyrics of each sound, the chosen mode, the language, a few technical options. You can erase them by clearing the site’s data in your browser.</p>
@@ -26,13 +26,14 @@ the lyrics style, the synced lyrics of each sound, the chosen mode, the language
 <p>This data is only used to run your account and subscription (performance of the contract). It is kept as long as your account exists; when you delete your account from the Account page, it is erased immediately.</p>
 <h2>Our service providers</h2>
 <ul>
-<li><strong>Cloudflare</strong>: hosting of the website and of the accounts database.</li>
+<li><strong>Cloudflare</strong>: hosting of the website and of the accounts database; lyrics transcription (Workers AI).</li>
 <li><strong>Resend</strong>: sending sign-in emails (your email address and the code).</li>
 <li><strong>Paddle.com</strong>: payment, taxes and invoices, as our authorized reseller. Paddle processes your payment information under its own <a href="https://www.paddle.com/legal/privacy">privacy policy</a> and keeps billing records for as long as the law requires.</li>
 </ul>
 <p>Some of these providers are located in the United States; transfers are covered by the safeguards provided by the GDPR (standard contractual clauses or the Data Privacy Framework).</p>
 <h2>What goes through our services</h2>
 <p>The site is hosted by Cloudflare, which processes the technical information needed to show the pages (IP address, browser), as for any website.</p>
+<p><strong>Automatic lyrics (Stalak Pro).</strong> When you tap “Write my lyrics”, the sound of the chosen part (mono, reduced quality, without the videos) is sent to Cloudflare Workers AI to write the lyrics, which come back to your device. Neither the sound nor the lyrics are kept by Stalak; we only count, per day, the number of transcriptions and seconds of sound (for the usage limits), erased with your account.</p>
 <p>The site does not use advertising cookies and does not sell any data.</p>
 <h2>Help</h2>
 <p>If you write to us for help, you can send us the “technical info” (button in the help bubble): it contains the browser type,

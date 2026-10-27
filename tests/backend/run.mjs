@@ -1071,6 +1071,164 @@ test('oauth Apple: form_post callback, ES256 and RS256 keys, client secret = ES2
   assert.equal(r.status, 415);
 });
 
+// ---- « Paroles automatiques »: POST /api/lyrics/transcribe -----------------------------------
+// A WAV as the browser makes it: mono, 16 kHz, 16-bit PCM, 44-byte header; base64.
+function wavB64(seconds, { rate = 16000, channels = 1, bits = 16 } = {}) {
+  const n = Math.round(seconds * rate) * channels * (bits / 8), b = Buffer.alloc(44 + n);
+  b.write('RIFF', 0); b.writeUInt32LE(36 + n, 4); b.write('WAVEfmt ', 8); b.writeUInt32LE(16, 16); b.writeUInt16LE(1, 20);
+  b.writeUInt16LE(channels, 22); b.writeUInt32LE(rate, 24); b.writeUInt32LE(rate * channels * bits / 8, 28); b.writeUInt16LE(channels * bits / 8, 32);
+  b.writeUInt16LE(bits, 34); b.write('data', 36); b.writeUInt32LE(n, 40);
+  for (let i = 44; i + 1 < b.length; i += 2) b.writeInt16LE(Math.round(3000 * Math.sin(i / 20)), i);
+  return b.toString('base64');
+}
+// The documented output of @cf/openai/whisper-large-v3-turbo
+const AI_OUT = {
+  transcription_info: { language: 'fr', language_probability: 0.97, duration: 20, duration_after_vad: 12.5 },
+  text: 'Je rentre tard ce soir. La ville dort encore.',
+  word_count: 9,
+  segments: [
+    { start: 1.2, end: 3.4, text: ' Je rentre tard ce soir.', temperature: 0, avg_logprob: -0.31, compression_ratio: 1.1, no_speech_prob: 0.02,
+      words: [{ word: ' Je', start: 1.2, end: 1.4 }, { word: ' rentre', start: 1.4, end: 1.9 }, { word: ' tard', start: 1.9, end: 2.3 },
+        { word: ' ce', start: 2.3, end: 2.5 }, { word: ' soir.', start: 2.5, end: 3.4 }] },
+    { start: 5, end: 7.1, text: ' La ville dort encore.', temperature: 0, avg_logprob: -0.4, compression_ratio: 1.0, no_speech_prob: 0.05,
+      words: [{ word: ' La', start: 5, end: 5.2 }, { word: ' ville', start: 5.2, end: 5.7 }, { word: ' dort', start: 5.7, end: 6.2 }, { word: ' encore.', start: 6.2, end: 99 }] },
+    // silence: what Whisper "hears" there must go
+    { start: 12, end: 18, text: ' Sous-titres réalisés par la communauté d\'Amara.org', temperature: 0, avg_logprob: -0.5, compression_ratio: 1.2, no_speech_prob: 0.4, words: [] },
+    { start: 18, end: 19, text: ' Hmm', temperature: 0.2, avg_logprob: -1.3, compression_ratio: 0.8, no_speech_prob: 0.9, words: [] },
+    { start: 19, end: 19.5, text: ' la la la la la la la la la la la la', temperature: 1, avg_logprob: -0.9, compression_ratio: 3.1, no_speech_prob: 0.1, words: [] },
+  ],
+  vtt: 'WEBVTT\n\n',
+};
+function fakeAI(out = AI_OUT) {
+  const calls = [];
+  return { calls, run: async (model, input) => { calls.push({ model, input }); if (out instanceof Error) throw out; return out; } };
+}
+let proN = 0;
+async function proUser(env, email) {
+  const u = await login(env, email), k = 'p' + (++proN);
+  await webhook(env, subEvent('subscription.created', sub(u.user.id, { id: 'sub_' + k, customer_id: 'ctm_' + k })));
+  return u;
+}
+const WAV20 = wavB64(20);
+const piece = (over = {}) => ({ audio: WAV20, job: 'job_abcdef12', part: 0, parts: 1, language: 'auto', ...over });
+const transcribe = (env, cookie, over, opts = {}) => call(env, 'POST', '/api/lyrics/transcribe', { cookie, body: piece(over), ...opts });
+
+test('lyrics transcribe: signed in + Pro only; Workers AI called with the documented input; cleaned, timed segments', async () => {
+  const AI = fakeAI(), env = makeEnv({ AI });
+  let r = await transcribe(env, undefined);
+  assert.equal(r.status, 401); assert.equal(r.data.error, 'not_logged_in');
+  const free = await login(env, 'lyr-free@example.com');
+  r = await transcribe(env, free.cookie);
+  assert.equal(r.status, 403); assert.equal(r.data.error, 'pro_required');
+  assert.equal(AI.calls.length, 0, 'no AI call before the Pro check');
+  r = await call(env, 'GET', '/api/lyrics/transcribe', { cookie: free.cookie });
+  assert.equal(r.status, 405);
+  // CSRF: JSON + same origin, as every state-changing route
+  const pro = await proUser(env, 'lyr-pro@example.com');
+  r = await transcribe(env, pro.cookie, {}, { origin: 'https://evil.example' });
+  assert.equal(r.status, 403); assert.equal(r.data.error, 'bad_origin');
+  r = await call(env, 'POST', '/api/lyrics/transcribe', { cookie: pro.cookie, raw: 'x', ct: 'text/plain' });
+  assert.equal(r.status, 415);
+
+  r = await transcribe(env, pro.cookie, { language: 'fr' });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.equal(AI.calls.length, 1);
+  const { model, input } = AI.calls[0];
+  assert.equal(model, '@cf/openai/whisper-large-v3-turbo');
+  assert.equal(input.task, 'transcribe'); assert.equal(input.language, 'fr'); assert.equal(input.vad_filter, true);
+  assert.equal(input.condition_on_previous_text, false);
+  assert.equal(input.audio, WAV20, 'the base64 WAV is passed as is');
+  assert.equal(r.data.language, 'fr'); assert.equal(r.data.duration, 20);
+  assert.deepEqual(r.data.segments.map((s) => s.text), ['Je rentre tard ce soir.', 'La ville dort encore.'], 'silence hallucinations, no-speech and loops dropped');
+  assert.deepEqual(r.data.segments[0].words[0], { word: 'Je', start: 1.2, end: 1.4 });
+  assert.equal(r.data.segments[1].words[3].end, 20, 'times clamped to the piece');
+  assert.equal(r.data.usage.jobs, 1); assert.equal(r.data.usage.seconds, 20);
+  // "auto": no language hint
+  await transcribe(env, pro.cookie, { job: 'job_second01' });
+  assert.equal('language' in AI.calls[1].input, false);
+});
+
+test('lyrics transcribe: audio checked (WAV mono 16 kHz, ≤ 31 s per piece, ≤ 16 pieces), body size limit', async () => {
+  const AI = fakeAI(), env = makeEnv({ AI });
+  const pro = await proUser(env, 'lyr-check@example.com');
+  const bad = async (over, status, error) => {
+    const r = await transcribe(env, pro.cookie, over);
+    assert.equal(r.status, status, JSON.stringify(over).slice(0, 80) + ' ' + JSON.stringify(r.data)); if (error) assert.equal(r.data.error, error);
+  };
+  await bad({ audio: wavB64(5, { rate: 44100 }) }, 400, 'invalid_audio');
+  await bad({ audio: wavB64(5, { channels: 2 }) }, 400, 'invalid_audio');
+  await bad({ audio: Buffer.from('ID3' + 'x'.repeat(400)).toString('base64') }, 400, 'invalid_audio');
+  await bad({ audio: 'not base64!'.repeat(20) }, 400, 'invalid_audio');
+  await bad({ audio: undefined }, 400, 'invalid_audio');
+  await bad({ audio: wavB64(0.1) }, 400, 'invalid_audio');
+  await bad({ audio: wavB64(31.5) }, 413);
+  await bad({ parts: 17, part: 0 }, 413, 'too_long');
+  await bad({ part: 2, parts: 2 }, 400, 'invalid_part');
+  await bad({ part: '0' }, 400, 'invalid_part');
+  await bad({ job: 'x' }, 400, 'invalid_job');
+  await bad({ language: 'français' }, 400, 'invalid_language');
+  // a body far over the limit is refused
+  const r = await call(env, 'POST', '/api/lyrics/transcribe', { cookie: pro.cookie, raw: JSON.stringify(piece({ audio: wavB64(60) })) });
+  assert.equal(r.status, 413);
+  assert.equal(AI.calls.length, 0, 'nothing invalid reaches Workers AI');
+  await bad({ audio: wavB64(30.9) }, 200);
+});
+
+test('lyrics transcribe: daily quota, failures not counted, no binding → 503, odd outputs, rate limit, rows go with the account', async () => {
+  let AI = fakeAI(), env = makeEnv({ AI });
+  const pro = await proUser(env, 'lyr-quota@example.com');
+  const W1 = wavB64(1);
+  for (let i = 0; i < 20; i++) {
+    const r = await transcribe(env, pro.cookie, { audio: W1, job: 'job_quota_' + String(i).padStart(3, '0') });
+    assert.equal(r.status, 200, 'job ' + i + ' ' + JSON.stringify(r.data));
+  }
+  // the other pieces of a transcription already started still go through
+  let r = await transcribe(env, pro.cookie, { audio: W1, part: 1, parts: 2 });
+  assert.equal(r.status, 200);
+  r = await transcribe(env, pro.cookie, { audio: W1, job: 'job_quota_021' });
+  assert.equal(r.status, 429); assert.equal(r.data.error, 'quota_exceeded');
+  assert.equal(AI.calls.length, 21);
+  // audio budget: 90 minutes a day
+  const pro2 = await proUser(env, 'lyr-minutes@example.com');
+  env.DB.raw.prepare('INSERT INTO lyrics_usage (user_id, day, jobs, pieces, seconds, updated_at) VALUES (?, ?, 1, 1, 5390, 0)').run(pro2.user.id, new Date().toISOString().slice(0, 10));
+  r = await transcribe(env, pro2.cookie, { part: 1, parts: 2 });
+  assert.equal(r.status, 429); assert.equal(r.data.error, 'quota_exceeded');
+  r = await transcribe(env, pro2.cookie, { audio: wavB64(5), part: 1, parts: 2 });
+  assert.equal(r.status, 200, 'still fits');
+
+  // Workers AI fails: 502, and the piece is not counted
+  AI = fakeAI(new Error('3010: model error')); env = makeEnv({ AI });
+  const p3 = await proUser(env, 'lyr-fail@example.com');
+  r = await transcribe(env, p3.cookie);
+  assert.equal(r.status, 502); assert.equal(r.data.error, 'transcribe_failed');
+  assert.deepEqual({ ...env.DB.raw.prepare('SELECT jobs, pieces, seconds FROM lyrics_usage WHERE user_id = ?').get(p3.user.id) }, { jobs: 0, pieces: 0, seconds: 0 });
+  // odd outputs do not break the answer
+  for (const out of [null, {}, { text: '' }, { text: 'Bonjour tout le monde' }, { words: [{ word: 'yo', start: 0.5, end: 0.9 }], text: 'yo' }, { segments: [null, { text: 5 }, { words: 'x' }] }]) {
+    const e2 = makeEnv({ AI: fakeAI(out) }); const p = await proUser(e2, 'lyr-odd@example.com');
+    r = await transcribe(e2, p.cookie);
+    assert.equal(r.status, 200, JSON.stringify(out)); assert.ok(Array.isArray(r.data.segments));
+    if (out && out.text === 'Bonjour tout le monde') assert.deepEqual(r.data.segments, [{ start: 0, end: 20, text: 'Bonjour tout le monde', words: [] }]);
+    if (out && out.words) assert.deepEqual(r.data.segments[0].words, [{ word: 'yo', start: 0.5, end: 0.9 }]);
+  }
+  // no AI binding (not set up yet): 503, nothing counted
+  const e3 = makeEnv(); const p4 = await proUser(e3, 'lyr-noai@example.com');
+  r = await transcribe(e3, p4.cookie);
+  assert.equal(r.status, 503); assert.equal(r.data.error, 'ai_unavailable');
+  assert.equal(e3.DB.raw.prepare('SELECT COUNT(*) AS n FROM lyrics_usage').get().n, 0);
+
+  // per-connection rate limit (300 requests an hour)
+  const e4 = makeEnv({ AI: fakeAI() }); const p5 = await proUser(e4, 'lyr-ip@example.com');
+  e4.DB.raw.exec(`INSERT INTO rate_limits (key, window_start, count) VALUES ('lyr:ip:${(await sha256Hex('ip:10.9.9.9')).slice(0, 32)}', ${Date.now()}, 300)`);
+  r = await transcribe(e4, p5.cookie, {}, { ip: '10.9.9.9' });
+  assert.equal(r.status, 429); assert.equal(r.data.error, 'rate_limited');
+
+  // account deleted: its usage rows go too
+  env.DB.raw.prepare("INSERT INTO lyrics_usage (user_id, day, jobs, pieces, seconds, updated_at) VALUES (?, '2026-01-01', 1, 1, 10, 0)").run(p3.user.id);
+  r = await call(env, 'DELETE', '/api/account', { cookie: p3.cookie, body: { confirm: true } });
+  assert.equal(r.status, 200);
+  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM lyrics_usage').get().n, 0);
+});
+
 // ---- runner --------------------------------------------------------------------------
 let failed = 0;
 for (const t of tests) {
