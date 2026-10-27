@@ -22,7 +22,7 @@ SOCIAL_CONNECT_ENABLED = "0"       # TikTok / Instagram posting: not implemented
 [[d1_databases]]
 binding = "DB"
 database_name = "stalak"
-database_id = "REPLACE-WITH-D1-DATABASE-ID"
+database_id = "fc4c8647-2357-4f7e-821c-e360c861a712"
 migrations_dir = "migrations"
 
 # R2 bucket for media, for later (social posting needs public video URLs).
