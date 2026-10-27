@@ -916,6 +916,20 @@ test('oauth Google: new account (verified email, name), PKCE verifier sent, sign
   assert.equal(frag(r).hash, '#auth-err-cancelled'); assert.equal(r.jar('stalak_s'), null);
 });
 
+test('oauth popup mode (project open in the app): the callback page tells the app and closes, still signed in', async () => {
+  const env = makeEnv(OAUTH_ENV); resetJwksCache();
+  const b = await oauthBegin(env, 'google', 'return=/en/&to=pro&popup=1');
+  const r = await oauthFinish(env, 'google', b);
+  assert.equal(r.status, 200);
+  assert.match(r.headers.get('Content-Type'), /text\/html/);
+  assert.match(r.headers.get('Content-Security-Policy'), /default-src 'none'/);
+  assert.ok(r.jar('stalak_s') && r.jar('stalak_d'));
+  assert.ok(r.data.includes('{"stalakAuth":"auth-ok-pro"}') && r.data.includes('BroadcastChannel') && r.data.includes('"https://stalak.app/en/#auth-ok-pro"'));
+  const b2 = await oauthBegin(env, 'google', 'return=/&popup=1');
+  const r2 = await oauthFinish(env, 'google', b2, { error: 'access_denied' });
+  assert.ok(r2.data.includes('auth-err-cancelled')); assert.equal(r2.jar('stalak_s'), null);
+});
+
 test('oauth: an existing account with the same verified email gets the identity (linking)', async () => {
   const env = makeEnv(OAUTH_ENV); resetJwksCache();
   const a = await login(env, 'neige@gmail.com');

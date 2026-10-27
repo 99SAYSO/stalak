@@ -130,12 +130,30 @@ function safeReturn(v) {
   const s = String(v || '/');
   return /^\/(?!\/)[A-Za-z0-9._~\/-]{0,200}$/.test(s) && !s.startsWith('/api') ? s : '/';
 }
+// ret = "/en/#pro" (path # where to go), or "/en/#pro:popup" when the sign-in runs in a small window opened by the app
+// (used when a project is open: leaving the page would lose it). The window then tells the app and closes itself.
 function backTo(env, ret, frag, cookies = []) {
-  const [path] = String(ret || '/').split('#');
-  const h = new Headers({ Location: appOrigin(env) + safeReturn(path) + '#' + frag, 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer' });
+  const [path, tail = ''] = String(ret || '/').split('#');
+  const url = appOrigin(env) + safeReturn(path) + '#' + frag;
+  const h = new Headers({ 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer' });
   for (const c of cookies) h.append('Set-Cookie', c);
   h.append('Set-Cookie', 'stalak_o=; Path=/api/auth/oauth; HttpOnly; Secure; SameSite=None; Max-Age=0');
-  return new Response(null, { status: 303, headers: h });
+  if (!tail.endsWith(':popup')) { h.set('Location', url); return new Response(null, { status: 303, headers: h }); }
+  h.set('Content-Type', 'text/html; charset=utf-8');
+  h.set('Content-Security-Policy', "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'");
+  const msg = JSON.stringify({ stalakAuth: frag }).replace(/</g, '\\u003c');
+  const u = JSON.stringify(url).replace(/</g, '\\u003c');
+  const ok = frag.startsWith('auth-ok');
+  const html = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Stalak</title></head>
+<body style="margin:0;min-height:100vh;display:grid;place-items:center;background:#5aa9f0;color:#0a0d14;font:600 18px/1.4 system-ui,-apple-system,sans-serif;text-align:center;padding:24px;box-sizing:border-box">
+<p>${ok ? 'C’est bon, tu es connecté. Tu peux fermer cette fenêtre.<br>Signed in. You can close this window.' : 'La connexion n’a pas abouti. Tu peux fermer cette fenêtre.<br>Sign-in did not work. You can close this window.'}<br><br><a href="${appOrigin(env)}/" id="go" style="color:#0a0d14">Stalak</a></p>
+<script>(function(){var m=${msg},u=${u};document.getElementById('go').href=u;
+try{var b=new BroadcastChannel('stalak-auth');b.postMessage(m);b.close();}catch(e){}
+try{localStorage.setItem('stalak:auth',JSON.stringify({f:m.stalakAuth,t:Date.now()}));}catch(e){}
+try{if(window.opener&&window.opener!==window)window.opener.postMessage(m,location.origin);}catch(e){}
+setTimeout(function(){try{window.close();}catch(e){}},150);
+setTimeout(function(){if(!window.closed&&!(window.opener&&!window.opener.closed))location.replace(u);},900);})();</script></body></html>`;
+  return new Response(html, { status: 200, headers: h });
 }
 
 // GET /api/auth/oauth/:provider/start
@@ -144,8 +162,8 @@ export async function oauthStart(request, env, provider) {
   if (!P) throw new HttpError(404, 'not_found', 'Unknown provider.');
   const url = new URL(request.url);
   const ret = safeReturn(url.searchParams.get('return'));
-  const to = url.searchParams.get('to') === 'pro' ? 'pro' : 'account';
-  if (!P.enabled(env)) return backTo(env, ret, 'auth-err-not_enabled');
+  const to = (url.searchParams.get('to') === 'pro' ? 'pro' : 'account') + (url.searchParams.get('popup') === '1' ? ':popup' : '');
+  if (!P.enabled(env)) return backTo(env, ret + '#' + to, 'auth-err-not_enabled');
   await limit(env, `oauth:ip:${(await sha256Hex('ip:' + clientIp(request))).slice(0, 32)}`, 30, 10 * 60e3, 'Too many sign-in attempts, try again later.');
   const state = randomToken(32), nonce = randomToken(24), binding = randomToken(24);
   const verifier = P.pkce ? randomToken(48) : null;
@@ -217,7 +235,7 @@ export async function oauthCallback(request, env, provider, method) {
     }
     const user = await linkOrCreate(env, provider, claims, name, row.lang);
     const cookies = [await createSession(env, user, 'oauth:' + provider), await trustDevice(request, env, user.id)];
-    return backTo(env, ret, 'auth-ok-' + (ret.split('#')[1] === 'pro' ? 'pro' : 'account'), cookies);
+    return backTo(env, ret, 'auth-ok-' + (String(ret.split('#')[1]).startsWith('pro') ? 'pro' : 'account'), cookies);
   } catch (e) {
     const code = e instanceof OAuthFail ? e.code : 'oauth_failed';
     console.warn('[stalak] oauth', provider, code, e && e.message);

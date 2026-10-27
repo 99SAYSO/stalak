@@ -552,8 +552,6 @@ const I18N_EN = /*@EN*/{
   "lang.sw": "Language",
   "acct.close": "Close",
   "acct.email": "Your email",
-  "acct.send": "Get the code",
-  "acct.mailHint": "No password: we email you a 6-digit code.",
   "acct.otherMail": "Use another email",
   "acct.verify": "Confirm",
   "acct.codeHint": "Check your spam folder too. The code works for 10 minutes.",
@@ -575,7 +573,6 @@ const I18N_EN = /*@EN*/{
   "acct.t": "Your Stalak account",
   "acct.tIn": "Your account",
   "acct.tPro": "You’re Pro",
-  "acct.codeL": "Code sent to {mail}",
   "acct.who": "Signed in as {mail}",
   "acct.proRenew": "Stalak Pro renews on {d}.",
   "acct.proEnds": "Stalak Pro stays on until {d}, then stops.",
@@ -583,7 +580,6 @@ const I18N_EN = /*@EN*/{
   "acct.why.clip": "Music video mode is part of Stalak Pro.",
   "acct.why.outro": "Videos without the Stalak logo come with Stalak Pro.",
   "acct.sending": "Sending…",
-  "acct.sent": "Code sent. Check your inbox.",
   "acct.checking": "Checking…",
   "acct.welcome": "You’re signed in.",
   "acct.welcomePro": "Welcome to Stalak Pro!",
@@ -597,7 +593,7 @@ const I18N_EN = /*@EN*/{
   "acct.e.invalid_email": "That email doesn’t look right.",
   "acct.e.invalid_code": "Wrong code. Check it and try again.",
   "acct.e.code_expired": "This code has expired. Ask for a new one.",
-  "acct.e.too_many_attempts": "Too many tries. Ask for a new code.",
+  "acct.e.too_many_attempts": "Too many wrong codes. Ask for a new one.",
   "acct.e.rate_limited": "Too many requests. Wait a minute and try again.",
   "acct.e.no_customer": "No subscription found on this account.",
   "acct.e.net": "No connection to Stalak. Check your internet and try again.",
@@ -605,13 +601,8 @@ const I18N_EN = /*@EN*/{
   "ap.back": "Back",
   "ap.login.t": "Sign in to Stalak",
   "ap.pw": "Password",
-  "ap.show": "Show",
-  "ap.byCode": "Email me a code",
-  "ap.byPw": "Password",
   "ap.signIn": "Sign in",
   "ap.forgot": "Forgot your password?",
-  "ap.useCode": "Get a code instead",
-  "ap.mailHint": "With a code, no password needed: we email it to you and it works for 10 minutes.",
   "ap.acc.t": "Your account",
   "ap.profile": "Profile",
   "ap.photo": "Change photo",
@@ -625,7 +616,7 @@ const I18N_EN = /*@EN*/{
   "ap.new": "New password",
   "ap.newHint": "At least 8 characters. A short sentence works great.",
   "ap.pwSave": "Save password",
-  "ap.curHint": "Forgot it? Sign out, then sign back in with an email code: you’ll be able to pick a new one.",
+  "ap.curHint": "Forgot it? Sign out, then tap “Forgot your password?” on the sign-in page.",
   "ap.sub": "Subscription",
   "ap.lang": "Language",
   "ap.pricing": "Pricing",
@@ -650,9 +641,9 @@ const I18N_EN = /*@EN*/{
   "pt.next": "Next",
   "ap.hide": "Hide",
   "ap.btnAria": "Your account ({name})",
-  "ap.whyIn.clip": "Music video mode is part of Stalak Pro. Sign in to get it.",
-  "ap.whyIn.outro": "Videos without the Stalak logo come with Stalak Pro. Sign in to get it.",
-  "ap.whyIn.pro": "Sign in to get Stalak Pro.",
+  "ap.whyIn.clip": "Music video mode is part of Stalak Pro. Sign in or create an account to get it.",
+  "ap.whyIn.outro": "Videos without the Stalak logo come with Stalak Pro. Sign in or create an account to get it.",
+  "ap.whyIn.pro": "Sign in or create an account to get Stalak Pro.",
   "ap.pwOn": "Set on {d}",
   "ap.pwOnNoDate": "Set",
   "ap.pwOff": "Not set yet",
@@ -670,14 +661,12 @@ const I18N_EN = /*@EN*/{
   "ap.photoSaved": "New photo saved.",
   "ap.photoDeleted": "Photo removed.",
   "ap.pwSaved": "Password saved. You can now sign in with it.",
-  "ap.resetSent": "Code sent. Once you’re in, you’ll pick a new password.",
-  "ap.resetNow": "You’re in. Now pick your new password.",
   "pt.of": "{n} of {total}",
   "pt.dot": "Slide {n}",
   "pt.live": "Slide {n} of {total}: {title}",
   "pt.done": "Let’s go!",
-  "acct.e.invalid_login": "Wrong email or password. No password yet? Get a code by email.",
-  "acct.e.pwLocked": "Too many tries. Try again in 15 minutes, or get a code by email.",
+  "acct.e.invalid_login": "Wrong email or password.",
+  "acct.e.pwLocked": "Too many tries. Try again in 15 minutes, or choose a new password.",
   "acct.e.pwEmpty": "Type your password.",
   "acct.e.wrong_password": "That’s not your current password.",
   "acct.e.reauth_required": "Type your current password to change it.",
@@ -688,7 +677,75 @@ const I18N_EN = /*@EN*/{
   "acct.e.invalid_image": "This image won’t work. Try a JPEG or PNG photo.",
   "acct.e.too_large": "This photo is too heavy. Try another one.",
   "acct.e.not_logged_in": "Your session has expired. Sign in again.",
-  "acct.e.not_configured": "Payments aren’t open yet. Try again soon."
+  "acct.e.not_configured": "Payments aren’t open yet. Try again soon.",
+  "ap.tabs.aria": "Sign in or create an account",
+  "ap.tabIn": "Sign in",
+  "ap.tabUp": "Create account",
+  "ap.sso.google": "Continue with Google",
+  "ap.sso.apple": "Continue with Apple",
+  "ap.sso.microsoft": "Continue with Microsoft",
+  "ap.or": "or",
+  "ap.mailL": "Email",
+  "ap.sugg1": "Did you mean",
+  "ap.sugg2": "?",
+  "ap.showPw": "Show password",
+  "ap.hidePw": "Hide password",
+  "ap.pwPick": "Choose a password",
+  "ap.opt": "(optional)",
+  "ap.upGo": "Create my account",
+  "ap.upLegal": "By creating an account, you accept the <a href=\"/en/terms\">Terms</a> and the <a href=\"/en/privacy\">Privacy policy</a>.",
+  "ap.toUp": "No account yet?",
+  "ap.toIn": "Already have an account?",
+  "ap.noPw": "Account made with an email code?",
+  "ap.noPwGo": "Create your password",
+  "ap.codeL": "6-digit code",
+  "ap.forgot.p": "Enter your email: we’ll send you a code to choose a new password.",
+  "ap.forgotGo": "Get a code",
+  "ap.backIn": "Back to sign in",
+  "ap.newpwGo": "Save and sign in",
+  "ap.linkedK": "Linked accounts",
+  "acct.perk5": "Packs: 5, 10 or 30 all-different videos in one go",
+  "pt.s5t": "Packs",
+  "pt.s5p": "5, 10 or 30 all-different videos in one go, to post every day. At the Edit step.",
+  "ap.up.t": "Create your Stalak account",
+  "ap.code.t": "Check your email",
+  "ap.code.tDev": "New device",
+  "ap.code.p.signup": "We sent a 6-digit code to {mail}. Type it to create your account.",
+  "ap.code.p.login": "You’re signing in from a new device. We sent a 6-digit code to {mail} to check it’s really you.",
+  "ap.code.p.reset": "We sent a 6-digit code to {mail}.",
+  "ap.forgot.t": "Forgot your password",
+  "ap.create.t": "Create your password",
+  "ap.create.p": "Enter the email of your account: we’ll send you a code to choose your password.",
+  "ap.newpw.t": "New password",
+  "ap.newpw.tCreate": "Your password",
+  "ap.newpw.p": "Choose the password for {mail}.",
+  "ap.resend": "Send the code again",
+  "ap.resendIn": "Send again in {n} s",
+  "ap.resent": "New code sent.",
+  "ap.str.short": "{n} more characters…",
+  "ap.str.short1": "1 more character…",
+  "ap.str.common": "Too easy to guess. Try a short sentence.",
+  "ap.str.fair": "OK. A bit longer would be safer.",
+  "ap.str.good": "Good password.",
+  "ap.str.strong": "Great password!",
+  "acct.e.emailEmpty": "Type your email.",
+  "acct.e.email_taken": "An account already exists with this email.",
+  "acct.e.codeLen": "The code has 6 digits.",
+  "ap.e.codeLeft": "Wrong code. {n} tries left.",
+  "ap.e.codeLeft1": "Wrong code. 1 try left.",
+  "ap.e.resetAgain": "This code has expired. Ask for a new one.",
+  "acct.e.rate_limitedLong": "Too many requests. Try again in {n} min.",
+  "ap.created": "Account created. Welcome to Stalak!",
+  "ap.pwReset": "New password saved. You’re signed in.",
+  "ap.oauthWait": "Finish signing in in the window that just opened…",
+  "ap.oauth.cancelled": "Sign-in cancelled.",
+  "ap.oauth.state_mismatch": "Sign-in took too long. Try again.",
+  "ap.oauth.oauth_email_unverified": "That account didn’t give us a verified email. Create an account with your email instead.",
+  "ap.oauth.oauth_no_email": "That account didn’t give us an email. Create an account with your email instead.",
+  "ap.oauth.not_enabled": "This sign-in option isn’t available yet.",
+  "ap.oauth.oauth_failed": "Sign-in didn’t work. Try again, or use your email.",
+  "acct.why.pack": "Video packs are part of Stalak Pro.",
+  "ap.whyIn.pack": "Video packs are part of Stalak Pro. Sign in or create an account to get it."
 }/*EN@*/;
 const I18N_FR = /*@FR*/{
   "kind.hint.reel": "Une vidéo verticale 9:16, de tout le son ou de quelques mesures.",
@@ -986,7 +1043,6 @@ const I18N_FR = /*@FR*/{
   "acct.t": "Ton compte Stalak",
   "acct.tIn": "Ton compte",
   "acct.tPro": "Tu es Pro",
-  "acct.codeL": "Code envoyé à {mail}",
   "acct.who": "Connecté avec {mail}",
   "acct.proRenew": "Stalak Pro se renouvelle le {d}.",
   "acct.proEnds": "Stalak Pro reste actif jusqu’au {d}, puis s’arrête.",
@@ -994,7 +1050,6 @@ const I18N_FR = /*@FR*/{
   "acct.why.clip": "Le mode Clip fait partie de Stalak Pro.",
   "acct.why.outro": "Les vidéos sans le logo Stalak, c’est avec Stalak Pro.",
   "acct.sending": "Envoi…",
-  "acct.sent": "Code envoyé. Regarde tes e-mails.",
   "acct.checking": "Vérification…",
   "acct.welcome": "Tu es connecté.",
   "acct.welcomePro": "Bienvenue dans Stalak Pro !",
@@ -1008,16 +1063,16 @@ const I18N_FR = /*@FR*/{
   "acct.e.invalid_email": "Cet e-mail n’a pas l’air bon.",
   "acct.e.invalid_code": "Code incorrect. Vérifie-le et réessaie.",
   "acct.e.code_expired": "Ce code a expiré. Demande-en un nouveau.",
-  "acct.e.too_many_attempts": "Trop d’essais. Demande un nouveau code.",
+  "acct.e.too_many_attempts": "Trop de codes faux. Demande-en un nouveau.",
   "acct.e.rate_limited": "Trop de demandes. Attends une minute et réessaie.",
   "acct.e.no_customer": "Aucun abonnement trouvé sur ce compte.",
   "acct.e.net": "Pas de connexion à Stalak. Vérifie ton internet et réessaie.",
   "acct.e.other": "Un souci est survenu. Réessaie dans un moment.",
   "ap.hide": "Masquer",
   "ap.btnAria": "Ton compte ({name})",
-  "ap.whyIn.clip": "Le mode Clip fait partie de Stalak Pro. Connecte-toi pour en profiter.",
-  "ap.whyIn.outro": "Les vidéos sans le logo Stalak, c’est avec Stalak Pro. Connecte-toi pour en profiter.",
-  "ap.whyIn.pro": "Connecte-toi pour passer à Stalak Pro.",
+  "ap.whyIn.clip": "Le mode Clip fait partie de Stalak Pro. Connecte-toi ou crée un compte pour en profiter.",
+  "ap.whyIn.outro": "Les vidéos sans le logo Stalak, c’est avec Stalak Pro. Connecte-toi ou crée un compte pour en profiter.",
+  "ap.whyIn.pro": "Connecte-toi ou crée un compte pour passer à Stalak Pro.",
   "ap.pwOn": "Défini le {d}",
   "ap.pwOnNoDate": "Défini",
   "ap.pwOff": "Pas encore défini",
@@ -1035,14 +1090,12 @@ const I18N_FR = /*@FR*/{
   "ap.photoSaved": "Nouvelle photo enregistrée.",
   "ap.photoDeleted": "Photo retirée.",
   "ap.pwSaved": "Mot de passe enregistré. Tu peux t’en servir pour te connecter.",
-  "ap.resetSent": "Code envoyé. Une fois connecté, tu choisiras un nouveau mot de passe.",
-  "ap.resetNow": "C’est bon, tu es connecté. Choisis ton nouveau mot de passe.",
   "pt.of": "{n} sur {total}",
   "pt.dot": "Diapo {n}",
   "pt.live": "Diapo {n} sur {total} : {title}",
   "pt.done": "C’est parti !",
-  "acct.e.invalid_login": "E-mail ou mot de passe incorrect. Pas encore de mot de passe ? Reçois un code par e-mail.",
-  "acct.e.pwLocked": "Trop d’essais. Réessaie dans 15 minutes, ou reçois un code par e-mail.",
+  "acct.e.invalid_login": "E-mail ou mot de passe incorrect.",
+  "acct.e.pwLocked": "Trop d’essais. Réessaie dans 15 minutes, ou choisis un nouveau mot de passe.",
   "acct.e.pwEmpty": "Tape ton mot de passe.",
   "acct.e.wrong_password": "Ce n’est pas ton mot de passe actuel.",
   "acct.e.reauth_required": "Tape ton mot de passe actuel pour le changer.",
@@ -1053,7 +1106,47 @@ const I18N_FR = /*@FR*/{
   "acct.e.invalid_image": "Cette image ne passe pas. Essaie une photo JPEG ou PNG.",
   "acct.e.too_large": "Cette photo est trop lourde. Essaies-en une autre.",
   "acct.e.not_logged_in": "Ta session a expiré. Reconnecte-toi.",
-  "acct.e.not_configured": "Le paiement n’est pas encore ouvert. Réessaie bientôt."
+  "acct.e.not_configured": "Le paiement n’est pas encore ouvert. Réessaie bientôt.",
+  "ap.up.t": "Crée ton compte Stalak",
+  "ap.code.t": "Vérifie ton e-mail",
+  "ap.code.tDev": "Nouvel appareil",
+  "ap.code.p.signup": "On a envoyé un code à 6 chiffres à {mail}. Tape-le pour créer ton compte.",
+  "ap.code.p.login": "Tu te connectes depuis un nouvel appareil. On a envoyé un code à 6 chiffres à {mail} pour vérifier que c’est bien toi.",
+  "ap.code.p.reset": "On a envoyé un code à 6 chiffres à {mail}.",
+  "ap.forgot.t": "Mot de passe oublié",
+  "ap.create.t": "Crée ton mot de passe",
+  "ap.create.p": "Indique l’e-mail de ton compte : on t’envoie un code pour choisir ton mot de passe.",
+  "ap.newpw.t": "Nouveau mot de passe",
+  "ap.newpw.tCreate": "Ton mot de passe",
+  "ap.newpw.p": "Choisis le mot de passe de {mail}.",
+  "ap.resend": "Renvoyer le code",
+  "ap.resendIn": "Renvoyer dans {n} s",
+  "ap.resent": "Nouveau code envoyé.",
+  "ap.hidePw": "Masquer le mot de passe",
+  "ap.str.short": "Encore {n} caractères…",
+  "ap.str.short1": "Encore 1 caractère…",
+  "ap.str.common": "Trop facile à deviner. Essaie une petite phrase.",
+  "ap.str.fair": "Ça passe. Un peu plus long, ce serait plus sûr.",
+  "ap.str.good": "Bon mot de passe.",
+  "ap.str.strong": "Excellent mot de passe !",
+  "acct.e.emailEmpty": "Tape ton e-mail.",
+  "acct.e.email_taken": "Un compte existe déjà avec cet e-mail.",
+  "acct.e.codeLen": "Le code a 6 chiffres.",
+  "ap.e.codeLeft": "Code incorrect. Encore {n} essais.",
+  "ap.e.codeLeft1": "Code incorrect. Dernier essai.",
+  "ap.e.resetAgain": "Ce code a expiré. Demande-en un nouveau.",
+  "acct.e.rate_limitedLong": "Trop de demandes. Réessaie dans {n} min.",
+  "ap.created": "Compte créé. Bienvenue sur Stalak !",
+  "ap.pwReset": "Nouveau mot de passe enregistré. Tu es connecté.",
+  "ap.oauthWait": "Termine la connexion dans la fenêtre qui vient de s’ouvrir…",
+  "ap.oauth.cancelled": "Connexion annulée.",
+  "ap.oauth.state_mismatch": "La connexion a pris trop de temps. Réessaie.",
+  "ap.oauth.oauth_email_unverified": "Ce compte ne nous a pas donné d’e-mail vérifié. Crée plutôt un compte avec ton e-mail.",
+  "ap.oauth.oauth_no_email": "Ce compte ne nous a pas donné d’e-mail. Crée plutôt un compte avec ton e-mail.",
+  "ap.oauth.not_enabled": "Ce mode de connexion n’est pas encore disponible.",
+  "ap.oauth.oauth_failed": "La connexion n’a pas marché. Réessaie, ou utilise ton e-mail.",
+  "acct.why.pack": "Les packs de vidéos font partie de Stalak Pro.",
+  "ap.whyIn.pack": "Les packs de vidéos font partie de Stalak Pro. Connecte-toi ou crée un compte pour en profiter."
 }/*FR@*/;
 let STATIC_FR = /*@STATIC_FR*/null/*STATIC_FR@*/;
 const LANGS = ['fr', 'en'];
@@ -5770,6 +5863,7 @@ function shareBroll(list){
 }
 /* pack: N different edits of the same passage, zipped */
 async function exportPack(){
+  if (ACCT && !acctPro()){ acctOpen('pack'); return; }
   logLyrics('pack');
   if (!S.cuts.length || S.exporting || exportGate) return;
   exportGate = true; try { await exportPackRun(); } finally { exportGate = false; }
@@ -6692,7 +6786,7 @@ LE SITE, EN 4 ÉTAPES (onglets en haut : 1 Son, 2 Prises, 3 Paroles, 4 Montage)
 - Toucher un plan : « Changer de prise », « Garder ce plan », « Exclure ce passage » ; « Ajouter un plan » coupe ce plan en deux sur le temps le plus proche de l'endroit touché, la deuxième moitié passe sur une autre prise.
 - L'aperçu est allégé pour rester fluide ; la vidéo exportée est en pleine qualité, à partir des vidéos originales.
 - Pendant l'export, un écran montre la mascotte qui construit un igloo : il avance avec l'export, « Annuler » l'arrête.
-- « Exporter la vidéo », ou un pack de 5, 10 ou 30 vidéos toutes différentes (« Générer le pack »), puis « Enregistrer sur l'appareil ».
+- « Exporter la vidéo », ou un pack de 5, 10 ou 30 vidéos toutes différentes (« Générer le pack », avec Stalak Pro sur stalak.app), puis « Enregistrer sur l'appareil ».
 - Les vidéos gratuites se terminent par 3 secondes avec le logo Stalak.
 - « Poster ta vidéo » : sur téléphone, « Partager vers TikTok, Insta, YouTube… » ouvre la liste de partage du téléphone. Sinon, enregistrer la vidéo puis toucher TikTok, Instagram ou YouTube Shorts pour ouvrir la page d'ajout. La publication automatique sans passer par l'appli n'existe pas encore.
 - Toucher le logo Stalak en haut à gauche : nouveau projet (tout est effacé, après confirmation).
@@ -6743,7 +6837,7 @@ THE SITE, IN 4 STEPS (tabs at the top: 1 Sound, 2 Takes, 3 Lyrics, 4 Edit)
 - Tapping a shot: "Swap take", "Keep this shot", "Exclude this part"; "Add a shot" splits the shot in two on the beat nearest to where you tapped, the second half uses another take.
 - The preview is lighter so it stays smooth; the exported video is full quality, from the original videos.
 - During the export, a screen shows the mascot building an igloo: it moves along with the export, "Cancel" stops it.
-- "Export video", or a pack of 5, 10 or 30 all-different videos ("Make the pack"), then "Save to device".
+- "Export video", or a pack of 5, 10 or 30 all-different videos ("Make the pack", with Stalak Pro on stalak.app), then "Save to device".
 - Free videos end with 3 seconds of the Stalak logo.
 - "Post your video": on a phone, "Share to TikTok, Insta, YouTube…" opens the phone's share sheet. Otherwise, save the video then tap TikTok, Instagram or YouTube Shorts to open their upload page. Automatic posting without going through the app doesn't exist yet.
 - Tapping the Stalak logo at the top left: new project (everything is cleared, after confirming).
@@ -6837,12 +6931,119 @@ helpInit();
 
 /* ---------- account (only on stalak.app, where account.js is loaded): pages over the app for signing in (#connexion),
    the account (#compte) and Stalak Pro (#pro). The work under them stays as it is; the back button / gesture closes them.
-   Sign in with an e-mail code or a password; profile (pseudo, photo), password, Stalak Pro through Paddle. ---------- */
+   Sign in (e-mail + password, a code by e-mail on a new browser) or create an account (e-mail + password, then a code),
+   forgotten password (e-mail, code, new password), Google / Apple / Microsoft when the server has them;
+   profile (pseudo, photo), password, Stalak Pro through Paddle. ---------- */
 const AP_HASH = { login: 'connexion', account: 'compte', pro: 'pro' };
-const AP_FROM_HASH = { connexion: 'login', signin: 'login', compte: 'account', account: 'account', pro: 'pro' };
+const AP_FROM_HASH = { connexion: 'login', signin: 'login', inscription: 'signup', signup: 'signup', compte: 'account', account: 'account', pro: 'pro' };
 const AP_PERSON = '<svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>';
 let apView = null, apDepth = 0, apBack = null, apBusy = false, acctWasPro = false, apMsgTimer = 0;
-let apStep = 'mail', apMailV = '', apAfter = 'account', apReset = false, apWhyK = null, apAvLocal = null;
+/* apMode: 'in' (sign in) | 'up' (create an account); apStep: 'form' | 'code' | 'forgot' | 'newpw'; apCodeFor: 'signup' | 'login' | 'reset' */
+let apMode = 'in', apStep = 'form', apCodeFor = 'signup', apMailV = '', apAfter = 'account', apResetCode = '', apForgotKind = 'forgot';
+let apWhyK = null, apAvLocal = null, apResendAt = 0, apResendT = 0, apProviders = [], apProvLoaded = false, apAuthLast = null;
+const AP_PROV = { google: 'Google', apple: 'Apple', microsoft: 'Microsoft' };
+/* the passwords the server refuses (the most common ones): told while typing */
+const AP_COMMON = new Set(['123456', '123456789', '12345678', 'password', 'qwerty123', 'qwerty1', '111111', '12345', 'secret', '123123',
+  '1234567890', '1234567', '000000', 'qwerty', 'abc123', 'password1', 'iloveyou', '11111111', 'azerty', 'azertyuiop',
+  'motdepasse', 'azerty123', '00000000', '123123123', 'qwertyuiop', 'password123', 'abcd1234', '12341234', 'soleil123', 'doudou123']);
+/* e-mail domains people mistype: « gmial.com » → « gmail.com » */
+const AP_DOMAINS = ['gmail.com', 'googlemail.com', 'hotmail.com', 'hotmail.fr', 'outlook.com', 'outlook.fr', 'live.com', 'live.fr', 'msn.com',
+  'yahoo.com', 'yahoo.fr', 'icloud.com', 'me.com', 'mac.com', 'orange.fr', 'wanadoo.fr', 'free.fr', 'sfr.fr', 'neuf.fr', 'laposte.net',
+  'bbox.fr', 'gmx.fr', 'gmx.com', 'proton.me', 'protonmail.com', 'aol.com', 'mail.com'];
+function apDist(a, b){
+  const d = []; for (let i = 0; i <= a.length; i++) d[i] = [i]; for (let j = 1; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++){
+    d[i][j] = Math.min(d[i-1][j] + 1, d[i][j-1] + 1, d[i-1][j-1] + (a[i-1] === b[j-1] ? 0 : 1));
+    if (i > 1 && j > 1 && a[i-1] === b[j-2] && a[i-2] === b[j-1]) d[i][j] = Math.min(d[i][j], d[i-2][j-2] + 1);
+  }
+  return d[a.length][b.length];
+}
+function apSuggest(m){
+  const at = m.lastIndexOf('@'); if (at < 1) return null;
+  const dom = m.slice(at + 1).toLowerCase(); if (dom.length < 4 || AP_DOMAINS.includes(dom)) return null;
+  let best = null, bd = 9;
+  for (const d of AP_DOMAINS){ const x = apDist(dom, d); if (x < bd){ bd = x; best = d; } }
+  return best && bd <= (dom.length > 7 ? 2 : 1) ? m.slice(0, at + 1) + best : null;
+}
+/* how strong a new password looks: a hint, not a rule (the server asks 8 characters and not a common one) */
+function apStrength(pw, email){
+  if (!pw) return { lvl: 0, k: 'ap.newHint' };
+  if (pw.length < 8) return { lvl: 1, k: 8 - pw.length === 1 ? 'ap.str.short1' : 'ap.str.short', v: { n: 8 - pw.length } };
+  const low = pw.toLowerCase();
+  if (AP_COMMON.has(low) || (email && low === email)) return { lvl: 1, k: 'ap.str.common' };
+  const kinds = [/[a-z]/, /[A-Z]/, /\d/, /[^A-Za-z0-9]/].filter(r => r.test(pw)).length, uniq = new Set(pw).size;
+  let lv = 2;
+  if (pw.length >= 12 || kinds >= 3) lv++;
+  if ((pw.length >= 16 || (pw.length >= 12 && kinds >= 3)) && uniq >= 6) lv++;
+  if (uniq < 4) lv = 2;
+  return { lvl: lv, k: ['', '', 'ap.str.fair', 'ap.str.good', 'ap.str.strong'][lv] };
+}
+function apMeter(id){
+  const i = document.getElementById(id); if (!i) return;
+  const box = i.closest('.ap-field') || i.closest('form'), m = box && box.querySelector('.ap-meter'), t = document.getElementById(id === 'apNew' ? 'apNewHint' : id + 'S');
+  const email = id === 'apUpPw' ? $('#apUpMail').value.trim().toLowerCase() : id === 'apNewPw' ? apMailV : (ACCT && ACCT.state.user ? ACCT.state.user.email : '');
+  const r = apStrength(i.value, email);
+  if (m) m.dataset.lvl = r.lvl;
+  if (t) setT(t, r.k, r.v);
+}
+/* an error under its field (input id; the message goes in #<id>E), with optional link buttons [[key, fn], …] */
+function apFErr(id, key, vars, actions){
+  const inp = document.getElementById(id), e = document.getElementById(id + 'E'); if (!e) return;
+  if (!key){ if (!e.hidden){ e.hidden = true; e.textContent = ''; } if (inp) inp.removeAttribute('aria-invalid'); return; }
+  e.textContent = ''; const sp = document.createElement('span'); e.append(sp); setT(sp, key, vars);
+  (actions || []).forEach(([k, fn]) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'linkbtn'; setT(b, k); b.onclick = fn; e.append(b); });
+  e.hidden = false; if (inp) inp.setAttribute('aria-invalid', 'true');
+  diag('compte : ' + key);
+}
+function apClearErrs(root){ root.querySelectorAll('.ap-err').forEach(e => apFErr(e.id.replace(/E$/, ''), null)); }
+function apClearPw(){
+  ['apInPw', 'apUpPw', 'apNewPw'].forEach(id => { const i = document.getElementById(id); if (i){ i.value = ''; i.type = 'password'; } });
+  document.querySelectorAll('#apLogin .ap-eye').forEach(b => { b.setAttribute('aria-pressed', 'false'); b.dataset.i18nAttr = 'aria-label:ap.showPw'; b.setAttribute('aria-label', _t('ap.showPw')); });
+  ['apUpPw', 'apNewPw'].forEach(apMeter);
+}
+function apResendUi(){
+  clearTimeout(apResendT); const b = $('#apResend'); if (!b) return;
+  const left = Math.ceil((apResendAt - Date.now()) / 1000);
+  if (left > 0){ b.disabled = true; setT(b, 'ap.resendIn', { n: left }); if (apStep === 'code' && apView === 'login') apResendT = setTimeout(apResendUi, 1000); }
+  else { b.disabled = false; setT(b, 'ap.resend'); }
+}
+/* the Google / Apple / Microsoft buttons: only those the server has keys for */
+function apLoadProviders(){
+  if (apProvLoaded || !ACCT || !ACCT.providers) return;
+  ACCT.providers().then(p => { apProvLoaded = true; apProviders = p.filter(x => AP_PROV[x]); apRender(); }, () => {});
+}
+/* off to Google / Apple / Microsoft. With a project open, leaving the page would lose it: a small window then */
+function apOAuth(p){
+  if (!ACCT || apBusy) return;
+  const to = apAfter === 'pro' ? 'pro' : 'account';
+  diag('compte : connexion avec ' + p);
+  if (S.song || (S.takes && S.takes.length)){
+    let w = null; try { w = window.open(ACCT.oauthUrl(p, to, true), 'stalak-auth', 'popup,width=520,height=700'); } catch(e){}
+    if (w){ apSay('ap.oauthWait'); return; }
+  }
+  location.href = ACCT.oauthUrl(p, to, false);
+}
+/* back from Google / Apple / Microsoft: « auth-ok-account », « auth-ok-pro » or « auth-err-<code> » (address or the small window) */
+function apAuthDone(f){
+  if (!ACCT || !/^auth-(ok-(account|pro)|err-[a-z_]{1,40})$/.test(f)) return;
+  if (apAuthLast && apAuthLast.f === f && Date.now() - apAuthLast.t < 4000) return;
+  apAuthLast = { f, t: Date.now() };
+  const open = !$('#acctPage').hidden;
+  if (f.startsWith('auth-ok')){
+    const to = f === 'auth-ok-pro' ? 'pro' : 'account';
+    ACCT.me().then(() => {
+      if (!ACCT.state.user) return;
+      store.set('stalak:hadAcct', 1); apAfter = 'account'; apStep = 'form'; apClearPw();
+      apGo(to, { replace: open, keepMsg: true }); apSay(acctPro() ? 'acct.welcomePro' : 'acct.welcome');
+      diag('compte : connecté (' + (ACCT.state.session && ACCT.state.session.method) + ')');
+    }, () => {});
+  } else {
+    const c = f.slice(9);
+    apStep = 'form'; apGo('login', { replace: open, keepMsg: true });
+    apSay(hasT('ap.oauth.' + c) ? 'ap.oauth.' + c : 'ap.oauth.oauth_failed', null, true, c === 'cancelled' ? 'think' : 'sad');
+    diag('compte : connexion externe refusée (' + c + ')');
+  }
+}
 function acctPro(){ return !!(ACCT && ACCT.state.entitlements && ACCT.state.entitlements.plan === 'pro'); }
 /* an account page or the Pro thank-you is on screen (modalOn keeps the app out of reach under them) */
 function acctLayerOpen(){ const a = $('#acctPage'), b = $('#proThx'); return !!((a && !a.hidden) || (b && !b.hidden)); }
@@ -6874,7 +7075,8 @@ function apErr(e, ctx){
   const c = e && e.code, net = !c || c === 'http_0' || e instanceof TypeError;
   let k = net ? 'acct.e.net' : hasT('acct.e.' + c) ? 'acct.e.' + c : 'acct.e.other';
   if (c === 'too_many_attempts' && ctx === 'pw') k = 'acct.e.pwLocked';
-  apSay(k, null, true, /invalid_login|wrong_password|password_too|invalid_code/.test(c || '') ? 'facepalm' : 'sad');
+  if (c === 'rate_limited' && e.data && e.data.retryAfter > 90) k = 'acct.e.rate_limitedLong';
+  apSay(k, { n: e.data && e.data.retryAfter ? Math.ceil(e.data.retryAfter / 60) : 1 }, true, /invalid_login|wrong_password|password_too|invalid_code/.test(c || '') ? 'facepalm' : 'sad');
   diag('compte : erreur ' + (c || (e && e.message)));
   if (c === 'not_logged_in') ACCT.me().catch(() => {});
 }
@@ -6895,11 +7097,22 @@ function apRender(){
   $('#apLogin').hidden = v !== 'login'; $('#apAccount').hidden = v !== 'account'; $('#apPro').hidden = v !== 'pro';
   $('#acctPage').setAttribute('aria-labelledby', v === 'login' ? 'apLoginT' : v === 'account' ? 'apAccT' : 'apProT');
   if (v === 'login'){
-    const code = apStep === 'code', pw = apStep === 'pw';
-    $('#apSignF').hidden = code; $('#apCodeF').hidden = !code;
-    $('#apPwBox').hidden = $('#apPwGo').hidden = !pw; $('#apChoice').hidden = pw; $('#apMailHint').hidden = pw;
-    if (code) setT('#apCodeL', 'acct.codeL', { mail: apMailV });
-    const w = $('#apWhy'), wk = apWhyK ? apWhyK.replace('acct.why.', 'ap.whyIn.') : apAfter === 'pro' ? 'ap.whyIn.pro' : null;
+    const stp = apStep, up = apMode === 'up';
+    $('#apStepForm').hidden = stp !== 'form'; $('#apCodeF').hidden = stp !== 'code'; $('#apForgotF').hidden = stp !== 'forgot'; $('#apNewPwF').hidden = stp !== 'newpw';
+    $('#apInF').hidden = up; $('#apUpF').hidden = !up;
+    $('#apTabIn').setAttribute('aria-selected', String(!up)); $('#apTabUp').setAttribute('aria-selected', String(up));
+    $('#apTabIn').tabIndex = up ? -1 : 0; $('#apTabUp').tabIndex = up ? 0 : -1;
+    $('#apToUp').hidden = up; $('#apToIn').hidden = !up;
+    $('#apSocial').hidden = !apProviders.length;
+    $$('#apSocial .ap-sso').forEach(b => { b.hidden = !apProviders.includes(b.dataset.p); });
+    const create = apForgotKind === 'create';
+    setT('#apLoginT', stp === 'form' ? (up ? 'ap.up.t' : 'ap.login.t') : stp === 'code' ? (apCodeFor === 'login' ? 'ap.code.tDev' : 'ap.code.t')
+      : stp === 'forgot' ? (create ? 'ap.create.t' : 'ap.forgot.t') : (create ? 'ap.newpw.tCreate' : 'ap.newpw.t'));
+    if (stp === 'code') setT('#apCodeP', 'ap.code.p.' + apCodeFor, { mail: '<b>' + escapeHtml(apMailV) + '</b>' }, true);
+    if (stp === 'forgot') setT('#apFgP', create ? 'ap.create.p' : 'ap.forgot.p');
+    if (stp === 'newpw') setT('#apNewPwP', 'ap.newpw.p', { mail: '<b>' + escapeHtml(apMailV) + '</b>' }, true);
+    apResendUi();
+    const w = $('#apWhy'), wk = stp !== 'form' ? null : apWhyK ? apWhyK.replace('acct.why.', 'ap.whyIn.') : apAfter === 'pro' ? 'ap.whyIn.pro' : null;
     w.hidden = !wk; if (wk) setT(w, wk); else setT(w, null);
   }
   if (v === 'account' && u){
@@ -6907,6 +7120,7 @@ function apRender(){
     const n = $('#apName'); if (document.activeElement !== n && !n.dataset.dirty) n.value = u.displayName || '';
     $('#apAvDel').hidden = !u.avatarUrl;
     $('#apMailV').textContent = u.email; $('#apPwUser').value = u.email;
+    const pv = u.providers || []; $('#apLinked').hidden = !pv.length; $('#apLinkedV').textContent = pv.map(p => AP_PROV[p] || p).join(', ');
     setT('#apPwV', u.hasPassword ? (u.passwordSetAt ? 'ap.pwOn' : 'ap.pwOnNoDate') : 'ap.pwOff', { d: acctDate(u.passwordSetAt) });
     const open = !$('#apPwF').hidden;
     setT('#apPwEdit', u.hasPassword ? 'ap.pwChange' : 'ap.pwSet'); $('#apPwEdit').hidden = open; $('#apPwEdit').setAttribute('aria-expanded', String(open));
@@ -6933,6 +7147,7 @@ function acctSync(){
   const lbl = u ? _t('ap.btnAria', { name: acctName(u) }) + (pro ? ' · Stalak Pro' : '') : _t('acct.btn');
   b.setAttribute('aria-label', lbl); b.title = lbl;
   const cb = $('#kindSeg button[data-v="clip"]'); if (cb) cb.classList.toggle('protag', !pro);
+  const pb = $('#packBtn'); if (pb) pb.classList.toggle('protag', !pro);
   if (!pro && isClip() && !S.exporting) setKind('reel', true);
   if (pro && !acctWasPro && store.get('stalak:kind') === 'clip' && !isClip() && !S.song && !S.exporting) setKind('clip', true);
   if (pro) apWhyK = null;
@@ -6958,12 +7173,19 @@ function apHist(v, replace){
 function apGo(view, o = {}){
   if (!ACCT) return;
   if ('why' in o) apWhyK = o.why && !acctPro() ? 'acct.why.' + o.why : null;
+  if (view === 'signup'){ view = 'login'; o.mode = o.mode || 'up'; }   // #inscription
   const v = apResolve(view), page = $('#acctPage'), first = page.hidden;
+  // Stalak Pro asked while signed out: « Créer un compte » first for someone never signed in on this browser
+  if (v === 'login' && !o.mode && apView !== 'login' && view !== 'login') o.mode = (apWhyK || view === 'pro') && !store.get('stalak:hadAcct') ? 'up' : apMode;
   if (first){
     apBack = document.activeElement; page.hidden = false; modalOn(true); $('#acctBtn').setAttribute('aria-expanded', 'true');
     ACCT.me().catch(() => {});
   }
-  if (v === 'login' && apView !== 'login'){ apStep = 'mail'; $('#apPw').value = ''; }
+  if (v === 'login' && apView !== 'login'){
+    if (!o.keepStep) apStep = 'form';
+    if (o.mode) apMode = o.mode;
+    apClearPw(); apClearErrs($('#apLogin')); apLoadProviders();
+  }
   if (v !== 'account'){ $('#apPwF').hidden = true; }
   const changed = apView !== v; apView = v;
   if (!o.noHist) apHist(v, !first && !!o.replace);
@@ -6971,7 +7193,7 @@ function apGo(view, o = {}){
   apRender();
   if (changed || first) page.scrollTop = 0;
   if (o.noFocus) return;
-  const f = v === 'login' ? (apStep === 'code' ? $('#apCode') : $('#apLoginT')) : v === 'account' ? $('#apAccT') : $('#apProT');
+  const f = v === 'login' ? $('#apLoginT') : v === 'account' ? $('#apAccT') : $('#apProT');
   setTimeout(() => { try { f.focus({ preventScroll: true }); } catch(e){} }, 40);
 }
 /* « Retour », Escape, the back gesture: one page back, then the app */
@@ -6985,7 +7207,9 @@ function apHide(){
 /* the header button, the PRO-tagged Clip button (why = 'clip'), the outro link (why = 'outro') */
 function acctOpen(why){
   if (!ACCT || S.exporting || askDone) return;
-  apGo(why ? 'pro' : ACCT.state.user ? 'account' : 'login', { why: why || null });
+  // signed out: the header button opens « Se connecter »; a Pro feature opens « Créer un compte » for someone never signed in here
+  const mode = ACCT.state.user ? null : why && !store.get('stalak:hadAcct') ? 'up' : 'in';
+  apGo(why ? 'pro' : ACCT.state.user ? 'account' : 'login', { why: why || null, mode });
 }
 
 /* ---- the profile photo: cropped to a centred square and made small here (256 × 256, WebP or JPEG, 60 KB at most) ---- */
@@ -7088,49 +7312,173 @@ if (ACCT){
     if (S.exporting) return;
     apGo(v, { noHist: true });
   });
-  // show / hide the password
-  $$('#acctPage .ap-eye').forEach(b => b.onclick = () => {
-    const i = $('#' + b.dataset.eye), on = i.type === 'password';
-    i.type = on ? 'text' : 'password'; b.setAttribute('aria-pressed', String(on)); setT(b, on ? 'ap.hide' : 'ap.show');
-  });
+  // show / hide the password: an eye
+  const EYE = '<svg class="eye-on" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>' +
+    '<svg class="eye-off" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 3l18 18"/><path d="M10.6 5.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.1"/><path d="M6.6 6.6C3.8 8.4 2 12 2 12s3.6 7 10 7a9.7 9.7 0 0 0 4.9-1.4"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
+  $$('#acctPage .ap-eye').forEach(b => { b.innerHTML = EYE; b.onclick = () => {
+    const i = $('#' + b.dataset.eye), on = i.type === 'password', k = on ? 'ap.hidePw' : 'ap.showPw';
+    i.type = on ? 'text' : 'password'; b.setAttribute('aria-pressed', String(on)); b.dataset.i18nAttr = 'aria-label:' + k; b.setAttribute('aria-label', _t(k));
+  }; });
 
-  // sign in: the e-mail, then a code by e-mail or the password
-  const mailOk = () => { const m = $('#apEmail').value.trim().toLowerCase();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m)){ apSay('acct.e.invalid_email', null, true, 'facepalm'); $('#apEmail').setAttribute('aria-invalid', 'true'); $('#apEmail').focus(); return null; }
-    $('#apEmail').removeAttribute('aria-invalid'); return m; };
-  const sendCode = async reset => {
-    const m = mailOk(); if (!m) return;
-    apSay('acct.sending'); await ACCT.sendCode(m, LANG);
-    apMailV = m; apReset = reset; apStep = 'code'; $('#apCode').value = ''; apRender(); apSay(reset ? 'ap.resetSent' : 'acct.sent');
-    diag('compte : code envoyé' + (reset ? ' (mot de passe oublié)' : ''));
-    setTimeout(() => $('#apCode').focus(), 30);
-  };
-  const signedIn = () => {
-    const to = apReset ? 'account' : apAfter || 'account', reset = apReset;
-    apReset = false; apAfter = 'account'; apStep = 'mail'; $('#apPw').value = '';
+  // ---- sign in / create an account ----
+  const mailOf = id => { const i = $('#' + id), m = i.value.trim().toLowerCase();
+    if (!m){ apFErr(id, 'acct.e.emailEmpty'); i.focus(); return null; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m)){ apFErr(id, 'acct.e.invalid_email'); i.focus(); return null; }
+    apFErr(id, null); return m; };
+  const signedIn = msgK => {
+    store.set('stalak:hadAcct', 1);
+    const to = apAfter || 'account';
+    apAfter = 'account'; apStep = 'form'; apResetCode = ''; apClearPw(); $('#apUpName').value = '';
     acctSync();
-    apGo(to, { replace: true, keepMsg: true, noFocus: reset });
-    apSay(reset ? 'ap.resetNow' : acctPro() ? 'acct.welcomePro' : 'acct.welcome');
-    if (reset) apPwOpen();
+    apGo(to, { replace: true, keepMsg: true });
+    apSay(msgK || (acctPro() ? 'acct.welcomePro' : 'acct.welcome'));
   };
-  $('#apPwBtn').onclick = () => { apStep = 'pw'; apSay(null); apRender(); ($('#apEmail').value.trim() ? $('#apPw') : $('#apEmail')).focus(); };
-  $('#apUseCode').onclick = () => { apStep = 'mail'; apSay(null); apRender(); $('#apCodeBtn').focus(); };
-  $('#apForgot').onclick = () => apRun(() => sendCode(true));
-  $('#apSignF').onsubmit = e => { e.preventDefault();
-    if (apStep !== 'pw'){ apRun(() => sendCode(false)); return; }
-    apRun(async () => {
-      const m = mailOk(); if (!m) return;
-      const pw = $('#apPw').value; if (!pw){ apSay('acct.e.pwEmpty', null, true, 'think'); $('#apPw').focus(); return; }
-      apSay('acct.checking'); await ACCT.loginPassword(m, pw); diag('compte : connecté (mot de passe)'); signedIn();
-    }, 'pw').then(() => { if (!ACCT.state.user && apStep === 'pw'){ $('#apPw').select(); } });
+  const toCode = (what, mail) => {
+    apCodeFor = what; apMailV = mail; apStep = 'code'; $('#apCode').value = ''; apFErr('apCode', null);
+    apResendAt = Date.now() + 30e3; apRender(); $('#acctPage').scrollTop = 0;
+    diag('compte : code envoyé (' + what + ')');
+    setTimeout(() => { try { $('#apCode').focus(); } catch(e){} }, 40);
   };
-  $('#apCode').addEventListener('input', e => { const v = e.target.value.replace(/\D/g, '').slice(0, 6); if (v !== e.target.value) e.target.value = v; if (v.length === 6) $('#apCodeF').requestSubmit ? $('#apCodeF').requestSubmit() : $('#apCodeF').onsubmit(new Event('submit')); });
+  const setMode = (m, focus) => {
+    apMode = m; apStep = 'form'; apClearErrs($('#apLogin')); apSay(null);
+    // the e-mail typed in one form follows to the other
+    const from = m === 'up' ? $('#apInMail') : $('#apUpMail'), to = m === 'up' ? $('#apUpMail') : $('#apInMail');
+    if (from.value.trim()) to.value = from.value.trim();
+    apRender(); apMeter('apUpPw');
+    if (focus) (to.value ? (m === 'up' ? $('#apUpPw') : $('#apInPw')) : to).focus();
+  };
+  const toForgot = (kind, mail) => {
+    apForgotKind = kind; apStep = 'forgot'; apClearErrs($('#apLogin')); apSay(null);
+    $('#apFgMail').value = mail || $('#apInMail').value.trim() || $('#apUpMail').value.trim();
+    apRender(); setTimeout(() => $('#apFgMail').focus(), 30);
+  };
+  $('#apTabIn').onclick = () => setMode('in', true);
+  $('#apTabUp').onclick = () => setMode('up', true);
+  $('#apLogin .ap-tabs').addEventListener('keydown', e => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    e.preventDefault(); const m = apMode === 'in' ? 'up' : 'in'; setMode(m); (m === 'in' ? $('#apTabIn') : $('#apTabUp')).focus();
+  });
+  $$('#apLogin [data-to]').forEach(b => b.onclick = () => setMode(b.dataset.to, true));
+  $$('#apSocial .ap-sso').forEach(b => b.onclick = () => apOAuth(b.dataset.p));
+  // a typo in the e-mail domain: offered, never forced
+  ['apInMail', 'apUpMail', 'apFgMail'].forEach(id => {
+    const i = $('#' + id), box = i.parentNode.querySelector('.ap-sugg'), btn = box.querySelector('button');
+    const check = () => { const sg = apSuggest(i.value.trim()); box.hidden = !sg; if (sg) btn.textContent = sg; };
+    i.addEventListener('blur', check);
+    i.addEventListener('input', () => { apFErr(id, null); if (!box.hidden) check(); if (id === 'apUpMail') apMeter('apUpPw'); });
+    btn.onclick = () => { i.value = btn.textContent; box.hidden = true; apFErr(id, null); i.focus(); };
+    i.apCheck = check;
+  });
+  ['apInPw', 'apUpPw', 'apNewPw', 'apUpName', 'apNew'].forEach(id => $('#' + id).addEventListener('input', () => apFErr(id, null)));
+  ['apUpPw', 'apNewPw', 'apNew'].forEach(id => $('#' + id).addEventListener('input', () => apMeter(id)));
+  const pwOk = (id, mail) => {
+    const pw = $('#' + id).value;
+    if (pw.length < 8){ apFErr(id, 'acct.e.password_too_short'); $('#' + id).focus(); return null; }
+    if (pw.length > 200){ apFErr(id, 'acct.e.password_too_long'); $('#' + id).focus(); return null; }
+    if (AP_COMMON.has(pw.toLowerCase()) || pw.toLowerCase() === mail){ apFErr(id, 'acct.e.password_too_common'); $('#' + id).focus(); return null; }
+    return pw;
+  };
+
+  $('#apInF').onsubmit = e => { e.preventDefault(); apRun(async () => {
+    const m = mailOf('apInMail'); if (!m) return; $('#apInMail').apCheck();
+    const pw = $('#apInPw').value; if (!pw){ apFErr('apInPw', 'acct.e.pwEmpty'); $('#apInPw').focus(); return; }
+    apSay('acct.checking');
+    let r;
+    try { r = await ACCT.login(m, pw); }
+    catch(err){
+      apSay(null);
+      if (err.code === 'invalid_login'){ apFErr('apInPw', 'acct.e.invalid_login', null, [['ap.forgot', () => toForgot('forgot', m)]]); $('#apInPw').select(); return; }
+      if (err.code === 'too_many_attempts'){ apFErr('apInPw', 'acct.e.pwLocked', null, [['ap.forgot', () => toForgot('forgot', m)]]); return; }
+      if (err.code === 'invalid_email'){ apFErr('apInMail', 'acct.e.invalid_email'); return; }
+      throw err;
+    }
+    if (r && r.needCode){ apSay(null); toCode('login', m); return; }
+    diag('compte : connecté (mot de passe)'); signedIn();
+  }, 'pw'); };
+
+  $('#apUpF').onsubmit = e => { e.preventDefault(); apRun(async () => {
+    const m = mailOf('apUpMail'); if (!m) return; $('#apUpMail').apCheck();
+    const pw = pwOk('apUpPw', m); if (!pw) return;
+    const name = $('#apUpName').value.replace(/\s+/g, ' ').trim(), len = [...name].length;
+    if (name && (len < 2 || len > 30)){ apFErr('apUpName', 'acct.e.invalid_name'); $('#apUpName').focus(); return; }
+    apSay('acct.sending');
+    try { await ACCT.signup(m, pw, name || null); }
+    catch(err){
+      apSay(null);
+      if (err.code === 'email_taken'){
+        apFErr('apUpMail', 'acct.e.email_taken', null, [['ap.tabIn', () => { $('#apInMail').value = m; setMode('in'); $('#apInPw').focus(); }], ['ap.forgot', () => toForgot('forgot', m)]]);
+        $('#apUpMail').focus(); return;
+      }
+      if (/^password_too/.test(err.code || '')){ apFErr('apUpPw', 'acct.e.' + err.code); $('#apUpPw').focus(); return; }
+      if (err.code === 'invalid_name'){ apFErr('apUpName', 'acct.e.invalid_name'); return; }
+      if (err.code === 'invalid_email'){ apFErr('apUpMail', 'acct.e.invalid_email'); return; }
+      throw err;
+    }
+    apSay(null); toCode('signup', m);
+  }); };
+
+  $('#apForgot').onclick = () => toForgot('forgot');
+  $('#apNoPw').onclick = () => toForgot('create');
+  $('#apForgotF').onsubmit = e => { e.preventDefault(); apRun(async () => {
+    const m = mailOf('apFgMail'); if (!m) return; $('#apFgMail').apCheck();
+    apSay('acct.sending'); await ACCT.forgot(m); apSay(null);
+    diag('compte : mot de passe oublié');
+    toCode('reset', m);
+  }); };
+
+  // the code: 6 digits, sent as soon as they are typed (or pasted, or filled in by the phone)
+  $('#apCode').addEventListener('input', e => { const v = e.target.value.replace(/\D/g, '').slice(0, 6); if (v !== e.target.value) e.target.value = v;
+    apFErr('apCode', null); if (v.length === 6) $('#apCodeF').requestSubmit ? $('#apCodeF').requestSubmit() : $('#apCodeF').onsubmit(new Event('submit')); });
+  const resend = () => apRun(async () => {
+    if (Date.now() < apResendAt) return;
+    apSay('acct.sending');
+    if (apCodeFor === 'signup') await ACCT.signup(apMailV, $('#apUpPw').value, $('#apUpName').value.trim() || null);
+    else if (apCodeFor === 'login'){ const r = await ACCT.login(apMailV, $('#apInPw').value); if (!r.needCode){ signedIn(); return; } }
+    else await ACCT.forgot(apMailV);
+    apResendAt = Date.now() + 30e3; $('#apCode').value = ''; apFErr('apCode', null); apRender();
+    apSay('ap.resent'); diag('compte : code renvoyé (' + apCodeFor + ')'); $('#apCode').focus();
+  });
+  $('#apResend').onclick = resend;
   $('#apCodeF').onsubmit = e => { e.preventDefault(); apRun(async () => {
     const c = $('#apCode').value.replace(/\D/g, '');
-    if (c.length !== 6){ apSay('acct.e.invalid_code', null, true, 'facepalm'); return; }
-    apSay('acct.checking'); await ACCT.verify(apMailV, c); diag('compte : connecté (code)'); signedIn();
+    if (c.length !== 6){ apFErr('apCode', 'acct.e.codeLen'); $('#apCode').focus(); return; }
+    apSay('acct.checking');
+    try {
+      if (apCodeFor === 'signup'){ await ACCT.signupVerify(apMailV, c); diag('compte : créé'); signedIn('ap.created'); }
+      else if (apCodeFor === 'login'){ await ACCT.loginVerify(apMailV, c); diag('compte : connecté (nouvel appareil)'); signedIn(); }
+      else {
+        await ACCT.resetCheck(apMailV, c); apSay(null);
+        apResetCode = c; apStep = 'newpw'; $('#apNewPwUser').value = apMailV; $('#apNewPw').value = ''; apFErr('apNewPw', null); apMeter('apNewPw'); apRender();
+        setTimeout(() => $('#apNewPw').focus(), 30);
+      }
+    } catch(err){
+      apSay(null);
+      const left = err.data && err.data.attemptsLeft;
+      if (err.code === 'invalid_code'){ apFErr('apCode', left ? (left === 1 ? 'ap.e.codeLeft1' : 'ap.e.codeLeft') : 'acct.e.invalid_code', { n: left }); $('#apCode').select(); return; }
+      if (err.code === 'code_expired' || err.code === 'too_many_attempts'){ apResendAt = 0; apResendUi(); apFErr('apCode', 'acct.e.' + err.code, null, [['ap.resend', resend]]); return; }
+      if (err.code === 'email_taken'){ apMode = 'up'; apStep = 'form'; apRender();
+        apFErr('apUpMail', 'acct.e.email_taken', null, [['ap.tabIn', () => { $('#apInMail').value = apMailV; setMode('in'); $('#apInPw').focus(); }], ['ap.forgot', () => toForgot('forgot', apMailV)]]); return; }
+      throw err;
+    }
   }); };
-  $('#apOtherMail').onclick = () => { apStep = 'mail'; apReset = false; apSay(null); apRender(); $('#apEmail').focus(); };
+  $('#apOtherMail').onclick = () => {
+    apStep = apCodeFor === 'reset' ? 'forgot' : 'form'; if (apCodeFor !== 'reset') apMode = apCodeFor === 'signup' ? 'up' : 'in';
+    apSay(null); apRender();
+    const f = apStep === 'forgot' ? $('#apFgMail') : apMode === 'up' ? $('#apUpMail') : $('#apInMail'); f.focus(); f.select();
+  };
+  $('#apNewPwF').onsubmit = e => { e.preventDefault(); apRun(async () => {
+    const pw = pwOk('apNewPw', apMailV); if (!pw) return;
+    apSay('acct.checking');
+    try { await ACCT.reset(apMailV, apResetCode, pw); }
+    catch(err){
+      apSay(null);
+      if (/^password_too/.test(err.code || '')){ apFErr('apNewPw', 'acct.e.' + err.code); $('#apNewPw').focus(); return; }
+      if (err.code === 'code_expired' || err.code === 'too_many_attempts' || err.code === 'invalid_code'){
+        apStep = 'forgot'; apRender(); apFErr('apFgMail', 'ap.e.resetAgain'); $('#apFgMail').value = apMailV; return; }
+      throw err;
+    }
+    diag('compte : nouveau mot de passe'); signedIn('ap.pwReset');
+  }, 'pw'); };
 
   // profile: pseudo and photo
   $('#apName').addEventListener('input', e => { e.target.dataset.dirty = '1'; e.target.removeAttribute('aria-invalid'); });
@@ -7154,17 +7502,21 @@ if (ACCT){
   $('#apAvDel').onclick = () => apRun(async () => { await ACCT.removeAvatar(); apSay('ap.photoDeleted'); $('#apAvIn').focus(); });
 
   // password: set or change (the current one is asked unless the session comes from an e-mail code of less than 15 min)
-  function apPwOpen(){ $('#apPwF').hidden = false; $('#apCur').value = $('#apNew').value = ''; apRender();
+  function apPwOpen(){ $('#apPwF').hidden = false; $('#apCur').value = $('#apNew').value = ''; apFErr('apNew', null); apMeter('apNew'); apRender();
     setTimeout(() => { const f = !$('#apCurBox').hidden ? $('#apCur') : $('#apNew'); try { f.focus(); } catch(e){} }, 40); }
   function apPwClose(){ $('#apPwF').hidden = true; $('#apCur').value = $('#apNew').value = ''; apRender(); $('#apPwEdit').focus(); }
   $('#apPwEdit').onclick = apPwOpen;
   $('#apPwCancel').onclick = apPwClose;
   $('#apPwF').onsubmit = e => { e.preventDefault(); apRun(async () => {
     const pw = $('#apNew').value, cur = $('#apCurBox').hidden ? '' : $('#apCur').value;
-    if (pw.length < 8){ apSay('acct.e.password_too_short', null, true, 'think'); $('#apNew').focus(); return; }
+    apFErr('apNew', null);
+    if (pw.length < 8){ apFErr('apNew', 'acct.e.password_too_short'); $('#apNew').focus(); return; }
+    if (AP_COMMON.has(pw.toLowerCase())){ apFErr('apNew', 'acct.e.password_too_common'); $('#apNew').focus(); return; }
     if (!$('#apCurBox').hidden && !cur){ apSay('acct.e.reauth_required', null, true, 'think'); $('#apCur').focus(); return; }
     try { await ACCT.setPassword(pw, cur || null); }
-    catch(err){ if (err.code === 'reauth_required') await ACCT.me().catch(() => {}); apRender(); throw err; }
+    catch(err){ if (err.code === 'reauth_required') await ACCT.me().catch(() => {}); apRender();
+      if (/^password_too/.test(err.code || '')){ apFErr('apNew', 'acct.e.' + err.code); $('#apNew').focus(); return; }
+      throw err; }
     apPwClose(); apSay('ap.pwSaved'); diag('compte : mot de passe enregistré');
   }, 'pw'); };
 
@@ -7176,7 +7528,7 @@ if (ACCT){
   }).then(() => { if (!u && w) w.close(); }); };
   $('#apSubGo').onclick = () => { if (acctPro()) portal(); else apGo('pro'); };
   $('#apManage').onclick = portal;
-  $('#apOut').onclick = () => apRun(async () => { await ACCT.logout(); diag('compte : déconnecté'); apGo('login', { replace: true }); apSay('acct.outDone'); });
+  $('#apOut').onclick = () => apRun(async () => { await ACCT.logout(); diag('compte : déconnecté'); apMode = 'in'; apGo('login', { replace: true, mode: 'in' }); apSay('acct.outDone'); });
   $('#apDel').onclick = async () => {
     if (apBusy) return;
     if (!await askSure(_t('acct.delAskT'), _t('acct.delAskP'), _t('acct.delYes'))) return;
@@ -7206,7 +7558,13 @@ if (ACCT){
   window.addEventListener('focus', () => { if (ACCT.state.user && !acctPro()) ACCT.me().catch(() => {}); });
   // opened at #compte, #pro or #connexion (links from the pricing pages): the page opens once we know who is there;
   // the address is first set back without it, so that Back closes the page instead of leaving the site
-  const boot = () => { const v = apHashView(); if (!v) return;
+  window.addEventListener('message', e => { if (e.origin === location.origin && e.data && typeof e.data.stalakAuth === 'string') apAuthDone(e.data.stalakAuth); });
+  try { const bc = new BroadcastChannel('stalak-auth'); bc.onmessage = e => { if (e.data && typeof e.data.stalakAuth === 'string') apAuthDone(e.data.stalakAuth); }; } catch(e){}
+  window.addEventListener('storage', e => { if (e.key === 'stalak:auth' && e.newValue) try { apAuthDone(JSON.parse(e.newValue).f); } catch(err){} });
+  const boot = () => {
+    const h = location.hash.slice(1);
+    if (/^auth-(ok|err)-/.test(h)){ try { history.replaceState(null, '', location.pathname + location.search); } catch(e){} apAuthDone(h); return; }
+    const v = apHashView(); if (!v) return;
     try { history.replaceState(null, '', location.pathname + location.search); } catch(e){}
     apGo(v); };
   ACCT.me().then(boot, e => { diag('compte : serveur injoignable (' + (e && (e.code || e.message)) + ')'); boot(); });
