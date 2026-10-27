@@ -21,6 +21,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Stalak">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "Stalak", "url": "https://stalak.app/", "applicationCategory": "MultimediaApplication", "operatingSystem": "Web, iOS, Android, macOS, Windows", "inLanguage": "fr", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"}, "description": "Stalak est un site de montage de playback (lip sync) : il coupe tes prises sur le rythme de ton son, garde la synchro des lèvres parfaite et exporte pour TikTok, Reels, Shorts et YouTube.", "image": "https://stalak.app/og.png", "creator": {"@type": "Organization", "name": "Alaska"}}, {"@type": "WebSite", "name": "Stalak", "alternateName": "Stalak app", "url": "https://stalak.app/"}]}</script>
 <title>Stalak — ton playback monté sur le rythme</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect x='4' y='4' width='120' height='120' rx='28' fill='%231f6fd6'/%3E%3Cpath d='M5 30V30Q5 5 30 5H98Q123 5 123 30V30L114 30Q111 44 108 50Q104 40 100 30H30Q26 42 22 48Q19 38 16 30Z' fill='%23fff' stroke='%230a0d14' stroke-width='4' stroke-linejoin='round'/%3E%3Crect x='4' y='4' width='120' height='120' rx='28' fill='none' stroke='%230a0d14' stroke-width='7'/%3E%3Cg transform='translate(44 23) scale(.7)' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M51 20.0C46 12.0 38 11.0 30 11.0C18 11.0 9 18.0 9 29.0C9 41.0 20 44.0 30 48.0C42 52.0 52 57.0 52 69.0C52 87.0 42 89.0 30 89.0C20 89.0 12 86.0 7 79.0' stroke='%230a0d14' stroke-width='34' transform='translate(3 6)'/%3E%3Cpath d='M21.0 100.0Q27.5 114.3 31.0 126.0Q34.5 114.3 41.0 100.0Z' fill='%23d6ecff' stroke='%230a0d14' stroke-width='5'/%3E%3Cpath d='M51 20.0C46 12.0 38 11.0 30 11.0C18 11.0 9 18.0 9 29.0C9 41.0 20 44.0 30 48.0C42 52.0 52 57.0 52 69.0C52 87.0 42 89.0 30 89.0C20 89.0 12 86.0 7 79.0' stroke='%230a0d14' stroke-width='34'/%3E%3Cpath d='M51 20.0C46 12.0 38 11.0 30 11.0C18 11.0 9 18.0 9 29.0C9 41.0 20 44.0 30 48.0C42 52.0 52 57.0 52 69.0C52 87.0 42 89.0 30 89.0C20 89.0 12 86.0 7 79.0' stroke='%23fff' stroke-width='22'/%3E%3C/g%3E%3C/svg%3E">
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -663,6 +664,7 @@ body::after{animation:al-snow-near 13s linear infinite}
 .installtip p{margin:0;flex:1;font-size:14.5px;line-height:1.4}
 .installtip img{border-radius:10px;flex:none}
 
+.about{align-self:center;max-width:760px;width:100%;color:#fff;font-size:14.5px;line-height:1.55;margin-top:18px}.about h2{font:400 22px/1.2 var(--display);margin:0 0 6px;color:#fff;text-shadow:0 2px 0 var(--ink)}.about p{margin:0 0 8px}.about ul{margin:0;padding-left:20px}.about strong{font-weight:700}
 .legal-links{align-self:center;font-size:13px;color:#fff;opacity:.85;margin-top:-4px}.legal-links a{color:#fff}
 </style>
 </head>
@@ -1030,6 +1032,19 @@ body::after{animation:al-snow-near 13s linear infinite}
     <button class="btn primary sm" id="installGo" type="button" hidden>Installer</button>
     <button class="hp-x" id="installX" type="button" aria-label="Fermer">×</button>
   </div>
+  <section class="about" aria-labelledby="aboutT">
+    <h2 id="aboutT">Stalak, c’est quoi ?</h2>
+    <p><strong>Stalak</strong> est un site gratuit de <strong>montage de playback</strong> (lip sync), dans l’esprit de Triller :
+    tu importes ton son et plusieurs vidéos où tu chantes dessus, et Stalak coupe sur le rythme en passant d’une prise à l’autre,
+    avec une <strong>synchro des lèvres parfaite</strong>. Tu exportes pour <strong>TikTok, Instagram Reels, YouTube Shorts</strong> ou un clip <strong>YouTube</strong> en 16:9.</p>
+    <ul>
+      <li>Coupes automatiques sur les temps, sur les mots ou par mesure.</li>
+      <li>Paroles à l’écran calées sur la voix, style karaoké.</li>
+      <li>Mode Clip avec effets : flash, zoom, secousse, ralenti…</li>
+      <li>Packs de 5 à 30 vidéos différentes pour poster tous les jours.</li>
+      <li>Tout se passe dans ton navigateur, sur iPhone, Android ou ordinateur : tes vidéos restent chez toi.</li>
+    </ul>
+  </section>
   <div class="byalaska" id="byAlaska">by Alaska</div>
   <nav class="legal-links"><a href="/mentions-legales">Mentions légales</a> · <a href="/confidentialite">Confidentialité</a></nav>
 </div>
