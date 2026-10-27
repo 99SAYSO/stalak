@@ -8138,7 +8138,7 @@ function apSay(key, vars, err, emo){
   const m = $('#apMsg'), e = $('#apMsgEmo'); clearTimeout(apMsgTimer);
   if (!key){ m.classList.remove('on', 'err'); setT('#apMsgT', null); e.hidden = true; return; }
   setT('#apMsgT', key, vars); m.classList.add('on'); m.classList.toggle('err', !!err);
-  const em = emo || (err ? 'sad' : null); e.hidden = !em; if (em) e.src = '/emoji/' + em + '.webp';
+  const em = emo || (err ? 'sad' : null); e.hidden = !em; if (em) e.src = '/emoji/' + em + '.webp?v=2';
   if (!err) apMsgTimer = setTimeout(() => apSay(null), 6000);
 }
 function apErr(e, ctx){
@@ -8373,7 +8373,7 @@ function ptClose(){
 
 if (ACCT){
   // the mascot's faces (only here: the claude.ai page has no /emoji/ folder)
-  $$('img[data-emo]').forEach(i => { i.src = '/emoji/' + i.dataset.emo + '.webp'; });
+  $$('img[data-emo]').forEach(i => { i.src = '/emoji/' + i.dataset.emo + '.webp?v=2'; });
   $('#acctBtn').onclick = () => acctOpen();
   $('#outroPro').onclick = () => acctOpen('outro');
   $('#apBack').onclick = apBackBtn;
