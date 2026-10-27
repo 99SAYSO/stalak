@@ -12,6 +12,7 @@ import { verifySignature } from '../../functions/_lib/paddle.js';
 import { verifyJwtSignature, decodeJwt } from '../../functions/_lib/jwt.js';
 import { resetJwksCache } from '../../functions/_lib/oauth.js';
 import { cleanPrompt, songPrompt, PROMPT_MAX } from '../../functions/_lib/lyrics.js';
+import { openToken, socialAccessToken, parseSignedRequest } from '../../functions/_lib/social.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const ORIGIN = 'https://stalak.app';
@@ -55,6 +56,7 @@ const tokenRequests = [];
 
 // ---- fake outside world -------------------------------------------------------------
 const outbound = [];
+let socialFetch = null;
 globalThis.fetch = async (url, init = {}) => {
   url = String(url);
   if (JWKS[url]) return Response.json(JWKS[url]);
@@ -63,6 +65,7 @@ globalThis.fetch = async (url, init = {}) => {
     if (!nextIdToken) return Response.json({ error: 'invalid_grant' }, { status: 400 });
     return Response.json({ access_token: 'at', token_type: 'Bearer', expires_in: 3600, id_token: nextIdToken });
   }
+  if (socialFetch) { const r = await socialFetch(url, init); if (r) return r; }   // fake TikTok / Instagram (social tests)
   const body = init.body ? JSON.parse(init.body) : null;
   outbound.push({ url, method: init.method, body, headers: init.headers });
   if (url === 'https://api.resend.com/emails') return Response.json({ id: 'email_1' });
@@ -613,14 +616,7 @@ test('account delete: cancels Paddle subscription, removes all data, clears cook
   assert.equal(r.data.user, null);
 });
 
-test('social connect stubs are disabled by default', async () => {
-  let r = await call(makeEnv(), 'GET', '/api/connect/tiktok/start');
-  assert.equal(r.status, 404); assert.equal(r.data.error, 'not_enabled');
-  const env = makeEnv({ SOCIAL_CONNECT_ENABLED: '1' });
-  const { cookie } = await login(env, 'social@example.com');
-  r = await call(env, 'GET', '/api/connect/instagram/callback', { cookie });
-  assert.equal(r.status, 501); assert.equal(r.data.error, 'not_implemented');
-});
+// social connect (TikTok / Instagram): see the tests at the end of the file
 
 test('unknown route and wrong method give JSON errors', async () => {
   const env = makeEnv();
@@ -1570,6 +1566,307 @@ test('lyrics transcribe: daily quota, failures not counted, no binding → 503, 
   r = await call(env, 'DELETE', '/api/account', { cookie: p3.cookie, body: { confirm: true } });
   assert.equal(r.status, 200);
   assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM lyrics_usage').get().n, 0);
+});
+
+// ---- social connect: TikTok and Instagram accounts (migration 0005) ------------------------------
+const SOCIAL_ENV = { SOCIAL_CONNECT_ENABLED: '1', SOCIAL_TOKEN_KEY: 'glace-neige-stalactite-0123456789-abcdef',
+  TIKTOK_CLIENT_KEY: 'tt-client-key', TIKTOK_CLIENT_SECRET: 'tt-secret', INSTAGRAM_APP_ID: '1122334455', INSTAGRAM_APP_SECRET: 'ig-secret' };
+const soc = { calls: [], ttScope: 'user.info.basic,video.publish', ttRefreshFail: false, igWrapped: true, n: 0 };
+socialFetch = async (url, init = {}) => {
+  const f = init.body ? new URLSearchParams(init.body) : null;
+  if (url === 'https://open.tiktokapis.com/v2/oauth/token/') {
+    soc.calls.push({ k: 'tt-' + f.get('grant_type'), f });
+    if (f.get('grant_type') === 'refresh_token') {
+      if (soc.ttRefreshFail) return Response.json({ error: 'invalid_grant' }, { status: 400 });
+      return Response.json({ access_token: 'act.refreshed' + (++soc.n), expires_in: 86400, refresh_token: 'rft.new' + soc.n, refresh_expires_in: 31536000, open_id: 'tt-open-1', scope: soc.ttScope });
+    }
+    if (f.get('code') !== 'c0de') return Response.json({ error: 'invalid_grant' }, { status: 400 });
+    return Response.json({ access_token: 'act.first', expires_in: 86400, refresh_token: 'rft.first', refresh_expires_in: 31536000, open_id: 'tt-open-1', scope: soc.ttScope, token_type: 'Bearer' });
+  }
+  if (url.startsWith('https://open.tiktokapis.com/v2/user/info/')) {
+    soc.calls.push({ k: 'tt-info', url, auth: init.headers.Authorization });
+    return Response.json({ data: { user: { open_id: 'tt-open-1', display_name: '99sayso', avatar_url: 'https://p16.tiktokcdn.example/a.jpg' } }, error: { code: 'ok' } });
+  }
+  if (url === 'https://open.tiktokapis.com/v2/oauth/revoke/') { soc.calls.push({ k: 'tt-revoke', f }); return new Response(''); }
+  if (url === 'https://api.instagram.com/oauth/access_token') {
+    soc.calls.push({ k: 'ig-code', f });
+    if (f.get('code') !== 'c0de') return Response.json({ error_type: 'OAuthException', error_message: 'bad code' }, { status: 400 });
+    const t = { access_token: 'IGshort', user_id: 'igapp-77', permissions: 'instagram_business_basic,instagram_business_content_publish' };
+    return Response.json(soc.igWrapped ? { data: [t] } : t);
+  }
+  if (url.startsWith('https://graph.instagram.com/access_token?')) {
+    soc.calls.push({ k: 'ig-long', q: new URL(url).searchParams });
+    return Response.json({ access_token: 'IGlong', token_type: 'bearer', expires_in: 5183944 });
+  }
+  if (url.startsWith('https://graph.instagram.com/v26.0/me?')) {
+    soc.calls.push({ k: 'ig-me', q: new URL(url).searchParams });
+    const me = { id: 'igapp-77', user_id: '17841400000000001', username: 'stalak.app', account_type: 'Business', profile_picture_url: 'https://scontent.example/p.jpg' };
+    return Response.json(soc.igWrapped ? { data: [me] } : me);
+  }
+  if (url.startsWith('https://graph.instagram.com/refresh_access_token?')) {
+    soc.calls.push({ k: 'ig-refresh', q: new URL(url).searchParams });
+    return Response.json({ access_token: 'IGlong.refreshed', token_type: 'bearer', expires_in: 5183944 });
+  }
+  return null;
+};
+const socCalls = (k) => soc.calls.filter((c) => c.k === k);
+async function socialBegin(env, p, cookie, query = 'return=/en/') {
+  const r = await call(env, 'GET', `/api/connect/${p}/start?${query}`, { cookie });
+  const loc = r.headers.get('Location') ? new URL(r.headers.get('Location')) : null;
+  return { r, loc, q: loc && loc.searchParams, state: loc && loc.searchParams.get('state'), bind: r.jar('stalak_c'), setCookie: r.setCookies.join('\n') };
+}
+async function socialFinish(env, p, b, cookie, extra = {}) {
+  const q = new URLSearchParams({ code: 'c0de', state: b.state, ...extra });
+  return call(env, 'GET', `/api/connect/${p}/callback?${q}`, { cookie: cookies(cookie, b.bind) });
+}
+const fragOf = (r) => r.headers.get('Location') && new URL(r.headers.get('Location')).hash.slice(1);
+const socialRow = (env, p) => env.DB.raw.prepare('SELECT * FROM social_accounts WHERE provider = ?').get(p);
+
+test('social: off by default; /api/config lists only the networks whose keys are set', async () => {
+  let r = await call(makeEnv(), 'GET', '/api/connect/tiktok/start');
+  assert.equal(r.status, 404); assert.equal(r.data.error, 'not_enabled');
+  r = await call(makeEnv(), 'GET', '/api/config');
+  assert.equal(r.data.features.socialConnect, false); assert.deepEqual(r.data.features.social, []);
+  // flag on but no token key: nothing offered (tokens could not be stored safely)
+  r = await call(makeEnv({ ...SOCIAL_ENV, SOCIAL_TOKEN_KEY: 'short' }), 'GET', '/api/config');
+  assert.deepEqual(r.data.features.social, []);
+  r = await call(makeEnv({ ...SOCIAL_ENV, INSTAGRAM_APP_SECRET: '' }), 'GET', '/api/config');
+  assert.deepEqual(r.data.features.social, ['tiktok']);
+  r = await call(makeEnv(SOCIAL_ENV), 'GET', '/api/config');
+  assert.deepEqual(r.data.features.social, ['tiktok', 'instagram']);
+  assert.ok(!JSON.stringify(r.data).includes('tt-secret') && !JSON.stringify(r.data).includes('ig-secret') && !JSON.stringify(r.data).includes('glace-neige'));
+  // unknown network, signed-out list
+  const env = makeEnv(SOCIAL_ENV);
+  r = await call(env, 'GET', '/api/connect/facebook/start'); assert.equal(r.status, 404); assert.equal(r.data.error, 'not_found');
+  r = await call(env, 'GET', '/api/connect'); assert.equal(r.status, 401);
+  r = await call(env, 'POST', '/api/connect/tiktok/start'); assert.equal(r.status, 405);
+});
+
+test('social TikTok: start, callback, tokens stored encrypted, account listed without tokens', async () => {
+  const env = makeEnv(SOCIAL_ENV); soc.calls.length = 0;
+  const { cookie, user } = await login(env, 'tt@example.com');
+  const b = await socialBegin(env, 'tiktok', cookie);
+  assert.equal(b.r.status, 302);
+  assert.equal(b.loc.origin + b.loc.pathname, 'https://www.tiktok.com/v2/auth/authorize/');
+  assert.equal(b.q.get('client_key'), 'tt-client-key'); assert.equal(b.q.get('response_type'), 'code');
+  assert.equal(b.q.get('scope'), 'user.info.basic,video.publish');
+  assert.equal(b.q.get('redirect_uri'), 'https://stalak.app/api/connect/tiktok/callback');
+  assert.ok(b.state.length >= 40);
+  for (const f of ['HttpOnly', 'Secure', 'SameSite=Lax', 'Path=/api/connect', 'Max-Age=600']) assert.ok(b.setCookie.includes(f), f);
+  const st = env.DB.raw.prepare('SELECT * FROM social_states').get();
+  assert.equal(st.user_id, user.id); assert.notEqual(st.state_hash, b.state);   // hashed
+
+  const r = await socialFinish(env, 'tiktok', b, cookie);
+  assert.equal(r.status, 303); assert.equal(r.headers.get('Location'), 'https://stalak.app/en/#social-ok-tiktok');
+  assert.ok(r.setCookies.some((c) => c.startsWith('stalak_c=;') && c.includes('Max-Age=0')));
+  const t = socCalls('tt-authorization_code')[0].f;
+  assert.equal(t.get('client_secret'), 'tt-secret'); assert.equal(t.get('redirect_uri'), 'https://stalak.app/api/connect/tiktok/callback');
+  assert.equal(socCalls('tt-info')[0].auth, 'Bearer act.first');
+  const row = socialRow(env, 'tiktok');
+  assert.equal(row.user_id, user.id); assert.equal(row.account_id, 'tt-open-1'); assert.equal(row.display_name, '99sayso');
+  assert.equal(row.avatar_url, 'https://p16.tiktokcdn.example/a.jpg');
+  assert.ok(row.access_token_enc.startsWith('v1.') && !row.access_token_enc.includes('act.first'));
+  assert.equal(await openToken(env, row.access_token_enc, `${user.id}:tiktok:access`), 'act.first');
+  assert.equal(await openToken(env, row.refresh_token_enc, `${user.id}:tiktok:refresh`), 'rft.first');
+  // a sealed token only opens for its own row and kind, and with the right key
+  await assert.rejects(openToken(env, row.access_token_enc, `${user.id}:tiktok:refresh`));
+  await assert.rejects(openToken({ SOCIAL_TOKEN_KEY: 'x'.repeat(40) }, row.access_token_enc, `${user.id}:tiktok:access`));
+  assert.ok(row.access_expires_at > Date.now() + 23 * 3600e3 && row.refresh_expires_at > Date.now() + 364 * 864e5);
+  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM social_states').get().n, 0);   // single use
+
+  const list = await call(env, 'GET', '/api/connect', { cookie });
+  assert.equal(list.status, 200); assert.deepEqual(list.data.providers, ['tiktok', 'instagram']);
+  assert.equal(list.data.accounts.length, 1);
+  assert.equal(list.data.accounts[0].provider, 'tiktok'); assert.equal(list.data.accounts[0].status, 'ok');
+  assert.equal(list.data.accounts[0].displayName, '99sayso');
+  assert.ok(!/act\.|rft\.|v1\.|tt-open-1/.test(JSON.stringify(list.data)));
+  // linking again replaces the row (no duplicate)
+  const b2 = await socialBegin(env, 'tiktok', cookie);
+  assert.equal(fragOf(await socialFinish(env, 'tiktok', b2, cookie)), 'social-ok-tiktok');
+  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM social_accounts').get().n, 1);
+});
+
+test('social callback guards: state, browser cookie, other account, cancel, missing permission, signed out', async () => {
+  const env = makeEnv(SOCIAL_ENV);
+  const a = await login(env, 'guard-a@example.com'), o = await login(env, 'guard-b@example.com');
+  // not signed in at the start: back to the app with an error, nothing stored
+  let b = await socialBegin(env, 'tiktok', null);
+  assert.equal(b.r.status, 303); assert.equal(fragOf(b.r), 'social-err-not_signed_in');
+  // network without keys
+  b = await socialBegin(makeEnv({ ...SOCIAL_ENV, TIKTOK_CLIENT_KEY: '' }), 'tiktok', null);
+  assert.equal(fragOf(b.r), 'social-err-not_signed_in');
+  const envNoTt = makeEnv({ ...SOCIAL_ENV, TIKTOK_CLIENT_KEY: '' }); const u = await login(envNoTt, 'nott@example.com');
+  b = await socialBegin(envNoTt, 'tiktok', u.cookie); assert.equal(fragOf(b.r), 'social-err-not_enabled');
+
+  b = await socialBegin(env, 'tiktok', a.cookie);
+  let r = await call(env, 'GET', `/api/connect/tiktok/callback?code=c0de&state=${b.state}`, { cookie: a.cookie });   // no stalak_c
+  assert.equal(fragOf(r), 'social-err-state_mismatch');
+  r = await socialFinish(env, 'tiktok', b, a.cookie);                                                       // state already used
+  assert.equal(fragOf(r), 'social-err-state_mismatch');
+  b = await socialBegin(env, 'tiktok', a.cookie);
+  r = await socialFinish(env, 'instagram', b, a.cookie);                                                    // state of the other network
+  assert.equal(fragOf(r), 'social-err-state_mismatch');
+  b = await socialBegin(env, 'tiktok', a.cookie);
+  r = await socialFinish(env, 'tiktok', b, o.cookie);                                                       // signed in as someone else
+  assert.equal(fragOf(r), 'social-err-state_mismatch');
+  b = await socialBegin(env, 'tiktok', a.cookie);
+  r = await socialFinish(env, 'tiktok', b, null);                                                           // signed out meanwhile
+  assert.equal(fragOf(r), 'social-err-not_signed_in');
+  b = await socialBegin(env, 'tiktok', a.cookie);
+  r = await socialFinish(env, 'tiktok', b, a.cookie, { error: 'access_denied', code: '' });
+  assert.equal(fragOf(r), 'social-err-cancelled');
+  b = await socialBegin(env, 'tiktok', a.cookie);
+  r = await socialFinish(env, 'tiktok', b, a.cookie, { code: 'wrong' });
+  assert.equal(fragOf(r), 'social-err-connect_failed');
+  b = await socialBegin(env, 'tiktok', a.cookie);
+  env.DB.raw.exec('UPDATE social_states SET expires_at = 1');
+  r = await socialFinish(env, 'tiktok', b, a.cookie);
+  assert.equal(fragOf(r), 'social-err-state_mismatch');
+  // the person unticked « publish videos » on TikTok's screen
+  soc.ttScope = 'user.info.basic';
+  b = await socialBegin(env, 'tiktok', a.cookie);
+  r = await socialFinish(env, 'tiktok', b, a.cookie);
+  soc.ttScope = 'user.info.basic,video.publish';
+  assert.equal(fragOf(r), 'social-err-missing_permission');
+  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM social_accounts').get().n, 0);
+  // a return path off the site falls back to "/"
+  b = await socialBegin(env, 'tiktok', a.cookie, 'return=' + encodeURIComponent('//evil.example/'));
+  r = await socialFinish(env, 'tiktok', b, a.cookie);
+  assert.equal(r.headers.get('Location'), 'https://stalak.app/#social-ok-tiktok');
+  // popup mode: a small page that tells the app, then closes
+  b = await socialBegin(env, 'tiktok', a.cookie, 'return=/en/&popup=1');
+  r = await socialFinish(env, 'tiktok', b, a.cookie);
+  assert.equal(r.status, 200); assert.match(r.headers.get('Content-Type'), /text\/html/);
+  assert.ok(r.data.includes('"stalakSocial":"social-ok-tiktok"') && r.data.includes('stalak-social'));
+  assert.match(r.headers.get('Content-Security-Policy'), /default-src 'none'/);
+  // too many starts
+  env.DB.raw.exec(`UPDATE rate_limits SET count = 100 WHERE key = 'social:u:${a.user.id}'`);
+  r = await call(env, 'GET', '/api/connect/tiktok/start', { cookie: a.cookie });
+  assert.equal(r.status, 429);
+});
+
+test('social Instagram: code (#_ removed), long-lived token, professional account id kept', async () => {
+  for (const wrapped of [true, false]) {
+    soc.igWrapped = wrapped; soc.calls.length = 0;
+    const env = makeEnv(SOCIAL_ENV);
+    const { cookie, user } = await login(env, `ig${wrapped ? 1 : 2}@example.com`, 'en');
+    const b = await socialBegin(env, 'instagram', cookie, 'return=/en/');
+    assert.equal(b.loc.origin + b.loc.pathname, 'https://www.instagram.com/oauth/authorize');
+    assert.equal(b.q.get('client_id'), '1122334455'); assert.equal(b.q.get('response_type'), 'code');
+    assert.equal(b.q.get('scope'), 'instagram_business_basic,instagram_business_content_publish');
+    assert.equal(b.q.get('redirect_uri'), 'https://stalak.app/api/connect/instagram/callback');
+    const r = await socialFinish(env, 'instagram', b, cookie, { code: 'c0de#_' });
+    assert.equal(r.headers.get('Location'), 'https://stalak.app/en/#social-ok-instagram');
+    const c1 = socCalls('ig-code')[0].f;
+    assert.equal(c1.get('code'), 'c0de'); assert.equal(c1.get('client_secret'), 'ig-secret'); assert.equal(c1.get('grant_type'), 'authorization_code');
+    const c2 = socCalls('ig-long')[0].q;
+    assert.equal(c2.get('grant_type'), 'ig_exchange_token'); assert.equal(c2.get('access_token'), 'IGshort');
+    assert.equal(socCalls('ig-me')[0].q.get('access_token'), 'IGlong');
+    const row = socialRow(env, 'instagram');
+    assert.equal(row.account_id, '17841400000000001'); assert.equal(row.app_user_id, 'igapp-77');
+    assert.equal(row.username, 'stalak.app'); assert.equal(row.account_type, 'BUSINESS'); assert.equal(row.refresh_token_enc, null);
+    assert.equal(await openToken(env, row.access_token_enc, `${user.id}:instagram:access`), 'IGlong');
+    assert.ok(row.access_expires_at > Date.now() + 59 * 864e5);
+  }
+  soc.igWrapped = true;
+});
+
+test('social tokens: TikTok renewed when about to expire, link marked expired when it cannot be; Instagram renewed after 10 days', async () => {
+  const env = makeEnv(SOCIAL_ENV);
+  const { cookie, user } = await login(env, 'tok@example.com');
+  let b = await socialBegin(env, 'tiktok', cookie); await socialFinish(env, 'tiktok', b, cookie);
+  b = await socialBegin(env, 'instagram', cookie); await socialFinish(env, 'instagram', b, cookie);
+  assert.equal(await socialAccessToken(env, user.id, 'tiktok'), 'act.first');          // still fresh: no call
+  assert.equal(socCalls('tt-refresh_token').length, 0);
+  env.DB.raw.exec(`UPDATE social_accounts SET access_expires_at = ${Date.now() + 60e3} WHERE provider = 'tiktok'`);
+  const t = await socialAccessToken(env, user.id, 'tiktok');
+  assert.match(t, /^act\.refreshed/);
+  assert.equal(socCalls('tt-refresh_token').at(-1).f.get('refresh_token'), 'rft.first');
+  let row = socialRow(env, 'tiktok');
+  assert.match(await openToken(env, row.refresh_token_enc, `${user.id}:tiktok:refresh`), /^rft\.new/);   // the new refresh token is kept
+  // refresh refused: the link is over, the person must connect again
+  env.DB.raw.exec(`UPDATE social_accounts SET access_expires_at = ${Date.now() - 1} WHERE provider = 'tiktok'`);
+  soc.ttRefreshFail = true;
+  await assert.rejects(socialAccessToken(env, user.id, 'tiktok'), (e) => e.status === 409 && e.code === 'reconnect_needed');
+  soc.ttRefreshFail = false;
+  assert.equal(socialRow(env, 'tiktok').status, 'expired');
+  let list = await call(env, 'GET', '/api/connect', { cookie });
+  assert.equal(list.data.accounts.find((a) => a.provider === 'tiktok').status, 'expired');
+  // connecting again makes it work again
+  b = await socialBegin(env, 'tiktok', cookie); await socialFinish(env, 'tiktok', b, cookie);
+  assert.equal(socialRow(env, 'tiktok').status, 'ok');
+
+  assert.equal(await socialAccessToken(env, user.id, 'instagram'), 'IGlong');
+  assert.equal(socCalls('ig-refresh').length, 0);
+  env.DB.raw.exec(`UPDATE social_accounts SET refreshed_at = ${Date.now() - 11 * 864e5} WHERE provider = 'instagram'`);
+  assert.equal(await socialAccessToken(env, user.id, 'instagram'), 'IGlong.refreshed');
+  assert.equal(socCalls('ig-refresh').at(-1).q.get('access_token'), 'IGlong');
+  env.DB.raw.exec(`UPDATE social_accounts SET access_expires_at = ${Date.now() - 1} WHERE provider = 'instagram'`);
+  await assert.rejects(socialAccessToken(env, user.id, 'instagram'), (e) => e.code === 'reconnect_needed');
+  await assert.rejects(socialAccessToken(env, 'u_nobody', 'tiktok'), (e) => e.code === 'not_connected');
+});
+
+test('social disconnect: TikTok token revoked, row gone; CSRF checked; account deletion removes links', async () => {
+  const env = makeEnv(SOCIAL_ENV); soc.calls.length = 0;
+  const { cookie, user } = await login(env, 'disc@example.com');
+  let b = await socialBegin(env, 'tiktok', cookie); await socialFinish(env, 'tiktok', b, cookie);
+  let r = await call(env, 'DELETE', '/api/connect/tiktok', { cookie, origin: 'https://evil.example' });
+  assert.equal(r.status, 403);
+  r = await call(env, 'DELETE', '/api/connect/tiktok', { cookie });
+  assert.equal(r.status, 200); assert.equal(r.data.disconnected, true);
+  assert.equal(socCalls('tt-revoke')[0].f.get('token'), 'act.first');
+  assert.equal(socCalls('tt-revoke')[0].f.get('client_secret'), 'tt-secret');
+  assert.equal(socialRow(env, 'tiktok'), undefined);
+  r = await call(env, 'DELETE', '/api/connect/tiktok', { cookie });
+  assert.equal(r.data.disconnected, false);
+  r = await call(env, 'GET', '/api/connect/tiktok', { cookie });
+  assert.equal(r.status, 405);
+
+  b = await socialBegin(env, 'tiktok', cookie); await socialFinish(env, 'tiktok', b, cookie);
+  b = await socialBegin(env, 'instagram', cookie); await socialFinish(env, 'instagram', b, cookie);
+  await socialBegin(env, 'tiktok', cookie);   // a link left half-way
+  r = await call(env, 'DELETE', '/api/account', { cookie, body: { confirm: true } });
+  assert.equal(r.status, 200);
+  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM social_accounts').get().n, 0);
+  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM social_states WHERE user_id = ?').get(user.id).n, 0);
+  assert.equal(socCalls('tt-revoke').length, 2);
+});
+
+async function signedRequest(payload, secret = 'ig-secret') {
+  const p = b64j(payload);
+  const key = await crypto.subtle.importKey('raw', enc.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  return base64url(new Uint8Array(await crypto.subtle.sign('HMAC', key, enc.encode(p)))) + '.' + p;
+}
+
+test('social Meta callbacks: deauthorize and data deletion (signed_request), status page', async () => {
+  const env = makeEnv(SOCIAL_ENV);
+  const { cookie } = await login(env, 'meta@example.com');
+  const b = await socialBegin(env, 'instagram', cookie); await socialFinish(env, 'instagram', b, cookie);
+  const post = (sr, step = 'data-deletion') => call(env, 'POST', `/api/connect/instagram/${step}`,
+    { raw: new URLSearchParams({ signed_request: sr }).toString(), ct: 'application/x-www-form-urlencoded', origin: null });
+  const now = Math.floor(Date.now() / 1000);
+  // forged or broken requests change nothing
+  for (const bad of [await signedRequest({ algorithm: 'HMAC-SHA256', user_id: 'igapp-77', issued_at: now }, 'wrong'), 'abc', '', 'x.y']) {
+    const r = await post(bad); assert.equal(r.status, 400, bad); assert.equal(r.data.error, 'bad_signature');
+  }
+  assert.equal(await parseSignedRequest(await signedRequest({ algorithm: 'NONE', user_id: '1' }), 'ig-secret'), null);
+  assert.ok(socialRow(env, 'instagram'));
+  // the app-scoped id or the professional account id both match
+  let r = await post(await signedRequest({ algorithm: 'HMAC-SHA256', user_id: 'igapp-77', issued_at: now }));
+  assert.equal(r.status, 200); assert.match(r.data.confirmation_code, /^del_[0-9a-f]{24}$/);
+  assert.equal(r.data.url, 'https://stalak.app/api/connect/instagram/deletion?code=' + r.data.confirmation_code);
+  assert.equal(socialRow(env, 'instagram'), undefined);
+  const page = await call(env, 'GET', '/api/connect/instagram/deletion?code=' + r.data.confirmation_code);
+  assert.equal(page.status, 200); assert.ok(page.data.includes(r.data.confirmation_code));
+  const b2 = await socialBegin(env, 'instagram', cookie); await socialFinish(env, 'instagram', b2, cookie);
+  r = await post(await signedRequest({ algorithm: 'HMAC-SHA256', user_id: '17841400000000001', issued_at: now }), 'deauthorize');
+  assert.equal(r.status, 200); assert.deepEqual(r.data, { ok: true });
+  assert.equal(socialRow(env, 'instagram'), undefined);
+  r = await call(env, 'POST', '/api/connect/instagram/deauthorize', { body: {} });
+  assert.equal(r.status, 415);
+  // Instagram not set up: these addresses do not exist
+  r = await call(makeEnv(), 'POST', '/api/connect/instagram/deauthorize', { raw: 'signed_request=a.b', ct: 'application/x-www-form-urlencoded', origin: null });
+  assert.equal(r.status, 404);
 });
 
 // ---- runner --------------------------------------------------------------------------

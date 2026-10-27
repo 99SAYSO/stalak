@@ -5,7 +5,7 @@ import { oauthStart, oauthCallback, enabledProviders, PROVIDERS } from './oauth.
 import { updateProfile, avatar, avatarUrl, AVATAR_TYPES } from './profile.js';
 import { entitlementsFor, requirePro } from './entitlements.js';
 import { handleWebhook, portalLinks, cancelSubscriptionNow } from './paddle.js';
-import { social } from './social.js';
+import { social, socialWebhook, isSocialWebhook, socialProviders, deleteSocialAccounts } from './social.js';
 import { projectFiles, storageInfo, checkProjectFiles, dropUnusedFiles, readyFiles, deleteProjectMedia, deleteUserMedia, maybeCleanup, cleanupCloud, cloudAvailable } from './cloud.js';
 import { timingSafeEqual } from './crypto.js';
 import { transcribe } from './lyrics.js';
@@ -51,7 +51,8 @@ function config(env) {
     plans: {
       pro: { month: { amount: '9.99', currency: 'EUR' }, year: { amount: '79.00', currency: 'EUR' } },
     },
-    features: { socialConnect: env.SOCIAL_CONNECT_ENABLED === '1', cloudSave: cloudAvailable(env) },
+    // social: the networks a person can link (TikTok / Instagram), only those whose keys are set (social.js)
+    features: { socialConnect: env.SOCIAL_CONNECT_ENABLED === '1', social: socialProviders(env), cloudSave: cloudAvailable(env) },
     // sign-in with Google / Apple / Microsoft: only the providers whose keys are set (the buttons show only those)
     auth: { providers: enabledProviders(env), passwordMin: 8 },
   };
@@ -150,6 +151,8 @@ async function deleteAccount(request, env) {
     "SELECT id FROM subscriptions WHERE user_id = ?1 AND status IN ('active','trialing','past_due','paused')"
   ).bind(user.id).all();
   for (const s of results) await cancelSubscriptionNow(env, s.id);
+  // linked TikTok / Instagram accounts: tokens revoked, rows erased (social.js)
+  await deleteSocialAccounts(env, user.id);
   // the media files saved online (R2), then their rows with the rest
   await deleteUserMedia(env, user.id);
   await env.DB.batch([
@@ -198,6 +201,8 @@ async function dispatch(request, env, ctx) {
       }
       if (parts[3] === 'callback') return oauthCallback(request, env, parts[2], method);
     }
+    // Meta (Instagram) tells Stalak an account was unlinked or asks for its data to be erased: signed by the app secret
+    if (isSocialWebhook(parts)) return socialWebhook(request, env, parts[1], parts[2], method);
     if (route === 'cron/cloud-cleanup') {
       if (method !== 'POST') throw new HttpError(405, 'method_not_allowed', 'Method not allowed.');
       return cronCleanup(request, env);
@@ -262,7 +267,7 @@ async function dispatch(request, env, ctx) {
         return transcribe(request, env);
       default:
         if (parts[0] === 'projects' && parts.length <= 6) return projects(request, env, method, parts.slice(1), ctx);
-        if (parts[0] === 'connect' && parts.length === 3) return social(request, env, parts[1], parts[2]);
+        if (parts[0] === 'connect' && parts.length <= 3) return social(request, env, method, parts.slice(1));
         throw new HttpError(404, 'not_found', 'Unknown API route.');
     }
     throw new HttpError(405, 'method_not_allowed', 'Method not allowed.');
