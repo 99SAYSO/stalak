@@ -747,7 +747,74 @@ const I18N_EN = /*@EN*/{
   "acct.why.pack": "Video packs are part of Stalak Pro.",
   "ap.whyIn.pack": "Video packs are part of Stalak Pro. Sign in or create an account to get it.",
   "acct.perk6": "Every text size and style: word by word, karaoke",
-  "acct.why.text": "These text sizes and styles are part of Stalak Pro."
+  "acct.why.text": "These text sizes and styles are part of Stalak Pro.",
+  "pr.promo": "Stalak Pro for <b>€6.58/mo</b> with the yearly plan",
+  "pr.sub": "Your videos without the logo, Music video mode and packs. Cancel anytime.",
+  "pr.popular": "Most popular",
+  "pr.year.n": "Pro yearly",
+  "pr.year.amt": "€6.58",
+  "pr.per": "/mo",
+  "pr.year.bill": "€79 billed once a year",
+  "pr.save": "Save 34%",
+  "pr.year.cta": "Go yearly",
+  "pr.f.plus": "Everything in Free, plus:",
+  "pr.f.nologo": "No Stalak logo at the end",
+  "pr.f.clip": "Music video mode: the whole song in 16:9, with effects",
+  "pr.f.pack": "Packs: 5, 10 or 30 different videos in one go",
+  "pr.f.text": "Every text size (S, M, L) and style: word by word, karaoke",
+  "pr.f.cloud": "Your projects saved online <span class=\"soon\">soon</span>",
+  "pr.f.auto": "Lyrics synced automatically <span class=\"soon\">soon</span>",
+  "pr.month.n": "Pro monthly",
+  "pr.month.amt": "€9.99",
+  "pr.month.bill": "Billed every month",
+  "pr.nocommit": "No commitment",
+  "pr.month.cta": "Go monthly",
+  "pr.same": "Same perks as yearly, paid month by month.",
+  "pr.free.n": "Free",
+  "pr.free.amt": "€0",
+  "pr.free.bill": "No card needed",
+  "pr.now": "Your current plan",
+  "pr.stay": "Stay on Free",
+  "pr.f.auto0": "Automatic cuts on the beats, the words or every bar",
+  "pr.f.lyr0": "On-screen lyrics in size M, whole sentence",
+  "pr.f.916": "9:16 videos for TikTok, Reels and Shorts",
+  "pr.f.logo0": "3 s with the Stalak logo at the end",
+  "pr.t.cancel": "Cancel anytime",
+  "pr.t.refund": "Full refund within 14 days",
+  "pr.t.secure": "Secure payment by Paddle",
+  "pr.pay": "Card, Apple Pay, Google Pay or PayPal. Prices include VAT in Europe.",
+  "pr.cmp.t": "Free or Pro?",
+  "pr.cmp.feat": "Feature",
+  "pr.yes": "Yes",
+  "pr.no": "No",
+  "pr.soon": "soon",
+  "pr.r.auto": "Automatic cuts on the beats, the words or every bar",
+  "pr.r.916": "9:16 videos for TikTok, Reels and Shorts",
+  "pr.r.lyr": "On-screen lyrics",
+  "pr.r.size": "Text size",
+  "pr.v.m": "M",
+  "pr.v.sml": "S, M, L",
+  "pr.r.anim": "Text style",
+  "pr.v.line": "Whole sentence",
+  "pr.v.all": "+ word by word, karaoke",
+  "pr.r.nologo": "No Stalak logo at the end",
+  "pr.r.clip": "Music video mode: the whole song in 16:9, with effects",
+  "pr.r.pack": "Packs of 5, 10 or 30 different videos",
+  "pr.r.cloud": "Projects saved online",
+  "pr.r.autoly": "Lyrics synced automatically",
+  "pr.r.price": "Price",
+  "pr.v.from": "from €6.58/mo",
+  "pr.faq.t": "Questions",
+  "pr.q.diff": "Monthly or yearly, what’s the difference?",
+  "pr.a.diff": "None in the app: you get all of Stalak Pro either way. Yearly costs €79 a year, so €6.58 a month: 34% less than 12 months at €9.99.",
+  "pr.q.stop": "Can I stop anytime?",
+  "pr.a.stop": "Yes. Cancel in two clicks from your account: you keep Pro until the end of the paid period, then go back to Free without losing anything.",
+  "pr.q.refund": "What if I don’t like it?",
+  "pr.a.refund": "You get a full refund if you ask within 14 days of a payment. See the <a href=\"/en/refunds\">refund policy</a>.",
+  "pr.q.pay": "How do I pay?",
+  "pr.a.pay": "By card, Apple Pay, Google Pay or PayPal. Payments are handled by Paddle.com, our authorized reseller, which also sends the invoices. Prices shown include VAT in Europe.",
+  "pr.q.videos": "Are my videos sent to your servers?",
+  "pr.a.videos": "No: editing and export happen on your device."
 }/*EN@*/;
 const I18N_FR = /*@FR*/{
   "kind.hint.reel": "Une vidéo verticale 9:16, de tout le son ou de quelques mesures.",
@@ -5788,6 +5855,36 @@ function expBuild(){
   const top = document.createElementNS(NS, 'path'); top.setAttribute('d', `M${cx-34} ${base-5*h} Q${cx} ${base-5*h-30} ${cx+34} ${base-5*h} Z`);
   top.setAttribute('class', 'ex-blk'); gI.append(top); expBlocks.push(top);
 }
+/* ---------- motion: full-screen layers (account pages, Pro thank-you) fade in and melt away instead of popping.
+   Everything else (state, history, focus, inert) changes at once as before: a layer on its way out is only a picture,
+   inert and see-through to the pointer, and counts as closed. Reduced motion: no exit animation at all. ---------- */
+const calmMotion = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){ return false; } };
+const LAYER_OUT_MS = 230;
+function isShown(el){ return !!el && !el.hidden && !el.classList.contains('is-leaving'); }
+function layerIn(el){
+  if (el._leaveT){ clearTimeout(el._leaveT); el._leaveT = 0; el.classList.remove('is-leaving'); el.removeAttribute('inert'); }
+  el.hidden = false;
+}
+function layerOut(el, done){
+  if (!isShown(el)) return;
+  const end = () => { el._leaveT = 0; el.classList.remove('is-leaving'); el.removeAttribute('inert'); el.hidden = true; if (done) done(); };
+  if (calmMotion() || document.hidden){ end(); return; }
+  el.classList.add('is-leaving'); el.setAttribute('inert', '');
+  el._leaveT = setTimeout(end, LAYER_OUT_MS);
+}
+/* a few snowflakes burst out of a primary button when it is pressed (decoration only: a handful of nodes, CSS does the rest) */
+function flurry(btn){
+  if (!btn || btn.disabled || calmMotion() || S.exporting) return;
+  const r = btn.getBoundingClientRect(); if (!r.width) return;
+  const box = document.createElement('div'); box.className = 'flurry'; box.setAttribute('aria-hidden', 'true');
+  box.style.left = (r.left + r.width / 2) + 'px'; box.style.top = (r.top + r.height / 2) + 'px';
+  for (let i = 0; i < 10; i++){
+    const f = document.createElement('i'), a = (i / 10) * Math.PI * 2 + Math.random() * 0.5, d = Math.max(r.width, 120) * (0.32 + Math.random() * 0.22);
+    f.style.cssText = `--x:${Math.round(Math.cos(a) * d)}px;--y:${Math.round(Math.sin(a) * d * 0.55 - 10)}px;--s:${4 + Math.round(Math.random() * 5)}px;--d:${Math.round(Math.random() * 60)}ms`;
+    box.append(f);
+  }
+  document.body.append(box); setTimeout(() => box.remove(), 800);
+}
 /* a dialog open: everything behind it can be neither reached with Tab nor clicked */
 function modalOn(on){
   // a closing dialog over the account page (stalak.app) or the Pro thank-you: the app stays out of reach under them
@@ -5796,7 +5893,7 @@ function modalOn(on){
 }
 document.addEventListener('keydown', e => {
   if (e.key !== 'Tab') return;
-  const box = !$('#proThx').hidden ? $('#proThx') : !$('#homeAsk').hidden ? $('#homeAsk') : !$('#acctPage').hidden ? $('#acctPage') : !$('#expScreen').hidden ? $('#expScreen') : null; if (!box) return;
+  const box = isShown($('#proThx')) ? $('#proThx') : !$('#homeAsk').hidden ? $('#homeAsk') : isShown($('#acctPage')) ? $('#acctPage') : !$('#expScreen').hidden ? $('#expScreen') : null; if (!box) return;
   const f = [...box.querySelectorAll('button:not([disabled]),input:not([tabindex="-1"]),a[href]')].filter(x => x.offsetParent && !x.closest('[inert]')); if (!f.length) return;
   const i = f.indexOf(document.activeElement);
   if (i < 0){ e.preventDefault(); f[0].focus(); return; }
@@ -6168,6 +6265,8 @@ function go(n){
   if (!canGo(n) || S.exporting) return;
   stop(true); if (tapping){ tapping = false; } if (beatOn) beatTestEnd(); if (n !== 1 && tapT.taps.length) tapReset();
   if (n !== 2 && recStream) closeCamera();
+  // which way the steps glide: forward from the right, back from the left (CSS only)
+  if (n !== S.step) $('.wrap').dataset.dir = n < S.step ? 'back' : 'fwd';
   S.step = n; $('#p1').hidden = n !== 1; $('#p2').hidden = n !== 2; $('#work').hidden = n < 3; $('#p3').hidden = n !== 3; $('#p4').hidden = n !== 4;
   $('#shuffleBtn').hidden = n !== 4;
   if (n === 3) lyricsView();
@@ -6351,6 +6450,7 @@ function styleChanged(){
 $$('#stepper button').forEach(b => b.onclick = () => go(+b.dataset.go));
 $$('[data-back]').forEach(b => b.onclick = () => go(+b.dataset.back));
 $('#next1').onclick = () => go(2); $('#next2').onclick = () => go(3); $('#next3').onclick = () => go(4);
+['#next1', '#next2', '#next3', '#shuffleBtn'].forEach(s => $(s).addEventListener('pointerdown', e => { if (e.button === 0) flurry(e.currentTarget); }));
 function togglePlay(){ if (S.exporting) return; if (S.playing) stop(); else play(S.step === 4 ? startPoint() : null); }
 $('#playBtn').onclick = togglePlay;
 $('#songPlay').onclick = listenToggle;
@@ -7047,7 +7147,7 @@ function apAuthDone(f){
   if (!ACCT || !/^auth-(ok-(account|pro)|err-[a-z_]{1,40})$/.test(f)) return;
   if (apAuthLast && apAuthLast.f === f && Date.now() - apAuthLast.t < 4000) return;
   apAuthLast = { f, t: Date.now() };
-  const open = !$('#acctPage').hidden;
+  const open = isShown($('#acctPage'));
   if (f.startsWith('auth-ok')){
     const to = f === 'auth-ok-pro' ? 'pro' : 'account';
     ACCT.me().then(() => {
@@ -7065,7 +7165,7 @@ function apAuthDone(f){
 }
 function acctPro(){ return !!(ACCT && ACCT.state.entitlements && ACCT.state.entitlements.plan === 'pro'); }
 /* an account page or the Pro thank-you is on screen (modalOn keeps the app out of reach under them) */
-function acctLayerOpen(){ const a = $('#acctPage'), b = $('#proThx'); return !!((a && !a.hidden) || (b && !b.hidden)); }
+function acctLayerOpen(){ return isShown($('#acctPage')) || isShown($('#proThx')); }
 function acctDate(iso){ try { return new Date(iso).toLocaleDateString(LANG === 'en' ? 'en-GB' : 'fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }); } catch(e){ return iso; } }
 function acctName(u){ return u ? (u.displayName || u.email.split('@')[0]) : ''; }
 function acctInitials(u){
@@ -7121,6 +7221,7 @@ function apRender(){
     $('#apInF').hidden = up; $('#apUpF').hidden = !up;
     $('#apTabIn').setAttribute('aria-selected', String(!up)); $('#apTabUp').setAttribute('aria-selected', String(up));
     $('#apTabIn').tabIndex = up ? -1 : 0; $('#apTabUp').tabIndex = up ? 0 : -1;
+    $('#apLogin .ap-tabs').dataset.on = up ? 'up' : 'in';   // the sliding pill under the tabs
     $('#apToUp').hidden = up; $('#apToIn').hidden = !up;
     $('#apSocial').hidden = !apProviders.length;
     $$('#apSocial .ap-sso').forEach(b => { b.hidden = !apProviders.includes(b.dataset.p); });
@@ -7148,7 +7249,7 @@ function apRender(){
     apSubLine();
   }
   if (v === 'pro'){
-    $('#apBuy').hidden = pro; $('#apIsPro').hidden = !pro;
+    $('#apBuy').hidden = pro; $('#apIsPro').hidden = !pro; $('#apPromo').hidden = pro; $('#apProSub').hidden = pro;
     setT('#apProT', pro ? 'acct.tPro' : 'acct.proT');
     const sub = st.subscription;
     if (pro) setT('#apProTxt', sub && sub.cancelAt ? 'acct.proEnds' : sub && sub.currentPeriodEnd ? 'acct.proRenew' : 'acct.proOn', { d: acctDate(sub && (sub.cancelAt || sub.currentPeriodEnd)) });
@@ -7194,11 +7295,11 @@ function apGo(view, o = {}){
   if (!ACCT) return;
   if ('why' in o) apWhyK = o.why && !acctPro() ? 'acct.why.' + o.why : null;
   if (view === 'signup'){ view = 'login'; o.mode = o.mode || 'up'; }   // #inscription
-  const v = apResolve(view), page = $('#acctPage'), first = page.hidden;
+  const v = apResolve(view), page = $('#acctPage'), first = !isShown(page);
   // Stalak Pro asked while signed out: « Créer un compte » first for someone never signed in on this browser
   if (v === 'login' && !o.mode && apView !== 'login' && view !== 'login') o.mode = (apWhyK || view === 'pro') && !store.get('stalak:hadAcct') ? 'up' : apMode;
   if (first){
-    apBack = document.activeElement; page.hidden = false; modalOn(true); $('#acctBtn').setAttribute('aria-expanded', 'true');
+    apBack = document.activeElement; layerIn(page); modalOn(true); $('#acctBtn').setAttribute('aria-expanded', 'true');
     ACCT.me().catch(() => {});
   }
   if (v === 'login' && apView !== 'login'){
@@ -7219,8 +7320,8 @@ function apGo(view, o = {}){
 /* « Retour », Escape, the back gesture: one page back, then the app */
 function apBackBtn(){ if (apDepth > 0) history.back(); else apHide(); }
 function apHide(){
-  const page = $('#acctPage'); if (page.hidden) return;
-  page.hidden = true; apView = null; apDepth = 0; apSay(null); modalOn(false); $('#acctBtn').setAttribute('aria-expanded', 'false');
+  const page = $('#acctPage'); if (!isShown(page)) return;
+  layerOut(page); apView = null; apDepth = 0; apSay(null); modalOn(false); $('#acctBtn').setAttribute('aria-expanded', 'false');
   if (apHashView()) try { history.replaceState(null, '', location.pathname + location.search); } catch(e){}
   try { (apBack && apBack.isConnected && !apBack.closest('#acctPage') ? apBack : $('#acctBtn')).focus(); } catch(e){}
 }
@@ -7262,7 +7363,7 @@ let ptI = 0, ptTimer = 0, ptWait = 0, ptBackEl = null, ptPhase = 0, ptScrollT = 
 const ptSeen = new Set();
 const ptCalm = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){ return false; } };
 function proThanksMaybe(){
-  if (!ACCT || !acctPro() || !ACCT.state.user || !$('#proThx').hidden) return;
+  if (!ACCT || !acctPro() || !ACCT.state.user || isShown($('#proThx'))) return;
   const id = ACCT.state.user.id, k = 'stalak:proThanks:' + id;
   if (ptSeen.has(id)) return;
   let seen = null; try { seen = localStorage.getItem(k); } catch(e){}
@@ -7274,7 +7375,7 @@ function proThanksMaybe(){
 }
 function ptOpen(){
   ptBackEl = document.activeElement; ptPhase = 1;
-  const box = $('#proThx'); box.hidden = false; modalOn(true); $('#acctPage').setAttribute('inert', '');
+  const box = $('#proThx'); layerIn(box); modalOn(true); $('#acctPage').setAttribute('inert', '');
   $('#ptHello').hidden = false; $('#ptHello').classList.remove('out'); $('#ptCard').hidden = true;
   if (!ptCalm()) ptBurst();
   diag('compte : merci Pro');
@@ -7311,9 +7412,9 @@ function ptMark(){
   setT('#ptLive', 'pt.live', { n: ptI + 1, total: sl.length, title: sl[ptI].querySelector('h3').textContent.trim() });
 }
 function ptClose(){
-  if ($('#proThx').hidden) return;
+  if (!isShown($('#proThx'))) return;
   clearTimeout(ptTimer); ptPhase = 0;
-  $('#proThx').hidden = true; $('#ptBurst').textContent = ''; $('#acctPage').removeAttribute('inert'); modalOn(false);
+  layerOut($('#proThx'), () => { if (!isShown($('#proThx'))) $('#ptBurst').textContent = ''; }); $('#acctPage').removeAttribute('inert'); modalOn(false);
   if (apView) setTimeout(() => { try { (apView === 'pro' ? $('#apProT') : $('#acctPage')).focus({ preventScroll: true }); } catch(e){} }, 30);
   else try { (ptBackEl && ptBackEl.isConnected ? ptBackEl : $('#acctBtn')).focus(); } catch(e){}
 }
@@ -7557,8 +7658,19 @@ if (ACCT){
 
   // Stalak Pro: the two prices (Paddle's window)
   const buy = plan => apRun(async () => { apSay('acct.paying'); diag('compte : paiement ' + plan); await ACCT.checkout(plan); apSay(null); });
-  $('#apMonth').onclick = () => buy('month');
-  $('#apYear').onclick = () => buy('year');
+  $('#apMonth').onclick = () => { flurry($('#apMonth')); buy('month'); };
+  $('#apYear').onclick = () => { flurry($('#apYear')); buy('year'); };
+  // the free card's way out: back to the app, nothing else asked
+  $('#apStayFree').onclick = apBackBtn;
+  // the sign-in forms' main buttons get their snowflakes too
+  $$('#acctPage .ap-go').forEach(b => b.addEventListener('click', () => flurry(b)));
+  // the tabs: meltwater spreads from where the finger touched
+  $$('#apLogin .ap-tabs button').forEach(b => b.addEventListener('pointerdown', e => {
+    if (calmMotion() || b.getAttribute('aria-selected') === 'true') return;
+    const r = b.getBoundingClientRect(), w = document.createElement('span'); w.className = 'ap-ripple'; w.setAttribute('aria-hidden', 'true');
+    w.style.left = (e.clientX - r.left) + 'px'; w.style.top = (e.clientY - r.top) + 'px';
+    b.append(w); setTimeout(() => w.remove(), 600);
+  }));
 
   // the thank-you: a tap or a key skips the « Merci ! »; the slides swipe, arrows and dots work too
   $('#proThx').addEventListener('click', e => { if (ptPhase === 1) ptCards(); });

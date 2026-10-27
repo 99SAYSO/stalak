@@ -17,7 +17,8 @@ SELLER = arg('--seller')   # legal name of the seller (company or sole proprieto
 URL = 'https://' + DOMAIN
 
 head = (src / 'head.html').read_text(encoding='utf-8')
-css = (src / 'style.css').read_text(encoding='utf-8') + '\n/* ---- theme ---- */\n' + (src / 'theme.css').read_text(encoding='utf-8')
+css = (src / 'style.css').read_text(encoding='utf-8') + '\n/* ---- theme ---- */\n' + (src / 'theme.css').read_text(encoding='utf-8') + '\n' + (src / 'pricing.css').read_text(encoding='utf-8')
+PRICING_CSS = (src / 'pricing.css').read_text(encoding='utf-8')   # plan cards: in the app's Stalak Pro page and in /pricing.css for /tarifs
 markup = (src / 'markup.html').read_text(encoding='utf-8')
 js = (src / 'app.js').read_text(encoding='utf-8')
 ACCOUNT_JS = (src / 'account.js').read_text(encoding='utf-8')   # stalak.app only: sign in, Stalak Pro
@@ -177,6 +178,7 @@ def page(lang, body):
 
 if out.exists(): shutil.rmtree(out)
 shutil.copytree(extra, out)
+(out / 'pricing.css').write_text(PRICING_CSS, encoding='utf-8')
 (out / 'index.html').write_text(page('fr', markup), encoding='utf-8')
 (out / 'en').mkdir(exist_ok=True)
 (out / 'en' / 'index.html').write_text(page('en', markup_en), encoding='utf-8')

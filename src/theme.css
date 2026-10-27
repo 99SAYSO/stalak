@@ -662,3 +662,81 @@ header .stepper{margin-left:auto}
 
 /* text size / appearance reserved to Stalak Pro */
 #stSize button.protag::after,#stAnim button.protag::after{content:"PRO";font:700 9px/1 var(--body);letter-spacing:.04em;margin-left:5px;padding:2px 4px;border-radius:5px;background:var(--ink);color:#fff;vertical-align:1px}
+/* ---- Stalak Pro page: wider than the other account pages, room for three plans side by side ---- */
+.acctpage:has(#apPro:not([hidden])) .ap-in{max-width:1060px}
+.ap-proview{gap:22px}
+.ap-proview > h2{font-size:clamp(40px,10vw,62px)}
+.ap-proview .ap-why{align-self:center;max-width:560px}
+.ap-ispro{align-self:center;width:100%;max-width:560px;box-sizing:border-box}
+.ap-ispro .ap-perks{align-self:stretch;text-align:left;margin:6px 0 4px}
+.ap-ispro .ap-emo{margin-bottom:0}
+.ap-ispro .btn{min-height:52px;min-width:240px;justify-content:center}
+
+/* =====================================================================
+   Motion: cold, quick, never in the way (150–450 ms, transform / opacity / filter only).
+   - pages over the app: a frost dissolve (the page fades in while its content clears from a blur and slides up on the ice);
+     on the way out they melt away (the layer is already closed for the app: see layerOut in app.js)
+   - inside: each view slides in and settles, icicles grow under the cards' top edge
+   - sign in / create an account: the white pill glides under the tabs, meltwater ripples from the touch
+   - the steps glide in from the side they come from; the step reached gets a frost sweep
+   - primary buttons: a few snowflakes burst out (app.js: flurry)
+   prefers-reduced-motion: the rule at the top of this theme stops every animation and transition.
+   ===================================================================== */
+.acctpage:not([hidden]),.prothx:not([hidden]){animation:mo-open .28s var(--soft) both}
+.acctpage:not([hidden]) > .ap-in{animation:mo-clear .44s var(--slide) both}
+.acctpage.is-leaving,.prothx.is-leaving{animation:mo-close .23s ease-in both;pointer-events:none}
+.acctpage.is-leaving > .ap-in,.prothx.is-leaving .pt-card,.prothx.is-leaving .pt-hello{animation:mo-melt .23s ease-in both}
+@keyframes mo-open{from{opacity:0}to{opacity:1}}
+@keyframes mo-close{from{opacity:1}to{opacity:0}}
+@keyframes mo-clear{0%{opacity:0;transform:translateY(30px) scale(.985);filter:blur(8px)}55%{opacity:1;filter:blur(0)}100%{opacity:1;transform:none;filter:none}}
+@keyframes mo-melt{to{opacity:0;transform:translateY(16px) scale(.985);filter:blur(6px)}}
+
+/* a view of the account page, and each card in it */
+.ap-view{animation:mo-view .38s var(--slide) both}
+.ap-view .ap-card{animation:mo-card .46s var(--slide) both}
+.ap-view .ap-card:nth-of-type(2){animation-delay:.05s}
+.ap-view .ap-card:nth-of-type(3){animation-delay:.1s}
+.ap-view .ap-card:nth-of-type(4){animation-delay:.15s}
+.ap-view .ap-card::before{transform-origin:top center;animation:pr-icicles .5s var(--slide) .2s both}
+@keyframes mo-view{0%{opacity:0;transform:translateY(14px);filter:blur(4px)}60%{opacity:1;filter:blur(0)}100%{opacity:1;transform:none;filter:none}}
+@keyframes mo-card{0%{opacity:0;transform:translateY(22px) scale(.98)}65%{opacity:1;transform:translateY(-3px)}100%{opacity:1;transform:none}}
+
+/* sign in / create an account: the pill glides, the form comes from the tab's side, a code step rises */
+.ap-tabs{position:relative;isolation:isolate}
+.ap-tabs::before{content:"";position:absolute;z-index:-1;top:4px;bottom:4px;left:4px;width:calc(50% - 6px);border-radius:11px;background:#fff;box-shadow:0 0 0 2px var(--ink),0 3px 0 2px var(--ink);transition:transform .4s var(--slide)}
+.ap-tabs[data-on="up"]::before{transform:translateX(calc(100% + 4px))}
+.ap-tabs button{position:relative;overflow:hidden;background:transparent}
+.ap-tabs button[aria-selected="true"]{background:transparent;box-shadow:none}
+.ap-ripple{position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:radial-gradient(circle,rgba(31,111,214,.38),rgba(169,211,255,.18) 55%,rgba(169,211,255,0) 72%);transform:scale(0);pointer-events:none;animation:mo-ripple .55s var(--soft) forwards}
+@keyframes mo-ripple{to{transform:scale(24);opacity:0}}
+#apInF:not([hidden]){animation:mo-from-l .34s var(--slide) both}
+#apUpF:not([hidden]){animation:mo-from-r .34s var(--slide) both}
+#apCodeF:not([hidden]),#apForgotF:not([hidden]),#apNewPwF:not([hidden]){animation:mo-view .36s var(--slide) both}
+@keyframes mo-from-l{0%{opacity:0;transform:translateX(-22px);filter:blur(3px)}60%{opacity:1;filter:blur(0)}100%{opacity:1;transform:none;filter:none}}
+@keyframes mo-from-r{0%{opacity:0;transform:translateX(22px);filter:blur(3px)}60%{opacity:1;filter:blur(0)}100%{opacity:1;transform:none;filter:none}}
+.ap-err:not([hidden]){animation:al-pop .2s var(--soft)}
+.ap-pwf:not([hidden]){animation:mo-view .32s var(--slide) both}
+
+/* the app's steps: forward from the right, back from the left, with a little overshoot on the ice */
+.wrap[data-dir="fwd"] .narrow:not([hidden]),.wrap[data-dir="fwd"] #p3:not([hidden]),.wrap[data-dir="fwd"] #p4:not([hidden]){animation:mo-step-r .5s var(--slide) both}
+.wrap[data-dir="back"] .narrow:not([hidden]),.wrap[data-dir="back"] #p3:not([hidden]),.wrap[data-dir="back"] #p4:not([hidden]){animation:mo-step-l .5s var(--slide) both}
+@keyframes mo-step-r{0%{opacity:0;transform:translateX(42px) rotate(.6deg)}60%{opacity:1;transform:translateX(-5px) rotate(-.2deg)}100%{opacity:1;transform:none}}
+@keyframes mo-step-l{0%{opacity:0;transform:translateX(-42px) rotate(-.6deg)}60%{opacity:1;transform:translateX(5px) rotate(.2deg)}100%{opacity:1;transform:none}}
+.narrow:not([hidden]) > .card::before,#p3:not([hidden]) > .card::before,#p4:not([hidden]) > .card::before{transform-origin:top center;animation:pr-icicles .5s var(--slide) .18s both}
+/* the step reached: a frost sweep over its ice cube, the number pops */
+.stepper button{position:relative;overflow:hidden}
+.stepper button::after{content:"";position:absolute;top:-4px;bottom:-4px;left:0;width:60%;background:linear-gradient(100deg,rgba(255,255,255,0),rgba(255,255,255,.95) 50%,rgba(255,255,255,0));transform:translateX(-180%) skewX(-14deg);pointer-events:none}
+.stepper button[aria-current="step"]::after{animation:mo-sweep .7s var(--soft) .08s 1 both}
+.stepper button[aria-current="step"] b{animation:mo-badge .45s var(--slide) both}
+@keyframes mo-sweep{0%{transform:translateX(-180%) skewX(-14deg)}100%{transform:translateX(260%) skewX(-14deg)}}
+@keyframes mo-badge{0%{transform:scale(.6) rotate(-12deg)}60%{transform:scale(1.15) rotate(3deg)}100%{transform:none}}
+
+/* the help chat opens from its ice cube */
+.help-panel:not([hidden]){transform-origin:100% 100%;animation:mo-help .3s var(--slide) both}
+@keyframes mo-help{0%{opacity:0;transform:translateY(14px) scale(.94)}100%{opacity:1;transform:none}}
+
+/* snowflakes out of a primary button */
+.flurry{position:fixed;left:0;top:0;width:0;height:0;z-index:200;pointer-events:none}
+.flurry i{position:absolute;left:0;top:0;width:var(--s);height:var(--s);margin:calc(var(--s) / -2) 0 0 calc(var(--s) / -2);border-radius:50%;background:#fff;box-shadow:0 0 0 1.5px var(--ink);opacity:0;animation:mo-flake .62s cubic-bezier(.15,.7,.3,1) var(--d) forwards}
+@keyframes mo-flake{0%{opacity:1;transform:translate(0,0) scale(.3)}70%{opacity:1}100%{opacity:0;transform:translate(var(--x),calc(var(--y) + 16px)) scale(1)}}
+@media (prefers-reduced-motion:reduce){ .flurry,.ap-ripple{display:none} }
