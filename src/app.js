@@ -569,6 +569,15 @@ const I18N_EN = /*@EN*/{
   "lyr.e.fail": "The transcription didn’t work. Try again, or paste your lyrics.",
   "acct.why.lyrics": "Automatic lyrics are part of Stalak Pro.",
   "ap.whyIn.lyrics": "Automatic lyrics are part of Stalak Pro. Sign in or create an account to get it.",
+  "lyr.vox.pick": "Got the vocals alone (a cappella)? Import them for an even more accurate transcription",
+  "lyr.vox.on": "Vocals alone used: {name}",
+  "lyr.vox.del": "Remove",
+  "lyr.vox.load": "Opening your vocals…",
+  "lyr.vox.ok": "Vocals ready: Stalak will listen to them to write your lyrics.",
+  "lyr.vox.shift": "Vocals ready, lined up on your song (they start {off} s off). Stalak will listen to them to write your lyrics.",
+  "lyr.vox.unsure": "Vocals imported, but I’m not sure I lined them up right on your song (best guess: {off} s off). If the lyrics land in the wrong place, check it’s the same song, from the start.",
+  "lyr.vox.bad": "I can’t read this file. Try another format (mp3, m4a, wav).",
+  "lyr.vox.off": "Vocals removed: the transcription will listen to your song.",
   "lang.sw": "Language",
   "acct.close": "Close",
   "acct.email": "Your email",
@@ -1225,6 +1234,15 @@ const I18N_FR = /*@FR*/{
   "lyr.e.fail": "La transcription n’a pas marché. Réessaie, ou colle tes paroles.",
   "acct.why.lyrics": "Les paroles automatiques font partie de Stalak Pro.",
   "ap.whyIn.lyrics": "Les paroles automatiques font partie de Stalak Pro. Connecte-toi ou crée un compte pour en profiter.",
+  "lyr.vox.pick": "Tu as la voix seule (a cappella) ? Importe-la pour une transcription encore plus précise",
+  "lyr.vox.on": "Voix seule utilisée : {name}",
+  "lyr.vox.del": "Retirer",
+  "lyr.vox.load": "J’ouvre ta voix seule…",
+  "lyr.vox.ok": "Voix seule prête : Stalak l’écoutera pour écrire tes paroles.",
+  "lyr.vox.shift": "Voix seule prête, calée sur ton son (elle est décalée de {off} s). Stalak l’écoutera pour écrire tes paroles.",
+  "lyr.vox.unsure": "Voix seule importée, mais je ne suis pas sûr de bien la caler sur ton son (au mieux : décalée de {off} s). Si les paroles tombent à côté, vérifie que c’est bien la même chanson, depuis le début.",
+  "lyr.vox.bad": "Je n’arrive pas à lire ce fichier. Essaie un autre format (mp3, m4a, wav).",
+  "lyr.vox.off": "Voix seule retirée : la transcription écoutera ton son.",
   "lang.sw": "Langue",
   "acct.btn": "Connexion",
   "acct.btn.in": "Compte",
@@ -3929,6 +3947,183 @@ function trWav(x){
   const u = new Uint8Array(b); let bin = ''; for (let i = 0; i < u.length; i += 0x8000) bin += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000));
   return btoa(bin);
 }
+/* tr-dsp:start (pure functions, also run offline by tests/lyrics/vocal_ab.mjs) */
+/* the voice brought forward before it is sent (cheap, no model): per piece, the left and right channels at 16 kHz go
+   through a short-time Fourier transform (1024 points = 64 ms, half overlap, √Hann windows: exact rebuild); in each
+   time-frequency cell, what L and R share in phase and level (smoothed over ~3 frames) is kept — the voice is usually in
+   the middle — and what lives on one side only or differs between them (wide guitars, stereo reverb) is turned down to
+   15 %. The same pass filters 100 Hz–7.8 kHz (no bass rumble, no hiss) and also rebuilds the plain filtered mix: when the
+   middle is much quieter than the mix (the voice is not in the middle), the plain mix is sent instead. Then the level is
+   evened out (RMS −20 dBFS, peaks ≤ 0.9). Buffers are made once and reused from piece to piece. */
+const TRV_N = 1024, TRV_H = 512;
+const trv = { re: new Float32Array(TRV_N), im: new Float32Array(TRV_N), win: new Float32Array(TRV_N), band: new Float32Array(TRV_N / 2 + 1),
+  cos: new Float32Array(TRV_N / 2), sin: new Float32Array(TRV_N / 2), rev: new Uint16Array(TRV_N),
+  pll: new Float32Array(TRV_N / 2 + 1), prr: new Float32Array(TRV_N / 2 + 1), plr: new Float32Array(TRV_N / 2 + 1), L: null, R: null, oc: null, om: null };
+(() => {
+  const N = TRV_N, bits = Math.log2(N);
+  for (let n = 0; n < N; n++){ trv.win[n] = Math.sin(Math.PI * n / N); let r = 0; for (let b = 0; b < bits; b++) r |= ((n >> b) & 1) << (bits - 1 - b); trv.rev[n] = r; }
+  for (let k = 0; k < N / 2; k++){ trv.cos[k] = Math.cos(2 * Math.PI * k / N); trv.sin[k] = -Math.sin(2 * Math.PI * k / N); }
+  for (let k = 0; k <= N / 2; k++){
+    const f = k * 16000 / N;
+    const hp = f < 70 ? 0 : f < 130 ? 0.5 - 0.5 * Math.cos(Math.PI * (f - 70) / 60) : 1;
+    const lp = f > 7800 ? 0.3 : f > 7200 ? 1 - 0.7 * (f - 7200) / 600 : 1;
+    trv.band[k] = hp * lp;
+  }
+})();
+/* in-place radix-2 FFT of (re, im) */
+function trFFT(re, im){
+  const N = TRV_N, rev = trv.rev, C = trv.cos, Sn = trv.sin;
+  for (let i = 0; i < N; i++){ const j = rev[i]; if (j > i){ let t = re[i]; re[i] = re[j]; re[j] = t; t = im[i]; im[i] = im[j]; im[j] = t; } }
+  for (let size = 2; size <= N; size <<= 1){
+    const half = size >> 1, step = N / size;
+    for (let s = 0; s < N; s += size){
+      for (let j = 0, t = 0; j < half; j++, t += step){
+        const a = s + j, b = a + half, wr = C[t], wi = Sn[t];
+        const xr = re[b] * wr - im[b] * wi, xi = re[b] * wi + im[b] * wr;
+        re[b] = re[a] - xr; im[b] = im[a] - xi; re[a] += xr; im[a] += xi;
+      }
+    }
+  }
+}
+/* channels `chs` of a buffer (anything with sampleRate, length, getChannelData) averaged at 16 kHz, sample k = time a + k / 16000
+   (same rounding as trSamples); before the start or after the end of the buffer: silence */
+function trChan(buf, a, k0, k1, chs, out){
+  const sr = buf.sampleRate, i0 = Math.floor(a * sr), step = sr / 16000, len = buf.length, ds = chs.map(c => buf.getChannelData(c));
+  for (let k = k0; k < k1; k++){
+    let s0 = i0 + Math.floor(k * step), s1 = Math.max(s0 + 1, i0 + Math.floor((k + 1) * step));
+    if (s0 < 0) s0 = 0; if (s1 > len) s1 = len;
+    let v = 0; if (s1 > s0){ for (const d of ds) for (let i = s0; i < s1; i++) v += d[i]; v /= (s1 - s0) * ds.length; }
+    out[k - k0] = v;
+  }
+}
+/* piece [p, q) of the passage that starts at time `a` of buffer `buf` → { y: Float32Array (q − p), ratio, center, gain } */
+function trVocal(buf, a, p, q){
+  const N = TRV_N, H = TRV_H, half = N / 2, len = q - p + 2 * N;
+  if (!trv.L || trv.L.length < len){ const m = Math.max(len, 31 * 16000 + 2 * N); trv.L = new Float32Array(m); trv.R = new Float32Array(m); trv.oc = new Float32Array(m); trv.om = new Float32Array(m); }
+  const { L, R, oc, om, re, im, win, band, pll, prr, plr } = trv, stereo = buf.numberOfChannels > 1;
+  trChan(buf, a, p - N, q + N, [0], L);
+  if (stereo) trChan(buf, a, p - N, q + N, [1], R);
+  oc.fill(0, 0, len); om.fill(0, 0, len); pll.fill(0); prr.fill(0); plr.fill(0);
+  const al = 0.6, lo = 0.35, hi = 0.85, floor = 0.15;
+  let eC = 0, eM = 0;
+  for (let s = 0; s + N <= len; s += H){
+    for (let n = 0; n < N; n++){ re[n] = L[s + n] * win[n]; im[n] = stereo ? R[s + n] * win[n] : 0; }
+    trFFT(re, im);
+    const inPiece = s + half >= N && s + half < len - N;
+    for (let k = 0; k <= half; k++){
+      const j = (N - k) & (N - 1), ar = re[k], ai = im[k], cr = re[j], ci = im[j];
+      let mr, mi, g = 1;
+      if (stereo){
+        const lr = (ar + cr) / 2, li = (ai - ci) / 2, rr = (ai + ci) / 2, ri = (cr - ar) / 2;   // L and R spectra out of the packed transform
+        mr = (lr + rr) / 2; mi = (li + ri) / 2;
+        pll[k] = al * pll[k] + (1 - al) * (lr * lr + li * li);
+        prr[k] = al * prr[k] + (1 - al) * (rr * rr + ri * ri);
+        plr[k] = al * plr[k] + (1 - al) * (lr * rr + li * ri);
+        const c = 2 * plr[k] / (pll[k] + prr[k] + 1e-12);   // 1: same in L and R; 0: one side only or unrelated; < 0: opposite
+        const u = Math.min(1, Math.max(0, (c - lo) / (hi - lo)));
+        g = floor + (1 - floor) * u * u * (3 - 2 * u);
+      } else { mr = ar; mi = ai; }
+      const b = band[k]; mr *= b; mi *= b;
+      const xr = g * mr, xi = g * mi;
+      if (inPiece){ const w = k === 0 || k === half ? 1 : 2; eC += w * (xr * xr + xi * xi); eM += w * (mr * mr + mi * mi); }
+      // both rebuilt with one transform: Y = C + i·M (C, M spectra of real signals) → real part = C, imaginary part = M
+      if (k === 0 || k === half){ re[k] = xr; im[k] = mr; }
+      else { re[k] = xr - mi; im[k] = xi + mr; re[N - k] = xr + mi; im[N - k] = mr - xi; }
+    }
+    // inverse transform as the forward one on the conjugate
+    for (let n = 0; n < N; n++) im[n] = -im[n];
+    trFFT(re, im);
+    for (let n = 0; n < N; n++){ const w = win[n] / N; oc[s + n] += re[n] * w; om[s + n] -= im[n] * w; }
+  }
+  const ratio = eM > 0 ? Math.sqrt(eC / eM) : 0, center = stereo && ratio >= 0.3, src = center ? oc : om;
+  const n = q - p, y = new Float32Array(n);
+  let ss = 0, pk = 0;
+  for (let i = 0; i < n; i++){ const v = src[N + i]; y[i] = v; ss += v * v; const av = v < 0 ? -v : v; if (av > pk) pk = av; }
+  const rms = Math.sqrt(ss / Math.max(1, n));
+  const gain = rms > 0 && pk > 0 ? Math.min(0.1 / rms, 0.9 / pk, 20) : 1;
+  for (let i = 0; i < n; i++) y[i] *= gain;
+  return { y, ratio, center, gain };
+}
+/* energy envelope (50 per second, log, slow trend removed) of a buffer from time t0 for n frames */
+function trEnv(buf, t0, n){
+  const sr = buf.sampleRate, hop = sr / 50, ds = []; for (let c = 0; c < buf.numberOfChannels; c++) ds.push(buf.getChannelData(c));
+  const e = new Float32Array(n);
+  for (let f = 0; f < n; f++){
+    const s0 = Math.max(0, Math.floor(t0 * sr + f * hop)), s1 = Math.min(buf.length, Math.floor(t0 * sr + (f + 1) * hop));
+    // (of the sample-to-sample difference: the bass and kick, which the vocals file does not have, count little)
+    let v = 0; for (const d of ds) for (let i = Math.max(1, s0); i < s1; i += 2){ const x = d[i] - d[i - 1]; v += x * x; }
+    e[f] = Math.log(1e-8 + v / Math.max(1, (s1 - s0) / 2));
+  }
+  // minus the mean over ±1 s: what is left is where the sound comes and goes
+  const out = new Float32Array(n), W = 50; let acc = 0, a = 0, b = 0;
+  for (let f = 0; f < n; f++){
+    while (b < n && b <= f + W){ acc += e[b++]; }
+    while (a < f - W){ acc -= e[a++]; }
+    out[f] = e[f] - acc / (b - a);
+  }
+  return out;
+}
+/* where the vocals file sits on the song: vocals time + offset = song time. Searched by matching the energy envelopes
+   (the voice is part of the song) over ± (length difference + 10 s); sure = a clear best match */
+function trOffset(song, vox){
+  const fs = 50, nS = Math.floor(song.duration * fs), nV = Math.floor(vox.duration * fs);
+  const S = trEnv(song, 0, nS), V = trEnv(vox, 0, nV);
+  const span = Math.min(120 * fs, Math.ceil((Math.abs(song.duration - vox.duration) + 10) * fs));
+  const score = new Float32Array(2 * span + 1);
+  for (let lag = -span; lag <= span; lag++){
+    let sv = 0, ss = 0, vv = 0;
+    const f0 = Math.max(0, lag), f1 = Math.min(nS, nV + lag);
+    for (let f = f0; f < f1; f++){ const x = S[f], y = V[f - lag]; sv += x * y; ss += x * x; vv += y * y; }
+    score[lag + span] = f1 - f0 > 5 * fs && ss > 0 && vv > 0 ? sv / Math.sqrt(ss * vv) : -1;
+  }
+  let best = 0; for (let i = 1; i < score.length; i++) if (score[i] > score[best]) best = i;
+  let second = -1; for (let i = 0; i < score.length; i++) if (Math.abs(i - best) > fs && score[i] > second) second = score[i];
+  const corr = score[best];
+  // sure: clearly above the next best place (a loop-based song matches almost as well one bar away), or several times
+  // closer to a perfect match than it (a vocals file cut from the very same audio)
+  return { offset: (best - span) / fs, corr, second, sure: corr >= 0.3 && (corr - second >= 0.06 || 1 - second >= 4 * (1 - corr)) };
+}
+/* the end of what was heard, as context for the next piece: last ~180 characters, whole words, letters / digits /
+   punctuation only (the server cleans it again) */
+function trContext(segs){
+  const t = segs.map(s => s.text || '').join(' ').normalize('NFC').replace(/[^\p{L}\p{M}\p{N}\p{P}\s]|[\p{C}<>{}\[\]\\]/gu, ' ').replace(/\s+/g, ' ').trim();
+  if (t.length <= 180) return t;
+  const cut = t.length - 180, sp = t.indexOf(' ', cut);
+  return (sp >= 0 && sp - cut < 30 ? t.slice(sp + 1) : t.slice(cut)).trim();
+}
+/* the pieces' segments (absolute times) put together; a line that comes out twice across a cut (the end of one piece and
+   the start of the next: same words, the second copy overlapping the first or squeezed) is kept once */
+const trNorm = w => String(w).toLowerCase().normalize('NFD').replace(/[^\p{L}\p{N}]/gu, '');
+function trMerge(pieces){
+  const out = [];
+  let dropped = 0;
+  for (const segs of pieces){
+    const cur = (segs || []).map(s => ({ ...s, words: (s.words || []).slice() }));
+    const prev = out.length ? out[out.length - 1] : null, first = cur[0];
+    if (prev && first){
+      const pw = prev.words, fw = first.words;
+      if (pw.length && fw.length){
+        let m = 0;
+        for (let k = Math.min(pw.length, fw.length, 12); k >= 2; k--){
+          let ok = true; for (let i = 0; i < k && ok; i++) ok = trNorm(pw[pw.length - k + i].word) === trNorm(fw[i].word) && trNorm(fw[i].word) !== '';
+          if (ok){ m = k; break; }
+        }
+        if (m){
+          const aS = pw[pw.length - m].start, aE = pw[pw.length - 1].end, bS = fw[0].start, bE = fw[m - 1].end;
+          const whole = m === fw.length;
+          if ((m >= 3 || whole) && (bS < aE + 0.3 || (bE - bS) < 0.5 * (aE - aS))){
+            first.words = fw.slice(m); dropped += m;
+            first.text = first.words.map(w => w.word).join(' ');
+            if (first.words.length) first.start = first.words[0].start; else cur.shift();
+          }
+        }
+      } else if (!pw.length && !fw.length && trNorm(prev.text) && trNorm(prev.text) === trNorm(first.text)){ cur.shift(); dropped++; }
+    }
+    out.push(...cur);
+  }
+  return { segs: out, dropped };
+}
+/* tr-dsp:end */
 /* a block of text → short lines: at the end of a sentence, at a comma when the line is already long, or every 8 words */
 function trSplit(text){
   const words = text.replace(/\s+/g, ' ').trim().split(' ').filter(Boolean), out = []; let cur = [];
@@ -3994,30 +4189,53 @@ async function transcribeLyrics(){
   stop(true); if (tapping){ tapping = false; }
   trBusy = true; trUi(); say('lyr.listen'); progress(0); await nextFrame();
   try {
-    const x = trSamples(S.song.buffer, a, b); await nextFrame();
+    // the vocals alone when the user gave them (same timeline as the song, moved by their offset), else the song
+    const vox = S.song.vox && S.song.vox.buffer ? S.song.vox : null, src = vox ? vox.buffer : S.song.buffer, srcA = vox ? a - vox.offset : a;
+    let x;
+    if (vox){ x = new Float32Array(Math.max(0, Math.floor((b - a) * TR_SR))); trChan(src, srcA, 0, x.length, Array.from({ length: src.numberOfChannels }, (_, c) => c), x); }
+    else x = trSamples(S.song.buffer, a, b);
+    await nextFrame();
     const pieces = trPieces(x), job = 'j' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
     if (!pieces.length){ say('lyr.empty'); return; }
     if (pieces.length > 16){ say('lyr.e.long'); return; }
     const results = new Array(pieces.length); let lang = trLang, done = 0, shown = 0;
     // the bar creeps forward while a piece is being written (a piece takes a few seconds), then jumps when it comes back
     trTick = setInterval(() => { const cap = Math.min(0.95, (done + 0.9) / pieces.length); shown = Math.min(cap, shown + (cap - shown) * 0.08 + 0.002); progress(shown); }, 120);
-    const send = async k => {
-      const [p, q] = pieces[k];
-      const r = await trPost({ audio: trWav(x.subarray(p, q)), job, part: k, parts: pieces.length, language: lang });
+    // each piece: the voice brought forward (trVocal), then the small WAV; if that fails, the plain samples
+    let dspMs = 0; const dspInfo = [];
+    const prep = k => {
+      const [p, q] = pieces[k], t = performance.now(); let y;
+      try { const v = trVocal(src, srcA, p, q); y = v.y; dspInfo.push((v.center ? 'centre ' : 'mix ') + v.ratio.toFixed(2) + ' ×' + v.gain.toFixed(1)); }
+      catch(e){ y = x.subarray(p, q); dspInfo.push('brut (' + (e && e.message || e) + ')'); }
+      dspMs += performance.now() - t;
+      return trWav(y);
+    };
+    const send = async (k, audio, prompt) => {
+      const [p, q] = pieces[k], body = { audio, job, part: k, parts: pieces.length, language: lang };
+      if (prompt) body.prompt = prompt;
+      const r = await trPost(body);
       if (r.debug) diag('paroles auto : morceau ' + (k + 1) + ' → le modèle a rendu ' + r.debug.raw + ' segment(s), ' + r.debug.words + ' mot(s) à part, ' + r.debug.chars + ' caractères ; ' + (r.segments || []).length + ' gardé(s)');
       results[k] = (r.segments || []).map(sg => ({ ...sg, start: sg.start + a + p / TR_SR, end: sg.end + a + p / TR_SR,
         words: (sg.words || []).map(w => ({ word: w.word, start: w.start + a + p / TR_SR, end: w.end + a + p / TR_SR })) }));
       ++done; shown = Math.max(shown, Math.min(0.97, done / pieces.length)); progress(shown);
       return r;
     };
-    // the first piece alone (it counts the transcription; with « Auto », its language is kept for the others), then 3 at a time
-    const r0 = await send(0); if (lang === 'auto' && r0.language) lang = r0.language;
-    let next = 1;
-    await Promise.all([0, 1, 2].map(async () => { while (next < pieces.length){ const k = next++; await send(k); } }));
+    // one piece after the other: the first alone (it counts the transcription; with « Auto », its language is kept for the
+    // others), then each one with the end of the words heard just before as context (same spelling of repeated words and
+    // names, same language). The next piece is made ready while the current one is being written.
+    let ctx = '', audio = prep(0);
+    for (let k = 0; k < pieces.length; k++){
+      const pr = send(k, audio, ctx); pr.catch(() => {});   // (awaited just below: no « unhandled » report meanwhile)
+      if (k + 1 < pieces.length){ await nextFrame(); audio = prep(k + 1); }
+      const r = await pr;
+      if (k === 0 && lang === 'auto' && r.language) lang = r.language;
+      const c = trContext(results[k]); if (c) ctx = c;
+    }
+    diag('paroles auto : voix mise en avant en ' + Math.round(dspMs) + ' ms' + (vox ? ' (voix seule importée, décalage ' + vox.offset.toFixed(2) + ' s)' : '') + ' — ' + dspInfo.map((d, i) => (i + 1) + ' : ' + d).join(', '));
     if (S.song !== songAt){ say('auto.changed'); return; }
-    const segs = results.flat(), nWords = segs.reduce((n, s) => n + (s.words ? s.words.length : 0), 0);
+    const merged = trMerge(results), segs = merged.segs, nWords = segs.reduce((n, s) => n + (s.words ? s.words.length : 0), 0);
     const lines = trLines(segs);
-    diag('paroles auto : réponse ' + segs.length + ' segment(s), ' + nWords + ' mot(s) minutés');
+    diag('paroles auto : réponse ' + segs.length + ' segment(s), ' + nWords + ' mot(s) minutés' + (merged.dropped ? ', ' + merged.dropped + ' mot(s) en double aux coupures retirés' : ''));
     diag('paroles auto : ' + pieces.length + ' morceau(x), ' + fmt(a) + '–' + fmt(b) + ', langue ' + lang + ', ' + lines.length + ' phrases, ' + Math.round(performance.now() - t0) + ' ms');
     if (!lines.length){ say('lyr.empty'); return; }
     S.lyrics.lines = lines; S.lyrics.mode = 'auto'; S.lyrUser = true; $('#lyText').value = lines.map(l => l.text).join('\n');
@@ -4032,7 +4250,7 @@ async function transcribeLyrics(){
     diag('paroles auto : erreur ' + ((e && (e.code + ' ' + (e.status || ''))) || e) + ' ' + (e && e.message || ''));
     say(k);
     if (k === 'lyr.e.pro') acctOpen('lyrics');
-  } finally { clearInterval(trTick); trTick = null; trBusy = false; progress(null); trUi(); }
+  } finally { clearInterval(trTick); trTick = null; trBusy = false; progress(null); trUi(); trv.L = trv.R = trv.oc = trv.om = null; }   // (the ~8 MB of work buffers go back)
 }
 /* the « Transcription auto » panel: Pro tag, the button's words, busy state; on the claude.ai page, the « stalak.app only » note */
 function trUi(){
@@ -4043,6 +4261,32 @@ function trUi(){
   setT($('#lyTrGo'), trBusy ? 'lyr.busy' : has ? 'ly.trAgain' : 'ly.trGo');
   $('#lyTrGo').disabled = trBusy;
   $$('#lyTrLang button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.v === trLang)));
+  const vox = S.song && S.song.vox;
+  $('#lyVoxOn').hidden = !vox; $('#lyVoxPick').hidden = !!vox;
+  if (vox) setT($('#lyVoxName'), 'lyr.vox.on', { name: vox.name });
+}
+/* « voix seule »: the vocals alone of the same song, for the transcription only. They are taken to start with the song;
+   when their length differs by more than 2 s, where they sit is found by matching the energy (trOffset) */
+async function trVoxFile(f){
+  if (!f || !S.song || trBusy) return;
+  const song = S.song;
+  say('lyr.vox.load'); await nextFrame();
+  try {
+    const buf = await songFromFile(f);
+    if (S.song !== song) return;
+    let off = 0, sure = true, info = 'même longueur que le son, calée au début';
+    if (Math.abs(buf.duration - song.duration) > 2){
+      await nextFrame();
+      const t = performance.now(), o = trOffset(song.buffer, buf);
+      sure = o.sure; off = o.corr >= 0.12 ? o.offset : 0;
+      info = 'longueur ' + fmt(buf.duration) + ' / son ' + fmt(song.duration) + ', décalage estimé ' + o.offset.toFixed(2) + ' s (corrélation ' + o.corr.toFixed(3) + ', suivante ' + o.second.toFixed(3) + (sure ? '' : ', pas sûr') + ', ' + Math.round(performance.now() - t) + ' ms)';
+    }
+    song.vox = { buffer: buf, offset: off, name: f.name, sure };
+    diag('paroles auto : voix seule « ' + f.name + ' » importée, ' + buf.numberOfChannels + ' canal(aux), ' + info);
+    const offTxt = (off > 0 ? '+' : '') + off.toFixed(1).replace('.', LANG === 'fr' ? ',' : '.');
+    say(!sure ? 'lyr.vox.unsure' : Math.abs(off) >= 0.05 ? 'lyr.vox.shift' : 'lyr.vox.ok', { off: offTxt });
+  } catch(err){ diag('paroles auto : voix seule illisible (' + (err && err.message || err) + ')'); say('lyr.vox.bad'); }
+  trUi();
 }
 
 /* ---------- drawing ---------- */
@@ -6971,6 +7215,8 @@ $('#autoAgain').onclick = () => autoSync(true);
 $('#autoToPaste').onclick = () => { S.lyrics.mode = 'paste'; lyricsView(); };
 $('#lyTrGo').onclick = () => transcribeLyrics();
 bindSeg('#lyTrLang', v => { trLang = v; });
+$('#lyVoxFile').onchange = e => { const f = e.target.files[0]; e.target.value = ''; trVoxFile(f); };
+$('#lyVoxDel').onclick = () => { if (S.song) S.song.vox = null; trUi(); say('lyr.vox.off'); };
 /* « Transcription auto » is Stalak Pro on stalak.app: a PRO tag, and the Pro page (« why ») instead of the panel for the others */
 $('#lyrMode').addEventListener('click', e => { const b = e.target.closest('button[data-mode="auto"]'); if (b && trAvail() && !acctPro()){ e.stopPropagation(); acctOpen('lyrics'); } }, true);
 if (ACCT) ACCT.onChange(() => trUi());
@@ -7250,7 +7496,7 @@ LE SITE, EN 4 ÉTAPES (onglets en haut : 1 Son, 2 Prises, 3 Paroles, 4 Montage)
 3. Paroles
 - « Coller mes paroles » (une phrase par ligne), « Importer un .txt », ou « Sans paroles » (par défaut en Clip).
 - « Caler automatiquement » écoute la voix et place chaque phrase ; c'est une proposition : écouter chaque phrase avec ▶ et la décaler avec − / + ; les phrases « à vérifier » sont les moins sûres. « Caler au tap » : toucher TAP (ou la barre espace) au début de chaque phrase.
-- « Transcription auto » (Stalak Pro, sur stalak.app) : choisir la langue chantée (Auto, Français, English), puis « Écrire mes paroles » : Stalak écoute la voix du passage choisi à l'étape 1 et écrit les paroles, déjà calées (karaoké et mot par mot compris). Ensuite on relit : toucher une phrase pour corriger un mot, ▶ pour écouter, − / + pour décaler. « Les réécrire » recommence. Limites : 8 minutes de passage au plus, 20 transcriptions par jour. Sans Stalak Pro, le bouton porte un badge PRO et ouvre la page Stalak Pro. Sur la page claude.ai, la transcription n'est pas disponible : coller ses paroles.
+- « Transcription auto » (Stalak Pro, sur stalak.app) : choisir la langue chantée (Auto, Français, English), puis « Écrire mes paroles » : Stalak écoute la voix du passage choisi à l'étape 1 et écrit les paroles, déjà calées (karaoké et mot par mot compris). Ensuite on relit : toucher une phrase pour corriger un mot, ▶ pour écouter, − / + pour décaler. « Les réécrire » recommence. Pour un meilleur résultat : choisir la bonne langue chantée plutôt qu'Auto, et si on a la voix seule de la chanson (a cappella), l'importer avec le lien « Tu as la voix seule (a cappella) ? » sous le bouton : elle sert seulement à écrire les paroles (le son du montage ne change pas). Limites : 8 minutes de passage au plus, 20 transcriptions par jour. Sans Stalak Pro, le bouton porte un badge PRO et ouvre la page Stalak Pro. Sur la page claude.ai, la transcription n'est pas disponible : coller ses paroles.
 - Style : position (haut, milieu, bas), police, couleur, contour, taille S/M/L, apparition (mot par mot, phrase entière, karaoké, surlignage).
 4. Montage
 - Coupes : Auto, Sur les mots, Par mesure. Rythme : Posé, Normal, Nerveux. Ambiance (plans d'ambiance) : Aucun, Un peu, Beaucoup.
@@ -7302,7 +7548,7 @@ THE SITE, IN 4 STEPS (tabs at the top: 1 Sound, 2 Takes, 3 Lyrics, 4 Edit)
 3. Lyrics
 - "Paste my lyrics" (one line per row), "Import a .txt", or "No lyrics" (the default for a music video).
 - "Sync automatically" listens to the voice and places each line; it's a suggestion: listen to each line with ▶ and nudge it with − / +; lines marked "check" are the least sure. "Sync by tapping": tap TAP (or the space bar) at the start of each line.
-- "Auto transcription" (Stalak Pro, on stalak.app): pick the sung language (Auto, Français, English), then "Write my lyrics": Stalak listens to the voice in the part picked in step 1 and writes the lyrics, already synced (karaoke and word by word included). Then read them over: tap a line to fix a word, ▶ to listen, − / + to nudge. "Write them again" starts over. Limits: a part of 8 minutes at most, 20 transcriptions a day. Without Stalak Pro, the button has a PRO badge and opens the Stalak Pro page. On the claude.ai page, transcription isn't available: paste the lyrics.
+- "Auto transcription" (Stalak Pro, on stalak.app): pick the sung language (Auto, Français, English), then "Write my lyrics": Stalak listens to the voice in the part picked in step 1 and writes the lyrics, already synced (karaoke and word by word included). Then read them over: tap a line to fix a word, ▶ to listen, − / + to nudge. "Write them again" starts over. For the best result: pick the right sung language rather than Auto, and if you have the song's vocals alone (a cappella), import them with the "Got the vocals alone (a cappella)?" link under the button: they're only used to write the lyrics (the sound of the edit doesn't change). Limits: a part of 8 minutes at most, 20 transcriptions a day. Without Stalak Pro, the button has a PRO badge and opens the Stalak Pro page. On the claude.ai page, transcription isn't available: paste the lyrics.
 - Style: position (top, middle, bottom), font, color, outline, size S/M/L, reveal (word by word, whole line, karaoke, highlight).
 4. Edit
 - Cuts: Auto, On the words, Every bar. Pace: Chill, Normal, Punchy. B-roll: None, A little, A lot.

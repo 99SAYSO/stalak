@@ -21,10 +21,42 @@ export const PIECES_MAX = 16;             // one transcription: at most 16 piece
 export const JOBS_PER_DAY = 20;           // transcriptions per account per day (UTC)
 export const SECONDS_PER_DAY = 90 * 60;   // audio minutes per account per day (cost guard: ~47 neurons per audio minute)
 const WAV_HEADER = 44;
-const BODY_MAX = Math.ceil((WAV_HEADER + PIECE_MAX_S * SAMPLE_RATE * 2) / 3) * 4 + 4096;
+const BODY_MAX = Math.ceil((WAV_HEADER + PIECE_MAX_S * SAMPLE_RATE * 2) / 3) * 4 + 4096 + 12288;   // + the optional prompt (≤ 2000 chars, JSON-escaped)
 const B64 = /^[A-Za-z0-9+/]+={0,2}$/;
 const LANG = /^[a-z]{2,3}$/;
 const JOB = /^[A-Za-z0-9_-]{8,40}$/;
+// Context between pieces: the client sends the end of the previous piece's words as `prompt`; it goes into Whisper's
+// initial_prompt after the song prompt. Whisper reads at most 224 prompt tokens (OpenAI speech-to-text guide: "prompts of
+// up to 224 tokens"; the Workers AI schema gives no own limit): ≤ 200 characters and ≤ 320 UTF-8 bytes keeps the whole
+// prompt well under that, even for scripts that take more tokens per character.
+export const PROMPT_MAX = 200;
+const PROMPT_BYTES = 320, PROMPT_RAW_MAX = 2000;
+const SONG_PROMPT = { en: 'Song lyrics.', fr: 'Paroles de chanson.' };
+
+// Client text → safe prompt text: Unicode NFC, only letters (with their accents), digits, punctuation and plain spaces
+// (control / format characters, symbols, markup chars like < > ` and newlines go); the END of the text is kept
+// (it is the part next to the piece), cut at a word boundary. '' when nothing is left.
+export function cleanPrompt(raw) {
+  if (typeof raw !== 'string' || !raw) return '';
+  let t = raw.slice(-PROMPT_RAW_MAX).normalize('NFC')
+    .replace(/[^\p{L}\p{M}\p{N}\p{P}\s]/gu, ' ')     // symbols: emoji, < > = + ` ^ | ~ $ …
+    .replace(/[\p{C}]/gu, ' ')                          // control, format (bidi overrides, zero-width), private use, unassigned
+    .replace(/[<>{}\[\]\\]/g, ' ')
+    .replace(/\s+/g, ' ').trim();
+  const enc = new TextEncoder();
+  while (t && (t.length > PROMPT_MAX || enc.encode(t).length > PROMPT_BYTES)) {
+    const cut = t.length > PROMPT_MAX ? t.length - PROMPT_MAX : Math.max(1, Math.ceil((enc.encode(t).length - PROMPT_BYTES) / 4));
+    const sp = t.indexOf(' ', cut);
+    t = (sp >= 0 && sp - cut < 40 ? t.slice(sp + 1) : t.slice(cut)).trim();
+  }
+  return /[\p{L}\p{N}]/u.test(t) ? t : '';
+}
+// the initial_prompt of a piece: the song prompt (in the language asked), then the cleaned context
+export function songPrompt(language, context) {
+  const base = SONG_PROMPT[language] || 'Song lyrics. Paroles de chanson.';
+  const ctx = cleanPrompt(context);
+  return ctx ? base + ' ' + ctx : base;
+}
 
 // What Whisper tends to "hear" in silence or pure music (subtitle credits, video outros): never real lyrics.
 const HALLU = [
@@ -116,6 +148,8 @@ export async function transcribe(request, env) {
   if (typeof body.job !== 'string' || !JOB.test(body.job)) throw new HttpError(400, 'invalid_job', 'job: 8-40 letters, digits, - or _.');
   const language = body.language == null || body.language === 'auto' ? null : String(body.language).toLowerCase();
   if (language && !LANG.test(language)) throw new HttpError(400, 'invalid_language', 'language: "auto" or a 2-3 letter code.');
+  if (body.prompt != null && typeof body.prompt !== 'string') throw new HttpError(400, 'invalid_prompt', 'prompt: a string.');
+  if (typeof body.prompt === 'string' && body.prompt.length > PROMPT_RAW_MAX) throw new HttpError(400, 'invalid_prompt', `prompt: at most ${PROMPT_RAW_MAX} characters.`);
   if (audio.length < 100 || audio.length % 4 || !B64.test(audio)) throw new HttpError(400, 'invalid_audio', 'audio: base64 WAV, mono 16 kHz 16-bit.');
   const duration = checkWav(audio);
   if (duration == null) throw new HttpError(400, 'invalid_audio', 'audio: base64 WAV, mono 16 kHz 16-bit.');
@@ -129,9 +163,10 @@ export async function transcribe(request, env) {
   if (!q) throw new HttpError(429, 'quota_exceeded', `Daily limit reached (${JOBS_PER_DAY} transcriptions or ${SECONDS_PER_DAY / 60} minutes of audio per day).`);
 
   // sung lyrics over music: no voice-activity filter (it takes singing for music and throws it away) and no silence
-  // skipping; a short prompt tells the model it is a song. Repeats on silence are cleaned afterwards (cleanSegments).
-  const input = { audio, task: 'transcribe', vad_filter: false, condition_on_previous_text: false,
-    initial_prompt: language === 'en' ? 'Song lyrics.' : language === 'fr' ? 'Paroles de chanson.' : 'Song lyrics. Paroles de chanson.' };
+  // skipping; a short prompt tells the model it is a song, followed by the end of the previous piece's words (context sent by
+  // the client: same spelling of repeated words and names, same language). The model's own conditioning stays off (it loops
+  // on songs). Repeats on silence are cleaned afterwards (cleanSegments).
+  const input = { audio, task: 'transcribe', vad_filter: false, condition_on_previous_text: false, initial_prompt: songPrompt(language, body.prompt) };
   if (language) input.language = language;
   let out;
   try {

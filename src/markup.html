@@ -190,6 +190,11 @@
               <div class="row" style="margin-top:10px">
                 <button class="btn primary" id="lyTrGo" type="button">Écrire mes paroles</button>
               </div>
+              <div class="voxpick" id="lyVox">
+                <label class="btn link" for="lyVoxFile" id="lyVoxPick" data-i18n="lyr.vox.pick">Tu as la voix seule (a cappella) ? Importe-la pour une transcription encore plus précise</label>
+                <input type="file" id="lyVoxFile" accept="audio/*,video/*,.mp3,.wav,.m4a,.aac,.flac,.ogg,.mp4,.mov,.m4v">
+                <p class="hint" id="lyVoxOn" hidden><span id="lyVoxName"></span> <button class="btn link" type="button" id="lyVoxDel" data-i18n="lyr.vox.del">Retirer</button></p>
+              </div>
             </div>
             <div id="lyTrNA" hidden>
               <p class="hint" data-i18n="ly.autoInfo">La transcription automatique marche sur stalak.app, avec Stalak Pro. Ici, colle tes paroles : le bouton « Caler automatiquement » trouve tout seul quand chaque phrase est chantée.</p>
