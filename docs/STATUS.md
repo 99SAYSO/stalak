@@ -41,6 +41,7 @@
 - Microsoft (création du compte bloquée, à retenter) et Apple (programme développeur à 99 $/an).
 - Ménage quotidien automatique des projets (Worker `workers/cloud-cleanup`, à déployer avec wrangler depuis un ordinateur). Pour l'instant, le ménage se fait quand quelqu'un ouvre « Mes projets ».
 - Assistant IA de la bulle d'aide : fait (branche `compte/assistant-aide`). Après la mise en ligne : poser quelques vraies questions pour juger les réponses ; ajuster `HELP_DAILY_MAX` si besoin.
+- **À corriger (trouvé au test en ligne du 27/10)** : l'assistant d'aide échoue environ 1 fois sur 3. Sur 9 questions, 3 ont renvoyé une erreur 502 après 5 à 9 s. Les journaux Cloudflare n'affichent aucune exception et aucun `console.error` : l'appel à Workers AI n'a pas échoué, c'est la réponse du modèle qui est arrivée **vide** (`answerText(out)` vide, ligne « if (!answer) » de `help.js`). Piste probable : Gemma 4 « réfléchit » d'abord et épuise `OUT_TOKENS`, ou le format de la réponse n'est pas celui attendu. Autre point : Cloudflare remplace toute réponse 502 de la fonction par sa propre page HTML d'erreur, donc la bulle ne reçoit pas le JSON. Mieux vaut un autre code, 503 par exemple. Les réponses obtenues sont justes, en FR comme en EN.
 - Plus tard : saler l'empreinte des IP des compteurs (paroles et aide) avec `AUTH_SECRET`.
 - Plus de 210 minutes de transcription par jour : passer au forfait Workers payant (5 $/mois).
 
