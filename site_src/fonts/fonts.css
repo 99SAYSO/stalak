@@ -1,0 +1,11 @@
+/* fonts served by Stalak itself (from Google Fonts, SIL Open Font License) */
+@font-face{font-family:'Rubik';src:url('/fonts/rubik.ttf') format('truetype');font-weight:300 900;font-style:normal;font-display:swap}
+@font-face{font-family:'Lilita One';src:url('/fonts/lilitaone.ttf') format('truetype');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'DM Sans';src:url('/fonts/dmsans.ttf') format('truetype');font-weight:100 1000;font-style:normal;font-display:swap}
+@font-face{font-family:'JetBrains Mono';src:url('/fonts/jetbrainsmono.ttf') format('truetype');font-weight:100 800;font-style:normal;font-display:swap}
+@font-face{font-family:'TikTok Sans';src:url('/fonts/tiktoksans.ttf') format('truetype');font-weight:300 900;font-style:normal;font-display:swap}
+@font-face{font-family:'Courier Prime';src:url('/fonts/courierprime-bold.ttf') format('truetype');font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:'Pacifico';src:url('/fonts/pacifico.ttf') format('truetype');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Playfair Display';src:url('/fonts/playfairdisplay.ttf') format('truetype');font-weight:400 900;font-style:normal;font-display:swap}
+@font-face{font-family:'Anton';src:url('/fonts/anton.ttf') format('truetype');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Unbounded';src:url('/fonts/unbounded.ttf') format('truetype');font-weight:200 900;font-style:normal;font-display:swap}

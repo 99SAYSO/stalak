@@ -1,0 +1,419 @@
+
+
+<div class="wrap">
+  <header>
+    <h1><button class="home" id="homeBtn" type="button" title="Nouveau projet" aria-label="Stalak : recommencer un nouveau projet"><svg class="logo" focusable="false" viewBox="-16.0 -6 370.0 163" role="img" aria-label="Stalak"><title>Stalak</title><g fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M51 19.0C46 11.0 38 10.0 30 10.0C18 10.0 9 17.0 9 28.0C9 40.0 20 43.0 30 47.0C42 51.0 52 56.0 52 68.0C52 88.0 42 90.0 30 90.0C20 90.0 12 87.0 7 80.0 M79 14.0L79 76.0Q79 90.0 93 90.0L96 90.0 M68 37.0L97 37.0 M166.0 37.0L166.0 90.0 M166.0 63.5A26.5 26.5 0 1 0 113 63.5A26.5 26.5 0 1 0 166.0 63.5 M193.0 10.0L193.0 90.0 M273.0 37.0L273.0 90.0 M273.0 63.5A26.5 26.5 0 1 0 220.0 63.5A26.5 26.5 0 1 0 273.0 63.5 M302.0 10.0L302.0 90.0 M332.0 37.0L305.0 65.5L334.0 90.0" stroke="#0a0d14" stroke-width="30" transform="translate(3 6)"/><path d="M9.0 99.0Q14.8 115.5 18.0 129.0Q21.1 115.5 27.0 99.0Z M131.5 101.0Q136.7 113.1 139.5 123.0Q142.3 113.1 147.5 101.0Z M186.0 101.0Q190.6 110.9 193.0 119.0Q195.4 110.9 200.0 101.0Z M243.5 101.0Q248.1 114.2 250.5 125.0Q252.9 114.2 257.5 101.0Z M293.0 101.0Q301.3 129.6 306.0 153.0Q309.7 129.6 317.0 101.0Z" fill="#d6ecff" stroke="#0a0d14" stroke-width="4"/><path d="M51 19.0C46 11.0 38 10.0 30 10.0C18 10.0 9 17.0 9 28.0C9 40.0 20 43.0 30 47.0C42 51.0 52 56.0 52 68.0C52 88.0 42 90.0 30 90.0C20 90.0 12 87.0 7 80.0 M79 14.0L79 76.0Q79 90.0 93 90.0L96 90.0 M68 37.0L97 37.0 M166.0 37.0L166.0 90.0 M166.0 63.5A26.5 26.5 0 1 0 113 63.5A26.5 26.5 0 1 0 166.0 63.5 M193.0 10.0L193.0 90.0 M273.0 37.0L273.0 90.0 M273.0 63.5A26.5 26.5 0 1 0 220.0 63.5A26.5 26.5 0 1 0 273.0 63.5 M302.0 10.0L302.0 90.0 M332.0 37.0L305.0 65.5L334.0 90.0" stroke="#0a0d14" stroke-width="30"/><path d="M51 19.0C46 11.0 38 10.0 30 10.0C18 10.0 9 17.0 9 28.0C9 40.0 20 43.0 30 47.0C42 51.0 52 56.0 52 68.0C52 88.0 42 90.0 30 90.0C20 90.0 12 87.0 7 80.0 M79 14.0L79 76.0Q79 90.0 93 90.0L96 90.0 M68 37.0L97 37.0 M166.0 37.0L166.0 90.0 M166.0 63.5A26.5 26.5 0 1 0 113 63.5A26.5 26.5 0 1 0 166.0 63.5 M193.0 10.0L193.0 90.0 M273.0 37.0L273.0 90.0 M273.0 63.5A26.5 26.5 0 1 0 220.0 63.5A26.5 26.5 0 1 0 273.0 63.5 M302.0 10.0L302.0 90.0 M332.0 37.0L305.0 65.5L334.0 90.0" stroke="#fff" stroke-width="20"/></g></svg></button></h1>
+    <ol class="stepper" id="stepper">
+      <li><button type="button" data-go="1"><b>1</b>Son</button></li>
+      <li><button type="button" data-go="2"><b>2</b>Prises</button></li>
+      <li><button type="button" data-go="3"><b>3</b>Paroles</button></li>
+      <li><button type="button" data-go="4"><b>4</b>Montage</button></li>
+    </ol>
+  </header>
+  <div class="status" id="status" role="status" aria-live="polite"></div>
+
+  <!-- STEP 1 -->
+  <section class="narrow" id="p1">
+    <div class="card">
+      <h2>Choisis ton son</h2>
+      <div class="kindpick">
+        <span class="label">Je fais</span>
+        <div class="seg kindseg" role="group" aria-label="Ce que tu fais" id="kindSeg">
+          <button type="button" data-v="reel" aria-pressed="true">TikTok / Reels</button>
+          <button type="button" data-v="clip" aria-pressed="false">Clip</button>
+        </div>
+        <p class="hint" id="kindHint">Une vidéo verticale 9:16, de tout le son ou de quelques mesures.</p>
+      </div>
+      <label class="drop" for="songFile" id="songDrop">
+        <strong>Importer la musique</strong>
+        <span>MP3, WAV, M4A, ou une vidéo : on prend son son</span>
+      </label>
+      <input type="file" id="songFile" accept="audio/*,video/*,.mp3,.wav,.m4a,.aac,.flac,.ogg,.mp4,.mov,.m4v">
+      <div id="songBox" hidden>
+        <div class="meta" id="songMeta" style="margin-bottom:10px"></div>
+        <div class="listen">
+          <button class="btn primary big" id="songPlay" type="button">▶ Écouter</button>
+          <span class="meta"><strong id="listenTime">0:00</strong> / <span id="listenDur">0:00</span></span>
+        </div>
+        <div class="wavebox" id="waveBox">
+          <canvas id="wave" width="1200" height="128" aria-label="Forme d'onde du morceau : touche pour écouter à partir de là"></canvas>
+          <div class="wgrip l" id="gripL" hidden aria-hidden="true"></div>
+          <div class="wgrip r" id="gripR" hidden aria-hidden="true"></div>
+          <div class="wph" id="wph" aria-hidden="true"></div>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <span class="label">Début</span>
+          <button class="btn sm" id="barPrev" type="button" aria-label="Une mesure plus tôt">‹</button>
+          <span class="meta"><strong id="startLbl">0:00.00</strong></span>
+          <button class="btn sm" id="barNext" type="button" aria-label="Une mesure plus tard">›</button>
+          <span class="clipend" id="endBox" hidden>
+            <span class="label">Fin</span>
+            <button class="btn sm" id="endPrev" type="button" aria-label="Finir une mesure plus tôt">‹</button>
+            <span class="meta"><strong id="endLbl">0:00.00</strong></span>
+            <button class="btn sm" id="endNext" type="button" aria-label="Finir une mesure plus tard">›</button>
+          </span>
+          <span class="label" id="barsLbl" style="margin-left:8px">Durée</span>
+          <select id="barsSel" aria-label="Durée de la vidéo">
+            <option value="all" selected>Tout le son</option>
+            <option value="4">4 mesures</option>
+            <option value="8">8 mesures</option>
+            <option value="12">12 mesures</option>
+            <option value="0" hidden>Jusqu'à la fin</option>
+          </select>
+          <span class="meta" id="lenLbl"></span>
+        </div>
+        <p class="hint" style="margin-top:8px" id="waveHint">Touche la forme d'onde pour choisir le passage de ta vidéo et l'écouter.</p>
+        <details class="beatfix" id="beatFix">
+          <summary>Les coupes ne tombent pas en rythme ?</summary>
+          <p class="hint">Touche <b>TAP</b> en rythme avec la musique, en commençant sur un temps fort.</p>
+          <div class="row tapbpm">
+            <button class="tapbtn bpmtap" id="bpmTap" type="button">TAP</button>
+            <div class="tapread"><strong id="bpmTapVal">— BPM</strong><span class="note" id="bpmTapN">Tape au moins 8 fois</span></div>
+            <button class="btn primary sm" id="bpmTapOk" type="button" disabled>Valider</button>
+          </div>
+          <button class="btn link beatcheck" id="beatTest" type="button">▶ Vérifier avec des bips</button>
+          <div hidden>
+            <div id="beatDots"><i></i><i></i><i></i><i></i></div>
+            <button id="gridHalf" type="button"></button><button id="gridDouble" type="button"></button><button id="gridShift" type="button"></button>
+            <button id="bpmTapReset" type="button"></button>
+            <input type="checkbox" id="clickChk">
+          </div>
+        </details>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="btn link" id="demoBtn" type="button">Essayer avec un exemple</button>
+      <button class="btn primary big" id="next1" type="button" disabled>Continuer</button>
+    </div>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="narrow" id="p2" hidden>
+    <div class="card">
+      <h2>Ajoute tes prises</h2>
+      <p class="hint">Fais plusieurs playbacks du même passage. Plus tu as de prises, plus le montage est varié.</p>
+      <div class="choices" id="takeChoices">
+        <label class="drop" for="takeFiles">
+          <strong>Importer mes vidéos</strong>
+          <span>Filmées avec le son en haut-parleur</span>
+        </label>
+        <input type="file" id="takeFiles" accept="video/*,.mp4,.mov,.webm" multiple>
+        <button class="drop" id="recOpen" type="button">
+          <strong>Filmer maintenant</strong>
+          <span>Ton son se lance pendant que tu filmes</span>
+        </button>
+      </div>
+      <div id="recPanel" hidden>
+        <div class="recbox"><video id="recVideo" muted playsinline></video><div class="count" id="recCount"></div><div class="rt" id="recTime" hidden></div></div>
+        <div class="row" style="justify-content:center;margin-top:12px">
+          <button class="btn primary big" id="recGo" type="button">● Lancer la prise</button>
+          <button class="btn big" id="recStop" type="button" hidden>■ Arrêter</button>
+          <button class="btn" id="recClose" type="button">Fermer la caméra</button>
+        </div>
+        <p class="hint" style="text-align:center;margin:8px auto 0">Le son démarre une mesure avant ton passage, pour que tu sois dans le rythme.</p>
+      </div>
+      <ul class="takes" id="takeList"></ul>
+      <div class="brollbox">
+        <div class="brollhead">
+          <label class="btn tip" for="brollFiles" data-tip="Des vidéos où tu ne chantes pas : la rue, le studio, la voiture, tes potes… Pas besoin de les caler, leur son n'est jamais utilisé.">+ Plans d'ambiance</label>
+          <span class="hint">Optionnel : des vidéos sans chant, glissées entre tes prises.</span>
+        </div>
+        <input type="file" id="brollFiles" accept="video/*,.mp4,.mov,.webm" multiple>
+        <ul class="takes" id="brollList" hidden></ul>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="btn" data-back="1" type="button">Retour</button>
+      <button class="btn primary big" id="next2" type="button" disabled>Continuer</button>
+    </div>
+  </section>
+
+  <!-- STEPS 3 & 4 -->
+  <div class="work" id="work" hidden>
+    <div class="stage">
+      <canvas id="view" width="1080" height="1920" aria-label="Aperçu de la vidéo"></canvas>
+      <div id="vpool" aria-hidden="true"></div>
+      <div class="transport">
+        <button class="btn grow" id="playBtn" type="button">▶ Lecture</button>
+        <button class="btn primary grow tip tr" id="shuffleBtn" type="button" data-tip="Crée un nouveau montage au hasard. Les plans que tu as gardés ne bougent pas.">↻ Régénérer</button>
+      </div>
+      <div class="progress" id="prog" hidden><i id="progBar"></i></div>
+      <p class="pvnote" id="pvNote">Aperçu allégé pour rester fluide. Ta vidéo exportée sera en pleine qualité.</p>
+    </div>
+
+    <div class="panel">
+      <!-- STEP 3 -->
+      <section id="p3" class="panel" hidden>
+        <div class="card">
+          <h2>Les paroles à l'écran</h2>
+          <div class="seg" role="group" aria-label="Paroles" id="lyrMode">
+            <button type="button" data-mode="paste" aria-pressed="true">Coller mes paroles</button>
+            <button type="button" data-mode="auto" aria-pressed="false">Transcription auto<span class="soon">bientôt</span></button>
+            <button type="button" data-mode="none" aria-pressed="false">Sans paroles</button>
+          </div>
+
+          <p class="hint" id="lyClipHint" hidden>Dans un clip, les paroles à l'écran sont rares : c'est « Sans paroles » par défaut. Tu peux quand même coller les tiennes.</p>
+          <div id="lyPaste">
+            <p class="hint" style="margin-bottom:8px">Colle les paroles du passage, une phrase par ligne.</p>
+            <textarea id="lyText" placeholder="Une phrase par ligne…"></textarea>
+            <div class="row" style="margin-top:10px">
+              <button class="btn primary" id="autoStart" type="button">Caler automatiquement</button>
+              <button class="btn" id="tapStart" type="button">Caler au tap</button>
+              <label class="btn" for="lyFile">Importer un .txt</label>
+              <input type="file" id="lyFile" accept=".txt,text/plain">
+            </div>
+            <p class="hint" style="margin-top:8px">« Caler automatiquement » écoute la voix dans ton son et place chaque phrase toute seule. « Caler au tap » : tu touches un bouton en rythme au début de chaque phrase.</p>
+          </div>
+
+          <div class="tapzone" id="tapZone" hidden>
+            <p class="hint">Le son se lance. Touche le bouton (ou la barre espace) au moment où chaque phrase commence.</p>
+            <div class="tapnow" id="tapNow"></div>
+            <div class="tapnext" id="tapNext"></div>
+            <button class="tapbtn" id="tapBtn" type="button">TAP</button>
+            <button class="btn" id="tapCancel" type="button">Arrêter</button>
+          </div>
+
+          <div id="lyEdit" hidden>
+            <p class="autonote" id="autoNote" hidden><strong>Calage automatique : c’est une proposition.</strong> Écoute chaque phrase avec ▶ et décale-la avec − / + si elle arrive trop tôt ou trop tard. Les phrases marquées <span class="chk">à vérifier</span> sont les moins sûres.</p>
+            <div class="row" style="justify-content:space-between;margin-bottom:8px">
+              <span class="hint">Corrige le texte ou décale une phrase avec − et +.</span>
+              <span class="row" style="gap:6px">
+                <button class="btn sm" id="autoAgain" type="button">Recaler automatiquement</button>
+                <button class="btn sm" id="tapAgain" type="button">Recaler au tap</button>
+              </span>
+            </div>
+            <ul class="lines" id="lyLines"></ul>
+          </div>
+
+          <div id="lyAuto" hidden>
+            <p class="hint">Écrire les paroles tout seul n’est pas encore possible ici (il faudrait télécharger un modèle de reconnaissance de la voix). Colle tes paroles : le bouton « Caler automatiquement » trouve tout seul quand chaque phrase est chantée.</p>
+            <button class="btn primary" id="autoToPaste" type="button" style="margin-top:10px">Coller mes paroles</button>
+          </div>
+        </div>
+
+        <div class="card" id="lyStyle">
+          <h2>Style du texte</h2>
+          <div class="grid2">
+            <span class="label">Position</span>
+            <div class="seg" role="group" aria-label="Position du texte" id="stPos">
+              <button type="button" data-v="top" aria-pressed="false">Haut</button>
+              <button type="button" data-v="mid" aria-pressed="true">Milieu</button>
+              <button type="button" data-v="bot" aria-pressed="false">Bas</button>
+            </div>
+            <span class="label">Police</span>
+            <div class="fontpick" role="group" aria-label="Police" id="stFont"></div>
+            <span class="label">Couleur</span>
+            <div class="swatches" role="group" aria-label="Couleur du texte" id="stColor"></div>
+            <span class="label">Contour</span>
+            <div class="seg" role="group" aria-label="Contour" id="stDeco">
+              <button type="button" data-v="none" aria-pressed="false">Aucun</button>
+              <button type="button" data-v="outline" aria-pressed="true">Contour</button>
+              <button type="button" data-v="box" aria-pressed="false">Fond</button>
+            </div>
+            <span class="label">Taille</span>
+            <div class="seg" role="group" aria-label="Taille" id="stSize">
+              <button type="button" data-v="s" aria-pressed="false">S</button>
+              <button type="button" data-v="m" aria-pressed="true">M</button>
+              <button type="button" data-v="l" aria-pressed="false">L</button>
+            </div>
+            <span class="label">Apparition</span>
+            <div class="seg" role="group" aria-label="Apparition" id="stAnim">
+              <button type="button" data-v="word" aria-pressed="true">Mot par mot</button>
+              <button type="button" data-v="line" aria-pressed="false">Phrase entière</button>
+              <button type="button" data-v="kara" aria-pressed="false">Karaoké</button>
+            </div>
+            <span class="label" id="hlLbl" hidden>Surlignage</span>
+            <div class="swatches" role="group" aria-label="Couleur du mot chanté" id="stHl" hidden></div>
+          </div>
+        </div>
+
+        <div class="nav">
+          <button class="btn" data-back="2" type="button">Retour</button>
+          <button class="btn primary big" id="next3" type="button">Continuer</button>
+        </div>
+      </section>
+
+      <!-- STEP 4 -->
+      <section id="p4" class="panel" hidden>
+        <div class="card">
+          <h2>Ton montage</h2>
+          <div class="grid2">
+            <span class="label">Coupes</span>
+            <div class="seg" role="group" aria-label="Où couper" id="modeSeg">
+              <button type="button" data-v="auto" aria-pressed="true" title="Le site coupe en suivant la musique, phrase par phrase (réglage Rythme)">Auto</button>
+              <button type="button" data-v="mots" aria-pressed="false" title="Coupe au début de chaque phrase et sur la rime en fin de ligne, toujours sur un temps.">Sur les mots</button>
+              <button type="button" data-v="mesure" aria-pressed="false" title="Une prise différente à chaque mesure, à tour de rôle">Par mesure</button>
+            </div>
+            <span class="label">Rythme</span>
+            <div class="seg" role="group" aria-label="Rythme des coupes" id="paceSeg">
+              <button type="button" data-v="pose" aria-pressed="false" title="Plans longs, peu de coupes">Posé</button>
+              <button type="button" data-v="normal" aria-pressed="true">Normal</button>
+              <button type="button" data-v="nerveux" aria-pressed="false" title="Coupes rapides, jusqu’à chaque temps">Nerveux</button>
+            </div>
+            <span class="label" id="brollLbl" hidden>Ambiance</span>
+            <div class="seg" role="group" aria-label="Plans d'ambiance" id="brollSeg" hidden>
+              <button type="button" data-v="aucun" aria-pressed="false" title="Seulement tes prises chantées">Aucun</button>
+              <button type="button" data-v="peu" aria-pressed="true" title="Un court plan d'ambiance de temps en temps, quand tu ne chantes pas">Un peu</button>
+              <button type="button" data-v="beaucoup" aria-pressed="false" title="Plusieurs plans d'ambiance, d'une ou deux mesures">Beaucoup</button>
+            </div>
+            <span class="label" id="fxLbl" hidden>Effets</span>
+            <div class="seg" role="group" aria-label="Effets et transitions" id="fxSeg" hidden>
+              <button type="button" data-v="aucun" aria-pressed="false" title="Aucun effet : que des coupes franches">Aucun</button>
+              <button type="button" data-v="sobre" aria-pressed="true" title="Quelques effets aux moments forts de la musique : drops, refrains, breaks">Sobre</button>
+              <button type="button" data-v="intense" aria-pressed="false" title="Plus d'effets : rafales de plans, secousses, ralentis">Intense</button>
+            </div>
+            <span class="label">Format</span>
+            <div class="seg" role="group" aria-label="Format de la vidéo" id="fmtSeg">
+              <button type="button" data-v="169" aria-pressed="false" title="Paysage : YouTube, clip" hidden>16:9</button>
+              <button type="button" data-v="916" aria-pressed="true" title="Vertical : TikTok, Reels, Shorts">9:16</button>
+              <button type="button" data-v="45" aria-pressed="false" title="Fil Instagram">4:5</button>
+              <button type="button" data-v="11" aria-pressed="false" title="Carré">1:1</button>
+            </div>
+            <span class="label">Prises</span>
+            <label class="chk best tip" for="bestChk" data-tip="Le site regarde tes prises (netteté, lumière, image qui saute, visage au centre) et met plus souvent la plus belle à chaque moment, en gardant de la variété. Les plans gardés ou exclus passent avant."><input type="checkbox" id="bestChk" checked> Meilleure prise auto</label>
+          </div>
+          <div>
+            <div class="row" style="justify-content:space-between;margin-bottom:6px"><span class="label" id="verLbl">Version 1</span><span class="row" style="gap:10px"><span class="meta" id="tlMeta"></span><button class="btn sm" id="tlZoom" type="button" hidden aria-pressed="false">Zoom +</button></span></div>
+            <div class="tlmini" id="tlMini" hidden aria-label="Tout le morceau : touche pour t'y placer"><i id="tlWin"></i><b id="tlMiniPh"></b></div>
+            <div class="fxrow" id="fxRow" hidden role="group" aria-label="Effets du clip : touche un effet pour le changer ou le supprimer"></div>
+            <div class="tl" id="tl" aria-label="Plans du montage : touche ou glisse pour te placer, touche un plan pour le modifier"><div class="ph" id="ph"></div></div>
+            <div class="tlscale" id="tlScale" hidden aria-hidden="true"></div>
+            <p class="hint" style="margin-top:6px" id="tlHint">Touche ou glisse pour te placer. Touche un plan pour le changer, le garder ou l'exclure.</p>
+            <p class="hint" id="fxHint" hidden>Les ronds au-dessus des plans sont les effets : touche-en un pour le changer ou le supprimer.</p>
+            <p class="lystate" id="lyState" hidden></p>
+          </div>
+          <div class="cutbar" id="cutBar" hidden>
+            <span class="meta" id="cutInfo"></span>
+            <button class="btn sm tip" id="cutSwap" type="button" data-tip="Remplace ce plan par une autre de tes prises, au même moment du son.">Changer de prise</button>
+            <button class="btn sm tip" id="cutAdd" type="button" data-tip="Coupe ce plan en deux sur le temps le plus proche de l’endroit où tu as cliqué. La deuxième moitié passe sur une autre prise.">Ajouter un plan</button>
+            <button class="btn sm tip" id="cutLock" type="button" data-tip="Ce plan ne bougera plus quand tu cliques sur Régénérer.">Garder ce plan</button>
+            <button class="btn sm tip" id="cutFx" type="button" hidden data-tip="Ajoute un effet sur la coupe la plus proche, choisi selon la musique. Touche « Changer » pour en essayer un autre.">+ Effet</button>
+            <button class="btn sm tip tr" id="cutExcl" type="button" data-tip="Ce moment de cette prise ne sera plus jamais utilisé, même en régénérant. Pratique pour une erreur ou un fou rire.">Exclure ce passage</button>
+          </div>
+          <div class="fxbar" id="fxBar" hidden>
+            <span class="fxinfo" id="fxInfo"></span>
+            <span class="fxbtns">
+              <button class="btn sm tip" id="fxChange" type="button" data-tip="Essaie un autre effet à cet endroit. Touche encore pour passer au suivant.">Changer</button>
+              <button class="btn sm tip" id="fxDel" type="button" data-tip="Enlève cet effet. Il ne reviendra pas quand tu régénères.">Supprimer</button>
+              <button class="btn sm tip tr" id="fxSee" type="button" data-tip="Regarde l'effet : la lecture part un peu avant.">▶ Voir</button>
+            </span>
+            <p class="hint fxexp" id="fxExp"></p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Exporter</h2>
+          <div class="row">
+            <button class="btn primary big" id="exportBtn" type="button">Exporter la vidéo</button>
+            <button class="btn" id="cancelBtn" type="button" hidden>Annuler</button>
+            <span class="note" id="exportQ">Pleine qualité, à partir de tes vidéos originales.</span>
+          </div>
+          <div id="packBox" class="packbox">
+          <div class="row">
+            <span class="hint">Ou un pack de vidéos toutes différentes, pour poster les jours suivants :</span>
+          </div>
+          <div class="row">
+            <select id="packSel" aria-label="Nombre de vidéos du pack">
+              <option value="5">5 vidéos</option>
+              <option value="10" selected>10 vidéos</option>
+              <option value="30">30 vidéos</option>
+            </select>
+            <button class="btn tip" id="packBtn" type="button" data-tip="Crée plusieurs montages différents du même passage, pour poster une vidéo par jour.">Générer le pack</button>
+          </div>
+          </div>
+          <p class="note cover-note" id="coverNote" hidden></p>
+          <p class="note outro-note" id="outroNote">Les vidéos gratuites se terminent par 3 secondes avec le logo Stalak.</p>
+          <div class="result" id="result" hidden>
+            <video id="resultVideo" controls playsinline hidden></video>
+            <div class="row">
+              <button class="btn primary" id="saveBtn" type="button">Enregistrer sur l'appareil</button>
+              <span class="note" id="saveNote"></span>
+            </div>
+            <div class="post" id="postBox">
+              <p class="label">Poster ta vidéo</p>
+              <div class="row">
+                <button class="btn" id="shareBtn" type="button" hidden>Partager vers TikTok, Insta, YouTube…</button>
+                <a class="btn sm" href="https://www.tiktok.com/upload" target="_blank" rel="noopener">TikTok</a>
+                <a class="btn sm" href="https://www.instagram.com/" target="_blank" rel="noopener">Instagram</a>
+                <a class="btn sm" href="https://www.youtube.com/upload" target="_blank" rel="noopener">YouTube Shorts</a>
+              </div>
+              <p class="hint" id="postHint">Enregistre ta vidéo, puis ouvre le réseau de ton choix et ajoute-la.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="nav">
+          <button class="btn" data-back="3" type="button">Retour</button>
+        </div>
+      </section>
+    </div>
+  </div>
+  <details class="diag" id="diagBox" hidden>
+    <summary>Infos techniques</summary>
+    <pre id="diagText"></pre>
+    <button class="btn sm" id="diagCopy" type="button">Copier</button>
+    <button class="btn sm" id="diagProbe" type="button">Tester le décodage pour l’export</button>
+  </details>
+  <div class="byalaska" id="byAlaska">by Alaska</div>
+</div>
+
+
+<!-- export: a screen of its own, the mascot builds an igloo block by block as the video gets made -->
+<div class="expscreen" id="expScreen" role="dialog" aria-modal="true" aria-labelledby="expTitle" tabindex="-1" hidden>
+  <div class="expbox">
+    <h2 id="expTitle">Stalak construit ta vidéo</h2>
+    <div class="expscene" id="expScene">
+      <svg viewBox="0 0 600 300" id="expSvg" aria-hidden="true" focusable="false">
+        <path class="ex-wave" d="M40 262 Q70 254 100 262 T160 262 M250 270 Q280 262 310 270 T370 270 M450 260 Q480 252 510 260 T570 260"/>
+        <path class="ex-floe" d="M24 232 Q30 214 70 212 L540 210 Q578 212 580 232 Q560 248 300 250 Q60 250 24 232 Z"/>
+        <g class="ex-pile"><rect x="64" y="186" width="34" height="22" rx="5"/><rect x="100" y="186" width="34" height="22" rx="5"/><rect x="82" y="164" width="34" height="22" rx="5"/></g>
+        <g id="expIgloo"></g>
+        <path class="ex-door" id="expDoor" d="M402 211 L402 186 Q420 166 438 186 L438 211 Z"/>
+        <g class="ex-flag" id="expFlag"><path d="M420 92 L420 60" /><path d="M420 60 L444 68 L420 76 Z"/></g>
+      </svg>
+      <div class="ex-mascot" id="expMascot"><i class="ex-block"></i></div>
+    </div>
+    <div class="exppct" id="expPct">0 %</div>
+    <p class="expmsg" id="expMsg">Je découpe la glace…</p>
+    <div class="progress"><i id="expBar"></i></div>
+    <button class="btn" id="expCancel" type="button">Annuler</button>
+  </div>
+</div>
+
+<!-- start over: asked before everything is cleared -->
+<div class="askbox" id="homeAsk" role="alertdialog" aria-modal="true" aria-labelledby="homeAskT" hidden>
+  <div class="card">
+    <h2 id="homeAskT">Recommencer à zéro ?</h2>
+    <p>Ton son, tes prises et ton montage actuels seront effacés. Pense à enregistrer ta vidéo avant.</p>
+    <div class="row">
+      <button class="btn" id="homeNo" type="button">Annuler</button>
+      <button class="btn primary" id="homeYes" type="button">Nouveau projet</button>
+    </div>
+  </div>
+</div>
+
+<!-- help: the ice cube in the corner opens a little chat with an assistant -->
+<button class="help-cube" id="helpBtn" type="button" aria-label="Aide" aria-expanded="false" aria-controls="helpPanel">
+  <svg viewBox="0 0 64 64" focusable="false" aria-hidden="true">
+    <path class="hc-top" d="M14 20 L30 11 Q33 9.5 36 11 L52 20 L36 28.5 Q33 30 30 28.5 Z"/>
+    <path class="hc-left" d="M14 20 L30 28.5 Q33 30 33 33 L33 54 L17 45.5 Q14 44 14 41 Z"/>
+    <path class="hc-right" d="M52 20 L52 41 Q52 44 49 45.5 L33 54 L33 33 Q33 30 36 28.5 Z"/>
+    <path class="hc-shine" d="M18 26 L18 36 M22 28 L22 31 M44 15.5 L38 19"/>
+    <circle class="hc-eye" cx="39" cy="36" r="2.2"/><circle class="hc-eye" cx="46" cy="32.5" r="2.2"/>
+    <path class="hc-smile" d="M39.5 42 Q43 43 46.5 38.5"/>
+    <g class="hc-q"><circle cx="11" cy="12" r="9.5"/><text x="11" y="16.6" text-anchor="middle">?</text></g>
+    <path class="hc-drip" d="M24 49 Q26 52 24.5 54.5 Q23 56 22 54 Q21.5 52 24 49 Z"/>
+  </svg>
+</button>
+<section class="help-panel" id="helpPanel" role="dialog" aria-label="Aide Stalak" hidden>
+  <div class="hp-head">
+    <b>Aide Stalak</b>
+    <button class="hp-x" id="helpClose" type="button" aria-label="Fermer">×</button>
+  </div>
+  <div class="hp-log" id="helpLog" aria-live="polite"></div>
+  <form class="hp-form" id="helpForm" autocomplete="off">
+    <textarea id="helpIn" rows="1" placeholder="Pose ta question…" aria-label="Ta question"></textarea>
+    <button class="btn primary sm" id="helpSend" type="submit">Envoyer</button>
+  </form>
+  <button class="hp-diag" id="helpDiag" type="button">Copier les infos pour l’équipe</button>
+</section>
