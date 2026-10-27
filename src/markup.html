@@ -9,7 +9,8 @@
       <li><button type="button" data-go="3" data-i18n="step.3"><b>3</b>Paroles</button></li>
       <li><button type="button" data-go="4" data-i18n="step.4"><b>4</b>Montage</button></li>
     </ol>
-    <div class="langsw" id="langSw" role="group" aria-label="Langue · Language"><button type="button" data-lang="fr" lang="fr" aria-pressed="true" title="Français">FR</button><button type="button" data-lang="en" lang="en" aria-pressed="false" title="English">EN</button></div>
+    <div class="hdtools"><button class="acctbtn" id="acctBtn" type="button" hidden aria-haspopup="dialog" aria-controls="acctBox"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg><span id="acctLbl">Connexion</span></button>
+    <div class="langsw" id="langSw" role="group" aria-label="Langue · Language"><button type="button" data-lang="fr" lang="fr" aria-pressed="true" title="Français">FR</button><button type="button" data-lang="en" lang="en" aria-pressed="false" title="English">EN</button></div></div>
   </header>
   <div class="status" id="status" role="status" aria-live="polite"></div>
 
@@ -324,7 +325,7 @@
           </div>
           </div>
           <p class="note cover-note" id="coverNote" hidden></p>
-          <p class="note outro-note" id="outroNote" data-i18n="outro">Les vidéos gratuites se terminent par 3 secondes avec le logo Stalak.</p>
+          <p class="note outro-note" id="outroNote"><span data-i18n="outro">Les vidéos gratuites se terminent par 3 secondes avec le logo Stalak.</span> <button class="linkbtn" id="outroPro" type="button" hidden data-i18n="acct.outroPro">L’enlever avec Stalak Pro</button></p>
           <div class="result" id="result" hidden>
             <video id="resultVideo" controls playsinline hidden></video>
             <div class="row">
@@ -397,6 +398,50 @@
       <button class="btn" id="homeNo" type="button" data-i18n="cancel">Annuler</button>
       <button class="btn primary" id="homeYes" type="button" data-i18n="home.title">Nouveau projet</button>
     </div>
+  </div>
+</div>
+
+<!-- account (stalak.app only): sign in with an e-mail code, Stalak Pro -->
+<div class="askbox" id="acctBox" role="dialog" aria-modal="true" aria-labelledby="acctT" hidden>
+  <div class="card acctcard">
+    <button class="acctx" id="acctX" type="button" aria-label="Fermer" data-i18n-attr="aria-label:acct.close">×</button>
+    <h2 id="acctT">Ton compte Stalak</h2>
+    <p class="acctwhy" id="acctWhy" hidden></p>
+    <form id="acctMail" novalidate>
+      <label for="acctEmail" data-i18n="acct.email">Ton e-mail</label>
+      <input id="acctEmail" type="email" autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" required>
+      <button class="btn primary" type="submit" data-i18n="acct.send">Recevoir le code</button>
+      <p class="hint" data-i18n="acct.mailHint">Pas de mot de passe : on t’envoie un code à 6 chiffres par e-mail.</p>
+    </form>
+    <form id="acctCode" novalidate hidden>
+      <label for="acctCodeIn" id="acctCodeL">Code reçu par e-mail</label>
+      <input id="acctCodeIn" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required>
+      <div class="row"><button class="btn" type="button" id="acctBack" data-i18n="acct.otherMail">Changer d’e-mail</button><button class="btn primary" type="submit" data-i18n="acct.verify">Valider</button></div>
+      <p class="hint" data-i18n="acct.codeHint">Pense à regarder dans les spams. Le code marche 10 minutes.</p>
+    </form>
+    <div id="acctIn" hidden>
+      <p class="acctwho" id="acctWho"></p>
+      <div id="acctFree">
+        <h3 data-i18n="acct.proT">Stalak Pro</h3>
+        <ul class="acctperks">
+          <li data-i18n="acct.perk1">Pas de logo Stalak à la fin de tes vidéos</li>
+          <li data-i18n="acct.perk2">Le mode Clip : le morceau entier en 16:9</li>
+          <li data-i18n="acct.perk3">Tes projets sauvegardés en ligne <span class="soon">bientôt</span></li>
+          <li data-i18n="acct.perk4">Les paroles calées automatiquement <span class="soon">bientôt</span></li>
+        </ul>
+        <div class="acctbuy">
+          <button class="btn primary" id="acctMonth" type="button" data-i18n="acct.month">9,99 € par mois</button>
+          <button class="btn primary" id="acctYear" type="button" data-i18n="acct.year">79 € par an <small>(−34 %)</small></button>
+        </div>
+        <p class="hint" data-i18n="acct.buyHint">Paiement sécurisé par Paddle. Tu arrêtes quand tu veux.</p>
+      </div>
+      <div id="acctPro" hidden>
+        <p id="acctProTxt"></p>
+        <button class="btn" id="acctManage" type="button" data-i18n="acct.manage">Gérer mon abonnement</button>
+      </div>
+      <div class="row acctfoot"><button class="btn sm" id="acctOut" type="button" data-i18n="acct.out">Se déconnecter</button><button class="btn sm acctdel" id="acctDel" type="button" data-i18n="acct.del">Supprimer mon compte</button></div>
+    </div>
+    <p class="acctmsg" id="acctMsg" role="status" aria-live="polite"></p>
   </div>
 </div>
 

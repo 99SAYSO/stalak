@@ -73,6 +73,8 @@ const store = { get(k){ try { return JSON.parse(localStorage.getItem(k)); } catc
    data-i18n-attr ("attribute:key;…"); their French is read from the page itself (or given by the site build, STATIC_FR).
    The texts written from here go through _t(key, vars) (tn: with a number, singular / plural). The technical log (diag)
    stays in French: it is for the team. */
+/* the account client, loaded before this script on stalak.app only (not in the claude.ai page) */
+const ACCT = window.StalakAccount || null;
 const I18N_EN = /*@EN*/{
   "step.1": "<b>1</b>Sound",
   "step.2": "<b>2</b>Takes",
@@ -539,7 +541,59 @@ const I18N_EN = /*@EN*/{
   "herr.rate_limited": "Too many questions at once: try again in a little while.",
   "herr.session_expired": "Your session expired: sign in again, then retry.",
   "herr.refused": "I can’t answer that. Ask me a question about Stalak.",
-  "lang.sw": "Language"
+  "lang.sw": "Language",
+  "acct.close": "Close",
+  "acct.email": "Your email",
+  "acct.send": "Get the code",
+  "acct.mailHint": "No password: we email you a 6-digit code.",
+  "acct.otherMail": "Use another email",
+  "acct.verify": "Confirm",
+  "acct.codeHint": "Check your spam folder too. The code works for 10 minutes.",
+  "acct.proT": "Stalak Pro",
+  "acct.perk1": "No Stalak logo at the end of your videos",
+  "acct.perk2": "Music video mode: the whole song in 16:9",
+  "acct.perk3": "Your projects saved online <span class=\"soon\">soon</span>",
+  "acct.perk4": "Lyrics synced automatically <span class=\"soon\">soon</span>",
+  "acct.month": "€9.99 a month",
+  "acct.year": "€79 a year <small>(−34%)</small>",
+  "acct.buyHint": "Secure payment by Paddle. Cancel anytime.",
+  "acct.manage": "Manage my subscription",
+  "acct.out": "Sign out",
+  "acct.del": "Delete my account",
+  "acct.outroPro": "Remove it with Stalak Pro",
+  "acct.btn": "Sign in",
+  "acct.btn.in": "Account",
+  "acct.btn.pro": "Pro",
+  "acct.t": "Your Stalak account",
+  "acct.tIn": "Your account",
+  "acct.tPro": "You’re Pro",
+  "acct.codeL": "Code sent to {mail}",
+  "acct.who": "Signed in as {mail}",
+  "acct.proRenew": "Stalak Pro renews on {d}.",
+  "acct.proEnds": "Stalak Pro stays on until {d}, then stops.",
+  "acct.proOn": "Stalak Pro is on.",
+  "acct.why.clip": "Music video mode is part of Stalak Pro.",
+  "acct.why.outro": "Videos without the Stalak logo come with Stalak Pro.",
+  "acct.sending": "Sending…",
+  "acct.sent": "Code sent. Check your inbox.",
+  "acct.checking": "Checking…",
+  "acct.welcome": "You’re signed in.",
+  "acct.welcomePro": "Welcome to Stalak Pro!",
+  "acct.paying": "Opening the payment window…",
+  "acct.waitPro": "Payment received: your account switches to Pro in a few seconds.",
+  "acct.delAskT": "Delete your account?",
+  "acct.delAskP": "Your account and saved projects will be erased for good. If you’re Pro, the subscription stops right away.",
+  "acct.delYes": "Delete",
+  "acct.deleted": "Your account has been deleted.",
+  "acct.outDone": "You’re signed out.",
+  "acct.e.invalid_email": "That email doesn’t look right.",
+  "acct.e.invalid_code": "Wrong code. Check it and try again.",
+  "acct.e.code_expired": "This code has expired. Ask for a new one.",
+  "acct.e.too_many_attempts": "Too many tries. Ask for a new code.",
+  "acct.e.rate_limited": "Too many requests. Wait a minute and try again.",
+  "acct.e.no_customer": "No subscription found on this account.",
+  "acct.e.net": "No connection to Stalak. Check your internet and try again.",
+  "acct.e.other": "Something went wrong. Try again in a moment."
 }/*EN@*/;
 const I18N_FR = /*@FR*/{
   "kind.hint.reel": "Une vidéo verticale 9:16, de tout le son ou de quelques mesures.",
@@ -822,7 +876,40 @@ const I18N_FR = /*@FR*/{
   "herr.rate_limited": "Trop de questions d’un coup : réessaie dans un petit moment.",
   "herr.session_expired": "Ta session a expiré : reconnecte-toi puis réessaie.",
   "herr.refused": "Je ne peux pas répondre à ça. Pose-moi une question sur Stalak.",
-  "lang.sw": "Langue"
+  "lang.sw": "Langue",
+  "acct.btn": "Connexion",
+  "acct.btn.in": "Compte",
+  "acct.btn.pro": "Pro",
+  "acct.t": "Ton compte Stalak",
+  "acct.tIn": "Ton compte",
+  "acct.tPro": "Tu es Pro",
+  "acct.codeL": "Code envoyé à {mail}",
+  "acct.who": "Connecté avec {mail}",
+  "acct.proRenew": "Stalak Pro se renouvelle le {d}.",
+  "acct.proEnds": "Stalak Pro reste actif jusqu’au {d}, puis s’arrête.",
+  "acct.proOn": "Stalak Pro est actif.",
+  "acct.why.clip": "Le mode Clip fait partie de Stalak Pro.",
+  "acct.why.outro": "Les vidéos sans le logo Stalak, c’est avec Stalak Pro.",
+  "acct.sending": "Envoi…",
+  "acct.sent": "Code envoyé. Regarde tes e-mails.",
+  "acct.checking": "Vérification…",
+  "acct.welcome": "Tu es connecté.",
+  "acct.welcomePro": "Bienvenue dans Stalak Pro !",
+  "acct.paying": "Ouverture du paiement…",
+  "acct.waitPro": "Paiement reçu : ton compte passe en Pro dans quelques secondes.",
+  "acct.delAskT": "Supprimer ton compte ?",
+  "acct.delAskP": "Ton compte et tes projets sauvegardés seront effacés pour de bon. Si tu es Pro, l’abonnement s’arrête tout de suite.",
+  "acct.delYes": "Supprimer",
+  "acct.deleted": "Ton compte a été supprimé.",
+  "acct.outDone": "Tu es déconnecté.",
+  "acct.e.invalid_email": "Cet e-mail n’a pas l’air bon.",
+  "acct.e.invalid_code": "Code incorrect. Vérifie-le et réessaie.",
+  "acct.e.code_expired": "Ce code a expiré. Demande-en un nouveau.",
+  "acct.e.too_many_attempts": "Trop d’essais. Demande un nouveau code.",
+  "acct.e.rate_limited": "Trop de demandes. Attends une minute et réessaie.",
+  "acct.e.no_customer": "Aucun abonnement trouvé sur ce compte.",
+  "acct.e.net": "Pas de connexion à Stalak. Vérifie ton internet et réessaie.",
+  "acct.e.other": "Un souci est survenu. Réessaie dans un moment."
 }/*FR@*/;
 let STATIC_FR = /*@STATIC_FR*/null/*STATIC_FR@*/;
 const LANGS = ['fr', 'en'];
@@ -5323,8 +5410,8 @@ function modalOn(on){
 }
 document.addEventListener('keydown', e => {
   if (e.key !== 'Tab') return;
-  const box = !$('#homeAsk').hidden ? $('#homeAsk') : !$('#expScreen').hidden ? $('#expScreen') : null; if (!box) return;
-  const f = [...box.querySelectorAll('button:not([disabled])')]; if (!f.length) return;
+  const box = !$('#homeAsk').hidden ? $('#homeAsk') : !$('#acctBox').hidden ? $('#acctBox') : !$('#expScreen').hidden ? $('#expScreen') : null; if (!box) return;
+  const f = [...box.querySelectorAll('button:not([disabled]),input')].filter(x => x.offsetParent); if (!f.length) return;
   const i = f.indexOf(document.activeElement);
   if (i < 0){ e.preventDefault(); f[0].focus(); return; }
   if (e.shiftKey && i === 0){ e.preventDefault(); f[f.length-1].focus(); }
@@ -5658,7 +5745,7 @@ function canGo(n){ if (n <= 1) return true; if (!S.song) return false; if (n ===
 function updateNav(){
   $('#next1').disabled = !canGo(2); $('#next2').disabled = !canGo(3);
   $$('#stepper button').forEach(b => { const n = +b.dataset.go; b.disabled = S.exporting || !canGo(n); b.setAttribute('aria-current', n === S.step ? 'step' : 'false'); b.classList.toggle('done', n < S.step); });
-  $('#outroNote').hidden = !outroOn();
+  $('#outroNote').hidden = !outroOn(); $('#outroPro').hidden = !ACCT;
   const gap = uncovered(); $('#coverNote').hidden = !gap;
   if (gap){ const n = (gap < 10 ? gap.toFixed(1) : Math.round(gap)) + ' s';
     $('#coverNote').textContent = _t(isClip() ? 'cover.clip' : 'cover.reel', { n }); }
@@ -5865,7 +5952,7 @@ $('#next1').onclick = () => go(2); $('#next2').onclick = () => go(3); $('#next3'
 function togglePlay(){ if (S.exporting) return; if (S.playing) stop(); else play(S.step === 4 ? startPoint() : null); }
 $('#playBtn').onclick = togglePlay;
 $('#songPlay').onclick = listenToggle;
-bindSeg('#kindSeg', setKind);
+bindSeg('#kindSeg', k => { if (k === 'clip' && ACCT && !acctPro()){ kindUI(); acctOpen('clip'); return; } setKind(k); });
 $('#endPrev').onclick = () => { if (!S.song) return; const e = clipEndBar(); if (e - 1 > S.startBar){ S.clipEnd = e - 1; S.locks = []; stop(true); rebuild(false); } };
 $('#endNext').onclick = () => { if (!S.song || S.clipEnd == null) return; S.clipEnd = S.clipEnd + 1 >= totalBars() ? null : S.clipEnd + 1; S.locks = []; stop(true); rebuild(false); };
 $('#shuffleBtn').onclick = () => { const was = S.playing; stop(true); rebuild(true); if (S.locks.length) say('shuffle.st'); else status(''); if (was) play(startPoint()); };
@@ -6136,7 +6223,7 @@ const st = store.get('lyrStyle'); if (st && typeof st === 'object') Object.assig
 initPickers();
 ['#stPos','#stDeco','#stSize','#stAnim'].forEach((sel, i) => { const key = ['pos','deco','size','anim'][i]; $$(sel + ' button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === S.lyrics.style[key])); });
 setRes(PREV); renderTakes(); drawEmpty(); updateNav(); go(1);
-if (store.get('stalak:kind') === 'clip') setKind('clip', true); else kindUI();
+if (store.get('stalak:kind') === 'clip' && !window.StalakAccount) setKind('clip', true); else kindUI();
 diag('navigateur : ' + navigator.userAgent);
 diag('WebCodecs : décodeur vidéo ' + (window.VideoDecoder ? 'oui' : 'non') + ', encodeur vidéo ' + (window.VideoEncoder ? 'oui' : 'non') + ', décodeur audio ' + (window.AudioDecoder ? 'oui' : 'non') + ', encodeur audio ' + (window.AudioEncoder ? 'oui' : 'non'));
 player.addEventListener('error', () => diag('lecteur audio : erreur ' + (player.error && player.error.code)));
@@ -6456,6 +6543,99 @@ function helpInit(){
 }
 helpInit();
 
+
+/* ---------- account (only on stalak.app, where account.js is loaded): sign in with an e-mail code, Stalak Pro through Paddle ---------- */
+let acctView = 'mail', acctMailV = '', acctBack = null, acctBusy = false, acctWasPro = false;
+function acctPro(){ return !!(ACCT && ACCT.state.entitlements && ACCT.state.entitlements.plan === 'pro'); }
+function acctSay(key, vars, err){ const m = $('#acctMsg'); if (!key){ setT(m, null); m.classList.remove('err'); return; } setT(m, key, vars); m.classList.toggle('err', !!err); }
+function acctErr(e){ const c = e && e.code; acctSay(!c || c === 'http_0' || e instanceof TypeError ? 'acct.e.net' : hasT('acct.e.' + c) ? 'acct.e.' + c : 'acct.e.other', null, true); diag('compte : erreur ' + (c || (e && e.message))); }
+function acctDate(iso){ try { return new Date(iso).toLocaleDateString(LANG === 'en' ? 'en-GB' : 'fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }); } catch(e){ return iso; } }
+function acctRender(){
+  if (!ACCT) return;
+  const st = ACCT.state, pro = acctPro(), v = st.user ? 'in' : acctView;
+  $('#acctMail').hidden = v !== 'mail'; $('#acctCode').hidden = v !== 'code'; $('#acctIn').hidden = v !== 'in';
+  setT('#acctT', v === 'in' ? (pro ? 'acct.tPro' : 'acct.tIn') : 'acct.t');
+  if (v === 'code') setT('#acctCodeL', 'acct.codeL', { mail: acctMailV });
+  if (st.user){
+    setT('#acctWho', 'acct.who', { mail: st.user.email });
+    $('#acctFree').hidden = pro; $('#acctPro').hidden = !pro;
+    const sub = st.subscription;
+    if (pro) setT('#acctProTxt', sub && sub.cancelAt ? 'acct.proEnds' : sub && sub.currentPeriodEnd ? 'acct.proRenew' : 'acct.proOn', { d: acctDate(sub && (sub.cancelAt || sub.currentPeriodEnd)) });
+  }
+}
+function acctSync(){
+  if (!ACCT) return;
+  const st = ACCT.state, pro = acctPro();
+  S.pro = pro;
+  $('#acctBtn').hidden = false; $('#acctBtn').classList.toggle('pro', pro);
+  setT('#acctLbl', pro ? 'acct.btn.pro' : st.user ? 'acct.btn.in' : 'acct.btn');
+  $('#acctBtn').setAttribute('aria-label', _t(pro ? 'acct.btn.pro' : st.user ? 'acct.btn.in' : 'acct.btn')); $('#acctBtn').title = $('#acctBtn').getAttribute('aria-label');
+  const cb = $('#kindSeg button[data-v="clip"]'); if (cb) cb.classList.toggle('protag', !pro);
+  if (!pro && isClip() && !S.exporting) setKind('reel', true);
+  if (pro && !acctWasPro && store.get('stalak:kind') === 'clip' && !isClip() && !S.song && !S.exporting) setKind('clip', true);
+  if (pro && !acctWasPro && !$('#acctBox').hidden){ acctSay('acct.welcomePro'); $('#acctWhy').hidden = true; }
+  acctWasPro = pro;
+  acctRender(); updateNav();
+}
+function acctOpen(why){
+  if (!ACCT || S.exporting || askDone) return;
+  acctBack = document.activeElement; acctSay(null);
+  const w = $('#acctWhy'); if (why && !acctPro()){ setT(w, 'acct.why.' + why); w.hidden = false; } else { setT(w, null); w.hidden = true; }
+  acctRender(); $('#acctBox').hidden = false; modalOn(true); $('#acctBtn').setAttribute('aria-expanded', 'true');
+  const f = !$('#acctMail').hidden ? $('#acctEmail') : !$('#acctCode').hidden ? $('#acctCodeIn') : $('#acctX');
+  setTimeout(() => { try { f.focus(); } catch(e){} }, 30);
+  ACCT.me().catch(() => {});
+}
+function acctClose(){
+  if ($('#acctBox').hidden) return;
+  $('#acctBox').hidden = true; modalOn(false); $('#acctBtn').setAttribute('aria-expanded', 'false');
+  try { acctBack && acctBack.focus(); } catch(e){}
+}
+async function acctRun(fn){ if (acctBusy) return; acctBusy = true; $$('#acctBox button').forEach(b => b.disabled = true);
+  try { await fn(); } catch(e){ acctErr(e); } finally { acctBusy = false; $$('#acctBox button').forEach(b => b.disabled = false); } }
+if (ACCT){
+  $('#acctBtn').onclick = () => acctOpen();
+  $('#outroPro').onclick = () => acctOpen('outro');
+  $('#acctX').onclick = acctClose;
+  $('#acctBox').addEventListener('keydown', e => { if (e.key === 'Escape'){ e.stopPropagation(); acctClose(); } });
+  $('#acctBox').addEventListener('click', e => { if (e.target === e.currentTarget) acctClose(); });
+  $('#acctMail').onsubmit = e => { e.preventDefault(); acctRun(async () => {
+    const m = $('#acctEmail').value.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m)){ acctSay('acct.e.invalid_email', null, true); $('#acctEmail').focus(); return; }
+    acctSay('acct.sending'); await ACCT.sendCode(m, LANG);
+    acctMailV = m; acctView = 'code'; $('#acctCodeIn').value = ''; acctRender(); acctSay('acct.sent'); diag('compte : code envoyé');
+    setTimeout(() => $('#acctCodeIn').focus(), 30);
+  }); };
+  $('#acctCodeIn').addEventListener('input', e => { const v = e.target.value.replace(/\D/g, '').slice(0, 6); if (v !== e.target.value) e.target.value = v; if (v.length === 6) $('#acctCode').requestSubmit ? $('#acctCode').requestSubmit() : $('#acctCode').onsubmit(new Event('submit')); });
+  $('#acctCode').onsubmit = e => { e.preventDefault(); acctRun(async () => {
+    const c = $('#acctCodeIn').value.replace(/\D/g, '');
+    if (c.length !== 6){ acctSay('acct.e.invalid_code', null, true); return; }
+    acctSay('acct.checking'); await ACCT.verify(acctMailV, c);
+    acctView = 'mail'; acctSay(acctPro() ? 'acct.welcomePro' : 'acct.welcome'); diag('compte : connecté'); acctSync();
+    setTimeout(() => { try { $('#acctX').focus(); } catch(e){} }, 30);
+  }); };
+  $('#acctBack').onclick = () => { acctView = 'mail'; acctSay(null); acctRender(); $('#acctEmail').focus(); };
+  const buy = plan => acctRun(async () => { acctSay('acct.paying'); diag('compte : paiement ' + plan); await ACCT.checkout(plan); acctSay(null); });
+  $('#acctMonth').onclick = () => buy('month');
+  $('#acctYear').onclick = () => buy('year');
+  $('#acctManage').onclick = () => { if (acctBusy) return; const w = window.open('about:blank', '_blank'); let u = null; acctRun(async () => {
+    const r = await ACCT.portal(); u = r.url || r.cancelUrl;
+    if (!u) throw Object.assign(new Error('no portal url'), { code: 'other' });
+    if (w){ try { w.opener = null; } catch(e){} w.location.href = u; } else location.href = u;
+  }).then(() => { if (!u && w) w.close(); }); };
+  $('#acctOut').onclick = () => acctRun(async () => { await ACCT.logout(); acctView = 'mail'; acctSay('acct.outDone'); diag('compte : déconnecté'); acctSync(); });
+  $('#acctDel').onclick = async () => {
+    if (acctBusy) return;
+    acctClose();
+    if (!await askSure(_t('acct.delAskT'), _t('acct.delAskP'), _t('acct.delYes'))){ acctOpen(); return; }
+    acctOpen(); acctRun(async () => { await ACCT.deleteAccount(); acctView = 'mail'; acctSay('acct.deleted'); diag('compte : supprimé'); acctSync(); });
+  };
+  ACCT.onChange(() => acctSync());
+  // back from the payment window: Paddle reports it, account.js asks the server until the account is Pro
+  window.addEventListener('focus', () => { if (ACCT.state.user && !acctPro()) ACCT.me().catch(() => {}); });
+  ACCT.me().catch(e => diag('compte : serveur injoignable (' + (e && (e.code || e.message)) + ')'));
+}
+
 /* ---------- FR / EN: everything on screen is written again in the other language, the work stays as it is ---------- */
 function applyLang(){
   document.documentElement.lang = LANG;
@@ -6476,6 +6656,7 @@ function applyLang(){
   // a help chat not started yet greets again in the new language
   if (!help.turns.length && !help.busy){ $('#helpLog').innerHTML = ''; if (!$('#helpPanel').hidden){ helpMsg('bot', _t('help.hello')); helpChips(); } }
   if (S.step >= 3) redraw();   // the take's name drawn over the preview
+  acctSync();
 }
 $('#langSw').onclick = e => {
   const b = e.target.closest('button[data-lang]'); if (!b || b.dataset.lang === LANG || !LANGS.includes(b.dataset.lang)) return;

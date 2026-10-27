@@ -410,18 +410,51 @@ body::after{animation:al-snow-near 13s linear infinite}
 /* ---- FR / EN switch, in the header (on a phone: next to the logo) ---- */
 header{position:relative}
 header .stepper{margin-left:auto}
-.langsw{display:inline-flex;flex:none;align-self:flex-start;margin-top:4px;background:var(--frost);border:2.5px solid var(--ink);border-radius:14px;padding:3px;gap:3px;box-shadow:0 4px 0 var(--ink)}
+.hdtools{display:flex;flex:none;align-self:flex-start;align-items:center;gap:8px;margin-top:4px}
+.langsw{display:inline-flex;flex:none;background:var(--frost);border:2.5px solid var(--ink);border-radius:14px;padding:3px;gap:3px;box-shadow:0 4px 0 var(--ink)}
 .langsw button{font:600 13.5px/1 var(--body);color:var(--ink);background:transparent;border:0;border-radius:10px;padding:0 10px;min-width:40px;min-height:34px;cursor:pointer;transition:background .15s,color .15s}
 .langsw button:hover:not([aria-pressed="true"]){background:var(--ice)}
 .langsw button[aria-pressed="true"]{background:var(--sky-deep);color:#fff;box-shadow:inset 0 -3px 0 rgba(10,13,20,.35)}
 .langsw button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 /* in between (tablets): the logo and the switch on one line, the steps on the next */
 @media (min-width:641px) and (max-width:799px){
-  .langsw{order:1;margin-left:auto}
+  .hdtools{order:1;margin-left:auto}
   header .stepper{order:2;flex-basis:100%;justify-content:flex-end}
 }
 @media (max-width:640px){
   header .stepper{margin-left:0}
-  .langsw{position:absolute;top:8px;right:0;margin-top:0}
+  .hdtools{position:absolute;top:8px;right:0;margin-top:0;gap:6px}
   .langsw button{min-height:38px;min-width:42px}
 }
+
+/* ---- account: button in the header, dialog (stalak.app only) ---- */
+.acctbtn{display:inline-flex;align-items:center;gap:6px;font:600 13.5px/1 var(--body);color:var(--ink);background:var(--frost);border:2.5px solid var(--ink);border-radius:14px;padding:0 12px 0 9px;min-height:40px;box-shadow:0 4px 0 var(--ink);cursor:pointer;white-space:nowrap}
+.acctbtn[hidden]{display:none}
+.acctbtn svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
+.acctbtn:hover{background:var(--ice)}
+.acctbtn.pro{background:var(--sky-deep);color:#fff}
+.acctbtn:focus-visible{outline:3px solid #fff;outline-offset:3px}
+@media (max-width:640px){ .acctbtn{min-height:44px;padding:0 12px} .acctbtn span{display:none} .acctbtn svg{width:19px;height:19px} }
+.acctcard{position:relative;max-width:440px}
+.acctcard h2{padding-right:36px}
+.acctx{position:absolute;top:10px;right:10px;width:40px;height:40px;border-radius:12px;border:2px solid var(--ink);background:#fff;font:600 22px/1 var(--body);color:var(--ink);cursor:pointer}
+.acctcard form{display:flex;flex-direction:column;gap:8px;margin:4px 0 0}
+.acctcard form[hidden],#acctIn[hidden],#acctFree[hidden],#acctPro[hidden],.acctwhy[hidden]{display:none}
+.acctcard label{font-weight:600}
+.acctcard input{font:500 17px var(--body);padding:12px 14px;border:2.5px solid var(--ink);border-radius:14px;background:#fff;color:var(--ink);width:100%;box-sizing:border-box}
+#acctCodeIn{font:600 26px var(--mono,monospace);letter-spacing:.35em;text-align:center}
+.acctwhy{background:var(--ice);border:2px solid var(--ink);border-radius:14px;padding:10px 12px;margin:0 0 10px;font-weight:600}
+.acctwho{margin:0 0 8px;color:var(--ink);opacity:.8;overflow-wrap:anywhere}
+.acctcard h3{margin:6px 0 4px}
+.acctperks{margin:0 0 12px;padding-left:20px;line-height:1.5}
+.acctbuy{display:flex;flex-wrap:wrap;gap:10px}
+.acctbuy .btn{flex:1 1 150px}
+.acctbuy small{font-weight:500;opacity:.85}
+.acctfoot{justify-content:space-between!important;margin-top:16px!important;flex-wrap:wrap}
+.acctdel{color:#b3261e}
+.acctcard form .hint,#acctFree .hint{margin-top:16px}
+.acctbuy{margin-top:4px}
+.acctmsg{min-height:1.3em;margin:10px 0 0;font-weight:600}
+.acctmsg.err{color:#b3261e}
+#kindSeg button.protag::after{content:"PRO";font:700 10px/1 var(--body);letter-spacing:.04em;margin-left:6px;padding:3px 5px;border-radius:6px;background:var(--ink);color:#fff;vertical-align:2px}
+.outro-note .linkbtn{background:none;border:0;padding:0;font:inherit;color:inherit;text-decoration:underline;cursor:pointer;font-weight:600}

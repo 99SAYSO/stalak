@@ -19,6 +19,7 @@ head = (src / 'head.html').read_text(encoding='utf-8')
 css = (src / 'style.css').read_text(encoding='utf-8') + '\n/* ---- theme ---- */\n' + (src / 'theme.css').read_text(encoding='utf-8')
 markup = (src / 'markup.html').read_text(encoding='utf-8')
 js = (src / 'app.js').read_text(encoding='utf-8')
+ACCOUNT_JS = (src / 'account.js').read_text(encoding='utf-8')   # stalak.app only: sign in, Stalak Pro
 
 # 1. head: fonts and libraries from the site itself
 head = re.sub(r'<link rel="preconnect" href="https://fonts.googleapis.com">\n?', '', head)
@@ -168,7 +169,7 @@ def meta(lang):
 '''
 def page(lang, body):
     h = meta(lang) + head.replace('<title>Stalak</title>', '<title>' + H.escape(PAGE[lang]['title']) + '</title>')
-    return '<!doctype html>\n<html lang="' + lang + '">\n<head>\n' + h + '<style>' + css + '</style>\n</head>\n<body>\n' + body + '<script>' + js + '</script>\n</body>\n</html>\n'
+    return '<!doctype html>\n<html lang="' + lang + '">\n<head>\n' + h + '<style>' + css + '</style>\n</head>\n<body>\n' + body + '<script>' + ACCOUNT_JS + '</script>\n<script>' + js + '</script>\n</body>\n</html>\n'
 
 if out.exists(): shutil.rmtree(out)
 shutil.copytree(extra, out)
