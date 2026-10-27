@@ -1,8 +1,10 @@
 """Builds the public website (site/) from the same sources as the claude.ai page.
    python3 build_site.py [--email contact@…] [--domain stalak.app]
    Differences with the claude.ai page: fonts and libraries served by the site itself (no Google / jsDelivr at load time),
-   proper <head> (description, sharing preview), legal pages, cache and security headers for Cloudflare Pages."""
-import pathlib, re, shutil, sys, json
+   proper <head> (description, sharing preview), legal pages, cache and security headers for Cloudflare Pages.
+   Two pages: / in French and /en/ in English (same app; the English page has its texts written in English in the HTML
+   itself, for search engines, and the app starts in English there unless the person picked FR with the switch)."""
+import pathlib, re, shutil, sys, json, html as H, datetime
 
 root = pathlib.Path(__file__).parent
 src, extra, out = root / 'src', root / 'site_src', root / 'public'
@@ -24,24 +26,134 @@ head = re.sub(r'<link rel="stylesheet" href="https://fonts.googleapis.com[^"]*">
 head = head.replace('https://cdn.jsdelivr.net/npm/mp4-muxer@5.1.3/build/mp4-muxer.min.js', '/vendor/mp4-muxer.min.js')
 head = head.replace('https://cdn.jsdelivr.net/npm/mp4box@0.5.2/dist/mp4box.all.min.js', '/vendor/mp4box.all.min.js')
 assert 'googleapis' not in head and 'jsdelivr' not in head, 'an outside resource is left in the head'
-LD = {'@context': 'https://schema.org', '@graph': [
-  {'@type': 'WebApplication', 'name': 'Stalak', 'url': URL + '/', 'applicationCategory': 'MultimediaApplication', 'operatingSystem': 'Web, iOS, Android, macOS, Windows',
-   'inLanguage': 'fr', 'isAccessibleForFree': True, 'offers': {'@type': 'Offer', 'price': '0', 'priceCurrency': 'EUR'},
-   'description': 'Stalak est un site de montage de playback (lip sync) : il coupe tes prises sur le rythme de ton son, garde la synchro des lèvres parfaite et exporte pour TikTok, Reels, Shorts et YouTube.',
-   'image': URL + '/og.png', 'creator': {'@type': 'Organization', 'name': 'Alaska'}},
-  {'@type': 'WebSite', 'name': 'Stalak', 'alternateName': 'Stalak app', 'url': URL + '/'},
-]}
-desc = 'Stalak monte ton playback sur le rythme : importe ton son et tes prises, la synchro des lèvres est parfaite, exporte pour TikTok, Reels, Shorts ou YouTube. Gratuit, dans le navigateur.'
-meta = f'''<meta charset="utf-8">
+head = re.sub(r'<meta charset="utf-8">\n?|<meta name="viewport"[^>]*>\n?', '', head)
+assert '<title>Stalak</title>' in head
+
+# the texts of each page
+PAGE = {
+  'fr': {
+    'path': '/', 'locale': 'fr_FR',
+    'title': 'Stalak — ton playback monté sur le rythme',
+    'desc': 'Stalak monte ton playback sur le rythme : importe ton son et tes prises, la synchro des lèvres est parfaite, exporte pour TikTok, Reels, Shorts ou YouTube. Gratuit, dans le navigateur.',
+    'ld': 'Stalak est un site de montage de playback (lip sync) : il coupe tes prises sur le rythme de ton son, garde la synchro des lèvres parfaite et exporte pour TikTok, Reels, Shorts et YouTube.',
+    'about': """
+    <h2 id="aboutT">Stalak, c’est quoi ?</h2>
+    <p><strong>Stalak</strong> est un site gratuit de <strong>montage de playback</strong> (lip sync), dans l’esprit de Triller :
+    tu importes ton son et plusieurs vidéos où tu chantes dessus, et Stalak coupe sur le rythme en passant d’une prise à l’autre,
+    avec une <strong>synchro des lèvres parfaite</strong>. Tu exportes pour <strong>TikTok, Instagram Reels, YouTube Shorts</strong> ou un clip <strong>YouTube</strong> en 16:9.</p>
+    <ul>
+      <li>Coupes automatiques sur les temps, sur les mots ou par mesure.</li>
+      <li>Paroles à l’écran calées sur la voix, style karaoké.</li>
+      <li>Mode Clip avec effets : flash, zoom, secousse, ralenti…</li>
+      <li>Packs de 5 à 30 vidéos différentes pour poster tous les jours.</li>
+      <li>Tout se passe dans ton navigateur, sur iPhone, Android ou ordinateur : tes vidéos restent chez toi.</li>
+    </ul>
+  """,
+    'legal': '<a href="/mentions-legales">Mentions légales</a> · <a href="/confidentialite">Confidentialité</a>',
+  },
+  'en': {
+    'path': '/en/', 'locale': 'en_US',
+    'title': 'Stalak — your lip-sync video, cut to the beat',
+    'desc': 'Stalak cuts your lip-sync video to the beat: import your song and your takes, the lip sync stays perfect, export for TikTok, Reels, Shorts or YouTube. Free, in your browser.',
+    'ld': 'Stalak is a lip-sync video editor: it cuts your takes to the beat of your song, keeps the lip sync perfect and exports for TikTok, Reels, Shorts and YouTube.',
+    'about': """
+    <h2 id="aboutT">What is Stalak?</h2>
+    <p><strong>Stalak</strong> is a free <strong>lip-sync video editor</strong>, in the spirit of Triller:
+    you import your song and several videos of you singing along, and Stalak cuts on the beat, switching from one take to another,
+    with <strong>perfect lip sync</strong>. You export for <strong>TikTok, Instagram Reels, YouTube Shorts</strong> or a 16:9 <strong>YouTube</strong> music video.</p>
+    <ul>
+      <li>Automatic cuts on the beats, on the words or every bar.</li>
+      <li>On-screen lyrics synced to the voice, karaoke style.</li>
+      <li>Music video mode with effects: flash, zoom, shake, slow-mo…</li>
+      <li>Packs of 5 to 30 different videos to post every day.</li>
+      <li>Everything happens in your browser, on iPhone, Android or computer: your videos stay with you.</li>
+    </ul>
+  """,
+    'legal': '<a href="/en/legal-notice">Legal notice</a> · <a href="/en/privacy">Privacy</a>',
+  },
+}
+
+# 2. the app: contact address for the help bubble; « Stalak, c'est quoi ? » and the links to the legal pages under the « by Alaska » badge
+if EMAIL:
+    assert "const SUPPORT_EMAIL = '';" in js
+    js = js.replace("const SUPPORT_EMAIL = '';", 'const SUPPORT_EMAIL = ' + json.dumps(EMAIL) + ';')
+a = '<div class="byalaska" id="byAlaska">by Alaska</div>'
+assert a in markup
+markup = markup.replace(a, '<section class="about" aria-labelledby="aboutT" data-i18n="site.about">' + PAGE['fr']['about'] + '</section>\n  ' + a
+                        + '\n  <nav class="legal-links" data-i18n="site.legal">' + PAGE['fr']['legal'] + '</nav>')
+css += '\n.about{align-self:center;max-width:760px;width:100%;color:#fff;font-size:14.5px;line-height:1.55;margin-top:18px}.about h2{font:400 22px/1.2 var(--display);margin:0 0 6px;color:#fff;text-shadow:0 2px 0 var(--ink)}.about p{margin:0 0 8px}.about ul{margin:0;padding-left:20px}.about strong{font-weight:700}\n.legal-links{align-self:center;font-size:13px;color:#fff;opacity:.85;margin-top:-4px}.legal-links a{color:#fff}\n'
+
+# 3. languages: the dictionaries are in app.js (between /*@EN*/ … /*EN@*/ and /*@FR*/ … /*FR@*/); the French of the page's
+#    fixed texts is read from the markup (data-i18n, data-i18n-attr) and given to the app, so that the English page can
+#    switch back to French; the English page gets its texts in English in the HTML
+def block(name):
+    m = re.search(r'/\*@' + name + r'\*/(.*?)/\*' + name + r'@\*/', js, re.S)
+    assert m, 'no ' + name + ' block in app.js'
+    return m
+EN = json.loads(block('EN').group(1)); FR = json.loads(block('FR').group(1))
+EN.update({'doc.title': PAGE['en']['title'], 'site.about': PAGE['en']['about'], 'site.legal': PAGE['en']['legal']})
+FR.update({'doc.title': PAGE['fr']['title']})
+
+TAG = re.compile(r'<(\w+)\b([^>]*?)\bdata-i18n="([^"]+)"([^>]*)>(.*?)</\1>', re.S)
+ATTR = re.compile(r'<\w+\b[^>]*\bdata-i18n-attr="([^"]+)"[^>]*>')
+def static_fr(m):
+    d = {}
+    for t in TAG.finditer(m): d.setdefault(t.group(3), t.group(5))
+    for t in ATTR.finditer(m):
+        for pair in t.group(1).split(';'):
+            at, k = pair.split(':', 1)
+            v = re.search(r'\s' + re.escape(at) + r'="([^"]*)"', t.group(0))
+            d.setdefault(k, H.unescape(v.group(1)) if v else '')
+    return d
+def localize(m, D):
+    n = [0]
+    def tag(t):
+        k = t.group(3)
+        if k not in D: return t.group(0)
+        n[0] += 1
+        return '<' + t.group(1) + t.group(2) + 'data-i18n="' + k + '"' + t.group(4) + '>' + D[k] + '</' + t.group(1) + '>'
+    m = TAG.sub(tag, m)
+    def attr(t):
+        s = t.group(0)
+        for pair in t.group(1).split(';'):
+            at, k = pair.split(':', 1)
+            if k in D: s = re.sub(r'(\s' + re.escape(at) + r'=")[^"]*(")', lambda x: x.group(1) + H.escape(D[k], quote=True) + x.group(2), s, count=1)
+        return s
+    return ATTR.sub(attr, m), n[0]
+SFR = static_fr(markup)
+missing = sorted(k for k in SFR if k not in EN)
+assert not missing, 'no English for: ' + ', '.join(missing)
+def jdump(d): return json.dumps(d, ensure_ascii=False).replace('</', '<\\/')
+js = js[:block('EN').start(1)] + jdump(EN) + js[block('EN').end(1):]
+js = js[:block('FR').start(1)] + jdump(FR) + js[block('FR').end(1):]
+js = js[:block('STATIC_FR').start(1)] + jdump(SFR) + js[block('STATIC_FR').end(1):]
+markup_en, n_en = localize(markup, EN)
+markup_en = markup_en.replace('data-lang="fr" lang="fr" aria-pressed="true"', 'data-lang="fr" lang="fr" aria-pressed="false"').replace('data-lang="en" lang="en" aria-pressed="false"', 'data-lang="en" lang="en" aria-pressed="true"')
+assert n_en == len(TAG.findall(markup)), 'some texts of the English page were not replaced'
+
+def meta(lang):
+    P = PAGE[lang]; url = URL + P['path']; other = 'en' if lang == 'fr' else 'fr'
+    LD = {'@context': 'https://schema.org', '@graph': [
+      {'@type': 'WebApplication', 'name': 'Stalak', 'url': url, 'applicationCategory': 'MultimediaApplication', 'operatingSystem': 'Web, iOS, Android, macOS, Windows',
+       'inLanguage': lang, 'isAccessibleForFree': True, 'offers': {'@type': 'Offer', 'price': '0', 'priceCurrency': 'EUR'},
+       'description': P['ld'], 'image': URL + '/og.png', 'creator': {'@type': 'Organization', 'name': 'Alaska'}},
+      {'@type': 'WebSite', 'name': 'Stalak', 'alternateName': 'Stalak app', 'url': url, 'inLanguage': lang},
+    ]}
+    return f'''<meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="{desc}">
+<meta name="description" content="{H.escape(P['desc'])}">
 <meta name="theme-color" content="#1f6fd6">
-<link rel="canonical" href="{URL}/">
+<link rel="canonical" href="{url}">
+<link rel="alternate" hreflang="fr" href="{URL}/">
+<link rel="alternate" hreflang="en" href="{URL}/en/">
+<link rel="alternate" hreflang="x-default" href="{URL}/en/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Stalak">
-<meta property="og:title" content="Stalak — ton playback monté sur le rythme">
-<meta property="og:description" content="{desc}">
-<meta property="og:url" content="{URL}/">
+<meta property="og:locale" content="{P['locale']}">
+<meta property="og:locale:alternate" content="{PAGE[other]['locale']}">
+<meta property="og:title" content="{H.escape(P['title'])}">
+<meta property="og:description" content="{H.escape(P['desc'])}">
+<meta property="og:url" content="{url}">
 <meta property="og:image" content="{URL}/og.png">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -54,41 +166,24 @@ meta = f'''<meta charset="utf-8">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <script type="application/ld+json">{json.dumps(LD, ensure_ascii=False)}</script>
 '''
-head = re.sub(r'<meta charset="utf-8">\n?|<meta name="viewport"[^>]*>\n?', '', head)
-head = meta + head.replace('<title>Stalak</title>', '<title>Stalak — ton playback monté sur le rythme</title>')
-
-# 2. the app: contact address for the help bubble; links to the legal pages under the « by Alaska » badge
-ABOUT = """<section class="about" aria-labelledby="aboutT">
-    <h2 id="aboutT">Stalak, c’est quoi ?</h2>
-    <p><strong>Stalak</strong> est un site gratuit de <strong>montage de playback</strong> (lip sync), dans l’esprit de Triller :
-    tu importes ton son et plusieurs vidéos où tu chantes dessus, et Stalak coupe sur le rythme en passant d’une prise à l’autre,
-    avec une <strong>synchro des lèvres parfaite</strong>. Tu exportes pour <strong>TikTok, Instagram Reels, YouTube Shorts</strong> ou un clip <strong>YouTube</strong> en 16:9.</p>
-    <ul>
-      <li>Coupes automatiques sur les temps, sur les mots ou par mesure.</li>
-      <li>Paroles à l’écran calées sur la voix, style karaoké.</li>
-      <li>Mode Clip avec effets : flash, zoom, secousse, ralenti…</li>
-      <li>Packs de 5 à 30 vidéos différentes pour poster tous les jours.</li>
-      <li>Tout se passe dans ton navigateur, sur iPhone, Android ou ordinateur : tes vidéos restent chez toi.</li>
-    </ul>
-  </section>
-  """
-if EMAIL:
-    assert "const SUPPORT_EMAIL = '';" in js
-    js = js.replace("const SUPPORT_EMAIL = '';", 'const SUPPORT_EMAIL = ' + json.dumps(EMAIL) + ';')
-a = '<div class="byalaska" id="byAlaska">by Alaska</div>'
-assert a in markup
-markup = markup.replace(a, ABOUT + a + '\n  <nav class="legal-links"><a href="/mentions-legales">Mentions légales</a> · <a href="/confidentialite">Confidentialité</a></nav>')
-css += '\n.about{align-self:center;max-width:760px;width:100%;color:#fff;font-size:14.5px;line-height:1.55;margin-top:18px}.about h2{font:400 22px/1.2 var(--display);margin:0 0 6px;color:#fff;text-shadow:0 2px 0 var(--ink)}.about p{margin:0 0 8px}.about ul{margin:0;padding-left:20px}.about strong{font-weight:700}\n.legal-links{align-self:center;font-size:13px;color:#fff;opacity:.85;margin-top:-4px}.legal-links a{color:#fff}\n'
+def page(lang, body):
+    h = meta(lang) + head.replace('<title>Stalak</title>', '<title>' + H.escape(PAGE[lang]['title']) + '</title>')
+    return '<!doctype html>\n<html lang="' + lang + '">\n<head>\n' + h + '<style>' + css + '</style>\n</head>\n<body>\n' + body + '<script>' + js + '</script>\n</body>\n</html>\n'
 
 if out.exists(): shutil.rmtree(out)
 shutil.copytree(extra, out)
-(out / 'index.html').write_text('<!doctype html>\n<html lang="fr">\n<head>\n' + head + '<style>' + css + '</style>\n</head>\n<body>\n' + markup + '<script>' + js + '</script>\n</body>\n</html>\n', encoding='utf-8')
+(out / 'index.html').write_text(page('fr', markup), encoding='utf-8')
+(out / 'en').mkdir(exist_ok=True)
+(out / 'en' / 'index.html').write_text(page('en', markup_en), encoding='utf-8')
 
-# 3. legal pages (to complete with the publisher's details: see the [ … ] parts)
-for name in ['mentions-legales.html', 'confidentialite.html']:
+# 4. legal pages (to complete with the publisher's details: see the [ … ] parts)
+for name in ['mentions-legales.html', 'confidentialite.html', 'en/legal-notice.html', 'en/privacy.html']:
     p = out / name
-    p.write_text(p.read_text(encoding='utf-8').replace('{{EMAIL}}', EMAIL or '[ADRESSE E-MAIL]').replace('{{URL}}', URL), encoding='utf-8')
+    p.write_text(p.read_text(encoding='utf-8').replace('{{EMAIL}}', EMAIL or ('[E-MAIL ADDRESS]' if name.startswith('en/') else '[ADRESSE E-MAIL]')).replace('{{URL}}', URL), encoding='utf-8')
 (out / 'robots.txt').write_text(f'User-agent: *\nAllow: /\nSitemap: {URL}/sitemap.xml\n', encoding='utf-8')
-(out / 'sitemap.xml').write_text(f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>{URL}/</loc><lastmod>{__import__('datetime').date.today().isoformat()}</lastmod></url></urlset>\n', encoding='utf-8')
+today = datetime.date.today().isoformat()
+alts = ''.join(f'<xhtml:link rel="alternate" hreflang="{l}" href="{u}"/>' for l, u in [('fr', URL + '/'), ('en', URL + '/en/'), ('x-default', URL + '/en/')])
+(out / 'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">'
+    + ''.join(f'<url><loc>{u}</loc><lastmod>{today}</lastmod>{alts}</url>' for u in [URL + '/', URL + '/en/']) + '</urlset>\n', encoding='utf-8')
 n = sum(1 for _ in out.rglob('*') if _.is_file()); size = sum(f.stat().st_size for f in out.rglob('*') if f.is_file())
 print('site built in', out, '·', n, 'files ·', round(size / 1048576, 1), 'MB')

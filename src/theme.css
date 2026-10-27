@@ -406,3 +406,22 @@ body::after{animation:al-snow-near 13s linear infinite}
 .installtip[hidden]{display:none}
 .installtip p{margin:0;flex:1;font-size:14.5px;line-height:1.4}
 .installtip img{border-radius:10px;flex:none}
+
+/* ---- FR / EN switch, in the header (on a phone: next to the logo) ---- */
+header{position:relative}
+header .stepper{margin-left:auto}
+.langsw{display:inline-flex;flex:none;align-self:flex-start;margin-top:4px;background:var(--frost);border:2.5px solid var(--ink);border-radius:14px;padding:3px;gap:3px;box-shadow:0 4px 0 var(--ink)}
+.langsw button{font:600 13.5px/1 var(--body);color:var(--ink);background:transparent;border:0;border-radius:10px;padding:0 10px;min-width:40px;min-height:34px;cursor:pointer;transition:background .15s,color .15s}
+.langsw button:hover:not([aria-pressed="true"]){background:var(--ice)}
+.langsw button[aria-pressed="true"]{background:var(--sky-deep);color:#fff;box-shadow:inset 0 -3px 0 rgba(10,13,20,.35)}
+.langsw button:focus-visible{outline:3px solid #fff;outline-offset:3px}
+/* in between (tablets): the logo and the switch on one line, the steps on the next */
+@media (min-width:641px) and (max-width:799px){
+  .langsw{order:1;margin-left:auto}
+  header .stepper{order:2;flex-basis:100%;justify-content:flex-end}
+}
+@media (max-width:640px){
+  header .stepper{margin-left:0}
+  .langsw{position:absolute;top:8px;right:0;margin-top:0}
+  .langsw button{min-height:38px;min-width:42px}
+}
