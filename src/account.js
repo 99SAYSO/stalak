@@ -40,7 +40,7 @@
   }
 
   function api(method, path, body, rawType) {
-    var opts = { method: method, credentials: 'same-origin', headers: { Accept: 'application/json' } };
+    var opts = { method: method, credentials: 'same-origin', cache: 'no-store', headers: { Accept: 'application/json' } };
     if (rawType) {
       opts.headers['Content-Type'] = rawType;
       opts.body = body;

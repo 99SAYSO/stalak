@@ -160,7 +160,7 @@ async function dispatch(request, env) {
 
     switch (route) {
       case 'config':
-        return json(config(env), 200, { 'Cache-Control': 'public, max-age=60' });
+        return json(config(env), 200, { 'Cache-Control': 'no-store' });
       case 'me':
         if (method === 'GET') return meResponse(env, await currentUser(request, env));
         if (method !== 'PATCH') break;
