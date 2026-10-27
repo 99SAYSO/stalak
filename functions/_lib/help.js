@@ -5,10 +5,14 @@
 // no answer; only counters in rate_limits.
 //
 // Workers AI model @cf/google/gemma-4-26b-a4b-it (developers.cloudflare.com/workers-ai/models/gemma-4-26b-a4b-it, read 27/10/2026):
-//   input  { messages: [{ role: 'system' | 'user' | 'assistant', content }], max_completion_tokens, temperature }
-//   output chat-completion shape { choices: [{ message: { content } }], usage }; older models answer { response }.
+//   input  { messages: [{ role: 'system' | 'user' | 'assistant', content }], max_completion_tokens, temperature, chat_template_kwargs }
+//   output chat-completion shape { choices: [{ message: { content }, finish_reason }], usage }; older models answer { response }.
+// Gemma 4 is a reasoning model: its chat template "thinks" first unless chat_template_kwargs.enable_thinking is false. The thinking
+// goes to message.reasoning / reasoning_content and uses the same output budget; with a small budget, content came back empty
+// (about 1 answer in 3 online, 27/10/2026). So thinking is turned off, the budget has room to spare, and an empty answer is retried once.
+// The thinking is never shown: it can repeat the guide.
 // Price (developers.cloudflare.com/workers-ai/platform/pricing): 9,091 neurons per M input tokens, 27,273 per M output tokens.
-// One question ≈ 4,500 tokens in + 300 out ≈ 50 neurons (at most ≈ 5,500 in + 450 out ≈ 62, with the limits below). The account has 10,000 free neurons a day, shared with the lyrics.
+// One question ≈ 4,500 tokens in + 300 out ≈ 50 neurons (at most ≈ 5,500 in + 700 out ≈ 70, twice if retried). The account has 10,000 free neurons a day, shared with the lyrics.
 import { HttpError, json, readJson, clientIp } from './http.js';
 import { currentUser } from './auth.js';
 import { entitlementsFor } from './entitlements.js';
@@ -25,7 +29,8 @@ export const QUESTION_MAX = 1000;       // characters in one user message
 export const ANSWER_MAX = 2000;         // characters in one earlier assistant message (sent back by the browser)
 export const CONTEXT_MAX = 4000;        // characters of page description
 export const TURNS_CHARS_MAX = 6000;    // characters of conversation in all (oldest turns dropped): bounds the cost of one question
-export const OUT_TOKENS = 450;
+export const OUT_TOKENS = 700;          // the answers need ≈ 300; the rest is room in case the model thinks anyway
+export const TRIES = 2;                 // one more try when the answer comes back empty or the call fails
 const BODY_MAX = 32 * 1024;
 
 const clean = (s, max) => String(s)
@@ -67,10 +72,25 @@ export function answerText(out) {
     else if (c && typeof c.text === 'string') t = c.text;
     else if (typeof out.response === 'string') t = out.response;
   } else if (typeof out === 'string') t = out;
-  t = t.replace(/<think>[\s\S]*?<\/think>/gi, '').replace(/<\/?think>/gi, '')
+  // thinking written inside the text: <think>…</think>, Gemma 4's <|channel>thought…<channel|>; an unclosed block = no answer yet
+  t = t.replace(/<think>[\s\S]*?<\/think>/gi, '').replace(/<think>[\s\S]*$/i, '').replace(/<\/think>/gi, '')
+    .replace(/<\|?channel\|?>\s*thought[\s\S]*?<\|?channel\|?>/gi, '').replace(/<\|?channel\|?>\s*thought[\s\S]*$/i, '')
+    .replace(/<\|?channel\|?>/gi, '')
     .replace(/\*\*(.+?)\*\*/g, '$1').replace(/^#{1,6}\s+/gm, '').replace(/\n{3,}/g, '\n\n').trim();
   return t.slice(0, 2500);
 }
+
+// Why an answer came back empty, for the logs: no question, no answer, no thinking text, only their shape and sizes.
+export function emptyInfo(out) {
+  const c = out && Array.isArray(out.choices) ? out.choices[0] : null, m = c && c.message;
+  const len = (x) => (typeof x === 'string' ? x.length : x == null ? 'none' : typeof x);
+  const u = out && out.usage;
+  return `finish=${c && c.finish_reason} content=${len(m && m.content)} reasoning=${len(m && (m.reasoning_content ?? m.reasoning))}`
+    + ` response=${len(out && out.response)} tokens=${u ? u.completion_tokens : '?'}`;
+}
+
+// Turning the thinking off: only for the models whose chat template reads it (others may refuse unknown fields).
+export const NO_THINKING = /gemma-4|glm-4\.7|qwen3/;
 
 function systemPrompt(lang, context, account) {
   const guide = lang === 'en' ? HELP_GUIDE_EN : HELP_GUIDE_FR;
@@ -111,20 +131,31 @@ export async function helpChat(request, env) {
   } catch { /* the answer does not need it */ }
 
   const model = typeof env.HELP_MODEL === 'string' && /^@cf\/[\w.\/-]{3,100}$/.test(env.HELP_MODEL) ? env.HELP_MODEL : DEFAULT_MODEL;
-  let out;
-  try {
-    out = await env.AI.run(model, {
-      messages: [{ role: 'system', content: systemPrompt(lang, context, account) }, ...turns],
-      max_completion_tokens: OUT_TOKENS, temperature: 0.3,
-    });
-  } catch (e) {
-    // only the error, never the question
-    console.error('[stalak] help ai', e && e.message ? String(e.message).slice(0, 200) : 'error');
-    throw new HttpError(502, 'help_failed', 'The assistant could not answer, try again.');
-  }
+  const input = {
+    messages: [{ role: 'system', content: systemPrompt(lang, context, account) }, ...turns],
+    max_completion_tokens: OUT_TOKENS, temperature: 0.3,
+  };
+  if (NO_THINKING.test(model)) input.chat_template_kwargs = { enable_thinking: false };
   // old counters go now and then (same as the sign-in routes)
   if (Math.random() < 0.05) await cleanup(env).catch(() => {});
-  const answer = answerText(out);
-  if (!answer) throw new HttpError(502, 'help_failed', 'The assistant could not answer, try again.');
-  return json({ answer });
+  for (let i = 1; i <= TRIES; i++) {
+    // a second try is one more call to the model: it counts in the day's budget too, so a question that keeps coming back
+    // empty (on purpose or not) can never make the help cost more than HELP_DAILY_MAX calls a day
+    if (i > 1) {
+      try { await limit(env, `help:all:${day}`, dailyMax, 86400e3); } catch { break; }
+    }
+    let out;
+    try {
+      out = await env.AI.run(model, input);
+    } catch (e) {
+      // only the error, never the question
+      console.error('[stalak] help ai try ' + i, e && e.message ? String(e.message).slice(0, 200) : 'error');
+      continue;
+    }
+    const answer = answerText(out);
+    if (answer) return json({ answer });
+    console.error('[stalak] help ai empty, try ' + i, emptyInfo(out));
+  }
+  // 503, not 502: Cloudflare replaces a 502 from the function with its own HTML page, and the bubble would not get this JSON
+  throw new HttpError(503, 'help_failed', 'The assistant could not answer, try again.');
 }

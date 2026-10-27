@@ -1580,7 +1580,8 @@ test('help chat: open to everyone; guide kept on the server; turns checked; answ
   assert.equal(AI.calls.length, 1);
   const { model, input } = AI.calls[0];
   assert.equal(model, '@cf/google/gemma-4-26b-a4b-it');
-  assert.equal(input.max_completion_tokens, 450);
+  assert.equal(input.max_completion_tokens, 700);
+  assert.deepEqual(input.chat_template_kwargs, { enable_thinking: false }, 'Gemma 4 thinking off');
   assert.equal(input.messages[0].role, 'system');
   assert.ok(input.messages[0].content.includes('RÈGLES DE RÉPONSE') && input.messages[0].content.includes('9,99 €'), 'French guide');
   assert.ok(input.messages[0].content.includes('Compte : pas connecté'));
@@ -1646,15 +1647,34 @@ test('help chat: per-connection and daily site limits; model failure → 502; no
   r = await askHelp(env, {});
   assert.equal(r.status, 503); assert.equal(r.data.error, 'help_busy');
   // the model fails or says nothing
-  for (const out of [new Error('3040: capacity'), {}, null, { choices: [] }, { choices: [{ message: { content: '<think>only thinking</think>' } }] }]) {
-    r = await askHelp(makeEnv({ AI: fakeAI(out) }), {});
-    assert.equal(r.status, 502, JSON.stringify(String(out))); assert.equal(r.data.error, 'help_failed');
+  // (503, not 502: Cloudflare would replace a 502 with its own HTML page); each question is tried twice
+  for (const out of [new Error('3040: capacity'), {}, null, { choices: [] }, { choices: [{ message: { content: '<think>only thinking</think>' } }] },
+    { choices: [{ message: { content: null, reasoning_content: 'Le guide dit…' }, finish_reason: 'length' }], usage: { completion_tokens: 700 } },
+    { choices: [{ message: { content: '<|channel>thought\nThe user asks' }, finish_reason: 'length' }] }]) {
+    const ai = fakeAI(out);
+    r = await askHelp(makeEnv({ AI: ai }), {});
+    assert.equal(r.status, 503, JSON.stringify(String(out))); assert.equal(r.data.error, 'help_failed');
+    assert.equal(ai.calls.length, 2, 'tried twice');
+    assert.ok(!JSON.stringify(r.data).includes('guide'), 'the thinking never goes out');
   }
+  // an empty answer, then a real one: the second try answers (online, about 1 question in 3 came back empty before the fix)
+  const seq = [{ choices: [{ message: { content: '', reasoning: 'hmm' }, finish_reason: 'length' }] }, HELP_OUT];
+  const ai2 = { calls: [], run: async (model, input) => { ai2.calls.push({ model, input }); return seq.shift(); } };
+  env = makeEnv({ AI: ai2 });
+  r = await askHelp(env, {});
+  assert.equal(r.status, 200); assert.equal(r.data.answer, 'Touche « Exporter la vidéo ».\n\nVoilà.'); assert.equal(ai2.calls.length, 2);
+  assert.equal(env.DB.raw.prepare("SELECT count FROM rate_limits WHERE key LIKE 'help:all:%'").get().count, 2, 'the second try counts in the day');
+  // the last call of the day is not retried: the budget is a hard ceiling on calls to the model
+  const ai3 = fakeAI({ choices: [{ message: { content: '' } }] });
+  env = makeEnv({ AI: ai3, HELP_DAILY_MAX: '1' });
+  r = await askHelp(env, {});
+  assert.equal(r.status, 503); assert.equal(r.data.error, 'help_failed'); assert.equal(ai3.calls.length, 1);
   // older model shape { response }, and a chosen model by variable (only a Workers AI name)
   AI = fakeAI({ response: 'Recharge la page.' });
   r = await askHelp(makeEnv({ AI, HELP_MODEL: '@cf/meta/llama-3.1-8b-instruct-fp8-fast' }), {});
   assert.equal(r.status, 200); assert.equal(r.data.answer, 'Recharge la page.');
   assert.equal(AI.calls[0].model, '@cf/meta/llama-3.1-8b-instruct-fp8-fast');
+  assert.equal(AI.calls[0].input.chat_template_kwargs, undefined, 'only sent to the models that read it');
   AI = fakeAI(HELP_OUT);
   await askHelp(makeEnv({ AI, HELP_MODEL: 'https://evil.example/model' }), {});
   assert.equal(AI.calls[0].model, '@cf/google/gemma-4-26b-a4b-it');

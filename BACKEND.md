@@ -385,7 +385,9 @@ Le glaçon en bas à droite répond aux questions sur Stalak. Sur claude.ai, c'e
 (à mettre à jour, comme `HELP_GUIDE` dans `src/app.js`, quand un bouton, un prix ou une règle change).
 
 1. **Rien à créer** : pas de clé, pas de migration. Ça marche dès la mise en ligne.
-2. **Coût** : environ 50 neurons par question (62 au plus). Pour garder le quota gratuit des paroles, l'aide s'arrête après
+2. **Coût** : environ 50 neurons par question (70 au plus). La « réflexion » de Gemma 4 est coupée (`enable_thinking: false`) : sinon elle mangeait
+   la place de la réponse, qui arrivait vide (1 fois sur 3 en ligne). Une réponse vide est redemandée une fois ; ce deuxième essai compte
+   dans les 60 du jour. Pour garder le quota gratuit des paroles, l'aide s'arrête après
    **60 questions par jour pour tout le site** (le visiteur voit « l'assistant fait une pause, réessaie demain » et l'adresse e-mail).
    Pour changer ce nombre : variable `HELP_DAILY_MAX` dans `wrangler.toml` (`[vars]`). 0 = assistant coupé.
    Avec le forfait Workers payant (5 $ / mois), on peut le monter sans souci (1 000 questions ≈ 0,55 $).
@@ -433,7 +435,7 @@ Toutes les réponses sont en JSON. Les erreurs ont la forme `{"error":"code","me
 | `POST /api/projects/:id/files/:fileId/complete` | Termine un envoi en morceaux (`409 parts_missing` avec `missing`). |
 | `GET /api/projects/:id/files/:fileId` | Le fichier, lu depuis R2, **pour son propriétaire seulement** ; accepte `Range` (réponse `206`, `416` hors limites). `Cache-Control: private, no-store`, `nosniff`, `Content-Security-Policy: sandbox`, `Content-Disposition: attachment`. |
 | `DELETE /api/projects/:id/files/:fileId` | Abandonne un envoi ou efface un fichier. |
-| `POST /api/help/chat` | `{lang: 'fr'\|'en', messages: [{role: 'user'\|'assistant', content}], context}` (sans compte). 10 derniers tours, 6 000 caractères au plus, le dernier de l'utilisateur ; `context` (4 000 caractères) = ce que montre la page. Renvoie `{answer}` (texte simple). Erreurs `invalid_messages`, `rate_limited` (429, `retryAfter`), `help_busy` (503, budget du jour épuisé), `ai_unavailable` (503), `help_failed` (502). |
+| `POST /api/help/chat` | `{lang: 'fr'\|'en', messages: [{role: 'user'\|'assistant', content}], context}` (sans compte). 10 derniers tours, 6 000 caractères au plus, le dernier de l'utilisateur ; `context` (4 000 caractères) = ce que montre la page. Renvoie `{answer}` (texte simple). Erreurs `invalid_messages`, `rate_limited` (429, `retryAfter`), `help_busy` (503, budget du jour épuisé), `ai_unavailable` (503), `help_failed` (503 : un 502 serait remplacé par la page d'erreur de Cloudflare ; la réponse vide est redemandée une fois avant). |
 | `POST /api/cron/cloud-cleanup` | Règle des 6 mois, pour un cron externe : `Authorization: Bearer <CRON_SECRET>` (sinon `404`). |
 | `DELETE /api/account` | `{confirm:true}`. Arrête l'abonnement Paddle, puis efface toutes les données (dont le pseudo, la photo et le mot de passe, qui sont dans la ligne `users`). |
 | `GET /api/connect` | Comptes TikTok / Instagram reliés : `{providers, accounts: [{provider, username, displayName, avatarUrl, accountType, status, connectedAt}]}` (jamais les jetons). Tout `/api/connect…` répond `404 not_enabled` tant que `SOCIAL_CONNECT_ENABLED` ne vaut pas `"1"`. |
@@ -446,7 +448,7 @@ Sans le bucket R2 (`MEDIA`), les routes de fichiers répondent `503 cloud_unavai
 
 Codes d'erreur : `not_logged_in` (401), `pro_required` (403), `cloud_unavailable` (503), `quota_exceeded` (413), `file_too_large` (413), `invalid_media_type` (415), `files_missing` (409), `parts_missing` (409), `size_mismatch`, `length_required` (411), `bad_origin` (403), `json_required` (415), `rate_limited` (429, avec `retryAfter`),
 `invalid_code` (avec `attemptsLeft`), `code_expired`, `too_many_attempts`, `email_taken` (409), `invalid_login` (401), `invalid_email`, `invalid_name`,
-`invalid_signature`, `too_large` (413), `not_found`, `method_not_allowed`, `gone` (410), `invalid_messages`, `help_busy` (503), `help_failed` (502).
+`invalid_signature`, `too_large` (413), `not_found`, `method_not_allowed`, `gone` (410), `invalid_messages`, `help_busy` (503), `help_failed` (503).
 
 Les codes par e-mail (table `auth_codes`) : un par e-mail et par usage (`signup`, `login`, `reset`), hachés avec l'usage, valables 10 min, 5 essais.
 Redemandé moins de 30 s après, le même code est gardé et aucun nouvel e-mail ne part. Limites : 5 codes par heure pour un e-mail, 20 par heure pour une IP.
