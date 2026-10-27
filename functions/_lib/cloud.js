@@ -310,6 +310,7 @@ export function parseRange(h, size) {
 
 // GET: the file, streamed from R2, only for its owner. Range requests get 206 (a <video> can seek).
 async function download(request, env, user, projectId, fileId) {
+  await requirePro(env, user, HttpError);
   needCloud(env);
   const row = await fileRow(env, user.id, projectId, fileId);
   if (!row || row.status !== 'ready') throw new HttpError(404, 'not_found', 'File not found.');

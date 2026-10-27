@@ -828,7 +828,7 @@ const I18N_EN = /*@EN*/{
   "pr.q.diff": "Monthly or yearly, what’s the difference?",
   "pr.a.diff": "None in the app: you get all of Stalak Pro either way. Yearly costs €79 a year, so €6.58 a month: 34% less than 12 months at €9.99.",
   "pr.q.stop": "Can I stop anytime?",
-  "pr.a.stop": "Yes. Cancel in two clicks from your account: you keep Pro until the end of the paid period, then go back to Free without losing anything.",
+  "pr.a.stop": "Yes. Cancel in two clicks from your account: you keep Pro until the end of the paid period, then go back to Free. Your projects saved online are no longer accessible, but we keep them for 6 months: they come back if you go Pro again.",
   "pr.q.refund": "What if I don’t like it?",
   "pr.a.refund": "You get a full refund if you ask within 14 days of a payment. See the <a href=\"/en/refunds\">refund policy</a>.",
   "pr.q.pay": "How do I pay?",
@@ -917,7 +917,8 @@ const I18N_EN = /*@EN*/{
   "acct.why.cloud": "Online saving is part of Stalak Pro.",
   "ap.whyIn.cloud": "Online saving is part of Stalak Pro. Sign in or create an account to get it.",
   "cl.close": "Close",
-  "best.done": "Takes analysed: the best-looking pictures are now picked first."
+  "best.done": "Takes analysed: the best-looking pictures are now picked first.",
+  "cl.locked": "Online saving is part of Stalak Pro. Projects you saved come back as soon as you’re Pro again."
 }/*EN@*/;
 const I18N_FR = /*@FR*/{
   "kind.hint.reel": "Une vidéo verticale 9:16, de tout le son ou de quelques mesures.",
@@ -1401,7 +1402,8 @@ const I18N_FR = /*@FR*/{
   "acct.why.cloud": "La sauvegarde en ligne fait partie de Stalak Pro.",
   "ap.whyIn.cloud": "La sauvegarde en ligne fait partie de Stalak Pro. Connecte-toi ou crée un compte pour en profiter.",
   "cl.close": "Fermer",
-  "best.done": "Analyse des prises finie : les plus belles images sont maintenant choisies en priorité."
+  "best.done": "Analyse des prises finie : les plus belles images sont maintenant choisies en priorité.",
+  "cl.locked": "La sauvegarde en ligne fait partie de Stalak Pro. Tes projets déjà sauvegardés reviennent dès que tu repasses en Pro."
 }/*FR@*/;
 let STATIC_FR = /*@STATIC_FR*/null/*STATIC_FR@*/;
 const LANGS = ['fr', 'en'];
@@ -3894,7 +3896,7 @@ async function autoSync(fromLines){
    (POST /api/lyrics/transcribe, Cloudflare Workers AI). The passage is made small here: mono, 16 kHz, 16-bit WAV, cut into
    pieces of at most 30 s in quiet spots; each piece gives words with their times, which become lines already timed. */
 const TR_SR = 16000, TR_PIECE = 30, TR_MAX = 8 * 60;
-let trBusy = false, trLang = 'auto';
+let trBusy = false, trLang = 'auto', trTick = null;
 const trAvail = () => !!ACCT;   // the claude.ai page has no server: the feature is shown as available on stalak.app only
 /* the passage (with a little margin) as 16 kHz mono samples; averaging over each output sample's span = a light anti-alias filter */
 function trSamples(buf, a, b){
@@ -3927,6 +3929,17 @@ function trWav(x){
   const u = new Uint8Array(b); let bin = ''; for (let i = 0; i < u.length; i += 0x8000) bin += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000));
   return btoa(bin);
 }
+/* a block of text → short lines: at the end of a sentence, at a comma when the line is already long, or every 8 words */
+function trSplit(text){
+  const words = text.replace(/\s+/g, ' ').trim().split(' ').filter(Boolean), out = []; let cur = [];
+  for (const w of words){
+    cur.push(w);
+    const n = cur.length, chars = cur.join(' ').length;
+    if ((/[.!?…]$/.test(w) && n >= 2) || (/[,;:]$/.test(w) && n >= 5) || n >= 8 || chars >= 42){ out.push(cur.join(' ')); cur = []; }
+  }
+  if (cur.length) out.push(cur.join(' '));
+  return out.map(l => l.replace(/[,;:]$/, '')).filter(l => /[\p{L}\p{N}]/u.test(l));
+}
 /* words heard (absolute times) → lines: a new line on a pause, at the end of a sentence, or when the line gets long */
 function trLines(segs){
   const lines = []; let cur = null;
@@ -3935,8 +3948,9 @@ function trLines(segs){
   for (const sg of segs){
     const ws = (sg.words || []).map(w => ({ w: String(w.word).replace(/\s+/g, ''), s: w.start, e: w.end })).filter(w => w.w);
     if (!ws.length){
-      // no word times: the whole segment as one line, its words spread by syllables
-      flush(); const text = String(sg.text || '').replace(/\s+/g, ' ').trim(); if (text) lines.push({ text, t: +sg.start.toFixed(3), d: +Math.max(0.3, sg.end - sg.start).toFixed(3), auto: true, tr: true, chk: false });
+      // no word times (the model gave a whole passage as one block): its text cut into short lines, without times;
+      // they are placed on the voice afterwards by the same timing as pasted lyrics (autoSync)
+      flush(); trSplit(String(sg.text || '')).forEach(text => lines.push({ text, t: null, auto: true, tr: true, chk: false }));
       continue;
     }
     if (cur && cur.w.length >= 3) flush();
@@ -3984,13 +3998,15 @@ async function transcribeLyrics(){
     const pieces = trPieces(x), job = 'j' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
     if (!pieces.length){ say('lyr.empty'); return; }
     if (pieces.length > 16){ say('lyr.e.long'); return; }
-    const results = new Array(pieces.length); let lang = trLang, done = 0;
+    const results = new Array(pieces.length); let lang = trLang, done = 0, shown = 0;
+    // the bar creeps forward while a piece is being written (a piece takes a few seconds), then jumps when it comes back
+    trTick = setInterval(() => { const cap = Math.min(0.95, (done + 0.9) / pieces.length); shown = Math.min(cap, shown + (cap - shown) * 0.08 + 0.002); progress(shown); }, 120);
     const send = async k => {
       const [p, q] = pieces[k];
       const r = await trPost({ audio: trWav(x.subarray(p, q)), job, part: k, parts: pieces.length, language: lang });
       results[k] = (r.segments || []).map(sg => ({ ...sg, start: sg.start + a + p / TR_SR, end: sg.end + a + p / TR_SR,
         words: (sg.words || []).map(w => ({ word: w.word, start: w.start + a + p / TR_SR, end: w.end + a + p / TR_SR })) }));
-      progress(Math.min(0.97, ++done / pieces.length));
+      ++done; shown = Math.max(shown, Math.min(0.97, done / pieces.length)); progress(shown);
       return r;
     };
     // the first piece alone (it counts the transcription; with « Auto », its language is kept for the others), then 3 at a time
@@ -3998,10 +4014,15 @@ async function transcribeLyrics(){
     let next = 1;
     await Promise.all([0, 1, 2].map(async () => { while (next < pieces.length){ const k = next++; await send(k); } }));
     if (S.song !== songAt){ say('auto.changed'); return; }
-    const lines = trLines(results.flat());
+    const segs = results.flat(), nWords = segs.reduce((n, s) => n + (s.words ? s.words.length : 0), 0);
+    const lines = trLines(segs);
+    diag('paroles auto : réponse ' + segs.length + ' segment(s), ' + nWords + ' mot(s) minutés');
     diag('paroles auto : ' + pieces.length + ' morceau(x), ' + fmt(a) + '–' + fmt(b) + ', langue ' + lang + ', ' + lines.length + ' phrases, ' + Math.round(performance.now() - t0) + ' ms');
     if (!lines.length){ say('lyr.empty'); return; }
     S.lyrics.lines = lines; S.lyrics.mode = 'auto'; S.lyrUser = true; $('#lyText').value = lines.map(l => l.text).join('\n');
+    clearInterval(trTick); trTick = null;
+    // lines without times (no word times from the model): placed on the voice like pasted lyrics
+    if (lines.some(l => l.t == null)){ saveLyrics(); trBusy = false; trUi(); await autoSync(true); diag('paroles auto : phrases placées sur la voix (calage auto)'); return; }
     saveLyrics(); renderLines(); lyricsView();
     say(() => tn('lyr.done', lines.length));
     showFrame(lyricShowTime());
@@ -4010,7 +4031,7 @@ async function transcribeLyrics(){
     diag('paroles auto : erreur ' + ((e && (e.code + ' ' + (e.status || ''))) || e) + ' ' + (e && e.message || ''));
     say(k);
     if (k === 'lyr.e.pro') acctOpen('lyrics');
-  } finally { trBusy = false; progress(null); trUi(); }
+  } finally { clearInterval(trTick); trTick = null; trBusy = false; progress(null); trUi(); }
 }
 /* the « Transcription auto » panel: Pro tag, the button's words, busy state; on the claude.ai page, the « stalak.app only » note */
 function trUi(){
@@ -8081,21 +8102,28 @@ function clSync(){
     setT('#clQuotaT', 'cl.quota', { used: clFmtBytes(stg.used), quota: clFmtBytes(stg.quota) });
   }
   if (CL.lang !== LANG){ CL.lang = LANG; clRenderList(); }
+  // Pro again: the list comes back; Pro lost: it goes
+  if (u && pro && CL.locked){ CL.locked = false; clLoadList(); }
+  else if (u && !pro && !CL.locked && CL.list){ CL.locked = true; CL.list = null; CL.storage = null; clRenderList(); }
 }
 async function clLoadList(){
   if (!CL || !ACCT.state.user) return;
   CL.listErr = false;
+  // saved projects are part of Stalak Pro: without it, no access (they come back with a new subscription)
+  if (!acctPro()){ CL.locked = true; CL.list = null; CL.storage = null; clSync(); clRenderList(); return; }
+  CL.locked = false;
   try {
     const d = await ACCT.projects.listAll();
     CL.list = d.projects || []; CL.storage = d.storage || null;
     if (d.storage) CL.avail = !!d.storage.available;
-  } catch(e){ CL.listErr = true; diag('mes projets : ' + (e && (e.code || e.message))); }
+  } catch(e){ if (e && e.code === 'pro_required') CL.locked = true; else CL.listErr = true; diag('mes projets : ' + (e && (e.code || e.message))); }
   clSync(); clRenderList();
 }
 function clRenderList(){
   if (!CL) return;
   const ul = $('#clList'), empty = $('#clEmpty'); ul.textContent = '';
   if (CL.avail === false){ empty.hidden = true; return; }
+  if (CL.locked){ empty.hidden = false; setT(empty, 'cl.locked'); return; }
   const list = CL.list;
   if (!list || !list.length){ empty.hidden = false; setT(empty, CL.listErr ? 'cl.listErr' : !list ? 'cl.loading' : 'cl.empty'); return; }
   empty.hidden = true;

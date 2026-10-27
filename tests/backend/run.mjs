@@ -568,7 +568,9 @@ test('project saving is Pro only; list/get/delete', async () => {
   r = await call(env, 'GET', '/api/projects/p1', { cookie: pro.cookie });
   assert.deepEqual(r.data.state, { bpm: 128 });
   r = await call(env, 'GET', '/api/projects/p1', { cookie: free.cookie });
-  assert.equal(r.status, 404, 'other users cannot read it');
+  assert.equal(r.status, 403, 'a free user has no access to saved projects at all');
+  r = await call(env, 'GET', '/api/projects', { cookie: free.cookie });
+  assert.equal(r.data.error, 'pro_required');
   r = await call(env, 'PUT', '/api/projects/big', { cookie: pro.cookie, body: { name: 'big', state: 'x'.repeat(300 * 1024) } });
   assert.equal(r.status, 413);
   r = await call(env, 'PUT', '/api/projects/bad%20id', { cookie: pro.cookie, body: { state: {} } });
@@ -577,6 +579,18 @@ test('project saving is Pro only; list/get/delete', async () => {
   assert.equal(r.status, 200);
   r = await call(env, 'GET', '/api/projects', { cookie: pro.cookie });
   assert.equal(r.data.projects.length, 0);
+
+  // Pro ends: the saved projects are no longer reachable (they come back with a new subscription)
+  r = await call(env, 'PUT', '/api/projects/p2', { cookie: pro.cookie, body: { name: 'kept', state: { a: 2 } } });
+  assert.equal(r.status, 200);
+  await webhook(env, subEvent('subscription.canceled', sub(pro.user.id, { id: 'sub_s', customer_id: 'ctm_s', status: 'canceled' })));
+  r = await call(env, 'GET', '/api/me', { cookie: pro.cookie });
+  if (r.data.entitlements.plan !== 'pro') {
+    r = await call(env, 'GET', '/api/projects', { cookie: pro.cookie });
+    assert.equal(r.status, 403); assert.equal(r.data.error, 'pro_required');
+    r = await call(env, 'GET', '/api/projects/p2', { cookie: pro.cookie });
+    assert.equal(r.status, 403);
+  }
 });
 
 test('account delete: cancels Paddle subscription, removes all data, clears cookie', async () => {

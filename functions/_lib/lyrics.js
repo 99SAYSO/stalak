@@ -55,6 +55,15 @@ export function cleanSegments(out, duration) {
   if (!segs && Array.isArray(out.words) && out.words.length) segs = [{ text: out.text || out.words.map((w) => w.word).join(' '), words: out.words }];
   if (!segs && typeof out.text === 'string' && out.text.trim()) segs = [{ start: 0, end: duration, text: out.text }];
   if (!segs) return [];
+  // word times given beside the segments (top-level "words") rather than inside them: each word goes to its segment
+  if (Array.isArray(out.words) && out.words.length && segs.every((sg) => !sg || !Array.isArray(sg.words) || !sg.words.length)) {
+    segs = segs.map((sg, i) => {
+      if (!sg || typeof sg !== 'object') return sg;
+      const s0 = num(sg.start), s1 = num(sg.end), last = i === segs.length - 1;
+      if (s0 == null || s1 == null) return segs.length === 1 ? { ...sg, words: out.words } : sg;
+      return { ...sg, words: out.words.filter((w) => w && num(w.start) != null && w.start >= s0 - 0.05 && (w.start < s1 || (last && w.start <= s1 + 0.5))) };
+    });
+  }
   const clamp = (t) => r3(Math.max(0, Math.min(duration, t)));
   const res = [];
   for (const s of segs) {

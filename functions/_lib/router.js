@@ -60,6 +60,8 @@ function config(env) {
 // Saved projects: the JSON state here (D1), their media files in R2 (cloud.js: /api/projects/:id/files/...).
 async function projects(request, env, method, rest, ctx) {
   const user = await requireUser(request, env);
+  // saved projects are part of Stalak Pro: without it, no access at all (they come back if the user subscribes again)
+  await requirePro(env, user, HttpError);
   const id = rest[0];
   if (!id) {
     if (method !== 'GET') throw new HttpError(405, 'method_not_allowed', 'Method not allowed.');
