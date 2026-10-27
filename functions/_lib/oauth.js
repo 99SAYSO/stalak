@@ -94,7 +94,7 @@ const redirectUri = (env, p) => `${appOrigin(env)}/api/auth/oauth/${p}/callback`
 // ---- provider keys (JWKS), kept one hour per isolate ----------------------------------------
 const jwksCache = new Map();
 export function resetJwksCache() { jwksCache.clear(); }
-async function jwksFor(url, force) {
+export async function jwksFor(url, force) {
   const c = jwksCache.get(url);
   if (c && !force && Date.now() - c.at < 3600e3) return c.keys;
   const res = await fetch(url, { headers: { Accept: 'application/json' } });

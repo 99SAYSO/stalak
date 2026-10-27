@@ -25,9 +25,14 @@
 - Rien.
 - **Assistant d'aide, réponses vides** (branche `compte/assistant-reponses-vides`, compte rendu `docs/handoff/compte-assistant-reponses-vides.md`, Statut : PRÊT) : réflexion de Gemma 4 coupée, place de réponse 450 → 700 jetons, un deuxième essai si la réponse est vide (compté dans le budget du jour), erreur en 503 au lieu de 502, raison des réponses vides dans les journaux. Aucune migration.
 
+- **Tableau de bord privé + « Parler à un humain »** (branche `compte/tableau-de-bord`, compte rendu `docs/handoff/compte-tableau-de-bord.md`, Statut : PRÊT) :
+  - `https://admin.stalak.app/admin/`, réservé à l'e-mail du propriétaire par Cloudflare Access (jeton vérifié aussi par le serveur) : inscrits, Pro mensuels/annuels, revenu, visiteurs en direct, jour par jour, usage des fonctions, messages ;
+  - glaçon : « Parler à un humain » (direct si le propriétaire est disponible, sinon e-mail du visiteur et réponse par e-mail) ;
+  - **migration 0006 à lancer avant publication** ; puis 2 secrets (`ACCESS_AUD`, `ADMIN_EMAILS`), domaine personnalisé admin.stalak.app sur Pages, événements Paddle `adjustment.*` (BACKEND.md, étape 13). L'équipe Access est déjà dans `wrangler.toml`.
+
 ## Base de données D1
 - Migrations appliquées : 0001, 0002, 0003, 0004_lyrics_usage, 0004_cloud_save, 0005_social_accounts (27/10).
-- En attente : aucune.
+- En attente : `0006_admin_support.sql` (branche `compte/tableau-de-bord`), à lancer avant de publier cette branche.
 
 ## À faire, par rôle
 
@@ -48,8 +53,10 @@
 - Assistant IA de la bulle d'aide : fait (branche `compte/assistant-aide`). Après la mise en ligne : poser quelques vraies questions pour juger les réponses ; ajuster `HELP_DAILY_MAX` si besoin.
 - Assistant d'aide, réponses vides (1 sur 3 en ligne) : corrigé sur `compte/assistant-reponses-vides`. Après la mise en ligne : poser une dizaine de questions et regarder les journaux Cloudflare (lignes `[stalak] help ai empty`, qui donnent la raison sans le texte).
 - Assistant d'aide : la correction des réponses vides est en ligne depuis le 27/10. Test en ligne : 8 questions sur 8 ont reçu une réponse, en 1,5 à 5 s, justes en FR et en EN.
-  - Petit détail à reprendre : en anglais, à la question « What is Clip mode? », le glaçon dit ne pas connaître ce mode. Le guide anglais l'appelle seulement « Music video », alors que d'autres textes disent « Clip ». Il faudrait ajouter « (also called Clip mode) » dans `HELP_GUIDE_EN`.
-- Plus tard : saler l'empreinte des IP des compteurs (paroles et aide) avec `AUTH_SECRET`.
+  - « What is Clip mode? » en anglais : corrigé sur `compte/tableau-de-bord` (le guide anglais dit « also called Clip mode »).
+- Tableau de bord + « Parler à un humain » : fait sur `compte/tableau-de-bord` (le jeton Access est vérifié par le serveur : hôte, signature des clés de l'équipe, AUD, e-mail). Reste : 2 secrets, domaine personnalisé, événements Paddle `adjustment.*` (BACKEND.md, étape 13).
+- Si des faux messages arrivent : Cloudflare Turnstile sur « Parler à un humain ».
+- Plus tard : saler l'empreinte des IP des compteurs (paroles, aide, visites, messages) avec `AUTH_SECRET`.
 - Plus de 210 minutes de transcription par jour : passer au forfait Workers payant (5 $/mois).
 
 ### Réseaux sociaux

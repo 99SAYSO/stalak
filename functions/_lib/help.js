@@ -19,6 +19,7 @@ import { entitlementsFor } from './entitlements.js';
 import { limit, cleanup } from './ratelimit.js';
 import { sha256Hex } from './crypto.js';
 import { HELP_GUIDE_FR, HELP_GUIDE_EN } from './help-guide.js';
+import { bump } from './metrics.js';
 
 export const DEFAULT_MODEL = '@cf/google/gemma-4-26b-a4b-it';
 export const DAILY_MAX = 60;            // questions a day for the whole site (≈ 3,000 neurons); variable HELP_DAILY_MAX
@@ -153,9 +154,10 @@ export async function helpChat(request, env) {
       continue;
     }
     const answer = answerText(out);
-    if (answer) return json({ answer });
+    if (answer) { await bump(env, 'help_q'); return json({ answer }); }
     console.error('[stalak] help ai empty, try ' + i, emptyInfo(out));
   }
+  await bump(env, 'help_fail');
   // 503, not 502: Cloudflare replaces a 502 from the function with its own HTML page, and the bubble would not get this JSON
   throw new HttpError(503, 'help_failed', 'The assistant could not answer, try again.');
 }

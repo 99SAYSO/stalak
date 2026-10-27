@@ -1986,6 +1986,335 @@ test('social Meta callbacks: deauthorize and data deletion (signed_request), sta
   assert.equal(r.status, 404);
 });
 
+// ---- owner's dashboard (admin.js) + « Parler à un humain » (support.js) + visits (metrics.js) — domaine Comptes, paiements & serveur ----
+import { onRequest as adminPage } from '../../functions/admin/[[path]].js';
+const ACCESS_TEAM = 'https://stalak-test.cloudflareaccess.com';
+const ACCESS_AUD = 'aud0123456789abcdef0123456789abcdef';
+KEYS.access = await rsaKey('acc1');
+JWKS[ACCESS_TEAM + '/cdn-cgi/access/certs'] = { keys: [KEYS.access.jwk], public_cert: { kid: 'acc1', cert: '' } };
+const ADMIN_ENV = { ADMIN_HOST: 'admin.stalak.app', ACCESS_TEAM_DOMAIN: ACCESS_TEAM, ACCESS_AUD, ADMIN_EMAILS: 'Owner@Example.com, second@example.com' };
+const ADMIN_ORIGIN = 'https://admin.stalak.app';
+const accessToken = (over = {}, key = KEYS.access) => {
+  const now = Math.floor(Date.now() / 1000);
+  return signJwt(key, { iss: ACCESS_TEAM, aud: [ACCESS_AUD], email: 'owner@example.com', iat: now, nbf: now, exp: now + 3600, sub: 'x', ...over });
+};
+async function adminCall(env, method, path, { token, host = 'admin.stalak.app', origin = ADMIN_ORIGIN, body, page = false } = {}) {
+  const h = new Headers();
+  if (token) h.set('Cf-Access-Jwt-Assertion', token);
+  if (method !== 'GET' && method !== 'HEAD') { h.set('Content-Type', 'application/json'); if (origin) h.set('Origin', origin); }
+  h.set('CF-Connecting-IP', '10.20.0.1');
+  const req = new Request(`https://${host}${path}`, { method, headers: h, body: ['GET', 'HEAD'].includes(method) ? undefined : JSON.stringify(body || {}) });
+  const res = page ? await adminPage({ request: req, env }) : await onRequest({ request: req, env, params: {}, waitUntil() {} });
+  const text = await res.text();
+  let data; try { data = JSON.parse(text); } catch { data = text; }
+  return { status: res.status, data, headers: res.headers };
+}
+const supportCall = (env, method, path, { token, body, ip, cookie } = {}) => call(env, method, '/api/support' + path,
+  { body, ip, cookie, headers: token ? { 'X-Ticket-Token': token } : {} });
+
+test('admin: only on the admin host, with a valid Cloudflare Access token for a listed email', async () => {
+  // not set up → the routes do not exist
+  let env = makeEnv();
+  let r = await adminCall(env, 'GET', '/api/admin/me', { token: await accessToken() });
+  assert.equal(r.status, 404);
+  env = makeEnv(ADMIN_ENV);
+  r = await adminCall(env, 'GET', '/api/admin/me', { token: await accessToken() });
+  assert.equal(r.status, 200, JSON.stringify(r.data)); assert.equal(r.data.email, 'owner@example.com');
+  // same token, other host (stalak.app, *.pages.dev): 404
+  for (const host of ['stalak.app', 'stalak-site.pages.dev', 'admin.stalak.app.evil.example']) {
+    r = await adminCall(env, 'GET', '/api/admin/me', { token: await accessToken(), host });
+    assert.equal(r.status, 404, host);
+  }
+  // no token / bad tokens: 403
+  r = await adminCall(env, 'GET', '/api/admin/stats');
+  assert.equal(r.status, 403); assert.equal(r.data.error, 'access_required');
+  const now = Math.floor(Date.now() / 1000);
+  const bad = {
+    forged: await accessToken({}, { ...KEYS.rogue, kid: 'acc1' }),
+    otherEmail: await accessToken({ email: 'someone@example.com' }),
+    otherAud: await accessToken({ aud: ['another-app-aud-0000000000000000'] }),
+    otherIss: await accessToken({ iss: 'https://evil.cloudflareaccess.com' }),
+    expired: await accessToken({ exp: now - 120 }),
+    notYet: await accessToken({ nbf: now + 600 }),
+    noExp: await accessToken({ exp: undefined }),
+    unknownKid: await accessToken({}, { ...KEYS.google, kid: 'zzz' }),
+  };
+  const [h, p] = (await accessToken()).split('.');
+  bad.algNone = b64j({ alg: 'none', kid: 'acc1' }) + '.' + p + '.';
+  bad.tampered = h + '.' + b64j({ ...decodeJwt(await accessToken()).payload, email: 'second@example.com', exp: now + 99999 }) + '.' + (await accessToken()).split('.')[2];
+  for (const [name, token] of Object.entries(bad)) {
+    r = await adminCall(env, 'GET', '/api/admin/me', { token });
+    assert.equal(r.status, 403, name + ' ' + JSON.stringify(r.data));
+  }
+  // the second listed address is let in; the list is case-insensitive
+  r = await adminCall(env, 'GET', '/api/admin/me', { token: await accessToken({ email: 'SECOND@example.com' }) });
+  assert.equal(r.status, 200);
+  // a team domain that is not a cloudflareaccess.com one: the dashboard stays off
+  r = await adminCall(makeEnv({ ...ADMIN_ENV, ACCESS_TEAM_DOMAIN: 'https://evil.example' }), 'GET', '/api/admin/me', { token: await accessToken() });
+  assert.equal(r.status, 404);
+
+  // the page: only there, no-store, strict CSP with a fresh nonce, not framable
+  r = await adminCall(env, 'GET', '/admin/', { token: await accessToken(), page: true });
+  assert.equal(r.status, 200);
+  assert.ok(r.data.includes('Stalak · tableau de bord'));
+  const csp = r.headers.get('Content-Security-Policy');
+  const nonce = csp.match(/'nonce-([^']+)'/)[1];
+  assert.ok(r.data.includes(`<script nonce="${nonce}">`) && !r.data.includes('__NONCE__'));
+  assert.ok(csp.includes("default-src 'none'") && csp.includes("frame-ancestors 'none'") && !csp.includes('unsafe-inline'));
+  assert.equal(r.headers.get('Cache-Control'), 'no-store'); assert.equal(r.headers.get('X-Frame-Options'), 'DENY');
+  const r2 = await adminCall(env, 'GET', '/admin/', { token: await accessToken(), page: true });
+  assert.notEqual(r2.headers.get('Content-Security-Policy'), csp, 'new nonce each time');
+  r = await adminCall(env, 'GET', '/admin/', { token: await accessToken(), page: true, host: 'stalak.app' });
+  assert.equal(r.status, 404); assert.ok(!String(r.data).includes('tableau'));
+  r = await adminCall(env, 'GET', '/admin/', { page: true });
+  assert.equal(r.status, 403); assert.ok(!String(r.data).includes('<script'));
+  r = await adminCall(env, 'GET', '/admin/', { token: await accessToken({ email: 'x@example.com' }), page: true });
+  assert.equal(r.status, 403);
+
+  // changes need JSON and the dashboard's own Origin
+  const token = await accessToken();
+  for (const origin of [null, 'https://stalak.app', 'https://evil.example', 'http://admin.stalak.app']) {
+    r = await adminCall(env, 'POST', '/api/admin/available', { token, origin, body: { available: true } });
+    assert.equal(r.status, 403, String(origin)); assert.equal(r.data.error, 'bad_origin');
+  }
+  r = await adminCall(env, 'POST', '/api/admin/available', { token, body: { available: true } });
+  assert.equal(r.status, 200); assert.equal(r.data.availableSwitch, true);
+});
+
+test('support: ticket, owner told by e-mail when away, live chat, reply e-mailed only when the visitor is gone', async () => {
+  const env = makeEnv(ADMIN_ENV), token = await accessToken();
+  // nobody on the dashboard: an e-mail address is needed
+  let r = await supportCall(env, 'GET', '/status');
+  assert.deepEqual(r.data, { available: false });
+  r = await supportCall(env, 'POST', '/tickets', { body: { lang: 'fr', message: 'Mon export plante' } });
+  assert.equal(r.status, 400); assert.equal(r.data.error, 'email_required');
+  for (const email of ['pas-un-mail', 'a@b', 'x@y.z<script>', 'a b@c.fr']) {
+    r = await supportCall(env, 'POST', '/tickets', { body: { lang: 'fr', message: 'Salut', email } });
+    assert.equal(r.status, 400, email); assert.equal(r.data.error, 'invalid_email');
+  }
+  const n0 = outbound.length;
+  r = await supportCall(env, 'POST', '/tickets', { body: { lang: 'fr', message: 'Mon export plante <script>alert(1)</script>', email: 'Fan@Example.com', context: 'Étape 4' } });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  const { id, token: tk } = r.data;
+  assert.match(id, /^t_[\w-]{16,32}$/); assert.ok(tk.length >= 32);
+  assert.equal(r.data.email, 'fan@example.com'); assert.equal(r.data.available, false);
+  assert.equal(r.data.messages.length, 1); assert.equal(r.data.messages[0].from, 'user');
+  // the token is not stored, only its hash
+  const row = env.DB.raw.prepare('SELECT token_hash, email, context FROM tickets WHERE id = ?').get(id);
+  assert.notEqual(row.token_hash, tk); assert.equal(row.email, 'fan@example.com'); assert.equal(row.context, 'Étape 4');
+  // the owner got an e-mail (to the support address), with the message escaped in the HTML and a link to the dashboard
+  const toOwner = outbound.slice(n0).filter((o) => o.url.includes('resend'));
+  assert.equal(toOwner.length, 1);
+  assert.deepEqual(toOwner[0].body.to, ['contact@stalak.app']); assert.equal(toOwner[0].body.reply_to, 'fan@example.com');
+  assert.ok(toOwner[0].body.html.includes('&lt;script&gt;') && !toOwner[0].body.html.includes('<script>'));
+  assert.ok(toOwner[0].body.text.includes('https://admin.stalak.app/admin/#t=' + id));
+  // a second message soon after: no second e-mail to the owner (one every 15 min per ticket)
+  r = await supportCall(env, 'POST', `/tickets/${id}/messages`, { token: tk, body: { text: 'Toujours là ?' } });
+  assert.equal(r.status, 200); assert.equal(r.data.messages.length, 2);
+  assert.equal(outbound.slice(n0).filter((o) => o.url.includes('resend')).length, 1);
+
+  // someone else's ticket, or a wrong token: not found
+  for (const [i, t] of [[id, 'x'.repeat(43)], [id, ''], ['t_' + 'A'.repeat(22), tk], ['../tickets', tk]]) {
+    r = await supportCall(env, 'GET', `/tickets/${i}`, { token: t });
+    assert.ok([404, 405].includes(r.status) && !r.data.messages, i + ' ' + t.slice(0, 4) + ' ' + r.status);
+  }
+
+  // the dashboard: one unread conversation
+  r = await adminCall(env, 'GET', '/api/admin/live', { token });
+  assert.equal(r.status, 200); assert.deepEqual(r.data.tickets, { open: 1, unread: 1 }); assert.equal(r.data.available, false);
+  r = await adminCall(env, 'GET', '/api/admin/tickets', { token });
+  assert.equal(r.data.tickets.length, 1); assert.equal(r.data.tickets[0].unread, true); assert.equal(r.data.tickets[0].email, 'fan@example.com');
+  r = await adminCall(env, 'GET', `/api/admin/tickets/${id}`, { token });
+  assert.equal(r.data.messages.length, 2); assert.equal(r.data.context, 'Étape 4'); assert.equal(r.data.account, null);
+  r = await adminCall(env, 'GET', '/api/admin/live', { token });
+  assert.equal(r.data.tickets.unread, 0, 'read once opened');
+
+  // the visitor is gone (no news asked for a while): the reply goes by e-mail, in his language, reply-to the support address
+  env.DB.raw.prepare('UPDATE tickets SET user_seen_at = ? WHERE id = ?').run(Date.now() - 120e3, id);
+  const n1 = outbound.length;
+  r = await adminCall(env, 'POST', `/api/admin/tickets/${id}/messages`, { token, body: { text: 'Essaie sur Chrome, ça devrait passer.' } });
+  assert.equal(r.status, 200); assert.equal(r.data.emailed, true);
+  const toUser = outbound.slice(n1).filter((o) => o.url.includes('resend'));
+  assert.equal(toUser.length, 1); assert.deepEqual(toUser[0].body.to, ['fan@example.com']);
+  assert.equal(toUser[0].body.subject, 'Réponse de l’équipe Stalak'); assert.equal(toUser[0].body.reply_to, 'contact@stalak.app');
+  assert.ok(toUser[0].body.text.includes('Essaie sur Chrome') && toUser[0].body.text.includes('Toujours là ?'));
+  // the visitor comes back: he sees the answer in the bubble
+  r = await supportCall(env, 'GET', `/tickets/${id}?after=2`, { token: tk });
+  assert.equal(r.status, 200); assert.equal(r.data.messages.length, 1); assert.equal(r.data.messages[0].from, 'admin');
+  assert.equal(r.data.messages[0].emailed, true);
+  // now he is live (just asked for news): the next reply is not e-mailed, unless asked
+  const n2 = outbound.length;
+  r = await adminCall(env, 'POST', `/api/admin/tickets/${id}/messages`, { token, body: { text: 'Tu me vois ?' } });
+  assert.equal(r.data.emailed, false); assert.equal(outbound.length, n2);
+  r = await adminCall(env, 'POST', `/api/admin/tickets/${id}/messages`, { token, body: { text: 'Copie par e-mail', email: 'yes' } });
+  assert.equal(r.data.emailed, true);
+  r = await adminCall(env, 'POST', `/api/admin/tickets/${id}/messages`, { token, body: { text: '   ' } });
+  assert.equal(r.status, 400);
+  // an answer written while the visitor was there, that his page never fetched (he closed it): e-mailed by the catch-up
+  r = await supportCall(env, 'GET', `/tickets/${id}?after=99`, { token: tk });          // he is here
+  r = await adminCall(env, 'POST', `/api/admin/tickets/${id}/messages`, { token, body: { text: 'Tu es parti ?' } });
+  assert.equal(r.data.emailed, false);
+  const lateId = r.data.id;
+  r = await adminCall(env, 'POST', `/api/admin/tickets/${id}/messages`, { token, body: { text: 'Pas par e-mail', email: 'no' } });
+  const noId = r.data.id;
+  const n4 = outbound.length;
+  await adminCall(env, 'GET', '/api/admin/live', { token });
+  assert.equal(outbound.length, n4, 'not before 20 s');
+  env.DB.raw.prepare('UPDATE ticket_messages SET created_at = created_at - 30000 WHERE id IN (?, ?)').run(lateId, noId);
+  env.DB.raw.prepare('UPDATE tickets SET user_seen_at = ? WHERE id = ?').run(Date.now() - 40000, id);
+  await adminCall(env, 'GET', '/api/admin/live', { token });
+  const late = outbound.slice(n4).filter((o) => o.url.includes('resend'));
+  assert.equal(late.length, 1); assert.ok(late[0].body.text.includes('Tu es parti ?'));
+  await adminCall(env, 'GET', '/api/admin/live', { token });
+  assert.equal(outbound.slice(n4).filter((o) => o.url.includes('resend')).length, 1, 'once only, never the « no » one');
+  // fetched live = not e-mailed
+  r = await adminCall(env, 'POST', `/api/admin/tickets/${id}/messages`, { token, body: { text: 'Vu en direct' } });
+  const liveId = r.data.id;
+  env.DB.raw.prepare('UPDATE ticket_messages SET created_at = created_at - 30000 WHERE id = ?').run(liveId);
+  env.DB.raw.prepare('UPDATE tickets SET user_seen_at = ? WHERE id = ?').run(Date.now(), id);
+  const n5 = outbound.length;
+  await adminCall(env, 'GET', '/api/admin/live', { token });
+  assert.equal(outbound.length, n5);
+
+  // « disponible » on + dashboard open: the bubble offers the live chat, no e-mail needed, no e-mail to the owner
+  r = await adminCall(env, 'POST', '/api/admin/available', { token, body: { available: true } });
+  r = await supportCall(env, 'GET', '/status');
+  assert.equal(r.data.available, true);
+  const n3 = outbound.length;
+  r = await supportCall(env, 'POST', '/tickets', { body: { lang: 'en', message: 'Hi, quick question' } });
+  assert.equal(r.status, 200); assert.equal(r.data.available, true); assert.equal(r.data.email, null);
+  assert.equal(outbound.length, n3, 'owner is on the dashboard: no e-mail');
+  const t2 = r.data;
+  // without an address, an owner reply cannot be e-mailed
+  env.DB.raw.prepare('UPDATE tickets SET user_seen_at = 1 WHERE id = ?').run(t2.id);
+  r = await adminCall(env, 'POST', `/api/admin/tickets/${t2.id}/messages`, { token, body: { text: 'Hello!', email: 'yes' } });
+  assert.equal(r.data.emailed, false);
+  // the visitor leaves an address later
+  r = await supportCall(env, 'POST', `/tickets/${t2.id}/messages`, { token: t2.token, body: { text: 'Here is my email', email: 'later@example.com' } });
+  assert.equal(r.data.email, 'later@example.com');
+  // the dashboard closed for more than 3 minutes = not available any more, even with the switch on
+  env.DB.raw.prepare("UPDATE admin_state SET value = ? WHERE key = 'admin_seen'").run(String(Date.now() - 200e3));
+  r = await supportCall(env, 'GET', '/status');
+  assert.equal(r.data.available, false);
+
+  // close, reopen when the visitor writes again, delete
+  r = await adminCall(env, 'POST', `/api/admin/tickets/${id}/status`, { token, body: { status: 'closed' } });
+  assert.equal(r.data.status, 'closed');
+  r = await adminCall(env, 'GET', '/api/admin/tickets?status=open', { token });
+  assert.deepEqual(r.data.tickets.map((t) => t.id), [t2.id]);
+  r = await supportCall(env, 'POST', `/tickets/${id}/messages`, { token: tk, body: { text: 'Merci, ça marche !' } });
+  assert.equal(env.DB.raw.prepare('SELECT status FROM tickets WHERE id = ?').get(id).status, 'open');
+  r = await adminCall(env, 'DELETE', `/api/admin/tickets/${t2.id}`, { token, body: {} });
+  assert.equal(r.status, 200);
+  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM ticket_messages WHERE ticket_id = ?').get(t2.id).n, 0);
+  r = await supportCall(env, 'GET', `/tickets/${t2.id}`, { token: t2.token });
+  assert.equal(r.status, 404);
+  // CSRF: the visitor's routes need JSON + the site's Origin too
+  r = await call(env, 'POST', `/api/support/tickets/${id}/messages`, { body: { text: 'x' }, origin: 'https://evil.example', headers: { 'X-Ticket-Token': tk } });
+  assert.equal(r.status, 403);
+});
+
+test('support: signed-in account e-mail used; tickets go with the account; creation limited per connection', async () => {
+  const env = makeEnv(ADMIN_ENV), token = await accessToken();
+  const u = await login(env, 'member@example.com');
+  let r = await supportCall(env, 'POST', '/tickets', { cookie: u.cookie, body: { lang: 'fr', message: 'Question de membre' } });
+  assert.equal(r.status, 200); assert.equal(r.data.email, 'member@example.com');
+  r = await adminCall(env, 'GET', `/api/admin/tickets/${r.data.id}`, { token });
+  assert.equal(r.data.account.email, 'member@example.com'); assert.equal(r.data.account.pro, false);
+  r = await call(env, 'DELETE', '/api/account', { cookie: u.cookie, body: { confirm: true } });
+  assert.equal(r.status, 200);
+  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM tickets').get().n, 0);
+  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM ticket_messages').get().n, 0);
+  // 5 new conversations per hour from one connection
+  for (let i = 0; i < 5; i++) assert.equal((await supportCall(env, 'POST', '/tickets', { ip: '10.30.0.1', body: { message: 'm' + i, email: 'a@example.com' } })).status, 200);
+  r = await supportCall(env, 'POST', '/tickets', { ip: '10.30.0.1', body: { message: 'again', email: 'a@example.com' } });
+  assert.equal(r.status, 429);
+  // a too long message is cut, an empty one refused
+  r = await supportCall(env, 'POST', '/tickets', { body: { message: '   ', email: 'a@example.com' } });
+  assert.equal(r.status, 400); assert.equal(r.data.error, 'invalid_message');
+  r = await supportCall(env, 'POST', '/tickets', { body: { message: 'x'.repeat(5000), email: 'a@example.com' } });
+  assert.equal(r.data.messages[0].text.length, 2000);
+});
+
+test('visits: one row per page load and day, live count, limited new visits per connection', async () => {
+  const env = makeEnv(ADMIN_ENV), token = await accessToken();
+  const vid = 'v_' + 'a'.repeat(20);
+  let r = await call(env, 'POST', '/api/presence', { body: { vid, lang: 'en' }, ip: '10.40.0.1' });
+  assert.equal(r.status, 200); assert.equal(r.data.every, 60);
+  r = await call(env, 'POST', '/api/presence', { body: { vid, lang: 'en' }, ip: '10.40.0.1' });
+  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM visits').get().n, 1);
+  await call(env, 'POST', '/api/presence', { body: { vid: 'v_' + 'b'.repeat(20) }, ip: '10.40.0.2' });
+  env.DB.raw.prepare("INSERT INTO visits (day, vid, first_at, last_at, lang) VALUES (?, 'old_visitor_0000000', 1, ?, 'fr')").run(new Date().toISOString().slice(0, 10), Date.now() - 600e3);
+  r = await adminCall(env, 'GET', '/api/admin/live', { token });
+  assert.deepEqual(r.data.visitors, { total: 2, fr: 1, en: 1 });
+  for (const bad of [{}, { vid: 'short' }, { vid: 'x'.repeat(16) + '<' }, { vid: 5 }]) {
+    r = await call(env, 'POST', '/api/presence', { body: bad });
+    assert.equal(r.status, 400, JSON.stringify(bad));
+  }
+  // the 61st new page load in an hour from one connection is not counted
+  for (let i = 0; i < 59; i++) await call(env, 'POST', '/api/presence', { body: { vid: 'v_flood_' + String(i).padStart(10, '0') }, ip: '10.40.0.1' });
+  r = await call(env, 'POST', '/api/presence', { body: { vid: 'v_flood_last_000000' }, ip: '10.40.0.1' });
+  assert.equal(r.status, 429);
+  assert.equal(env.DB.raw.prepare("SELECT COUNT(*) AS n FROM visits WHERE vid = 'v_flood_last_000000'").get().n, 0);
+  // updates of a page already counted still go through
+  r = await call(env, 'POST', '/api/presence', { body: { vid }, ip: '10.40.0.1' });
+  assert.equal(r.status, 200);
+  // no IP in the table
+  const cols = env.DB.raw.prepare('SELECT * FROM visits LIMIT 1').get();
+  assert.deepEqual(Object.keys(cols).sort(), ['day', 'first_at', 'lang', 'last_at', 'vid']);
+});
+
+test('payments and refunds from Paddle → revenue, Pro by plan and day-by-day stats on the dashboard', async () => {
+  const env = makeEnv(ADMIN_ENV), token = await accessToken();
+  const a = await login(env, 'buyer-m@example.com'), b = await login(env, 'buyer-y@example.com');
+  await webhook(env, subEvent('subscription.created', sub(a.user.id, { id: 'sub_m1', customer_id: 'ctm_m1' })));
+  await webhook(env, subEvent('subscription.created', sub(b.user.id, { id: 'sub_y1', customer_id: 'ctm_y1', items: [{ status: 'active', price: { id: 'pri_year' } }] })));
+  const txn = (id, userId, subId, total, origin, priceId) => subEvent('transaction.completed', { id, status: 'completed', customer_id: 'ctm', subscription_id: subId,
+    origin, billed_at: new Date().toISOString(), currency_code: 'EUR', custom_data: { user_id: userId }, items: [{ price: { id: priceId } }],
+    details: { totals: { subtotal: String(Math.round(total / 1.2)), tax: String(total - Math.round(total / 1.2)), discount: '0', total: String(total), grand_total: String(total), fee: null, earnings: null, currency_code: 'EUR' } } });
+  let r = await webhook(env, txn('txn_1', a.user.id, 'sub_m1', 999, 'web', 'pri_month'));
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  await webhook(env, txn('txn_2', b.user.id, 'sub_y1', 7900, 'web', 'pri_year'));
+  await webhook(env, txn('txn_1', a.user.id, 'sub_m1', 999, 'web', 'pri_month'));   // same payment again: kept once
+  // a transaction without totals (older payload): still accepted, nothing counted
+  await webhook(env, subEvent('transaction.completed', { id: 'txn_3', customer_id: 'ctm_m1', custom_data: { user_id: a.user.id } }));
+  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM payments').get().n, 2);
+  const p = env.DB.raw.prepare("SELECT * FROM payments WHERE id = 'txn_1'").get();
+  assert.equal(p.total, 999); assert.equal(p.tax, 999 - 833); assert.equal(p.currency, 'EUR'); assert.equal(p.user_id, a.user.id); assert.equal(p.earnings, null);
+  // a refund: pending, then approved; an older event does not undo the approval
+  const adj = (status, at) => ({ ...subEvent('adjustment.updated', { id: 'adj_1', action: 'refund', status, transaction_id: 'txn_1', currency_code: 'EUR',
+    totals: { subtotal: '833', tax: '166', total: '999', fee: '0', earnings: '0', currency_code: 'EUR' }, created_at: new Date().toISOString() }, at) });
+  await webhook(env, { ...adj('pending_approval', new Date(Date.now() - 5000).toISOString()), event_type: 'adjustment.created' });
+  await webhook(env, adj('approved', new Date().toISOString()));
+  await webhook(env, adj('pending_approval', new Date(Date.now() - 4000).toISOString()));
+  assert.equal(env.DB.raw.prepare("SELECT status FROM refunds WHERE id = 'adj_1'").get().status, 'approved');
+
+  // counters: a help answer, a failed one
+  env.AI = fakeAI(HELP_OUT);
+  await askHelp(env, {});
+  env.AI = fakeAI({});
+  await askHelp(env, {});
+  r = await adminCall(env, 'GET', '/api/admin/stats?days=7', { token });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  const s = r.data;
+  assert.equal(s.days.length, 7);
+  const today = s.days[s.days.length - 1];
+  assert.equal(today.signups, 2); assert.equal(today.payments, 2); assert.equal(today.newPro, 2);
+  assert.equal(today.revenue, 999 + 7900); assert.equal(today.refunds, 999);
+  assert.equal(today.helpQuestions, 1); assert.equal(today.helpFailed, 1);
+  assert.deepEqual({ month: s.totals.pro.month, year: s.totals.pro.year, total: s.totals.pro.total }, { month: 1, year: 1, total: 2 });
+  assert.equal(s.totals.mrrCents, 999 + Math.round(7900 / 12));
+  assert.deepEqual(s.totals.revenue.all.EUR.total, 8899); assert.equal(s.totals.revenue.refunds.EUR.total, 999);
+  assert.equal(s.totals.users, 2); assert.equal(s.recentUsers.length, 2); assert.equal(s.recentUsers.filter((x) => x.pro).length, 2);
+  assert.equal(s.usage.help.questions30, 1); assert.equal(s.usage.help.dailyMax, 60);
+  // the account goes: the payment stays (accounting) without the link
+  r = await call(env, 'DELETE', '/api/account', { cookie: a.cookie, body: { confirm: true } });
+  assert.equal(env.DB.raw.prepare("SELECT user_id FROM payments WHERE id = 'txn_1'").get().user_id, null);
+  // the period is bounded
+  r = await adminCall(env, 'GET', '/api/admin/stats?days=100000', { token });
+  assert.equal(r.data.days.length, 120);
+});
+
 // ---- runner --------------------------------------------------------------------------
 let failed = 0;
 for (const t of tests) {

@@ -1,0 +1,54 @@
+// Counters for the owner's dashboard (functions/_lib/admin.js): features used per day, and visits.
+// Nothing here can identify a person: no IP, no account, no cookie.
+import { HttpError, json, readJson, clientIp } from './http.js';
+import { limit } from './ratelimit.js';
+import { sha256Hex } from './crypto.js';
+
+export const today = (now = Date.now()) => new Date(now).toISOString().slice(0, 10);
+export const METRICS = ['help_q', 'help_fail', 'cloud_save', 'ticket', 'ticket_msg'];
+
+// +1 on today's counter `name`. Never breaks the request that counts (the counter is only for the dashboard).
+export async function bump(env, name, n = 1) {
+  try {
+    await env.DB.prepare(
+      'INSERT INTO daily_counts (day, name, n) VALUES (?1, ?2, ?3) ON CONFLICT(day, name) DO UPDATE SET n = n + ?3'
+    ).bind(today(), name, n).run();
+  } catch (e) {
+    console.error('[stalak] metric', name, e && e.message ? String(e.message).slice(0, 120) : 'error');
+  }
+}
+
+export const VISIT_EVERY_S = 60;          // the page sends a sign of life every minute while it is shown
+export const LIVE_MS = 150e3;             // "live" = seen in the last 2 min 30 s
+export const NEW_VISITS_PER_IP_HOUR = 60; // new page loads counted per connection and per hour (sign-of-life updates are free)
+export const VISITS_KEEP_DAYS = 90;
+const VID = /^[A-Za-z0-9_-]{16,40}$/;
+
+// POST /api/presence {vid, lang}: the page is open. One row per page load and per day, updated each minute.
+export async function presence(request, env) {
+  const body = await readJson(request, 1024);
+  const vid = typeof body.vid === 'string' && VID.test(body.vid) ? body.vid : null;
+  if (!vid) throw new HttpError(400, 'invalid_vid', 'vid: 16-40 letters, digits, - or _.');
+  const lang = body.lang === 'en' ? 'en' : 'fr';
+  const now = Date.now(), day = today(now);
+  const row = await env.DB.prepare(
+    `INSERT INTO visits (day, vid, first_at, last_at, lang) VALUES (?1, ?2, ?3, ?3, ?4)
+     ON CONFLICT(day, vid) DO UPDATE SET last_at = ?3 RETURNING first_at`
+  ).bind(day, vid, now, lang).first();
+  if (row && row.first_at === now) {
+    // a new page load: limited per connection, so nobody can fill the table with made-up visits
+    const ipKey = (await sha256Hex('ip:' + clientIp(request))).slice(0, 32);
+    try {
+      await limit(env, `visit:ip:${ipKey}`, NEW_VISITS_PER_IP_HOUR, 3600e3);
+    } catch (e) {
+      await env.DB.prepare('DELETE FROM visits WHERE day = ?1 AND vid = ?2').bind(day, vid).run();
+      throw e;
+    }
+    // old visits go now and then
+    if (Math.random() < 0.01) {
+      const old = today(now - VISITS_KEEP_DAYS * 864e5);
+      await env.DB.prepare('DELETE FROM visits WHERE day < ?1').bind(old).run().catch(() => {});
+    }
+  }
+  return json({ ok: true, every: VISIT_EVERY_S });
+}

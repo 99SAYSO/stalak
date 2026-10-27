@@ -9,6 +9,7 @@ import { join, extname, dirname, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createD1 } from '../backend/fake-d1.mjs';
 import { onRequest } from '../../functions/api/[[path]].js';
+import { onRequest as adminPage } from '../../functions/admin/[[path]].js';
 import { sha256Hex, base64url } from '../../functions/_lib/crypto.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -52,7 +53,25 @@ const AI = {
     return { transcription_info: { language: input.language || 'fr', language_probability: 0.9, duration: dur, duration_after_vad: dur }, text: segments.map((s) => s.text).join(''), word_count: k * 4, segments, vtt: 'WEBVTT' };
   },
 };
-const env = { DB: createD1(join(root, 'migrations')), APP_ORIGIN: origin, PADDLE_ENV: 'sandbox', PADDLE_CLIENT_TOKEN: 'test_x', PADDLE_PRICE_MONTH: 'pri_month', PADDLE_PRICE_YEAR: 'pri_year', AI };
+// Cloudflare Access, imitated for the owner's dashboard: a test key signs the token the Access edge would add, for requests
+// that carry the cookie test_admin=1 (set by GET /__test/admin-login). The real check in functions/_lib/admin.js runs unchanged.
+const ACCESS_TEAM = 'https://stalak-ui.cloudflareaccess.com', ACCESS_AUD = 'aud-ui-test-0123456789abcdef0123';
+const accessKey = await crypto.subtle.generateKey({ name: 'RSASSA-PKCS1-v1_5', modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: 'SHA-256' }, true, ['sign', 'verify']);
+const accessJwk = { ...(await crypto.subtle.exportKey('jwk', accessKey.publicKey)), kid: 'ui1', alg: 'RS256', use: 'sig' };
+const realFetch = globalThis.fetch;
+globalThis.fetch = (url, init) => String(url) === ACCESS_TEAM + '/cdn-cgi/access/certs' ? Promise.resolve(Response.json({ keys: [accessJwk] })) : realFetch(url, init);
+const b64u = (b) => Buffer.from(b).toString('base64url');
+async function accessToken() {
+  const now = Math.floor(Date.now() / 1000);
+  const input = b64u(JSON.stringify({ alg: 'RS256', kid: 'ui1', typ: 'JWT' })) + '.' + b64u(JSON.stringify({ iss: ACCESS_TEAM, aud: [ACCESS_AUD], email: 'owner@example.com', iat: now, exp: now + 600 }));
+  return input + '.' + b64u(await crypto.subtle.sign({ name: 'RSASSA-PKCS1-v1_5' }, accessKey.privateKey, new TextEncoder().encode(input)));
+}
+const env = { ADMIN_HOST: 'localhost', ACCESS_TEAM_DOMAIN: ACCESS_TEAM, ACCESS_AUD, ADMIN_EMAILS: 'owner@example.com',
+  DB: createD1(join(root, 'migrations')), APP_ORIGIN: origin, PADDLE_ENV: 'sandbox', PADDLE_CLIENT_TOKEN: 'test_x', PADDLE_PRICE_MONTH: 'pri_month', PADDLE_PRICE_YEAR: 'pri_year', AI };
+// e-mails: in dev mode (no RESEND_API_KEY) the server writes them in the console; kept here for the tests (GET /__test/mails)
+const mails = [];
+const consoleLog = console.log;
+console.log = (...a) => { const t = String(a[0]); if (t.startsWith('[stalak dev] mail to ')) mails.push(t.slice(21)); else consoleLog(...a); };
 let userN = 0;
 async function testUser(pro) {
   const id = 'u_ui' + (++userN), now = Date.now(), token = base64url(crypto.getRandomValues(new Uint8Array(32)));
@@ -71,11 +90,16 @@ http.createServer(async (req, res) => {
     if (url.pathname === '/__test/user') { const u = await testUser(JSON.parse(body.toString() || '{}').pro); res.writeHead(200, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify(u)); }
     // the site-wide daily budget of the help assistant (HELP_DAILY_MAX)
     if (url.pathname === '/__test/helpmax') { env.HELP_DAILY_MAX = url.searchParams.get('n'); res.writeHead(200); return res.end('{}'); }
+    if (url.pathname === '/__test/admin-login') { res.writeHead(302, { Location: '/admin/', 'Set-Cookie': 'test_admin=1; Path=/' }); return res.end(); }
+    if (url.pathname === '/__test/mails') { res.writeHead(200, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify(mails)); }
     if (url.pathname === '/__test/ai') { res.writeHead(200, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify(aiCalls)); }
-    if (url.pathname.startsWith('/api/')) {
+    const isAdmin = url.pathname === '/admin' || url.pathname.startsWith('/admin/') || url.pathname.startsWith('/api/admin/');
+    if (url.pathname.startsWith('/api/') || isAdmin) {
       const headers = new Headers(); for (const [k, v] of Object.entries(req.headers)) headers.set(k, Array.isArray(v) ? v.join(', ') : v);
+      if (isAdmin && /(^|;\s*)test_admin=1/.test(req.headers.cookie || '')) headers.set('Cf-Access-Jwt-Assertion', await accessToken());
       headers.set('CF-Connecting-IP', '127.0.0.1');
-      const r = await onRequest({ request: new Request(origin + req.url, { method: req.method, headers, body: ['GET', 'HEAD'].includes(req.method) ? undefined : body }), env, params: {}, waitUntil() {} });
+      const request = new Request(origin + req.url, { method: req.method, headers, body: ['GET', 'HEAD'].includes(req.method) ? undefined : body });
+      const r = url.pathname.startsWith('/api/') ? await onRequest({ request, env, params: {}, waitUntil() {} }) : await adminPage({ request, env });
       const h = {}; r.headers.forEach((v, k) => { if (k !== 'set-cookie') h[k] = v; });
       const sc = r.headers.getSetCookie(); if (sc.length) h['set-cookie'] = sc;
       res.writeHead(r.status, h); return res.end(Buffer.from(await r.arrayBuffer()));

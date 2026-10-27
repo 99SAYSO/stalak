@@ -398,6 +398,83 @@ Le glaçon en bas à droite répond aux questions sur Stalak. Sur claude.ai, c'e
 
 ---
 
+## 13. Ton tableau de bord privé (admin.stalak.app) et « Parler à un humain »
+
+Le tableau de bord montre les inscrits, les abonnés Pro (mensuels, annuels) et le revenu, les visiteurs en direct, l'évolution
+jour par jour, l'usage des fonctions et les messages des visiteurs, auxquels tu réponds depuis la page.
+Il est à `https://admin.stalak.app/admin/`, réservé à ton e-mail par **Cloudflare Access**. Le serveur vérifie lui-même,
+à chaque requête, la signature d'Access, l'adresse `admin.stalak.app` et ton e-mail : ailleurs (stalak.app, pages.dev),
+ces pages n'existent pas. Tant que les 2 secrets de l'étape 13.4 manquent, le tableau de bord est éteint.
+
+### 13.1 La base (avant de publier)
+Dans la **Console** de la base D1 `stalak`, colle **tout** `migrations/0006_admin_support.sql` et clique sur **Execute** (une seule fois).
+
+### 13.2 L'adresse admin.stalak.app
+**Workers & Pages → stalak-site → Custom domains → Set up a custom domain** → `admin.stalak.app` → **Continue** → **Activate domain**.
+Cloudflare crée l'enregistrement DNS tout seul. (Ne visite pas encore l'adresse : fais d'abord 13.3.)
+
+### 13.3 Cloudflare Access (gratuit jusqu'à 50 personnes)
+**Déjà fait le 27/10** : Zero Trust Free, équipe `small-band-a6ef` (`https://small-band-a6ef.cloudflareaccess.com`, déjà dans
+`wrangler.toml`), application Access « admin » sur `admin.stalak.app`, code par e-mail pour le propriétaire seul.
+Il reste à copier son AUD : **Zero Trust → Access controls → Applications → admin → Configure → Additional settings →
+Application Audience (AUD) Tag**. Pour refaire ailleurs :
+1. Dans le tableau de bord Cloudflare, ouvre **Zero Trust**. La première fois : choisis un **nom d'équipe** (par exemple `stalak`),
+   puis l'offre **Free**. Cloudflare demande un moyen de paiement même pour l'offre gratuite, sans rien prélever.
+   Ton adresse d'équipe sera `https://<nom-d-équipe>.cloudflareaccess.com` (visible dans **Settings**).
+2. **Access** (ou **Access controls**) → **Applications** → **Add an application** → **Self-hosted** :
+   - nom : `Stalak admin` ; durée de session : `24 hours` ;
+   - domaine : sous-domaine `admin`, domaine `stalak.app`, chemin vide ;
+   - règle (**policy**) : nom `Moi seul`, action **Allow**, sélecteur **Emails**, valeur : ton adresse e-mail ;
+   - méthode de connexion : **One-time PIN** (un code envoyé à ton e-mail). Elle est active par défaut
+     (**Settings → Authentication → Login methods**).
+   Enregistre.
+3. Ouvre l'application (**Configure**) → **Additional settings** (ou **Overview**) : copie l'**Application Audience (AUD) Tag**.
+
+### 13.4 Les réglages, dans Cloudflare
+**Workers & Pages → stalak-site → Settings → Variables and Secrets**, environnement **Production**, type **Secret** :
+
+| Nom | Valeur |
+|---|---|
+| `ACCESS_AUD` | l'AUD Tag de l'application « admin » (13.3) |
+| `ADMIN_EMAILS` | ton adresse e-mail (plusieurs : séparées par des virgules) |
+| `SUPPORT_EMAIL` (facultatif) | où recevoir les nouveaux messages ; par défaut `contact@stalak.app` (qui arrive sur ton Gmail) |
+
+`ADMIN_HOST = "admin.stalak.app"` et `ACCESS_TEAM_DOMAIN` (l'adresse de l'équipe) sont déjà dans `wrangler.toml`. Les réglages s'appliquent à la publication suivante.
+
+### 13.5 Paddle : les remboursements
+Pour que les remboursements comptent dans le revenu : Paddle → **Developer tools → Notifications** → ta destination →
+coche aussi `adjustment.created` et `adjustment.updated`, puis enregistre. (Le revenu part de la mise en ligne de cette version :
+les paiements d'avant ne sont pas rattrapés.)
+
+### 13.6 Facultatif : arriver directement sur le tableau de bord
+**stalak.app → Rules → Redirect Rules → Create rule** : si le nom d'hôte est `admin.stalak.app` et le chemin est `/`,
+rediriger (302) vers `https://admin.stalak.app/admin/`. Sinon, garde le favori `https://admin.stalak.app/admin/`.
+
+### 13.7 Vérifier
+- `https://admin.stalak.app/admin/` : Cloudflare demande ton e-mail, envoie un code, puis le tableau de bord s'affiche.
+- `https://stalak.app/admin/` : « Not found ».
+- Sur stalak.app, ouvre le glaçon → **Parler à un humain** → écris un message avec ton autre adresse e-mail :
+  il apparaît dans le tableau de bord, et un e-mail « Stalak : nouveau message » arrive sur contact@stalak.app.
+
+### Comment marche « Parler à un humain »
+- Interrupteur **Je suis disponible** allumé **et** tableau de bord ouvert (moins de 3 minutes) : le glaçon propose le direct
+  (l'e-mail du visiteur est facultatif) et tu réponds en direct.
+- Sinon : le visiteur doit laisser son e-mail, et tu reçois un e-mail pour chaque nouvelle conversation
+  (au plus un par conversation toutes les 15 minutes, 50 par jour).
+- Ta réponse part par e-mail si le visiteur n'est plus sur la page (sa page ne l'a pas récupérée en 20 s), avec
+  `contact@stalak.app` en adresse de réponse. Le menu « Par e-mail » : *si absent* (par défaut), *toujours*, *jamais*.
+- La conversation reste sur l'appareil du visiteur 30 jours : il retrouve tes réponses en rouvrant le glaçon.
+- Effacement : 6 mois après le dernier message, avec le compte, ou avec le bouton **Supprimer** du tableau de bord.
+- Limites : 5 nouvelles conversations par heure et 20 par jour par connexion, 200 par jour pour le site ; messages de 2 000 caractères.
+
+### Les visites
+Chaque page ouverte envoie un signe de vie par minute (un nombre au hasard, sans cookie ni IP). « En direct » = vu dans les
+2 dernières minutes. Une page rechargée compte comme une nouvelle visite. Coût : 1 écriture D1 et 1 requête par minute et par
+page ouverte (offre gratuite : 100 000 de chaque par jour, soit environ 1 600 heures de visite par jour).
+L'audience détaillée (pays, appareils) reste dans **Web Analytics**.
+
+---
+
 ## Pour le développeur
 
 ### Routes (`/api/…`)
@@ -436,6 +513,12 @@ Toutes les réponses sont en JSON. Les erreurs ont la forme `{"error":"code","me
 | `GET /api/projects/:id/files/:fileId` | Le fichier, lu depuis R2, **pour son propriétaire seulement** ; accepte `Range` (réponse `206`, `416` hors limites). `Cache-Control: private, no-store`, `nosniff`, `Content-Security-Policy: sandbox`, `Content-Disposition: attachment`. |
 | `DELETE /api/projects/:id/files/:fileId` | Abandonne un envoi ou efface un fichier. |
 | `POST /api/help/chat` | `{lang: 'fr'\|'en', messages: [{role: 'user'\|'assistant', content}], context}` (sans compte). 10 derniers tours, 6 000 caractères au plus, le dernier de l'utilisateur ; `context` (4 000 caractères) = ce que montre la page. Renvoie `{answer}` (texte simple). Erreurs `invalid_messages`, `rate_limited` (429, `retryAfter`), `help_busy` (503, budget du jour épuisé), `ai_unavailable` (503), `help_failed` (503 : un 502 serait remplacé par la page d'erreur de Cloudflare ; la réponse vide est redemandée une fois avant). |
+| `POST /api/presence` | `{vid, lang}` : la page est ouverte (signe de vie, 1 par minute). `vid` = 16 à 40 lettres ou chiffres tirés au hasard par la page. 60 nouvelles visites par heure et par connexion (`429` au-delà). |
+| `GET /api/support/status` | `{available}` : l'équipe propose le direct (interrupteur allumé et tableau de bord ouvert depuis moins de 3 min). |
+| `POST /api/support/tickets` | `{lang, message, email?, context?}` (sans compte ; connecté : e-mail vérifié du compte par défaut). Renvoie `{id, token, available, email, messages}`. Erreurs `email_required` (personne n'est là et pas d'e-mail), `invalid_email`, `invalid_message`, `rate_limited`, `support_busy` (503). |
+| `GET /api/support/tickets/:id?after=<id>` | En-tête `X-Ticket-Token`. `{status, available, email, messages: [{id, from: 'user'\|'admin', text, at, emailed}]}`. Mauvais jeton = `404`. |
+| `POST /api/support/tickets/:id/messages` | En-tête `X-Ticket-Token`, `{text, email?, after?}`. Rouvre une conversation fermée. |
+| `GET\|POST\|DELETE /api/admin/*` | Tableau de bord (hôte `ADMIN_HOST` + jeton Cloudflare Access ; écritures : JSON + `Origin` du tableau de bord) : `me`, `stats?days=7..120`, `live`, `available`, `tickets[?status=open\|closed\|all]`, `tickets/:id` (GET, DELETE), `tickets/:id/messages` (`{text, email: 'auto'\|'yes'\|'no'}`), `tickets/:id/status`. Ailleurs : `404`. |
 | `POST /api/cron/cloud-cleanup` | Règle des 6 mois, pour un cron externe : `Authorization: Bearer <CRON_SECRET>` (sinon `404`). |
 | `DELETE /api/account` | `{confirm:true}`. Arrête l'abonnement Paddle, puis efface toutes les données (dont le pseudo, la photo et le mot de passe, qui sont dans la ligne `users`). |
 | `GET /api/connect` | Comptes TikTok / Instagram reliés : `{providers, accounts: [{provider, username, displayName, avatarUrl, accountType, status, connectedAt}]}` (jamais les jetons). Tout `/api/connect…` répond `404 not_enabled` tant que `SOCIAL_CONNECT_ENABLED` ne vaut pas `"1"`. |
@@ -523,6 +606,9 @@ Pour la base locale : `npx wrangler d1 migrations apply stalak --local`.
 - Liaison R2 d'un projet Pages (`context.env.<BINDING>`) : <https://developers.cloudflare.com/pages/functions/bindings/>
 - Configuration `wrangler.toml` pour Pages (`pages_build_output_dir`, D1) : <https://developers.cloudflare.com/pages/functions/wrangler-configuration/>
 - Modèle de texte Workers AI `@cf/google/gemma-4-26b-a4b-it` (`messages` avec les rôles system / user / assistant, `max_completion_tokens`, sortie `choices[]`) : <https://developers.cloudflare.com/workers-ai/models/gemma-4-26b-a4b-it/> ; prix (9 091 neurons par million de jetons en entrée, 27 273 en sortie) : <https://developers.cloudflare.com/workers-ai/platform/pricing/>
+- Vérifier le jeton de Cloudflare Access (`Cf-Access-Jwt-Assertion`, RS256, `iss` = adresse d'équipe, `aud` = AUD Tag, clés sur `/cdn-cgi/access/certs`) : <https://developers.cloudflare.com/cloudflare-one/access-controls/applications/http-apps/authorization-cookie/validating-json/>
+- Création de l'organisation Zero Trust (offre Free, moyen de paiement demandé sans prélèvement) : <https://developers.cloudflare.com/learning-paths/zero-trust-web-access/initial-setup/create-zero-trust-org/>
+- Paiements Paddle (`transaction.completed`, montants en centimes dans `details.totals`) : <https://developer.paddle.com/webhooks/transactions/transaction-completed> ; remboursements (`adjustment.created` / `adjustment.updated`) : <https://developer.paddle.com/webhooks/adjustments/adjustment-updated>
 - Envoi d'e-mail avec Resend : <https://resend.com/docs/api-reference/emails/send-email>
 - OpenID Connect chez Google (points d'accès, `id_token`, `email_verified`) : <https://developers.google.com/identity/openid-connect/openid-connect>
 - Microsoft identity platform, OIDC et validation des jetons multi-locataires (`iss` avec `{tid}`, revendication `xms_edov`) : <https://learn.microsoft.com/entra/identity-platform/v2-protocols-oidc>, <https://learn.microsoft.com/entra/identity-platform/optional-claims-reference>

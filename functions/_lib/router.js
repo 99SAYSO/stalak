@@ -10,6 +10,9 @@ import { projectFiles, storageInfo, checkProjectFiles, dropUnusedFiles, readyFil
 import { timingSafeEqual } from './crypto.js';
 import { transcribe } from './lyrics.js';
 import { helpChat } from './help.js';
+import { admin } from './admin.js';
+import { support } from './support.js';
+import { presence, bump } from './metrics.js';
 
 const PROJECT_MAX_BYTES = 256 * 1024; // ~200 KB of project JSON + envelope
 const PROJECT_MAX_COUNT = 200;
@@ -111,6 +114,7 @@ async function projects(request, env, method, rest, ctx) {
          media_bytes = COALESCE(?7, media_bytes)`
     ).bind(user.id, id, name, data, data.length, now, mediaBytes).run();
     if (withFiles) await dropUnusedFiles(env, user.id, id, body.files);
+    await bump(env, 'cloud_save');
     return json({ ok: true, id, updatedAt: new Date(now).toISOString(), mediaBytes: mediaBytes || 0, storage: await storageInfo(env, user.id) });
   }
   if (method === 'PATCH') {
@@ -167,6 +171,10 @@ async function deleteAccount(request, env) {
     env.DB.prepare('DELETE FROM trusted_devices WHERE user_id = ?1').bind(user.id),
     env.DB.prepare('DELETE FROM identities WHERE user_id = ?1').bind(user.id),
     env.DB.prepare('DELETE FROM rate_limits WHERE key = ?1').bind(await failKey(user.email)),
+    // « Parler à un humain »: the conversations of this account go too; payments stay (accounting) without the link
+    env.DB.prepare('DELETE FROM ticket_messages WHERE ticket_id IN (SELECT id FROM tickets WHERE user_id = ?1)').bind(user.id),
+    env.DB.prepare('DELETE FROM tickets WHERE user_id = ?1').bind(user.id),
+    env.DB.prepare('UPDATE payments SET user_id = NULL WHERE user_id = ?1').bind(user.id),
     // the users row holds the display name, the photo and the password hash: all gone with it
     env.DB.prepare('DELETE FROM users WHERE id = ?1').bind(user.id),
   ]);
@@ -204,6 +212,8 @@ async function dispatch(request, env, ctx) {
     }
     // Meta (Instagram) tells Stalak an account was unlinked or asks for its data to be erased: signed by the app secret
     if (isSocialWebhook(parts)) return socialWebhook(request, env, parts[1], parts[2], method);
+    // the owner's dashboard (admin.js): admin host + Cloudflare Access token, its own Origin check; 404 anywhere else
+    if (parts[0] === 'admin') return admin(request, env, method, parts.slice(1));
     if (route === 'cron/cloud-cleanup') {
       if (method !== 'POST') throw new HttpError(405, 'method_not_allowed', 'Method not allowed.');
       return cronCleanup(request, env);
@@ -266,6 +276,10 @@ async function dispatch(request, env, ctx) {
         // « Paroles automatiques » (Stalak Pro): one piece of the song's voice → timed words (functions/_lib/lyrics.js)
         if (method !== 'POST') break;
         return transcribe(request, env);
+      case 'presence':
+        // the page is open (a random number per page load, no cookie): visits and live visitors on the dashboard
+        if (method !== 'POST') break;
+        return presence(request, env);
       case 'help/chat':
         // the help assistant of the ice cube (functions/_lib/help.js): open to everyone, signed in or not
         if (method !== 'POST') break;
@@ -273,6 +287,8 @@ async function dispatch(request, env, ctx) {
       default:
         if (parts[0] === 'projects' && parts.length <= 6) return projects(request, env, method, parts.slice(1), ctx);
         if (parts[0] === 'connect' && parts.length <= 3) return social(request, env, method, parts.slice(1));
+        // « Parler à un humain » (support.js)
+        if (parts[0] === 'support') return support(request, env, method, parts.slice(1), ctx);
         throw new HttpError(404, 'not_found', 'Unknown API route.');
     }
     throw new HttpError(405, 'method_not_allowed', 'Method not allowed.');

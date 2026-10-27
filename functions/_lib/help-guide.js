@@ -73,7 +73,7 @@ switching from one take to another, with perfect lip sync, then exports the vide
 
 THE SITE, IN 4 STEPS (tabs at the top: 1 Sound, 2 Takes, 3 Lyrics, 4 Edit)
 1. Sound
-- "I'm making": "TikTok / Reels" (vertical 9:16 video, the whole song or 4, 8, 12 bars) or "Music video" (16:9 video of the whole song, with effects; Stalak Pro).
+- "I'm making": "TikTok / Reels" (vertical 9:16 video, the whole song or 4, 8, 12 bars) or "Music video" (also called Clip mode: 16:9 video of the whole song, with effects; Stalak Pro).
 - "Import your music": MP3, WAV, M4A, or a video directly (MP4, MOV): Stalak takes the video's sound. "▶ Listen" to hear it.
 - Picking the part: by default "Whole song". "Length": Whole song, 4, 8 or 12 bars. Tapping the waveform moves the start of the part.
 - "Cuts not on the beat?": tapping TAP starts the song, then tap TAP in time on every beat, starting on a strong beat (at least 8 times); "Apply" sets the tempo. "▶ Check with beeps" plays a beep on every beat.
