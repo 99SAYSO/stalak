@@ -84,6 +84,8 @@ th{color:var(--text2);font-weight:600}
 .tlist .l1 b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
 .tlist .l2{color:var(--text2);font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .badge{background:var(--bad);color:#fff;border-radius:99px;font-size:11px;padding:1px 7px;font-weight:700}
+.pro{background:var(--ink);color:#fff;border-radius:6px;font-size:11px;padding:1px 6px;font-weight:700;letter-spacing:.03em}
+.pro.off{background:var(--line);color:var(--text2)}
 .empty{color:var(--muted);padding:16px;text-align:center}
 .conv{border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column;min-height:420px;min-width:0}
 .conv .head{padding:10px 12px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
@@ -330,6 +332,7 @@ th{color:var(--text2);font-weight:600}
         var b = el('button', { type: 'button', 'data-id': t.id, 'aria-current': S.open === t.id ? 'true' : 'false' });
         var l1 = el('div', { class: 'l1' });
         l1.append(el('b', null, t.email || 'Visiteur sans e-mail'));
+        l1.append(t.pro ? el('span', { class: 'pro', title: 'Abonné Stalak Pro' }, 'Pro') : el('span', { class: 'pro off', title: t.account ? 'Plus abonné Pro' : 'Sans compte' }, t.account ? 'ex-Pro' : 'invité'));
         if (t.unread) l1.append(el('span', { class: 'badge' }, 'nouveau'));
         if (t.visitorLive) l1.append(el('span', { class: 'pill on' }, 'en ligne'));
         b.append(l1, el('div', { class: 'l2' }, (t.lastFrom === 'admin' ? 'Toi : ' : '') + t.lastText), el('div', { class: 'l2' }, ago(t.updatedAt) + ' · ' + t.lang.toUpperCase() + (t.account ? ' · compte' : '') + (t.status === 'closed' ? ' · fermé' : '')));
@@ -359,7 +362,7 @@ th{color:var(--text2);font-weight:600}
       var conv = $('#conv'), draft = keepDraft && $('#replyText') ? $('#replyText').value : '';
       conv.textContent = '';
       var head = el('div', { class: 'head' });
-      head.append(el('b', null, t.email || 'Visiteur sans e-mail'), el('span', { class: 'pill' + (t.visitorLive ? ' on' : '') }, t.visitorLive ? 'en ligne, il voit ta réponse' : (t.visitorSeenAt ? 'vu ' + ago(t.visitorSeenAt) : 'absent')));
+      head.append(el('b', null, t.email || 'Visiteur sans e-mail'), t.account && t.account.pro ? el('span', { class: 'pro' }, 'Pro') : el('span', { class: 'pro off' }, t.account ? 'ex-Pro' : 'invité'), el('span', { class: 'pill' + (t.visitorLive ? ' on' : '') }, t.visitorLive ? 'en ligne, il voit ta réponse' : (t.visitorSeenAt ? 'vu ' + ago(t.visitorSeenAt) : 'absent')));
       head.append(el('span', { class: 'sp' }));
       var close = el('button', { type: 'button', class: 'btn small' }, t.status === 'open' ? 'Fermer' : 'Rouvrir');
       close.addEventListener('click', function () { api('POST', 'tickets/' + encodeURIComponent(id) + '/status', { status: t.status === 'open' ? 'closed' : 'open' }).then(function () { tickets(); openTicket(id); }); });
