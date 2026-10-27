@@ -20,7 +20,7 @@
 
 ## En cours
 - Rien. La précision des paroles auto est en ligne : voix mise en avant, contexte entre les morceaux, import de la voix seule. Seuils à vérifier sur de vraies chansons via les infos techniques (« centre / mix »).
-- **Assistant IA de la bulle d'aide** (branche `compte/assistant-aide`, prête à fusionner) :
+- **Assistant IA de la bulle d'aide** (branche `compte/assistant-aide`, compte rendu `docs/handoff/compte-assistant-aide.md`, Statut : PRÊT) :
   - le glaçon d'aide répond sur stalak.app (route `POST /api/help/chat`, Workers AI, modèle Gemma 4 26B) ;
   - ouvert à tous, sans compte ; rien n'est gardé ; message « IA, peut se tromper » ;
   - limites : 15 questions / 10 min et 60 / jour par connexion, 60 / jour pour tout le site (`HELP_DAILY_MAX`) ;
@@ -53,8 +53,11 @@
 - Publication directe : connexion des comptes, adresse vidéo temporaire sur R2, dossiers de validation, vidéo de démo.
 
 ### Marketing & croissance
-- Contenu des réseaux de Stalak, plan de lancement.
-- Logo de Stalak sur l'écran de connexion Google (vérification de l'app par Google).
+- **Fait (branche `marketing/audit-site`)** : audit SEO et textes de l'accueil et des Tarifs, FR/EN. Détail dans `docs/marketing/AUDIT_SITE.md`. Descriptions raccourcies, aperçus de partage sur Tarifs, limites Pro affichées, FAQ « données envoyées » corrigée (paroles auto), karaoké marqué Pro, section « comment faire un playback » sur l'accueil.
+- **Fait** : plan de lancement en 4 phases, calcul de l'objectif, idées de vidéos, calendrier réseaux 2 → 29 nov. avec légendes FR/EN, messages testeurs et e-mail Pro (document « Stalak — plan de lancement et réseaux » dans claude.ai).
+- **Fait et en ligne** : logo 120 × 120 sur l'écran de connexion Google. Envoyé dans Google Cloud → Stalak → Branding par le Chef de projet le 27/10 ; marque vérifiée et publiée par Google.
+- **À décider** : boutons Pro de la page Tarifs pendant que Paddle est en sandbox (« bientôt » ou Paddle réel) avant toute promo.
+- **À demander** : case « recevoir les nouveautés » à l'inscription (Comptes) ; mots « montage de playback » dans le H1 et JS/CSS en fichiers cachés (App).
 
 ### Juridique & business
 - LLC ou micro-entreprise.
