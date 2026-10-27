@@ -72,9 +72,9 @@ export function cleanSegments(out, duration) {
     // no voice, repeated / low-confidence text, or a known silence hallucination
     // (Whisper's own rules: no_speech_prob > 0.6 with avg_logprob < -1; compression ratio > 2.4; sung words over music
     // often score low, so only a very low confidence alone drops a segment)
-    if (num(s.no_speech_prob) != null && s.no_speech_prob > 0.6 && (num(s.avg_logprob) == null || s.avg_logprob < -1)) continue;
+    if (num(s.no_speech_prob) != null && s.no_speech_prob > 0.85 && (num(s.avg_logprob) == null || s.avg_logprob < -1.2)) continue;
     if (num(s.compression_ratio) != null && s.compression_ratio > 2.4) continue;
-    if (num(s.avg_logprob) != null && s.avg_logprob < -2) continue;
+    if (num(s.avg_logprob) != null && s.avg_logprob < -2.5) continue;
     let words = (Array.isArray(s.words) ? s.words : [])
       .map((w) => ({ word: String((w && w.word) || '').replace(/\s+/g, ' ').trim(), start: num(w && w.start), end: num(w && w.end) }))
       .filter((w) => w.word && w.start != null)
@@ -128,7 +128,10 @@ export async function transcribe(request, env) {
   const q = await useQuota(env, user.id, day, seconds, part === 0);
   if (!q) throw new HttpError(429, 'quota_exceeded', `Daily limit reached (${JOBS_PER_DAY} transcriptions or ${SECONDS_PER_DAY / 60} minutes of audio per day).`);
 
-  const input = { audio, task: 'transcribe', vad_filter: true, condition_on_previous_text: false, hallucination_silence_threshold: 2 };
+  // sung lyrics over music: no voice-activity filter (it takes singing for music and throws it away) and no silence
+  // skipping; a short prompt tells the model it is a song. Repeats on silence are cleaned afterwards (cleanSegments).
+  const input = { audio, task: 'transcribe', vad_filter: false, condition_on_previous_text: false,
+    initial_prompt: language === 'en' ? 'Song lyrics.' : language === 'fr' ? 'Paroles de chanson.' : 'Song lyrics. Paroles de chanson.' };
   if (language) input.language = language;
   let out;
   try {
@@ -144,6 +147,8 @@ export async function transcribe(request, env) {
   const info = (out && out.transcription_info) || {};
   return json({
     segments: cleanSegments(out, duration),
+    debug: { raw: Array.isArray(out && out.segments) ? out.segments.length : 0, words: Array.isArray(out && out.words) ? out.words.length : 0,
+      chars: typeof (out && out.text) === 'string' ? out.text.length : 0 },
     language: typeof info.language === 'string' && LANG.test(info.language) ? info.language : language,
     duration: r3(duration),
     usage: { jobs: q.jobs, jobsMax: JOBS_PER_DAY, seconds: Math.round(q.seconds), secondsMax: SECONDS_PER_DAY },

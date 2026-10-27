@@ -1449,7 +1449,7 @@ test('lyrics transcribe: signed in + Pro only; Workers AI called with the docume
   assert.equal(AI.calls.length, 1);
   const { model, input } = AI.calls[0];
   assert.equal(model, '@cf/openai/whisper-large-v3-turbo');
-  assert.equal(input.task, 'transcribe'); assert.equal(input.language, 'fr'); assert.equal(input.vad_filter, true);
+  assert.equal(input.task, 'transcribe'); assert.equal(input.language, 'fr'); assert.equal(input.vad_filter, false, 'no voice filter: it drops singing');
   assert.equal(input.condition_on_previous_text, false);
   assert.equal(input.audio, WAV20, 'the base64 WAV is passed as is');
   assert.equal(r.data.language, 'fr'); assert.equal(r.data.duration, 20);

@@ -5007,6 +5007,7 @@ async function transcribeLyrics(){
     const send = async k => {
       const [p, q] = pieces[k];
       const r = await trPost({ audio: trWav(x.subarray(p, q)), job, part: k, parts: pieces.length, language: lang });
+      if (r.debug) diag('paroles auto : morceau ' + (k + 1) + ' → le modèle a rendu ' + r.debug.raw + ' segment(s), ' + r.debug.words + ' mot(s) à part, ' + r.debug.chars + ' caractères ; ' + (r.segments || []).length + ' gardé(s)');
       results[k] = (r.segments || []).map(sg => ({ ...sg, start: sg.start + a + p / TR_SR, end: sg.end + a + p / TR_SR,
         words: (sg.words || []).map(w => ({ word: w.word, start: w.start + a + p / TR_SR, end: w.end + a + p / TR_SR })) }));
       ++done; shown = Math.max(shown, Math.min(0.97, done / pieces.length)); progress(shown);
