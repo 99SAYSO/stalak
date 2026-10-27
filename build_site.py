@@ -13,6 +13,7 @@ def arg(name, default=''):
     return args[args.index(name) + 1] if name in args else default
 EMAIL = arg('--email')
 DOMAIN = arg('--domain', 'stalak.app')
+SELLER = arg('--seller')   # legal name of the seller (company or sole proprietor), shown in the terms of sale
 URL = 'https://' + DOMAIN
 
 head = (src / 'head.html').read_text(encoding='utf-8')
@@ -45,12 +46,12 @@ PAGE = {
     <ul>
       <li>Coupes automatiques sur les temps, sur les mots ou par mesure.</li>
       <li>Paroles à l’écran calées sur la voix, style karaoké.</li>
-      <li>Mode Clip avec effets : flash, zoom, secousse, ralenti…</li>
+      <li>Mode Clip avec effets : flash, zoom, secousse, ralenti… (Stalak Pro)</li>
       <li>Packs de 5 à 30 vidéos différentes pour poster tous les jours.</li>
       <li>Tout se passe dans ton navigateur, sur iPhone, Android ou ordinateur : tes vidéos restent chez toi.</li>
     </ul>
   """,
-    'legal': '<a href="/mentions-legales">Mentions légales</a> · <a href="/confidentialite">Confidentialité</a>',
+    'legal': '<a href="/tarifs">Tarifs</a> · <a href="/conditions">Conditions</a> · <a href="/remboursement">Remboursement</a> · <a href="/confidentialite">Confidentialité</a> · <a href="/mentions-legales">Mentions légales</a>',
   },
   'en': {
     'path': '/en/', 'locale': 'en_US',
@@ -65,12 +66,12 @@ PAGE = {
     <ul>
       <li>Automatic cuts on the beats, on the words or every bar.</li>
       <li>On-screen lyrics synced to the voice, karaoke style.</li>
-      <li>Music video mode with effects: flash, zoom, shake, slow-mo…</li>
+      <li>Music video mode with effects: flash, zoom, shake, slow-mo… (Stalak Pro)</li>
       <li>Packs of 5 to 30 different videos to post every day.</li>
       <li>Everything happens in your browser, on iPhone, Android or computer: your videos stay with you.</li>
     </ul>
   """,
-    'legal': '<a href="/en/legal-notice">Legal notice</a> · <a href="/en/privacy">Privacy</a>',
+    'legal': '<a href="/en/pricing">Pricing</a> · <a href="/en/terms">Terms</a> · <a href="/en/refunds">Refunds</a> · <a href="/en/privacy">Privacy</a> · <a href="/en/legal-notice">Legal notice</a>',
   },
 }
 
@@ -181,13 +182,13 @@ shutil.copytree(extra, out)
 (out / 'en' / 'index.html').write_text(page('en', markup_en), encoding='utf-8')
 
 # 4. legal pages (to complete with the publisher's details: see the [ … ] parts)
-for name in ['mentions-legales.html', 'confidentialite.html', 'en/legal-notice.html', 'en/privacy.html']:
+for name in ['mentions-legales.html', 'confidentialite.html', 'en/legal-notice.html', 'en/privacy.html', 'tarifs.html', 'conditions.html', 'remboursement.html', 'en/pricing.html', 'en/terms.html', 'en/refunds.html']:
     p = out / name
-    p.write_text(p.read_text(encoding='utf-8').replace('{{EMAIL}}', EMAIL or ('[E-MAIL ADDRESS]' if name.startswith('en/') else '[ADRESSE E-MAIL]')).replace('{{URL}}', URL), encoding='utf-8')
+    p.write_text(p.read_text(encoding='utf-8').replace('{{EMAIL}}', EMAIL or ('[E-MAIL ADDRESS]' if name.startswith('en/') else '[ADRESSE E-MAIL]')).replace('{{URL}}', URL).replace('{{SELLER}}', SELLER or ('the publisher of the site, a private individual' if name.startswith('en/') else 'l’éditeur du site, un particulier')), encoding='utf-8')
 (out / 'robots.txt').write_text(f'User-agent: *\nAllow: /\nSitemap: {URL}/sitemap.xml\n', encoding='utf-8')
 today = datetime.date.today().isoformat()
 alts = ''.join(f'<xhtml:link rel="alternate" hreflang="{l}" href="{u}"/>' for l, u in [('fr', URL + '/'), ('en', URL + '/en/'), ('x-default', URL + '/en/')])
 (out / 'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">'
-    + ''.join(f'<url><loc>{u}</loc><lastmod>{today}</lastmod>{alts}</url>' for u in [URL + '/', URL + '/en/']) + '</urlset>\n', encoding='utf-8')
+    + ''.join(f'<url><loc>{u}</loc><lastmod>{today}</lastmod>{alts}</url>' for u in [URL + '/', URL + '/en/']) + ''.join(f'<url><loc>{URL}{a}</loc><lastmod>{today}</lastmod><xhtml:link rel="alternate" hreflang="fr" href="{URL}{a}"/><xhtml:link rel="alternate" hreflang="en" href="{URL}{b}"/></url><url><loc>{URL}{b}</loc><lastmod>{today}</lastmod><xhtml:link rel="alternate" hreflang="fr" href="{URL}{a}"/><xhtml:link rel="alternate" hreflang="en" href="{URL}{b}"/></url>' for a, b in [('/tarifs', '/en/pricing')]) + '</urlset>\n', encoding='utf-8')
 n = sum(1 for _ in out.rglob('*') if _.is_file()); size = sum(f.stat().st_size for f in out.rglob('*') if f.is_file())
 print('site built in', out, '·', n, 'files ·', round(size / 1048576, 1), 'MB')
