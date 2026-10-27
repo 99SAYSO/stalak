@@ -3552,7 +3552,10 @@ async function buildClickWav(){
 /* the song can also play through Web Audio, without any media element: Safari's media player was seen to lock the page */
 const wa = { ctx: null, node: null, t0: 0, started: false, ended: false };
 function waOn(){ return S.waSong && !!(window.AudioContext || window.webkitAudioContext); }
-function soundAlways(){ try { if (navigator.audioSession && navigator.audioSession.type !== 'playback') navigator.audioSession.type = 'playback'; } catch(e){} }
+/* iPhone: « playback » lets the sound out even on silent, but forbids the microphone (the camera then fails with
+   InvalidStateError). While the camera is open the session goes back to « auto » (as before: the song plays aloud, the mic works) */
+let camWanted = false;
+function soundAlways(){ try { const want = camWanted || recStream ? 'auto' : 'playback'; if (navigator.audioSession && navigator.audioSession.type !== want) navigator.audioSession.type = want; } catch(e){} }
 function waCtx(){ soundAlways(); if (!wa.ctx){ const C = window.AudioContext || window.webkitAudioContext; wa.ctx = new C(); } if (wa.ctx.state !== 'running') wa.ctx.resume().catch(() => {}); return wa.ctx; }
 function waStop(){ wa.started = false; if (wa.node){ try { wa.node.onended = null; wa.node.stop(); wa.node.disconnect(); } catch(e){} wa.node = null; } }
 function songNow(){ return clockPerf ? playFrom + (performance.now() - perfT0) / 1000 : wa.started ? playFrom + (wa.ctx.currentTime - wa.t0) : playBase + player.currentTime; }
@@ -3776,10 +3779,12 @@ async function camFlip(){
 }
 async function openCamera(){
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ status('Ton navigateur ne permet pas de filmer ici. Importe tes vidéos à la place.'); return; }
+  camWanted = true; soundAlways();
   try {
     recStream = await camStream(camFacing);
   } catch(e){
     const why = e && e.name || 'erreur';
+    camWanted = false; soundAlways();
     diag('caméra refusée (' + why + ')');
     if (window.claude) status('La caméra n’est pas accessible dans cet aperçu. Elle marche sur stalak.app. En attendant, filme avec ton téléphone (son en haut-parleur) et importe les vidéos.');
     else if (why === 'NotAllowedError') status(/iPhone|iPad|iPod/.test(navigator.userAgent)
@@ -3796,6 +3801,7 @@ function closeCamera(){
   recStopReq = true;
   if (recRec && recRec.state !== 'inactive') recRec.stop();
   if (recStream) recStream.getTracks().forEach(t => t.stop()); recStream = null;
+  camWanted = false; soundAlways();
   $('#recPanel').hidden = true; $('#takeChoices').hidden = false; $('#recVideo').srcObject = null;
 }
 function recordTake(){
