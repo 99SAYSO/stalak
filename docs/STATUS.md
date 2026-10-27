@@ -129,6 +129,43 @@
 
 **À mesurer dès la bêta** : visites → premier export → affichage de Pro → achat, et visites venues de `?ref=outro`.
 
+## Stratégie vers 30 000 € par mois (28/10/2026, à répartir par le propriétaire)
+
+> Objectif du propriétaire : 30 000 € de revenu **par mois**, d'ici 6 mois. Document complet : « Stalak — stratégie vers 30 000 € par mois » dans claude.ai ; résumé dans `docs/marketing/STRATEGIE_REVENUS.md`.
+
+**Point bloquant à lever d'abord (Juridique + Comptes).** Les règles de Paddle (13/04/2026) interdisent la vente de publicité, le marketing automatisé sur les réseaux et les places de marché. Les campagnes de son et le « son à la une » ne pourront pas passer par Paddle.
+- Demander à Paddle, par écrit, ce qu'il accepte, en particulier la « campagne faite pour toi ».
+- Prévoir une facturation directe par une société et un autre moyen de payer les créateurs.
+- À prendre en compte dans le choix du statut : à 30 000 € par mois, on dépasse les plafonds de la micro-entreprise.
+
+**À trancher par le propriétaire (change l'offre déjà décidée)**
+- Studio : 49 €/mois pour 5 artistes.
+- Label : 149 €/mois pour 20 artistes.
+- Pack de sortie : 19 € une fois.
+- Prix en dollars aux États-Unis (par exemple 12,99 $/mois).
+- Campagnes de son : à partir de 500 €, Stalak garde 25 %.
+- Son à la une : par exemple 300 à 500 € la semaine.
+- Campagne faite pour toi : 149 €.
+
+**Recommandé, par rôle**
+1. **Comptes** : formules Studio et Label (plusieurs artistes par compte) et pack de sortie dans Paddle, une fois validés ; prix en dollars aux États-Unis. Ensuite, le tableau de bord suit le revenu par source.
+2. **Marketing** : page Tarifs avec les formules Studio et Label ; argumentaire pour les labels ; 3 campagnes pilotes en janvier avec des artistes ou labels connus, si la société existe.
+3. **App & montage** : écran « campagnes » (un label dépose un son, les artistes font des vidéos dessus, avec la mention « Collaboration commerciale » ajoutée automatiquement) ; « son à la une » avec les paroles déjà calées. À faire seulement après le pilote à la main.
+4. **Juridique** : loi influenceurs du 9 juin 2023 (mention pendant toute la vidéo, contrat écrit, responsabilité de l'intermédiaire ; vérifier si elle a changé depuis) ; mois Pro donnés en récompense ; mineurs (accord des parents avant 15 ans pour les données, âge minimum de Paddle) ; statut de la société.
+
+**Exemple de répartition à 30 000 € par mois** (hypothèses, pas une prévision) :
+
+| Source | Hypothèse | Revenu par mois |
+|---|---|---|
+| Campagnes de son | 20 × 2 000 € à 25 % | 10 000 € |
+| Pro | 1 000 abonnés | 8 500 € |
+| Studio / Label | 60 Studio + 15 Label | 5 175 € |
+| Packs de sortie | 150 packs | 2 850 € |
+| Campagnes faites pour toi | 15 campagnes | 2 235 € |
+| Son à la une | 4 semaines | 1 600 € |
+
+Ces montants sont avant TVA et frais. Réaliste : 10 000 € par mois en avril 2027.
+
 ### Juridique & business
 - **Fait (branche `legal/etat-des-lieux`)** : état des lieux du statut, de Paddle en réel et des pages légales (infos pour décider, pas un avis juridique).
 - **À décider (propriétaire)** : statut. La LLC prévue est remise en question : pour un résident français, elle ne supprime ni l'impôt ni les cotisations en France et ajoute des obligations (formulaire américain 5472, 25 000 $ d'amende si oublié ; compte étranger à déclarer). La micro-entreprise paraît plus simple. Rendez-vous avec un expert-comptable avant de créer quoi que ce soit (BIC ou BNC, ACRE).
