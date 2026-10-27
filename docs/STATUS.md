@@ -19,10 +19,7 @@
 - Pages : tarifs, conditions, remboursement, confidentialité, mentions légales (FR/EN), avec des animations glacées.
 
 ## En cours
-- **Précision des paroles auto** (branche `lyrics-accuracy`) :
-  - voix mise en avant avant l'envoi ;
-  - contexte transmis d'un morceau à l'autre ;
-  - import de la voix seule (a cappella).
+- Rien. La précision des paroles auto est en ligne : voix mise en avant, contexte entre les morceaux, import de la voix seule. Seuils à vérifier sur de vraies chansons via les infos techniques (« centre / mix »).
 
 ## Base de données D1
 - Migrations appliquées : 0001, 0002, 0003, 0004_lyrics_usage, 0004_cloud_save.
@@ -30,7 +27,6 @@
 ## À faire, par rôle
 
 ### Chef de projet
-- Fusionner `lyrics-accuracy`, puis mettre en ligne.
 - Supprimer l'ancien projet Cloudflare « stalak » en double.
 
 ### App & montage
