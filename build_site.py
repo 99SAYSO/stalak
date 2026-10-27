@@ -80,9 +80,12 @@ if EMAIL:
     js = js.replace("const SUPPORT_EMAIL = '';", 'const SUPPORT_EMAIL = ' + json.dumps(EMAIL) + ';')
 a = '<div class="byalaska" id="byAlaska">by Alaska</div>'
 assert a in markup
-markup = markup.replace(a, '<section class="about" aria-labelledby="aboutT" data-i18n="site.about">' + PAGE['fr']['about'] + '</section>\n  ' + a
-                        + '\n  <nav class="legal-links" data-i18n="site.legal">' + PAGE['fr']['legal'] + '</nav>')
-css += '\n.about{align-self:center;max-width:760px;width:100%;color:#fff;font-size:14.5px;line-height:1.55;margin-top:18px}.about h2{font:400 22px/1.2 var(--display);margin:0 0 6px;color:#fff;text-shadow:0 2px 0 var(--ink)}.about p{margin:0 0 8px}.about ul{margin:0;padding-left:20px}.about strong{font-weight:700}\n.legal-links{align-self:center;font-size:13px;color:#fff;opacity:.85;margin-top:-4px}.legal-links a{color:#fff}\n'
+markup = markup.replace(a, '<section class="about" aria-labelledby="aboutT" data-i18n="site.about">' + PAGE['fr']['about'] + '</section>\n  ' + a)
+# the legal links go in the footer, next to the FR / EN switch (the claude.ai page has the footer with the switch only)
+f = '<footer class="sitefoot" id="siteFoot">'
+assert f in markup
+markup = markup.replace(f, f + '<nav class="legal-links" data-i18n="site.legal">' + PAGE['fr']['legal'] + '</nav>')
+css += '\n.about{align-self:center;max-width:760px;width:100%;color:#fff;font-size:14.5px;line-height:1.55;margin-top:18px}.about h2{font:400 22px/1.2 var(--display);margin:0 0 6px;color:#fff;text-shadow:0 2px 0 var(--ink)}.about p{margin:0 0 8px}.about ul{margin:0;padding-left:20px}.about strong{font-weight:700}\n.legal-links{font-size:13px;color:#fff;opacity:.9}.legal-links a{color:#fff}\n'
 
 # 3. languages: the dictionaries are in app.js (between /*@EN*/ … /*EN@*/ and /*@FR*/ … /*FR@*/); the French of the page's
 #    fixed texts is read from the markup (data-i18n, data-i18n-attr) and given to the app, so that the English page can

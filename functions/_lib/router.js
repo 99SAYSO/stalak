@@ -1,9 +1,11 @@
 // All /api/* routes. Entry point: functions/api/[[path]].js
 import { HttpError, json, errorResponse, checkCsrf, readJson, readText, clearSessionCookie } from './http.js';
-import { sendCode, verifyCode, currentUser, requireUser, logout } from './auth.js';
+import { sendCode, verifyCode, currentUser, requireUser, logout, loginPassword, setPassword, recentCodeSession } from './auth.js';
+import { updateProfile, avatar, avatarUrl, AVATAR_TYPES } from './profile.js';
 import { entitlementsFor, requirePro } from './entitlements.js';
 import { handleWebhook, portalLinks, cancelSubscriptionNow } from './paddle.js';
 import { social } from './social.js';
+import { sha256Hex } from './crypto.js';
 
 const PROJECT_MAX_BYTES = 256 * 1024; // ~200 KB of project JSON + envelope
 const PROJECT_MAX_COUNT = 200;
@@ -11,12 +13,23 @@ const PROJECT_ID = /^[A-Za-z0-9_-]{1,64}$/;
 const STATE_CHANGING = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
 function publicUser(u) {
-  return u ? { id: u.id, email: u.email, lang: u.lang, createdAt: new Date(u.created_at).toISOString() } : null;
+  return u ? {
+    id: u.id, email: u.email, lang: u.lang, createdAt: new Date(u.created_at).toISOString(),
+    displayName: u.display_name || null,
+    avatarUrl: avatarUrl(u),
+    hasPassword: !!u.password_hash,
+    passwordSetAt: u.password_set_at ? new Date(u.password_set_at).toISOString() : null,
+  } : null;
+}
+
+// How the current session was opened; recentCode = may set a new password without the current one.
+function publicSession(u) {
+  return u ? { method: u.s_method || null, recentCode: recentCodeSession(u) } : null;
 }
 
 async function meResponse(env, user, headers) {
   const { entitlements, subscription } = await entitlementsFor(env, user);
-  return json({ user: publicUser(user), entitlements, subscription }, 200, headers);
+  return json({ user: publicUser(user), session: publicSession(user), entitlements, subscription }, 200, headers);
 }
 
 function config(env) {
@@ -91,6 +104,8 @@ async function deleteAccount(request, env) {
     env.DB.prepare('DELETE FROM sessions WHERE user_id = ?1').bind(user.id),
     env.DB.prepare('DELETE FROM subscriptions WHERE user_id = ?1').bind(user.id),
     env.DB.prepare('DELETE FROM login_codes WHERE email = ?1').bind(user.email),
+    env.DB.prepare('DELETE FROM rate_limits WHERE key = ?1').bind('pwfail:' + (await sha256Hex('email:' + user.email)).slice(0, 32)),
+    // the users row holds the display name, the photo and the password hash: all gone with it
     env.DB.prepare('DELETE FROM users WHERE id = ?1').bind(user.id),
   ]);
   // Note: Paddle keeps its own invoices/customer record (legal accounting obligation as Merchant of Record).
@@ -117,13 +132,25 @@ async function dispatch(request, env) {
       if (method !== 'POST') throw new HttpError(405, 'method_not_allowed', 'Method not allowed.');
       return json(await handleWebhook(request, env));
     }
-    if (STATE_CHANGING.has(method)) checkCsrf(request, env);
+    if (STATE_CHANGING.has(method)) checkCsrf(request, env, route === 'me/avatar' && method === 'PUT' ? AVATAR_TYPES : []);
 
     switch (route) {
       case 'config':
         return json(config(env), 200, { 'Cache-Control': 'public, max-age=300' });
       case 'me':
-        return meResponse(env, await currentUser(request, env));
+        if (method === 'GET') return meResponse(env, await currentUser(request, env));
+        if (method !== 'PATCH') break;
+        return meResponse(env, await updateProfile(env, await requireUser(request, env), await readJson(request)));
+      case 'me/avatar':
+        return avatar(request, env, method);
+      case 'auth/login': {
+        if (method !== 'POST') break;
+        const { user, cookie } = await loginPassword(request, env, await readJson(request));
+        return meResponse(env, user, { 'Set-Cookie': cookie });
+      }
+      case 'auth/password':
+        if (method !== 'POST') break;
+        return meResponse(env, await setPassword(request, env, await readJson(request)));
       case 'auth/send-code':
         if (method !== 'POST') break;
         return json(await sendCode(request, env, await readJson(request)));

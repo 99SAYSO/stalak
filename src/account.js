@@ -1,32 +1,44 @@
 /* Stalak account client (plain JS, no framework).
    window.StalakAccount:
-     me()                 -> Promise<{user, entitlements, subscription}>
+     me()                 -> Promise<{user, session, entitlements, subscription}>
+                             user: {id, email, lang, displayName, avatarUrl, hasPassword, passwordSetAt}
+                             session: {method: 'code'|'password', recentCode} (recentCode: may set a password without the old one)
      sendCode(email[, lang])
      verify(email, code)  -> Promise<state>   (sets the session cookie)
+     loginPassword(email, password) -> Promise<state> (sets the session cookie; error code invalid_login / too_many_attempts)
+     setPassword(password[, currentPassword]) -> Promise<state>
+     updateProfile({displayName}) -> Promise<state>
+     uploadAvatar(blob)   -> Promise<state>   (blob: image/jpeg | image/webp | image/png, at most 80 KB)
+     removeAvatar()       -> Promise<state>
      logout()
      checkout(plan)       -> opens the Paddle overlay; plan = 'month' | 'year'
      portal()             -> Promise<{url, cancelUrl, updatePaymentUrl}> (manage / cancel)
      deleteAccount()
      projects.list() / get(id) / save(id, name, state) / remove(id)
      onChange(cb)         -> unsubscribe function; cb(state) on every state change
+     checkoutOpen         -> true while Paddle's checkout window is open
      state                -> last known state
    Errors are thrown as Error objects with .code (server "error" field) and .status. */
 (function () {
   'use strict';
   var FREE = { plan: 'free', outro: true, cloudSave: false, clipMode: false, autoLyrics: false };
-  var state = { user: null, entitlements: FREE, subscription: null };
+  var state = { user: null, session: null, entitlements: FREE, subscription: null };
   var listeners = [];
   var configPromise = null;
   var paddlePromise = null;
+  var checkoutOpen = false;   // Paddle's window is on screen
 
   function lang() {
     var l = (document.documentElement.lang || navigator.language || 'fr').toLowerCase();
     return l.indexOf('en') === 0 ? 'en' : 'fr';
   }
 
-  function api(method, path, body) {
+  function api(method, path, body, rawType) {
     var opts = { method: method, credentials: 'same-origin', headers: { Accept: 'application/json' } };
-    if (method !== 'GET') {
+    if (rawType) {
+      opts.headers['Content-Type'] = rawType;
+      opts.body = body;
+    } else if (method !== 'GET') {
       opts.headers['Content-Type'] = 'application/json';
       opts.body = JSON.stringify(body || {});
     }
@@ -46,7 +58,7 @@
 
   function setState(next) {
     var before = JSON.stringify(state);
-    state = { user: next.user || null, entitlements: next.entitlements || FREE, subscription: next.subscription || null };
+    state = { user: next.user || null, session: next.session || null, entitlements: next.entitlements || FREE, subscription: next.subscription || null };
     if (JSON.stringify(state) !== before) {
       listeners.slice().forEach(function (cb) { try { cb(state); } catch (e) { console.error(e); } });
     }
@@ -88,6 +100,7 @@
   }
 
   function onPaddleEvent(ev) {
+    if (ev && ev.name === 'checkout.closed') checkoutOpen = false;
     if (ev && ev.name === 'checkout.completed') waitForPro(20);
   }
 
@@ -99,6 +112,7 @@
       var priceId = cfg.paddle.prices[plan];
       if (!priceId) throw Object.assign(new Error('Payments are not configured yet.'), { code: 'not_configured' });
       return loadPaddle(cfg).then(function (P) {
+        checkoutOpen = true;
         P.Checkout.open({
           items: [{ priceId: priceId, quantity: 1 }],
           customer: { email: st.user.email },
@@ -111,10 +125,20 @@
 
   window.StalakAccount = {
     get state() { return state; },
+    get checkoutOpen() { return checkoutOpen; },
     me: me,
     config: config,
     sendCode: function (email, l) { return api('POST', 'auth/send-code', { email: email, lang: l || lang() }); },
     verify: function (email, code) { return api('POST', 'auth/verify', { email: email, code: code, lang: lang() }).then(setState); },
+    loginPassword: function (email, password) { return api('POST', 'auth/login', { email: email, password: password, lang: lang() }).then(setState); },
+    setPassword: function (password, currentPassword) {
+      var b = { password: password };
+      if (currentPassword) b.currentPassword = currentPassword;
+      return api('POST', 'auth/password', b).then(setState);
+    },
+    updateProfile: function (fields) { return api('PATCH', 'me', fields).then(setState); },
+    uploadAvatar: function (blob) { return api('PUT', 'me/avatar', blob, blob.type || 'image/jpeg').then(me); },
+    removeAvatar: function () { return api('DELETE', 'me/avatar').then(me); },
     logout: function () { return api('POST', 'auth/logout').then(function () { return setState({}); }); },
     checkout: checkout,
     portal: function () { return api('POST', 'paddle/portal'); },

@@ -364,6 +364,218 @@ test('unknown route and wrong method give JSON errors', async () => {
   assert.equal(r.status, 405); assert.equal(r.data.error, 'method_not_allowed');
 });
 
+// ---- profile, photo, password (migration 0002) -------------------------------------------
+async function putAvatar(env, cookie, bytes, type, extra = {}) {
+  return call(env, 'PUT', '/api/me/avatar', { cookie, ct: type, raw: bytes, ...extra });
+}
+const JPEG = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, ...new Array(60).fill(7), 0xff, 0xd9]);
+const PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, ...new Array(40).fill(1)]);
+const WEBP = new Uint8Array([...Buffer.from('RIFF'), 40, 0, 0, 0, ...Buffer.from('WEBPVP8 '), ...new Array(40).fill(2)]);
+
+test('/api/me exposes profile fields and session info', async () => {
+  const env = makeEnv();
+  const { cookie, data } = await login(env, 'me2@example.com');
+  assert.equal(data.user.displayName, null);
+  assert.equal(data.user.avatarUrl, null);
+  assert.equal(data.user.hasPassword, false);
+  assert.deepEqual(data.session, { method: 'code', recentCode: true });
+  const r = await call(env, 'GET', '/api/me', { cookie });
+  assert.deepEqual(r.data.session, { method: 'code', recentCode: true });
+  assert.equal((await call(env, 'GET', '/api/me')).data.session, null);
+});
+
+test('display name: 2-30 characters, trimmed, cleared with null', async () => {
+  const env = makeEnv();
+  const { cookie } = await login(env, 'name@example.com');
+  let r = await call(env, 'PATCH', '/api/me', { cookie, body: { displayName: '  Alaska​   la   Star \n' } });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.equal(r.data.user.displayName, 'Alaska la Star');
+  r = await call(env, 'PATCH', '/api/me', { cookie, body: { displayName: 'A' } });
+  assert.equal(r.status, 400); assert.equal(r.data.error, 'invalid_name');
+  r = await call(env, 'PATCH', '/api/me', { cookie, body: { displayName: 'x'.repeat(31) } });
+  assert.equal(r.data.error, 'invalid_name');
+  r = await call(env, 'PATCH', '/api/me', { cookie, body: { displayName: '😀'.repeat(30) } });
+  assert.equal(r.status, 200, 'counted in characters, not UTF-16 units');
+  r = await call(env, 'PATCH', '/api/me', { cookie, body: { displayName: 42 } });
+  assert.equal(r.data.error, 'invalid_name');
+  r = await call(env, 'PATCH', '/api/me', { cookie, body: {} });
+  assert.equal(r.data.error, 'nothing_to_update');
+  r = await call(env, 'PATCH', '/api/me', { cookie, body: { displayName: null } });
+  assert.equal(r.data.user.displayName, null);
+  r = await call(env, 'PATCH', '/api/me', { body: { displayName: 'Bob' } });
+  assert.equal(r.status, 401);
+  r = await call(env, 'PATCH', '/api/me', { cookie, body: { displayName: 'Bob' }, origin: 'https://evil.example' });
+  assert.equal(r.status, 403);
+});
+
+test('photo: upload JPEG/PNG/WebP, magic bytes and size checked, private GET with cache headers, delete', async () => {
+  const env = makeEnv();
+  const a = await login(env, 'pic@example.com');
+  const b = await login(env, 'other@example.com');
+  let r = await putAvatar(env, a.cookie, JPEG, 'image/jpeg');
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.match(r.data.avatarUrl, /^\/api\/me\/avatar\?v=\d+$/);
+  r = await call(env, 'GET', '/api/me', { cookie: a.cookie });
+  const url = r.data.user.avatarUrl;
+  assert.match(url, /^\/api\/me\/avatar\?v=\d+$/);
+  r = await call(env, 'GET', url, { cookie: a.cookie });
+  assert.equal(r.status, 200);
+  assert.equal(r.headers.get('Content-Type'), 'image/jpeg');
+  assert.match(r.headers.get('Cache-Control'), /^private, max-age=\d+, immutable$/);
+  assert.equal(r.headers.get('X-Content-Type-Options'), 'nosniff');
+  // other users and anonymous visitors get nothing
+  assert.equal((await call(env, 'GET', url, { cookie: b.cookie })).status, 404);
+  assert.equal((await call(env, 'GET', url)).status, 401);
+  assert.equal((await putAvatar(env, a.cookie, PNG, 'image/png')).status, 200);
+  assert.equal((await putAvatar(env, a.cookie, WEBP, 'image/webp')).status, 200);
+  // declared type must match the bytes
+  r = await putAvatar(env, a.cookie, PNG, 'image/jpeg');
+  assert.equal(r.status, 415); assert.equal(r.data.error, 'invalid_image');
+  r = await putAvatar(env, a.cookie, new TextEncoder().encode('<svg xmlns="http://www.w3.org/2000/svg"></svg>'), 'image/svg+xml');
+  assert.equal(r.status, 415, 'svg refused (by the CSRF type check)');
+  r = await putAvatar(env, a.cookie, new TextEncoder().encode('GIF89a..........'), 'image/png');
+  assert.equal(r.status, 415);
+  const big = new Uint8Array(81 * 1024); big.set(JPEG.subarray(0, 4));
+  r = await putAvatar(env, a.cookie, big, 'image/jpeg');
+  assert.equal(r.status, 413);
+  r = await putAvatar(env, a.cookie, JPEG, 'image/jpeg', { origin: 'https://evil.example' });
+  assert.equal(r.status, 403);
+  r = await putAvatar(env, null, JPEG, 'image/jpeg');
+  assert.equal(r.status, 401);
+  r = await call(env, 'DELETE', '/api/me/avatar', { cookie: a.cookie, body: {} });
+  assert.equal(r.status, 200);
+  r = await call(env, 'GET', '/api/me', { cookie: a.cookie });
+  assert.equal(r.data.user.avatarUrl, null);
+  assert.equal((await call(env, 'GET', url, { cookie: a.cookie })).status, 404);
+});
+
+test('password: set (policy), PBKDF2 stored, login with password, generic error', async () => {
+  const env = makeEnv();
+  const { cookie, user } = await login(env, 'pw@example.com');
+  for (const [pw, code] of [['short', 'password_too_short'], ['password', 'password_too_common'], ['AZERTYUIOP', 'password_too_common'],
+    ['pw@example.com', 'password_too_common'], ['x'.repeat(201), 'password_too_long']]) {
+    const r = await call(env, 'POST', '/api/auth/password', { cookie, body: { password: pw } });
+    assert.equal(r.status, 400, pw); assert.equal(r.data.error, code, pw);
+  }
+  assert.equal((await call(env, 'POST', '/api/auth/password', { body: { password: 'neige-et-glace' } })).status, 401);
+  let r = await call(env, 'POST', '/api/auth/password', { cookie, body: { password: 'neige-et-glace' } });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.equal(r.data.user.hasPassword, true);
+  const row = env.DB.raw.prepare('SELECT password_hash, password_salt, password_iter FROM users WHERE id = ?').get(user.id);
+  assert.equal(row.password_iter, 100000);
+  assert.match(row.password_salt, /^[0-9a-f]{32}$/);
+  assert.match(row.password_hash, /^[0-9a-f]{64}$/);
+  assert.ok(!row.password_hash.includes('neige'));
+
+  r = await call(env, 'POST', '/api/auth/login', { body: { email: ' PW@example.com ', password: 'neige-et-glace' } });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.match(r.headers.get('Set-Cookie'), /^stalak_s=[A-Za-z0-9_-]{43};.*HttpOnly/);
+  assert.equal(r.data.user.email, 'pw@example.com');
+  assert.deepEqual(r.data.session, { method: 'password', recentCode: false });
+  const pwCookie = r.headers.get('Set-Cookie').split(';')[0];
+  assert.equal((await call(env, 'GET', '/api/me', { cookie: pwCookie })).data.user.id, user.id);
+
+  // wrong password, unknown email and account without password: same answer
+  const wrong = await call(env, 'POST', '/api/auth/login', { body: { email: 'pw@example.com', password: 'pas-le-bon' } });
+  const unknown = await call(env, 'POST', '/api/auth/login', { body: { email: 'nobody@example.com', password: 'pas-le-bon' } });
+  await login(env, 'nopw@example.com');
+  const nopw = await call(env, 'POST', '/api/auth/login', { body: { email: 'nopw@example.com', password: 'pas-le-bon' } });
+  for (const x of [wrong, unknown, nopw]) { assert.equal(x.status, 401); assert.deepEqual(x.data, { error: 'invalid_login', message: 'Wrong email or password.' }); }
+  r = await call(env, 'POST', '/api/auth/login', { body: { email: 'pw@example.com', password: 'neige-et-glace' }, origin: 'https://evil.example' });
+  assert.equal(r.status, 403, 'CSRF check on login');
+});
+
+test('password login: lock after 5 failures for 15 min (also for unknown emails), rate limits per IP and per email', async () => {
+  const env = makeEnv();
+  const { cookie } = await login(env, 'lock@example.com');
+  await call(env, 'POST', '/api/auth/password', { cookie, body: { password: 'banquise-2026' } });
+  for (let i = 1; i <= 4; i++) {
+    const r = await call(env, 'POST', '/api/auth/login', { body: { email: 'lock@example.com', password: 'nope-nope-' + i } });
+    assert.equal(r.status, 401);
+  }
+  let r = await call(env, 'POST', '/api/auth/login', { body: { email: 'lock@example.com', password: 'nope-nope-5' } });
+  assert.equal(r.status, 429); assert.equal(r.data.error, 'too_many_attempts'); assert.ok(r.data.retryAfter > 800);
+  r = await call(env, 'POST', '/api/auth/login', { body: { email: 'lock@example.com', password: 'banquise-2026' } });
+  assert.equal(r.status, 429, 'locked even with the right password');
+  for (let i = 1; i <= 5; i++) r = await call(env, 'POST', '/api/auth/login', { body: { email: 'ghost@example.com', password: 'nope-nope-' + i } });
+  assert.equal(r.status, 429, 'unknown emails lock the same way (no account enumeration)');
+  // lock expires
+  env.DB.raw.exec(`UPDATE rate_limits SET window_start = window_start - ${16 * 60e3} WHERE key LIKE 'pwfail:%'`);
+  env.DB.raw.exec("DELETE FROM rate_limits WHERE key LIKE 'login:email:%'");
+  r = await call(env, 'POST', '/api/auth/login', { body: { email: 'lock@example.com', password: 'banquise-2026' } });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.equal(env.DB.raw.prepare("SELECT COUNT(*) AS n FROM rate_limits WHERE key LIKE 'pwfail:%' AND count >= 5").get().n, 1, 'success clears the failures');
+  // per email: 10 attempts / 10 min
+  env.DB.raw.exec('DELETE FROM rate_limits');
+  for (let i = 0; i < 10; i++) {
+    env.DB.raw.exec("DELETE FROM rate_limits WHERE key LIKE 'pwfail:%'");
+    r = await call(env, 'POST', '/api/auth/login', { body: { email: 'lock@example.com', password: 'banquise-2026' } });
+    assert.equal(r.status, 200);
+  }
+  r = await call(env, 'POST', '/api/auth/login', { body: { email: 'lock@example.com', password: 'banquise-2026' } });
+  assert.equal(r.status, 429); assert.equal(r.data.error, 'rate_limited');
+  // per IP: 30 attempts / 10 min
+  env.DB.raw.exec('DELETE FROM rate_limits');
+  for (let i = 0; i < 30; i++) {
+    r = await call(env, 'POST', '/api/auth/login', { body: { email: `ip${i}@example.com`, password: 'whatever-1' }, ip: '7.7.7.7' });
+    assert.equal(r.status, 401);
+  }
+  r = await call(env, 'POST', '/api/auth/login', { body: { email: 'ip99@example.com', password: 'whatever-1' }, ip: '7.7.7.7' });
+  assert.equal(r.status, 429); assert.equal(r.data.error, 'rate_limited');
+  const keys = env.DB.raw.prepare('SELECT key FROM rate_limits').all().map((x) => x.key).join(' ');
+  assert.ok(!keys.includes('7.7.7.7') && !keys.includes('example.com'), 'no clear IP/email in keys');
+});
+
+test('password change: needs the current one, or a code session < 15 min; other sessions signed out', async () => {
+  const env = makeEnv();
+  const codeS = await login(env, 'chg@example.com');
+  let r = await call(env, 'POST', '/api/auth/password', { cookie: codeS.cookie, body: { password: 'premier-mdp-1' } });
+  assert.equal(r.status, 200);
+  // a fresh code session may change it without the old one (forgotten password flow)
+  r = await call(env, 'POST', '/api/auth/password', { cookie: codeS.cookie, body: { password: 'deuxieme-mdp-2' } });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  // a password session needs the current one
+  r = await call(env, 'POST', '/api/auth/login', { body: { email: 'chg@example.com', password: 'deuxieme-mdp-2' } });
+  const pwCookie = r.headers.get('Set-Cookie').split(';')[0];
+  r = await call(env, 'POST', '/api/auth/password', { cookie: pwCookie, body: { password: 'troisieme-mdp-3' } });
+  assert.equal(r.status, 403); assert.equal(r.data.error, 'reauth_required');
+  r = await call(env, 'POST', '/api/auth/password', { cookie: pwCookie, body: { password: 'troisieme-mdp-3', currentPassword: 'faux-faux-faux' } });
+  assert.equal(r.status, 400); assert.equal(r.data.error, 'wrong_password');
+  // the code session is now older than 15 minutes: needs the current password too
+  env.DB.raw.exec(`UPDATE sessions SET created_at = created_at - ${16 * 60e3} WHERE method = 'code'`);
+  r = await call(env, 'POST', '/api/auth/password', { cookie: codeS.cookie, body: { password: 'troisieme-mdp-3' } });
+  assert.equal(r.data.error, 'reauth_required');
+  assert.equal((await call(env, 'GET', '/api/me', { cookie: codeS.cookie })).data.session.recentCode, false);
+  r = await call(env, 'POST', '/api/auth/password', { cookie: pwCookie, body: { password: 'troisieme-mdp-3', currentPassword: 'deuxieme-mdp-2' } });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.equal((await call(env, 'GET', '/api/me', { cookie: pwCookie })).data.user.email, 'chg@example.com', 'this session stays');
+  assert.equal((await call(env, 'GET', '/api/me', { cookie: codeS.cookie })).data.user, null, 'the other sessions are signed out');
+  r = await call(env, 'POST', '/api/auth/login', { body: { email: 'chg@example.com', password: 'deuxieme-mdp-2' } });
+  assert.equal(r.status, 401, 'old password no longer works');
+  r = await call(env, 'POST', '/api/auth/login', { body: { email: 'chg@example.com', password: 'troisieme-mdp-3' } });
+  assert.equal(r.status, 200);
+  // wrong current passwords count toward the lock
+  const p2 = r.headers.get('Set-Cookie').split(';')[0];
+  for (let i = 0; i < 5; i++) r = await call(env, 'POST', '/api/auth/password', { cookie: p2, body: { password: 'quatrieme-mdp-4', currentPassword: 'faux-' + i + '-faux' } });
+  r = await call(env, 'POST', '/api/auth/password', { cookie: p2, body: { password: 'quatrieme-mdp-4', currentPassword: 'troisieme-mdp-3' } });
+  assert.equal(r.status, 429); assert.equal(r.data.error, 'too_many_attempts');
+});
+
+test('account delete also erases name, photo and password', async () => {
+  const env = makeEnv();
+  const { cookie } = await login(env, 'gone@example.com');
+  await call(env, 'PATCH', '/api/me', { cookie, body: { displayName: 'Gone' } });
+  await putAvatar(env, cookie, JPEG, 'image/jpeg');
+  await call(env, 'POST', '/api/auth/password', { cookie, body: { password: 'adieu-la-neige' } });
+  await call(env, 'POST', '/api/auth/login', { body: { email: 'gone@example.com', password: 'wrong-wrong' } });
+  const r = await call(env, 'DELETE', '/api/account', { cookie, body: { confirm: true } });
+  assert.equal(r.status, 200);
+  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM users').get().n, 0);
+  assert.equal(env.DB.raw.prepare("SELECT COUNT(*) AS n FROM rate_limits WHERE key LIKE 'pwfail:%'").get().n, 0);
+  const login2 = await call(env, 'POST', '/api/auth/login', { body: { email: 'gone@example.com', password: 'adieu-la-neige' } });
+  assert.equal(login2.status, 401);
+});
+
 // ---- runner --------------------------------------------------------------------------
 let failed = 0;
 for (const t of tests) {

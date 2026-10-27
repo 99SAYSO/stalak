@@ -50,3 +50,24 @@ export function timingSafeEqual(a, b) {
   for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
   return diff === 0;
 }
+
+// PBKDF2-SHA256 (WebCrypto), 32-byte result as hex. 100000 iterations is the most the Workers runtime accepts.
+export const PBKDF2_ITER = 100000;
+export async function pbkdf2Hex(password, saltHex, iterations = PBKDF2_ITER) {
+  const salt = new Uint8Array(String(saltHex).match(/../g).map((h) => parseInt(h, 16)));
+  const key = await crypto.subtle.importKey('raw', enc.encode(String(password)), 'PBKDF2', false, ['deriveBits']);
+  return toHex(await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt, iterations }, key, 256));
+}
+
+export function base64Encode(bytes) {
+  let s = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return btoa(s);
+}
+
+export function base64Decode(text) {
+  const s = atob(text);
+  const out = new Uint8Array(s.length);
+  for (let i = 0; i < s.length; i++) out[i] = s.charCodeAt(i);
+  return out;
+}

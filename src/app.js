@@ -593,7 +593,94 @@ const I18N_EN = /*@EN*/{
   "acct.e.rate_limited": "Too many requests. Wait a minute and try again.",
   "acct.e.no_customer": "No subscription found on this account.",
   "acct.e.net": "No connection to Stalak. Check your internet and try again.",
-  "acct.e.other": "Something went wrong. Try again in a moment."
+  "acct.e.other": "Something went wrong. Try again in a moment.",
+  "ap.back": "Back",
+  "ap.login.t": "Sign in to Stalak",
+  "ap.pw": "Password",
+  "ap.show": "Show",
+  "ap.byCode": "Email me a code",
+  "ap.byPw": "Password",
+  "ap.signIn": "Sign in",
+  "ap.forgot": "Forgot your password?",
+  "ap.useCode": "Get a code instead",
+  "ap.mailHint": "With a code, no password needed: we email it to you and it works for 10 minutes.",
+  "ap.acc.t": "Your account",
+  "ap.profile": "Profile",
+  "ap.photo": "Change photo",
+  "ap.name": "Your name",
+  "ap.namePh": "Alaska",
+  "ap.save": "Save",
+  "ap.photoDel": "Remove photo",
+  "ap.sec": "Sign-in & security",
+  "ap.mail": "Email",
+  "ap.cur": "Current password",
+  "ap.new": "New password",
+  "ap.newHint": "At least 8 characters. A short sentence works great.",
+  "ap.pwSave": "Save password",
+  "ap.curHint": "Forgot it? Sign out, then sign back in with an email code: you’ll be able to pick a new one.",
+  "ap.sub": "Subscription",
+  "ap.lang": "Language",
+  "ap.pricing": "Pricing",
+  "ap.pricingHref": "/en/pricing",
+  "ap.terms": "Terms",
+  "ap.termsHref": "/en/terms",
+  "ap.refunds": "Refunds",
+  "ap.refundsHref": "/en/refunds",
+  "pt.merci": "Thank you!",
+  "pt.carousel": "carousel",
+  "pt.aria": "What Stalak Pro gets you",
+  "pt.slide": "slide",
+  "pt.s1t": "No more logo at the end",
+  "pt.s1p": "Your videos end on you, without the 3 Stalak seconds.",
+  "pt.s2t": "Music video mode",
+  "pt.s2p": "The whole song in 16:9, with effects. Pick “Music video” at the Sound step.",
+  "pt.s3t": "Cloud saving <span class=\"soon\">soon</span>",
+  "pt.s3p": "Your projects will follow you from one device to another.",
+  "pt.s4t": "Automatic lyrics <span class=\"soon\">soon</span>",
+  "pt.s4p": "Stalak will sync your lyrics to your voice, all by itself.",
+  "pt.skip": "Skip",
+  "pt.next": "Next",
+  "ap.hide": "Hide",
+  "ap.btnAria": "Your account ({name})",
+  "ap.whyIn.clip": "Music video mode is part of Stalak Pro. Sign in to get it.",
+  "ap.whyIn.outro": "Videos without the Stalak logo come with Stalak Pro. Sign in to get it.",
+  "ap.whyIn.pro": "Sign in to get Stalak Pro.",
+  "ap.pwOn": "Set on {d}",
+  "ap.pwOnNoDate": "Set",
+  "ap.pwOff": "Not set yet",
+  "ap.pwSet": "Set a password",
+  "ap.pwChange": "Change",
+  "ap.subFree": "Free ·",
+  "ap.discover": "Discover Stalak Pro →",
+  "ap.subRenew": "Stalak Pro · renews on {d} ·",
+  "ap.subEnds": "Stalak Pro · until {d} ·",
+  "ap.subPro": "Stalak Pro ·",
+  "ap.manage": "Manage",
+  "ap.nameSaved": "Name saved.",
+  "ap.nameCleared": "Name removed.",
+  "ap.photoWorking": "Getting your photo ready…",
+  "ap.photoSaved": "New photo saved.",
+  "ap.photoDeleted": "Photo removed.",
+  "ap.pwSaved": "Password saved. You can now sign in with it.",
+  "ap.resetSent": "Code sent. Once you’re in, you’ll pick a new password.",
+  "ap.resetNow": "You’re in. Now pick your new password.",
+  "pt.of": "{n} of {total}",
+  "pt.dot": "Slide {n}",
+  "pt.live": "Slide {n} of {total}: {title}",
+  "pt.done": "Let’s go!",
+  "acct.e.invalid_login": "Wrong email or password. No password yet? Get a code by email.",
+  "acct.e.pwLocked": "Too many tries. Try again in 15 minutes, or get a code by email.",
+  "acct.e.pwEmpty": "Type your password.",
+  "acct.e.wrong_password": "That’s not your current password.",
+  "acct.e.reauth_required": "Type your current password to change it.",
+  "acct.e.password_too_short": "It needs at least 8 characters.",
+  "acct.e.password_too_common": "That password is too easy to guess. Try a short sentence.",
+  "acct.e.password_too_long": "That password is too long (200 characters max).",
+  "acct.e.invalid_name": "Your name needs 2 to 30 characters.",
+  "acct.e.invalid_image": "This image won’t work. Try a JPEG or PNG photo.",
+  "acct.e.too_large": "This photo is too heavy. Try another one.",
+  "acct.e.not_logged_in": "Your session has expired. Sign in again.",
+  "acct.e.not_configured": "Payments aren’t open yet. Try again soon."
 }/*EN@*/;
 const I18N_FR = /*@FR*/{
   "kind.hint.reel": "Une vidéo verticale 9:16, de tout le son ou de quelques mesures.",
@@ -909,7 +996,48 @@ const I18N_FR = /*@FR*/{
   "acct.e.rate_limited": "Trop de demandes. Attends une minute et réessaie.",
   "acct.e.no_customer": "Aucun abonnement trouvé sur ce compte.",
   "acct.e.net": "Pas de connexion à Stalak. Vérifie ton internet et réessaie.",
-  "acct.e.other": "Un souci est survenu. Réessaie dans un moment."
+  "acct.e.other": "Un souci est survenu. Réessaie dans un moment.",
+  "ap.hide": "Masquer",
+  "ap.btnAria": "Ton compte ({name})",
+  "ap.whyIn.clip": "Le mode Clip fait partie de Stalak Pro. Connecte-toi pour en profiter.",
+  "ap.whyIn.outro": "Les vidéos sans le logo Stalak, c’est avec Stalak Pro. Connecte-toi pour en profiter.",
+  "ap.whyIn.pro": "Connecte-toi pour passer à Stalak Pro.",
+  "ap.pwOn": "Défini le {d}",
+  "ap.pwOnNoDate": "Défini",
+  "ap.pwOff": "Pas encore défini",
+  "ap.pwSet": "Choisir un mot de passe",
+  "ap.pwChange": "Changer",
+  "ap.subFree": "Gratuit ·",
+  "ap.discover": "Découvrir Stalak Pro →",
+  "ap.subRenew": "Stalak Pro · renouvellement le {d} ·",
+  "ap.subEnds": "Stalak Pro · jusqu’au {d} ·",
+  "ap.subPro": "Stalak Pro ·",
+  "ap.manage": "Gérer",
+  "ap.nameSaved": "Pseudo enregistré.",
+  "ap.nameCleared": "Pseudo retiré.",
+  "ap.photoWorking": "Préparation de la photo…",
+  "ap.photoSaved": "Nouvelle photo enregistrée.",
+  "ap.photoDeleted": "Photo retirée.",
+  "ap.pwSaved": "Mot de passe enregistré. Tu peux t’en servir pour te connecter.",
+  "ap.resetSent": "Code envoyé. Une fois connecté, tu choisiras un nouveau mot de passe.",
+  "ap.resetNow": "C’est bon, tu es connecté. Choisis ton nouveau mot de passe.",
+  "pt.of": "{n} sur {total}",
+  "pt.dot": "Diapo {n}",
+  "pt.live": "Diapo {n} sur {total} : {title}",
+  "pt.done": "C’est parti !",
+  "acct.e.invalid_login": "E-mail ou mot de passe incorrect. Pas encore de mot de passe ? Reçois un code par e-mail.",
+  "acct.e.pwLocked": "Trop d’essais. Réessaie dans 15 minutes, ou reçois un code par e-mail.",
+  "acct.e.pwEmpty": "Tape ton mot de passe.",
+  "acct.e.wrong_password": "Ce n’est pas ton mot de passe actuel.",
+  "acct.e.reauth_required": "Tape ton mot de passe actuel pour le changer.",
+  "acct.e.password_too_short": "Il faut au moins 8 caractères.",
+  "acct.e.password_too_common": "Ce mot de passe est trop facile à deviner. Essaie une petite phrase.",
+  "acct.e.password_too_long": "Ce mot de passe est trop long (200 caractères max).",
+  "acct.e.invalid_name": "Ton pseudo doit faire entre 2 et 30 caractères.",
+  "acct.e.invalid_image": "Cette image ne passe pas. Essaie une photo JPEG ou PNG.",
+  "acct.e.too_large": "Cette photo est trop lourde. Essaies-en une autre.",
+  "acct.e.not_logged_in": "Ta session a expiré. Reconnecte-toi.",
+  "acct.e.not_configured": "Le paiement n’est pas encore ouvert. Réessaie bientôt."
 }/*FR@*/;
 let STATIC_FR = /*@STATIC_FR*/null/*STATIC_FR@*/;
 const LANGS = ['fr', 'en'];
@@ -5406,12 +5534,14 @@ function expBuild(){
 }
 /* a dialog open: everything behind it can be neither reached with Tab nor clicked */
 function modalOn(on){
+  // a closing dialog over the account page (stalak.app) or the Pro thank-you: the app stays out of reach under them
+  if (!on && acctLayerOpen()) on = true;
   for (const el of [document.querySelector('.wrap'), $('#helpBtn'), $('#helpPanel')]) if (el){ if (on) el.setAttribute('inert', ''); else el.removeAttribute('inert'); }
 }
 document.addEventListener('keydown', e => {
   if (e.key !== 'Tab') return;
-  const box = !$('#homeAsk').hidden ? $('#homeAsk') : !$('#acctBox').hidden ? $('#acctBox') : !$('#expScreen').hidden ? $('#expScreen') : null; if (!box) return;
-  const f = [...box.querySelectorAll('button:not([disabled]),input')].filter(x => x.offsetParent); if (!f.length) return;
+  const box = !$('#proThx').hidden ? $('#proThx') : !$('#homeAsk').hidden ? $('#homeAsk') : !$('#acctPage').hidden ? $('#acctPage') : !$('#expScreen').hidden ? $('#expScreen') : null; if (!box) return;
+  const f = [...box.querySelectorAll('button:not([disabled]),input:not([tabindex="-1"]),a[href]')].filter(x => x.offsetParent && !x.closest('[inert]')); if (!f.length) return;
   const i = f.indexOf(document.activeElement);
   if (i < 0){ e.preventDefault(); f[0].focus(); return; }
   if (e.shiftKey && i === 0){ e.preventDefault(); f[f.length-1].focus(); }
@@ -6544,96 +6674,381 @@ function helpInit(){
 helpInit();
 
 
-/* ---------- account (only on stalak.app, where account.js is loaded): sign in with an e-mail code, Stalak Pro through Paddle ---------- */
-let acctView = 'mail', acctMailV = '', acctBack = null, acctBusy = false, acctWasPro = false;
+/* ---------- account (only on stalak.app, where account.js is loaded): pages over the app for signing in (#connexion),
+   the account (#compte) and Stalak Pro (#pro). The work under them stays as it is; the back button / gesture closes them.
+   Sign in with an e-mail code or a password; profile (pseudo, photo), password, Stalak Pro through Paddle. ---------- */
+const AP_HASH = { login: 'connexion', account: 'compte', pro: 'pro' };
+const AP_FROM_HASH = { connexion: 'login', signin: 'login', compte: 'account', account: 'account', pro: 'pro' };
+const AP_PERSON = '<svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>';
+let apView = null, apDepth = 0, apBack = null, apBusy = false, acctWasPro = false, apMsgTimer = 0;
+let apStep = 'mail', apMailV = '', apAfter = 'account', apReset = false, apWhyK = null, apAvLocal = null;
 function acctPro(){ return !!(ACCT && ACCT.state.entitlements && ACCT.state.entitlements.plan === 'pro'); }
-function acctSay(key, vars, err){ const m = $('#acctMsg'); if (!key){ setT(m, null); m.classList.remove('err'); return; } setT(m, key, vars); m.classList.toggle('err', !!err); }
-function acctErr(e){ const c = e && e.code; acctSay(!c || c === 'http_0' || e instanceof TypeError ? 'acct.e.net' : hasT('acct.e.' + c) ? 'acct.e.' + c : 'acct.e.other', null, true); diag('compte : erreur ' + (c || (e && e.message))); }
+/* an account page or the Pro thank-you is on screen (modalOn keeps the app out of reach under them) */
+function acctLayerOpen(){ const a = $('#acctPage'), b = $('#proThx'); return !!((a && !a.hidden) || (b && !b.hidden)); }
 function acctDate(iso){ try { return new Date(iso).toLocaleDateString(LANG === 'en' ? 'en-GB' : 'fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }); } catch(e){ return iso; } }
-function acctRender(){
-  if (!ACCT) return;
-  const st = ACCT.state, pro = acctPro(), v = st.user ? 'in' : acctView;
-  $('#acctMail').hidden = v !== 'mail'; $('#acctCode').hidden = v !== 'code'; $('#acctIn').hidden = v !== 'in';
-  setT('#acctT', v === 'in' ? (pro ? 'acct.tPro' : 'acct.tIn') : 'acct.t');
-  if (v === 'code') setT('#acctCodeL', 'acct.codeL', { mail: acctMailV });
-  if (st.user){
-    setT('#acctWho', 'acct.who', { mail: st.user.email });
-    $('#acctFree').hidden = pro; $('#acctPro').hidden = !pro;
+function acctName(u){ return u ? (u.displayName || u.email.split('@')[0]) : ''; }
+function acctInitials(u){
+  const w = acctName(u).split(/[\s._+-]+/).filter(Boolean);
+  const s = w.length > 1 ? [...w[0]][0] + [...w[1]][0] : [...(w[0] || '?')].slice(0, 1).join('');
+  return s.toUpperCase();
+}
+/* the photo, else the initials, else the little person */
+function acctAvatar(el, u, local){
+  const url = local || (u && u.avatarUrl), key = url || (u ? 'i:' + acctInitials(u) : '-');
+  if (el.dataset.k === key) return; el.dataset.k = key;
+  el.textContent = ''; el.classList.toggle('ini', !!u && !url);
+  if (url){ const i = new Image(); i.alt = ''; i.decoding = 'async'; i.src = url; i.onerror = () => { el.dataset.k = ''; el.textContent = acctInitials(u); el.classList.add('ini'); }; el.append(i); }
+  else if (u) el.textContent = acctInitials(u);
+  else el.innerHTML = AP_PERSON;
+}
+/* the message at the bottom of the page (stays in view): errors with a sad mascot */
+function apSay(key, vars, err, emo){
+  const m = $('#apMsg'), e = $('#apMsgEmo'); clearTimeout(apMsgTimer);
+  if (!key){ m.classList.remove('on', 'err'); setT('#apMsgT', null); e.hidden = true; return; }
+  setT('#apMsgT', key, vars); m.classList.add('on'); m.classList.toggle('err', !!err);
+  const em = emo || (err ? 'sad' : null); e.hidden = !em; if (em) e.src = '/emoji/' + em + '.webp';
+  if (!err) apMsgTimer = setTimeout(() => apSay(null), 6000);
+}
+function apErr(e, ctx){
+  const c = e && e.code, net = !c || c === 'http_0' || e instanceof TypeError;
+  let k = net ? 'acct.e.net' : hasT('acct.e.' + c) ? 'acct.e.' + c : 'acct.e.other';
+  if (c === 'too_many_attempts' && ctx === 'pw') k = 'acct.e.pwLocked';
+  apSay(k, null, true, /invalid_login|wrong_password|password_too|invalid_code/.test(c || '') ? 'facepalm' : 'sad');
+  diag('compte : erreur ' + (c || (e && e.message)));
+  if (c === 'not_logged_in') ACCT.me().catch(() => {});
+}
+async function apRun(fn, ctx){
+  if (apBusy) return; apBusy = true; $('#acctPage').setAttribute('aria-busy', 'true');
+  try { await fn(); } catch(e){ apErr(e, ctx); } finally { apBusy = false; $('#acctPage').removeAttribute('aria-busy'); }
+}
+function apSubLine(){
+  const st = ACCT.state, sub = st.subscription, pro = acctPro();
+  if (pro){
+    setT('#apSubT', sub && sub.cancelAt ? 'ap.subEnds' : sub && sub.currentPeriodEnd ? 'ap.subRenew' : 'ap.subPro', { d: acctDate(sub && (sub.cancelAt || sub.currentPeriodEnd)) });
+    setT('#apSubGo', 'ap.manage');
+  } else { setT('#apSubT', 'ap.subFree'); setT('#apSubGo', 'ap.discover'); }
+}
+function apRender(){
+  if (!ACCT || !apView) return;
+  const st = ACCT.state, u = st.user, pro = acctPro(), v = apView;
+  $('#apLogin').hidden = v !== 'login'; $('#apAccount').hidden = v !== 'account'; $('#apPro').hidden = v !== 'pro';
+  $('#acctPage').setAttribute('aria-labelledby', v === 'login' ? 'apLoginT' : v === 'account' ? 'apAccT' : 'apProT');
+  if (v === 'login'){
+    const code = apStep === 'code', pw = apStep === 'pw';
+    $('#apSignF').hidden = code; $('#apCodeF').hidden = !code;
+    $('#apPwBox').hidden = $('#apPwGo').hidden = !pw; $('#apChoice').hidden = pw; $('#apMailHint').hidden = pw;
+    if (code) setT('#apCodeL', 'acct.codeL', { mail: apMailV });
+    const w = $('#apWhy'), wk = apWhyK ? apWhyK.replace('acct.why.', 'ap.whyIn.') : apAfter === 'pro' ? 'ap.whyIn.pro' : null;
+    w.hidden = !wk; if (wk) setT(w, wk); else setT(w, null);
+  }
+  if (v === 'account' && u){
+    acctAvatar($('#apAv'), u, apAvLocal);
+    const n = $('#apName'); if (document.activeElement !== n && !n.dataset.dirty) n.value = u.displayName || '';
+    $('#apAvDel').hidden = !u.avatarUrl;
+    $('#apMailV').textContent = u.email; $('#apPwUser').value = u.email;
+    setT('#apPwV', u.hasPassword ? (u.passwordSetAt ? 'ap.pwOn' : 'ap.pwOnNoDate') : 'ap.pwOff', { d: acctDate(u.passwordSetAt) });
+    const open = !$('#apPwF').hidden;
+    setT('#apPwEdit', u.hasPassword ? 'ap.pwChange' : 'ap.pwSet'); $('#apPwEdit').hidden = open; $('#apPwEdit').setAttribute('aria-expanded', String(open));
+    const needCur = !!u.hasPassword && !(st.session && st.session.recentCode);
+    $('#apCurBox').hidden = !needCur; $('#apCurHint').hidden = !needCur;
+    apSubLine();
+  }
+  if (v === 'pro'){
+    $('#apBuy').hidden = pro; $('#apIsPro').hidden = !pro;
+    setT('#apProT', pro ? 'acct.tPro' : 'acct.proT');
     const sub = st.subscription;
-    if (pro) setT('#acctProTxt', sub && sub.cancelAt ? 'acct.proEnds' : sub && sub.currentPeriodEnd ? 'acct.proRenew' : 'acct.proOn', { d: acctDate(sub && (sub.cancelAt || sub.currentPeriodEnd)) });
+    if (pro) setT('#apProTxt', sub && sub.cancelAt ? 'acct.proEnds' : sub && sub.currentPeriodEnd ? 'acct.proRenew' : 'acct.proOn', { d: acctDate(sub && (sub.cancelAt || sub.currentPeriodEnd)) });
+    const w = $('#apProWhy'); w.hidden = !apWhyK || pro; if (apWhyK && !pro) setT(w, apWhyK); else setT(w, null);
   }
 }
+/* the header button: the photo or the initials, the pseudo (on a computer), PRO */
 function acctSync(){
   if (!ACCT) return;
-  const st = ACCT.state, pro = acctPro();
+  const st = ACCT.state, u = st.user, pro = acctPro(), b = $('#acctBtn');
   S.pro = pro;
-  $('#acctBtn').hidden = false; $('#acctBtn').classList.toggle('pro', pro);
-  setT('#acctLbl', pro ? 'acct.btn.pro' : st.user ? 'acct.btn.in' : 'acct.btn');
-  $('#acctBtn').setAttribute('aria-label', _t(pro ? 'acct.btn.pro' : st.user ? 'acct.btn.in' : 'acct.btn')); $('#acctBtn').title = $('#acctBtn').getAttribute('aria-label');
+  b.hidden = false; b.classList.toggle('pro', pro); $('#acctProTag').hidden = !pro;
+  if (u && u.displayName){ setT('#acctLbl', null); $('#acctLbl').textContent = u.displayName; } else setT('#acctLbl', u ? 'acct.btn.in' : 'acct.btn');
+  acctAvatar($('#acctAv'), u);
+  const lbl = u ? _t('ap.btnAria', { name: acctName(u) }) + (pro ? ' · Stalak Pro' : '') : _t('acct.btn');
+  b.setAttribute('aria-label', lbl); b.title = lbl;
   const cb = $('#kindSeg button[data-v="clip"]'); if (cb) cb.classList.toggle('protag', !pro);
   if (!pro && isClip() && !S.exporting) setKind('reel', true);
   if (pro && !acctWasPro && store.get('stalak:kind') === 'clip' && !isClip() && !S.song && !S.exporting) setKind('clip', true);
-  if (pro && !acctWasPro && !$('#acctBox').hidden){ acctSay('acct.welcomePro'); $('#acctWhy').hidden = true; }
+  if (pro) apWhyK = null;
   acctWasPro = pro;
-  acctRender(); updateNav();
+  apRender(); updateNav();
+  proThanksMaybe();
 }
+
+/* ---- the pages and the browser history: each page is an entry (#connexion, #compte, #pro), Back goes back ---- */
+function apHashView(){ let h = ''; try { h = decodeURIComponent(location.hash.slice(1)).toLowerCase(); } catch(e){} return AP_FROM_HASH[h] || null; }
+/* signed out, the account and the Pro offer go through the sign-in first; signed in, the sign-in page is skipped */
+function apResolve(v){
+  const u = ACCT.state.user;
+  if (!u && (v === 'account' || v === 'pro')){ apAfter = v; return 'login'; }
+  if (u && v === 'login') return apAfter || 'account';
+  return v;
+}
+function apHist(v, replace){
+  const url = location.pathname + location.search + '#' + AP_HASH[v];
+  try { if (replace) history.replaceState({ apD: apDepth }, '', url); else { apDepth++; history.pushState({ apD: apDepth }, '', url); } } catch(e){}
+}
+/* opens a page: o.why (clip | outro: why Pro is shown), o.replace (instead of a new history entry), o.noHist (from Back) */
+function apGo(view, o = {}){
+  if (!ACCT) return;
+  if ('why' in o) apWhyK = o.why && !acctPro() ? 'acct.why.' + o.why : null;
+  const v = apResolve(view), page = $('#acctPage'), first = page.hidden;
+  if (first){
+    apBack = document.activeElement; page.hidden = false; modalOn(true); $('#acctBtn').setAttribute('aria-expanded', 'true');
+    ACCT.me().catch(() => {});
+  }
+  if (v === 'login' && apView !== 'login'){ apStep = 'mail'; $('#apPw').value = ''; }
+  if (v !== 'account'){ $('#apPwF').hidden = true; }
+  const changed = apView !== v; apView = v;
+  if (!o.noHist) apHist(v, !first && !!o.replace);
+  if (!o.keepMsg) apSay(null);
+  apRender();
+  if (changed || first) page.scrollTop = 0;
+  if (o.noFocus) return;
+  const f = v === 'login' ? (apStep === 'code' ? $('#apCode') : $('#apLoginT')) : v === 'account' ? $('#apAccT') : $('#apProT');
+  setTimeout(() => { try { f.focus({ preventScroll: true }); } catch(e){} }, 40);
+}
+/* « Retour », Escape, the back gesture: one page back, then the app */
+function apBackBtn(){ if (apDepth > 0) history.back(); else apHide(); }
+function apHide(){
+  const page = $('#acctPage'); if (page.hidden) return;
+  page.hidden = true; apView = null; apDepth = 0; apSay(null); modalOn(false); $('#acctBtn').setAttribute('aria-expanded', 'false');
+  if (apHashView()) try { history.replaceState(null, '', location.pathname + location.search); } catch(e){}
+  try { (apBack && apBack.isConnected && !apBack.closest('#acctPage') ? apBack : $('#acctBtn')).focus(); } catch(e){}
+}
+/* the header button, the PRO-tagged Clip button (why = 'clip'), the outro link (why = 'outro') */
 function acctOpen(why){
   if (!ACCT || S.exporting || askDone) return;
-  acctBack = document.activeElement; acctSay(null);
-  const w = $('#acctWhy'); if (why && !acctPro()){ setT(w, 'acct.why.' + why); w.hidden = false; } else { setT(w, null); w.hidden = true; }
-  acctRender(); $('#acctBox').hidden = false; modalOn(true); $('#acctBtn').setAttribute('aria-expanded', 'true');
-  const f = !$('#acctMail').hidden ? $('#acctEmail') : !$('#acctCode').hidden ? $('#acctCodeIn') : $('#acctX');
-  setTimeout(() => { try { f.focus(); } catch(e){} }, 30);
-  ACCT.me().catch(() => {});
+  apGo(why ? 'pro' : ACCT.state.user ? 'account' : 'login', { why: why || null });
 }
-function acctClose(){
-  if ($('#acctBox').hidden) return;
-  $('#acctBox').hidden = true; modalOn(false); $('#acctBtn').setAttribute('aria-expanded', 'false');
-  try { acctBack && acctBack.focus(); } catch(e){}
+
+/* ---- the profile photo: cropped to a centred square and made small here (256 × 256, WebP or JPEG, 60 KB at most) ---- */
+async function apAvatarBlob(file){
+  const url = URL.createObjectURL(file);
+  try {
+    const img = new Image(); img.src = url;
+    try { await img.decode(); } catch(e){ throw Object.assign(new Error('decode'), { code: 'invalid_image' }); }
+    const w = img.naturalWidth, h = img.naturalHeight, s = Math.min(w, h); if (!s) throw Object.assign(new Error('empty'), { code: 'invalid_image' });
+    let src = img, sx = (w - s) / 2, sy = (h - s) / 2, ss = s;
+    // big photos: halved step by step first, for a smooth result
+    while (ss > 1024){ const c = document.createElement('canvas'), n = Math.round(ss / 2); c.width = c.height = n;
+      c.getContext('2d').drawImage(src, sx, sy, ss, ss, 0, 0, n, n); src = c; sx = sy = 0; ss = n; }
+    const c = document.createElement('canvas'); c.width = c.height = 256;
+    const g = c.getContext('2d'); g.imageSmoothingQuality = 'high'; g.fillStyle = '#fff'; g.fillRect(0, 0, 256, 256);
+    g.drawImage(src, sx, sy, ss, ss, 0, 0, 256, 256);
+    for (const type of ['image/webp', 'image/jpeg']){
+      for (const q of [0.86, 0.76, 0.64, 0.5, 0.38]){
+        const b = await new Promise(r => c.toBlob(r, type, q));
+        if (!b || b.type !== type) break;   // Safari: no WebP encoder, JPEG then
+        if (b.size <= 60 * 1024) return b;
+      }
+    }
+    throw Object.assign(new Error('too big'), { code: 'too_large' });
+  } finally { URL.revokeObjectURL(url); }
 }
-async function acctRun(fn){ if (acctBusy) return; acctBusy = true; $$('#acctBox button').forEach(b => b.disabled = true);
-  try { await fn(); } catch(e){ acctErr(e); } finally { acctBusy = false; $$('#acctBox button').forEach(b => b.disabled = false); } }
+
+/* ---- Stalak Pro bought: « Merci ! » with a snow burst, then 4 slides of what is unlocked; once per account ---- */
+let ptI = 0, ptTimer = 0, ptWait = 0, ptBackEl = null, ptPhase = 0, ptScrollT = 0;
+const ptSeen = new Set();
+const ptCalm = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){ return false; } };
+function proThanksMaybe(){
+  if (!ACCT || !acctPro() || !ACCT.state.user || !$('#proThx').hidden) return;
+  const id = ACCT.state.user.id, k = 'stalak:proThanks:' + id;
+  if (ptSeen.has(id)) return;
+  let seen = null; try { seen = localStorage.getItem(k); } catch(e){}
+  if (seen){ ptSeen.add(id); return; }
+  // not over an export, a question, or Paddle's own window (it shows its success screen first)
+  if (S.exporting || askDone || ACCT.checkoutOpen){ clearTimeout(ptWait); ptWait = setTimeout(proThanksMaybe, 1500); return; }
+  ptSeen.add(id); try { localStorage.setItem(k, String(Date.now())); } catch(e){}
+  ptOpen();
+}
+function ptOpen(){
+  ptBackEl = document.activeElement; ptPhase = 1;
+  const box = $('#proThx'); box.hidden = false; modalOn(true); $('#acctPage').setAttribute('inert', '');
+  $('#ptHello').hidden = false; $('#ptHello').classList.remove('out'); $('#ptCard').hidden = true;
+  if (!ptCalm()) ptBurst();
+  diag('compte : merci Pro');
+  try { box.focus({ preventScroll: true }); } catch(e){}
+  ptTimer = setTimeout(ptCards, ptCalm() ? 1200 : 1600);
+}
+function ptBurst(){
+  const b = $('#ptBurst'); b.textContent = '';
+  const cols = ['#fff', 'var(--ice)', 'var(--tongue)', 'var(--fur)', 'var(--ice-2)', '#fff', 'var(--sky)'], R = Math.min(innerWidth, innerHeight, 760);
+  for (let i = 0; i < 64; i++){
+    const el = document.createElement('i'), a = Math.random() * Math.PI * 2, d = R * (0.25 + Math.random() * 0.5);
+    el.style.cssText = `--x:${Math.round(Math.cos(a) * d)}px;--y:${Math.round(Math.sin(a) * d + 40)}px;--r:${Math.round(Math.random() * 540 - 270)}deg;--s:${9 + Math.round(Math.random() * 15)}px;--c:${cols[i % cols.length]};--br:${i % 3 ? '50%' : '3px'};--d:${(Math.random() * 0.25).toFixed(2)}s`;
+    b.append(el);
+  }
+}
+function ptCards(){
+  clearTimeout(ptTimer); if (ptPhase !== 1) return; ptPhase = 2;
+  const h = $('#ptHello');
+  const show = () => { h.hidden = true; $('#ptCard').hidden = false; ptGo(0, true); try { $('#ptNext').focus(); } catch(e){} };
+  if (ptCalm()) show(); else { h.classList.add('out'); setTimeout(show, 260); }
+}
+const ptSlides = () => $$('#ptTrack .pt-slide');
+function ptGo(i, instant){
+  const sl = ptSlides(), t = $('#ptTrack'); ptI = Math.max(0, Math.min(sl.length - 1, i));
+  t.scrollTo({ left: ptI * t.clientWidth, behavior: instant || ptCalm() ? 'auto' : 'smooth' });
+  ptMark();
+}
+function ptMark(){
+  const sl = ptSlides(), dots = $('#ptDots');
+  if (dots.children.length !== sl.length){ dots.textContent = ''; sl.forEach((s, k) => { const d = document.createElement('button'); d.type = 'button'; d.onclick = () => ptGo(k); dots.append(d); }); }
+  sl.forEach((s, k) => { s.setAttribute('aria-label', _t('pt.of', { n: k + 1, total: sl.length })); s.inert = k !== ptI; if (k !== ptI) s.setAttribute('aria-hidden', 'true'); else s.removeAttribute('aria-hidden'); });
+  [...dots.children].forEach((d, k) => { d.setAttribute('aria-label', _t('pt.dot', { n: k + 1 })); d.setAttribute('aria-current', String(k === ptI)); });
+  setT('#ptNext', ptI === sl.length - 1 ? 'pt.done' : 'pt.next');
+  setT('#ptLive', 'pt.live', { n: ptI + 1, total: sl.length, title: sl[ptI].querySelector('h3').textContent.trim() });
+}
+function ptClose(){
+  if ($('#proThx').hidden) return;
+  clearTimeout(ptTimer); ptPhase = 0;
+  $('#proThx').hidden = true; $('#ptBurst').textContent = ''; $('#acctPage').removeAttribute('inert'); modalOn(false);
+  if (apView) setTimeout(() => { try { (apView === 'pro' ? $('#apProT') : $('#acctPage')).focus({ preventScroll: true }); } catch(e){} }, 30);
+  else try { (ptBackEl && ptBackEl.isConnected ? ptBackEl : $('#acctBtn')).focus(); } catch(e){}
+}
+
 if (ACCT){
+  // the mascot's faces (only here: the claude.ai page has no /emoji/ folder)
+  $$('img[data-emo]').forEach(i => { i.src = '/emoji/' + i.dataset.emo + '.webp'; });
   $('#acctBtn').onclick = () => acctOpen();
   $('#outroPro').onclick = () => acctOpen('outro');
-  $('#acctX').onclick = acctClose;
-  $('#acctBox').addEventListener('keydown', e => { if (e.key === 'Escape'){ e.stopPropagation(); acctClose(); } });
-  $('#acctBox').addEventListener('click', e => { if (e.target === e.currentTarget) acctClose(); });
-  $('#acctMail').onsubmit = e => { e.preventDefault(); acctRun(async () => {
-    const m = $('#acctEmail').value.trim().toLowerCase();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m)){ acctSay('acct.e.invalid_email', null, true); $('#acctEmail').focus(); return; }
-    acctSay('acct.sending'); await ACCT.sendCode(m, LANG);
-    acctMailV = m; acctView = 'code'; $('#acctCodeIn').value = ''; acctRender(); acctSay('acct.sent'); diag('compte : code envoyé');
-    setTimeout(() => $('#acctCodeIn').focus(), 30);
+  $('#apBack').onclick = apBackBtn;
+  $('#acctPage').addEventListener('keydown', e => { if (e.key === 'Escape'){ e.stopPropagation(); e.preventDefault(); apBackBtn(); } });
+  window.addEventListener('popstate', e => {
+    const v = apHashView();
+    apDepth = (e.state && e.state.apD) || 0;
+    if (!v){ apHide(); return; }
+    if (S.exporting) return;
+    apGo(v, { noHist: true });
+  });
+  // show / hide the password
+  $$('#acctPage .ap-eye').forEach(b => b.onclick = () => {
+    const i = $('#' + b.dataset.eye), on = i.type === 'password';
+    i.type = on ? 'text' : 'password'; b.setAttribute('aria-pressed', String(on)); setT(b, on ? 'ap.hide' : 'ap.show');
+  });
+
+  // sign in: the e-mail, then a code by e-mail or the password
+  const mailOk = () => { const m = $('#apEmail').value.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m)){ apSay('acct.e.invalid_email', null, true, 'facepalm'); $('#apEmail').setAttribute('aria-invalid', 'true'); $('#apEmail').focus(); return null; }
+    $('#apEmail').removeAttribute('aria-invalid'); return m; };
+  const sendCode = async reset => {
+    const m = mailOk(); if (!m) return;
+    apSay('acct.sending'); await ACCT.sendCode(m, LANG);
+    apMailV = m; apReset = reset; apStep = 'code'; $('#apCode').value = ''; apRender(); apSay(reset ? 'ap.resetSent' : 'acct.sent');
+    diag('compte : code envoyé' + (reset ? ' (mot de passe oublié)' : ''));
+    setTimeout(() => $('#apCode').focus(), 30);
+  };
+  const signedIn = () => {
+    const to = apReset ? 'account' : apAfter || 'account', reset = apReset;
+    apReset = false; apAfter = 'account'; apStep = 'mail'; $('#apPw').value = '';
+    acctSync();
+    apGo(to, { replace: true, keepMsg: true, noFocus: reset });
+    apSay(reset ? 'ap.resetNow' : acctPro() ? 'acct.welcomePro' : 'acct.welcome');
+    if (reset) apPwOpen();
+  };
+  $('#apPwBtn').onclick = () => { apStep = 'pw'; apSay(null); apRender(); ($('#apEmail').value.trim() ? $('#apPw') : $('#apEmail')).focus(); };
+  $('#apUseCode').onclick = () => { apStep = 'mail'; apSay(null); apRender(); $('#apCodeBtn').focus(); };
+  $('#apForgot').onclick = () => apRun(() => sendCode(true));
+  $('#apSignF').onsubmit = e => { e.preventDefault();
+    if (apStep !== 'pw'){ apRun(() => sendCode(false)); return; }
+    apRun(async () => {
+      const m = mailOk(); if (!m) return;
+      const pw = $('#apPw').value; if (!pw){ apSay('acct.e.pwEmpty', null, true, 'think'); $('#apPw').focus(); return; }
+      apSay('acct.checking'); await ACCT.loginPassword(m, pw); diag('compte : connecté (mot de passe)'); signedIn();
+    }, 'pw').then(() => { if (!ACCT.state.user && apStep === 'pw'){ $('#apPw').select(); } });
+  };
+  $('#apCode').addEventListener('input', e => { const v = e.target.value.replace(/\D/g, '').slice(0, 6); if (v !== e.target.value) e.target.value = v; if (v.length === 6) $('#apCodeF').requestSubmit ? $('#apCodeF').requestSubmit() : $('#apCodeF').onsubmit(new Event('submit')); });
+  $('#apCodeF').onsubmit = e => { e.preventDefault(); apRun(async () => {
+    const c = $('#apCode').value.replace(/\D/g, '');
+    if (c.length !== 6){ apSay('acct.e.invalid_code', null, true, 'facepalm'); return; }
+    apSay('acct.checking'); await ACCT.verify(apMailV, c); diag('compte : connecté (code)'); signedIn();
   }); };
-  $('#acctCodeIn').addEventListener('input', e => { const v = e.target.value.replace(/\D/g, '').slice(0, 6); if (v !== e.target.value) e.target.value = v; if (v.length === 6) $('#acctCode').requestSubmit ? $('#acctCode').requestSubmit() : $('#acctCode').onsubmit(new Event('submit')); });
-  $('#acctCode').onsubmit = e => { e.preventDefault(); acctRun(async () => {
-    const c = $('#acctCodeIn').value.replace(/\D/g, '');
-    if (c.length !== 6){ acctSay('acct.e.invalid_code', null, true); return; }
-    acctSay('acct.checking'); await ACCT.verify(acctMailV, c);
-    acctView = 'mail'; acctSay(acctPro() ? 'acct.welcomePro' : 'acct.welcome'); diag('compte : connecté'); acctSync();
-    setTimeout(() => { try { $('#acctX').focus(); } catch(e){} }, 30);
+  $('#apOtherMail').onclick = () => { apStep = 'mail'; apReset = false; apSay(null); apRender(); $('#apEmail').focus(); };
+
+  // profile: pseudo and photo
+  $('#apName').addEventListener('input', e => { e.target.dataset.dirty = '1'; e.target.removeAttribute('aria-invalid'); });
+  $('#apNameF').onsubmit = e => { e.preventDefault(); apRun(async () => {
+    const n = $('#apName'), v = n.value.replace(/\s+/g, ' ').trim(), len = [...v].length;
+    if (v && (len < 2 || len > 30)){ apSay('acct.e.invalid_name', null, true, 'think'); n.setAttribute('aria-invalid', 'true'); n.focus(); return; }
+    await ACCT.updateProfile({ displayName: v || null }); delete n.dataset.dirty; n.value = (ACCT.state.user && ACCT.state.user.displayName) || '';
+    apSay(v ? 'ap.nameSaved' : 'ap.nameCleared'); diag('compte : pseudo');
   }); };
-  $('#acctBack').onclick = () => { acctView = 'mail'; acctSay(null); acctRender(); $('#acctEmail').focus(); };
-  const buy = plan => acctRun(async () => { acctSay('acct.paying'); diag('compte : paiement ' + plan); await ACCT.checkout(plan); acctSay(null); });
-  $('#acctMonth').onclick = () => buy('month');
-  $('#acctYear').onclick = () => buy('year');
-  $('#acctManage').onclick = () => { if (acctBusy) return; const w = window.open('about:blank', '_blank'); let u = null; acctRun(async () => {
+  $('#apAvIn').onchange = e => { const f = e.target.files && e.target.files[0]; e.target.value = ''; if (!f) return;
+    apRun(async () => {
+      apSay('ap.photoWorking'); $('#apAv').classList.add('busy');
+      try {
+        const b = await apAvatarBlob(f);
+        if (apAvLocal) URL.revokeObjectURL(apAvLocal); apAvLocal = URL.createObjectURL(b); apRender();
+        await ACCT.uploadAvatar(b);
+        apSay('ap.photoSaved'); diag('compte : photo ' + b.type + ' ' + Math.round(b.size / 1024) + ' Ko');
+      } finally { if (apAvLocal){ URL.revokeObjectURL(apAvLocal); apAvLocal = null; } $('#apAv').classList.remove('busy'); apRender(); }
+    });
+  };
+  $('#apAvDel').onclick = () => apRun(async () => { await ACCT.removeAvatar(); apSay('ap.photoDeleted'); $('#apAvIn').focus(); });
+
+  // password: set or change (the current one is asked unless the session comes from an e-mail code of less than 15 min)
+  function apPwOpen(){ $('#apPwF').hidden = false; $('#apCur').value = $('#apNew').value = ''; apRender();
+    setTimeout(() => { const f = !$('#apCurBox').hidden ? $('#apCur') : $('#apNew'); try { f.focus(); } catch(e){} }, 40); }
+  function apPwClose(){ $('#apPwF').hidden = true; $('#apCur').value = $('#apNew').value = ''; apRender(); $('#apPwEdit').focus(); }
+  $('#apPwEdit').onclick = apPwOpen;
+  $('#apPwCancel').onclick = apPwClose;
+  $('#apPwF').onsubmit = e => { e.preventDefault(); apRun(async () => {
+    const pw = $('#apNew').value, cur = $('#apCurBox').hidden ? '' : $('#apCur').value;
+    if (pw.length < 8){ apSay('acct.e.password_too_short', null, true, 'think'); $('#apNew').focus(); return; }
+    if (!$('#apCurBox').hidden && !cur){ apSay('acct.e.reauth_required', null, true, 'think'); $('#apCur').focus(); return; }
+    try { await ACCT.setPassword(pw, cur || null); }
+    catch(err){ if (err.code === 'reauth_required') await ACCT.me().catch(() => {}); apRender(); throw err; }
+    apPwClose(); apSay('ap.pwSaved'); diag('compte : mot de passe enregistré');
+  }, 'pw'); };
+
+  // subscription line, sign out, delete
+  const portal = () => { if (apBusy) return; const w = window.open('about:blank', '_blank'); let u = null; apRun(async () => {
     const r = await ACCT.portal(); u = r.url || r.cancelUrl;
     if (!u) throw Object.assign(new Error('no portal url'), { code: 'other' });
     if (w){ try { w.opener = null; } catch(e){} w.location.href = u; } else location.href = u;
   }).then(() => { if (!u && w) w.close(); }); };
-  $('#acctOut').onclick = () => acctRun(async () => { await ACCT.logout(); acctView = 'mail'; acctSay('acct.outDone'); diag('compte : déconnecté'); acctSync(); });
-  $('#acctDel').onclick = async () => {
-    if (acctBusy) return;
-    acctClose();
-    if (!await askSure(_t('acct.delAskT'), _t('acct.delAskP'), _t('acct.delYes'))){ acctOpen(); return; }
-    acctOpen(); acctRun(async () => { await ACCT.deleteAccount(); acctView = 'mail'; acctSay('acct.deleted'); diag('compte : supprimé'); acctSync(); });
+  $('#apSubGo').onclick = () => { if (acctPro()) portal(); else apGo('pro'); };
+  $('#apManage').onclick = portal;
+  $('#apOut').onclick = () => apRun(async () => { await ACCT.logout(); diag('compte : déconnecté'); apGo('login', { replace: true }); apSay('acct.outDone'); });
+  $('#apDel').onclick = async () => {
+    if (apBusy) return;
+    if (!await askSure(_t('acct.delAskT'), _t('acct.delAskP'), _t('acct.delYes'))) return;
+    apRun(async () => { await ACCT.deleteAccount(); diag('compte : supprimé'); apGo('login', { replace: true }); apSay('acct.deleted'); });
   };
+
+  // Stalak Pro: the two prices (Paddle's window)
+  const buy = plan => apRun(async () => { apSay('acct.paying'); diag('compte : paiement ' + plan); await ACCT.checkout(plan); apSay(null); });
+  $('#apMonth').onclick = () => buy('month');
+  $('#apYear').onclick = () => buy('year');
+
+  // the thank-you: a tap or a key skips the « Merci ! »; the slides swipe, arrows and dots work too
+  $('#proThx').addEventListener('click', e => { if (ptPhase === 1) ptCards(); });
+  $('#proThx').addEventListener('keydown', e => {
+    if (e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); ptClose(); return; }
+    if (ptPhase === 1 && (e.key === 'Enter' || e.key === ' ')){ e.preventDefault(); ptCards(); return; }
+    if (ptPhase === 2 && e.key === 'ArrowRight'){ e.preventDefault(); ptGo(ptI + 1); }
+    if (ptPhase === 2 && e.key === 'ArrowLeft'){ e.preventDefault(); ptGo(ptI - 1); }
+  });
+  $('#ptTrack').addEventListener('scroll', () => { clearTimeout(ptScrollT); ptScrollT = setTimeout(() => {
+    const t = $('#ptTrack'), i = Math.round(t.scrollLeft / Math.max(1, t.clientWidth)); if (i !== ptI){ ptI = i; ptMark(); } }, 90); }, { passive: true });
+  $('#ptNext').onclick = () => { if (ptI >= ptSlides().length - 1) ptClose(); else ptGo(ptI + 1); };
+  $('#ptSkip').onclick = ptClose;
+
   ACCT.onChange(() => acctSync());
   // back from the payment window: Paddle reports it, account.js asks the server until the account is Pro
   window.addEventListener('focus', () => { if (ACCT.state.user && !acctPro()) ACCT.me().catch(() => {}); });
-  ACCT.me().catch(e => diag('compte : serveur injoignable (' + (e && (e.code || e.message)) + ')'));
+  // opened at #compte, #pro or #connexion (links from the pricing pages): the page opens once we know who is there;
+  // the address is first set back without it, so that Back closes the page instead of leaving the site
+  const boot = () => { const v = apHashView(); if (!v) return;
+    try { history.replaceState(null, '', location.pathname + location.search); } catch(e){}
+    apGo(v); };
+  ACCT.me().then(boot, e => { diag('compte : serveur injoignable (' + (e && (e.code || e.message)) + ')'); boot(); });
 }
 
 /* ---------- FR / EN: everything on screen is written again in the other language, the work stays as it is ---------- */
@@ -6641,7 +7056,7 @@ function applyLang(){
   document.documentElement.lang = LANG;
   applyStatic();
   if (hasT('doc.title')) document.title = _t('doc.title');
-  $$('#langSw button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === LANG)));
+  $$('.langsw button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === LANG)));
   // what is written from here: drawn again as it is now
   kindUI(); renderTakes(); renderLines(); tapShow(); if (tapping) tapUi();
   $('#playBtn').textContent = S.playing ? '■ Stop' : _t('play.play');
@@ -6658,7 +7073,7 @@ function applyLang(){
   if (S.step >= 3) redraw();   // the take's name drawn over the preview
   acctSync();
 }
-$('#langSw').onclick = e => {
+const langPick = e => {
   const b = e.target.closest('button[data-lang]'); if (!b || b.dataset.lang === LANG || !LANGS.includes(b.dataset.lang)) return;
   LANG = b.dataset.lang; store.set('stalak:lang', LANG);
   // a ?lang= in the address would win on the next visit: it follows the choice
@@ -6666,5 +7081,6 @@ $('#langSw').onclick = e => {
   diag('langue : ' + LANG);
   applyLang();
 };
+$$('.langsw').forEach(sw => { sw.onclick = langPick; });
 applyLang();
 })();
