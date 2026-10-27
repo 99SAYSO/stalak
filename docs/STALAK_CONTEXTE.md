@@ -1,7 +1,7 @@
 # Stalak — contexte commun à toutes les conversations
 
 > À mettre dans les « connaissances du projet » Claude (Project knowledge).
-> Chaque conversation du projet le lit avant de travailler. Mis à jour le 27/10/2026 (règle 3 : comptes rendus automatiques).
+> Chaque conversation du projet le lit avant de travailler. Mis à jour le 27/10/2026 (règle 3 : comptes rendus automatiques ; « Parler à un humain » réservé à Pro).
 
 ## 1. Le produit en une minute
 
@@ -29,7 +29,8 @@
 - packs de 5, 10 ou 30 vidéos ;
 - toutes les tailles (S/M/L) et apparitions du texte (mot par mot, karaoké) ;
 - paroles automatiques (20 par jour, 8 min max) ;
-- sauvegarde en ligne (20 Go par compte, projet effacé après 6 mois sans ouverture, e-mail de rappel 14 jours avant).
+- sauvegarde en ligne (20 Go par compte, projet effacé après 6 mois sans ouverture, e-mail de rappel 14 jours avant) ;
+- « Parler à un humain » dans le glaçon d'aide : chat en direct avec le propriétaire quand il est disponible, sinon réponse par e-mail sous 24 h. Ne jamais écrire « 24 h/24 ». Les gratuits gardent le glaçon IA et contact@stalak.app.
 
 **Règles commerciales :**
 - Un ancien Pro **perd l'accès** à ses projets en ligne. Ils restent gardés jusqu'à l'effacement des 6 mois et reviennent s'il reprend Pro.
