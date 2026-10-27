@@ -460,10 +460,17 @@ rediriger (302) vers `https://admin.stalak.app/admin/`. Sinon, garde le favori `
 - Sur stalak.app, ouvre le glaçon → **Parler à un humain** → écris un message avec ton autre adresse e-mail :
   il apparaît dans le tableau de bord, et un e-mail « Stalak : nouveau message » arrive sur contact@stalak.app.
 
-### Comment marche « Parler à un humain »
+### Comment marche « Parler à un humain » (Stalak Pro)
+- Réservé à **Stalak Pro** (décision du 27/10). Sans Pro, déconnecté ou gratuit, le bouton du glaçon affiche
+  « Réservé à Stalak Pro », un bouton vers la page Pro (`acctOpen('support')`) et l'adresse contact@stalak.app.
+  Le serveur l'impose : créer une conversation ou y écrire demande une session d'un compte Pro (`401` / `403 pro_required`),
+  et écrire demande que la conversation soit celle de ce compte (`404` sinon).
+- Un ex-Pro ne peut plus écrire, mais garde les réponses déjà reçues (lecture par le jeton de la conversation, sur son appareil).
+- Les réponses par e-mail vont à l'adresse du compte, annoncées « sous 24 h ». Badge « Pro » / « ex-Pro » / « invité » sur
+  chaque conversation du tableau de bord.
 - Interrupteur **Je suis disponible** allumé **et** tableau de bord ouvert (moins de 3 minutes) : le glaçon propose le direct
-  (l'e-mail du visiteur est facultatif) et tu réponds en direct.
-- Sinon : le visiteur doit laisser son e-mail, et tu reçois un e-mail pour chaque nouvelle conversation
+  et tu réponds en direct.
+- Sinon : la réponse partira par e-mail « sous 24 h », et tu reçois un e-mail pour chaque nouvelle conversation
   (au plus un par conversation toutes les 15 minutes, 50 par jour).
 - Ta réponse part par e-mail si le visiteur n'est plus sur la page (sa page ne l'a pas récupérée en 20 s), avec
   `contact@stalak.app` en adresse de réponse. Le menu « Par e-mail » : *si absent* (par défaut), *toujours*, *jamais*.
@@ -521,9 +528,9 @@ Toutes les réponses sont en JSON. Les erreurs ont la forme `{"error":"code","me
 | `POST /api/help/chat` | `{lang: 'fr'\|'en', messages: [{role: 'user'\|'assistant', content}], context}` (sans compte). 10 derniers tours, 6 000 caractères au plus, le dernier de l'utilisateur ; `context` (4 000 caractères) = ce que montre la page. Renvoie `{answer}` (texte simple). Erreurs `invalid_messages`, `rate_limited` (429, `retryAfter`), `help_busy` (503, budget du jour épuisé), `ai_unavailable` (503), `help_failed` (503 : un 502 serait remplacé par la page d'erreur de Cloudflare ; la réponse vide est redemandée une fois avant). |
 | `POST /api/presence` | `{vid, lang}` : la page est ouverte (signe de vie, 1 par minute). `vid` = 16 à 40 lettres ou chiffres tirés au hasard par la page. 60 nouvelles visites par heure et par connexion (`429` au-delà). |
 | `GET /api/support/status` | `{available}` : l'équipe propose le direct (interrupteur allumé et tableau de bord ouvert depuis moins de 3 min). |
-| `POST /api/support/tickets` | `{lang, message, email?, context?}` (sans compte ; connecté : e-mail vérifié du compte par défaut). Renvoie `{id, token, available, email, messages}`. Erreurs `email_required` (personne n'est là et pas d'e-mail), `invalid_email`, `invalid_message`, `rate_limited`, `support_busy` (503). |
+| `POST /api/support/tickets` | **Stalak Pro.** `{lang, message, email?, context?}` ; réponses à l'e-mail du compte (ou `email`). Renvoie `{id, token, available, email, messages}`. Erreurs `not_logged_in` (401), `pro_required` (403), `invalid_email`, `invalid_message`, `rate_limited`, `support_busy` (503). |
 | `GET /api/support/tickets/:id?after=<id>` | En-tête `X-Ticket-Token`. `{status, available, email, messages: [{id, from: 'user'\|'admin', text, at, emailed}]}`. Mauvais jeton = `404`. |
-| `POST /api/support/tickets/:id/messages` | En-tête `X-Ticket-Token`, `{text, email?, after?}`. Rouvre une conversation fermée. |
+| `POST /api/support/tickets/:id/messages` | **Stalak Pro**, conversation de ce compte. En-tête `X-Ticket-Token`, `{text, email?, after?}`. Rouvre une conversation fermée. Erreurs `401`, `403 pro_required`, `404` (pas sa conversation). |
 | `GET\|POST\|DELETE /api/admin/*` | Tableau de bord (hôte `ADMIN_HOST` + jeton Cloudflare Access ; écritures : JSON + `Origin` du tableau de bord) : `me`, `stats?days=7..120`, `live`, `available`, `tickets[?status=open\|closed\|all]`, `tickets/:id` (GET, DELETE), `tickets/:id/messages` (`{text, email: 'auto'\|'yes'\|'no'}`), `tickets/:id/status`. Ailleurs : `404`. |
 | `POST /api/cron/cloud-cleanup` | Règle des 6 mois, pour un cron externe : `Authorization: Bearer <CRON_SECRET>` (sinon `404`). |
 | `DELETE /api/account` | `{confirm:true}`. Arrête l'abonnement Paddle, puis efface toutes les données (dont le pseudo, la photo et le mot de passe, qui sont dans la ligne `users`). |

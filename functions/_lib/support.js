@@ -1,15 +1,17 @@
-// « Parler à un humain » (the help ice cube): a support ticket the owner answers from the dashboard (admin.js).
-// The visitor's page holds the ticket id and a random token (only its SHA-256 is stored) and asks for news every few seconds
-// while the help window is open. When the owner is not there (« disponible » off, or the dashboard closed), the visitor
-// leaves an e-mail address: the owner's answers are then sent there. The owner gets an e-mail for each new message
-// when he is not on the dashboard.
+// « Parler à un humain » (the help ice cube), a Stalak Pro feature: a support ticket the owner answers from the dashboard
+// (admin.js). Starting a conversation or writing in it needs a signed-in Pro account (the conversation must be this
+// account's). Reading it needs only the ticket's token: someone who is no longer Pro keeps the answers already received.
+// The page holds the ticket id and a random token (only its SHA-256 is stored) and asks for news every few seconds while
+// the help window is open. When the owner is not there (« disponible » off, or the dashboard closed), the answers go to the
+// account's e-mail (« sous 24 h »). The owner gets an e-mail for each new message when he is not on the dashboard.
 //
 //   GET  /api/support/status                       → {available}
-//   POST /api/support/tickets                      {lang, message, email?, context?} → {id, token, available, messages}
+//   POST /api/support/tickets                      Pro; {lang, message, email?, context?} → {id, token, available, email, messages}
 //   GET  /api/support/tickets/:id?after=<msg id>   header X-Ticket-Token → {status, available, email, messages}
-//   POST /api/support/tickets/:id/messages         header X-Ticket-Token, {text, email?} → {messages}
+//   POST /api/support/tickets/:id/messages         Pro, own ticket; header X-Ticket-Token, {text, email?} → {messages}
 import { HttpError, json, readJson, clientIp, isDev } from './http.js';
-import { currentUser } from './auth.js';
+import { requireUser } from './auth.js';
+import { requirePro } from './entitlements.js';
 import { limit } from './ratelimit.js';
 import { sha256Hex, base64url } from './crypto.js';
 import { bump } from './metrics.js';
@@ -92,9 +94,9 @@ export function ownerEmail(env, ticket, text) {
   const who = ticket.email || 'visiteur sans e-mail';
   const body = String(text).slice(0, 1000);
   return {
-    subject: `Stalak : nouveau message (${who})`,
-    text: `Nouveau message sur Stalak, de ${who} :\n\n${body}\n\nRépondre : ${link}`,
-    html: page('fr', `<p>Nouveau message sur Stalak, de <b>${esc(who)}</b> :</p><div style="white-space:pre-wrap;border-left:3px solid #2a7de1;padding:4px 12px;margin:12px 0">${esc(body)}</div><p><a href="${esc(link)}">Répondre depuis le tableau de bord</a></p>`),
+    subject: `Stalak Pro : nouveau message (${who})`,
+    text: `Nouveau message d’un abonné Stalak Pro, de ${who} :\n\n${body}\n\nRépondre : ${link}`,
+    html: page('fr', `<p>Nouveau message d’un abonné Stalak Pro, de <b>${esc(who)}</b> :</p><div style="white-space:pre-wrap;border-left:3px solid #2a7de1;padding:4px 12px;margin:12px 0">${esc(body)}</div><p><a href="${esc(link)}">Répondre depuis le tableau de bord</a></p>`),
   };
 }
 
@@ -186,6 +188,9 @@ export async function support(request, env, method, rest, ctx) {
   // a new ticket
   if (rest.length === 1) {
     if (method !== 'POST') throw new HttpError(405, 'method_not_allowed', 'Method not allowed.');
+    // Stalak Pro only (401 not_logged_in / 403 pro_required); checked before anything is counted
+    const user = await requireUser(request, env);
+    await requirePro(env, user, HttpError);
     await limit(env, `support:new:ip:${ipKey}`, 5, 3600e3, 'Too many new conversations, try again later.');
     await limit(env, `support:newd:ip:${ipKey}`, 20, 86400e3, 'Too many new conversations today, try again tomorrow.');
     const body = await readJson(request, 16 * 1024);
@@ -193,14 +198,13 @@ export async function support(request, env, method, rest, ctx) {
     const message = clean(typeof body.message === 'string' ? body.message : '', MESSAGE_MAX);
     if (!message) throw new HttpError(400, 'invalid_message', 'message: 1-2000 characters.');
     const context = body.context == null ? null : clean(typeof body.context === 'string' ? body.context : '', CONTEXT_MAX) || null;
-    const user = await currentUser(request, env).catch(() => null);
-    let email = null;
+    // the answers go to the account's address, or to another one the member gives
+    let email = user.email;
     if (body.email != null && body.email !== '') {
       email = cleanEmail(body.email);
       if (!email) throw new HttpError(400, 'invalid_email', 'That email address does not look right.');
-    } else if (user && user.email_verified_at) email = user.email;
+    }
     const available = isAvailable(await getState(env));
-    if (!available && !email) throw new HttpError(400, 'email_required', 'Leave an email address: the answer will be sent there.');
     try {
       await limit(env, `support:all:${day()}`, TICKETS_PER_DAY, 86400e3);
     } catch { throw new HttpError(503, 'support_busy', 'Too many conversations today, write to the support email address.'); }
@@ -210,7 +214,7 @@ export async function support(request, env, method, rest, ctx) {
     await env.DB.prepare(
       `INSERT INTO tickets (id, token_hash, user_id, email, lang, status, context, created_at, updated_at, user_seen_at)
        VALUES (?1, ?2, ?3, ?4, ?5, 'open', ?6, ?7, ?7, ?7)`
-    ).bind(id, await sha256Hex('ticket:' + token), user ? user.id : null, email, lang, context, now).run();
+    ).bind(id, await sha256Hex('ticket:' + token), user.id, email, lang, context, now).run();
     await addMessage(env, id, 'user', message, now);
     await bump(env, 'ticket');
     await tellOwner(env, { id, email, notified_at: null }, message, ctx);
@@ -230,6 +234,10 @@ export async function support(request, env, method, rest, ctx) {
   }
   if (rest[2] !== 'messages') throw new HttpError(404, 'not_found', 'Unknown API route.');
   if (method !== 'POST') throw new HttpError(405, 'method_not_allowed', 'Method not allowed.');
+  // writing: Stalak Pro, and only in this account's own conversation (older ones without an account stay read-only)
+  const user = await requireUser(request, env);
+  await requirePro(env, user, HttpError);
+  if (t.user_id !== user.id) throw new HttpError(404, 'not_found', 'Ticket not found.');
   await limit(env, `support:msg:ip:${ipKey}`, 120, 3600e3, 'Too many messages, try again later.');
   await limit(env, `support:msg:t:${t.id}`, 60, 3600e3, 'Too many messages, try again later.');
   const body = await readJson(request, 8 * 1024);

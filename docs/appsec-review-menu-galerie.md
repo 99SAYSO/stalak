@@ -41,7 +41,7 @@ Secrets hygiene: aucune clé, aucun mot de passe ajouté. Inspection du diff : P
 | Tests serveur (dont « galerie: covers… ») | PASS | `node tests/backend/run.mjs` | 63/63 |
 | Parcours Galerie (gratuit, ex-Pro, Pro, 390 et 1280 px, FR/EN) | PASS | `python3 tests/ui/gallery_ui.py http://localhost:<port>` sur `tests/ui/cloud-server.mjs` | 40/40, sans défilement horizontal, sans erreur de page |
 | Glaçon d'aide + version claude.ai | PASS | `tests/ui/help_ui.py` | 42/42 |
-| Tableau de bord / « Parler à un humain » (non touchés) | PASS | `tests/ui/support_ui.py` | 34/34 |
+| Tableau de bord / « Parler à un humain » (non touchés) | PASS | `tests/ui/support_ui.py` | 39/39 (après fusion de main 016500b) |
 | Lecture du diff serveur | PASS | `git diff main -- functions/ migrations/` | voir tableau ci-dessus |
 | Vrai R2 / D1 / cache Cloudflare | NOT RUN | — | à vérifier après publication (une sauvegarde, la couverture s'affiche, un autre compte reçoit 404) |
 

@@ -2081,55 +2081,82 @@ test('admin: only on the admin host, with a valid Cloudflare Access token for a 
   assert.equal(r.status, 200); assert.equal(r.data.availableSwitch, true);
 });
 
-test('support: ticket, owner told by e-mail when away, live chat, reply e-mailed only when the visitor is gone', async () => {
+// « Parler à un humain » is part of Stalak Pro: a signed-in Pro account starts a conversation and writes in it;
+// the token alone still reads it (an ex-Pro keeps the answers already received).
+const proCancel = async (env, userId) => {
+  const sid = env.DB.raw.prepare('SELECT id, customer_id FROM subscriptions WHERE user_id = ?').get(userId);
+  return webhook(env, subEvent('subscription.canceled', sub(userId, { id: sid.id, customer_id: sid.customer_id, status: 'canceled' })));
+};
+
+test('support (Pro): sign-in and Pro needed to start; account e-mail; owner told by e-mail when away; replies by e-mail or live', async () => {
   const env = makeEnv(ADMIN_ENV), token = await accessToken();
-  // nobody on the dashboard: an e-mail address is needed
-  let r = await supportCall(env, 'GET', '/status');
+  // nobody signed in, or a free account: refused, nothing created, nothing counted
+  let r = await supportCall(env, 'POST', '/tickets', { body: { lang: 'fr', message: 'Mon export plante', email: 'x@example.com' } });
+  assert.equal(r.status, 401); assert.equal(r.data.error, 'not_logged_in');
+  const free = await login(env, 'free-user@example.com');
+  r = await supportCall(env, 'POST', '/tickets', { cookie: free.cookie, body: { lang: 'fr', message: 'Mon export plante' } });
+  assert.equal(r.status, 403); assert.equal(r.data.error, 'pro_required');
+  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM tickets').get().n, 0);
+  assert.equal(env.DB.raw.prepare("SELECT COUNT(*) AS n FROM rate_limits WHERE key LIKE 'support:%'").get().n, 0, 'refusals do not use the limits');
+  // the status stays public (it only says whether the team is online)
+  r = await supportCall(env, 'GET', '/status');
   assert.deepEqual(r.data, { available: false });
-  r = await supportCall(env, 'POST', '/tickets', { body: { lang: 'fr', message: 'Mon export plante' } });
-  assert.equal(r.status, 400); assert.equal(r.data.error, 'email_required');
+
+  // a Pro member, nobody on the dashboard: the answer will go to the account's address
+  const pro = await proUser(env, 'fan@example.com');
   for (const email of ['pas-un-mail', 'a@b', 'x@y.z<script>', 'a b@c.fr']) {
-    r = await supportCall(env, 'POST', '/tickets', { body: { lang: 'fr', message: 'Salut', email } });
+    r = await supportCall(env, 'POST', '/tickets', { cookie: pro.cookie, body: { lang: 'fr', message: 'Salut', email } });
     assert.equal(r.status, 400, email); assert.equal(r.data.error, 'invalid_email');
   }
   const n0 = outbound.length;
-  r = await supportCall(env, 'POST', '/tickets', { body: { lang: 'fr', message: 'Mon export plante <script>alert(1)</script>', email: 'Fan@Example.com', context: 'Étape 4' } });
+  r = await supportCall(env, 'POST', '/tickets', { cookie: pro.cookie, body: { lang: 'fr', message: 'Mon export plante <script>alert(1)</script>', context: 'Étape 4' } });
   assert.equal(r.status, 200, JSON.stringify(r.data));
   const { id, token: tk } = r.data;
   assert.match(id, /^t_[\w-]{16,32}$/); assert.ok(tk.length >= 32);
   assert.equal(r.data.email, 'fan@example.com'); assert.equal(r.data.available, false);
   assert.equal(r.data.messages.length, 1); assert.equal(r.data.messages[0].from, 'user');
-  // the token is not stored, only its hash
-  const row = env.DB.raw.prepare('SELECT token_hash, email, context FROM tickets WHERE id = ?').get(id);
-  assert.notEqual(row.token_hash, tk); assert.equal(row.email, 'fan@example.com'); assert.equal(row.context, 'Étape 4');
-  // the owner got an e-mail (to the support address), with the message escaped in the HTML and a link to the dashboard
+  const row = env.DB.raw.prepare('SELECT token_hash, email, context, user_id FROM tickets WHERE id = ?').get(id);
+  assert.notEqual(row.token_hash, tk); assert.equal(row.email, 'fan@example.com'); assert.equal(row.context, 'Étape 4'); assert.equal(row.user_id, pro.user.id);
+  // the owner got an e-mail (to the support address), marked Pro, the message escaped, with the link to the dashboard
   const toOwner = outbound.slice(n0).filter((o) => o.url.includes('resend'));
   assert.equal(toOwner.length, 1);
   assert.deepEqual(toOwner[0].body.to, ['contact@stalak.app']); assert.equal(toOwner[0].body.reply_to, 'fan@example.com');
+  assert.ok(toOwner[0].body.subject.startsWith('Stalak Pro : nouveau message'));
   assert.ok(toOwner[0].body.html.includes('&lt;script&gt;') && !toOwner[0].body.html.includes('<script>'));
   assert.ok(toOwner[0].body.text.includes('https://admin.stalak.app/admin/#t=' + id));
-  // a second message soon after: no second e-mail to the owner (one every 15 min per ticket)
-  r = await supportCall(env, 'POST', `/tickets/${id}/messages`, { token: tk, body: { text: 'Toujours là ?' } });
+  // another address the member gives
+  r = await supportCall(env, 'POST', '/tickets', { cookie: pro.cookie, body: { message: 'Autre adresse', email: 'Autre@Example.com' } });
+  assert.equal(r.data.email, 'autre@example.com');
+  await adminCall(env, 'DELETE', `/api/admin/tickets/${r.data.id}`, { token, body: {} });
+  // a second message soon after: no second e-mail to the owner (one every 15 min per conversation)
+  const n0b = outbound.length;
+  r = await supportCall(env, 'POST', `/tickets/${id}/messages`, { cookie: pro.cookie, token: tk, body: { text: 'Toujours là ?' } });
   assert.equal(r.status, 200); assert.equal(r.data.messages.length, 2);
-  assert.equal(outbound.slice(n0).filter((o) => o.url.includes('resend')).length, 1);
+  assert.equal(outbound.slice(n0b).filter((o) => o.url.includes('resend')).length, 0);
 
-  // someone else's ticket, or a wrong token: not found
+  // a wrong token, someone else's id: not found
   for (const [i, t] of [[id, 'x'.repeat(43)], [id, ''], ['t_' + 'A'.repeat(22), tk], ['../tickets', tk]]) {
     r = await supportCall(env, 'GET', `/tickets/${i}`, { token: t });
     assert.ok([404, 405].includes(r.status) && !r.data.messages, i + ' ' + t.slice(0, 4) + ' ' + r.status);
   }
+  // writing needs the Pro account that owns it, even with the token
+  r = await supportCall(env, 'POST', `/tickets/${id}/messages`, { token: tk, body: { text: 'sans session' } });
+  assert.equal(r.status, 401);
+  const otherPro = await proUser(env, 'other-pro@example.com');
+  r = await supportCall(env, 'POST', `/tickets/${id}/messages`, { cookie: otherPro.cookie, token: tk, body: { text: 'pas à moi' } });
+  assert.equal(r.status, 404);
 
-  // the dashboard: one unread conversation
+  // the dashboard: one unread conversation, marked Pro
   r = await adminCall(env, 'GET', '/api/admin/live', { token });
   assert.equal(r.status, 200); assert.deepEqual(r.data.tickets, { open: 1, unread: 1 }); assert.equal(r.data.available, false);
   r = await adminCall(env, 'GET', '/api/admin/tickets', { token });
-  assert.equal(r.data.tickets.length, 1); assert.equal(r.data.tickets[0].unread, true); assert.equal(r.data.tickets[0].email, 'fan@example.com');
+  assert.equal(r.data.tickets.length, 1); assert.equal(r.data.tickets[0].unread, true); assert.equal(r.data.tickets[0].pro, true);
   r = await adminCall(env, 'GET', `/api/admin/tickets/${id}`, { token });
-  assert.equal(r.data.messages.length, 2); assert.equal(r.data.context, 'Étape 4'); assert.equal(r.data.account, null);
+  assert.equal(r.data.messages.length, 2); assert.equal(r.data.context, 'Étape 4'); assert.equal(r.data.account.pro, true);
   r = await adminCall(env, 'GET', '/api/admin/live', { token });
   assert.equal(r.data.tickets.unread, 0, 'read once opened');
 
-  // the visitor is gone (no news asked for a while): the reply goes by e-mail, in his language, reply-to the support address
+  // the member is gone: the reply goes by e-mail, reply-to the support address
   env.DB.raw.prepare('UPDATE tickets SET user_seen_at = ? WHERE id = ?').run(Date.now() - 120e3, id);
   const n1 = outbound.length;
   r = await adminCall(env, 'POST', `/api/admin/tickets/${id}/messages`, { token, body: { text: 'Essaie sur Chrome, ça devrait passer.' } });
@@ -2138,11 +2165,10 @@ test('support: ticket, owner told by e-mail when away, live chat, reply e-mailed
   assert.equal(toUser.length, 1); assert.deepEqual(toUser[0].body.to, ['fan@example.com']);
   assert.equal(toUser[0].body.subject, 'Réponse de l’équipe Stalak'); assert.equal(toUser[0].body.reply_to, 'contact@stalak.app');
   assert.ok(toUser[0].body.text.includes('Essaie sur Chrome') && toUser[0].body.text.includes('Toujours là ?'));
-  // the visitor comes back: he sees the answer in the bubble
-  r = await supportCall(env, 'GET', `/tickets/${id}?after=2`, { token: tk });
+  const lastUser = env.DB.raw.prepare("SELECT MAX(id) AS id FROM ticket_messages WHERE ticket_id = ? AND sender = 'user'").get(id).id;
+  r = await supportCall(env, 'GET', `/tickets/${id}?after=${lastUser}`, { token: tk });
   assert.equal(r.status, 200); assert.equal(r.data.messages.length, 1); assert.equal(r.data.messages[0].from, 'admin');
-  assert.equal(r.data.messages[0].emailed, true);
-  // now he is live (just asked for news): the next reply is not e-mailed, unless asked
+  // live now: not e-mailed unless asked; the catch-up sends what his page never fetched
   const n2 = outbound.length;
   r = await adminCall(env, 'POST', `/api/admin/tickets/${id}/messages`, { token, body: { text: 'Tu me vois ?' } });
   assert.equal(r.data.emailed, false); assert.equal(outbound.length, n2);
@@ -2150,10 +2176,8 @@ test('support: ticket, owner told by e-mail when away, live chat, reply e-mailed
   assert.equal(r.data.emailed, true);
   r = await adminCall(env, 'POST', `/api/admin/tickets/${id}/messages`, { token, body: { text: '   ' } });
   assert.equal(r.status, 400);
-  // an answer written while the visitor was there, that his page never fetched (he closed it): e-mailed by the catch-up
-  r = await supportCall(env, 'GET', `/tickets/${id}?after=99`, { token: tk });          // he is here
+  r = await supportCall(env, 'GET', `/tickets/${id}?after=99`, { token: tk });
   r = await adminCall(env, 'POST', `/api/admin/tickets/${id}/messages`, { token, body: { text: 'Tu es parti ?' } });
-  assert.equal(r.data.emailed, false);
   const lateId = r.data.id;
   r = await adminCall(env, 'POST', `/api/admin/tickets/${id}/messages`, { token, body: { text: 'Pas par e-mail', email: 'no' } });
   const noId = r.data.id;
@@ -2163,76 +2187,84 @@ test('support: ticket, owner told by e-mail when away, live chat, reply e-mailed
   env.DB.raw.prepare('UPDATE ticket_messages SET created_at = created_at - 30000 WHERE id IN (?, ?)').run(lateId, noId);
   env.DB.raw.prepare('UPDATE tickets SET user_seen_at = ? WHERE id = ?').run(Date.now() - 40000, id);
   await adminCall(env, 'GET', '/api/admin/live', { token });
+  await adminCall(env, 'GET', '/api/admin/live', { token });
   const late = outbound.slice(n4).filter((o) => o.url.includes('resend'));
   assert.equal(late.length, 1); assert.ok(late[0].body.text.includes('Tu es parti ?'));
-  await adminCall(env, 'GET', '/api/admin/live', { token });
-  assert.equal(outbound.slice(n4).filter((o) => o.url.includes('resend')).length, 1, 'once only, never the « no » one');
-  // fetched live = not e-mailed
-  r = await adminCall(env, 'POST', `/api/admin/tickets/${id}/messages`, { token, body: { text: 'Vu en direct' } });
-  const liveId = r.data.id;
-  env.DB.raw.prepare('UPDATE ticket_messages SET created_at = created_at - 30000 WHERE id = ?').run(liveId);
-  env.DB.raw.prepare('UPDATE tickets SET user_seen_at = ? WHERE id = ?').run(Date.now(), id);
-  const n5 = outbound.length;
-  await adminCall(env, 'GET', '/api/admin/live', { token });
-  assert.equal(outbound.length, n5);
 
-  // « disponible » on + dashboard open: the bubble offers the live chat, no e-mail needed, no e-mail to the owner
+  // « disponible » on + dashboard open: live, no e-mail to the owner
   r = await adminCall(env, 'POST', '/api/admin/available', { token, body: { available: true } });
   r = await supportCall(env, 'GET', '/status');
   assert.equal(r.data.available, true);
   const n3 = outbound.length;
-  r = await supportCall(env, 'POST', '/tickets', { body: { lang: 'en', message: 'Hi, quick question' } });
-  assert.equal(r.status, 200); assert.equal(r.data.available, true); assert.equal(r.data.email, null);
+  r = await supportCall(env, 'POST', '/tickets', { cookie: otherPro.cookie, body: { lang: 'en', message: 'Hi, quick question' } });
+  assert.equal(r.status, 200); assert.equal(r.data.available, true); assert.equal(r.data.email, 'other-pro@example.com');
   assert.equal(outbound.length, n3, 'owner is on the dashboard: no e-mail');
   const t2 = r.data;
-  // without an address, an owner reply cannot be e-mailed
-  env.DB.raw.prepare('UPDATE tickets SET user_seen_at = 1 WHERE id = ?').run(t2.id);
-  r = await adminCall(env, 'POST', `/api/admin/tickets/${t2.id}/messages`, { token, body: { text: 'Hello!', email: 'yes' } });
-  assert.equal(r.data.emailed, false);
-  // the visitor leaves an address later
-  r = await supportCall(env, 'POST', `/tickets/${t2.id}/messages`, { token: t2.token, body: { text: 'Here is my email', email: 'later@example.com' } });
-  assert.equal(r.data.email, 'later@example.com');
-  // the dashboard closed for more than 3 minutes = not available any more, even with the switch on
   env.DB.raw.prepare("UPDATE admin_state SET value = ? WHERE key = 'admin_seen'").run(String(Date.now() - 200e3));
   r = await supportCall(env, 'GET', '/status');
   assert.equal(r.data.available, false);
 
-  // close, reopen when the visitor writes again, delete
+  // close, reopen when the member writes again, delete
   r = await adminCall(env, 'POST', `/api/admin/tickets/${id}/status`, { token, body: { status: 'closed' } });
   assert.equal(r.data.status, 'closed');
   r = await adminCall(env, 'GET', '/api/admin/tickets?status=open', { token });
   assert.deepEqual(r.data.tickets.map((t) => t.id), [t2.id]);
-  r = await supportCall(env, 'POST', `/tickets/${id}/messages`, { token: tk, body: { text: 'Merci, ça marche !' } });
+  r = await supportCall(env, 'POST', `/tickets/${id}/messages`, { cookie: pro.cookie, token: tk, body: { text: 'Merci, ça marche !' } });
+  assert.equal(r.status, 200);
   assert.equal(env.DB.raw.prepare('SELECT status FROM tickets WHERE id = ?').get(id).status, 'open');
   r = await adminCall(env, 'DELETE', `/api/admin/tickets/${t2.id}`, { token, body: {} });
   assert.equal(r.status, 200);
-  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM ticket_messages WHERE ticket_id = ?').get(t2.id).n, 0);
   r = await supportCall(env, 'GET', `/tickets/${t2.id}`, { token: t2.token });
   assert.equal(r.status, 404);
-  // CSRF: the visitor's routes need JSON + the site's Origin too
-  r = await call(env, 'POST', `/api/support/tickets/${id}/messages`, { body: { text: 'x' }, origin: 'https://evil.example', headers: { 'X-Ticket-Token': tk } });
+  // CSRF: the member's routes need JSON + the site's Origin too
+  r = await call(env, 'POST', `/api/support/tickets/${id}/messages`, { cookie: pro.cookie, body: { text: 'x' }, origin: 'https://evil.example', headers: { 'X-Ticket-Token': tk } });
   assert.equal(r.status, 403);
+
+  // Pro ends: no new conversation, no new message; the answers already received stay readable; « ex-Pro » on the dashboard
+  await proCancel(env, pro.user.id);
+  r = await supportCall(env, 'POST', '/tickets', { cookie: pro.cookie, body: { message: 'Encore une question' } });
+  assert.equal(r.status, 403); assert.equal(r.data.error, 'pro_required');
+  r = await supportCall(env, 'POST', `/tickets/${id}/messages`, { cookie: pro.cookie, token: tk, body: { text: 'Toujours là ?' } });
+  assert.equal(r.status, 403); assert.equal(r.data.error, 'pro_required');
+  r = await supportCall(env, 'GET', `/tickets/${id}`, { token: tk });
+  assert.equal(r.status, 200); assert.ok(r.data.messages.some((m) => m.from === 'admin' && m.text.includes('Essaie sur Chrome')));
+  r = await adminCall(env, 'GET', '/api/admin/tickets?status=all', { token });
+  assert.equal(r.data.tickets.find((t) => t.id === id).pro, false);
+  // and the owner can still answer him (by e-mail)
+  r = await adminCall(env, 'POST', `/api/admin/tickets/${id}/messages`, { token, body: { text: 'Merci de ton retour !', email: 'yes' } });
+  assert.equal(r.data.emailed, true);
 });
 
-test('support: signed-in account e-mail used; tickets go with the account; creation limited per connection', async () => {
+test('support (Pro): older conversations without an account stay readable, not writable; tickets go with the account; limits', async () => {
   const env = makeEnv(ADMIN_ENV), token = await accessToken();
-  const u = await login(env, 'member@example.com');
-  let r = await supportCall(env, 'POST', '/tickets', { cookie: u.cookie, body: { lang: 'fr', message: 'Question de membre' } });
+  // a conversation started before the Pro rule, without an account
+  const oldTok = 'o'.repeat(43), oldId = 't_' + 'B'.repeat(22), now = Date.now();
+  env.DB.raw.prepare("INSERT INTO tickets (id, token_hash, user_id, email, lang, status, created_at, updated_at) VALUES (?, ?, NULL, 'guest@example.com', 'fr', 'open', ?, ?)")
+    .run(oldId, await sha256Hex('ticket:' + oldTok), now, now);
+  env.DB.raw.prepare("INSERT INTO ticket_messages (ticket_id, sender, body, created_at) VALUES (?, 'admin', 'Réponse d’avant', ?)").run(oldId, now);
+  let r = await supportCall(env, 'GET', `/tickets/${oldId}`, { token: oldTok });
+  assert.equal(r.status, 200); assert.equal(r.data.messages[0].text, 'Réponse d’avant');
+  const pro = await proUser(env, 'member@example.com');
+  r = await supportCall(env, 'POST', `/tickets/${oldId}/messages`, { cookie: pro.cookie, token: oldTok, body: { text: 'Je continue' } });
+  assert.equal(r.status, 404, 'a Pro member starts a new conversation instead');
+  r = await adminCall(env, 'GET', '/api/admin/tickets', { token });
+  assert.equal(r.data.tickets.find((t) => t.id === oldId).pro, false); assert.equal(r.data.tickets.find((t) => t.id === oldId).account, false);
+
+  // the account goes: its conversations go too
+  r = await supportCall(env, 'POST', '/tickets', { cookie: pro.cookie, body: { lang: 'fr', message: 'Question de membre' } });
   assert.equal(r.status, 200); assert.equal(r.data.email, 'member@example.com');
-  r = await adminCall(env, 'GET', `/api/admin/tickets/${r.data.id}`, { token });
-  assert.equal(r.data.account.email, 'member@example.com'); assert.equal(r.data.account.pro, false);
-  r = await call(env, 'DELETE', '/api/account', { cookie: u.cookie, body: { confirm: true } });
+  r = await call(env, 'DELETE', '/api/account', { cookie: pro.cookie, body: { confirm: true } });
   assert.equal(r.status, 200);
-  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM tickets').get().n, 0);
-  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM ticket_messages').get().n, 0);
-  // 5 new conversations per hour from one connection
-  for (let i = 0; i < 5; i++) assert.equal((await supportCall(env, 'POST', '/tickets', { ip: '10.30.0.1', body: { message: 'm' + i, email: 'a@example.com' } })).status, 200);
-  r = await supportCall(env, 'POST', '/tickets', { ip: '10.30.0.1', body: { message: 'again', email: 'a@example.com' } });
+  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM tickets WHERE user_id IS NOT NULL').get().n, 0);
+
+  // 5 new conversations per hour from one connection; messages cut at 2,000 characters; empty refused
+  const p2 = await proUser(env, 'busy@example.com');
+  for (let i = 0; i < 5; i++) assert.equal((await supportCall(env, 'POST', '/tickets', { cookie: p2.cookie, ip: '10.30.0.1', body: { message: 'm' + i } })).status, 200);
+  r = await supportCall(env, 'POST', '/tickets', { cookie: p2.cookie, ip: '10.30.0.1', body: { message: 'again' } });
   assert.equal(r.status, 429);
-  // a too long message is cut, an empty one refused
-  r = await supportCall(env, 'POST', '/tickets', { body: { message: '   ', email: 'a@example.com' } });
+  r = await supportCall(env, 'POST', '/tickets', { cookie: p2.cookie, body: { message: '   ' } });
   assert.equal(r.status, 400); assert.equal(r.data.error, 'invalid_message');
-  r = await supportCall(env, 'POST', '/tickets', { body: { message: 'x'.repeat(5000), email: 'a@example.com' } });
+  r = await supportCall(env, 'POST', '/tickets', { cookie: p2.cookie, body: { message: 'x'.repeat(5000) } });
   assert.equal(r.data.messages[0].text.length, 2000);
 });
 

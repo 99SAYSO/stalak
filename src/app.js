@@ -936,20 +936,22 @@ const I18N_EN = /*@EN*/{
   "help.s.busy": "The assistant answered a lot today and is taking a break. Try again tomorrow, or tap “Copy info for the team” just below",
   "help.s.fail": "Oops, I couldn’t answer. Try again in a moment, or tap “Copy info for the team” just below",
   "help.s.net": "No connection to Stalak. Check your internet and try again.",
-  "_bloc.compte.aide": "Comptes, paiements & serveur : bulle d’aide (« Parler à un humain »)",
+  "_bloc.compte.aide": "Comptes, paiements & serveur : bulle d’aide (« Parler à un humain », Stalak Pro)",
   "help.human": "Talk to a human",
   "help.h.check": "Checking if someone from the team is around…",
   "help.h.live": "Someone from the team is here! Write your message below: the answer will show up right here.",
-  "help.h.away": "Nobody from the team is around right now. Write your message and leave your email: the answer will come by email.",
-  "help.h.mailL": "Your email (for the answer)",
-  "help.h.mailOpt": "Your email (optional, in case you leave before the answer)",
   "help.h.ph": "Your message for the team…",
   "help.h.wait": "Sent! Keep this window open: the answer shows up here.",
-  "help.h.waitMail": "Sent! The answer will go to {mail}, and show up here if you come back.",
   "help.h.team": "Stalak team",
   "help.h.back": "← Back to the assistant",
-  "help.h.needMail": "Leave your email so we can send you the answer.",
-  "help.h.badMail": "That email doesn’t look right. Check it and send again.",
+  "help.h.away24": "Nobody from the team is online right now. Write your message: the answer will come by email to {mail}, within 24 hours.",
+  "help.h.waitMail24": "Sent! The answer will come within 24 hours to {mail}, and show up here if you come back.",
+  "help.h.proOnly": "“Talk to a human” is part of Stalak Pro: you write to the team and get an answer live, or by email within 24 hours.",
+  "help.h.proAgain": "To write to the team here again, you need Stalak Pro. The answers you already got stay right above.",
+  "help.h.proGo": "Discover Stalak Pro",
+  "help.h.proMail": "You can still write to {mail} anytime.",
+  "acct.why.support": "“Talk to a human” is part of Stalak Pro.",
+  "ap.whyIn.support": "“Talk to a human” is part of Stalak Pro. Sign in or create an account to get it.",
   "help.h.fail": "Your message didn’t go through. Try again in a moment.",
   "help.h.failMail": "Your message didn’t go through. Try again in a moment, or write to {mail}.",
   "_bloc.app.son": "App & montage : étape Son (glisser-déposer, poignées du passage)",
@@ -1477,19 +1479,21 @@ const I18N_FR = /*@FR*/{
   "help.s.busy": "L’assistant a beaucoup répondu aujourd’hui et fait une pause. Réessaie demain, ou touche « Copier les infos pour l’équipe » juste en dessous",
   "help.s.fail": "Oups, je n’ai pas pu répondre. Réessaie dans un instant, ou touche « Copier les infos pour l’équipe » juste en dessous",
   "help.s.net": "Pas de connexion à Stalak. Vérifie ton internet et réessaie.",
-  "_bloc.compte.aide": "Comptes, paiements & serveur : bulle d’aide (« Parler à un humain »)",
+  "_bloc.compte.aide": "Comptes, paiements & serveur : bulle d’aide (« Parler à un humain », Stalak Pro)",
   "help.h.check": "Je regarde si quelqu’un de l’équipe est là…",
   "help.h.live": "Quelqu’un de l’équipe est là ! Écris ton message ci-dessous : la réponse arrivera ici même.",
-  "help.h.away": "Personne de l’équipe n’est disponible pour l’instant. Écris ton message et laisse ton e-mail : la réponse t’arrivera par e-mail.",
-  "help.h.mailL": "Ton e-mail (pour la réponse)",
-  "help.h.mailOpt": "Ton e-mail (facultatif, au cas où tu partirais avant la réponse)",
   "help.h.ph": "Ton message pour l’équipe…",
   "help.h.wait": "C’est envoyé ! Garde cette fenêtre ouverte : la réponse s’affiche ici.",
-  "help.h.waitMail": "C’est envoyé ! La réponse arrivera à {mail}, et ici si tu reviens.",
   "help.h.team": "Équipe Stalak",
   "help.h.back": "← Revenir à l’assistant",
-  "help.h.needMail": "Laisse ton e-mail pour qu’on puisse t’envoyer la réponse.",
-  "help.h.badMail": "Cet e-mail n’a pas l’air bon. Vérifie-le et renvoie.",
+  "help.h.away24": "Personne de l’équipe n’est en ligne pour l’instant. Écris ton message : la réponse t’arrivera par e-mail à {mail}, sous 24 h.",
+  "help.h.waitMail24": "C’est envoyé ! La réponse arrivera sous 24 h à {mail}, et ici si tu reviens.",
+  "help.h.proOnly": "« Parler à un humain » est réservé à Stalak Pro : tu écris à l’équipe et on te répond en direct, ou par e-mail sous 24 h.",
+  "help.h.proAgain": "Pour écrire de nouveau à l’équipe ici, il faut Stalak Pro. Les réponses déjà reçues restent juste au-dessus.",
+  "help.h.proGo": "Découvrir Stalak Pro",
+  "help.h.proMail": "Tu peux aussi toujours écrire à {mail}.",
+  "acct.why.support": "« Parler à un humain » fait partie de Stalak Pro.",
+  "ap.whyIn.support": "« Parler à un humain » fait partie de Stalak Pro. Connecte-toi ou crée un compte pour en profiter.",
   "help.h.fail": "Ton message n’est pas parti. Réessaie dans un instant.",
   "help.h.failMail": "Ton message n’est pas parti. Réessaie dans un instant, ou écris à {mail}.",
   "_bloc.app.son": "App & montage : étape Son (glisser-déposer, poignées du passage)",
@@ -7870,12 +7874,20 @@ function helpSiteErr(e){
   if (e instanceof TypeError) return _t('help.s.net');   // fetch could not reach the server
   return _t('help.s.fail') + team;
 }
-/* « Parler à un humain » (stalak.app; domaine Comptes, paiements & serveur): a ticket the owner answers from his dashboard
-   (functions/_lib/support.js). When nobody is there, the visitor leaves an e-mail and gets the answer by e-mail.
-   The ticket's id and token stay on this device (localStorage) for 30 days, so the answer shows up here later too. */
+/* « Parler à un humain » (stalak.app; domaine Comptes, paiements & serveur), a Stalak Pro feature: a ticket the owner answers
+   from his dashboard (functions/_lib/support.js). A Pro member writes; the answer comes live when the owner is there, else by
+   e-mail to the account's address (« sous 24 h »). Without Pro: a small « Réservé à Stalak Pro » screen (and the contact address).
+   The ticket's id and token stay on this device (localStorage, with the account's id) for 30 days: the answers already received
+   stay readable here, even once Pro has ended. */
 const HUMAN_KEY = 'stalak:ticket', HUMAN_DAYS = 30;
 const human = { t: null, last: 0, timer: 0, available: false, sending: false };
 function humanSaved(){ const s = store.get(HUMAN_KEY); return s && s.id && s.token && Date.now() - (s.at || 0) < HUMAN_DAYS * 864e5 ? s : null; }
+const humanUser = () => (ACCT && ACCT.state && ACCT.state.user) || null;
+async function humanIsPro(){
+  if (acctPro()) return true;
+  if (ACCT && !humanUser()){ try { await ACCT.me(); } catch(e){} }   // the account may not be loaded yet
+  return acctPro();
+}
 async function humanApi(method, path, body){
   const h = { Accept: 'application/json' }; if (body) h['Content-Type'] = 'application/json';
   if (human.t) h['X-Ticket-Token'] = human.t.token;
@@ -7892,18 +7904,19 @@ function humanShow(msgs){
     else helpMsg('me', m.text);
   }
 }
-function humanMailRow(on, optional){
-  let row = $('#helpMailRow');
-  if (!on){ if (row) row.remove(); return null; }
-  if (!row){
-    row = document.createElement('div'); row.className = 'hp-mailrow'; row.id = 'helpMailRow';
-    const lab = document.createElement('label'), inp = document.createElement('input');
-    lab.htmlFor = 'helpMail'; inp.type = 'email'; inp.id = 'helpMail'; inp.autocomplete = 'email'; inp.inputMode = 'email'; inp.maxLength = 254;
-    const u = ACCT && ACCT.state && ACCT.state.user; if (u && u.email) inp.value = u.email;
-    row.append(lab, inp); $('#helpForm').before(row);
-  }
-  row.querySelector('label').textContent = _t(optional ? 'help.h.mailOpt' : 'help.h.mailL');
-  return row.querySelector('input');
+/* « Réservé à Stalak Pro »: what the feature is, a button to the Pro page, and the contact address that stays open to all */
+function humanGate(again){
+  const box = document.createElement('div'); box.className = 'hp-msg bot hp-gate';
+  const p = document.createElement('p'); p.textContent = _t(again ? 'help.h.proAgain' : 'help.h.proOnly');
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'btn primary sm'; b.textContent = _t('help.h.proGo');
+  b.onclick = () => { helpOpen(false); acctOpen('support'); };
+  const mail = SUPPORT_EMAIL || 'contact@stalak.app', q = document.createElement('p'), a = document.createElement('a');
+  q.className = 'hp-gate-mail'; a.href = 'mailto:' + mail; a.textContent = mail;
+  const parts = _t('help.h.proMail', { mail: '\u0001' }).split('\u0001'); q.append(parts[0], a, parts[1] || '');
+  // one such screen at a time, at the bottom; scrolled to once the button is laid out
+  for (const old of document.querySelectorAll('#helpLog .hp-gate')) old.remove();
+  const log = $('#helpLog'); box.append(p, b, q); log.append(box);
+  log.scrollTop = log.scrollHeight; requestAnimationFrame(() => { log.scrollTop = log.scrollHeight; });
 }
 function humanTimer(on){
   clearInterval(human.timer); human.timer = 0;
@@ -7922,53 +7935,60 @@ function humanBackChip(){
   b.onclick = () => { box.remove(); humanStop(); helpGreet(); };
   box.append(b); $('#helpLog').append(box);
 }
-function humanStop(){ help.mode = 'ai'; humanTimer(false); humanMailRow(false); $('#helpIn').placeholder = _t('help.ph'); $('#helpHuman').hidden = false; }
+function humanStop(){ help.mode = 'ai'; humanTimer(false); $('#helpIn').placeholder = _t('help.ph'); $('#helpHuman').hidden = false; }
 async function humanStart(){
   if (help.busy || help.mode === 'human') return;
   help.mode = 'human'; $('#helpHuman').hidden = true;
   const c = $('#helpLog .hp-chips'); if (c) c.remove();
-  $('#helpIn').placeholder = _t('help.h.ph');
-  const saved = humanSaved();
+  const pro = await humanIsPro(), u = humanUser();
+  let saved = humanSaved();
+  // a conversation of another account on this device stays with that account
+  if (saved && saved.uid && (!u || saved.uid !== u.id)){ store.set(HUMAN_KEY, null); saved = null; }
   if (saved){
-    // the conversation already started on this device: show it, then the new answers as they come
+    // the conversation already started here: its answers stay readable, Pro or not
     human.t = saved; human.last = 0;
     await humanPoll();
-    if (human.t){ humanBackChip(); humanTimer(true); return; }
+    if (human.t){
+      if (pro){ $('#helpIn').placeholder = _t('help.h.ph'); humanTimer(true); humanBackChip(); }
+      else { humanGate(true); humanStop(); }
+      return;
+    }
   }
+  if (!pro){ humanGate(false); humanStop(); return; }
+  $('#helpIn').placeholder = _t('help.h.ph');
   const box = helpMsg('bot wait', _t('help.h.check'));
   try { human.available = !!(await humanApi('GET', 'status')).available; } catch(e){ human.available = false; }
-  box.className = 'hp-msg bot'; box.textContent = _t(human.available ? 'help.h.live' : 'help.h.away');
-  humanMailRow(true, human.available);
+  box.className = 'hp-msg bot'; box.textContent = human.available ? _t('help.h.live') : _t('help.h.away24', { mail: u ? u.email : '' });
   humanBackChip();
   $('#helpIn').focus();
 }
-async function humanSend(text){
+async function humanSend(text, retried){
   text = String(text || '').trim(); if (!text || human.sending) return;
-  const mailInp = $('#helpMail'), email = mailInp ? mailInp.value.trim() : '';
   const back = () => { $('#helpIn').value = text; };
-  if (!human.t && !human.available && !email){ back(); helpMsg('bot err', _t('help.h.needMail')); if (mailInp) mailInp.focus(); return; }
+  if (!acctPro()){ back(); humanStop(); humanGate(!!human.t); return; }
   human.sending = true; $('#helpSend').disabled = true;
   try {
     let r;
     if (!human.t){
-      r = await humanApi('POST', 'tickets', { lang: LANG === 'en' ? 'en' : 'fr', message: text, email: email || undefined, context: helpContext(1200, 1200) });
-      human.t = { id: r.id, token: r.token, at: Date.now() }; store.set(HUMAN_KEY, human.t); human.last = 0;
+      r = await humanApi('POST', 'tickets', { lang: LANG === 'en' ? 'en' : 'fr', message: text, context: helpContext(1200, 1200) });
+      const u = humanUser();
+      human.t = { id: r.id, token: r.token, at: Date.now(), uid: u ? u.id : null }; store.set(HUMAN_KEY, human.t); human.last = 0;
       humanShow(r.messages);
-      helpMsg('bot', r.email ? _t('help.h.waitMail', { mail: r.email }) : _t('help.h.wait'));
+      helpMsg('bot', r.available ? _t('help.h.wait') : _t('help.h.waitMail24', { mail: r.email || '' }));
       humanTimer(true);
     } else {
-      r = await humanApi('POST', 'tickets/' + encodeURIComponent(human.t.id) + '/messages', { text, email: email || undefined, after: human.last });
+      r = await humanApi('POST', 'tickets/' + encodeURIComponent(human.t.id) + '/messages', { text, after: human.last });
       humanShow(r.messages); store.set(HUMAN_KEY, { ...human.t, at: Date.now() });
     }
-    if (r.email) humanMailRow(false);
   } catch(e){
+    // Pro ended (or signed out) meanwhile: the Pro screen; the answers already received stay above
+    if (e.code === 'pro_required' || e.code === 'not_logged_in'){ back(); humanStop(); humanGate(!!human.t); return; }
+    // an older conversation this account cannot write in (made without an account): a new one starts
+    if (e.status === 404 && human.t && !retried){ store.set(HUMAN_KEY, null); human.t = null; humanTimer(false); human.sending = false; await humanSend(text, true); return; }
     back();
     const fail = () => SUPPORT_EMAIL ? _t('help.h.failMail', { mail: SUPPORT_EMAIL }) : _t('help.h.fail');
     let msg;
-    if (e.code === 'email_required'){ human.available = false; humanMailRow(true, false); msg = _t('help.h.needMail'); }
-    else if (e.code === 'invalid_email') msg = _t('help.h.badMail');
-    else if (e.code === 'rate_limited') msg = _t('help.s.rate', { min: Math.max(1, Math.ceil((+e.retryAfter || 60) / 60)) });
-    else if (e.status === 404){ store.set(HUMAN_KEY, null); human.t = null; humanTimer(false); msg = fail(); }
+    if (e.code === 'rate_limited') msg = _t('help.s.rate', { min: Math.max(1, Math.ceil((+e.retryAfter || 60) / 60)) });
     else if (e instanceof TypeError) msg = _t('help.s.net');
     else msg = fail();
     helpMsg('bot err', msg);

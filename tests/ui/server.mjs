@@ -2,7 +2,7 @@
 // Serves a built site (python3 build_site.py, public/) and runs the real Pages Functions for /api/* on an in-memory
 // SQLite "D1", with a fake Workers AI binding (env.AI) that answers in the documented Whisper output shape.
 // Test-only routes: POST /__test/user {pro} → a signed-in user (session token); GET /__test/ai → the AI calls seen;
-// GET /__test/helpmax?n=N → the help assistant's daily budget.
+// GET /__test/helpmax?n=N → the help assistant's daily budget; GET /__test/unpro?id=<user id> → Pro ends for that account.
 import http from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { join, extname, dirname, normalize } from 'node:path';
@@ -91,6 +91,8 @@ http.createServer(async (req, res) => {
     // the site-wide daily budget of the help assistant (HELP_DAILY_MAX)
     if (url.pathname === '/__test/helpmax') { env.HELP_DAILY_MAX = url.searchParams.get('n'); res.writeHead(200); return res.end('{}'); }
     if (url.pathname === '/__test/admin-login') { res.writeHead(302, { Location: '/admin/', 'Set-Cookie': 'test_admin=1; Path=/' }); return res.end(); }
+    // Stalak Pro ends for a test account (its subscription canceled)
+    if (url.pathname === '/__test/unpro') { env.DB.raw.prepare("UPDATE subscriptions SET status = 'canceled' WHERE user_id = ?").run(url.searchParams.get('id')); res.writeHead(200); return res.end('{}'); }
     if (url.pathname === '/__test/mails') { res.writeHead(200, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify(mails)); }
     if (url.pathname === '/__test/ai') { res.writeHead(200, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify(aiCalls)); }
     const isAdmin = url.pathname === '/admin' || url.pathname.startsWith('/admin/') || url.pathname.startsWith('/api/admin/');

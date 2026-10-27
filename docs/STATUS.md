@@ -35,6 +35,7 @@
   - migration 0006 appliquée ; reste au propriétaire : 2 secrets (`ACCESS_AUD`, `ADMIN_EMAILS`), domaine personnalisé admin.stalak.app sur Pages, événements Paddle `adjustment.*` (BACKEND.md, étape 13). L'équipe Access est déjà dans `wrangler.toml`.
 
 - **Menu du compte + Galerie** (branche `compte/menu-galerie`, compte rendu `docs/handoff/compte-menu-galerie.md`, Statut : PRÊT) : un appui sur le compte en haut à droite ouvre un menu (Galerie, Mon compte, Stalak Pro ou « Gérer mon abonnement », Aide, Se déconnecter) ; la Galerie remplace « Mes projets » : grille avec couverture (image du montage, 300 px, rangée dans R2 avec le projet), nom dessous, appui = ouvrir, appui long ou « … » = renommer / supprimer. Sans Pro : « La sauvegarde en ligne est réservée à Stalak Pro ». **Migration 0007 à appliquer avant de publier.**
+- **« Parler à un humain » réservé à Stalak Pro** (branche `compte/humain-pro`, compte rendu `docs/handoff/compte-humain-pro.md`, Statut : PRÊT) : création et écriture réservées à Pro côté serveur ; sans Pro, écran « Réservé à Stalak Pro » (page Pro + contact@stalak.app) ; un ex-Pro garde les réponses reçues ; réponse « sous 24 h » par e-mail quand tu n'es pas là ; badge Pro dans le tableau de bord. Textes de vente : `marketing/chat-pro`, à fusionner ensemble. Aucune migration.
 
 ## Base de données D1
 - Migrations appliquées : 0001, 0002, 0003, 0004_lyrics_usage, 0004_cloud_save, 0005_social_accounts (27/10), 0006_admin_support (27/10).
@@ -118,6 +119,11 @@
 - P3 : pack de sortie à l'unité sans abonnement (par exemple 10 vidéos d'un son, 4,99 à 7,99 €).
 - P4 : Pro complet offert sur le premier son, sans carte (demande un compte).
 - P7 : annuel plus bas ou essai de 7 jours avec carte sur l'annuel.
+
+**Nouveau concurrent direct (27/10) : camrip** (camrip.app). Il fait déjà le montage automatique de 1 à 4 prises coupées sur le temps, avec la synchro. Détail dans `docs/marketing/IDEES_CROISSANCE.md`.
+- À mettre en avant (Marketing) : ce que camrip n'a pas (paroles à l'écran, karaoké, paroles écrites automatiquement, packs, clip 16:9, français) et le prix (Pro à 9,99 € sans limite de vidéos, contre 14,99 $ pour 30 vidéos chez camrip).
+- À étudier (App & montage) : choisir automatiquement la meilleure prise à chaque coupe (visage net et bien cadré), et des zooms automatiques sur les plans qui durent.
+- Renforce P3 (pack à l'unité) : camrip vend 5 vidéos 4,99 $ sans abonnement.
 
 **Plus tard** : P6 prix locaux via Paddle (Comptes) ; A6 affiliation après Pro ; A7 dizaine de pages SEO FR/EN (Marketing) ; A8 Product Hunt un dimanche (Marketing) ; F9 détourage, F10 stats par variante, F11 modèles partagés.
 

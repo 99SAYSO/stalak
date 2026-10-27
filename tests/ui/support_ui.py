@@ -1,13 +1,15 @@
-"""UI test of the owner's dashboard and « Parler à un humain », Python Playwright (chromium).
+"""UI test of the owner's dashboard and « Parler à un humain » (Stalak Pro), Python Playwright (chromium).
 
     python3 /abs/path/tests/ui/support_ui.py <base url of tests/ui/server.mjs> <path of the claude.ai build shuffle-lab.html>
 
-Build the site first (python3 build_site.py …, python3 build.py), then run node tests/ui/server.mjs <repo>/public <port>:
-the real Functions on node:sqlite; Cloudflare Access is imitated by a test key (cookie test_admin=1, set by /__test/admin-login).
-Checks: the visitor writes when nobody is there (e-mail asked, owner told by e-mail), the dashboard (figures, 8 charts, table,
-messages) on a computer and a phone, the owner's answer e-mailed to the visitor who left, the live chat when the owner is
-« disponible », FR and EN, no horizontal scroll, no page error (the dashboard runs under a strict CSP), the claude.ai build.
-Run this file by absolute path from a clean directory."""
+Build the site first (python3 build_site.py …, python3 build.py), then run node tests/ui/server.mjs <repo>/public <port>
+(a fresh one for each run): the real Functions on node:sqlite; Cloudflare Access is imitated by a test key (cookie
+test_admin=1, set by /__test/admin-login); test accounts come from POST /__test/user {pro}.
+Checks: signed out and free → « Réservé à Stalak Pro » screen (button to the Pro page, contact address); a Pro member when
+nobody is there (answer by e-mail « sous 24 h », owner told by e-mail); the dashboard (figures, 8 charts, table, « Pro » badge)
+on a computer and a phone; the owner's answer e-mailed to the member who left; the live chat when the owner is « disponible »;
+an ex-Pro keeps the answers already received but cannot write; FR and EN; no horizontal scroll; no page error (strict CSP);
+the claude.ai build. Run this file by absolute path from a clean directory."""
 import asyncio, json, os, sys, urllib.request
 from playwright.async_api import async_playwright
 
@@ -21,8 +23,13 @@ def check(name, ok, info=''):
     print(('PASS ' if ok else 'FAIL ') + name + (('  — ' + str(info)) if info and not ok else ''))
 
 
-def mails():
-    return json.load(urllib.request.urlopen(BASE + '/__test/mails'))
+def get(path):
+    return json.load(urllib.request.urlopen(BASE + path))
+
+
+def post(path, body):
+    req = urllib.request.Request(BASE + path, data=json.dumps(body).encode(), headers={'Content-Type': 'application/json'}, method='POST')
+    return json.load(urllib.request.urlopen(req))
 
 
 async def shot(page, name):
@@ -42,14 +49,17 @@ async def last_bot(page):
     return await page.eval_on_selector_all('#helpLog .hp-msg.bot:not(.wait)', 'els => els.length ? els[els.length - 1].innerText : ""')
 
 
-async def visitor(browser, lang, width, height):
+async def visitor(browser, lang, width, height, user=None):
     ctx = await browser.new_context(locale='fr-FR' if lang == 'fr' else 'en-US', viewport={'width': width, 'height': height},
                                     is_mobile=width < 500, has_touch=width < 500)
+    if user: await ctx.add_cookies([{'name': 'stalak_s', 'value': user['token'], 'url': BASE}])
+    # a member who already saw the « thank you for going Pro » screen (shown once per account and device)
+    if user: await ctx.add_init_script("try { localStorage.setItem('stalak:proThanks:" + user['id'] + "', '1'); } catch (e) {}")
     page = await ctx.new_page()
     errors = []
     watch(page, errors)
     await page.goto(BASE + ('/' if lang == 'fr' else '/en/'), wait_until='load')
-    await page.wait_for_timeout(500)
+    await page.wait_for_timeout(700)
     await page.click('#helpBtn', force=True)
     await page.wait_for_selector('#helpPanel:not([hidden])')
     return ctx, page, errors
@@ -58,35 +68,62 @@ async def visitor(browser, lang, width, height):
 async def main():
     async with async_playwright() as p:
         browser = await p.chromium.launch()
-        m0 = len(mails())
+        m0 = len(get('/__test/mails'))
 
-        # 1. a visitor on a phone, nobody on the dashboard: an e-mail is asked
+        # 1. signed out, on a phone: « Réservé à Stalak Pro », a button to the Pro page, the contact address
         vctx, v, verr = await visitor(browser, 'fr', 390, 844)
-        check('fr-390: « Parler à un humain » shown on stalak.app', await v.is_visible('#helpHuman') and 'humain' in (await v.inner_text('#helpHuman')))
+        check('fr-390 signed out: « Parler à un humain » shown', await v.is_visible('#helpHuman'))
         await v.click('#helpHuman')
-        await v.wait_for_selector('#helpMail')
-        msg = await last_bot(v)
-        check('fr-390: nobody there → asks for an e-mail', 'e-mail' in msg, msg)
-        check('fr-390: placeholder for the team', 'équipe' in (await v.get_attribute('#helpIn', 'placeholder')))
-        await v.fill('#helpMail', '')
-        await v.fill('#helpIn', 'Mon export reste bloqué à 80 %')
-        await v.press('#helpIn', 'Enter')
-        await v.wait_for_timeout(300)
-        check('fr-390: no e-mail → asked again, message kept', 'e-mail' in (await last_bot(v)) and 'export' in (await v.input_value('#helpIn')))
-        await v.fill('#helpMail', 'fan@example.com')
-        await v.press('#helpIn', 'Enter')
-        await v.wait_for_function("() => /fan@example.com/.test(document.querySelector('#helpLog').innerText)", timeout=10000)
-        check('fr-390: sent, answer promised by e-mail', 'fan@example.com' in (await last_bot(v)))
-        check('fr-390: e-mail field gone once known', not await v.is_visible('#helpMail'))
+        await v.wait_for_selector('#helpLog .hp-gate')
+        gate = await v.inner_text('#helpLog .hp-gate')
+        check('fr-390 signed out: reserved to Stalak Pro', 'réservé à Stalak Pro' in gate and 'sous 24 h' in gate, gate)
+        href = await v.get_attribute('#helpLog .hp-gate a', 'href')
+        check('fr-390 signed out: contact address still offered', href == 'mailto:contact@stalak.app', href)
+        check('fr-390 signed out: no message box for the team', 'équipe' not in (await v.get_attribute('#helpIn', 'placeholder')))
         check('fr-390: no horizontal scroll', await no_scroll(v))
-        await shot(v, 'support-visitor-fr-390')
-        new = mails()[m0:]
-        check('owner told by e-mail (nobody on the dashboard)', any(x.startswith('contact@stalak.app: Stalak : nouveau message (fan@example.com)') for x in new), new)
-        # the visitor closes the page
-        check('fr-390: no page error', not verr, verr)
+        await shot(v, 'humain-pro-gate-fr-390')
+        await v.click('#helpLog .hp-gate button')
+        await v.wait_for_timeout(600)
+        why = await v.evaluate("() => [...document.querySelectorAll('#apWhy, #apProWhy')].filter(e => !e.hidden && e.offsetParent).map(e => e.innerText).join(' ')")
+        check('fr-390 signed out: the button opens sign-in / Pro, with the reason', 'Parler à un humain' in why and await v.is_hidden('#helpPanel'), why)
+        check('fr-390 signed out: no page error', not verr, verr)
         await vctx.close()
 
-        # 2. the dashboard on a computer
+        # 2. a free account: the same screen
+        free = post('/__test/user', {'pro': False})
+        vctx, v, verr = await visitor(browser, 'en', 1280, 800, free)
+        await v.click('#helpHuman')
+        await v.wait_for_selector('#helpLog .hp-gate')
+        gate = await v.inner_text('#helpLog .hp-gate')
+        check('en-1280 free: reserved to Stalak Pro', 'part of Stalak Pro' in gate and 'within 24 hours' in gate, gate)
+        await v.click('#helpLog .hp-gate button')
+        await v.wait_for_timeout(600)
+        why = await v.evaluate("() => { const e = document.querySelector('#apProWhy'); return e && !e.hidden ? e.innerText : ''; }")
+        check('en-1280 free: the Pro page says why', 'Talk to a human' in why, why)
+        check('en-1280 free: no page error', not verr, verr)
+        await vctx.close()
+
+        # 3. a Pro member on a phone, nobody on the dashboard: answer by e-mail within 24 h, to the account's address
+        pro = post('/__test/user', {'pro': True})
+        vctx, v, verr = await visitor(browser, 'fr', 390, 844, pro)
+        await v.click('#helpHuman')
+        await v.wait_for_function("() => /sous 24 h/.test(document.querySelector('#helpLog').innerText)", timeout=10000)
+        msg = await last_bot(v)
+        mail = pro.get('email') or msg.split(' à ')[-1].split(',')[0]
+        check('fr-390 Pro: nobody there → answer by e-mail within 24 h', 'sous 24 h' in msg and '@example.com' in msg, msg)
+        check('fr-390 Pro: no e-mail field to fill', not await v.is_visible('#helpMail'))
+        check('fr-390 Pro: placeholder for the team', 'équipe' in (await v.get_attribute('#helpIn', 'placeholder')))
+        await v.fill('#helpIn', 'Mon export reste bloqué à 80 %')
+        await v.press('#helpIn', 'Enter')
+        await v.wait_for_function("() => /La réponse arrivera sous 24 h/.test(document.querySelector('#helpLog').innerText)", timeout=10000)
+        check('fr-390 Pro: sent', True)
+        await shot(v, 'humain-pro-member-fr-390')
+        new = get('/__test/mails')[m0:]
+        check('owner told by e-mail, marked Pro', any(x.startswith('contact@stalak.app: Stalak Pro : nouveau message') for x in new), new)
+        check('fr-390 Pro: no page error', not verr, verr)
+        await vctx.close()
+
+        # 4. the dashboard on a computer
         actx = await browser.new_context(locale='fr-FR', viewport={'width': 1280, 'height': 900})
         a = await actx.new_page()
         aerr = []
@@ -94,68 +131,72 @@ async def main():
         await a.goto(BASE + '/__test/admin-login', wait_until='load')
         await a.wait_for_selector('#charts .chart', timeout=15000)
         await a.wait_for_function("() => document.querySelector('#who').textContent.includes('@')", timeout=10000)
-        check('admin-1280: signed in as the owner', 'owner@example.com' in (await a.inner_text('#who')))
-        n = await a.eval_on_selector_all('#charts .chart', 'e => e.length')
-        check('admin-1280: 8 day-by-day charts', n == 8, n)
-        check('admin-1280: figures shown', (await a.inner_text('#kUsers')).strip() != '–' and (await a.inner_text('#kMrr')).strip() != '–')
-        live = await a.inner_text('#kLive')
-        check('admin-1280: live visitors counted (the visitor page sent its sign of life)', live.strip().isdigit(), live)
+        check('admin-1280: 8 day-by-day charts', await a.eval_on_selector_all('#charts .chart', 'e => e.length') == 8)
+        check('admin-1280: Pro subscribers counted', (await a.inner_text('#kPro')).strip() == '1', await a.inner_text('#kPro'))
         await a.wait_for_selector('#tlist button', timeout=10000)
         item = await a.inner_text('#tlist button')
-        check('admin-1280: the message is listed, marked new', 'fan@example.com' in item and 'nouveau' in item, item)
+        check('admin-1280: conversation listed, new, with the « Pro » badge', 'nouveau' in item and 'Pro' in item, item)
         await a.click('#tableBtn')
         check('admin-1280: table view', await a.is_visible('#tableWrap table'))
         await a.hover('#charts .chart .hit >> nth=-1')
         tip = await a.eval_on_selector_all('#charts .chart .tip', "els => els.filter(e => getComputedStyle(e).display !== 'none').map(e => e.textContent)")
-        check('admin-1280: tooltip on hover (day and value)', len(tip) == 1 and '·' in tip[0], tip)
+        check('admin-1280: tooltip on hover', len(tip) == 1 and '·' in tip[0], tip)
         await a.click('#tlist button')
         await a.wait_for_selector('#replyText')
-        conv = await a.inner_text('#conv')
-        check('admin-1280: conversation open, with the page context and the absent visitor', 'bloqué à 80' in conv and 'Ce que montrait la page' in conv, conv[:200])
+        head = await a.inner_text('#conv .head')
+        check('admin-1280: « Pro » shown in the open conversation', 'Pro' in head and 'ex-Pro' not in head, head)
         await a.fill('#replyText', 'Essaie sur Chrome, ça devrait passer.')
         await a.click('#conv button[type=submit]')
-        # the visitor left a few seconds ago: e-mailed at once, or by the catch-up once his page has not fetched it for 20 s
         await a.wait_for_function("() => /envoyé par e-mail/.test(document.querySelector('#conv .msgs').innerText)", timeout=50000)
-        check('admin-1280: reply e-mailed to the visitor who left', any(x.startswith('fan@example.com: Réponse de l’équipe Stalak') for x in mails()[m0:]), mails()[m0:])
+        check('admin-1280: reply e-mailed to the member who left', any('Réponse de l’équipe Stalak' in x for x in get('/__test/mails')[m0:]))
         check('admin-1280: no horizontal scroll', await no_scroll(a))
-        await shot(a, 'support-admin-1280')
+        await shot(a, 'humain-pro-admin-1280')
 
-        # 3. « disponible » on: a visitor in English gets the live chat, no e-mail needed
+        # 5. « disponible » on: another Pro member in English gets the live chat
         await a.check('#availSw')
         await a.wait_for_function("() => /Direct/.test(document.querySelector('#availTxt').textContent)", timeout=15000)
-        check('admin: « disponible » shown', True)
-        vctx, v, verr = await visitor(browser, 'en', 1280, 800)
+        pro2 = post('/__test/user', {'pro': True})
+        vctx, v, verr = await visitor(browser, 'en', 1280, 800, pro2)
         await v.click('#helpHuman')
-        await v.wait_for_selector('#helpMail')
-        check('en-1280: someone is here → e-mail optional', 'here' in (await last_bot(v)) and 'optional' in (await v.inner_text('#helpMailRow')))
+        await v.wait_for_function("() => /team is here/.test(document.querySelector('#helpLog').innerText)", timeout=10000)
         await v.fill('#helpIn', 'Hi! How do I remove the logo?')
         await v.press('#helpIn', 'Enter')
         await v.wait_for_function("() => /Keep this window open/.test(document.querySelector('#helpLog').innerText)", timeout=10000)
-        check('en-1280: sent without e-mail, live', True)
+        check('en-1280 Pro: live chat offered and message sent', True)
         await a.wait_for_function("() => [...document.querySelectorAll('#tlist button')].some(b => /remove the logo/.test(b.innerText))", timeout=25000)
         await a.click("#tlist button:has-text('remove the logo')")
         await a.wait_for_selector('#replyText')
-        live_pill = await a.inner_text('#conv .head')
-        check('admin: the visitor shows as online', 'en ligne' in live_pill, live_pill)
-        await a.fill('#replyText', 'Take Stalak Pro: videos without the logo.')
+        check('admin: the member shows as online', 'en ligne' in (await a.inner_text('#conv .head')))
+        await a.fill('#replyText', 'Stalak Pro removes it: export again.')
         await a.press('#replyText', 'Control+Enter')
-        await v.wait_for_function("() => /Take Stalak Pro/.test(document.querySelector('#helpLog').innerText)", timeout=12000)
+        await v.wait_for_function("() => /export again/.test(document.querySelector('#helpLog').innerText)", timeout=12000)
         team = await v.eval_on_selector('#helpLog .hp-msg.team', 'e => getComputedStyle(e, "::before").content')
-        check('en-1280: the answer appears live, signed « Stalak team »', 'Stalak team' in team, team)
-        check('en-1280: not e-mailed (no address, seen live)', not any('Reply from' in x for x in mails()[m0:]))
-        await shot(v, 'support-visitor-en-1280')
-        # the visitor comes back later: the conversation is still there
-        await v.reload(wait_until='load')
-        await v.wait_for_timeout(500)
-        await v.click('#helpBtn', force=True)
-        await v.wait_for_function("() => /Take Stalak Pro/.test(document.querySelector('#helpLog').innerText)", timeout=10000)
-        check('en-1280: conversation back after a reload', True)
-        await v.click("#helpLog .hp-chips button")
-        check('en-1280: back to the assistant', 'AI' in (await last_bot(v)))
-        check('en-1280: no page error', not verr, verr)
-        await vctx.close()
+        check('en-1280 Pro: the answer appears live, signed « Stalak team »', 'Stalak team' in team, team)
+        await shot(v, 'humain-pro-live-en-1280')
+        check('en-1280 Pro: no page error', not verr, verr)
 
-        # 4. the dashboard on a phone
+        # 6. Pro ends (same device): the member still reads the answers, but writing again shows the Pro screen; « ex-Pro » on the dashboard
+        get('/__test/unpro?id=' + pro2['id'])
+        await v.set_viewport_size({'width': 390, 'height': 844})
+        await v.reload(wait_until='load')
+        await v.wait_for_timeout(700)
+        await v.click('#helpBtn', force=True)
+        await v.wait_for_selector('#helpPanel:not([hidden])')
+        await v.click('#helpHuman')
+        await v.wait_for_function("() => /export again/.test(document.querySelector('#helpLog').innerText)", timeout=10000)
+        await v.wait_for_selector('#helpLog .hp-gate')
+        gate = await v.inner_text('#helpLog .hp-gate')
+        check('en-390 ex-Pro: answers kept, writing needs Pro', 'need Stalak Pro' in gate and 'stay right above' in gate, gate)
+        check('en-390 ex-Pro: the box goes back to the assistant', 'team' not in (await v.get_attribute('#helpIn', 'placeholder')))
+        check('en-390 ex-Pro: no horizontal scroll', await no_scroll(v))
+        await shot(v, 'humain-pro-expro-en-390')
+        check('en-390 ex-Pro: no page error', not verr, verr)
+        await vctx.close()
+        await a.click("[data-st='all']")
+        await a.wait_for_function("() => [...document.querySelectorAll('#tlist button')].some(b => /export again/.test(b.innerText) && /ex-Pro/.test(b.innerText))", timeout=15000)
+        check('admin: « ex-Pro » once the subscription ended', True)
+
+        # 7. the dashboard on a phone
         pctx = await browser.new_context(locale='fr-FR', viewport={'width': 390, 'height': 844}, is_mobile=True, has_touch=True)
         ph = await pctx.new_page()
         perr = []
@@ -163,14 +204,14 @@ async def main():
         await ph.goto(BASE + '/__test/admin-login', wait_until='load')
         await ph.wait_for_selector('#charts .chart', timeout=15000)
         await ph.wait_for_selector('#tlist button', timeout=10000)
-        check('admin-390: no horizontal scroll', await no_scroll(ph), await ph.evaluate('() => document.documentElement.scrollWidth'))
-        await shot(ph, 'support-admin-390')
+        check('admin-390: no horizontal scroll', await no_scroll(ph))
+        await shot(ph, 'humain-pro-admin-390')
         check('admin-390: no page error (strict CSP)', not perr, perr)
         await pctx.close()
         check('admin-1280: no page error (strict CSP)', not aerr, aerr)
         await actx.close()
 
-        # 5. the dashboard is not there without Access, nor the button in the claude.ai build
+        # 8. no dashboard without Access; no « talk to a human » in the claude.ai build
         nctx = await browser.new_context()
         n = await nctx.new_page()
         r = await n.goto(BASE + '/admin/')

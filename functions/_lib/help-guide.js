@@ -42,11 +42,12 @@ COMPTE ET STALAK PRO
 - Sur un nouvel appareil, un code est envoyé par e-mail après le mot de passe ; l'appareil est ensuite reconnu 90 jours.
 - Mot de passe perdu : « Mot de passe oublié ? » sur la page de connexion. Compte créé avec un code seul : « Crée ton mot de passe ». Trop d'erreurs : attendre 15 minutes ou choisir un nouveau mot de passe.
 - Gratuit : montage automatique, vidéos 9:16, paroles taille M et « phrase entière », 3 s de logo Stalak à la fin.
-- Stalak Pro : 9,99 € par mois ou 79 € par an. Débloque : vidéos sans logo, mode Clip 16:9, packs de 5, 10 ou 30 vidéos, toutes les tailles et apparitions du texte, transcription auto des paroles, sauvegarde en ligne (20 Go). Page Stalak Pro : bouton « Pro » ou « Découvrir Stalak Pro → » dans le compte ; page Tarifs du site.
+- Stalak Pro : 9,99 € par mois ou 79 € par an. Débloque : vidéos sans logo, mode Clip 16:9, packs de 5, 10 ou 30 vidéos, toutes les tailles et apparitions du texte, transcription auto des paroles, sauvegarde en ligne (20 Go), « Parler à un humain ». Page Stalak Pro : bouton « Pro » ou « Découvrir Stalak Pro → » dans le compte ; page Tarifs du site.
 - Paiement sécurisé par Paddle (revendeur officiel, qui envoie le reçu). Après le paiement, le compte passe en Pro en quelques secondes.
 - Résilier, changer de carte, factures : Compte → Abonnement → « Gérer » (ou « Gérer mon abonnement » sur la page Stalak Pro). Après une résiliation, Pro reste actif jusqu'à la fin de la période payée.
 - Remboursement intégral sur demande dans les 14 jours après un paiement, sans justification : écrire à l'équipe Stalak avec l'e-mail du compte, ou répondre à l'e-mail de reçu de Paddle.
 - Sans Pro (ou après la fin de Pro), la Galerie affiche « La sauvegarde en ligne est réservée à Stalak Pro » et les projets en ligne ne sont plus accessibles ; ils restent gardés (jusqu'à la règle des 6 mois) et reviennent si on reprend Pro.
+- « Parler à un humain » (bouton sous la zone de texte de cette fenêtre, Stalak Pro) : écrire à l'équipe Stalak ; réponse en direct si quelqu'un est en ligne, sinon par e-mail à l'adresse du compte, sous 24 h. Sans Stalak Pro, on peut toujours écrire à contact@stalak.app.
 - « Supprimer mon compte » (page Compte) efface le compte et les projets en ligne, et arrête l'abonnement tout de suite.
 
 PROBLÈMES CONNUS ET SOLUTIONS
@@ -106,11 +107,12 @@ ACCOUNT AND STALAK PRO
 - On a new device, a code is emailed after the password; the device is then remembered for 90 days.
 - Lost password: "Forgot your password?" on the sign-in page. Account made with an email code only: "Create your password". Too many tries: wait 15 minutes or choose a new password.
 - Free: automatic edit, 9:16 videos, lyrics in size M and "whole line", 3 s of the Stalak logo at the end.
-- Stalak Pro: €9.99 a month or €79 a year. Unlocks: videos without the logo, 16:9 music video mode, packs of 5, 10 or 30 videos, all text sizes and reveals, auto lyrics transcription, online saving (20 GB). Stalak Pro page: the "Pro" button or "Discover Stalak Pro →" in the account; the site's Pricing page.
+- Stalak Pro: €9.99 a month or €79 a year. Unlocks: videos without the logo, 16:9 music video mode, packs of 5, 10 or 30 videos, all text sizes and reveals, auto lyrics transcription, online saving (20 GB), "Talk to a human". Stalak Pro page: the "Pro" button or "Discover Stalak Pro →" in the account; the site's Pricing page.
 - Secure payment by Paddle (the official reseller, which sends the receipt). After paying, the account switches to Pro in a few seconds.
 - Cancel, change card, invoices: Account → Subscription → "Manage" (or "Manage my subscription" on the Stalak Pro page). After cancelling, Pro stays on until the end of the paid period.
 - Full refund on request within 14 days of a payment, no questions asked: write to the Stalak team with the account's email, or reply to Paddle's receipt email.
 - Without Pro (or once Pro ends), the Gallery says online saving is part of Stalak Pro and online projects can't be opened; they're kept (until the 6-month rule) and come back if you take Pro again.
+- "Talk to a human" (button under the text box of this window, Stalak Pro): write to the Stalak team; a live answer if someone is online, otherwise by email to the account's address, within 24 hours. Without Stalak Pro, you can still write to contact@stalak.app.
 - "Delete my account" (Account page) erases the account and online projects, and stops the subscription right away.
 
 KNOWN PROBLEMS AND FIXES

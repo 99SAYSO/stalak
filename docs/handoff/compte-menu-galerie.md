@@ -42,13 +42,13 @@ Migration SQL : **oui, `migrations/0007_project_covers.sql`**, à coller dans la
 
 Une seule ligne, sans danger pour l'existant (ajoute une colonne vide). À ne lancer qu'une fois.
 
-Tests :
+Tests (sur la branche, après fusion de main 016500b, qui contient déjà `compte/humain-pro`) :
 - `node tests/backend/run.mjs` : 63/63 (nouveau : couvertures — type vérifié par les octets, taille, CSRF, propriétaire seul,
   gratuit et ex-Pro refusés, effacement avec le projet et le compte)
 - `tests/ui/gallery_ui.py` : 40/40 (non connecté, gratuit 390 px FR, ex-Pro 1280 px EN, Pro 390 px FR : vraie sauvegarde de
   l'exemple avec couverture, 3 colonnes, appui long, « … », renommer, supprimer, ouvrir ; Pro 1280 px EN : plus de colonnes,
   ouvrir), sans défilement horizontal, sans erreur de page
-- `tests/ui/help_ui.py` : 42/42 (dont la version claude.ai qui se charge) ; `tests/ui/support_ui.py` : 34/34
+- `tests/ui/help_ui.py` : 42/42 (dont la version claude.ai qui se charge) ; `tests/ui/support_ui.py` : 39/39
 - non lancé : vrai R2 et vrai iPhone (à vérifier après publication)
 
 Ordre de mise en ligne (Chef de projet) :
@@ -59,5 +59,5 @@ Ordre de mise en ligne (Chef de projet) :
 Reste au propriétaire : rien d'autre que la vérification ci-dessus (idéalement sur iPhone).
 
 À signaler :
-- Si `compte/humain-pro` est fusionnée avant ou après : pas de conflit attendu (fichiers communs touchés à des endroits différents).
+- `main` (016500b, avec « Parler à un humain » réservé à Pro) est déjà fusionnée dans la branche : conflits réglés (STATUS, guide du glaçon), `public/` reconstruit.
 - Juridique : une phrase ajoutée à la politique de confidentialité FR/EN (la couverture est gardée avec le projet), à relire.
