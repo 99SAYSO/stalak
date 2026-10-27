@@ -121,7 +121,7 @@ details[open] summary{margin-bottom:10px}
 @media (max-width:820px){.work{grid-template-columns:minmax(0,1fr)}}
 .stage{display:flex;flex-direction:column;gap:10px;position:sticky;top:max(12px,env(safe-area-inset-top,0px));align-items:center}
 @media (max-width:820px){.stage{position:static}}
-canvas#view{width:min(100%,340px,calc(68vh*9/16));aspect-ratio:9/16;border-radius:18px;background:#000;display:block;object-fit:contain}
+canvas#view{--ar:.5625;width:min(100%,340px,calc(68vh*var(--ar)));aspect-ratio:9/16;border-radius:18px;background:#000;display:block;object-fit:contain}
 #vpool{position:absolute;left:0;top:0;width:2px;height:2px;overflow:hidden;opacity:.01;pointer-events:none}
 #vpool video{display:block;width:2px;height:2px}
 .transport{display:flex;gap:8px;width:100%;max-width:340px}
@@ -258,6 +258,8 @@ body.lite .tl .cut{box-shadow:none!important;text-shadow:none!important}
 .fxic svg{width:17px;height:17px}
 .fxbtns{display:inline-flex;gap:8px;flex-wrap:wrap}
 .fxexp{flex:1 1 100%;margin:0}
+
+.work.wide canvas#view{width:min(100%,calc(60vh*var(--ar)))}
 
 /* ---- theme ---- */
 /* =====================================================================
@@ -652,8 +654,8 @@ body::after{animation:al-snow-near 13s linear infinite}
 /* ---- phone: the preview stays at the top while the settings and the timeline scroll under it ---- */
 @media (max-width:820px){
   .work .stage{position:sticky;top:0;z-index:20;background:var(--sky);margin:0 -16px;padding:max(8px,env(safe-area-inset-top,0px)) 16px 8px;gap:8px;box-shadow:0 10px 14px -12px rgba(10,13,20,.55)}
-  canvas#view{width:min(100%,calc(34vh*9/16));box-shadow:0 0 0 4px var(--fur),0 0 0 7px var(--ink);border-width:3px;border-radius:20px}
-  .work.wide canvas#view{width:min(100%,calc(34vh*16/9))}
+  canvas#view{width:min(100%,calc(34vh*var(--ar)));box-shadow:0 0 0 4px var(--fur),0 0 0 7px var(--ink);border-width:3px;border-radius:20px}
+  .work.wide canvas#view{width:min(100%,calc(34vh*var(--ar)))}
   .work .transport{margin:4px 0 0}
   .work .transport .btn{min-height:44px}
   .work .pvnote{display:none}
@@ -6875,7 +6877,8 @@ function go(n){
 }
 function setFormat(f){ S.fmt = f; [W, H] = FORMATS[f]; setRes(RES); view.style.aspectRatio = W + '/' + H;
   // landscape: the preview takes the wide column (see .work.wide)
-  view.style.width = W > H ? `min(100%, calc(60vh * ${W/H}))` : `min(100%, 340px, calc(68vh * ${W/H}))`; $('#work').classList.toggle('wide', W > H);
+  // the width comes from the style sheet (desktop / phone), from the shape given here
+  view.style.width = ''; view.style.setProperty('--ar', String(W / H)); $('#work').classList.toggle('wide', W > H);
   $$('#fmtSeg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === f));
   showFrame(S.cursor); }
 

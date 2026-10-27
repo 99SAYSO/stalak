@@ -6177,7 +6177,8 @@ function go(n){
 }
 function setFormat(f){ S.fmt = f; [W, H] = FORMATS[f]; setRes(RES); view.style.aspectRatio = W + '/' + H;
   // landscape: the preview takes the wide column (see .work.wide)
-  view.style.width = W > H ? `min(100%, calc(60vh * ${W/H}))` : `min(100%, 340px, calc(68vh * ${W/H}))`; $('#work').classList.toggle('wide', W > H);
+  // the width comes from the style sheet (desktop / phone), from the shape given here
+  view.style.width = ''; view.style.setProperty('--ar', String(W / H)); $('#work').classList.toggle('wide', W > H);
   $$('#fmtSeg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === f));
   showFrame(S.cursor); }
 

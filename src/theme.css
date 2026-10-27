@@ -390,8 +390,8 @@ body::after{animation:al-snow-near 13s linear infinite}
 /* ---- phone: the preview stays at the top while the settings and the timeline scroll under it ---- */
 @media (max-width:820px){
   .work .stage{position:sticky;top:0;z-index:20;background:var(--sky);margin:0 -16px;padding:max(8px,env(safe-area-inset-top,0px)) 16px 8px;gap:8px;box-shadow:0 10px 14px -12px rgba(10,13,20,.55)}
-  canvas#view{width:min(100%,calc(34vh*9/16));box-shadow:0 0 0 4px var(--fur),0 0 0 7px var(--ink);border-width:3px;border-radius:20px}
-  .work.wide canvas#view{width:min(100%,calc(34vh*16/9))}
+  canvas#view{width:min(100%,calc(34vh*var(--ar)));box-shadow:0 0 0 4px var(--fur),0 0 0 7px var(--ink);border-width:3px;border-radius:20px}
+  .work.wide canvas#view{width:min(100%,calc(34vh*var(--ar)))}
   .work .transport{margin:4px 0 0}
   .work .transport .btn{min-height:44px}
   .work .pvnote{display:none}
