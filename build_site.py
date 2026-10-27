@@ -39,6 +39,12 @@ meta = f'''<meta charset="utf-8">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="{URL}/og.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Stalak">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 '''
 head = re.sub(r'<meta charset="utf-8">\n?|<meta name="viewport"[^>]*>\n?', '', head)
 head = meta + head.replace('<title>Stalak</title>', '<title>Stalak — ton playback monté sur le rythme</title>')

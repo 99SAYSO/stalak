@@ -386,3 +386,23 @@ body::after{animation:al-snow-near 13s linear infinite}
 .cover-note[hidden]{display:none}
 
 .expscreen:focus{outline:none}
+
+/* ---- phone: the preview stays at the top while the settings and the timeline scroll under it ---- */
+@media (max-width:820px){
+  .work .stage{position:sticky;top:0;z-index:20;background:var(--sky);margin:0 -16px;padding:max(8px,env(safe-area-inset-top,0px)) 16px 8px;gap:8px;box-shadow:0 10px 14px -12px rgba(10,13,20,.55)}
+  canvas#view{width:min(100%,calc(34vh*9/16));box-shadow:0 0 0 4px var(--fur),0 0 0 7px var(--ink);border-width:3px;border-radius:20px}
+  .work.wide canvas#view{width:min(100%,calc(34vh*16/9))}
+  .work .transport{margin:4px 0 0}
+  .work .transport .btn{min-height:44px}
+  .work .pvnote{display:none}
+  /* the timeline first, right under the preview; the settings after */
+  #p4 > .card:first-child .tlwrap{order:-3}
+  #p4 > .card:first-child .cutbar,#p4 > .card:first-child .fxbar{order:-2}
+  #p4 > .card:first-child > h2{order:-4}
+}
+
+/* ---- « add to home screen » tip (the site on its own domain only) ---- */
+.installtip{display:flex;align-items:center;gap:12px;align-self:center;max-width:560px;width:100%;background:#fff;border:var(--stroke) solid var(--ink);border-radius:18px;box-shadow:0 5px 0 var(--ink);padding:10px 10px 10px 12px}
+.installtip[hidden]{display:none}
+.installtip p{margin:0;flex:1;font-size:14.5px;line-height:1.4}
+.installtip img{border-radius:10px;flex:none}

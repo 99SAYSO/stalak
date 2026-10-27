@@ -3512,7 +3512,7 @@ const PREV = 0.5; let RES = PREV;
 function setRes(r){ RES = r; view.width = Math.round(W * r); view.height = Math.round(H * r); }
 const player = new Audio(); player.preload = 'auto';
 let songURL = null, clickWav = null, clickBuilding = null, playBase = 0, playFrom = 0, clockPerf = false, perfT0 = 0, raf = 0, cur = -1, endHook = null, actx = null;
-function audio(){ return actx || (actx = new (window.AudioContext || window.webkitAudioContext)()); }
+function audio(){ soundAlways(); return actx || (actx = new (window.AudioContext || window.webkitAudioContext)()); }
 function wavBlob(b){
   const ch = Math.min(2, b.numberOfChannels), n = b.length, sr = b.sampleRate, out = new DataView(new ArrayBuffer(44 + n * ch * 2));
   const w = (o, str) => { for (let i=0; i<str.length; i++) out.setUint8(o + i, str.charCodeAt(i)); };
@@ -3552,7 +3552,8 @@ async function buildClickWav(){
 /* the song can also play through Web Audio, without any media element: Safari's media player was seen to lock the page */
 const wa = { ctx: null, node: null, t0: 0, started: false, ended: false };
 function waOn(){ return S.waSong && !!(window.AudioContext || window.webkitAudioContext); }
-function waCtx(){ if (!wa.ctx){ const C = window.AudioContext || window.webkitAudioContext; wa.ctx = new C(); } if (wa.ctx.state !== 'running') wa.ctx.resume().catch(() => {}); return wa.ctx; }
+function soundAlways(){ try { if (navigator.audioSession && navigator.audioSession.type !== 'playback') navigator.audioSession.type = 'playback'; } catch(e){} }
+function waCtx(){ soundAlways(); if (!wa.ctx){ const C = window.AudioContext || window.webkitAudioContext; wa.ctx = new C(); } if (wa.ctx.state !== 'running') wa.ctx.resume().catch(() => {}); return wa.ctx; }
 function waStop(){ wa.started = false; if (wa.node){ try { wa.node.onended = null; wa.node.stop(); wa.node.disconnect(); } catch(e){} wa.node = null; } }
 function songNow(){ return clockPerf ? playFrom + (performance.now() - perfT0) / 1000 : wa.started ? playFrom + (wa.ctx.currentTime - wa.t0) : playBase + player.currentTime; }
 function audioStarted(){ return !preparing && (clockPerf || wa.started || (!player.paused && !player.seeking && player.readyState >= 2)); }
@@ -3736,16 +3737,42 @@ function finish(){ const hook = !!endHook; stop(true); if (!hook) showFrame(S.se
 
 /* ---------- recording on the site ---------- */
 let recStream = null, recRec = null, recTimer = 0, recStopReq = false;
+let camFacing = 'user';
+async function camStream(facing){
+  const audio = { echoCancellation:false, noiseSuppression:false, autoGainControl:false };
+  // sizes given the camera's own way (landscape): iPhones then give the whole picture, turned upright, instead of a cropped one
+  try { return await navigator.mediaDevices.getUserMedia({ video:{ facingMode:{ ideal:facing }, width:{ ideal:1920 }, height:{ ideal:1080 } }, audio }); }
+  catch(e){ if (e && e.name === 'NotAllowedError') throw e; return await navigator.mediaDevices.getUserMedia({ video:{ facingMode:{ ideal:facing } }, audio }); }
+}
+function camZoomOut(){
+  // the widest view the camera allows (some phones start a little zoomed in)
+  const t = recStream && recStream.getVideoTracks()[0]; if (!t || !t.getCapabilities) return;
+  try { const c = t.getCapabilities(); if (c.zoom && c.zoom.min != null) t.applyConstraints({ advanced: [{ zoom: c.zoom.min }] }).catch(() => {}); } catch(e){}
+}
+function camShow(){
+  const v = $('#recVideo'); v.srcObject = recStream; v.play().catch(()=>{});
+  v.classList.toggle('mirror', camFacing === 'user'); camZoomOut();
+  const t = recStream.getVideoTracks()[0], st = t && t.getSettings ? t.getSettings() : {};
+  diag('caméra : ' + (camFacing === 'user' ? 'selfie' : 'arrière') + (st.width ? ' · ' + st.width + '×' + st.height : ''));
+}
+async function camFlip(){
+  if (!recStream || (recRec && recRec.state !== 'inactive')) return;
+  const next = camFacing === 'user' ? 'environment' : 'user';
+  recStream.getTracks().forEach(t => t.stop()); recStream = null;
+  try { recStream = await camStream(next); camFacing = next; }
+  catch(e){ try { recStream = await camStream(camFacing); } catch(e2){ closeCamera(); status('La caméra ne répond plus. Ferme-la et rouvre-la.'); return; } status('Cette caméra n’est pas disponible.'); }
+  camShow();
+}
 async function openCamera(){
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ status('Ton navigateur ne permet pas de filmer ici. Importe tes vidéos à la place.'); return; }
   try {
-    recStream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:'user', width:{ ideal:1080 }, height:{ ideal:1920 } }, audio:{ echoCancellation:false, noiseSuppression:false, autoGainControl:false } });
+    recStream = await camStream(camFacing);
   } catch(e){
     diag('caméra refusée (' + (e && e.name) + ')');
     status('La caméra n’est pas accessible dans cet aperçu. Elle marchera sur le site en ligne. En attendant, filme avec ton téléphone (son en haut-parleur) et importe les vidéos.');
     return;
   }
-  const v = $('#recVideo'); v.srcObject = recStream; v.play().catch(()=>{});
+  camShow();
   $('#recPanel').hidden = false; $('#takeChoices').hidden = true; status('');
 }
 function closeCamera(){
@@ -5190,6 +5217,7 @@ $('#fxRow').addEventListener('keydown', e => { const m = e.target.closest && e.t
 $('#cutLock').onclick = () => { const c = S.cuts[S.sel]; if (!c) return; lockCut(c, !c.locked); renderTimeline(); renderCutBar(); };
 $('#recOpen').onclick = openCamera;
 $('#recClose').onclick = closeCamera;
+$('#recFlip').onclick = camFlip;
 $('#recGo').onclick = recordTake;
 $('#recStop').onclick = () => { recStopReq = true; };
 $('#lyrMode').onclick = e => { const b = e.target.closest('button'); if (!b) return; S.lyrics.mode = b.dataset.mode; S.lyrUser = true; stop(true); lyricsView(); showFrame(S.cursor); };
@@ -5413,6 +5441,24 @@ async function exportProbe(){
   b.disabled = false; status('Test fini : touche « Copier » et envoie le texte.');
 }
 $('#diagProbe').onclick = exportProbe;
+/* Stalak as an app on the phone's home screen (its own site only, not inside Claude): iPhone = Share then « Sur l'écran
+   d'accueil » (said in a small tip), Android / Chrome = the browser's own install, from a button */
+{
+  const standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+  const ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const iosSafari = ios && !/CriOS|FxiOS|EdgiOS|OPiOS/.test(navigator.userAgent);
+  const tip = $('#installTip'), seen = store.get('stalak:installTip') === 'non';
+  const show = (txt, withBtn) => { const ic = document.querySelector('link[rel="apple-touch-icon"]'); if (ic) $('#installIcon').src = ic.href; else $('#installIcon').hidden = true;
+    $('#installTxt').textContent = txt; $('#installGo').hidden = !withBtn; tip.hidden = false; };
+  if (!window.claude && !standalone && !seen){
+    if (iosSafari) setTimeout(() => show('Installe Stalak comme une app : touche le bouton Partager (le carré avec la flèche ⬆︎), puis « Sur l’écran d’accueil ».', false), 1500);
+    let ev = null;
+    window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); ev = e; show('Installe Stalak comme une app, pour l’ouvrir d’un seul geste.', true); });
+    $('#installGo').onclick = async () => { if (!ev) return; ev.prompt(); try { await ev.userChoice; } catch(e){} ev = null; tip.hidden = true; };
+  }
+  $('#installX').onclick = () => { tip.hidden = true; store.set('stalak:installTip', 'non'); };
+  if (standalone) diag('ouvert comme une app (écran d’accueil)');
+}
 /* the technical info is for the Stalak team: hidden from people, shown again by touching « by Alaska » 5 times
    (or with #debug in the address), and remembered on this device */
 function devShow(on){ $('#diagBox').hidden = !on; store.set('stalak:dev', !!on); }
@@ -5446,7 +5492,8 @@ LE SITE, EN 4 ÉTAPES (onglets en haut : 1 Son, 2 Prises, 3 Paroles, 4 Montage)
 - « Essayer avec un exemple » pour tester sans ses fichiers.
 2. Prises
 - « Importer mes vidéos » : des playbacks du même passage, filmés avec le son en haut-parleur (le son de la vidéo sert à la caler automatiquement sur la musique). Plus il y a de prises, plus le montage est varié.
-- Ou « Filmer maintenant » : le son se lance une mesure avant le passage pendant qu'on filme (« ● Lancer la prise », « ■ Arrêter »).
+- Ou « Filmer maintenant » : le son se lance une mesure avant le passage pendant qu'on filme (« ● Lancer la prise », « ■ Arrêter »). « ⇄ Caméra avant / arrière » change de caméra.
+- Sur iPhone, Stalak peut s'installer comme une app : bouton Partager de Safari, puis « Sur l'écran d'accueil ». Le son sort même quand l'iPhone est en mode silencieux.
 - « + Plans d'ambiance » (optionnel) : des vidéos sans chant glissées entre les prises.
 3. Paroles
 - « Coller mes paroles » (une phrase par ligne), « Importer un .txt », ou « Sans paroles » (par défaut en Clip).

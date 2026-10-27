@@ -77,7 +77,8 @@ details[open] summary{margin-bottom:10px}
 .nav{display:flex;justify-content:space-between;gap:10px;align-items:center}
 /* recording */
 .recbox{position:relative;width:100%;max-width:320px;aspect-ratio:9/16;margin:0 auto;border-radius:16px;overflow:hidden;background:#000}
-.recbox video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.recbox video{width:100%;height:100%;object-fit:cover}
+.recbox video.mirror{transform:scaleX(-1)}
 .recbox .count{position:absolute;inset:0;display:grid;place-items:center;font:700 88px var(--display);color:#fff;text-shadow:0 2px 20px rgba(0,0,0,.5);pointer-events:none}
 .recbox .rt{position:absolute;top:12px;left:12px;font:600 13px var(--mono);color:#fff;background:rgba(214,51,108,.9);border-radius:99px;padding:3px 10px}
 /* work area: preview + panel */

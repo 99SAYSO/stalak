@@ -108,6 +108,7 @@
         <div class="row" style="justify-content:center;margin-top:12px">
           <button class="btn primary big" id="recGo" type="button">● Lancer la prise</button>
           <button class="btn big" id="recStop" type="button" hidden>■ Arrêter</button>
+          <button class="btn" id="recFlip" type="button" aria-label="Changer de caméra">⇄ Caméra avant / arrière</button>
           <button class="btn" id="recClose" type="button">Fermer la caméra</button>
         </div>
         <p class="hint" style="text-align:center;margin:8px auto 0">Le son démarre une mesure avant ton passage, pour que tu sois dans le rythme.</p>
@@ -272,7 +273,7 @@
             <span class="label">Prises</span>
             <label class="chk best tip" for="bestChk" data-tip="Le site regarde tes prises (netteté, lumière, image qui saute, visage au centre) et met plus souvent la plus belle à chaque moment, en gardant de la variété. Les plans gardés ou exclus passent avant."><input type="checkbox" id="bestChk" checked> Meilleure prise auto</label>
           </div>
-          <div>
+          <div class="tlwrap">
             <div class="row" style="justify-content:space-between;margin-bottom:6px"><span class="label" id="verLbl">Version 1</span><span class="row" style="gap:10px"><span class="meta" id="tlMeta"></span><button class="btn sm" id="tlZoom" type="button" hidden aria-pressed="false">Zoom +</button></span></div>
             <div class="tlmini" id="tlMini" hidden aria-label="Tout le morceau : touche pour t'y placer"><i id="tlWin"></i><b id="tlMiniPh"></b></div>
             <div class="fxrow" id="fxRow" hidden role="group" aria-label="Effets du clip : touche un effet pour le changer ou le supprimer"></div>
@@ -354,6 +355,12 @@
     <button class="btn sm" id="diagCopy" type="button">Copier</button>
     <button class="btn sm" id="diagProbe" type="button">Tester le décodage pour l’export</button>
   </details>
+  <div class="installtip" id="installTip" hidden>
+    <img src="data:," alt="" id="installIcon" width="44" height="44">
+    <p id="installTxt"></p>
+    <button class="btn primary sm" id="installGo" type="button" hidden>Installer</button>
+    <button class="hp-x" id="installX" type="button" aria-label="Fermer">×</button>
+  </div>
   <div class="byalaska" id="byAlaska">by Alaska</div>
 </div>
 
