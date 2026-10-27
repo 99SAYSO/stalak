@@ -824,7 +824,7 @@ const I18N_EN = /*@EN*/{
   "pr.w3p": "Without the Stalak logo, your videos end on you. It looks pro, and your name is the one people remember.",
   "pr.w4t": "Lyrics people sing along to",
   "pr.w4p": "Karaoke lights up with your voice, word after word, big or subtle. Viewers read along, sing with you and remember your hook.",
-  "hd.price": "Pricing"
+  "hd.price": "Stalak Pro"
 }/*EN@*/;
 const I18N_FR = /*@FR*/{
   "kind.hint.reel": "Une vidéo verticale 9:16, de tout le son ou de quelques mesures.",
