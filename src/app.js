@@ -750,7 +750,7 @@ const I18N_EN = /*@EN*/{
   "acct.why.text": "These text sizes and styles are part of Stalak Pro.",
   "pr.promo": "Stalak Pro for <b>€6.58/mo</b> with the yearly plan",
   "pr.sub": "Your videos without the logo, Music video mode and packs. Cancel anytime.",
-  "pr.popular": "Most popular",
+  "pr.popular": "Best value",
   "pr.year.n": "Pro yearly",
   "pr.year.amt": "€6.58",
   "pr.per": "/mo",
