@@ -130,3 +130,15 @@
   .pr-plan,.pr-art,.pr-plan::before,.pr-compare::before,.pr-faq::before,.pr-ribbon,.pr-glint::before,.pr-trust,.pr-pay,.pr-compare,.pr-faq,.pr-faq details[open] p{animation:none!important}
   .pr-faq summary::after{transition:none}
 }
+
+/* « Ce que Pro fait pour toi »: four benefits, the mascot beside each */
+.pr-why{background:#fff;color:var(--ink);border:3px solid var(--ink);border-radius:26px;box-shadow:0 6px 0 var(--ink);padding:22px 20px 8px}
+.pr-why h3{margin:0 0 12px;text-align:center;font:400 26px/1.15 var(--display)}
+.pr-why ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:4px 22px}
+.pr-why-i{display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-top:2px dashed var(--ice-2,#bfe0ff)}
+.pr-why-i:first-child{border-top:0}
+.pr-why-i img{flex:none;width:64px;height:64px}
+.pr-why-i img:not([src]){visibility:hidden}
+.pr-why h4{margin:2px 0 4px;font:400 19px/1.2 var(--display);color:var(--sky-deep)}
+.pr-why p{margin:0;font-size:15px;line-height:1.5}
+@media (min-width:880px){ .pr-why ul{grid-template-columns:1fr 1fr} .pr-why-i:nth-child(2){border-top:0} }

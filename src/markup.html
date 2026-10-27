@@ -9,7 +9,7 @@
       <li><button type="button" data-go="3" data-i18n="step.3"><b>3</b>Paroles</button></li>
       <li><button type="button" data-go="4" data-i18n="step.4"><b>4</b>Montage</button></li>
     </ol>
-    <div class="hdtools"><button class="acctbtn" id="acctBtn" type="button" hidden aria-haspopup="dialog" aria-controls="acctPage"><span class="acctav" id="acctAv" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></span><span class="acctlbl" id="acctLbl">Connexion</span><span class="acctpro" id="acctProTag" hidden>PRO</span></button></div>
+    <div class="hdtools"><button class="pricebtn" id="priceBtn" type="button" hidden aria-controls="acctPage"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.5v19M3.8 7.25l16.4 9.5M3.8 16.75l16.4-9.5"/></svg><span data-i18n="hd.price">Tarifs</span></button><button class="acctbtn" id="acctBtn" type="button" hidden aria-haspopup="dialog" aria-controls="acctPage"><span class="acctav" id="acctAv" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></span><span class="acctlbl" id="acctLbl">Connexion</span><span class="acctpro" id="acctProTag" hidden>PRO</span></button></div>
   </header>
   <div class="status" id="status" role="status" aria-live="polite"></div>
 
@@ -575,7 +575,7 @@
     <section class="ap-view ap-proview" id="apPro" hidden>
       <p class="pr-promo" id="apPromo"><svg class="pr-flake" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.5v19M3.8 7.25l16.4 9.5M3.8 16.75l16.4-9.5M9.6 3.9 12 6.3l2.4-2.4M9.6 20.1 12 17.7l2.4 2.4"/></svg><span data-i18n="pr.promo">Stalak Pro pour <b>6,58 €/mois</b> avec l’annuel</span></p>
       <h2 id="apProT" tabindex="-1" data-i18n="acct.proT">Stalak Pro</h2>
-      <p class="pr-sub" id="apProSub" data-i18n="pr.sub">Tes vidéos sans logo, le mode Clip et les packs. Tu arrêtes quand tu veux.</p>
+      <p class="pr-sub" id="apProSub" data-i18n="pr.sub">Stalak monte tes vidéos à ta place. Avec Pro, tu postes plus, plus vite, et chaque vidéo a l’air sortie d’un studio.</p>
       <p class="ap-why" id="apProWhy" hidden></p>
       <div class="pr" id="apBuy">
         <div class="pr-plans">
@@ -590,12 +590,12 @@
             <button class="btn primary pr-cta" id="apYear" type="button" data-i18n="pr.year.cta">Choisir l’annuel</button>
             <ul class="pr-feats">
               <li class="pr-plus" data-i18n="pr.f.plus">Tout le gratuit, plus :</li>
-              <li data-i18n="pr.f.nologo">Pas de logo Stalak à la fin</li>
-              <li data-i18n="pr.f.clip">Le mode Clip : le morceau entier en 16:9, avec effets</li>
-              <li data-i18n="pr.f.pack">Les packs : 5, 10 ou 30 vidéos différentes d’un coup</li>
-              <li data-i18n="pr.f.text">Toutes les tailles (S, M, L) et apparitions : mot par mot, karaoké</li>
-              <li class="is-soon" data-i18n="pr.f.cloud">Tes projets sauvegardés en ligne <span class="soon">bientôt</span></li>
-              <li class="is-soon" data-i18n="pr.f.auto">Les paroles calées automatiquement <span class="soon">bientôt</span></li>
+              <li data-i18n="pr.f.nologo"><strong>Zéro logo Stalak.</strong> Tes vidéos finissent sur toi, comme si un monteur pro était passé derrière.</li>
+              <li data-i18n="pr.f.clip"><strong>Ton clip YouTube, monté tout seul.</strong> Le morceau entier en 16:9, coupé sur le rythme, avec effets. Prêt à poster.</li>
+              <li data-i18n="pr.f.pack"><strong>Un mois de contenu en un clic.</strong> 5, 10 ou 30 vidéos toutes différentes du même son, pour poster chaque jour.</li>
+              <li data-i18n="pr.f.text"><strong>Des paroles qui accrochent.</strong> Mot par mot ou en karaoké qui suit ta voix, en taille S, M ou L.</li>
+              <li class="is-soon" data-i18n="pr.f.cloud"><strong>Tes projets partout :</strong> commence sur ton téléphone, finis sur ton ordi. <span class="soon">bientôt</span></li>
+              <li class="is-soon" data-i18n="pr.f.auto"><strong>Tes paroles écrites pour toi :</strong> Stalak écoute ta voix et les cale tout seul. <span class="soon">bientôt</span></li>
             </ul>
           </article>
           <article class="pr-plan pr-month" aria-labelledby="apMonthN">
@@ -605,15 +605,15 @@
             <p class="pr-bill" data-i18n="pr.month.bill">Facturé chaque mois</p>
             <p class="pr-pill" data-i18n="pr.nocommit">Sans engagement</p>
             <button class="btn pr-cta" id="apMonth" type="button" data-i18n="pr.month.cta">Choisir le mensuel</button>
-            <p class="pr-same" data-i18n="pr.same">Les mêmes avantages que l’annuel, payés au mois.</p>
+            <p class="pr-same" data-i18n="pr.same">Tout Stalak Pro, payé au mois. Tu arrêtes quand tu veux.</p>
             <ul class="pr-feats pr-dup">
               <li class="pr-plus" data-i18n="pr.f.plus">Tout le gratuit, plus :</li>
-              <li data-i18n="pr.f.nologo">Pas de logo Stalak à la fin</li>
-              <li data-i18n="pr.f.clip">Le mode Clip : le morceau entier en 16:9, avec effets</li>
-              <li data-i18n="pr.f.pack">Les packs : 5, 10 ou 30 vidéos différentes d’un coup</li>
-              <li data-i18n="pr.f.text">Toutes les tailles (S, M, L) et apparitions : mot par mot, karaoké</li>
-              <li class="is-soon" data-i18n="pr.f.cloud">Tes projets sauvegardés en ligne <span class="soon">bientôt</span></li>
-              <li class="is-soon" data-i18n="pr.f.auto">Les paroles calées automatiquement <span class="soon">bientôt</span></li>
+              <li data-i18n="pr.f.nologo"><strong>Zéro logo Stalak.</strong> Tes vidéos finissent sur toi, comme si un monteur pro était passé derrière.</li>
+              <li data-i18n="pr.f.clip"><strong>Ton clip YouTube, monté tout seul.</strong> Le morceau entier en 16:9, coupé sur le rythme, avec effets. Prêt à poster.</li>
+              <li data-i18n="pr.f.pack"><strong>Un mois de contenu en un clic.</strong> 5, 10 ou 30 vidéos toutes différentes du même son, pour poster chaque jour.</li>
+              <li data-i18n="pr.f.text"><strong>Des paroles qui accrochent.</strong> Mot par mot ou en karaoké qui suit ta voix, en taille S, M ou L.</li>
+              <li class="is-soon" data-i18n="pr.f.cloud"><strong>Tes projets partout :</strong> commence sur ton téléphone, finis sur ton ordi. <span class="soon">bientôt</span></li>
+              <li class="is-soon" data-i18n="pr.f.auto"><strong>Tes paroles écrites pour toi :</strong> Stalak écoute ta voix et les cale tout seul. <span class="soon">bientôt</span></li>
             </ul>
           </article>
           <article class="pr-plan pr-free" aria-labelledby="apFreeN">
@@ -624,8 +624,8 @@
             <p class="pr-pill pr-now" data-i18n="pr.now">Ton plan actuel</p>
             <button class="btn pr-cta" id="apStayFree" type="button" data-i18n="pr.stay">Rester en gratuit</button>
             <ul class="pr-feats">
-              <li data-i18n="pr.f.auto0">Montage automatique sur les temps, les mots ou par mesure</li>
-              <li data-i18n="pr.f.lyr0">Paroles à l’écran en taille M, phrase entière</li>
+              <li data-i18n="pr.f.auto0"><strong>Montage automatique</strong> sur les temps, les mots ou par mesure</li>
+              <li data-i18n="pr.f.lyr0">Paroles à l’écran (taille M, phrase entière)</li>
               <li data-i18n="pr.f.916">Vidéos 9:16 pour TikTok, Reels et Shorts</li>
               <li class="is-minus" data-i18n="pr.f.logo0">3 s avec le logo Stalak à la fin</li>
             </ul>
@@ -638,6 +638,8 @@
           <li><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5M12 14.5v2.5"/></svg><span data-i18n="pr.t.secure">Paiement sécurisé par Paddle</span></li>
         </ul>
         <p class="pr-pay" data-i18n="pr.pay">Carte bancaire, Apple Pay, Google Pay ou PayPal. Prix TTC en Europe.</p>
+        <section class="pr-why" aria-labelledby="apWhyT"><h3 id="apWhyT" data-i18n="pr.w.t">Ce que Pro fait pour toi</h3><ul><li class="pr-why-i"><img data-emo="gg" alt="" width="72" height="72"><div><h4 data-i18n="pr.w1t">Ton clip, prêt pour YouTube</h4><p data-i18n="pr.w1p">Fini les heures sur un logiciel de montage. Tu importes ton son et tes prises, Stalak monte le morceau entier en 16:9 : coupes sur le rythme, lèvres parfaitement synchro, effets. Tu n’as plus qu’à poster.</p></div></li><li class="pr-why-i"><img data-emo="hype" alt="" width="72" height="72"><div><h4 data-i18n="pr.w2t">Poste tous les jours, sans effort</h4><p data-i18n="pr.w2p">Un pack, c’est 5, 10 ou 30 vidéos toutes différentes du même son, créées d’un coup. De quoi nourrir ton TikTok et tes Reels pendant un mois, en une seule séance.</p></div></li><li class="pr-why-i"><img data-emo="cool" alt="" width="72" height="72"><div><h4 data-i18n="pr.w3t">Ta vidéo, ta signature</h4><p data-i18n="pr.w3p">Sans le logo Stalak, tes vidéos se terminent sur toi. Le rendu fait pro, et c’est ton nom qu’on retient.</p></div></li><li class="pr-why-i"><img data-emo="love" alt="" width="72" height="72"><div><h4 data-i18n="pr.w4t">Des paroles qui font chanter</h4><p data-i18n="pr.w4p">Le karaoké s’allume au rythme de ta voix, mot après mot, en grand ou en discret. Ceux qui regardent lisent, chantent avec toi et retiennent ton refrain.</p></div></li></ul></section>
+
 
         <section class="pr-compare" aria-labelledby="apCmpT">
           <h3 id="apCmpT" data-i18n="pr.cmp.t">Gratuit ou Pro ?</h3>
@@ -649,11 +651,11 @@
               <tr><th scope="row" data-i18n="pr.r.lyr">Paroles à l’écran</th><td><i class="pr-yes" role="img" aria-label="Oui" data-i18n-attr="aria-label:pr.yes"></i></td><td class="pr-colpro"><i class="pr-yes" role="img" aria-label="Oui" data-i18n-attr="aria-label:pr.yes"></i></td></tr>
               <tr><th scope="row" data-i18n="pr.r.size">Taille du texte</th><td class="pr-v" data-i18n="pr.v.m">M</td><td class="pr-colpro pr-v" data-i18n="pr.v.sml">S, M, L</td></tr>
               <tr><th scope="row" data-i18n="pr.r.anim">Apparition du texte</th><td class="pr-v" data-i18n="pr.v.line">Phrase entière</td><td class="pr-colpro pr-v" data-i18n="pr.v.all">+ mot par mot, karaoké</td></tr>
-              <tr><th scope="row" data-i18n="pr.r.nologo">Sans logo Stalak à la fin</th><td><i class="pr-no" role="img" aria-label="Non" data-i18n-attr="aria-label:pr.no"></i></td><td class="pr-colpro"><i class="pr-yes" role="img" aria-label="Oui" data-i18n-attr="aria-label:pr.yes"></i></td></tr>
-              <tr><th scope="row" data-i18n="pr.r.clip">Mode Clip : le morceau entier en 16:9, avec effets</th><td><i class="pr-no" role="img" aria-label="Non" data-i18n-attr="aria-label:pr.no"></i></td><td class="pr-colpro"><i class="pr-yes" role="img" aria-label="Oui" data-i18n-attr="aria-label:pr.yes"></i></td></tr>
-              <tr><th scope="row" data-i18n="pr.r.pack">Packs de 5, 10 ou 30 vidéos différentes</th><td><i class="pr-no" role="img" aria-label="Non" data-i18n-attr="aria-label:pr.no"></i></td><td class="pr-colpro"><i class="pr-yes" role="img" aria-label="Oui" data-i18n-attr="aria-label:pr.yes"></i></td></tr>
+              <tr><th scope="row" data-i18n="pr.r.nologo">Vidéos sans logo Stalak</th><td><i class="pr-no" role="img" aria-label="Non" data-i18n-attr="aria-label:pr.no"></i></td><td class="pr-colpro"><i class="pr-yes" role="img" aria-label="Oui" data-i18n-attr="aria-label:pr.yes"></i></td></tr>
+              <tr><th scope="row" data-i18n="pr.r.clip">Clip YouTube 16:9 monté automatiquement, avec effets</th><td><i class="pr-no" role="img" aria-label="Non" data-i18n-attr="aria-label:pr.no"></i></td><td class="pr-colpro"><i class="pr-yes" role="img" aria-label="Oui" data-i18n-attr="aria-label:pr.yes"></i></td></tr>
+              <tr><th scope="row" data-i18n="pr.r.pack">Packs de 5, 10 ou 30 vidéos différentes en un clic</th><td><i class="pr-no" role="img" aria-label="Non" data-i18n-attr="aria-label:pr.no"></i></td><td class="pr-colpro"><i class="pr-yes" role="img" aria-label="Oui" data-i18n-attr="aria-label:pr.yes"></i></td></tr>
               <tr><th scope="row" data-i18n="pr.r.cloud">Sauvegarde en ligne</th><td><i class="pr-no" role="img" aria-label="Non" data-i18n-attr="aria-label:pr.no"></i></td><td class="pr-colpro"><span class="soon" data-i18n="pr.soon">bientôt</span></td></tr>
-              <tr><th scope="row" data-i18n="pr.r.autoly">Paroles calées automatiquement</th><td><i class="pr-no" role="img" aria-label="Non" data-i18n-attr="aria-label:pr.no"></i></td><td class="pr-colpro"><span class="soon" data-i18n="pr.soon">bientôt</span></td></tr>
+              <tr><th scope="row" data-i18n="pr.r.autoly">Paroles écrites et calées automatiquement</th><td><i class="pr-no" role="img" aria-label="Non" data-i18n-attr="aria-label:pr.no"></i></td><td class="pr-colpro"><span class="soon" data-i18n="pr.soon">bientôt</span></td></tr>
             </tbody>
             <tfoot><tr><th scope="row" data-i18n="pr.r.price">Prix</th><td class="pr-v" data-i18n="pr.free.amt">0 €</td><td class="pr-colpro pr-v" data-i18n="pr.v.from">dès 6,58 €/mois</td></tr></tfoot>
           </table>

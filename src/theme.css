@@ -740,3 +740,12 @@ header .stepper{margin-left:auto}
 .flurry i{position:absolute;left:0;top:0;width:var(--s);height:var(--s);margin:calc(var(--s) / -2) 0 0 calc(var(--s) / -2);border-radius:50%;background:#fff;box-shadow:0 0 0 1.5px var(--ink);opacity:0;animation:mo-flake .62s cubic-bezier(.15,.7,.3,1) var(--d) forwards}
 @keyframes mo-flake{0%{opacity:1;transform:translate(0,0) scale(.3)}70%{opacity:1}100%{opacity:0;transform:translate(var(--x),calc(var(--y) + 16px)) scale(1)}}
 @media (prefers-reduced-motion:reduce){ .flurry,.ap-ripple{display:none} }
+
+/* « Tarifs » in the header (stalak.app only), next to the account button */
+.pricebtn{display:inline-flex;align-items:center;gap:6px;font:600 13.5px/1 var(--body);color:var(--ink);background:var(--fur);border:2.5px solid var(--ink);border-radius:14px;padding:0 12px 0 9px;min-height:40px;box-shadow:0 4px 0 var(--ink);cursor:pointer;white-space:nowrap}
+.pricebtn[hidden]{display:none}
+.pricebtn svg{width:16px;height:16px;fill:none;stroke:var(--sky-deep);stroke-width:2.6;stroke-linecap:round}
+.pricebtn:hover{background:#ffe9c2}
+.pricebtn:focus-visible{outline:3px solid #fff;outline-offset:3px}
+@media (max-width:640px){ .pricebtn{min-height:44px;padding:0 11px 0 9px} }
+@media (max-width:350px){ .pricebtn svg{display:none} }

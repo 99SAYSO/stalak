@@ -749,7 +749,7 @@ const I18N_EN = /*@EN*/{
   "acct.perk6": "Every text size and style: word by word, karaoke",
   "acct.why.text": "These text sizes and styles are part of Stalak Pro.",
   "pr.promo": "Stalak Pro for <b>€6.58/mo</b> with the yearly plan",
-  "pr.sub": "Your videos without the logo, Music video mode and packs. Cancel anytime.",
+  "pr.sub": "Stalak edits your videos for you. With Pro, you post more, faster, and every video looks studio-made.",
   "pr.popular": "Best value",
   "pr.year.n": "Pro yearly",
   "pr.year.amt": "€6.58",
@@ -758,25 +758,25 @@ const I18N_EN = /*@EN*/{
   "pr.save": "Save 34%",
   "pr.year.cta": "Go yearly",
   "pr.f.plus": "Everything in Free, plus:",
-  "pr.f.nologo": "No Stalak logo at the end",
-  "pr.f.clip": "Music video mode: the whole song in 16:9, with effects",
-  "pr.f.pack": "Packs: 5, 10 or 30 different videos in one go",
-  "pr.f.text": "Every text size (S, M, L) and style: word by word, karaoke",
-  "pr.f.cloud": "Your projects saved online <span class=\"soon\">soon</span>",
-  "pr.f.auto": "Lyrics synced automatically <span class=\"soon\">soon</span>",
+  "pr.f.nologo": "<strong>Zero Stalak logo.</strong> Your videos end on you, like a pro editor went over them.",
+  "pr.f.clip": "<strong>Your YouTube video, edited for you.</strong> The whole song in 16:9, cut to the beat, with effects. Ready to post.",
+  "pr.f.pack": "<strong>A month of content in one click.</strong> 5, 10 or 30 all-different videos from the same song, to post every day.",
+  "pr.f.text": "<strong>Lyrics that grab attention.</strong> Word by word or karaoke that follows your voice, in size S, M or L.",
+  "pr.f.cloud": "<strong>Your projects everywhere:</strong> start on your phone, finish on your computer. <span class=\"soon\">soon</span>",
+  "pr.f.auto": "<strong>Your lyrics written for you:</strong> Stalak listens to your voice and syncs them by itself. <span class=\"soon\">soon</span>",
   "pr.month.n": "Pro monthly",
   "pr.month.amt": "€9.99",
   "pr.month.bill": "Billed every month",
   "pr.nocommit": "No commitment",
   "pr.month.cta": "Go monthly",
-  "pr.same": "Same perks as yearly, paid month by month.",
+  "pr.same": "All of Stalak Pro, paid monthly. Cancel anytime.",
   "pr.free.n": "Free",
   "pr.free.amt": "€0",
   "pr.free.bill": "No card needed",
   "pr.now": "Your current plan",
   "pr.stay": "Stay on Free",
-  "pr.f.auto0": "Automatic cuts on the beats, the words or every bar",
-  "pr.f.lyr0": "On-screen lyrics in size M, whole sentence",
+  "pr.f.auto0": "<strong>Automatic editing</strong> on the beats, the words or every bar",
+  "pr.f.lyr0": "On-screen lyrics (size M, whole sentence)",
   "pr.f.916": "9:16 videos for TikTok, Reels and Shorts",
   "pr.f.logo0": "3 s with the Stalak logo at the end",
   "pr.t.cancel": "Cancel anytime",
@@ -797,11 +797,11 @@ const I18N_EN = /*@EN*/{
   "pr.r.anim": "Text style",
   "pr.v.line": "Whole sentence",
   "pr.v.all": "+ word by word, karaoke",
-  "pr.r.nologo": "No Stalak logo at the end",
-  "pr.r.clip": "Music video mode: the whole song in 16:9, with effects",
-  "pr.r.pack": "Packs of 5, 10 or 30 different videos",
+  "pr.r.nologo": "Videos without the Stalak logo",
+  "pr.r.clip": "16:9 YouTube video edited automatically, with effects",
+  "pr.r.pack": "Packs of 5, 10 or 30 different videos in one click",
   "pr.r.cloud": "Projects saved online",
-  "pr.r.autoly": "Lyrics synced automatically",
+  "pr.r.autoly": "Lyrics written and synced automatically",
   "pr.r.price": "Price",
   "pr.v.from": "from €6.58/mo",
   "pr.faq.t": "Questions",
@@ -814,7 +814,17 @@ const I18N_EN = /*@EN*/{
   "pr.q.pay": "How do I pay?",
   "pr.a.pay": "By card, Apple Pay, Google Pay or PayPal. Payments are handled by Paddle.com, our authorized reseller, which also sends the invoices. Prices shown include VAT in Europe.",
   "pr.q.videos": "Are my videos sent to your servers?",
-  "pr.a.videos": "No: editing and export happen on your device."
+  "pr.a.videos": "No: editing and export happen on your device.",
+  "pr.w.t": "What Pro does for you",
+  "pr.w1t": "Your music video, ready for YouTube",
+  "pr.w1p": "No more hours in editing software. Import your song and your takes, and Stalak edits the whole track in 16:9: cuts on the beat, lips perfectly in sync, effects. All that’s left is to post.",
+  "pr.w2t": "Post every day, effortlessly",
+  "pr.w2p": "A pack is 5, 10 or 30 all-different videos from the same song, made in one go. Enough to feed your TikTok and Reels for a month, from a single session.",
+  "pr.w3t": "Your video, your signature",
+  "pr.w3p": "Without the Stalak logo, your videos end on you. It looks pro, and your name is the one people remember.",
+  "pr.w4t": "Lyrics people sing along to",
+  "pr.w4p": "Karaoke lights up with your voice, word after word, big or subtle. Viewers read along, sing with you and remember your hook.",
+  "hd.price": "Pricing"
 }/*EN@*/;
 const I18N_FR = /*@FR*/{
   "kind.hint.reel": "Une vidéo verticale 9:16, de tout le son ou de quelques mesures.",
@@ -7261,7 +7271,7 @@ function acctSync(){
   if (!ACCT) return;
   const st = ACCT.state, u = st.user, pro = acctPro(), b = $('#acctBtn');
   S.pro = pro;
-  b.hidden = false; b.classList.toggle('pro', pro); $('#acctProTag').hidden = !pro;
+  b.hidden = false; b.classList.toggle('pro', pro); $('#acctProTag').hidden = !pro; $('#priceBtn').hidden = pro;
   if (u && u.displayName){ setT('#acctLbl', null); $('#acctLbl').textContent = u.displayName; } else setT('#acctLbl', u ? 'acct.btn.in' : 'acct.btn');
   acctAvatar($('#acctAv'), u);
   const lbl = u ? _t('ap.btnAria', { name: acctName(u) }) + (pro ? ' · Stalak Pro' : '') : _t('acct.btn');
@@ -7282,7 +7292,8 @@ function apHashView(){ let h = ''; try { h = decodeURIComponent(location.hash.sl
 /* signed out, the account and the Pro offer go through the sign-in first; signed in, the sign-in page is skipped */
 function apResolve(v){
   const u = ACCT.state.user;
-  if (!u && (v === 'account' || v === 'pro')){ apAfter = v; return 'login'; }
+  // the Pro offer can be seen signed out (the buy buttons ask to sign in); the account page needs it
+  if (!u && v === 'account'){ apAfter = v; return 'login'; }
   if (u && v === 'login') return apAfter || 'account';
   return v;
 }
@@ -7647,6 +7658,7 @@ if (ACCT){
     if (!u) throw Object.assign(new Error('no portal url'), { code: 'other' });
     if (w){ try { w.opener = null; } catch(e){} w.location.href = u; } else location.href = u;
   }).then(() => { if (!u && w) w.close(); }); };
+  $('#priceBtn').onclick = () => { if (!S.exporting && !askDone) apGo('pro'); };
   $('#apSubGo').onclick = () => { if (acctPro()) portal(); else apGo('pro'); };
   $('#apManage').onclick = portal;
   $('#apOut').onclick = () => apRun(async () => { await ACCT.logout(); diag('compte : déconnecté'); apMode = 'in'; apGo('login', { replace: true, mode: 'in' }); apSay('acct.outDone'); });
@@ -7657,7 +7669,7 @@ if (ACCT){
   };
 
   // Stalak Pro: the two prices (Paddle's window)
-  const buy = plan => apRun(async () => { apSay('acct.paying'); diag('compte : paiement ' + plan); await ACCT.checkout(plan); apSay(null); });
+  const buy = plan => !ACCT.state.user ? (apAfter = 'pro', apGo('login', { mode: store.get('stalak:hadAcct') ? 'in' : 'up' })) : apRun(async () => { apSay('acct.paying'); diag('compte : paiement ' + plan); await ACCT.checkout(plan); apSay(null); });
   $('#apMonth').onclick = () => { flurry($('#apMonth')); buy('month'); };
   $('#apYear').onclick = () => { flurry($('#apYear')); buy('year'); };
   // the free card's way out: back to the app, nothing else asked
