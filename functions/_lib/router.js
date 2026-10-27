@@ -1,11 +1,11 @@
 // All /api/* routes. Entry point: functions/api/[[path]].js
 import { HttpError, json, errorResponse, checkCsrf, readJson, readText, clearSessionCookie } from './http.js';
-import { sendCode, verifyCode, currentUser, requireUser, logout, loginPassword, setPassword, recentCodeSession } from './auth.js';
+import { currentUser, requireUser, logout, loginPassword, setPassword, recentCodeSession, signup, signupVerify, loginVerify, forgot, reset, failKey } from './auth.js';
+import { oauthStart, oauthCallback, enabledProviders, PROVIDERS } from './oauth.js';
 import { updateProfile, avatar, avatarUrl, AVATAR_TYPES } from './profile.js';
 import { entitlementsFor, requirePro } from './entitlements.js';
 import { handleWebhook, portalLinks, cancelSubscriptionNow } from './paddle.js';
 import { social } from './social.js';
-import { sha256Hex } from './crypto.js';
 
 const PROJECT_MAX_BYTES = 256 * 1024; // ~200 KB of project JSON + envelope
 const PROJECT_MAX_COUNT = 200;
@@ -19,6 +19,8 @@ function publicUser(u) {
     avatarUrl: avatarUrl(u),
     hasPassword: !!u.password_hash,
     passwordSetAt: u.password_set_at ? new Date(u.password_set_at).toISOString() : null,
+    emailVerified: !!u.email_verified_at,
+    providers: u.providers || [],
   } : null;
 }
 
@@ -29,6 +31,10 @@ function publicSession(u) {
 
 async function meResponse(env, user, headers) {
   const { entitlements, subscription } = await entitlementsFor(env, user);
+  if (user) {
+    const { results } = await env.DB.prepare('SELECT provider FROM identities WHERE user_id = ?1 ORDER BY created_at').bind(user.id).all();
+    user.providers = results.map((r) => r.provider);
+  }
   return json({ user: publicUser(user), session: publicSession(user), entitlements, subscription }, 200, headers);
 }
 
@@ -43,6 +49,8 @@ function config(env) {
       pro: { month: { amount: '9.99', currency: 'EUR' }, year: { amount: '79.00', currency: 'EUR' } },
     },
     features: { socialConnect: env.SOCIAL_CONNECT_ENABLED === '1' },
+    // sign-in with Google / Apple / Microsoft: only the providers whose keys are set (the buttons show only those)
+    auth: { providers: enabledProviders(env), passwordMin: 8 },
   };
 }
 
@@ -90,6 +98,11 @@ async function projects(request, env, method, id) {
   throw new HttpError(405, 'method_not_allowed', 'Method not allowed.');
 }
 
+// Signed in: the session cookie (and the trusted-device cookie), then the same answer as GET /api/me.
+function signedIn(env, { user, cookies }) {
+  return meResponse(env, user, { 'Set-Cookie': cookies });
+}
+
 async function deleteAccount(request, env) {
   const user = await requireUser(request, env);
   const body = await readJson(request);
@@ -104,7 +117,10 @@ async function deleteAccount(request, env) {
     env.DB.prepare('DELETE FROM sessions WHERE user_id = ?1').bind(user.id),
     env.DB.prepare('DELETE FROM subscriptions WHERE user_id = ?1').bind(user.id),
     env.DB.prepare('DELETE FROM login_codes WHERE email = ?1').bind(user.email),
-    env.DB.prepare('DELETE FROM rate_limits WHERE key = ?1').bind('pwfail:' + (await sha256Hex('email:' + user.email)).slice(0, 32)),
+    env.DB.prepare('DELETE FROM auth_codes WHERE email = ?1').bind(user.email),
+    env.DB.prepare('DELETE FROM trusted_devices WHERE user_id = ?1').bind(user.id),
+    env.DB.prepare('DELETE FROM identities WHERE user_id = ?1').bind(user.id),
+    env.DB.prepare('DELETE FROM rate_limits WHERE key = ?1').bind(await failKey(user.email)),
     // the users row holds the display name, the photo and the password hash: all gone with it
     env.DB.prepare('DELETE FROM users WHERE id = ?1').bind(user.id),
   ]);
@@ -132,6 +148,14 @@ async function dispatch(request, env) {
       if (method !== 'POST') throw new HttpError(405, 'method_not_allowed', 'Method not allowed.');
       return json(await handleWebhook(request, env));
     }
+    // Google / Apple / Microsoft: browser navigations (Apple comes back with a cross-site form POST, checked by state + cookie)
+    if (parts[0] === 'auth' && parts[1] === 'oauth' && parts.length === 4 && PROVIDERS[parts[2]]) {
+      if (parts[3] === 'start') {
+        if (method !== 'GET') throw new HttpError(405, 'method_not_allowed', 'Method not allowed.');
+        return oauthStart(request, env, parts[2]);
+      }
+      if (parts[3] === 'callback') return oauthCallback(request, env, parts[2], method);
+    }
     if (STATE_CHANGING.has(method)) checkCsrf(request, env, route === 'me/avatar' && method === 'PUT' ? AVATAR_TYPES : []);
 
     switch (route) {
@@ -143,22 +167,38 @@ async function dispatch(request, env) {
         return meResponse(env, await updateProfile(env, await requireUser(request, env), await readJson(request)));
       case 'me/avatar':
         return avatar(request, env, method);
+      case 'auth/signup':
+        if (method !== 'POST') break;
+        return json(await signup(request, env, await readJson(request)));
+      case 'auth/signup/verify':
+        if (method !== 'POST') break;
+        return signedIn(env, await signupVerify(request, env, await readJson(request)));
       case 'auth/login': {
         if (method !== 'POST') break;
-        const { user, cookie } = await loginPassword(request, env, await readJson(request));
-        return meResponse(env, user, { 'Set-Cookie': cookie });
+        const r = await loginPassword(request, env, await readJson(request));
+        if (r.needCode) return json(r.needCode);
+        return signedIn(env, r);
+      }
+      case 'auth/login/verify':
+        if (method !== 'POST') break;
+        return signedIn(env, await loginVerify(request, env, await readJson(request)));
+      case 'auth/forgot':
+        if (method !== 'POST') break;
+        return json(await forgot(request, env, await readJson(request)));
+      case 'auth/reset': {
+        if (method !== 'POST') break;
+        const r = await reset(request, env, await readJson(request));
+        if (r.codeOk) return json({ ok: true, codeOk: true });
+        return signedIn(env, r);
       }
       case 'auth/password':
         if (method !== 'POST') break;
         return meResponse(env, await setPassword(request, env, await readJson(request)));
       case 'auth/send-code':
+      case 'auth/verify':
+        // v2 "code only" sign-in: replaced by sign up / sign in with a password (+ code on a new device) in v3
         if (method !== 'POST') break;
-        return json(await sendCode(request, env, await readJson(request)));
-      case 'auth/verify': {
-        if (method !== 'POST') break;
-        const { user, cookie } = await verifyCode(request, env, await readJson(request));
-        return meResponse(env, user, { 'Set-Cookie': cookie });
-      }
+        throw new HttpError(410, 'gone', 'Sign in with your email and password, or use "Forgot password".');
       case 'auth/logout':
         if (method !== 'POST') break;
         return json({ ok: true }, 200, { 'Set-Cookie': await logout(request, env) });

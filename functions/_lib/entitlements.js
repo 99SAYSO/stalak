@@ -1,7 +1,8 @@
 // What each plan unlocks. The server is the source of truth; the client only reads this.
 
-export const FREE = Object.freeze({ plan: 'free', outro: true, cloudSave: false, clipMode: false, autoLyrics: false });
-export const PRO = Object.freeze({ plan: 'pro', outro: false, cloudSave: true, clipMode: true, autoLyrics: true });
+// packs = several different videos made in one go (5, 10 or 30)
+export const FREE = Object.freeze({ plan: 'free', outro: true, cloudSave: false, clipMode: false, autoLyrics: false, packs: false });
+export const PRO = Object.freeze({ plan: 'pro', outro: false, cloudSave: true, clipMode: true, autoLyrics: true, packs: true });
 
 // Statuses that keep Pro. past_due = Paddle is retrying a failed payment (dunning): access is kept meanwhile.
 const PRO_STATUSES = new Set(['active', 'trialing', 'past_due']);

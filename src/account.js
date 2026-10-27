@@ -1,11 +1,17 @@
 /* Stalak account client (plain JS, no framework).
    window.StalakAccount:
      me()                 -> Promise<{user, session, entitlements, subscription}>
-                             user: {id, email, lang, displayName, avatarUrl, hasPassword, passwordSetAt}
-                             session: {method: 'code'|'password', recentCode} (recentCode: may set a password without the old one)
-     sendCode(email[, lang])
-     verify(email, code)  -> Promise<state>   (sets the session cookie)
-     loginPassword(email, password) -> Promise<state> (sets the session cookie; error code invalid_login / too_many_attempts)
+                             user: {id, email, lang, displayName, avatarUrl, hasPassword, passwordSetAt, emailVerified, providers}
+                             session: {method, recentCode} (recentCode: may set a password without the old one)
+     providers()          -> Promise<['google'|'microsoft'|'apple', …]>  (only those configured on the server)
+     signup(email, password[, displayName]) -> Promise<{needCode, expiresIn}> (a code is mailed; error email_taken…)
+     signupVerify(email, code)  -> Promise<state>   (account made, signed in)
+     login(email, password)     -> Promise<state | {needCode: true}> (needCode: new browser, a code is mailed)
+     loginVerify(email, code)   -> Promise<state>
+     forgot(email)              -> Promise<{needCode}>   (same answer whether the account exists or not)
+     resetCheck(email, code)    -> Promise<{codeOk}>     (checks the code, keeps it)
+     reset(email, code, password) -> Promise<state>      (new password, signed in)
+     oauthUrl(provider, to, popup) -> the address that starts Google / Apple / Microsoft sign-in (to: 'account' | 'pro')
      setPassword(password[, currentPassword]) -> Promise<state>
      updateProfile({displayName}) -> Promise<state>
      uploadAvatar(blob)   -> Promise<state>   (blob: image/jpeg | image/webp | image/png, at most 80 KB)
@@ -21,7 +27,7 @@
    Errors are thrown as Error objects with .code (server "error" field) and .status. */
 (function () {
   'use strict';
-  var FREE = { plan: 'free', outro: true, cloudSave: false, clipMode: false, autoLyrics: false };
+  var FREE = { plan: 'free', outro: true, cloudSave: false, clipMode: false, autoLyrics: false, packs: false };
   var state = { user: null, session: null, entitlements: FREE, subscription: null };
   var listeners = [];
   var configPromise = null;
@@ -128,9 +134,22 @@
     get checkoutOpen() { return checkoutOpen; },
     me: me,
     config: config,
-    sendCode: function (email, l) { return api('POST', 'auth/send-code', { email: email, lang: l || lang() }); },
-    verify: function (email, code) { return api('POST', 'auth/verify', { email: email, code: code, lang: lang() }).then(setState); },
-    loginPassword: function (email, password) { return api('POST', 'auth/login', { email: email, password: password, lang: lang() }).then(setState); },
+    providers: function () { return config().then(function (c) { return (c.auth && c.auth.providers) || []; }); },
+    signup: function (email, password, displayName) {
+      return api('POST', 'auth/signup', { email: email, password: password, displayName: displayName || null, lang: lang() });
+    },
+    signupVerify: function (email, code) { return api('POST', 'auth/signup/verify', { email: email, code: code, lang: lang() }).then(setState); },
+    login: function (email, password) {
+      return api('POST', 'auth/login', { email: email, password: password, lang: lang() }).then(function (d) { return d.needCode ? d : setState(d); });
+    },
+    loginVerify: function (email, code) { return api('POST', 'auth/login/verify', { email: email, code: code }).then(setState); },
+    forgot: function (email) { return api('POST', 'auth/forgot', { email: email, lang: lang() }); },
+    resetCheck: function (email, code) { return api('POST', 'auth/reset', { email: email, code: code }); },
+    reset: function (email, code, password) { return api('POST', 'auth/reset', { email: email, code: code, password: password }).then(setState); },
+    oauthUrl: function (provider, to, popup) {
+      return '/api/auth/oauth/' + encodeURIComponent(provider) + '/start?return=' + encodeURIComponent(location.pathname) +
+        '&to=' + (to === 'pro' ? 'pro' : 'account') + '&lang=' + lang() + (popup ? '&popup=1' : '');
+    },
     setPassword: function (password, currentPassword) {
       var b = { password: password };
       if (currentPassword) b.currentPassword = currentPassword;

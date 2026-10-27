@@ -47,7 +47,7 @@ PAGE = {
       <li>Coupes automatiques sur les temps, sur les mots ou par mesure.</li>
       <li>Paroles à l’écran calées sur la voix, style karaoké.</li>
       <li>Mode Clip avec effets : flash, zoom, secousse, ralenti… (Stalak Pro)</li>
-      <li>Packs de 5 à 30 vidéos différentes pour poster tous les jours.</li>
+      <li>Packs de 5 à 30 vidéos différentes pour poster tous les jours (Stalak Pro).</li>
       <li>Tout se passe dans ton navigateur, sur iPhone, Android ou ordinateur : tes vidéos restent chez toi.</li>
     </ul>
   """,
@@ -67,7 +67,7 @@ PAGE = {
       <li>Automatic cuts on the beats, on the words or every bar.</li>
       <li>On-screen lyrics synced to the voice, karaoke style.</li>
       <li>Music video mode with effects: flash, zoom, shake, slow-mo… (Stalak Pro)</li>
-      <li>Packs of 5 to 30 different videos to post every day.</li>
+      <li>Packs of 5 to 30 different videos to post every day (Stalak Pro).</li>
       <li>Everything happens in your browser, on iPhone, Android or computer: your videos stay with you.</li>
     </ul>
   """,

@@ -28,6 +28,9 @@ export async function cleanup(env, now = Date.now()) {
   await env.DB.batch([
     env.DB.prepare('DELETE FROM rate_limits WHERE window_start < ?1').bind(now - 24 * 3600e3),
     env.DB.prepare('DELETE FROM login_codes WHERE expires_at < ?1').bind(now),
+    env.DB.prepare('DELETE FROM auth_codes WHERE expires_at < ?1').bind(now),
+    env.DB.prepare('DELETE FROM oauth_states WHERE expires_at < ?1').bind(now),
+    env.DB.prepare('DELETE FROM trusted_devices WHERE expires_at < ?1').bind(now),
     env.DB.prepare('DELETE FROM sessions WHERE expires_at < ?1').bind(now),
   ]);
 }

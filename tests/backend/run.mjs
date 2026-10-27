@@ -1,34 +1,86 @@
 // Backend tests: node tests/backend/run.mjs   (Node >= 22.5, no dependencies)
-// Runs the real Pages Function (functions/api/[[path]].js) against an in-memory SQLite "D1" and a fake fetch.
+// Runs the real Pages Function (functions/api/[[path]].js) against an in-memory SQLite "D1" and a fake fetch
+// (Resend, Paddle, and fake Google / Apple / Microsoft token endpoints and key sets).
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import assert from 'node:assert/strict';
 import { createD1 } from './fake-d1.mjs';
 import { onRequest } from '../../functions/api/[[path]].js';
-import { hmacSha256Hex } from '../../functions/_lib/crypto.js';
+import { hmacSha256Hex, sha256Hex, base64url } from '../../functions/_lib/crypto.js';
 import { verifySignature } from '../../functions/_lib/paddle.js';
+import { verifyJwtSignature, decodeJwt } from '../../functions/_lib/jwt.js';
+import { resetJwksCache } from '../../functions/_lib/oauth.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const ORIGIN = 'https://stalak.app';
 const WEBHOOK_SECRET = 'pdl_ntfset_test_secret';
+const PW = 'glace-et-neige-42';
+
+// ---- fake identity providers (keys made here; tokens signed here) ---------------------------
+const enc = new TextEncoder();
+const b64j = (o) => base64url(enc.encode(JSON.stringify(o)));
+async function rsaKey(kid) {
+  const k = await crypto.subtle.generateKey({ name: 'RSASSA-PKCS1-v1_5', modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: 'SHA-256' }, true, ['sign', 'verify']);
+  const jwk = await crypto.subtle.exportKey('jwk', k.publicKey);
+  return { kid, alg: 'RS256', priv: k.privateKey, jwk: { kty: 'RSA', n: jwk.n, e: jwk.e, kid, alg: 'RS256', use: 'sig' } };
+}
+async function ecKey(kid) {
+  const k = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
+  const jwk = await crypto.subtle.exportKey('jwk', k.publicKey);
+  return { kid, alg: 'ES256', priv: k.privateKey, pub: k.publicKey, jwk: { kty: 'EC', crv: 'P-256', x: jwk.x, y: jwk.y, kid, alg: 'ES256', use: 'sig' },
+    pkcs8: await crypto.subtle.exportKey('pkcs8', k.privateKey) };
+}
+async function signJwt(key, payload, header = {}) {
+  const h = { alg: key.alg, kid: key.kid, typ: 'JWT', ...header };
+  const input = b64j(h) + '.' + b64j(payload);
+  const algo = key.alg === 'RS256' ? { name: 'RSASSA-PKCS1-v1_5' } : { name: 'ECDSA', hash: 'SHA-256' };
+  return input + '.' + base64url(new Uint8Array(await crypto.subtle.sign(algo, key.priv, enc.encode(input))));
+}
+const KEYS = {
+  google: await rsaKey('g1'), microsoft: await rsaKey('m1'), apple: await ecKey('a1'), appleRsa: await rsaKey('a2'),
+  rogue: await rsaKey('g1'),        // same kid as Google's, other key: forged tokens
+  appleP8: await ecKey('ABC123DEFG'), // the .p8 key used to sign Apple's client secret
+};
+const pem = (der) => '-----BEGIN PRIVATE KEY-----\n' + Buffer.from(der).toString('base64').match(/.{1,64}/g).join('\n') + '\n-----END PRIVATE KEY-----\n';
+const JWKS = {
+  'https://www.googleapis.com/oauth2/v3/certs': { keys: [KEYS.google.jwk] },
+  'https://login.microsoftonline.com/common/discovery/v2.0/keys': { keys: [KEYS.microsoft.jwk] },
+  'https://appleid.apple.com/auth/keys': { keys: [KEYS.apple.jwk, KEYS.appleRsa.jwk] },
+};
+const TOKEN_URLS = { 'https://oauth2.googleapis.com/token': 'google', 'https://login.microsoftonline.com/common/oauth2/v2.0/token': 'microsoft', 'https://appleid.apple.com/auth/token': 'apple' };
+let nextIdToken = null;           // what the fake token endpoint answers
+const tokenRequests = [];
 
 // ---- fake outside world -------------------------------------------------------------
 const outbound = [];
 globalThis.fetch = async (url, init = {}) => {
+  url = String(url);
+  if (JWKS[url]) return Response.json(JWKS[url]);
+  if (TOKEN_URLS[url]) {
+    tokenRequests.push({ provider: TOKEN_URLS[url], form: new URLSearchParams(init.body) });
+    if (!nextIdToken) return Response.json({ error: 'invalid_grant' }, { status: 400 });
+    return Response.json({ access_token: 'at', token_type: 'Bearer', expires_in: 3600, id_token: nextIdToken });
+  }
   const body = init.body ? JSON.parse(init.body) : null;
-  outbound.push({ url: String(url), method: init.method, body, headers: init.headers });
-  if (String(url) === 'https://api.resend.com/emails') return Response.json({ id: 'email_1' });
-  let m = String(url).match(/paddle\.com\/customers\/(ctm_\w+)\/portal-sessions$/);
+  outbound.push({ url, method: init.method, body, headers: init.headers });
+  if (url === 'https://api.resend.com/emails') return Response.json({ id: 'email_1' });
+  let m = url.match(/paddle\.com\/customers\/(ctm_\w+)\/portal-sessions$/);
   if (m) return Response.json({ data: { id: 'cpls_1', customer_id: m[1], urls: { general: { overview: 'https://portal.example/overview' },
     subscriptions: (body.subscription_ids || []).map((id) => ({ id, cancel_subscription: 'https://portal.example/cancel/' + id,
       update_subscription_payment_method: 'https://portal.example/pay/' + id, view_subscription: 'https://portal.example/view/' + id })) } } }, { status: 201 });
-  m = String(url).match(/paddle\.com\/subscriptions\/(sub_\w+)\/cancel$/);
+  m = url.match(/paddle\.com\/subscriptions\/(sub_\w+)\/cancel$/);
   if (m) return Response.json({ data: { id: m[1], status: 'canceled' } });
   return new Response('not mocked: ' + url, { status: 599 });
 };
 const origLog = console.log, origWarn = console.warn;
 console.log = (...a) => { if (!String(a[0]).startsWith('[stalak dev]')) origLog(...a); };
 console.warn = () => {};
+
+const OAUTH_ENV = {
+  GOOGLE_CLIENT_ID: 'g-client.apps.googleusercontent.com', GOOGLE_CLIENT_SECRET: 'g-secret',
+  MICROSOFT_CLIENT_ID: '11111111-2222-3333-4444-555555555555', MICROSOFT_CLIENT_SECRET: 'm-secret',
+  APPLE_CLIENT_ID: 'app.stalak.web', APPLE_TEAM_ID: 'TEAM123456', APPLE_KEY_ID: 'ABC123DEFG', APPLE_PRIVATE_KEY: pem(KEYS.appleP8.pkcs8),
+};
 
 function makeEnv(extra = {}) {
   return {
@@ -50,21 +102,45 @@ async function call(env, method, path, { body, cookie, origin = ORIGIN, ct = 'ap
   const res = await onRequest({ request: req, env, params: {}, waitUntil() {} });
   const text = await res.text();
   let data; try { data = JSON.parse(text); } catch { data = text; }
-  return { status: res.status, data, headers: res.headers };
+  const setCookies = res.headers.getSetCookie();
+  const jar = (name) => { const c = setCookies.find((x) => x.startsWith(name + '=')); return c ? c.split(';')[0] : null; };
+  return { status: res.status, data, headers: res.headers, setCookies, jar };
 }
+const cookies = (...c) => c.filter(Boolean).join('; ');
 
+function lastMail(email) {
+  return [...outbound].reverse().find((o) => o.url.includes('resend') && o.body.to[0] === email);
+}
 function lastCode(email) {
-  const e = [...outbound].reverse().find((o) => o.url.includes('resend') && o.body.to[0] === email);
-  return e.body.text.match(/\b(\d{6})\b/)[1];
+  return lastMail(email).body.text.match(/\b(\d{6})\b/)[1];
 }
+const mailCount = (email) => outbound.filter((o) => o.url.includes('resend') && o.body.to[0] === email).length;
+const ageCodes = (env) => env.DB.raw.exec(`UPDATE auth_codes SET created_at = created_at - ${31e3}`);
 
-async function login(env, email, lang = 'fr') {
-  let r = await call(env, 'POST', '/api/auth/send-code', { body: { email, lang } });
+// Signs up (email + password + code): returns the session cookie, the trusted-device cookie, the user.
+async function login(env, email, lang = 'fr', password = PW) {
+  let r = await call(env, 'POST', '/api/auth/signup', { body: { email, password, lang } });
   assert.equal(r.status, 200, JSON.stringify(r.data));
-  r = await call(env, 'POST', '/api/auth/verify', { body: { email, code: lastCode(email) } });
+  r = await call(env, 'POST', '/api/auth/signup/verify', { body: { email, code: lastCode(email) } });
   assert.equal(r.status, 200, JSON.stringify(r.data));
-  const cookie = r.headers.get('Set-Cookie').split(';')[0];
-  return { cookie, user: r.data.user, data: r.data, setCookie: r.headers.get('Set-Cookie') };
+  return { cookie: r.jar('stalak_s'), device: r.jar('stalak_d'), user: r.data.user, data: r.data, setCookies: r.setCookies };
+}
+// Password sign-in, typing the code if the browser (device cookie) is new. Returns the cookies.
+async function signIn(env, email, password = PW, device = null) {
+  let r = await call(env, 'POST', '/api/auth/login', { body: { email, password }, cookie: device || undefined });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  if (r.data.needCode) {
+    r = await call(env, 'POST', '/api/auth/login/verify', { body: { email, code: lastCode(email.trim().toLowerCase()) }, cookie: device || undefined });
+    assert.equal(r.status, 200, JSON.stringify(r.data));
+  }
+  return { cookie: r.jar('stalak_s'), device: r.jar('stalak_d') || device, data: r.data };
+}
+// An account from before v3: made with an e-mail code only, no password; signed in with a 'code' session.
+async function legacyUser(env, email) {
+  const id = 'u_legacy' + Math.random().toString(16).slice(2, 10), now = Date.now(), token = base64url(crypto.getRandomValues(new Uint8Array(32)));
+  env.DB.raw.prepare('INSERT INTO users (id, email, lang, created_at, last_login_at, email_verified_at) VALUES (?, ?, ?, ?, ?, ?)').run(id, email, 'fr', now, now, now);
+  env.DB.raw.prepare('INSERT INTO sessions (token_hash, user_id, created_at, expires_at, method) VALUES (?, ?, ?, ?, ?)').run(await sha256Hex(token), id, now, now + 864e5, 'code');
+  return { id, cookie: 'stalak_s=' + token };
 }
 
 async function webhook(env, event, { secret = WEBHOOK_SECRET, ts = Math.floor(Date.now() / 1000), tamper = false } = {}) {
@@ -89,59 +165,75 @@ function sub(userId, over = {}) {
 // ---- tests ------------------------------------------------------------------------------
 const tests = [];
 const test = (name, fn) => tests.push({ name, fn });
+const FREE_ENT = { plan: 'free', outro: true, cloudSave: false, clipMode: false, autoLyrics: false, packs: false };
+const PRO_ENT = { plan: 'pro', outro: false, cloudSave: true, clipMode: true, autoLyrics: true, packs: true };
 
-test('config exposes only public Paddle settings', async () => {
-  const env = makeEnv();
-  const r = await call(env, 'GET', '/api/config');
+test('config exposes only public settings; sign-in providers only when configured', async () => {
+  let r = await call(makeEnv(), 'GET', '/api/config');
   assert.equal(r.status, 200);
   assert.deepEqual(r.data.paddle, { environment: 'sandbox', clientToken: 'test_clienttoken', prices: { month: 'pri_month', year: 'pri_year' } });
+  assert.deepEqual(r.data.auth.providers, []);
   assert.ok(!JSON.stringify(r.data).includes('pdl_sdbx_apikey_test'));
   assert.ok(!JSON.stringify(r.data).includes(WEBHOOK_SECRET));
+  r = await call(makeEnv({ GOOGLE_CLIENT_ID: 'x', GOOGLE_CLIENT_SECRET: 'y', APPLE_CLIENT_ID: 'z' }), 'GET', '/api/config');
+  assert.deepEqual(r.data.auth.providers, ['google'], 'Apple needs all four settings');
+  r = await call(makeEnv(OAUTH_ENV), 'GET', '/api/config');
+  assert.deepEqual(r.data.auth.providers, ['google', 'microsoft', 'apple']);
+  for (const v of Object.values(OAUTH_ENV)) if (!/client/i.test(v) && v.length > 5 && !v.includes('.')) assert.ok(!JSON.stringify(r.data).includes(v), 'secret leaked');
 });
 
-test('anonymous /api/me returns free entitlements', async () => {
+test('anonymous /api/me returns free entitlements (no packs)', async () => {
   const r = await call(makeEnv(), 'GET', '/api/me');
   assert.equal(r.status, 200);
   assert.equal(r.data.user, null);
-  assert.deepEqual(r.data.entitlements, { plan: 'free', outro: true, cloudSave: false, clipMode: false, autoLyrics: false });
+  assert.deepEqual(r.data.entitlements, FREE_ENT);
 });
 
-test('code login flow: email sent (FR/EN), code hashed, session cookie set', async () => {
+test('sign up: code by email (FR/EN), hashed; account made only after the code; session + trusted device', async () => {
   const env = makeEnv();
-  let r = await call(env, 'POST', '/api/auth/send-code', { body: { email: '  Alice@Example.com ', lang: 'en' } });
-  assert.equal(r.status, 200);
+  let r = await call(env, 'POST', '/api/auth/signup', { body: { email: '  Alice@Example.com ', password: PW, displayName: ' Alice ', lang: 'en' } });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.equal(r.data.needCode, true);
   assert.equal(r.data.devCode, undefined, 'code never returned outside dev');
-  const mail = outbound.at(-1);
+  assert.equal(r.setCookies.length, 0, 'not signed in yet');
+  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM users').get().n, 0, 'no account before the code');
+  const mail = lastMail('alice@example.com');
   assert.equal(mail.body.from, 'Stalak <login@stalak.app>');
-  assert.deepEqual(mail.body.to, ['alice@example.com']);
   assert.match(mail.body.subject, /is your Stalak code/);
+  assert.match(mail.body.text, /confirm your email/);
   const code = lastCode('alice@example.com');
-  const stored = await env.DB.prepare('SELECT code_hash FROM login_codes').first();
+  const stored = env.DB.raw.prepare('SELECT code_hash, data FROM auth_codes').get();
   assert.ok(!stored.code_hash.includes(code) && stored.code_hash.length === 64, 'code stored hashed');
+  assert.ok(!stored.data.includes(PW), 'password kept hashed while waiting');
 
-  r = await call(env, 'POST', '/api/auth/verify', { body: { email: 'alice@example.com', code } });
-  assert.equal(r.status, 200);
-  const sc = r.headers.get('Set-Cookie');
+  r = await call(env, 'POST', '/api/auth/signup/verify', { body: { email: 'alice@example.com', code } });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  const sc = r.setCookies.find((c) => c.startsWith('stalak_s='));
   assert.match(sc, /^stalak_s=[A-Za-z0-9_-]{43};/);
   for (const flag of ['HttpOnly', 'Secure', 'SameSite=Lax', 'Path=/', `Max-Age=${60 * 86400}`]) assert.ok(sc.includes(flag), flag);
-  const token = sc.split(';')[0].split('=')[1];
-  const sess = await env.DB.prepare('SELECT token_hash, expires_at FROM sessions').first();
-  assert.notEqual(sess.token_hash, token, 'session token stored hashed');
-  assert.ok(Math.abs(sess.expires_at - (Date.now() + 60 * 864e5)) < 60e3);
-
-  r = await call(env, 'GET', '/api/me', { cookie: 'stalak_s=' + token });
+  const dc = r.setCookies.find((c) => c.startsWith('stalak_d='));
+  for (const flag of ['HttpOnly', 'Secure', 'SameSite=Lax', 'Path=/api/auth', `Max-Age=${90 * 86400}`]) assert.ok(dc.includes(flag), flag);
+  const dtok = dc.split(';')[0].split('=')[1];
+  assert.equal(env.DB.raw.prepare('SELECT token_hash FROM trusted_devices').get().token_hash, await sha256Hex(dtok), 'device token stored hashed');
   assert.equal(r.data.user.email, 'alice@example.com');
   assert.equal(r.data.user.lang, 'en');
-  assert.equal(r.data.entitlements.plan, 'free');
-
+  assert.equal(r.data.user.displayName, 'Alice');
+  assert.equal(r.data.user.hasPassword, true);
+  assert.equal(r.data.user.emailVerified, true);
+  assert.deepEqual(r.data.user.providers, []);
+  assert.deepEqual(r.data.session, { method: 'signup', recentCode: false });
+  const token = sc.split(';')[0].split('=')[1];
+  const sess = env.DB.raw.prepare('SELECT token_hash, expires_at FROM sessions').get();
+  assert.notEqual(sess.token_hash, token, 'session token stored hashed');
+  assert.ok(Math.abs(sess.expires_at - (Date.now() + 60 * 864e5)) < 60e3);
+  r = await call(env, 'GET', '/api/me', { cookie: 'stalak_s=' + token });
+  assert.equal(r.data.user.email, 'alice@example.com');
   // code is single use
-  r = await call(env, 'POST', '/api/auth/verify', { body: { email: 'alice@example.com', code } });
+  r = await call(env, 'POST', '/api/auth/signup/verify', { body: { email: 'alice@example.com', code } });
   assert.equal(r.status, 400); assert.equal(r.data.error, 'code_expired');
-
   // French email
-  await call(env, 'POST', '/api/auth/send-code', { body: { email: 'bob@example.com', lang: 'fr' } });
-  assert.match(outbound.at(-1).body.subject, /est ton code Stalak/);
-
+  await call(env, 'POST', '/api/auth/signup', { body: { email: 'bob@example.com', password: PW, lang: 'fr' } });
+  assert.match(lastMail('bob@example.com').body.subject, /est ton code Stalak/);
   // logout
   r = await call(env, 'POST', '/api/auth/logout', { cookie: 'stalak_s=' + token });
   assert.match(r.headers.get('Set-Cookie'), /Max-Age=0/);
@@ -149,46 +241,84 @@ test('code login flow: email sent (FR/EN), code hashed, session cookie set', asy
   assert.equal(r.data.user, null);
 });
 
-test('wrong code: 5 attempts max, then the code is burned', async () => {
+test('sign up: password and name rules, bad email; nothing sent', async () => {
   const env = makeEnv();
-  await call(env, 'POST', '/api/auth/send-code', { body: { email: 'c@example.com' } });
+  for (const [body, code] of [[{ email: 'x@example.com', password: 'short' }, 'password_too_short'], [{ email: 'x@example.com', password: 'azertyuiop' }, 'password_too_common'],
+    [{ email: 'x@example.com', password: 'x@example.com' }, 'password_too_common'], [{ email: 'x@example.com', password: 'x'.repeat(201) }, 'password_too_long'],
+    [{ email: 'x@example.com', password: PW, displayName: 'A' }, 'invalid_name'], [{ email: 'not-an-email', password: PW }, 'invalid_email']]) {
+    const r = await call(env, 'POST', '/api/auth/signup', { body });
+    assert.equal(r.status, 400, JSON.stringify(body)); assert.equal(r.data.error, code);
+  }
+  assert.equal(mailCount('x@example.com'), 0);
+});
+
+test('sign up: email already used -> 409 email_taken (also if taken while waiting for the code); rate limited per IP', async () => {
+  const env = makeEnv();
+  await login(env, 'taken@example.com');
+  let r = await call(env, 'POST', '/api/auth/signup', { body: { email: 'TAKEN@example.com', password: 'autre-mot-de-passe' } });
+  assert.equal(r.status, 409); assert.equal(r.data.error, 'email_taken');
+  // asked twice: the second account made first wins, the other code is refused
+  await call(env, 'POST', '/api/auth/signup', { body: { email: 'race@example.com', password: PW } });
+  const code = lastCode('race@example.com');
+  await legacyUser(env, 'race@example.com');
+  r = await call(env, 'POST', '/api/auth/signup/verify', { body: { email: 'race@example.com', code } });
+  assert.equal(r.status, 409); assert.equal(r.data.error, 'email_taken');
+  // per IP: 20 sign-up requests / hour
+  for (let i = 0; i < 20; i++) {
+    r = await call(env, 'POST', '/api/auth/signup', { body: { email: 'taken@example.com', password: PW }, ip: '8.8.8.8' });
+    assert.equal(r.status, 409);
+  }
+  r = await call(env, 'POST', '/api/auth/signup', { body: { email: 'taken@example.com', password: PW }, ip: '8.8.8.8' });
+  assert.equal(r.status, 429); assert.equal(r.data.error, 'rate_limited');
+});
+
+test('codes: 5 wrong tries burn the code; expired code refused', async () => {
+  const env = makeEnv();
+  await call(env, 'POST', '/api/auth/signup', { body: { email: 'c@example.com', password: PW } });
   const good = lastCode('c@example.com');
   const bad = good === '000000' ? '111111' : '000000';
   for (let i = 1; i <= 4; i++) {
-    const r = await call(env, 'POST', '/api/auth/verify', { body: { email: 'c@example.com', code: bad } });
+    const r = await call(env, 'POST', '/api/auth/signup/verify', { body: { email: 'c@example.com', code: bad } });
     assert.equal(r.status, 400); assert.equal(r.data.error, 'invalid_code'); assert.equal(r.data.attemptsLeft, 5 - i);
   }
-  let r = await call(env, 'POST', '/api/auth/verify', { body: { email: 'c@example.com', code: bad } });
+  let r = await call(env, 'POST', '/api/auth/signup/verify', { body: { email: 'c@example.com', code: bad } });
   assert.equal(r.status, 429); assert.equal(r.data.error, 'too_many_attempts');
-  r = await call(env, 'POST', '/api/auth/verify', { body: { email: 'c@example.com', code: good } });
+  r = await call(env, 'POST', '/api/auth/signup/verify', { body: { email: 'c@example.com', code: good } });
   assert.equal(r.status, 400, 'even the right code fails after 5 wrong ones');
-});
-
-test('expired code is refused', async () => {
-  const env = makeEnv();
-  await call(env, 'POST', '/api/auth/send-code', { body: { email: 'd@example.com' } });
-  env.DB.raw.exec('UPDATE login_codes SET expires_at = 1');
-  const r = await call(env, 'POST', '/api/auth/verify', { body: { email: 'd@example.com', code: lastCode('d@example.com') } });
+  await call(env, 'POST', '/api/auth/signup', { body: { email: 'd@example.com', password: PW } });
+  env.DB.raw.exec('UPDATE auth_codes SET expires_at = 1');
+  r = await call(env, 'POST', '/api/auth/signup/verify', { body: { email: 'd@example.com', code: lastCode('d@example.com') } });
+  assert.equal(r.data.error, 'code_expired');
+  // a code of one purpose does not work for another
+  await call(env, 'POST', '/api/auth/signup', { body: { email: 'e2@example.com', password: PW } });
+  r = await call(env, 'POST', '/api/auth/login/verify', { body: { email: 'e2@example.com', code: lastCode('e2@example.com') } });
   assert.equal(r.data.error, 'code_expired');
 });
 
-test('rate limiting per email (30 s cooldown, 5/hour) and per IP (20/hour)', async () => {
+test('code emails: asked again within 30 s = same code, no new mail; 5 per hour per email; 20 per hour per IP', async () => {
   const env = makeEnv();
-  let r = await call(env, 'POST', '/api/auth/send-code', { body: { email: 'e@example.com' } });
+  let r = await call(env, 'POST', '/api/auth/signup', { body: { email: 'e@example.com', password: PW } });
+  assert.equal(r.status, 200); assert.equal(r.data.resent, true);
+  r = await call(env, 'POST', '/api/auth/signup', { body: { email: 'e@example.com', password: 'un-autre-mdp-9' } });
+  assert.equal(r.status, 200); assert.equal(r.data.resent, false);
+  assert.equal(mailCount('e@example.com'), 1);
+  // the last password typed is the one kept
+  r = await call(env, 'POST', '/api/auth/signup/verify', { body: { email: 'e@example.com', code: lastCode('e@example.com') } });
   assert.equal(r.status, 200);
-  r = await call(env, 'POST', '/api/auth/send-code', { body: { email: 'e@example.com' } });
-  assert.equal(r.status, 429); assert.equal(r.data.error, 'rate_limited'); assert.ok(r.data.retryAfter > 0);
-  for (let i = 0; i < 4; i++) { env.DB.raw.exec("DELETE FROM rate_limits WHERE key LIKE 'send:email30:%'");
-    r = await call(env, 'POST', '/api/auth/send-code', { body: { email: 'e@example.com' } }); assert.equal(r.status, 200); }
-  env.DB.raw.exec("DELETE FROM rate_limits WHERE key LIKE 'send:email30:%'");
-  r = await call(env, 'POST', '/api/auth/send-code', { body: { email: 'e@example.com' } });
-  assert.equal(r.status, 429, '6th code in an hour refused');
+  await call(env, 'POST', '/api/auth/logout', { cookie: r.jar('stalak_s') });
+  assert.equal((await call(env, 'POST', '/api/auth/login', { body: { email: 'e@example.com', password: 'un-autre-mdp-9' }, cookie: r.jar('stalak_d') })).data.user.email, 'e@example.com');
 
+  for (let i = 0; i < 4; i++) { ageCodes(env); r = await call(env, 'POST', '/api/auth/signup', { body: { email: 'f@example.com', password: PW } }); assert.equal(r.status, 200); assert.equal(r.data.resent, true); }
+  ageCodes(env); r = await call(env, 'POST', '/api/auth/signup', { body: { email: 'f@example.com', password: PW } }); assert.equal(r.status, 200);
+  ageCodes(env); r = await call(env, 'POST', '/api/auth/signup', { body: { email: 'f@example.com', password: PW } });
+  assert.equal(r.status, 429, '6th code in an hour refused'); assert.equal(r.data.error, 'rate_limited'); assert.ok(r.data.retryAfter > 0);
+
+  env.DB.raw.exec('DELETE FROM rate_limits');
   for (let i = 0; i < 20; i++) {
-    r = await call(env, 'POST', '/api/auth/send-code', { body: { email: `ip${i}@example.com` }, ip: '9.9.9.9' });
+    r = await call(env, 'POST', '/api/auth/forgot', { body: { email: `ip${i}@example.com` }, ip: '9.9.9.9' });
     assert.equal(r.status, 200);
   }
-  r = await call(env, 'POST', '/api/auth/send-code', { body: { email: 'ip21@example.com' }, ip: '9.9.9.9' });
+  r = await call(env, 'POST', '/api/auth/forgot', { body: { email: 'ip21@example.com' }, ip: '9.9.9.9' });
   assert.equal(r.status, 429);
   const keys = env.DB.raw.prepare('SELECT key FROM rate_limits').all().map((x) => x.key).join(' ');
   assert.ok(!keys.includes('9.9.9.9') && !keys.includes('example.com'), 'no clear IP/email in rate limit keys');
@@ -196,23 +326,143 @@ test('rate limiting per email (30 s cooldown, 5/hour) and per IP (20/hour)', asy
 
 test('dev mode without RESEND_API_KEY returns/logs the code', async () => {
   const env = makeEnv({ RESEND_API_KEY: '', APP_ORIGIN: 'http://localhost:8788' });
-  const r = await call(env, 'POST', '/api/auth/send-code', { body: { email: 'dev@example.com' }, origin: 'http://localhost:8788' });
+  const r = await call(env, 'POST', '/api/auth/signup', { body: { email: 'dev@example.com', password: PW }, origin: 'http://localhost:8788' });
   assert.equal(r.status, 200); assert.match(r.data.devCode, /^\d{6}$/);
   const prod = makeEnv({ RESEND_API_KEY: '' });
-  const r2 = await call(prod, 'POST', '/api/auth/send-code', { body: { email: 'dev@example.com' } });
+  const r2 = await call(prod, 'POST', '/api/auth/signup', { body: { email: 'dev@example.com', password: PW } });
   assert.equal(r2.status, 500); assert.equal(r2.data.error, 'email_not_configured');
 });
 
 test('CSRF: JSON content type and Origin required on state-changing requests', async () => {
   const env = makeEnv();
-  let r = await call(env, 'POST', '/api/auth/send-code', { body: { email: 'f@example.com' }, ct: 'text/plain' });
+  const b = { email: 'f@example.com', password: PW };
+  let r = await call(env, 'POST', '/api/auth/signup', { body: b, ct: 'text/plain' });
   assert.equal(r.status, 415); assert.equal(r.data.error, 'json_required');
-  r = await call(env, 'POST', '/api/auth/send-code', { body: { email: 'f@example.com' }, origin: 'https://evil.example' });
+  r = await call(env, 'POST', '/api/auth/signup', { body: b, origin: 'https://evil.example' });
   assert.equal(r.status, 403); assert.equal(r.data.error, 'bad_origin');
-  r = await call(env, 'POST', '/api/auth/send-code', { body: { email: 'f@example.com' }, origin: null });
+  r = await call(env, 'POST', '/api/auth/login', { body: b, origin: null });
   assert.equal(r.status, 403);
-  r = await call(env, 'POST', '/api/auth/send-code', { body: { email: 'f@example.com' }, origin: 'http://localhost:8788' });
+  r = await call(env, 'POST', '/api/auth/forgot', { body: b, origin: 'http://localhost:8788' });
   assert.equal(r.status, 403, 'localhost refused outside dev');
+});
+
+test('v2 code-only sign-in endpoints are gone', async () => {
+  const env = makeEnv();
+  let r = await call(env, 'POST', '/api/auth/send-code', { body: { email: 'old@example.com' } });
+  assert.equal(r.status, 410); assert.equal(r.data.error, 'gone');
+  r = await call(env, 'POST', '/api/auth/verify', { body: { email: 'old@example.com', code: '123456' } });
+  assert.equal(r.status, 410);
+  assert.equal(mailCount('old@example.com'), 0);
+});
+
+test('sign in: new browser -> code by email -> trusted 90 days; trusted browser skips the code', async () => {
+  const env = makeEnv();
+  const a = await login(env, 'dev1@example.com');
+  // another browser: right password, but a code is needed; no session yet
+  let r = await call(env, 'POST', '/api/auth/login', { body: { email: 'dev1@example.com', password: PW } });
+  assert.equal(r.status, 200); assert.equal(r.data.needCode, true); assert.equal(r.data.user, undefined);
+  assert.equal(r.setCookies.length, 0, 'no session before the code');
+  assert.match(lastMail('dev1@example.com').body.text, /nouvel appareil/);
+  const code = lastCode('dev1@example.com');
+  const bad = code === '000000' ? '111111' : '000000';
+  r = await call(env, 'POST', '/api/auth/login/verify', { body: { email: 'dev1@example.com', code: bad } });
+  assert.equal(r.data.error, 'invalid_code');
+  r = await call(env, 'POST', '/api/auth/login/verify', { body: { email: 'dev1@example.com', code } });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.deepEqual(r.data.session, { method: 'password+code', recentCode: false });
+  const dev2 = r.jar('stalak_d');
+  assert.ok(dev2 && r.jar('stalak_s'));
+  // that browser now signs in straight away
+  r = await call(env, 'POST', '/api/auth/login', { body: { email: 'dev1@example.com', password: PW }, cookie: dev2 });
+  assert.equal(r.status, 200); assert.equal(r.data.user.email, 'dev1@example.com'); assert.deepEqual(r.data.session, { method: 'password', recentCode: false });
+  assert.ok(r.jar('stalak_s'));
+  // so does the browser used to sign up
+  r = await call(env, 'POST', '/api/auth/login', { body: { email: 'dev1@example.com', password: PW }, cookie: a.device });
+  assert.equal(r.data.user.email, 'dev1@example.com');
+  // wrong password on a trusted browser: still refused, same message
+  r = await call(env, 'POST', '/api/auth/login', { body: { email: 'dev1@example.com', password: 'pas-le-bon-mdp' }, cookie: dev2 });
+  assert.equal(r.status, 401); assert.equal(r.data.error, 'invalid_login');
+  // a browser trusted for someone else is not trusted for this account
+  const b = await login(env, 'dev2@example.com');
+  r = await call(env, 'POST', '/api/auth/login', { body: { email: 'dev1@example.com', password: PW }, cookie: b.device });
+  assert.equal(r.data.needCode, true);
+  // one browser, two accounts: typing the code keeps the same browser token
+  ageCodes(env);
+  r = await call(env, 'POST', '/api/auth/login', { body: { email: 'dev1@example.com', password: PW }, cookie: b.device });
+  r = await call(env, 'POST', '/api/auth/login/verify', { body: { email: 'dev1@example.com', code: lastCode('dev1@example.com') }, cookie: b.device });
+  assert.equal(r.jar('stalak_d'), b.device);
+  assert.ok((await call(env, 'POST', '/api/auth/login', { body: { email: 'dev2@example.com', password: PW }, cookie: b.device })).data.user);
+  assert.ok((await call(env, 'POST', '/api/auth/login', { body: { email: 'dev1@example.com', password: PW }, cookie: b.device })).data.user);
+  // after 90 days the browser asks for a code again
+  env.DB.raw.exec('UPDATE trusted_devices SET expires_at = 1');
+  r = await call(env, 'POST', '/api/auth/login', { body: { email: 'dev1@example.com', password: PW }, cookie: dev2 });
+  assert.equal(r.data.needCode, true);
+  // a forged / unknown device cookie does nothing
+  r = await call(env, 'POST', '/api/auth/login', { body: { email: 'dev2@example.com', password: PW }, cookie: 'stalak_d=' + 'A'.repeat(43) });
+  assert.equal(r.data.needCode, true);
+});
+
+test('forgot password: same answer for unknown emails; code checked first, then the new password; signed in, others signed out', async () => {
+  const env = makeEnv();
+  const a = await login(env, 'fp@example.com');
+  const other = await signIn(env, 'fp@example.com');   // a second browser, trusted too
+  let r = await call(env, 'POST', '/api/auth/forgot', { body: { email: 'nobody@example.com' } });
+  const unknown = r.data;
+  r = await call(env, 'POST', '/api/auth/forgot', { body: { email: 'fp@example.com', lang: 'en' } });
+  assert.equal(r.status, 200);
+  assert.deepEqual(Object.keys(r.data).sort(), Object.keys(unknown).sort(), 'no hint whether the account exists');
+  assert.deepEqual(r.data, unknown);
+  assert.equal(mailCount('nobody@example.com'), 0);
+  assert.match(lastMail('fp@example.com').body.text, /new Stalak password/);
+  const code = lastCode('fp@example.com');
+  const bad = code === '000000' ? '111111' : '000000';
+  r = await call(env, 'POST', '/api/auth/reset', { body: { email: 'fp@example.com', code: bad } });
+  assert.equal(r.data.error, 'invalid_code'); assert.equal(r.data.attemptsLeft, 4);
+  r = await call(env, 'POST', '/api/auth/reset', { body: { email: 'fp@example.com', code } });
+  assert.deepEqual(r.data, { ok: true, codeOk: true }); assert.equal(r.setCookies.length, 0);
+  r = await call(env, 'POST', '/api/auth/reset', { body: { email: 'fp@example.com', code, password: '12345678' } });
+  assert.equal(r.data.error, 'password_too_common', 'code kept when the new password is refused');
+  r = await call(env, 'POST', '/api/auth/reset', { body: { email: 'fp@example.com', code, password: 'nouveau-flocon-7' } });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.deepEqual(r.data.session, { method: 'reset', recentCode: true });
+  const device = r.jar('stalak_d');
+  assert.ok(r.jar('stalak_s') && device);
+  r = await call(env, 'POST', '/api/auth/reset', { body: { email: 'fp@example.com', code, password: 'nouveau-flocon-8' } });
+  assert.equal(r.data.error, 'code_expired', 'code used');
+  assert.equal((await call(env, 'GET', '/api/me', { cookie: a.cookie })).data.user, null, 'old sessions signed out');
+  assert.equal((await call(env, 'GET', '/api/me', { cookie: other.cookie })).data.user, null);
+  assert.equal((await call(env, 'POST', '/api/auth/login', { body: { email: 'fp@example.com', password: PW }, cookie: device })).status, 401, 'old password refused');
+  r = await call(env, 'POST', '/api/auth/login', { body: { email: 'fp@example.com', password: 'nouveau-flocon-7' }, cookie: device });
+  assert.ok(r.data.user, 'this browser is trusted');
+  r = await call(env, 'POST', '/api/auth/login', { body: { email: 'fp@example.com', password: 'nouveau-flocon-7' }, cookie: other.device });
+  assert.equal(r.data.needCode, true, 'the other browsers must type a code again');
+});
+
+test('accounts made with a code only (v2): sign-in refused like a wrong password, then "forgot password" creates one', async () => {
+  const env = makeEnv();
+  const old = await legacyUser(env, 'legacy@example.com');
+  assert.equal((await call(env, 'GET', '/api/me', { cookie: old.cookie })).data.user.email, 'legacy@example.com', 'v2 sessions keep working');
+  let r = await call(env, 'POST', '/api/auth/login', { body: { email: 'legacy@example.com', password: 'nimporte-quoi' } });
+  const unknown = await call(env, 'POST', '/api/auth/login', { body: { email: 'ghost2@example.com', password: 'nimporte-quoi' } });
+  assert.equal(r.status, 401); assert.deepEqual(r.data, unknown.data);
+  r = await call(env, 'POST', '/api/auth/signup', { body: { email: 'legacy@example.com', password: PW } });
+  assert.equal(r.data.error, 'email_taken');
+  await call(env, 'POST', '/api/auth/forgot', { body: { email: 'legacy@example.com' } });
+  r = await call(env, 'POST', '/api/auth/reset', { body: { email: 'legacy@example.com', code: lastCode('legacy@example.com'), password: 'mon-premier-mdp' } });
+  assert.equal(r.status, 200);
+  assert.equal(r.data.user.id, old.id); assert.equal(r.data.user.hasPassword, true);
+  r = await call(env, 'POST', '/api/auth/login', { body: { email: 'legacy@example.com', password: 'mon-premier-mdp' }, cookie: r.jar('stalak_d') });
+  assert.equal(r.data.user.id, old.id);
+});
+
+test('account delete: removes devices, identities and pending codes too', async () => {
+  const env = makeEnv();
+  const a = await login(env, 'gone3@example.com');
+  env.DB.raw.prepare("INSERT INTO identities (provider, subject, user_id, email, created_at) VALUES ('google', 's1', ?, 'gone3@example.com', 1)").run(a.user.id);
+  await call(env, 'POST', '/api/auth/forgot', { body: { email: 'gone3@example.com' } });
+  const r = await call(env, 'DELETE', '/api/account', { cookie: a.cookie, body: { confirm: true } });
+  assert.equal(r.status, 200);
+  for (const t of ['users', 'sessions', 'trusted_devices', 'identities', 'auth_codes']) assert.equal(env.DB.raw.prepare(`SELECT COUNT(*) AS n FROM ${t}`).get().n, 0, t);
 });
 
 test('webhook signature: valid, wrong secret, tampered body, stale, missing', async () => {
@@ -241,7 +491,7 @@ test('subscription → Pro; duplicate and out-of-order events; portal link', asy
   assert.equal((await webhook(env, created)).status, 200);
   await webhook(env, subEvent('transaction.completed', { id: 'txn_1', customer_id: 'ctm_01', subscription_id: 'sub_01', custom_data: { user_id: user.id } }));
   let r = await call(env, 'GET', '/api/me', { cookie });
-  assert.deepEqual(r.data.entitlements, { plan: 'pro', outro: false, cloudSave: true, clipMode: true, autoLyrics: true });
+  assert.deepEqual(r.data.entitlements, PRO_ENT);
   assert.equal(r.data.subscription.status, 'active');
   assert.equal(r.data.subscription.interval, 'month');
   const dup = await webhook(env, created);
@@ -377,10 +627,10 @@ test('/api/me exposes profile fields and session info', async () => {
   const { cookie, data } = await login(env, 'me2@example.com');
   assert.equal(data.user.displayName, null);
   assert.equal(data.user.avatarUrl, null);
-  assert.equal(data.user.hasPassword, false);
-  assert.deepEqual(data.session, { method: 'code', recentCode: true });
+  assert.equal(data.user.hasPassword, true);
+  assert.deepEqual(data.session, { method: 'signup', recentCode: false });
   const r = await call(env, 'GET', '/api/me', { cookie });
-  assert.deepEqual(r.data.session, { method: 'code', recentCode: true });
+  assert.deepEqual(r.data.session, { method: 'signup', recentCode: false });
   assert.equal((await call(env, 'GET', '/api/me')).data.session, null);
 });
 
@@ -449,9 +699,9 @@ test('photo: upload JPEG/PNG/WebP, magic bytes and size checked, private GET wit
   assert.equal((await call(env, 'GET', url, { cookie: a.cookie })).status, 404);
 });
 
-test('password: set (policy), PBKDF2 stored, login with password, generic error', async () => {
+test('password: set on an account without one (policy), PBKDF2 stored, login, generic error', async () => {
   const env = makeEnv();
-  const { cookie, user } = await login(env, 'pw@example.com');
+  const { cookie, id } = await legacyUser(env, 'pw@example.com');
   for (const [pw, code] of [['short', 'password_too_short'], ['password', 'password_too_common'], ['AZERTYUIOP', 'password_too_common'],
     ['pw@example.com', 'password_too_common'], ['x'.repeat(201), 'password_too_long']]) {
     const r = await call(env, 'POST', '/api/auth/password', { cookie, body: { password: pw } });
@@ -461,24 +711,21 @@ test('password: set (policy), PBKDF2 stored, login with password, generic error'
   let r = await call(env, 'POST', '/api/auth/password', { cookie, body: { password: 'neige-et-glace' } });
   assert.equal(r.status, 200, JSON.stringify(r.data));
   assert.equal(r.data.user.hasPassword, true);
-  const row = env.DB.raw.prepare('SELECT password_hash, password_salt, password_iter FROM users WHERE id = ?').get(user.id);
+  const row = env.DB.raw.prepare('SELECT password_hash, password_salt, password_iter FROM users WHERE id = ?').get(id);
   assert.equal(row.password_iter, 100000);
   assert.match(row.password_salt, /^[0-9a-f]{32}$/);
   assert.match(row.password_hash, /^[0-9a-f]{64}$/);
   assert.ok(!row.password_hash.includes('neige'));
 
-  r = await call(env, 'POST', '/api/auth/login', { body: { email: ' PW@example.com ', password: 'neige-et-glace' } });
-  assert.equal(r.status, 200, JSON.stringify(r.data));
-  assert.match(r.headers.get('Set-Cookie'), /^stalak_s=[A-Za-z0-9_-]{43};.*HttpOnly/);
-  assert.equal(r.data.user.email, 'pw@example.com');
-  assert.deepEqual(r.data.session, { method: 'password', recentCode: false });
-  const pwCookie = r.headers.get('Set-Cookie').split(';')[0];
-  assert.equal((await call(env, 'GET', '/api/me', { cookie: pwCookie })).data.user.id, user.id);
+  const s = await signIn(env, ' PW@example.com ', 'neige-et-glace');
+  assert.match(s.cookie, /^stalak_s=[A-Za-z0-9_-]{43}$/);
+  assert.equal(s.data.user.email, 'pw@example.com');
+  assert.equal((await call(env, 'GET', '/api/me', { cookie: s.cookie })).data.user.id, id);
 
   // wrong password, unknown email and account without password: same answer
   const wrong = await call(env, 'POST', '/api/auth/login', { body: { email: 'pw@example.com', password: 'pas-le-bon' } });
   const unknown = await call(env, 'POST', '/api/auth/login', { body: { email: 'nobody@example.com', password: 'pas-le-bon' } });
-  await login(env, 'nopw@example.com');
+  await legacyUser(env, 'nopw@example.com');
   const nopw = await call(env, 'POST', '/api/auth/login', { body: { email: 'nopw@example.com', password: 'pas-le-bon' } });
   for (const x of [wrong, unknown, nopw]) { assert.equal(x.status, 401); assert.deepEqual(x.data, { error: 'invalid_login', message: 'Wrong email or password.' }); }
   r = await call(env, 'POST', '/api/auth/login', { body: { email: 'pw@example.com', password: 'neige-et-glace' }, origin: 'https://evil.example' });
@@ -487,32 +734,30 @@ test('password: set (policy), PBKDF2 stored, login with password, generic error'
 
 test('password login: lock after 5 failures for 15 min (also for unknown emails), rate limits per IP and per email', async () => {
   const env = makeEnv();
-  const { cookie } = await login(env, 'lock@example.com');
-  await call(env, 'POST', '/api/auth/password', { cookie, body: { password: 'banquise-2026' } });
+  const { device } = await login(env, 'lock@example.com', 'fr', 'banquise-2026');
   for (let i = 1; i <= 4; i++) {
-    const r = await call(env, 'POST', '/api/auth/login', { body: { email: 'lock@example.com', password: 'nope-nope-' + i } });
+    const r = await call(env, 'POST', '/api/auth/login', { body: { email: 'lock@example.com', password: 'nope-nope-' + i }, cookie: device });
     assert.equal(r.status, 401);
   }
-  let r = await call(env, 'POST', '/api/auth/login', { body: { email: 'lock@example.com', password: 'nope-nope-5' } });
+  let r = await call(env, 'POST', '/api/auth/login', { body: { email: 'lock@example.com', password: 'nope-nope-5' }, cookie: device });
   assert.equal(r.status, 429); assert.equal(r.data.error, 'too_many_attempts'); assert.ok(r.data.retryAfter > 800);
-  r = await call(env, 'POST', '/api/auth/login', { body: { email: 'lock@example.com', password: 'banquise-2026' } });
+  r = await call(env, 'POST', '/api/auth/login', { body: { email: 'lock@example.com', password: 'banquise-2026' }, cookie: device });
   assert.equal(r.status, 429, 'locked even with the right password');
   for (let i = 1; i <= 5; i++) r = await call(env, 'POST', '/api/auth/login', { body: { email: 'ghost@example.com', password: 'nope-nope-' + i } });
   assert.equal(r.status, 429, 'unknown emails lock the same way (no account enumeration)');
   // lock expires
   env.DB.raw.exec(`UPDATE rate_limits SET window_start = window_start - ${16 * 60e3} WHERE key LIKE 'pwfail:%'`);
   env.DB.raw.exec("DELETE FROM rate_limits WHERE key LIKE 'login:email:%'");
-  r = await call(env, 'POST', '/api/auth/login', { body: { email: 'lock@example.com', password: 'banquise-2026' } });
+  r = await call(env, 'POST', '/api/auth/login', { body: { email: 'lock@example.com', password: 'banquise-2026' }, cookie: device });
   assert.equal(r.status, 200, JSON.stringify(r.data));
   assert.equal(env.DB.raw.prepare("SELECT COUNT(*) AS n FROM rate_limits WHERE key LIKE 'pwfail:%' AND count >= 5").get().n, 1, 'success clears the failures');
   // per email: 10 attempts / 10 min
   env.DB.raw.exec('DELETE FROM rate_limits');
   for (let i = 0; i < 10; i++) {
-    env.DB.raw.exec("DELETE FROM rate_limits WHERE key LIKE 'pwfail:%'");
-    r = await call(env, 'POST', '/api/auth/login', { body: { email: 'lock@example.com', password: 'banquise-2026' } });
+    r = await call(env, 'POST', '/api/auth/login', { body: { email: 'lock@example.com', password: 'banquise-2026' }, cookie: device });
     assert.equal(r.status, 200);
   }
-  r = await call(env, 'POST', '/api/auth/login', { body: { email: 'lock@example.com', password: 'banquise-2026' } });
+  r = await call(env, 'POST', '/api/auth/login', { body: { email: 'lock@example.com', password: 'banquise-2026' }, cookie: device });
   assert.equal(r.status, 429); assert.equal(r.data.error, 'rate_limited');
   // per IP: 30 attempts / 10 min
   env.DB.raw.exec('DELETE FROM rate_limits');
@@ -526,47 +771,45 @@ test('password login: lock after 5 failures for 15 min (also for unknown emails)
   assert.ok(!keys.includes('7.7.7.7') && !keys.includes('example.com'), 'no clear IP/email in keys');
 });
 
-test('password change: needs the current one, or a code session < 15 min; other sessions signed out', async () => {
+test('password change: needs the current one (except a fresh reset session); other sessions and browsers signed out', async () => {
   const env = makeEnv();
-  const codeS = await login(env, 'chg@example.com');
-  let r = await call(env, 'POST', '/api/auth/password', { cookie: codeS.cookie, body: { password: 'premier-mdp-1' } });
-  assert.equal(r.status, 200);
-  // a fresh code session may change it without the old one (forgotten password flow)
-  r = await call(env, 'POST', '/api/auth/password', { cookie: codeS.cookie, body: { password: 'deuxieme-mdp-2' } });
-  assert.equal(r.status, 200, JSON.stringify(r.data));
-  // a password session needs the current one
-  r = await call(env, 'POST', '/api/auth/login', { body: { email: 'chg@example.com', password: 'deuxieme-mdp-2' } });
-  const pwCookie = r.headers.get('Set-Cookie').split(';')[0];
-  r = await call(env, 'POST', '/api/auth/password', { cookie: pwCookie, body: { password: 'troisieme-mdp-3' } });
+  const a = await login(env, 'chg@example.com', 'fr', 'premier-mdp-1');
+  let r = await call(env, 'POST', '/api/auth/password', { cookie: a.cookie, body: { password: 'deuxieme-mdp-2' } });
   assert.equal(r.status, 403); assert.equal(r.data.error, 'reauth_required');
-  r = await call(env, 'POST', '/api/auth/password', { cookie: pwCookie, body: { password: 'troisieme-mdp-3', currentPassword: 'faux-faux-faux' } });
+  r = await call(env, 'POST', '/api/auth/password', { cookie: a.cookie, body: { password: 'deuxieme-mdp-2', currentPassword: 'faux-faux-faux' } });
   assert.equal(r.status, 400); assert.equal(r.data.error, 'wrong_password');
-  // the code session is now older than 15 minutes: needs the current password too
-  env.DB.raw.exec(`UPDATE sessions SET created_at = created_at - ${16 * 60e3} WHERE method = 'code'`);
-  r = await call(env, 'POST', '/api/auth/password', { cookie: codeS.cookie, body: { password: 'troisieme-mdp-3' } });
-  assert.equal(r.data.error, 'reauth_required');
-  assert.equal((await call(env, 'GET', '/api/me', { cookie: codeS.cookie })).data.session.recentCode, false);
-  r = await call(env, 'POST', '/api/auth/password', { cookie: pwCookie, body: { password: 'troisieme-mdp-3', currentPassword: 'deuxieme-mdp-2' } });
+  const b = await signIn(env, 'chg@example.com', 'premier-mdp-1');   // another browser
+  // the browser sends its device cookie too (Path=/api/auth): it stays trusted
+  r = await call(env, 'POST', '/api/auth/password', { cookie: cookies(a.cookie, a.device), body: { password: 'deuxieme-mdp-2', currentPassword: 'premier-mdp-1' } });
   assert.equal(r.status, 200, JSON.stringify(r.data));
-  assert.equal((await call(env, 'GET', '/api/me', { cookie: pwCookie })).data.user.email, 'chg@example.com', 'this session stays');
-  assert.equal((await call(env, 'GET', '/api/me', { cookie: codeS.cookie })).data.user, null, 'the other sessions are signed out');
-  r = await call(env, 'POST', '/api/auth/login', { body: { email: 'chg@example.com', password: 'deuxieme-mdp-2' } });
-  assert.equal(r.status, 401, 'old password no longer works');
-  r = await call(env, 'POST', '/api/auth/login', { body: { email: 'chg@example.com', password: 'troisieme-mdp-3' } });
-  assert.equal(r.status, 200);
+  assert.equal((await call(env, 'GET', '/api/me', { cookie: a.cookie })).data.user.email, 'chg@example.com', 'this session stays');
+  assert.equal((await call(env, 'GET', '/api/me', { cookie: b.cookie })).data.user, null, 'the other sessions are signed out');
+  r = await call(env, 'POST', '/api/auth/login', { body: { email: 'chg@example.com', password: 'deuxieme-mdp-2' }, cookie: b.device });
+  assert.equal(r.data.needCode, true, 'the other browser must type a code again');
+  r = await call(env, 'POST', '/api/auth/login', { body: { email: 'chg@example.com', password: 'deuxieme-mdp-2' }, cookie: a.device });
+  assert.ok(r.data.user, 'this browser stays trusted');
+  assert.equal((await call(env, 'POST', '/api/auth/login', { body: { email: 'chg@example.com', password: 'premier-mdp-1' }, cookie: a.device })).status, 401, 'old password no longer works');
+  // a reset session (forgot password) younger than 15 min may change it again without the current one
+  await call(env, 'POST', '/api/auth/forgot', { body: { email: 'chg@example.com' } });
+  r = await call(env, 'POST', '/api/auth/reset', { body: { email: 'chg@example.com', code: lastCode('chg@example.com'), password: 'troisieme-mdp-3' } });
+  const rs = r.jar('stalak_s');
+  r = await call(env, 'POST', '/api/auth/password', { cookie: rs, body: { password: 'quatrieme-mdp-4' } });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  env.DB.raw.exec(`UPDATE sessions SET created_at = created_at - ${16 * 60e3} WHERE method = 'reset'`);
+  r = await call(env, 'POST', '/api/auth/password', { cookie: rs, body: { password: 'cinquieme-mdp-5' } });
+  assert.equal(r.data.error, 'reauth_required');
+  assert.equal((await call(env, 'GET', '/api/me', { cookie: rs })).data.session.recentCode, false);
   // wrong current passwords count toward the lock
-  const p2 = r.headers.get('Set-Cookie').split(';')[0];
-  for (let i = 0; i < 5; i++) r = await call(env, 'POST', '/api/auth/password', { cookie: p2, body: { password: 'quatrieme-mdp-4', currentPassword: 'faux-' + i + '-faux' } });
-  r = await call(env, 'POST', '/api/auth/password', { cookie: p2, body: { password: 'quatrieme-mdp-4', currentPassword: 'troisieme-mdp-3' } });
+  for (let i = 0; i < 5; i++) r = await call(env, 'POST', '/api/auth/password', { cookie: rs, body: { password: 'cinquieme-mdp-5', currentPassword: 'faux-' + i + '-faux' } });
+  r = await call(env, 'POST', '/api/auth/password', { cookie: rs, body: { password: 'cinquieme-mdp-5', currentPassword: 'quatrieme-mdp-4' } });
   assert.equal(r.status, 429); assert.equal(r.data.error, 'too_many_attempts');
 });
 
 test('account delete also erases name, photo and password', async () => {
   const env = makeEnv();
-  const { cookie } = await login(env, 'gone@example.com');
+  const { cookie } = await login(env, 'gone@example.com', 'fr', 'adieu-la-neige');
   await call(env, 'PATCH', '/api/me', { cookie, body: { displayName: 'Gone' } });
   await putAvatar(env, cookie, JPEG, 'image/jpeg');
-  await call(env, 'POST', '/api/auth/password', { cookie, body: { password: 'adieu-la-neige' } });
   await call(env, 'POST', '/api/auth/login', { body: { email: 'gone@example.com', password: 'wrong-wrong' } });
   const r = await call(env, 'DELETE', '/api/account', { cookie, body: { confirm: true } });
   assert.equal(r.status, 200);
@@ -574,6 +817,258 @@ test('account delete also erases name, photo and password', async () => {
   assert.equal(env.DB.raw.prepare("SELECT COUNT(*) AS n FROM rate_limits WHERE key LIKE 'pwfail:%'").get().n, 0);
   const login2 = await call(env, 'POST', '/api/auth/login', { body: { email: 'gone@example.com', password: 'adieu-la-neige' } });
   assert.equal(login2.status, 401);
+});
+
+// ---- Google / Apple / Microsoft (OpenID Connect) ---------------------------------------------
+// Starts a sign-in like the browser does, then plays the provider: returns what the callback needs.
+async function oauthBegin(env, provider, query = 'return=/en/&to=pro') {
+  const r = await call(env, 'GET', `/api/auth/oauth/${provider}/start?${query}`);
+  assert.equal(r.status, 302, JSON.stringify(r.data));
+  const loc = new URL(r.headers.get('Location'));
+  return { loc, q: loc.searchParams, binding: r.jar('stalak_o'), setCookie: r.setCookies[0] };
+}
+function claimsFor(provider, b, over = {}) {
+  const now = Math.floor(Date.now() / 1000), nonce = b.q.get('nonce');
+  const base = {
+    google: { iss: 'https://accounts.google.com', aud: OAUTH_ENV.GOOGLE_CLIENT_ID, sub: '1100220033', email: 'neige@gmail.com', email_verified: true, name: 'Neige Blanche' },
+    microsoft: { iss: 'https://login.microsoftonline.com/9188040d-6c67-4c5b-b112-36a304b66dad/v2.0', tid: '9188040d-6c67-4c5b-b112-36a304b66dad',
+      aud: OAUTH_ENV.MICROSOFT_CLIENT_ID, sub: 'AAAAAAAAAAAAAAAAAAAAAMsft', email: 'glacon@outlook.com', name: 'Gla Çon' },
+    apple: { iss: 'https://appleid.apple.com', aud: OAUTH_ENV.APPLE_CLIENT_ID, sub: '001234.abcdef.0987', email: 'x7k2@privaterelay.appleid.com',
+      email_verified: 'true', is_private_email: 'true' },
+  }[provider];
+  return { ...base, iat: now, exp: now + 600, nonce, ...over };
+}
+async function oauthFinish(env, provider, b, { claims, key, header, state, binding, form = {}, error } = {}) {
+  nextIdToken = await signJwt(key || KEYS[provider], claims || claimsFor(provider, b), header);
+  const params = new URLSearchParams({ code: 'auth-code-123', state: state ?? b.q.get('state'), ...form });
+  if (error) { params.delete('code'); params.set('error', error); }
+  const cookie = binding === undefined ? b.binding : binding;
+  if (provider === 'apple') {
+    // form_post: a cross-site POST from appleid.apple.com
+    return call(env, 'POST', '/api/auth/oauth/apple/callback', { raw: params.toString(), ct: 'application/x-www-form-urlencoded', origin: 'https://appleid.apple.com', cookie });
+  }
+  return call(env, 'GET', `/api/auth/oauth/${provider}/callback?${params}`, { cookie });
+}
+const frag = (r) => { const l = r.headers.get('Location'); assert.ok(l, 'redirect expected, got ' + r.status + ' ' + JSON.stringify(r.data)); return new URL(l); };
+
+test('oauth start: redirect with state, nonce, PKCE S256; binding cookie; disabled provider; bad return path', async () => {
+  const env = makeEnv(OAUTH_ENV);
+  let b = await oauthBegin(env, 'google');
+  assert.equal(b.loc.origin + b.loc.pathname, 'https://accounts.google.com/o/oauth2/v2/auth');
+  assert.equal(b.q.get('client_id'), OAUTH_ENV.GOOGLE_CLIENT_ID);
+  assert.equal(b.q.get('redirect_uri'), 'https://stalak.app/api/auth/oauth/google/callback');
+  assert.equal(b.q.get('response_type'), 'code');
+  assert.equal(b.q.get('scope'), 'openid email profile');
+  assert.equal(b.q.get('code_challenge_method'), 'S256');
+  assert.match(b.q.get('code_challenge'), /^[A-Za-z0-9_-]{43}$/);
+  assert.ok(b.q.get('state').length >= 40 && b.q.get('nonce').length >= 30);
+  for (const f of ['HttpOnly', 'Secure', 'SameSite=None', 'Path=/api/auth/oauth', 'Max-Age=600']) assert.ok(b.setCookie.includes(f), f);
+  const row = env.DB.raw.prepare('SELECT * FROM oauth_states').get();
+  assert.notEqual(row.state_hash, b.q.get('state'), 'state stored hashed');
+  assert.equal(row.return_to, '/en/#pro'); assert.equal(row.lang, 'en');
+  b = await oauthBegin(env, 'microsoft');
+  assert.equal(b.loc.origin + b.loc.pathname, 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize');
+  b = await oauthBegin(env, 'apple');
+  assert.equal(b.loc.origin + b.loc.pathname, 'https://appleid.apple.com/auth/authorize');
+  assert.equal(b.q.get('response_mode'), 'form_post'); assert.equal(b.q.get('scope'), 'name email');
+  assert.equal(b.q.get('code_challenge'), null, 'Apple takes no PKCE');
+  // not configured: back to the app with an error, no redirect to the provider
+  let r = await call(makeEnv(), 'GET', '/api/auth/oauth/google/start?return=/en/');
+  assert.equal(r.status, 303); assert.equal(r.headers.get('Location'), 'https://stalak.app/en/#auth-err-not_enabled');
+  r = await call(env, 'GET', '/api/auth/oauth/facebook/start');
+  assert.equal(r.status, 404);
+  for (const bad of ['//evil.example/', 'https://evil.example/', '/api/me', '/x?y=1']) {
+    b = await oauthBegin(env, 'google', 'return=' + encodeURIComponent(bad));
+    assert.equal(env.DB.raw.prepare('SELECT return_to FROM oauth_states ORDER BY created_at DESC, rowid DESC LIMIT 1').get().return_to, '/#account', bad);
+  }
+});
+
+test('oauth Google: new account (verified email, name), PKCE verifier sent, signed in, back to the page; same sub = same account', async () => {
+  const env = makeEnv(OAUTH_ENV); resetJwksCache();
+  const b = await oauthBegin(env, 'google');
+  let r = await oauthFinish(env, 'google', b);
+  assert.equal(r.status, 303);
+  assert.equal(r.headers.get('Location'), 'https://stalak.app/en/#auth-ok-pro');
+  const tr = tokenRequests.at(-1);
+  assert.equal(tr.form.get('grant_type'), 'authorization_code'); assert.equal(tr.form.get('code'), 'auth-code-123');
+  assert.equal(tr.form.get('client_secret'), 'g-secret'); assert.equal(tr.form.get('redirect_uri'), 'https://stalak.app/api/auth/oauth/google/callback');
+  assert.equal(base64url(new Uint8Array(await crypto.subtle.digest('SHA-256', enc.encode(tr.form.get('code_verifier'))))), b.q.get('code_challenge'), 'PKCE verifier matches');
+  const cookie = r.jar('stalak_s');
+  assert.ok(cookie && r.jar('stalak_d'));
+  assert.ok(r.setCookies.some((c) => c.startsWith('stalak_o=;') && c.includes('Max-Age=0')), 'binding cookie cleared');
+  let me = await call(env, 'GET', '/api/me', { cookie });
+  assert.equal(me.data.user.email, 'neige@gmail.com'); assert.equal(me.data.user.displayName, 'Neige Blanche');
+  assert.equal(me.data.user.emailVerified, true); assert.equal(me.data.user.hasPassword, false); assert.equal(me.data.user.lang, 'en');
+  assert.deepEqual(me.data.user.providers, ['google']); assert.equal(me.data.session.method, 'oauth:google');
+  // again: same account, no second identity
+  const b2 = await oauthBegin(env, 'google');
+  r = await oauthFinish(env, 'google', b2, { claims: claimsFor('google', b2, { name: 'Autre Nom' }) });
+  me = await call(env, 'GET', '/api/me', { cookie: r.jar('stalak_s') });
+  assert.equal(me.data.user.id, (await call(env, 'GET', '/api/me', { cookie })).data.user.id);
+  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM identities').get().n, 1);
+  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM users').get().n, 1);
+  // the account can then choose a password without a "current" one
+  r = await call(env, 'POST', '/api/auth/password', { cookie, body: { password: 'apres-google-1' } });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  // the provider says no (user cancelled)
+  const b3 = await oauthBegin(env, 'google');
+  r = await oauthFinish(env, 'google', b3, { error: 'access_denied' });
+  assert.equal(frag(r).hash, '#auth-err-cancelled'); assert.equal(r.jar('stalak_s'), null);
+});
+
+test('oauth popup mode (project open in the app): the callback page tells the app and closes, still signed in', async () => {
+  const env = makeEnv(OAUTH_ENV); resetJwksCache();
+  const b = await oauthBegin(env, 'google', 'return=/en/&to=pro&popup=1');
+  const r = await oauthFinish(env, 'google', b);
+  assert.equal(r.status, 200);
+  assert.match(r.headers.get('Content-Type'), /text\/html/);
+  assert.match(r.headers.get('Content-Security-Policy'), /default-src 'none'/);
+  assert.ok(r.jar('stalak_s') && r.jar('stalak_d'));
+  assert.ok(r.data.includes('{"stalakAuth":"auth-ok-pro"}') && r.data.includes('BroadcastChannel') && r.data.includes('"https://stalak.app/en/#auth-ok-pro"'));
+  const b2 = await oauthBegin(env, 'google', 'return=/&popup=1');
+  const r2 = await oauthFinish(env, 'google', b2, { error: 'access_denied' });
+  assert.ok(r2.data.includes('auth-err-cancelled')); assert.equal(r2.jar('stalak_s'), null);
+});
+
+test('oauth: an existing account with the same verified email gets the identity (linking)', async () => {
+  const env = makeEnv(OAUTH_ENV); resetJwksCache();
+  const a = await login(env, 'neige@gmail.com');
+  const b = await oauthBegin(env, 'google', 'return=/');
+  const r = await oauthFinish(env, 'google', b);
+  assert.equal(frag(r).hash, '#auth-ok-account');
+  const me = await call(env, 'GET', '/api/me', { cookie: r.jar('stalak_s') });
+  assert.equal(me.data.user.id, a.user.id); assert.equal(me.data.user.hasPassword, true);
+  assert.deepEqual(me.data.user.providers, ['google']);
+  // unverified email at Google: refused, never linked
+  const env2 = makeEnv(OAUTH_ENV);
+  await login(env2, 'neige@gmail.com');
+  const b2 = await oauthBegin(env2, 'google');
+  const r2 = await oauthFinish(env2, 'google', b2, { claims: claimsFor('google', b2, { email_verified: false }) });
+  assert.equal(frag(r2).hash, '#auth-err-oauth_email_unverified');
+  assert.equal(env2.DB.raw.prepare('SELECT COUNT(*) AS n FROM identities').get().n, 0);
+});
+
+test('oauth id_token checks: signature, alg, issuer, audience, expiry, nonce (each refused)', async () => {
+  const env = makeEnv(OAUTH_ENV); resetJwksCache();
+  const cases = [
+    ['forged signature (other key, same kid)', (b) => ({ key: KEYS.rogue })],
+    ['unknown kid', (b) => ({ header: { kid: 'nope' } })],
+    ['alg none', (b) => ({ header: { alg: 'none' } })],
+    ['HS256', (b) => ({ header: { alg: 'HS256' } })],
+    ['wrong issuer', (b) => ({ claims: claimsFor('google', b, { iss: 'https://evil.example' }) })],
+    ['wrong audience', (b) => ({ claims: claimsFor('google', b, { aud: 'someone-else' }) })],
+    ['several audiences, azp not us', (b) => ({ claims: claimsFor('google', b, { aud: [OAUTH_ENV.GOOGLE_CLIENT_ID, 'x'], azp: 'x' }) })],
+    ['expired', (b) => ({ claims: claimsFor('google', b, { exp: Math.floor(Date.now() / 1000) - 600 }) })],
+    ['issued in the future', (b) => ({ claims: claimsFor('google', b, { iat: Math.floor(Date.now() / 1000) + 3600 }) })],
+    ['nonce mismatch', (b) => ({ claims: claimsFor('google', b, { nonce: 'not-the-nonce' }) })],
+    ['nonce missing', (b) => ({ claims: { ...claimsFor('google', b), nonce: undefined } })],
+  ];
+  for (const [name, f] of cases) {
+    const b = await oauthBegin(env, 'google');
+    const r = await oauthFinish(env, 'google', b, f(b));
+    assert.equal(frag(r).hash, '#auth-err-oauth_failed', name);
+    assert.equal(r.jar('stalak_s'), null, name);
+  }
+  // token endpoint refusing the code
+  const b = await oauthBegin(env, 'google');
+  nextIdToken = null;
+  const r = await call(env, 'GET', `/api/auth/oauth/google/callback?code=x&state=${b.q.get('state')}`, { cookie: b.binding });
+  assert.equal(frag(r).hash, '#auth-err-oauth_failed');
+  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM users').get().n, 0);
+});
+
+test('oauth state: unknown, reused, other provider, expired, missing or wrong browser cookie -> refused', async () => {
+  const env = makeEnv(OAUTH_ENV); resetJwksCache();
+  let b = await oauthBegin(env, 'google');
+  let r = await oauthFinish(env, 'google', b, { state: 'x'.repeat(43) });
+  assert.equal(frag(r).hash, '#auth-err-state_mismatch');
+  r = await oauthFinish(env, 'google', b, { binding: null });
+  assert.equal(frag(r).hash, '#auth-err-state_mismatch', 'no cookie (login CSRF)');
+  r = await oauthFinish(env, 'google', b);
+  assert.equal(frag(r).hash, '#auth-err-state_mismatch', 'state is single use, even after a failure');
+  b = await oauthBegin(env, 'google');
+  r = await oauthFinish(env, 'google', b, { binding: 'stalak_o=' + 'B'.repeat(32) });
+  assert.equal(frag(r).hash, '#auth-err-state_mismatch', 'cookie of another browser');
+  b = await oauthBegin(env, 'google');
+  r = await oauthFinish(env, 'microsoft', b);
+  assert.equal(frag(r).hash, '#auth-err-state_mismatch', 'state of another provider');
+  b = await oauthBegin(env, 'google');
+  env.DB.raw.exec('UPDATE oauth_states SET expires_at = 1');
+  r = await oauthFinish(env, 'google', b);
+  assert.equal(frag(r).hash, '#auth-err-state_mismatch', 'expired');
+  b = await oauthBegin(env, 'google');
+  r = await oauthFinish(env, 'google', b);
+  assert.equal(frag(r).hash, '#auth-ok-pro', 'the normal case still works');
+});
+
+test('oauth Microsoft: tenant issuer must match tid; personal accounts trusted; work accounts need xms_edov', async () => {
+  const env = makeEnv(OAUTH_ENV); resetJwksCache();
+  let b = await oauthBegin(env, 'microsoft');
+  let r = await oauthFinish(env, 'microsoft', b);
+  assert.equal(frag(r).hash, '#auth-ok-pro', 'personal account');
+  assert.ok(tokenRequests.at(-1).form.get('code_verifier'));
+  assert.equal(tokenRequests.at(-1).provider, 'microsoft');
+  let me = await call(env, 'GET', '/api/me', { cookie: r.jar('stalak_s') });
+  assert.equal(me.data.user.email, 'glacon@outlook.com'); assert.deepEqual(me.data.user.providers, ['microsoft']);
+  const T = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee';
+  const work = (over) => ({ iss: `https://login.microsoftonline.com/${T}/v2.0`, tid: T, sub: 'work-sub-' + Math.random(), email: 'boss@entreprise.fr', ...over });
+  b = await oauthBegin(env, 'microsoft');
+  r = await oauthFinish(env, 'microsoft', b, { claims: claimsFor('microsoft', b, work()) });
+  assert.equal(frag(r).hash, '#auth-err-oauth_email_unverified', 'work account e-mail not proven');
+  b = await oauthBegin(env, 'microsoft');
+  r = await oauthFinish(env, 'microsoft', b, { claims: claimsFor('microsoft', b, work({ xms_edov: true })) });
+  assert.equal(frag(r).hash, '#auth-ok-pro', 'domain owner verified');
+  b = await oauthBegin(env, 'microsoft');
+  r = await oauthFinish(env, 'microsoft', b, { claims: claimsFor('microsoft', b, work({ tid: '11111111-bbbb-cccc-dddd-eeeeeeeeeeee', xms_edov: true })) });
+  assert.equal(frag(r).hash, '#auth-err-oauth_failed', 'issuer tenant differs from tid');
+  b = await oauthBegin(env, 'microsoft');
+  r = await oauthFinish(env, 'microsoft', b, { claims: claimsFor('microsoft', b, { iss: `https://sts.windows.net/${T}/`, tid: T }) });
+  assert.equal(frag(r).hash, '#auth-err-oauth_failed', 'v1 issuer refused');
+  b = await oauthBegin(env, 'microsoft');
+  r = await oauthFinish(env, 'microsoft', b, { claims: claimsFor('microsoft', b, { iss: 'https://login.microsoftonline.com/{tenantid}/v2.0' }) });
+  assert.equal(frag(r).hash, '#auth-err-oauth_failed', 'template issuer refused');
+  // tenant pinned to personal accounts only
+  const env2 = makeEnv({ ...OAUTH_ENV, MICROSOFT_TENANT: 'consumers' });
+  b = await oauthBegin(env2, 'microsoft');
+  assert.equal(b.loc.pathname, '/consumers/oauth2/v2.0/authorize');
+  r = await oauthFinish(env2, 'microsoft', b, { claims: claimsFor('microsoft', b, work({ xms_edov: true })) });
+  assert.equal(frag(r).hash, '#auth-err-oauth_failed');
+});
+
+test('oauth Apple: form_post callback, ES256 and RS256 keys, client secret = ES256 JWT, name only the first time, private relay email', async () => {
+  const env = makeEnv(OAUTH_ENV); resetJwksCache();
+  let b = await oauthBegin(env, 'apple', 'return=/&to=account');
+  let r = await oauthFinish(env, 'apple', b, { form: { user: JSON.stringify({ name: { firstName: 'Ana', lastName: 'Glace' }, email: 'x7k2@privaterelay.appleid.com' }) } });
+  assert.equal(r.status, 303, JSON.stringify(r.data));
+  assert.equal(r.headers.get('Location'), 'https://stalak.app/#auth-ok-account');
+  const tr = tokenRequests.at(-1);
+  assert.equal(tr.provider, 'apple'); assert.equal(tr.form.get('code_verifier'), null);
+  assert.equal(tr.form.get('client_id'), 'app.stalak.web');
+  // the client secret: ES256, kid = key id, iss = team, sub = Services ID, aud = Apple, signed with the .p8 key
+  const cs = tr.form.get('client_secret');
+  const { header, payload } = await verifyJwtSignature(cs, { keys: [KEYS.appleP8.jwk] }, ['ES256']);
+  assert.equal(header.kid, 'ABC123DEFG'); assert.equal(header.alg, 'ES256');
+  assert.equal(payload.iss, 'TEAM123456'); assert.equal(payload.sub, 'app.stalak.web'); assert.equal(payload.aud, 'https://appleid.apple.com');
+  assert.ok(payload.exp > payload.iat && payload.exp - payload.iat <= 15777000);
+  let me = await call(env, 'GET', '/api/me', { cookie: r.jar('stalak_s') });
+  assert.equal(me.data.user.email, 'x7k2@privaterelay.appleid.com'); assert.equal(me.data.user.displayName, 'Ana Glace'); assert.equal(me.data.user.lang, 'fr');
+  // next time: no name sent, RS256 key; the name stays
+  b = await oauthBegin(env, 'apple');
+  r = await oauthFinish(env, 'apple', b, { key: KEYS.appleRsa });
+  assert.equal(frag(r).hash, '#auth-ok-pro');
+  me = await call(env, 'GET', '/api/me', { cookie: r.jar('stalak_s') });
+  assert.equal(me.data.user.displayName, 'Ana Glace');
+  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM users').get().n, 1);
+  // Apple rules: issuer and audience
+  b = await oauthBegin(env, 'apple');
+  r = await oauthFinish(env, 'apple', b, { claims: claimsFor('apple', b, { aud: 'com.other.app' }) });
+  assert.equal(frag(r).hash, '#auth-err-oauth_failed');
+  b = await oauthBegin(env, 'apple');
+  r = await oauthFinish(env, 'apple', b, { claims: claimsFor('apple', b, { iss: 'https://accounts.google.com' }) });
+  assert.equal(frag(r).hash, '#auth-err-oauth_failed');
+  // the form post must be a form
+  r = await call(env, 'POST', '/api/auth/oauth/apple/callback', { raw: '{}', ct: 'application/json', origin: 'https://appleid.apple.com' });
+  assert.equal(r.status, 415);
 });
 
 // ---- runner --------------------------------------------------------------------------
