@@ -377,6 +377,25 @@ Le petit état du projet (JSON) est dans D1 ; le son et les vidéos sont dans **
 
 ---
 
+## 12. Assistant de la bulle d'aide (tout le monde, Cloudflare Workers AI)
+
+Le glaçon en bas à droite répond aux questions sur Stalak. Sur claude.ai, c'est Claude ; sur stalak.app, c'est la route
+`POST /api/help/chat`, qui fait écrire la réponse par le modèle `@cf/google/gemma-4-26b-a4b-it` de **Workers AI**
+(le même branchement `AI` que les paroles automatiques). Ce que l'assistant sait est dans `functions/_lib/help-guide.js`
+(à mettre à jour, comme `HELP_GUIDE` dans `src/app.js`, quand un bouton, un prix ou une règle change).
+
+1. **Rien à créer** : pas de clé, pas de migration. Ça marche dès la mise en ligne.
+2. **Coût** : environ 50 neurons par question (62 au plus). Pour garder le quota gratuit des paroles, l'aide s'arrête après
+   **60 questions par jour pour tout le site** (le visiteur voit « l'assistant fait une pause, réessaie demain » et l'adresse e-mail).
+   Pour changer ce nombre : variable `HELP_DAILY_MAX` dans `wrangler.toml` (`[vars]`). 0 = assistant coupé.
+   Avec le forfait Workers payant (5 $ / mois), on peut le monter sans souci (1 000 questions ≈ 0,55 $).
+3. **Limites par connexion** : 15 questions par 10 minutes, 60 par jour.
+4. **Changer de modèle** (facultatif) : variable `HELP_MODEL`, un nom de modèle Workers AI qui commence par `@cf/`.
+5. **Vie privée** : la question, les derniers messages et quelques infos sur l'écran partent chez Workers AI ; rien n'est gardé,
+   seuls des compteurs servent aux limites. La politique de confidentialité le dit.
+
+---
+
 ## Pour le développeur
 
 ### Routes (`/api/…`)
@@ -414,6 +433,7 @@ Toutes les réponses sont en JSON. Les erreurs ont la forme `{"error":"code","me
 | `POST /api/projects/:id/files/:fileId/complete` | Termine un envoi en morceaux (`409 parts_missing` avec `missing`). |
 | `GET /api/projects/:id/files/:fileId` | Le fichier, lu depuis R2, **pour son propriétaire seulement** ; accepte `Range` (réponse `206`, `416` hors limites). `Cache-Control: private, no-store`, `nosniff`, `Content-Security-Policy: sandbox`, `Content-Disposition: attachment`. |
 | `DELETE /api/projects/:id/files/:fileId` | Abandonne un envoi ou efface un fichier. |
+| `POST /api/help/chat` | `{lang: 'fr'\|'en', messages: [{role: 'user'\|'assistant', content}], context}` (sans compte). 10 derniers tours, 6 000 caractères au plus, le dernier de l'utilisateur ; `context` (4 000 caractères) = ce que montre la page. Renvoie `{answer}` (texte simple). Erreurs `invalid_messages`, `rate_limited` (429, `retryAfter`), `help_busy` (503, budget du jour épuisé), `ai_unavailable` (503), `help_failed` (502). |
 | `POST /api/cron/cloud-cleanup` | Règle des 6 mois, pour un cron externe : `Authorization: Bearer <CRON_SECRET>` (sinon `404`). |
 | `DELETE /api/account` | `{confirm:true}`. Arrête l'abonnement Paddle, puis efface toutes les données (dont le pseudo, la photo et le mot de passe, qui sont dans la ligne `users`). |
 | `GET /api/connect/{tiktok,instagram}/{start,callback}` | Ébauches : `404 not_enabled` tant que `SOCIAL_CONNECT_ENABLED` ne vaut pas `"1"`, puis `501`. |
@@ -422,7 +442,7 @@ Sans le bucket R2 (`MEDIA`), les routes de fichiers répondent `503 cloud_unavai
 
 Codes d'erreur : `not_logged_in` (401), `pro_required` (403), `cloud_unavailable` (503), `quota_exceeded` (413), `file_too_large` (413), `invalid_media_type` (415), `files_missing` (409), `parts_missing` (409), `size_mismatch`, `length_required` (411), `bad_origin` (403), `json_required` (415), `rate_limited` (429, avec `retryAfter`),
 `invalid_code` (avec `attemptsLeft`), `code_expired`, `too_many_attempts`, `email_taken` (409), `invalid_login` (401), `invalid_email`, `invalid_name`,
-`invalid_signature`, `too_large` (413), `not_found`, `method_not_allowed`, `gone` (410).
+`invalid_signature`, `too_large` (413), `not_found`, `method_not_allowed`, `gone` (410), `invalid_messages`, `help_busy` (503), `help_failed` (502).
 
 Les codes par e-mail (table `auth_codes`) : un par e-mail et par usage (`signup`, `login`, `reset`), hachés avec l'usage, valables 10 min, 5 essais.
 Redemandé moins de 30 s après, le même code est gardé et aucun nouvel e-mail ne part. Limites : 5 codes par heure pour un e-mail, 20 par heure pour une IP.
@@ -496,6 +516,7 @@ Pour la base locale : `npx wrangler d1 migrations apply stalak --local`.
 - Limites D1 (2 Mo par ligne, 100 paramètres, 1000 requêtes par appel en offre payante, 50 en Free) : <https://developers.cloudflare.com/d1/platform/limits/>
 - Liaison R2 d'un projet Pages (`context.env.<BINDING>`) : <https://developers.cloudflare.com/pages/functions/bindings/>
 - Configuration `wrangler.toml` pour Pages (`pages_build_output_dir`, D1) : <https://developers.cloudflare.com/pages/functions/wrangler-configuration/>
+- Modèle de texte Workers AI `@cf/google/gemma-4-26b-a4b-it` (`messages` avec les rôles system / user / assistant, `max_completion_tokens`, sortie `choices[]`) : <https://developers.cloudflare.com/workers-ai/models/gemma-4-26b-a4b-it/> ; prix (9 091 neurons par million de jetons en entrée, 27 273 en sortie) : <https://developers.cloudflare.com/workers-ai/platform/pricing/>
 - Envoi d'e-mail avec Resend : <https://resend.com/docs/api-reference/emails/send-email>
 - OpenID Connect chez Google (points d'accès, `id_token`, `email_verified`) : <https://developers.google.com/identity/openid-connect/openid-connect>
 - Microsoft identity platform, OIDC et validation des jetons multi-locataires (`iss` avec `{tid}`, revendication `xms_edov`) : <https://learn.microsoft.com/entra/identity-platform/v2-protocols-oidc>, <https://learn.microsoft.com/entra/identity-platform/optional-claims-reference>

@@ -27,7 +27,7 @@ the lyrics style, the synced lyrics of each sound, the chosen mode, the language
 <p>This data is only used to run your account and subscription (performance of the contract). It is kept as long as your account exists; when you delete your account from the Account page, it is erased immediately.</p>
 <h2>Our service providers</h2>
 <ul>
-<li><strong>Cloudflare</strong>: hosting of the website, of the accounts database and of the projects saved online (R2 storage); lyrics transcription (Workers AI).</li>
+<li><strong>Cloudflare</strong>: hosting of the website, of the accounts database and of the projects saved online (R2 storage); lyrics transcription and help assistant (Workers AI).</li>
 <li><strong>Resend</strong>: sending sign-in emails (your email address and the code).</li>
 <li><strong>Paddle.com</strong>: payment, taxes and invoices, as our authorized reseller. Paddle processes your payment information under its own <a href="https://www.paddle.com/legal/privacy">privacy policy</a> and keeps billing records for as long as the law requires.</li>
 </ul>
@@ -35,6 +35,7 @@ the lyrics style, the synced lyrics of each sound, the chosen mode, the language
 <h2>What goes through our services</h2>
 <p>The site is hosted by Cloudflare, which processes the technical information needed to show the pages (IP address, browser), as for any website.</p>
 <p><strong>Automatic lyrics (Stalak Pro).</strong> When you tap “Write my lyrics”, the sound of the chosen part (mono, reduced quality, without the videos) is sent to Cloudflare Workers AI to write the lyrics, which come back to your device. Neither the sound nor the lyrics are kept by Stalak; we only count, per day, the number of transcriptions and seconds of sound (for the usage limits), erased with your account.</p>
+<p><strong>Help assistant.</strong> When you ask the help ice cube a question, your question, the last messages of the conversation and a little info about the screen (step, messages shown, file names, browser type, end of the technical log) are sent to Cloudflare Workers AI, which writes the answer. Stalak keeps neither the questions nor the answers; only counters (per connection, without the IP address in clear, kept briefly, usually one to two days) are used for the usage limits. The answers are written by an AI and can be wrong: never type a password or a code there.</p>
 <p>The site does not use advertising cookies and does not sell any data.</p>
 <h2>Help</h2>
 <p>If you write to us for help, you can send us the “technical info” (button in the help bubble): it contains the browser type,
