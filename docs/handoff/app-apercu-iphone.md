@@ -1,4 +1,4 @@
-Statut : PRÊT
+Statut : FUSIONNÉ (en ligne le 27/10)
 Branche : app/apercu-iphone
 
 Résumé :
