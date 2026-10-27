@@ -69,6 +69,10 @@
 - Si des faux messages arrivent : Cloudflare Turnstile sur « Parler à un humain ».
 - Tableau de bord et « Parler à un humain » : fusionnés et en ligne le 27/10, migration 0006 appliquée. Le tableau de bord est en marche (connexion du propriétaire vérifiée le 27/10). Les chiffres Pro et revenu viennent pour l'instant des abonnements de test Paddle (sandbox).
   - À regarder (Comptes) : dans l'espace de travail du Chef de projet, `tests/ui/support_ui.py` s'arrête après 17 PASS, à l'étape « reply e-mailed to the visitor who left » (attente de « envoyé par e-mail » dépassée après 50 s). C'est pareil sur la branche seule, donc la fusion n'y est pour rien. Les tests serveur (62/62) couvrent le même parcours.
+- **À faire avant la mise en ligne de `marketing/chat-pro` (décision du propriétaire, 27/10)** : réserver « Parler à un humain » à Stalak Pro.
+  - Côté serveur (`requirePro` sur les routes du chat) et dans la bulle d'aide : le bouton n'apparaît que pour un compte Pro.
+  - Un gratuit garde le glaçon IA. Proposer un message court pour un gratuit qui cherche à joindre l'équipe (clé à ajouter dans le bloc « bulle d'aide »).
+  - La promesse affichée est « réponse sous 24 h si on n'est pas en ligne » : jamais « 24 h/24 ».
 - Plus tard : saler l'empreinte des IP des compteurs (paroles, aide, visites, messages) avec `AUTH_SECRET`.
 - Plus de 210 minutes de transcription par jour : passer au forfait Workers payant (5 $/mois).
 
@@ -90,6 +94,13 @@
 - **À décider** : boutons Pro de la page Tarifs pendant que Paddle est en sandbox (« bientôt » ou Paddle réel) avant toute promo.
 - **À demander** : case « recevoir les nouveautés » à l'inscription (Comptes) ; mots « montage de playback » dans le H1 et JS/CSS en fichiers cachés (App).
 - **Fait (branche `marketing/idees-croissance`)** : recherche « idées de croissance » (concurrents, fonctions, Stalak Pro, acquisition), classée par impact et effort. Document « Stalak — idées de croissance » dans claude.ai ; résumé dans `docs/marketing/IDEES_CROISSANCE.md`.
+- **Fait, en attente de Comptes (branche `marketing/chat-pro`)** : nouvel avantage Pro « Chat en direct avec l'équipe Stalak (réponse sous 24 h si on n'est pas en ligne) ».
+  - Page Tarifs FR/EN : cartes Pro, tableau et FAQ.
+  - Écran Pro de l'app : `pr.f.chat`, `acct.perk7`, `pr.r.chat`, `pr.q.chat` / `pr.a.chat`.
+  - À ne pas mettre en ligne avant que « Parler à un humain » soit réservé à Pro (voir Comptes) : aujourd'hui il est ouvert à tous, donc l'annoncer comme avantage Pro serait faux.
+- **À reprendre (textes de l'app)** : l'écran Pro de l'app garde deux anciens textes déjà corrigés sur le site.
+  - « comme si un monteur pro était passé derrière » (`pr.f.nologo`).
+  - La FAQ « Mes vidéos sont-elles envoyées ? » (`pr.a.videos`), qui oublie les paroles automatiques.
 
 ## Idées de croissance recommandées (à répartir par le propriétaire)
 
