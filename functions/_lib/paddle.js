@@ -82,20 +82,50 @@ async function applySubscription(env, data, occurredAt) {
   return { applied: true, userId };
 }
 
-// transaction.completed: links the Paddle customer to the user (custom_data.user_id).
+// transaction.completed: links the Paddle customer to the user (custom_data.user_id), and keeps the payment for the
+// owner's dashboard (functions/_lib/admin.js): amounts in cents, as strings in Paddle's payload (details.totals).
+// developer.paddle.com/webhooks/transactions/transaction-completed
+const cents = (v) => (v == null || v === '' || !/^-?\d+$/.test(String(v)) ? null : Number(v));
 async function applyTransaction(env, data) {
   const userId = await findUserId(env, data || {});
   await linkCustomer(env, userId, data && data.customer_id);
   if (userId && data.subscription_id) {
     await env.DB.prepare('UPDATE subscriptions SET user_id = ?2 WHERE id = ?1 AND user_id IS NULL').bind(data.subscription_id, userId).run();
   }
+  const totals = data && data.details && data.details.totals;
+  const total = totals && cents(totals.grand_total != null ? totals.grand_total : totals.total);
+  if (data && data.id && total != null) {
+    const item = (data.items || []).find((i) => i && i.price) || null;
+    await env.DB.prepare(
+      `INSERT INTO payments (id, user_id, subscription_id, price_id, origin, currency, total, tax, earnings, billed_at, created_at)
+       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)
+       ON CONFLICT(id) DO UPDATE SET user_id = COALESCE(?2, user_id), total = ?7, tax = ?8, earnings = COALESCE(?9, earnings)`
+    ).bind(data.id, userId, data.subscription_id || null, item ? item.price.id : null, String(data.origin || ''),
+      String(totals.currency_code || data.currency_code || 'EUR').toUpperCase().slice(0, 3), total, cents(totals.tax) || 0, cents(totals.earnings),
+      ms(data.billed_at) || ms(data.updated_at) || Date.now(), Date.now()).run();
+  }
   return { applied: true, userId };
+}
+
+// adjustment.created / adjustment.updated: refunds and chargebacks (counted when approved), for the dashboard.
+// developer.paddle.com/webhooks/adjustments/adjustment-updated
+async function applyAdjustment(env, data, occurredAt) {
+  if (!data || !data.id) throw new HttpError(400, 'bad_event', 'Missing adjustment data.');
+  const t = data.totals || {};
+  await env.DB.prepare(
+    `INSERT INTO refunds (id, transaction_id, action, status, currency, total, last_event_at, created_at)
+     VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)
+     ON CONFLICT(id) DO UPDATE SET status = ?4, total = ?6, last_event_at = ?7 WHERE refunds.last_event_at <= ?7`
+  ).bind(data.id, data.transaction_id || null, String(data.action || ''), String(data.status || ''),
+    String(t.currency_code || data.currency_code || 'EUR').toUpperCase().slice(0, 3), cents(t.total) || 0, occurredAt,
+    ms(data.created_at) || occurredAt).run();
+  return { applied: true };
 }
 
 export const HANDLED_EVENTS = [
   'subscription.created', 'subscription.updated', 'subscription.activated', 'subscription.canceled',
   'subscription.past_due', 'subscription.paused', 'subscription.resumed', 'subscription.trialing',
-  'transaction.completed',
+  'transaction.completed', 'adjustment.created', 'adjustment.updated',
 ];
 
 export async function handleWebhook(request, env) {
@@ -116,7 +146,8 @@ export async function handleWebhook(request, env) {
   }
   const occurredAt = ms(event.occurred_at) || Date.now();
   try {
-    const r = type.startsWith('subscription.') ? await applySubscription(env, event.data, occurredAt) : await applyTransaction(env, event.data);
+    const r = type.startsWith('subscription.') ? await applySubscription(env, event.data, occurredAt)
+      : type.startsWith('adjustment.') ? await applyAdjustment(env, event.data, occurredAt) : await applyTransaction(env, event.data);
     return { ok: true, ...r };
   } catch (e) {
     // Let Paddle retry: forget the event id so the retry is not seen as a duplicate.

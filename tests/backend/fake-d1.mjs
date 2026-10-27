@@ -20,7 +20,8 @@ class Stmt {
   async all() { return { success: true, results: this._s().all(...this.params).map(plain), meta: {} }; }
   async run() {
     const s = this._s();
-    if (/\bRETURNING\b/i.test(this.sql)) return { success: true, results: s.all(...this.params).map(plain), meta: {} };
+    // like D1, run() (and so batch()) gives back the rows of a SELECT or of RETURNING
+    if (/\bRETURNING\b/i.test(this.sql) || /^\s*(SELECT|WITH)\b/i.test(this.sql)) return { success: true, results: s.all(...this.params).map(plain), meta: {} };
     const r = s.run(...this.params);
     return { success: true, meta: { changes: Number(r.changes), last_row_id: Number(r.lastInsertRowid) } };
   }

@@ -16,6 +16,8 @@ PADDLE_CLIENT_TOKEN = "test_6ba61e76a40fdce6b9d25c3eb9a"           # client-side
 PADDLE_PRICE_MONTH = "pri_01m5ygermd2pjw66mgdsh4f4rw"            # pri_... for 9.99 EUR / month
 PADDLE_PRICE_YEAR = "pri_01m5ygfwqdq8h2ax297c6qagjs"             # pri_... for 79 EUR / year
 SOCIAL_CONNECT_ENABLED = "0"
+ADMIN_HOST = "admin.stalak.app"   # the owner's dashboard (BACKEND.md, step 13); off until the secrets ACCESS_AUD and ADMIN_EMAILS are set
+ACCESS_TEAM_DOMAIN = "https://small-band-a6ef.cloudflareaccess.com"   # Cloudflare Zero Trust team (public); its keys sign the Access tokens
 GOOGLE_CLIENT_ID = "912353079416-aq4ljmd2n7ijcfl92025egde3r5nhnc9.apps.googleusercontent.com"   # public; the secret GOOGLE_CLIENT_SECRET is set in Cloudflare       # TikTok / Instagram posting: not implemented, keep "0"
 
 # Workers AI (« Paroles automatiques », Stalak Pro): the Whisper model that writes the lyrics, on env.AI.
