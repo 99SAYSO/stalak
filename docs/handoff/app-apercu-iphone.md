@@ -16,7 +16,7 @@ Migration SQL : aucune.
 
 Tests :
 - Nouveau `python3 tests/ui/remux_frag.py public` : 5 dispositions de MP4 en morceaux (ffmpeg), images et son comparés à l'original. Avant la correction : 8/10, les deux cas « 2e piste sans position » échouent comme sur l'iPhone. Après : 10/10.
-- `node tests/backend/run.mjs` : 49/49.
+- `node tests/backend/run.mjs` : 57/57 (après remise à jour sur main f4be097).
 - Syntaxe de `src/app.js` OK, `build.py` et `build_site.py` OK.
 - Chargement sans erreur ni défilement horizontal : site FR et EN + version claude.ai, à 390 px et 1280 px.
 - `tests/ui/lyrics_ui.py` : s'arrête sur un délai d'attente de 15 s, à l'identique sur `main` sans ce changement. Ce problème existait déjà et n'est pas lié à cette branche, à regarder à part.
