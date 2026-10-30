@@ -1,9 +1,22 @@
 # Stalak — état du projet
 
 > Tenu à jour par le Chef de projet. Chaque conversation le lit avant de commencer et met à jour sa section sur sa branche à la fin de chaque tâche.
-> Dernière mise à jour : 27/10/2026 (fusion et mise en ligne : assistant d'aide, connexion TikTok/Instagram éteinte, état des lieux juridique).
+> Dernière mise à jour : 30/10/2026 (prix Paddle de l'offre hybride, contrat App / Comptes).
 
 ## Décisions récentes du propriétaire
+- **30/10 au soir : l'offre change encore. Elle remplace « Gratuit 1 vidéo par jour + Basic / Pro / Max »** (voir STALAK_CONTEXTE.md, section 2) : Gratuit illimité avec filigrane et pub récompensée, Pro 7,99 $ / 49,99 $, Creator Plus 14,99 $ / 99,99 $. On reprend le travail fait sur `compte/formules`, `app/formules`, `marketing/tarifs-formules` et `legal/nouvelle-offre` (tableau des formules, Paddle, changement de formule, cadenas, pages), et on l'adapte. Ces branches ne seront pas fusionnées telles quelles. Les nouveaux prix Paddle sandbox seront créés par le Chef de projet et notés ici.
+  - **Prix Paddle sandbox de l'offre hybride (créés le 30/10 à 19 h 35 par le Chef de projet, en dollars ; Paddle convertit selon le pays)** :
+    | Formule | Produit | Mensuel | Annuel |
+    |---|---|---|---|
+    | Pro | `pro_01m5ygd6ra9bhd5vzy2v1rrk70` | 7,99 $ `pri_01m671bncd9qm3dqxjyqf127gn` | 49,99 $ `pri_01m671cexysycbr7wz1av55cvy` |
+    | Creator Plus | `pro_01m671d5b8wbm0dmmvjn7x8vx9` | 14,99 $ `pri_01m671dtkv0d5m0r2a4ek02a3e` | 99,99 $ `pri_01m671eex11hq295vhmsj723wm` |
+    - Anciens prix (tous encore actifs, abonnements de test seulement) : le webhook compte les prix Pro en euros (9,99 €, 79 €, 10,99 €, 109 €) et Basic comme `pro`, les prix Max comme `creator`. Ils seront archivés plus tard, avec l'accord du propriétaire.
+  - **Contrat App / Comptes pour l'offre hybride** (remplace le contrat Basic/Pro/Max ci-dessous) :
+    - Formules : `free`, `pro`, `creator`. Gratuit **sans compte obligatoire**, montage illimité, plus de vidéo du jour, plus d'e-mail de rappel, plus de fin Stalak de 3 s.
+    - `acctHas(feat)` : `nowm` (pas de filigrane ni de pub), `clip`, `fx` (effets premium), `text` (mot par mot / karaoké), `filters` (filtres pro), `lyrics` (paroles auto) → Pro et Creator Plus ; `pack5`, `pack10`, `pack30`, `cloud`, `human` → Creator Plus seulement.
+    - `acctOpen(why, { plan })` avec `plan` = `pro` ou `creator`. `acctQuota` et `acctUseVideo` ne servent plus.
+    - Filigrane : ajouté par l'App dans le navigateur à l'export pour Gratuit (logo + « Clipped with stalak.app », qui bouge). La pub récompensée (Google Ad Manager, format « rewarded » pour le web) l'enlève pour **cette** vidéo. Pas de vérification côté serveur : Google n'en propose pas pour le web.
+    - Paroles auto : proposition 20 par jour en Pro, 60 en Creator Plus ; sauvegarde en ligne 100 Go en Creator Plus.
 - 27/10 : « Parler à un humain » devient un avantage **Stalak Pro** : chat en direct si le propriétaire est disponible, sinon réponse par e-mail sous 24 h. Ne jamais écrire « 24 h/24 ». Les gratuits gardent le glaçon IA et contact@stalak.app (obligation légale de pouvoir joindre le vendeur). Comptes fait la restriction côté serveur et dans le glaçon ; Marketing a écrit les textes (branche `marketing/chat-pro`, à fusionner en même temps que la branche Comptes).
 - 27/10 : **menu du compte** (en haut à droite) et **Galerie** des projets en ligne, en grille avec couvertures, comme l'app Photos de l'iPhone → Comptes.
 
@@ -19,6 +32,19 @@
   - **Pro 10,99 €/mois (109 €/an)** : Basic + tous les filtres, mode Clip 16:9, packs de 5 et 10, paroles auto 20 par jour, sauvegarde en ligne 20 Go.
   - **Max 13,99 €/mois (139 €/an)** : Pro + packs de 30, paroles auto 60 par jour, sauvegarde 100 Go, « Parler à un humain ». Carte mise en avant : « seulement 3 € de plus que Pro ».
   - Un abonné garde son prix. Aujourd'hui, il n'y a que des abonnements de test (sandbox).
+  - **Prix Paddle sandbox créés le 30/10 par le Chef de projet** (taxe : réglage du compte, catégorie « Standard digital goods ») :
+    | Formule | Produit | Mensuel | Annuel |
+    |---|---|---|---|
+    | Basic | `pro_01m66r6h2rkefmaxn31gckec3n` | 4,99 € `pri_01m66r80jxszc4yxggqvwak5p5` | 39 € `pri_01m66r8g1bhvhnk6x1z9m0x894` |
+    | Pro | `pro_01m5ygd6ra9bhd5vzy2v1rrk70` | 10,99 € `pri_01m66r4d7mtzps3wmycfmv8pk9` | 109 € `pri_01m66r5nakxvg6cxjcgc1vv7j7` |
+    | Max | `pro_01m66r71dy61a2qaqsrrxgq12n` | 13,99 € `pri_01m66r9m12ckfttnrr5h3vhfgc` | 139 € `pri_01m66r9tmrfg7fxfrb5dpnk5s3` |
+    - Anciens prix Pro, toujours actifs pour les abonnés existants : 9,99 € `pri_01m5ygermd2pjw66mgdsh4f4rw` et 79 € `pri_01m5ygfwqdq8h2ax297c6qagjs`. Le webhook doit les compter comme « pro ».
+  - **Contrat entre App et Comptes (30/10, à respecter tel quel par Comptes)** : App a déjà écrit son côté sur la branche `app/formules`, encore à l'état EN COURS. Comptes doit fournir dans le bloc compte de `app.js`, sous ces noms exacts :
+    1. `acctHas(feat)` → `true` ou `false` pour `nologo`, `text`, `unlimited` (Basic) ; `filters`, `clip`, `pack5`, `pack10` (Pro) ; `pack30` (Max). Ajouter aussi `cloud`, `lyrics` et `human` côté serveur.
+    2. `acctQuota()` → `{ left, resetAt }` pour un gratuit connecté (vidéos restantes aujourd'hui, heure en ms de la prochaine), `null` pour une formule payante.
+    3. `acctUseVideo()` → compte la vidéo du jour côté serveur (peut renvoyer une promesse).
+    4. `acctOpen(why, { plan })` → ouvre la page des formules sur `plan` (`basic`, `pro` ou `max`). Nouvelles raisons : `daily`, `pack30` et `filters`. `daily` pour une personne non connectée ouvre la création de compte.
+    - Juridique a écrit les règles côté serveur (remise à zéro, prorata, changement programmé, prix gardé) dans `docs/STATUS.md` de la branche `legal/nouvelle-offre` (`git show origin/legal/nouvelle-offre:docs/STATUS.md`), section Juridique : à appliquer.
   - Travail : Comptes (formules, compteur, e-mail de rappel, Paddle), App (ce que débloque chaque formule, écran « vidéo du jour utilisée »), Marketing (page Tarifs à 4 colonnes), Juridique (conditions de vente). Prix Paddle sandbox créés par le Chef de projet.
 
 ## En ligne (stalak.app)
@@ -112,6 +138,15 @@
 - **À décider** : boutons Pro de la page Tarifs pendant que Paddle est en sandbox (« bientôt » ou Paddle réel) avant toute promo.
 - **À demander** : case « recevoir les nouveautés » à l'inscription (Comptes) ; mots « montage de playback » dans le H1 et JS/CSS en fichiers cachés (App).
 - **Fait (branche `marketing/idees-croissance`)** : recherche « idées de croissance » (concurrents, fonctions, Stalak Pro, acquisition), classée par impact et effort. Document « Stalak — idées de croissance » dans claude.ai ; résumé dans `docs/marketing/IDEES_CROISSANCE.md`.
+- **Fait (branche `marketing/seo`, 30/10)** : référencement du nom « Stalak » et de la niche. Détail dans `docs/marketing/SEO.md` ; plan complet dans le document claude.ai « Stalak — passer premier sur Google ».
+  - Fiche de la marque pour Google (Organization : logo, e-mail, noms) ; liste `SOCIAL` dans `build_site.py` pour les comptes officiels (déclarés en `sameAs` et en liens `rel="me"` dans le pied de page) — **vide pour l'instant, en attente des adresses du propriétaire**.
+  - `llms.txt` pour les IA de recherche ; plan du site passé de 4 à 14 pages (pages légales + comparatif).
+  - Nouvelles pages **`/alternative-triller`** et **`/en/triller-alternative`** : comparatif sourcé et daté Stalak / Triller / CapCut / camrip, FAQ, données structurées Article + FAQ + fil d'Ariane, liens depuis le pied de page de l'accueil. Vidéo d'exemple affichée seulement si `site_src/demo/exemple.mp4` existe.
+  - **Correction (touche `src/app.js`, à relire par App)** : sur stalak.app, la page française passait en anglais selon la langue du navigateur, donc Google la lisait en anglais (titre anglais sur la recherche « stalak » en France). Elle reste maintenant en français ; l'anglais reste disponible par le bouton FR / EN et `/en/`. La version claude.ai n'est pas touchée.
+- **Au propriétaire** : adresses des comptes Instagram / TikTok / YouTube de Stalak ; une vraie vidéo montée avec Stalak ; vérifier dans Search Console (compte propriétaire) que `sitemap.xml` est envoyé et demander l'indexation ; Bing Webmaster Tools ; inscriptions aux annuaires (liste et textes dans le document).
+- **Suivant (Marketing)** : pages « faire un playback » (FR), « cut multiple takes to the beat » (EN/FR), « lip-sync videos for musicians » (EN), « paroles sur une vidéo TikTok » (FR/EN).
+- **À regarder (App)** : proposer aux visiteurs dont le navigateur est en anglais un petit lien « English version » sur la page française, plutôt que de changer la langue tout seul.
+- **À regarder (Juridique)** : la page de comparaison est de la publicité comparative ; elle ne compare que des faits vérifiables, sourcés et datés. Revoir les prix des concurrents tous les 3 mois.
 
 ## Idées de croissance recommandées (à répartir par le propriétaire)
 
