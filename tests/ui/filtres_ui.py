@@ -153,12 +153,13 @@ def engine(b, base, video):
     enc = aev(pg, "const c = await pickVideoConfig(); return c ? c.codec : null;")
     if enc:
         times = {}
-        for fid in ('none', 'film35', 'reve'):
+        # free filters only: this test page has no Pro account, a Pro filter would open the Pro page instead of exporting
+        for fid in ('none', 'film35', 'nb'):
             ev(pg, "setFilter('%s', true), lastBlob = null" % fid)
             t = aev(pg, "const t0 = performance.now(); await exportOne(); return [performance.now() - t0, lastBlob ? lastBlob.size : 0];")
             times[fid] = t
         print('export complet (exemple, %s) : ' % enc + ', '.join('%s %.1f s (%d ko)' % (k, v[0] / 1000, v[1] / 1024) for k, v in times.items()))
-        slow = max(times['film35'][0], times['reve'][0]) / max(1, times['none'][0])
+        slow = max(times['film35'][0], times['nb'][0]) / max(1, times['none'][0])
         check('export avec filtre pas beaucoup plus lent (x%.2f)' % slow, all(v[1] > 0 for v in times.values()) and slow < 1.6, times)
     else:
         print('export complet : pas d’encodeur vidéo dans ce navigateur de test, mesure faite image par image seulement')
