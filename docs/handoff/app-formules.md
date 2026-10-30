@@ -32,6 +32,16 @@ Ce que Comptes doit livrer (noms utilisés ici, à garder tels quels) :
 
 Fichiers touchés : src/app.js (bloc formules, filtres, export, texte, Clip, fin Stalak ; 4 lignes du bloc compte : `acctSync` appelle `planTags()`, `#outroPro`, la restauration d'un projet Clip), src/markup.html (écran #dayDone, lien de la fin), src/theme.css (étiquettes BASIC/PRO/MAX, écran), public/ (reconstruit), tests/ui/formules_ui.py (nouveau), docs/STATUS.md, ce compte rendu.
 Migration SQL : aucune côté App (le compteur journalier est côté Comptes).
-Tests : voir plus bas.
+Tests :
+- Nouveau `tests/ui/formules_ui.py` : 128/128, en FR et EN, sur téléphone 390 px et ordinateur 1280 px. Comptes y est simulé formule par formule (Gratuit, Basic, Pro, Max). Il vérifie :
+  - logo ;
+  - tailles de texte, Clip, packs 5/10/30 ;
+  - 3 filtres pour Gratuit et Basic, tous pour Pro ;
+  - chaque cadenas ouvre la bonne formule ;
+  - écran « vidéo du jour » : texte, temps restant, focus, Échap, « Passer à Basic » ;
+  - vidéo comptée une fois faite ;
+  - création de compte si non connecté ;
+  - comportement d'avant sans `acctHas`.
+- `node tests/backend/run.mjs` 63/63 ; `tests/ui/paroles_suppr.py` 44/44 ; syntaxe et builds OK ; version claude.ai chargée sans erreur à 390 px et 1280 px.
 Reste au propriétaire : rien tant que Comptes n'a pas livré ; ensuite, tester un compte gratuit sur iPhone (2e export du jour).
 Skills utilisés : webapp-testing.
