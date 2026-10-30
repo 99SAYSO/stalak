@@ -73,11 +73,12 @@ const mails = [];
 const consoleLog = console.log;
 console.log = (...a) => { const t = String(a[0]); if (t.startsWith('[stalak dev] mail to ')) mails.push(t.slice(21)); else consoleLog(...a); };
 let userN = 0;
-async function testUser(pro) {
+async function testUser(pro, plan) {
   const id = 'u_ui' + (++userN), now = Date.now(), token = base64url(crypto.getRandomValues(new Uint8Array(32)));
   env.DB.raw.prepare('INSERT INTO users (id, email, lang, created_at, last_login_at, email_verified_at) VALUES (?, ?, ?, ?, ?, ?)').run(id, `ui${userN}@example.com`, 'fr', now, now, now);
   env.DB.raw.prepare('INSERT INTO sessions (token_hash, user_id, created_at, expires_at, method) VALUES (?, ?, ?, ?, ?)').run(await sha256Hex(token), id, now, now + 864e5, 'password');
-  if (pro) env.DB.raw.prepare("INSERT INTO subscriptions (id, user_id, customer_id, status, price_id, current_period_end, last_event_at, updated_at) VALUES (?, ?, ?, 'active', 'pri_month', ?, ?, ?)").run('sub_ui' + userN, id, 'ctm_ui' + userN, now + 30 * 864e5, now, now);
+  // plan: 'basic' | 'pro' | 'max' (offer of 30/10); without it, Pro at the first offer's price
+  if (pro) env.DB.raw.prepare("INSERT INTO subscriptions (id, user_id, customer_id, status, price_id, current_period_end, last_event_at, updated_at, plan) VALUES (?, ?, ?, 'active', 'pri_month', ?, ?, ?, ?)").run('sub_ui' + userN, id, 'ctm_ui' + userN, now + 30 * 864e5, now, now, plan || null);
   return { id, token };
 }
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.webmanifest': 'application/manifest+json', '.txt': 'text/plain' };
@@ -87,7 +88,7 @@ http.createServer(async (req, res) => {
     const url = new URL(req.url, origin);
     const chunks = []; for await (const c of req) chunks.push(c);
     const body = Buffer.concat(chunks);
-    if (url.pathname === '/__test/user') { const u = await testUser(JSON.parse(body.toString() || '{}').pro); res.writeHead(200, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify(u)); }
+    if (url.pathname === '/__test/user') { const b = JSON.parse(body.toString() || '{}'), u = await testUser(b.pro, b.plan); res.writeHead(200, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify(u)); }
     // the site-wide daily budget of the help assistant (HELP_DAILY_MAX)
     if (url.pathname === '/__test/helpmax') { env.HELP_DAILY_MAX = url.searchParams.get('n'); res.writeHead(200); return res.end('{}'); }
     if (url.pathname === '/__test/admin-login') { res.writeHead(302, { Location: '/admin/', 'Set-Cookie': 'test_admin=1; Path=/' }); return res.end(); }

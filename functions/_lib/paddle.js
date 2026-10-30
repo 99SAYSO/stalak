@@ -3,6 +3,7 @@
 //       https://developer.paddle.com/api-reference/customer-portals/create-customer-portal-session
 import { HttpError, readText } from './http.js';
 import { hmacSha256Hex, timingSafeEqual } from './crypto.js';
+import { planOfPrice, isPlan, priceTable, subscriptionActive, planOfSub } from './entitlements.js';
 
 export const SIGNATURE_TOLERANCE_S = 300;
 
@@ -66,20 +67,25 @@ async function applySubscription(env, data, occurredAt) {
   const userId = (await findUserId(env, data)) || (prev && prev.user_id) || null;
   const item = (data.items || []).find((i) => i.status !== 'inactive') || (data.items || [])[0];
   const priceId = item && item.price ? item.price.id : null;
+  // the plan (basic / pro / max): from the price ids set in wrangler.toml, else from the price's custom_data {"plan": "max"}
+  // set in Paddle. Unknown price: NULL (entitlements.js then counts it as Pro, the plan of the first offer) and a warning.
+  const cdPlan = item && item.price && item.price.custom_data && item.price.custom_data.plan;
+  const plan = planOfPrice(env, priceId) || (isPlan(cdPlan) && cdPlan !== 'free' ? cdPlan : null);
+  if (priceId && !plan) console.warn('[stalak] subscription with an unknown price', data.id, priceId);
   const periodEnd = ms(data.current_billing_period && data.current_billing_period.ends_at);
   const sc = data.scheduled_change;
   const cancelAt = sc && sc.action === 'cancel' ? ms(sc.effective_at) : null;
   const now = Date.now();
 
   await env.DB.prepare(
-    `INSERT INTO subscriptions (id, user_id, customer_id, status, price_id, current_period_end, cancel_at, last_event_at, updated_at)
-     VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)
+    `INSERT INTO subscriptions (id, user_id, customer_id, status, price_id, current_period_end, cancel_at, last_event_at, updated_at, plan)
+     VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)
      ON CONFLICT(id) DO UPDATE SET user_id = COALESCE(?2, user_id), customer_id = ?3, status = ?4, price_id = COALESCE(?5, price_id),
-       current_period_end = ?6, cancel_at = ?7, last_event_at = ?8, updated_at = ?9`
-  ).bind(data.id, userId, data.customer_id || null, String(data.status || 'active'), priceId, periodEnd, cancelAt, occurredAt, now).run();
+       current_period_end = ?6, cancel_at = ?7, last_event_at = ?8, updated_at = ?9, plan = CASE WHEN ?5 IS NULL THEN plan ELSE ?10 END`
+  ).bind(data.id, userId, data.customer_id || null, String(data.status || 'active'), priceId, periodEnd, cancelAt, occurredAt, now, plan).run();
   await linkCustomer(env, userId, data.customer_id);
   if (!userId) console.warn('[stalak] subscription without known user', data.id, data.customer_id);
-  return { applied: true, userId };
+  return { applied: true, userId, plan };
 }
 
 // transaction.completed: links the Paddle customer to the user (custom_data.user_id), and keeps the payment for the
@@ -190,4 +196,28 @@ export async function portalLinks(env, user) {
 // Used when an account is deleted: stop billing immediately.
 export async function cancelSubscriptionNow(env, subscriptionId) {
   return paddleApi(env, 'POST', `/subscriptions/${encodeURIComponent(subscriptionId)}/cancel`, { effective_from: 'immediately' });
+}
+
+// POST /api/paddle/change {plan, interval}: a subscriber moves to another plan (Pro → Max, Basic → Pro…) on the SAME
+// subscription, instead of buying a second one. Paddle bills the difference now, prorated, with the saved payment method;
+// if that payment fails nothing changes (on_payment_failure: prevent_change). The webhook (subscription.updated) then
+// sets the new plan. developer.paddle.com/build/subscriptions/replace-products-prices-upgrade-downgrade
+export async function changePlan(env, user, body) {
+  const plan = body && body.plan, interval = body && body.interval;
+  if (!['basic', 'pro', 'max'].includes(plan) || !['month', 'year'].includes(interval)) {
+    throw new HttpError(400, 'invalid_plan', 'plan: basic, pro or max; interval: month or year.');
+  }
+  const priceId = env[`PADDLE_PRICE_${plan.toUpperCase()}_${interval === 'year' ? 'YEAR' : 'MONTH'}`];
+  if (!priceId || !priceTable(env)[priceId]) throw new HttpError(409, 'not_configured', 'This plan cannot be bought yet.');
+  const { results } = await env.DB.prepare('SELECT * FROM subscriptions WHERE user_id = ?1 ORDER BY updated_at DESC').bind(user.id).all();
+  const sub = results.find((s) => subscriptionActive(s) && s.status !== 'past_due');
+  if (!sub) throw new HttpError(404, 'no_subscription', 'No running subscription to change: buy a plan instead.');
+  if (sub.cancel_at) throw new HttpError(409, 'subscription_ending', 'This subscription is ending: buy a new plan once it has stopped, or resume it first.');
+  if (sub.price_id === priceId) throw new HttpError(409, 'same_plan', 'This is already your plan.');
+  await paddleApi(env, 'PATCH', `/subscriptions/${encodeURIComponent(sub.id)}`, {
+    items: [{ price_id: priceId, quantity: 1 }],
+    proration_billing_mode: 'prorated_immediately',
+    on_payment_failure: 'prevent_change',
+  });
+  return { ok: true, from: planOfSub(env, sub), to: plan, interval };
 }

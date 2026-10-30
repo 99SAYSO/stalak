@@ -6,9 +6,15 @@
 // Secret for the warning e-mails:           npx wrangler secret put RESEND_API_KEY -c workers/cloud-cleanup/wrangler.toml
 // Without this Worker, the same cleanup still runs lazily from the site (at most every 6 hours, see BACKEND.md).
 import { cleanupCloud } from '../../functions/_lib/cloud.js';
+import { sendReminders } from '../../functions/_lib/videos.js';
 
 export default {
   async scheduled(controller, env, ctx) {
+    // the two daytime triggers send the reminder e-mails of the free video of the day (sent only 10:00-21:00, Paris time)
+    if (controller.cron !== '17 3 * * *') {
+      ctx.waitUntil(sendReminders(env, Date.now(), { max: 300 }).then((r) => console.log('[stalak] reminders', JSON.stringify(r))));
+      return;
+    }
     ctx.waitUntil(cleanupCloud(env, Date.now(), { max: 200 }).then((r) => console.log('[stalak] cloud cleanup', JSON.stringify(r))));
   },
 };

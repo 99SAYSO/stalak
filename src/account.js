@@ -1,10 +1,15 @@
 /* Stalak account client (plain JS, no framework).
    window.StalakAccount:
-     me()                 -> Promise<{user, session, entitlements, subscription}>
-                             user: {id, email, lang, displayName, avatarUrl, hasPassword, passwordSetAt, emailVerified, providers}
+     me()                 -> Promise<{user, session, entitlements, subscription, freeVideo}>
+                             user: {id, email, lang, displayName, avatarUrl, hasPassword, passwordSetAt, emailVerified, providers, reminders}
+                             entitlements: {plan: 'free'|'basic'|'pro'|'max', features: [...], limits: {...}} (functions/_lib/entitlements.js)
+                             freeVideo (free plan): {usedToday, nextAt}
+     has(feature)         -> bool: the plan unlocks this feature ('unlimited', 'nologo', 'text', 'filters', 'clip', 'packs',
+                             'lyrics', 'cloud', 'pack30', 'human'); the table is on the server
                              session: {method, recentCode} (recentCode: may set a password without the old one)
      providers()          -> Promise<['google'|'microsoft'|'apple', …]>  (only those configured on the server)
-     signup(email, password[, displayName]) -> Promise<{needCode, expiresIn}> (a code is mailed; error email_taken…)
+     signup(email, password[, displayName[, reminders]]) -> Promise<{needCode, expiresIn}> (a code is mailed; error email_taken…)
+                             reminders: true = the box « Me prévenir quand ma vidéo gratuite du jour est disponible »
      signupVerify(email, code)  -> Promise<state>   (account made, signed in)
      login(email, password)     -> Promise<state | {needCode: true}> (needCode: new browser, a code is mailed)
      loginVerify(email, code)   -> Promise<state>
@@ -13,12 +18,16 @@
      reset(email, code, password) -> Promise<state>      (new password, signed in)
      oauthUrl(provider, to, popup) -> the address that starts Google / Apple / Microsoft sign-in (to: 'account' | 'pro')
      setPassword(password[, currentPassword]) -> Promise<state>
-     updateProfile({displayName}) -> Promise<state>
+     updateProfile({displayName} | {reminders: bool}) -> Promise<state>
      uploadAvatar(blob)   -> Promise<state>   (blob: image/jpeg | image/webp | image/png, at most 80 KB)
      removeAvatar()       -> Promise<state>
      logout()
-     checkout(plan)       -> opens the Paddle overlay; plan = 'month' | 'year'
+     checkout(plan, interval) -> opens the Paddle overlay; plan = 'basic' | 'pro' | 'max', interval = 'month' | 'year'
+                             (checkout('month') / checkout('year') = Pro, the older call)
+     videos.claim(videoId) -> Promise<{unlimited} | {token, day, nextAt}>: the « jeton du jour » asked before a free export;
+                             error daily_video_used (data.nextAt), not_logged_in
      portal()             -> Promise<{url, cancelUrl, updatePaymentUrl}> (manage / cancel)
+     changePlan(plan, interval) -> Promise<{ok, from, to}>: a subscriber moves to another plan (prorated, same subscription)
      deleteAccount()
      projects.list() / get(id) / save(id, name, state[, fileIds]) / remove(id)
      projects.listAll()   -> Promise<{projects, storage: {available, used, quota, partSize, maxFile}}>
@@ -34,8 +43,15 @@
    Errors are thrown as Error objects with .code (server "error" field) and .status. */
 (function () {
   'use strict';
-  var FREE = { plan: 'free', outro: true, cloudSave: false, clipMode: false, autoLyrics: false, packs: false };
-  var state = { user: null, session: null, entitlements: FREE, subscription: null };
+  var FREE = { plan: 'free', features: [], limits: { videosPerDay: 1 }, outro: true, cloudSave: false, clipMode: false, autoLyrics: false, packs: false };
+  var state = { user: null, session: null, entitlements: FREE, subscription: null, freeVideo: null };
+  // a server from before the 30/10 offer sends no features list: its Pro had everything but « pack30 » and « human »
+  var OLD_PRO = ['unlimited', 'nologo', 'text', 'filters', 'clip', 'packs', 'lyrics', 'cloud', 'pack30', 'human'];
+  function has(feature) {
+    var e = state.entitlements || FREE;
+    if (Array.isArray(e.features)) return e.features.indexOf(feature) >= 0;
+    return e.plan === 'pro' && OLD_PRO.indexOf(feature) >= 0;
+  }
   var listeners = [];
   var configPromise = null;
   var paddlePromise = null;
@@ -71,7 +87,8 @@
 
   function setState(next) {
     var before = JSON.stringify(state);
-    state = { user: next.user || null, session: next.session || null, entitlements: next.entitlements || FREE, subscription: next.subscription || null };
+    state = { user: next.user || null, session: next.session || null, entitlements: next.entitlements || FREE, subscription: next.subscription || null,
+      freeVideo: next.freeVideo || null };
     if (JSON.stringify(state) !== before) {
       listeners.slice().forEach(function (cb) { try { cb(state); } catch (e) { console.error(e); } });
     }
@@ -106,23 +123,29 @@
     return paddlePromise;
   }
 
-  // After payment the webhook upgrades the account a few seconds later: poll /api/me until Pro.
-  function waitForPro(tries) {
-    if (state.entitlements.plan === 'pro' || tries <= 0) return;
-    setTimeout(function () { me().then(function () { waitForPro(tries - 1); }, function () { waitForPro(tries - 1); }); }, 2000);
+  // After payment the webhook changes the account's plan a few seconds later: poll /api/me until it is the plan bought.
+  var buying = null;
+  function waitForPlan(tries) {
+    if ((buying && state.entitlements.plan === buying) || tries <= 0) { buying = null; return; }
+    setTimeout(function () { me().then(function () { waitForPlan(tries - 1); }, function () { waitForPlan(tries - 1); }); }, 2000);
   }
 
   function onPaddleEvent(ev) {
     if (ev && ev.name === 'checkout.closed') checkoutOpen = false;
-    if (ev && ev.name === 'checkout.completed') waitForPro(20);
+    if (ev && ev.name === 'checkout.completed') waitForPlan(20);
   }
 
-  function checkout(plan) {
-    if (plan !== 'month' && plan !== 'year') return Promise.reject(Object.assign(new Error('plan must be month or year'), { code: 'invalid_plan' }));
+  var PLANS = ['basic', 'pro', 'max'];
+  function checkout(plan, interval) {
+    if (plan === 'month' || plan === 'year') { interval = plan; plan = 'pro'; }   // the older call
+    if (PLANS.indexOf(plan) < 0 || (interval !== 'month' && interval !== 'year')) {
+      return Promise.reject(Object.assign(new Error('plan: basic, pro or max; interval: month or year'), { code: 'invalid_plan' }));
+    }
     return Promise.all([config(), state.user ? state : me()]).then(function (r) {
       var cfg = r[0], st = r[1];
       if (!st.user) throw Object.assign(new Error('Sign in first.'), { code: 'not_logged_in', status: 401 });
-      var priceId = cfg.paddle.prices[plan];
+      var p = cfg.paddle.prices[plan], priceId = p && typeof p === 'object' ? p[interval] : null;
+      buying = plan;
       if (!priceId) throw Object.assign(new Error('Payments are not configured yet.'), { code: 'not_configured' });
       return loadPaddle(cfg).then(function (P) {
         checkoutOpen = true;
@@ -247,9 +270,10 @@
     get checkoutOpen() { return checkoutOpen; },
     me: me,
     config: config,
+    has: has,
     providers: function () { return config().then(function (c) { return (c.auth && c.auth.providers) || []; }); },
-    signup: function (email, password, displayName) {
-      return api('POST', 'auth/signup', { email: email, password: password, displayName: displayName || null, lang: lang() });
+    signup: function (email, password, displayName, reminders) {
+      return api('POST', 'auth/signup', { email: email, password: password, displayName: displayName || null, lang: lang(), reminders: reminders === true });
     },
     signupVerify: function (email, code) { return api('POST', 'auth/signup/verify', { email: email, code: code, lang: lang() }).then(setState); },
     login: function (email, password) {
@@ -274,7 +298,21 @@
     logout: function () { return api('POST', 'auth/logout').then(function () { return setState({}); }); },
     checkout: checkout,
     portal: function () { return api('POST', 'paddle/portal'); },
+    // a subscriber moves to another plan (same subscription, the difference billed now): then wait for the webhook
+    changePlan: function (plan, interval) {
+      return api('POST', 'paddle/change', { plan: plan, interval: interval }).then(function (d) { buying = plan; waitForPlan(20); return d; });
+    },
     deleteAccount: function () { return api('DELETE', 'account', { confirm: true }).then(function () { return setState({}); }); },
+    videos: {
+      // the free video of the day (functions/_lib/videos.js); the same id may be asked again the same day (a retry)
+      claim: function (videoId) {
+        return api('POST', 'videos/claim', { video: videoId }).then(function (d) {
+          if (!d.unlimited && state.user) setState({ user: state.user, session: state.session, entitlements: state.entitlements,
+            subscription: state.subscription, freeVideo: { usedToday: true, nextAt: d.nextAt } });
+          return d;
+        });
+      }
+    },
     projects: {
       list: function () { return api('GET', 'projects').then(function (d) { return d.projects; }); },
       get: function (id) { return api('GET', 'projects/' + encodeURIComponent(id)); },

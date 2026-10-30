@@ -34,10 +34,18 @@ export function sniffImage(b) {
 
 // PATCH /api/me {displayName}
 export async function updateProfile(env, user, body) {
-  if (!('displayName' in body)) throw new HttpError(400, 'nothing_to_update', 'Send {"displayName": "..."}.');
-  const name = normalizeDisplayName(body.displayName);
-  await env.DB.prepare('UPDATE users SET display_name = ?2 WHERE id = ?1').bind(user.id, name).run();
-  user.display_name = name;
+  if (!('displayName' in body) && !('reminders' in body)) throw new HttpError(400, 'nothing_to_update', 'Send {"displayName": "..."} or {"reminders": true|false}.');
+  if ('reminders' in body) {
+    // the reminder e-mail « Ta vidéo gratuite du jour est disponible » (videos.js)
+    if (typeof body.reminders !== 'boolean') throw new HttpError(400, 'invalid_reminders', 'reminders: true or false.');
+    await env.DB.prepare('UPDATE users SET reminders = ?2 WHERE id = ?1').bind(user.id, body.reminders ? 1 : 0).run();
+    user.reminders = body.reminders ? 1 : 0;
+  }
+  if ('displayName' in body) {
+    const name = normalizeDisplayName(body.displayName);
+    await env.DB.prepare('UPDATE users SET display_name = ?2 WHERE id = ?1').bind(user.id, name).run();
+    user.display_name = name;
+  }
   return user;
 }
 

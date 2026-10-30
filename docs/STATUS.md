@@ -51,9 +51,17 @@
 - **Menu du compte + Galerie** (en ligne le 28/10) : un appui sur le compte en haut à droite ouvre un menu (Galerie, Mon compte, Stalak Pro ou « Gérer mon abonnement », Aide, Se déconnecter) ; la Galerie remplace « Mes projets » : grille avec couverture (image du montage, 300 px, rangée dans R2 avec le projet), nom dessous, appui = ouvrir, appui long ou « … » = renommer / supprimer. Sans Pro : « La sauvegarde en ligne est réservée à Stalak Pro ». Migration 0007 appliquée. À vérifier par le propriétaire sur iPhone : sauvegarder en ligne, puis voir la couverture dans la Galerie.
 - **« Parler à un humain » réservé à Stalak Pro** (branche `compte/humain-pro`, compte rendu `docs/handoff/compte-humain-pro.md`, Statut : PRÊT) : création et écriture réservées à Pro côté serveur ; sans Pro, écran « Réservé à Stalak Pro » (page Pro + contact@stalak.app) ; un ex-Pro garde les réponses reçues ; réponse « sous 24 h » par e-mail quand tu n'es pas là ; badge Pro dans le tableau de bord. Textes de vente : `marketing/chat-pro`, à fusionner ensemble. Aucune migration.
 
+- **Nouvelle offre côté Comptes** (branche `compte/formules`, compte rendu `docs/handoff/compte-formules.md`, Statut : PRÊT) :
+  - formules `free` / `basic` / `pro` / `max` ; un seul tableau « fonction → formule » (`functions/_lib/entitlements.js`), `acctHas('…')` dans la page, `requirePlan(env, user, '…')` sur le serveur ; paroles auto 20/jour (Pro) et 60 (Max), sauvegarde 20 Go (Pro) et 100 Go (Max), « Parler à un humain » Max seulement ;
+  - gratuit : 1 vidéo par jour avec un compte, « jeton du jour » du serveur, compteur remis à zéro à minuit (Paris) ;
+  - e-mail de rappel (case à l'inscription et dans le compte, lien de désabonnement, 1 par jour au plus, le lendemain d'une vidéo gratuite, arrêt après 7 jours sans visite) ;
+  - page des formules dans l'app : 4 cartes, mensuel / annuel, Max mis en avant ; un abonné change de formule sur le même abonnement (prorata) ;
+  - webhook : la formule vient du prix ; tableau de bord : abonnés et revenu par formule, vidéos gratuites du jour ;
+  - **migration 0008 à appliquer avant de publier** ; les 6 prix Paddle à créer et à mettre dans `wrangler.toml` (BACKEND.md, étape 14).
+
 ## Base de données D1
 - Migrations appliquées : 0001, 0002, 0003, 0004_lyrics_usage, 0004_cloud_save, 0005_social_accounts (27/10), 0006_admin_support (27/10), 0007_project_covers (28/10).
-- En attente : aucune.
+- En attente : **0008_plans_free_video** (branche `compte/formules`), à coller dans la console D1 avant de publier cette branche.
 
 ## À faire, par rôle
 
@@ -78,6 +86,11 @@
 - En cours : « un peu de lag » dans la vidéo exportée, signalé par le propriétaire. La cause n'est pas visible dans le journal. Vidéo exportée et précisions demandées au propriétaire : saccade continue, à chaque coupe, ou lèvres en retard.
 
 ### Comptes, paiements & serveur
+- Nouvelle offre (`compte/formules`) : à faire par le Chef de projet : 3 produits et 6 prix dans Paddle sandbox, identifiants ici et dans `wrangler.toml` (vides pour l'instant : les boutons disent « Bientôt »), redéployer le Worker `workers/cloud-cleanup` (horaires des rappels).
+  - Prix Paddle sandbox (à remplir) : Basic mensuel `pri_…`, Basic annuel `pri_…`, Pro mensuel `pri_…`, Pro annuel `pri_…`, Max mensuel `pri_…`, Max annuel `pri_…`.
+  - Pour App : `acctHas('filters')` pour les filtres (ancien nom `acctPro()` gardé pour la branche `app/filtres`), `acctHas('pack30')` déjà demandé pour le pack de 30, `acctFreeVideo()` = `{usedToday, nextAt}` pour l'écran « vidéo du jour utilisée » (aujourd'hui : la page des formules s'ouvre avec la raison).
+  - Pour Marketing : les textes de la page des formules dans l'app (clés `pl.*`) sont simples, à relire ; la page Tarifs du site reste à faire (4 colonnes).
+  - Limite connue : l'export se fait sur l'appareil, donc la limite d'1 vidéo par jour est comptée et refusée par le serveur, mais une page modifiée à la main pourrait l'ignorer (comme le logo de fin).
 - Paddle en réel une fois la structure créée : nouveaux produits, prix, clés et webhook, puis `PADDLE_ENV=production`.
 - Microsoft (création du compte bloquée, à retenter) et Apple (programme développeur à 99 $/an).
 - Ménage quotidien automatique des projets (Worker `workers/cloud-cleanup`, à déployer avec wrangler depuis un ordinateur). Pour l'instant, le ménage se fait quand quelqu'un ouvre la Galerie.
