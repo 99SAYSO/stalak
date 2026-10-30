@@ -996,3 +996,6 @@ header .stepper{margin-left:auto}
 #apBuy .pl-creator .pl-ribbon{position:relative;top:auto;right:auto;align-self:center;margin:0 0 10px;transform:rotate(-2deg)}
 #apBuy .pl-card .pr-cta{white-space:normal;line-height:1.15;text-align:center;padding-left:12px;padding-right:12px}
 @media (min-width:1000px){ #apBuy .pl-card .pr-cta{font-size:16px} }
+/* « Reprendre ton dernier montage ? » (audit 30/10): it takes the mascot while it is shown, the card below does not repeat it */
+#p1 > .lpoffer:not([hidden]) ~ .card::after{display:none}
+.lpoffer h2{margin-bottom:6px}

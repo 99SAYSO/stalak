@@ -1108,7 +1108,17 @@ const I18N_EN = /*@EN*/{
   "acct.e.same_plan": "That’s already your plan.",
   "acct.e.no_subscription": "No running subscription to change: pick a plan to subscribe.",
   "acct.e.subscription_ending": "Your subscription is ending: you can take a new plan once it has stopped.",
-  "acct.e.change_at_renewal": "Going to monthly (or to a smaller plan billed differently) starts at the end of your current period: turn off the renewal in “Manage my subscription”, then pick the new plan when it ends."
+  "acct.e.change_at_renewal": "Going to monthly (or to a smaller plan billed differently) starts at the end of your current period: turn off the renewal in “Manage my subscription”, then pick the new plan when it ends.",
+  "_bloc.app.audit": "App & montage : audit du 30/10 (projet gardé, mémoire, export, partage, offre Pro, erreurs)",
+  "lp.t": "Pick up your last edit?",
+  "lp.p": "“{name}”, {n} takes, {when}. It’s saved on this phone.",
+  "lp.p1": "“{name}”, {when}. It’s saved on this phone.",
+  "lp.yes": "Pick it up",
+  "lp.no": "No thanks",
+  "lp.ok": "OK",
+  "lp.restoring": "Bringing your edit back…",
+  "lp.done": "“{name}” is back, just as you left it.",
+  "lp.fail": "This edit can’t come back: one of its files is missing from this phone. Import your song and takes again."
 }/*EN@*/;
 const I18N_FR = /*@FR*/{
   "kind.hint.reel": "Une vidéo verticale 9:16, de tout le son ou de quelques mesures.",
@@ -1740,7 +1750,17 @@ const I18N_FR = /*@FR*/{
   "acct.e.same_plan": "C’est déjà ta formule.",
   "acct.e.no_subscription": "Aucun abonnement en cours à changer : choisis une formule pour t’abonner.",
   "acct.e.subscription_ending": "Ton abonnement s’arrête bientôt : tu pourras prendre une nouvelle formule une fois qu’il sera fini.",
-  "acct.e.change_at_renewal": "Passer au mensuel (ou à une formule plus petite facturée autrement) commence à la fin de ta période : arrête le renouvellement dans « Gérer mon abonnement », puis choisis la nouvelle formule à la fin."
+  "acct.e.change_at_renewal": "Passer au mensuel (ou à une formule plus petite facturée autrement) commence à la fin de ta période : arrête le renouvellement dans « Gérer mon abonnement », puis choisis la nouvelle formule à la fin.",
+  "_bloc.app.audit": "App & montage : audit du 30/10 (projet gardé, mémoire, export, partage, offre Pro, erreurs)",
+  "lp.t": "Reprendre ton dernier montage ?",
+  "lp.p": "« {name} », {n} prises, {when}. Il est gardé dans ce téléphone.",
+  "lp.p1": "« {name} », {when}. Il est gardé dans ce téléphone.",
+  "lp.yes": "Reprendre",
+  "lp.no": "Non merci",
+  "lp.ok": "OK",
+  "lp.restoring": "Ton montage revient…",
+  "lp.done": "« {name} » est revenu, comme tu l’avais laissé.",
+  "lp.fail": "Ce montage ne peut pas revenir : un de ses fichiers n’est plus dans ce téléphone. Importe à nouveau ton son et tes prises."
 }/*FR@*/;
 let STATIC_FR = /*@STATIC_FR*/null/*STATIC_FR@*/;
 const LANGS = ['fr', 'en'];
@@ -9984,11 +10004,11 @@ function clMediaFiles(){
 async function clFingerprint(f){ let id = CL.fp.get(f); if (!id){ id = await ACCT.cloud.fingerprint(f); CL.fp.set(f, id); } return id; }
 const clFileRef = (f, id) => ({ id, name: f.name, type: f.type || '', size: f.size, lastModified: f.lastModified || 0 });
 /* what is saved: everything that makes the project, the take objects replaced by their place in the list */
-async function clCollect(){
+async function clCollect(fpOf = clFingerprint){
   const sg = S.song, media = [], ids = new Map();
   const ref = async f => {
     if (!f) throw Object.assign(new Error('no file'), { code: 'no_song_file' });
-    let id = ids.get(f); if (!id){ id = await clFingerprint(f); ids.set(f, id); if (!media.some(m => m.id === id)) media.push({ id, file: f }); }
+    let id = ids.get(f); if (!id){ id = await fpOf(f); ids.set(f, id); if (!media.some(m => m.id === id)) media.push({ id, file: f }); }
     return clFileRef(f, id);
   };
   const song = { name: sg.name, demo: !!sg.demo, duration: sg.duration, beats: sg.beats, down: sg.down, bpm: sg.bpm, lyr: sg.lyr || null };
@@ -10271,6 +10291,117 @@ if (CL){
   asStart();   // automatic saving (Creator Plus)
 }
 
+/* ---------- the project kept in this phone (every plan, with or without an account): Safari often reloads the tab when one
+   goes to Photos, TikTok or the camera; the last project then comes back at the next opening (« Reprendre ton dernier
+   montage ? »). Stored in the browser (IndexedDB): the project as the online saving writes it (clCollect) and each of its
+   files once. Saved 3 s after a change has settled, at once when the page is hidden, never during an export. ---------- */
+const LP = { db: null, ok: typeof indexedDB !== 'undefined', saved: null, pending: null, running: false, full: false, waitUntil: 0,
+  fp: new WeakMap(), n: 0, applying: false, offered: null };
+function lpDb(){
+  if (!LP.db) LP.db = new Promise((res, rej) => {
+    let r; try { r = indexedDB.open('stalak-local', 1); } catch(e){ rej(e); return; }
+    r.onupgradeneeded = () => { const d = r.result; ['kv', 'media'].forEach(n => { if (!d.objectStoreNames.contains(n)) d.createObjectStore(n); }); };
+    r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error || new Error('idb')); r.onblocked = () => rej(new Error('blocked'));
+  });
+  LP.db.catch(e => { LP.ok = false; diag('projet dans le téléphone : stockage indisponible (' + (e && (e.name || e.message)) + ')'); });
+  return LP.db;
+}
+function lpReq(store, mode, fn){
+  return lpDb().then(d => new Promise((res, rej) => {
+    const tx = d.transaction(store, mode), r = fn(tx.objectStore(store)); let out;
+    if (r) r.onsuccess = () => { out = r.result; };
+    tx.oncomplete = () => res(out); tx.onerror = tx.onabort = () => rej(tx.error || new Error('idb'));
+  }));
+}
+const lpGet = (st, k) => lpReq(st, 'readonly', o => o.get(k));
+const lpPut = (st, k, v) => lpReq(st, 'readwrite', o => o.put(v, k));
+const lpDel = (st, k) => lpReq(st, 'readwrite', o => o.delete(k));
+const lpKeys = st => lpReq(st, 'readonly', o => o.getAllKeys());
+// a file's name in this store: given once per file of this visit (the files read back from the store keep theirs)
+async function lpFp(f){ let id = LP.fp.get(f); if (!id){ id = 'f' + Date.now().toString(36) + (++LP.n).toString(36) + Math.random().toString(36).slice(2, 6); LP.fp.set(f, id); } return id; }
+// worth keeping: a song and at least one take of the person (the example alone is not kept)
+function lpWorth(){ return !!S.song && S.takes.length > 0 && !(S.song.demo && S.takes.every(t => t.kind === 'demo')); }
+// a quick look at what makes the edit (read at once, when the page is about to go)
+function lpQuick(){
+  try { return JSON.stringify([S.kind, S.fmt, S.filter, S.segStart, S.segEnd, S.seed, S.version, S.pace, S.mode, S.brollAmt, S.fxLevel, S.fxUser,
+    S.cuts.map(c => [c.t0, c.t1, S.takes.indexOf(baseOf(c.take)), !!c.locked]), S.lyrics.mode, S.lyrics.lines, S.lyrics.style,
+    S.takes.map(t => [t.name, t.offset, t.excl && t.excl.length, !!t.mirror])]); } catch(e){ return null; }
+}
+function lpName(){ const sg = S.song; return (sg.demo ? _t('demo.song') : sg.name) || 'Stalak'; }
+async function lpSave(now){
+  if (!LP.ok || LP.full || LP.running || LP.applying || S.exporting || !lpWorth() || Date.now() < LP.waitUntil) return;
+  if (S.takes.some(t => t.status === 'pending')) return;
+  const quick = lpQuick();
+  let col; try { col = await clCollect(lpFp); } catch(e){ return; }
+  const sig = asSig(col.state);
+  if (sig === LP.saved){ LP.pending = null; LP.quick = quick; return; }
+  // changed: kept once it stays the same for one more look (now: the page is being hidden)
+  if (!now && sig !== LP.pending){ LP.pending = sig; return; }
+  LP.running = true;
+  try {
+    const have = new Set(await lpKeys('media')), keep = new Set(col.media.map(m => m.id));
+    for (const m of col.media){ if (have.has(m.id)) continue; if (S.exporting) throw new Error('export'); await lpPut('media', m.id, m.file); }
+    await lpPut('kv', 'last', { state: col.state, files: col.media.map(m => ({ id: m.id, name: m.file.name || 'video', type: m.file.type || '', lastModified: m.file.lastModified || 0 })),
+      at: Date.now(), name: lpName(), takes: S.takes.filter(t => !t.broll).length });
+    for (const k of have) if (!keep.has(k)) await lpDel('media', k);
+    LP.saved = sig; LP.pending = null; LP.quick = quick;
+  } catch(e){
+    const full = e && /quota/i.test(e.name || e.message || '');
+    if (full) LP.full = true; else LP.waitUntil = Date.now() + 20e3;
+    diag('projet dans le téléphone : pas gardé (' + (e && (e.name || e.message)) + ')' + (full ? ', plus de place' : ''));
+  } finally { LP.running = false; }
+}
+// something on screen that is not kept yet (asked before leaving the page)
+function lpUnsaved(){ return lpWorth() && !LP.applying && (!LP.ok || LP.full || LP.running || LP.pending != null || LP.saved == null || LP.quick !== lpQuick()); }
+/* « Reprendre ton dernier montage ? » at the opening, while nothing is on screen */
+async function lpOffer(){
+  if (!LP.ok || S.song) return;
+  try { if (sessionStorage.getItem(CL_OPEN_KEY)) return; } catch(e){}
+  let last; try { last = await lpGet('kv', 'last'); } catch(e){ return; }
+  if (!last || !last.state || S.song) return;
+  LP.offered = last; lpOfferUi();
+}
+function lpOfferUi(){
+  const box = $('#lpOffer'), last = LP.offered; if (!box) return;
+  box.hidden = !last || !!S.song; if (box.hidden) return;
+  let when = '';
+  try { const m = Math.round((Date.now() - last.at) / 60000), rtf = new Intl.RelativeTimeFormat(LANG, { numeric: 'auto' });
+    when = m < 60 ? rtf.format(-Math.max(1, m), 'minute') : m < 48 * 60 ? rtf.format(-Math.round(m / 60), 'hour') : rtf.format(-Math.round(m / 1440), 'day'); } catch(e){}
+  setT('#lpOfferP', last.takes > 1 ? 'lp.p' : 'lp.p1', { name: last.name, n: last.takes, when });
+}
+async function lpResume(){
+  const last = LP.offered; if (!last || LP.applying) return;
+  LP.applying = true; $('#lpYes').disabled = $('#lpNo').disabled = true; setT('#lpOfferP', 'lp.restoring');
+  try {
+    const files = new Map();
+    for (const r of last.files){
+      const b = await lpGet('media', r.id);
+      if (!b) throw Object.assign(new Error('missing'), { code: 'missing' });
+      const f = b instanceof File ? b : new File([b], r.name, { type: r.type || b.type, lastModified: r.lastModified });
+      LP.fp.set(f, r.id); files.set(r.id, f);
+    }
+    const gated = await clApply(last.state, files);
+    LP.offered = null; $('#lpOffer').hidden = true;
+    LP.quick = lpQuick(); LP.saved = asSig((await clCollect(lpFp)).state);
+    say(gated ? 'cl.clipNoPro' : 'lp.done', { name: last.name });
+    diag('projet dans le téléphone : repris (' + last.files.length + ' fichier(s))');
+  } catch(e){
+    diag('projet dans le téléphone : impossible de reprendre (' + (e && (e.code || e.message)) + ')');
+    setT('#lpOfferP', 'lp.fail'); $('#lpYes').hidden = true; $('#lpNo').disabled = false; setT('#lpNo', 'lp.ok');
+  } finally { LP.applying = false; $('#lpYes').disabled = false; }
+}
+if (LP.ok){
+  $('#lpYes').onclick = lpResume;
+  $('#lpNo').onclick = () => { LP.offered = null; $('#lpOffer').hidden = true; };
+  setInterval(() => { lpSave(false).catch(() => {}); if (LP.offered && S.song && !LP.applying) lpOfferUi(); }, 3000);
+  // going to Photos, TikTok or the camera: kept at once
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') lpSave(true).catch(() => {}); });
+  window.addEventListener('pagehide', () => { lpSave(true).catch(() => {}); });
+  lpOffer();
+}
+// leaving the page: the browser asks first during an export, or while the project on screen is not kept in the phone yet
+window.addEventListener('beforeunload', e => { if (S.exporting || lpUnsaved()){ e.preventDefault(); e.returnValue = ''; } });
+
 /* ---------- FR / EN: everything on screen is written again in the other language, the work stays as it is ---------- */
 function applyLang(){
   document.documentElement.lang = LANG;
@@ -10292,6 +10423,7 @@ function applyLang(){
   // a help chat not started yet greets again in the new language
   if (!help.turns.length && !help.busy && help.mode !== 'human'){ $('#helpLog').innerHTML = ''; if (!$('#helpPanel').hidden) helpGreet(); }
   if (S.step >= 3) redraw();   // the take's name drawn over the preview
+  if (typeof LP !== 'undefined' && LP.offered && !LP.applying) lpOfferUi();
   acctSync();
 }
 const langPick = e => {
