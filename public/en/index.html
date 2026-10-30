@@ -1183,6 +1183,8 @@ header .stepper{margin-left:auto}
 .btn.ad{white-space:normal;text-align:left}
 .btn.ad::before{content:"▶";font-size:.8em;margin-right:8px}
 .adst{font-weight:600;color:var(--sky-deep)}
+.wmnote .linkbtn{background:none;border:0;padding:0 2px;min-height:44px;font:600 14.5px var(--body);color:var(--sky-deep);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.wmnote .linkbtn:focus-visible{outline:3px solid var(--ink);outline-offset:2px;border-radius:8px}
 
 /* ---- domaine Comptes, paiements & serveur : the plans (offer of 30/10/2026), Gratuit + Basic / Pro / Max ----
    Monthly / yearly switch, 4 cards (Max first on a phone, Gratuit → Max from left to right on a computer), the 5-column
@@ -5947,8 +5949,9 @@ function planTags(){
 
 /* ---------- the watermark of free videos: the Stalak logo and « Clipped with stalak.app », moving from corner to corner ----------
    Drawn on top of everything (lyrics included) in the preview and in the export, from the song's time: a given moment looks
-   the same in both. Sizes are in pixels of the finished video (a share of its short side). Every 6 s it glides (1.2 s)
-   to the next of 4 spots near the edges, so it cannot be cut out with one crop. wmPass: a rewarded ad watched for this video. */
+   the same in both. Sizes are in pixels of the finished video (a share of its short side: about 30 px of text in 1080 px,
+   readable on a phone). Every 6 s it glides (1.2 s) to the next of 4 spots near the edges (top right, left, bottom right,
+   left), so it cannot be cut out with one crop. wmPass: a rewarded ad watched for this video. */
 const WM_TEXT = 'Clipped with stalak.app';
 const WM_LOGO = new Image(); WM_LOGO.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'><rect x='4' y='4' width='120' height='120' rx='28' fill='#1f6fd6'/><path d='M5 30V30Q5 5 30 5H98Q123 5 123 30V30L114 30Q111 44 108 50Q104 40 100 30H30Q26 42 22 48Q19 38 16 30Z' fill='#fff' stroke='#0a0d14' stroke-width='4' stroke-linejoin='round'/><rect x='4' y='4' width='120' height='120' rx='28' fill='none' stroke='#0a0d14' stroke-width='7'/><g transform='translate(44 23) scale(.7)' fill='none' stroke-linecap='round' stroke-linejoin='round'><path d='M51 20.0C46 12.0 38 11.0 30 11.0C18 11.0 9 18.0 9 29.0C9 41.0 20 44.0 30 48.0C42 52.0 52 57.0 52 69.0C52 87.0 42 89.0 30 89.0C20 89.0 12 86.0 7 79.0' stroke='#0a0d14' stroke-width='34' transform='translate(3 6)'/><path d='M21.0 100.0Q27.5 114.3 31.0 126.0Q34.5 114.3 41.0 100.0Z' fill='#d6ecff' stroke='#0a0d14' stroke-width='5'/><path d='M51 20.0C46 12.0 38 11.0 30 11.0C18 11.0 9 18.0 9 29.0C9 41.0 20 44.0 30 48.0C42 52.0 52 57.0 52 69.0C52 87.0 42 89.0 30 89.0C20 89.0 12 86.0 7 79.0' stroke='#0a0d14' stroke-width='34'/><path d='M51 20.0C46 12.0 38 11.0 30 11.0C18 11.0 9 18.0 9 29.0C9 41.0 20 44.0 30 48.0C42 52.0 52 57.0 52 69.0C52 87.0 42 89.0 30 89.0C20 89.0 12 86.0 7 79.0' stroke='#fff' stroke-width='22'/></g></svg>");
 let wmPass = false, lastWm = false;
@@ -5956,14 +5959,14 @@ const wmOn = () => !can('nowm') && !wmPass;
 /* what the picture shows: during an export, what was decided when it started (S.wm); otherwise the plan of now */
 const wmShow = () => S.exporting ? !!S.wm : wmOn();
 function wmBox(c, lw, lh){
-  const m = Math.min(lw, lh), h = Math.round(m * 0.044), fs = Math.round(h * 0.46), pad = Math.round(h * 0.28), lg = Math.round(h * 0.74);
+  const m = Math.min(lw, lh), h = Math.round(m * 0.062), fs = Math.round(h * 0.46), pad = Math.round(h * 0.28), lg = Math.round(h * 0.74);
   c.font = '600 ' + fs + 'px "Rubik", "DM Sans", system-ui, sans-serif';
   const w = Math.round(pad + lg + pad * 0.8 + c.measureText(WM_TEXT).width + pad * 1.3);
   return { m, h, fs, pad, lg, w };
 }
 function wmPos(t, lw, lh, B){
   const mx = B.m * 0.045, my = B.m * 0.06;
-  const spots = [[mx, my], [lw - B.w - mx, lh * 0.30], [lw - B.w - mx, lh - B.h - my], [mx, lh * 0.62]];
+  const spots = [[lw - B.w - mx, my], [mx, lh * 0.30], [lw - B.w - mx, lh - B.h - my], [mx, lh * 0.62]];
   const P = 6, G = 1.2, tt = Math.max(0, t), i = Math.floor(tt / P) % 4, k = tt % P;
   const a = spots[i], b = spots[(i + 1) % 4];
   if (k < P - G) return a;

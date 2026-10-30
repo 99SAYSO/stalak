@@ -114,8 +114,8 @@ def run(b, base, lang, iphone):
     check(tag + ' gratuit : plus de fin Stalak de 3 s', ev(pg, 'outroOn() === false'))
     # the watermark: in the preview, moving from spot to spot
     s1, s2, s3 = wm_spot(pg, 1.0), wm_spot(pg, 7.0), wm_spot(pg, 13.0)
-    check(tag + ' gratuit : filigrane dans l’aperçu (en haut à gauche au début)', s1 is not None and s1[0] < 120 and s1[1] < 200, s1)
-    check(tag + ' gratuit : le filigrane bouge (à droite à 7 s, en bas à 13 s)', s2 is not None and s3 is not None and s2[2] > 900 and s3[1] > 1500, (s2, s3))
+    check(tag + ' gratuit : filigrane dans l’aperçu (en haut à droite au début, loin du nom de la prise)', s1 is not None and s1[2] > 900 and s1[1] < 200, s1)
+    check(tag + ' gratuit : le filigrane bouge (à gauche à 7 s, en bas à 13 s)', s2 is not None and s3 is not None and s2[0] < 120 and s3[1] > 1500, (s2, s3))
     check(tag + ' gratuit : filigrane discret (moins de 6 % de l’image)', s1 is not None and s1[4] < 0.06 * ev(pg, 'view.width * view.height'), s1)
     # padlocks: the right plan
     check(tag + ' gratuit : « ou passe à Pro » → Pro', lock(pg, "$('#outroPro').click()")[0] == ['nowm', 'pro'])

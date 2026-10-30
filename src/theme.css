@@ -917,6 +917,8 @@ header .stepper{margin-left:auto}
 .btn.ad{white-space:normal;text-align:left}
 .btn.ad::before{content:"▶";font-size:.8em;margin-right:8px}
 .adst{font-weight:600;color:var(--sky-deep)}
+.wmnote .linkbtn{background:none;border:0;padding:0 2px;min-height:44px;font:600 14.5px var(--body);color:var(--sky-deep);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.wmnote .linkbtn:focus-visible{outline:3px solid var(--ink);outline-offset:2px;border-radius:8px}
 
 /* ---- domaine Comptes, paiements & serveur : the plans (offer of 30/10/2026), Gratuit + Basic / Pro / Max ----
    Monthly / yearly switch, 4 cards (Max first on a phone, Gratuit → Max from left to right on a computer), the 5-column
