@@ -1,4 +1,4 @@
-Statut : PRÊT
+Statut : INCLUSE dans app/audit (fusionner app/audit suffit)
 Branche : app/export-pub (créée depuis `main` du 30/10 à 21 h). Une seule fusion suffit.
 
 Résumé (demandes du propriétaire du 30/10, 21 h) :
