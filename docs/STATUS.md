@@ -69,7 +69,7 @@
 - Confirmé sur iPhone par le journal du 27/10 à 23 h : prises filmées lisibles, copie légère 360×640 faite en 3 s, son des prises lu (calage automatique), lecture sans image lente, export de 25 s en 7,7 s par WebCodecs (aucun repli sur le lecteur vidéo).
 - En cours : « un peu de lag » dans la vidéo exportée, signalé par le propriétaire. La cause n'est pas visible dans le journal. Vidéo exportée et précisions demandées au propriétaire : saccade continue, à chaque coupe, ou lèvres en retard.
 
-- En cours (branche `app/filtres`) : 13 filtres vidéo à l'étape Montage, plus « Aucun ».
+- En cours (branche `app/filtres`) : 26 filtres vidéo à l'étape Montage, plus « Aucun » : les 13 choisis le 30/10, et un thème « Couleurs » de 13 retouches façon filtres des stories Instagram, sous des noms Stalak.
   - Un seul code de filtre (shader WebGL, bloc `/*@FILTERS*/` de `src/app.js`), utilisé par l'aperçu, l'export (2D et WebGL) et la page de comparaison.
   - Rangée de vignettes par thème, limite Pro (`acctOpen('filters')` à l'export), filtre sauvegardé dans le projet.
   - Page de comparaison publiée pour validation (artifact « Filtres Stalak »), générée par `tests/ui/filtres_comparaison.py`.

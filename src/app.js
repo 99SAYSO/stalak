@@ -4707,7 +4707,8 @@ void main(){
     c = src(q); float l = lum(c);
     float cool = clamp((c.b + c.g * 0.5 - c.r * 1.2) * 2.0, 0.0, 1.0);
     c = mix(c, sat(c, 1.55), cool);
-    c = con(sat(c, 1.12), 1.12) * vec3(0.97, 1.0, 1.05);
+    c = con(sat(c, 1.18), 1.16) * vec3(0.96, 1.0, 1.06);
+    c = mix(c, c * vec3(0.90, 1.0, 1.12), (1.0 - smoothstep(0.0, 0.45, lum(c))) * 0.5);
   } else if (u_f == 18){ // Éclat: brighter, a little more contrast
     c = pow(src(q), vec3(0.88)) * 1.06;
     c = sat(con(c, 1.08), 1.06);

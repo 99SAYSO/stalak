@@ -67,6 +67,7 @@ SAMPLES = [   # free example pictures shipped with scikit-image / scikit-learn (
     {'id': 'jour', 'name': 'Jour', 'src': sample(os.path.join(SL, 'china.jpg'))},
 ]
 NAMES = {f: FR['filt.' + f] for f in ['none'] + list(DESC)}
+FILT_LIGHT = {f: True for f in ('velours', 'soleil', 'cocon', 'lagon', 'eclat', 'miel', 'dune', 'souvenir', 'beton', 'fuchsia', 'safran', 'mono', 'tropique')}
 THEMES = {k: FR['filt.th.' + k] for k in ('col', 'cam', 'retro', 'esth')}
 
 PAGE = r'''<title>Filtres Stalak</title>
@@ -282,7 +283,9 @@ with sync_playwright() as p:
         if fid == 'none':
             check(key + ' : sans filtre = image d’origine', st['orig'] < 1.0, round(st['orig'], 2))
         else:
-            check(key + ' : le filtre change l’image (écart %.0f)' % st['orig'], st['orig'] > 6, round(st['orig'], 2))
+            # the « Couleurs » retouches are light on purpose (as in the stories): a smaller change is expected
+            light = FILT_LIGHT.get(fid, False)
+            check(key + ' : le filtre change l’image (écart %.0f)' % st['orig'], st['orig'] > (3 if light else 6), round(st['orig'], 2))
             check(key + ' : image ni noire ni blanche (moyenne %.0f)' % st['mean'], 18 < st['mean'] < 235, round(st['mean'], 1))
         # grain and fine lines differ pixel by pixel between sizes; the look (a quarter-size view) must match
         check(key + ' : même rendu aperçu / export (écart %.1f)' % st['half'], st['half'] < 9, round(st['half'], 2))

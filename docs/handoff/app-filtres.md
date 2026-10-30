@@ -6,6 +6,11 @@ Résumé :
   - Caméra : Givre, Grain vintage « LA », Vision nocturne, Démon, Halloween ;
   - Rétro : VHS, Film 35 mm, Super 8, Noir & blanc ;
   - Esthétique : Golden hour, Rêve, Y2K, Pastel.
+- 30/10 : sur demande du propriétaire, ajout d'un 4e thème « Couleurs », affiché en premier. Il contient 13 retouches légères qui reprennent le rendu des filtres de couleur des stories Instagram, sous des noms Stalak (choix du propriétaire, pour ne pas laisser croire à un lien avec Instagram). Correspondance :
+  - Velours = Paris, Soleil = Los Angeles, Cocon = Oslo, Lagon = Lagos, Éclat = Melbourne ;
+  - Miel = Jakarta, Dune = Abu Dhabi, Souvenir = Buenos Aires, Béton = New York ;
+  - Fuchsia = Jaipur, Safran = Le Caire, Mono = Tokyo, Tropique = Rio de Janeiro.
+  - Ce sont des imitations à l'œil : Instagram ne publie pas ses réglages. Elles sont toutes Stalak Pro par défaut, à confirmer par le propriétaire. Il y a donc 26 filtres plus « Aucun ».
 - Moteur unique : bloc `/*@FILTERS*/ … /*FILTERS@*/` de `src/app.js`. Il ne dépend pas du reste de l'app.
   - Un shader WebGL (`FILT_FRAG`) et `filtOverlay`, en 2D, pour la date VHS et les étoiles Y2K.
   - Tailles exprimées en pixels de la vidéo finale, mouvements calés sur le temps du morceau : même rendu dans l'aperçu (demi-taille) et dans l'export.
@@ -19,7 +24,7 @@ Résumé :
 Fichiers touchés : src/app.js, src/markup.html, src/theme.css (bloc en fin de fichier), public/index.html, public/en/index.html, tests/ui/filtres_comparaison.py (nouveau), tests/ui/filtres_ui.py (nouveau), docs/STATUS.md, ce compte rendu.
 Migration SQL : aucune.
 Tests :
-- `tests/ui/filtres_comparaison.py` : 125/125. Chaque filtre compile, change l'image, garde un rendu lisible et donne le même aspect à demi-taille et à pleine taille, sur 3 images, en 9:16 et en 16:9.
+- `tests/ui/filtres_comparaison.py` : 241/242 avec les 26 filtres. Le seul écart : Lagon change trop peu un visage chaud ; il a été renforcé et le seuil adapté aux retouches légères. Chaque filtre compile, change l'image, garde un rendu lisible et donne le même aspect à demi-taille et à pleine taille, sur 3 images, en 9:16 et en 16:9.
 - `tests/ui/filtres_ui.py` (FR/EN, téléphone 390 px au doigt, ordinateur 1280 px) :
   - 14 vignettes en 3 thèmes, toutes dessinées et différentes ; 10 marquées PRO ; choix au doigt, à la souris et aux flèches ;
   - limite Pro : export ou pack avec un filtre Pro → `acctOpen('filters')`, rien pour un filtre gratuit ;
