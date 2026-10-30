@@ -1,7 +1,7 @@
 # Stalak — contexte commun à toutes les conversations
 
 > À mettre dans les « connaissances du projet » Claude (Project knowledge).
-> Chaque conversation du projet le lit avant de travailler. Mis à jour le 30/10/2026 au soir (offre : Gratuit avec filigrane et pub récompensée + Pro + Creator Plus).
+> Chaque conversation du projet le lit avant de travailler. Mis à jour le 30/10/2026 à 21 h (cible : États-Unis d'abord ; aucun concurrent cité sur le site ; filigrane, packs, sauvegarde automatique).
 
 ## 1. Le produit en une minute
 
@@ -10,7 +10,8 @@
 - Stalak coupe sur le rythme en passant d'une prise à l'autre, avec une synchro des lèvres parfaite.
 - Il exporte pour TikTok, Reels, Shorts, ou un clip YouTube en 16:9.
 - Le montage et l'export se font dans le navigateur, sur l'appareil.
-- Artiste : 99Sayso, collectif Alaska. Priorité : simple, mondial (FR + EN), iPhone Safari d'abord.
+- Artiste : 99Sayso, collectif Alaska. Priorité : simple, iPhone Safari d'abord.
+- **Marché visé : les États-Unis d'abord (décision du 30/10 au soir).** L'anglais (américain) est la langue principale du site, des textes et du marketing ; le français reste disponible. Prix en dollars.
 - Direction artistique : froid, glace, neige, liquide.
   - Fond bleu ciel avec neige qui tombe, cartes blanches à contour encre (#0a0d14), stalactites.
   - Polices Lilita One (titres) et Rubik.
@@ -24,12 +25,13 @@
   - montage illimité (coupes sur le rythme), paroles en phrases entières, taille M ;
   - import des paroles et calage au tap, mais pas de paroles automatiques ;
   - les filtres gratuits (Givre, Film 35 mm, Noir & blanc) ;
-  - export avec un **filigrane** discret mais visible, qui se déplace pendant la vidéo : le logo et « Clipped with stalak.app » ;
+  - export avec un **filigrane** : seulement le logo Stalak, discret, dans l'esprit du filigrane de l'ancien Triller ; il change de place de temps en temps en apparaissant directement à un autre endroit, sans qu'on le voie glisser ;
   - **pub récompensée** : regarder une pub vidéo d'environ 30 s retire le filigrane de CETTE vidéo, gratuitement. Pubs « rewarded » web de Google Ad Manager (GPT), pas AdMob ni AppLovin, qui ne marchent que dans les applis installées.
 - **Stalak Pro** : 7,99 $/mois ou 49,99 $/an. Ni pub ni filigrane. Débloque le mode Clip 16:9, les effets premium, les paroles mot par mot et karaoké (et toutes les tailles), tous les filtres et les paroles automatiques.
-- **Stalak Creator Plus** : 14,99 $/mois ou 99,99 $/an. Tout Pro, plus le générateur de packs (5 à 30 vidéos aux coupes différentes, à partir d'au moins 3 playbacks), la sauvegarde en ligne et « Parler à un humain » (chat en direct, ou réponse par e-mail sous 24 h ; ne jamais écrire « 24 h/24 »).
+- **Stalak Creator Plus** : 14,99 $/mois ou 99,99 $/an. Tout Pro, plus le générateur de packs (5 à 30 vidéos aux coupes différentes, à partir de 2 playbacks), la sauvegarde en ligne **automatique** (chaque projet s'enregistre tout seul, comme CapCut ; pas de bouton « Sauvegarder en ligne ») et « Parler à un humain » (chat en direct, ou réponse par e-mail sous 24 h ; ne jamais écrire « 24 h/24 »).
 - La limite d'une vidéo gratuite par jour, l'e-mail de rappel et la fin de vidéo de 3 s sont **abandonnés**.
 - Prix en dollars dans Paddle ; Paddle les convertit et ajoute la TVA selon le pays. Un abonné garde son prix.
+- **Aucun concurrent cité sur le site** (ni Triller, ni CapCut, ni camrip, etc.) : pages, FAQ, `llms.txt`, textes de l'app. Décision du 30/10 au soir.
 - Croissance : aucun faux témoignage ni pub déguisée. Le fondateur parle en son nom (« je suis rappeur, j'ai codé Stalak »), dans le respect des règles de chaque réseau.
 
 **Règles commerciales :**
