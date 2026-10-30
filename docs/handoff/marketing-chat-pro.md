@@ -1,7 +1,7 @@
-Statut : EN COURS
+Statut : ABANDONNÉE
 Branche : marketing/chat-pro
 
-**Remplacée par `marketing/tarifs-formules` : ne pas fusionner cette branche.**
+**Abandonnée le 30/10 au soir (offre hybride : « Parler à un humain » est dans Creator Plus). Les textes sont dans `marketing/tarifs-formules`. Ne pas fusionner cette branche.**
 
 Pourquoi : la nouvelle offre du 30/10/2026 met « Parler à un humain » dans **Max**, pas dans Pro.
 - La branche `marketing/tarifs-formules` refait la page Tarifs (FR/EN) et l'écran des formules de l'app avec 4 colonnes.
