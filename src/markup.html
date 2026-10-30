@@ -316,6 +316,11 @@
             <span class="label" data-i18n="p4.takes">Prises</span>
             <label class="chk best tip" for="bestChk" data-tip="Le site regarde tes prises (netteté, lumière, image qui saute, visage au centre) et met plus souvent la plus belle à chaque moment, en gardant de la variété. Les plans gardés ou exclus passent avant." data-i18n-attr="data-tip:best.tip"><input type="checkbox" id="bestChk" checked> <span data-i18n="best">Meilleure prise auto</span></label>
           </div>
+          <div class="filtbox" id="filtBox">
+            <span class="label" data-i18n="filt.title">Filtre</span>
+            <p class="hint" data-i18n="filt.hint">Un style pour toute la vidéo. Les paroles restent au-dessus, sans changer.</p>
+            <div class="filtrow" id="filtRow" role="radiogroup" aria-label="Filtre" data-i18n-attr="aria-label:filt.title"></div>
+          </div>
           <div class="tlwrap">
             <div class="row" style="justify-content:space-between;margin-bottom:6px"><span class="label" id="verLbl">Version 1</span><span class="row" style="gap:10px"><span class="meta" id="tlMeta"></span><button class="btn sm" id="tlZoom" type="button" hidden aria-pressed="false" data-i18n="tl.zoom">Zoom +</button></span></div>
             <div class="tlmini" id="tlMini" hidden aria-label="Tout le morceau : touche pour t'y placer" data-i18n-attr="aria-label:tl.mini.aria"><i id="tlWin"></i><b id="tlMiniPh"></b></div>
@@ -370,7 +375,7 @@
             <button class="btn tip" id="cloudSaveBtn" type="button" data-tip="Garde ce projet (son, prises, paroles, montage) dans ton compte, pour le rouvrir plus tard sur n’importe quel appareil." data-i18n="cl.save" data-i18n-attr="data-tip:cl.save.tip">Sauvegarder en ligne</button>
             <span class="note" id="cloudSaveNote"></span>
           </div>
-          <p class="note outro-note" id="outroNote"><span data-i18n="outro">Les vidéos gratuites se terminent par 3 secondes avec le logo Stalak.</span> <button class="linkbtn" id="outroPro" type="button" hidden data-i18n="acct.outroPro">L’enlever avec Stalak Pro</button></p>
+          <p class="note outro-note" id="outroNote"><span data-i18n="outro">Les vidéos gratuites se terminent par 3 secondes avec le logo Stalak.</span> <button class="linkbtn" id="outroPro" type="button" hidden data-i18n="acct.outroBasic">L’enlever avec Basic</button></p>
           <div class="result" id="result" hidden>
             <video id="resultVideo" controls playsinline hidden></video>
             <div class="row">
@@ -436,6 +441,18 @@
 </div>
 
 <!-- start over: asked before everything is cleared -->
+<div class="askbox daydone" id="dayDone" role="dialog" aria-modal="true" aria-labelledby="dayDoneT" aria-describedby="dayDoneP" tabindex="-1" hidden>
+  <div class="card">
+    <img class="dayemo" data-emo="gg" alt="" width="96" height="96">
+    <h2 id="dayDoneT" data-i18n="day.t">Ta vidéo du jour est faite ✓</h2>
+    <p id="dayDoneP" data-i18n="day.p">Reviens demain, ou passe à Basic pour des vidéos illimitées.</p>
+    <p class="dayleft" id="dayLeft" aria-live="polite"></p>
+    <div class="row">
+      <button class="btn" id="dayClose" type="button" data-i18n="day.close">Revenir demain</button>
+      <button class="btn primary" id="dayGo" type="button" data-i18n="day.go">Passer à Basic</button>
+    </div>
+  </div>
+</div>
 <div class="askbox" id="homeAsk" role="alertdialog" aria-modal="true" aria-labelledby="homeAskT" hidden>
   <div class="card">
     <h2 id="homeAskT" data-i18n="home.askT">Recommencer à zéro ?</h2>

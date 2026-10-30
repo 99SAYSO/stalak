@@ -111,6 +111,10 @@
 - Confirmé sur iPhone par le journal du 27/10 à 23 h : prises filmées lisibles, copie légère 360×640 faite en 3 s, son des prises lu (calage automatique), lecture sans image lente, export de 25 s en 7,7 s par WebCodecs (aucun repli sur le lecteur vidéo).
 - En cours : « un peu de lag » dans la vidéo exportée, signalé par le propriétaire. La cause n'est pas visible dans le journal. Vidéo exportée et précisions demandées au propriétaire : saccade continue, à chaque coupe, ou lèvres en retard.
 
+- Prêt (dans `app/formules`) : 26 filtres vidéo validés par le propriétaire le 30/10, plus « Aucun » : 4 thèmes, dont « Couleurs », avec 13 retouches façon stories Instagram sous des noms Stalak. Gratuits : Givre, Film 35 mm, Noir & blanc.
+
+- Prêt (branche `app/formules`, avec `app/filtres` et `compte/formules`) : ce que débloque chaque formule dans l'app, cadenas BASIC/PRO/MAX qui ouvrent la bonne formule, écran « Ta vidéo du jour est faite ✓ » avec le temps restant. Tous les tests passent sauf `support_ui.py`, qui échoue aussi sans cette fusion (à voir par Comptes).
+
 ### Comptes, paiements & serveur
 - Nouvelle offre (`compte/formules`) : les 6 prix sandbox sont dans `wrangler.toml`. Au Chef de projet : migration 0008, puis redéployer le Worker `workers/cloud-cleanup` (horaires des rappels).
   - Contrat App / Comptes livré sous les noms exacts : `acctHas(feat)` (dont `pack5`, `pack10`, `pack30`, `filters`, `unlimited`, `nologo`, `text`, `clip`, `cloud`, `lyrics`, `human`), `acctQuota()` → `{left, resetAt}` ou `null`, `acctUseVideo()` → promesse (compte la vidéo du jour sur le serveur), `acctOpen(why, {plan})` (`daily` non connecté → création de compte). Les lignes de l'app que `app/formules` remplace (texte, Clip, packs, export, restauration d'un Clip) sont laissées comme sur main : à fusionner avec `app/formules`. `acctPro()` reste (= Pro ou Max) pour `app/filtres`.

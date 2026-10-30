@@ -509,7 +509,7 @@ header .stepper{margin-left:auto}
 @media (pointer:coarse){ .langsw button{min-height:44px} }
 
 /* the PRO tag on the Clip button and the link under the outro note (gating stays in app.js: acctSync) */
-#kindSeg button.protag::after{content:"PRO";font:700 10px/1 var(--body);letter-spacing:.04em;margin-left:6px;padding:3px 5px;border-radius:6px;background:var(--ink);color:#fff;vertical-align:2px}
+#kindSeg button.protag::after{content:attr(data-plan);font:700 10px/1 var(--body);letter-spacing:.04em;margin-left:6px;padding:3px 5px;border-radius:6px;background:var(--ink);color:#fff;vertical-align:2px}
 .outro-note .linkbtn{background:none;border:0;padding:0;font:inherit;color:inherit;text-decoration:underline;cursor:pointer;font-weight:600}
 
 .vh{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
@@ -716,10 +716,10 @@ header .stepper{margin-left:auto}
 @media (max-width:380px){ .ap-tabs button{font-size:14px} }
 
 /* the pack button carries a PRO tag for free accounts (gating in app.js: exportPack) */
-#packBtn.protag::after{content:"PRO";font:700 10px/1 var(--body);letter-spacing:.04em;margin-left:8px;padding:3px 5px;border-radius:6px;background:var(--ink);color:#fff;vertical-align:2px}
+#packBtn.protag::after{content:attr(data-plan);font:700 10px/1 var(--body);letter-spacing:.04em;margin-left:8px;padding:3px 5px;border-radius:6px;background:var(--ink);color:#fff;vertical-align:2px}
 
 /* text size / appearance reserved to Stalak Pro */
-#stSize button.protag::after,#stAnim button.protag::after{content:"PRO";font:700 9px/1 var(--body);letter-spacing:.04em;margin-left:5px;padding:2px 4px;border-radius:5px;background:var(--ink);color:#fff;vertical-align:1px}
+#stSize button.protag::after,#stAnim button.protag::after{content:attr(data-plan);font:700 9px/1 var(--body);letter-spacing:.04em;margin-left:5px;padding:2px 4px;border-radius:5px;background:var(--ink);color:#fff;vertical-align:1px}
 /* « Transcription auto » (automatic lyrics): Stalak Pro on stalak.app */
 #lyrMode button.protag::after{content:"PRO";font:700 9px/1 var(--body);letter-spacing:.04em;margin-left:5px;padding:2px 4px;border-radius:5px;background:var(--ink);color:#fff;vertical-align:1px}
 /* ---- Stalak Pro page: wider than the other account pages, room for three plans side by side ---- */
@@ -893,6 +893,29 @@ header .stepper{margin-left:auto}
 .gal-menu [role=menuitem]{min-height:46px;padding:8px 14px;border:0;border-radius:10px;background:none;color:var(--ink);font:600 15px var(--body);text-align:left;cursor:pointer}
 .gal-menu [role=menuitem]:hover,.gal-menu [role=menuitem]:focus{background:var(--ice);outline:none}
 .gal-menu .gal-del{color:#b3261e}
+/* App & montage : filtres vidéo — une rangée de vignettes qui défile, par thème, comme les filtres des stories */
+.filtbox{margin:14px 0 6px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.filtbox .hint{margin:0}
+.filtrow{display:flex;gap:16px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;padding:4px 2px 10px;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.filtgrp{display:flex;flex-direction:column;gap:4px;flex:none}
+.filtth{font:700 11px/1.2 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);min-height:14px}
+.filtitems{display:flex;gap:8px}
+.filt{position:relative;flex:none;display:flex;flex-direction:column;align-items:center;gap:4px;padding:0;background:none;border:0;cursor:pointer;color:var(--ink);font:500 12px/1.2 var(--body);scroll-snap-align:start;max-width:110px}
+.filt canvas{display:block;border-radius:10px;border:2.5px solid var(--ink);background:var(--ink);box-shadow:0 3px 0 var(--ink);transition:transform .15s}
+.filt[aria-checked="true"] canvas{outline:3px solid var(--sky);outline-offset:2px;transform:translateY(-2px)}
+.filt[aria-checked="true"] .filtnm{font-weight:700}
+.filt:focus-visible{outline:none}
+.filt:focus-visible canvas{outline:3px solid var(--ink);outline-offset:3px}
+.filtnm{max-width:100%;text-align:center;overflow-wrap:anywhere}
+.filtpro{position:absolute;top:5px;right:5px;font:700 9.5px/1 var(--body);letter-spacing:.05em;color:#fff;background:#7a3ff2;border:1.5px solid var(--ink);border-radius:999px;padding:3px 5px}
+@media (prefers-reduced-motion:reduce){.filt canvas{transition:none}}
+/* App & montage : formules — l'écran « Ta vidéo du jour est faite » */
+.daydone .card{text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px}
+.daydone h2{margin:0;font:400 26px/1.15 var(--display);text-wrap:balance}
+.daydone p{margin:0;max-width:34ch}
+.daydone .dayemo{width:96px;height:96px;object-fit:contain}
+.daydone .dayleft{font:700 15px/1.3 var(--body);font-variant-numeric:tabular-nums;color:var(--sky-deep);background:var(--frost);border:2px solid var(--ink);border-radius:999px;padding:8px 14px}
+.daydone .row{justify-content:center;flex-wrap:wrap}
 
 /* ---- domaine Comptes, paiements & serveur : the plans (offer of 30/10/2026), Gratuit + Basic / Pro / Max ----
    Monthly / yearly switch, 4 cards (Max first on a phone, Gratuit → Max from left to right on a computer), the 5-column
