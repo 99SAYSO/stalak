@@ -70,7 +70,7 @@ def plan(pg, name):
 
 def lock(pg, code, stop_export=True):
     pg.evaluate('() => { window.__open = null; window.__began = false; }')
-    if stop_export: ev(pg, "beginExport = () => { window.__began = true; throw new Error('test : export arrêté ici'); }")
+    if stop_export: ev(pg, "beginExport = () => { window.__began = true; window.__wmAt = S.wm; throw new Error('test : export arrêté ici'); }")
     try: pg.evaluate('s => Promise.resolve(__ev(s)).catch(() => {})', code)
     except Exception: pass
     pg.wait_for_timeout(200)
@@ -107,16 +107,25 @@ def run(b, base, lang, iphone):
     ev(pg, "ACCT.state.user = null, acctOpen = (why, o) => { window.__open = [why, o && o.plan || null]; }, textGate(), planTags(), filtUI(), adUI()")
     note = pg.locator('#outroNote')
     check(tag + ' gratuit : note du filigrane, bouton pub et « ou passe à Pro » visibles', note.is_visible() and pg.locator('#adBtn').is_visible() and pg.locator('#outroPro').is_visible())
-    want = 'Watch an ad (30 s) to remove the watermark' if lang == 'en' else 'Regarder une pub (30 s) pour enlever le filigrane'
-    check(tag + ' gratuit : texte du bouton', pg.locator('#adBtn').inner_text().strip().endswith(want), pg.locator('#adBtn').inner_text())
+    # two buttons side by side: « Exporter » (with the watermark) and « Regarder une pub (30 s) » (without), blue and frosted
+    eb, ab = pg.locator('#exportBtn').bounding_box(), pg.locator('#adBtn').bounding_box()
+    check(tag + ' gratuit : deux boutons côte à côte', eb and ab and abs(eb['y'] - ab['y']) < 4 and ab['x'] >= eb['x'] + eb['width'] - 1 and abs(eb['width'] - ab['width']) < 4, (eb, ab))
+    et, at = ' '.join(pg.locator('#exportBtn').inner_text().split()), ' '.join(pg.locator('#adBtn').inner_text().split())
+    want_e, want_a = (('Export with watermark', 'Watch an ad (30 s) no watermark') if lang == 'en' else ('Exporter avec filigrane', 'Regarder une pub (30 s) sans filigrane'))
+    check(tag + ' gratuit : textes des deux boutons', et == want_e and at == want_a, (et, at))
+    look = pg.evaluate("() => { const b = document.querySelector('#adBtn'), cs = getComputedStyle(b); return [cs.backgroundImage, getComputedStyle(b, '::before').animationName, getComputedStyle(b, '::after').animationName]; }")
+    check(tag + ' gratuit : bouton pub bleu et givré (animé)', 'gradient' in look[0] and 'ad-frost' in look[1] and 'ad-twinkle' in look[2], look)
     o = lock(pg, "setFilter('nb', true), exportOne()")
     check(tag + ' gratuit : export sans compte, sans écran du jour', o == [None, True] and ev(pg, 'S.wm === true') and pg.locator('#dayDone').count() == 0, o)
     check(tag + ' gratuit : plus de fin Stalak de 3 s', ev(pg, 'outroOn() === false'))
-    # the watermark: in the preview, moving from spot to spot
-    s1, s2, s3 = wm_spot(pg, 1.0), wm_spot(pg, 7.0), wm_spot(pg, 13.0)
+    # the watermark: the logo only, small, in the preview; it jumps from spot to spot every 5 s (never seen gliding)
+    s1, s4, s5, s6, s11, s16 = (wm_spot(pg, t) for t in (1.0, 4.9, 5.1, 6.0, 11.0, 16.0))
     check(tag + ' gratuit : filigrane dans l’aperçu (en haut à droite au début, loin du nom de la prise)', s1 is not None and s1[2] > 900 and s1[1] < 200, s1)
-    check(tag + ' gratuit : le filigrane bouge (à gauche à 7 s, en bas à 13 s)', s2 is not None and s3 is not None and s2[0] < 120 and s3[1] > 1500, (s2, s3))
-    check(tag + ' gratuit : filigrane discret (moins de 6 % de l’image)', s1 is not None and s1[4] < 0.06 * ev(pg, 'view.width * view.height'), s1)
+    check(tag + ' gratuit : logo seul, sans texte (carré)', s1 is not None and (s1[2] - s1[0]) < 1.3 * (s1[3] - s1[1]) and (s1[3] - s1[1]) < 1.3 * (s1[2] - s1[0]), s1)
+    check(tag + ' gratuit : filigrane discret (moins de 1 % de l’image)', s1 is not None and s1[4] < 0.01 * ev(pg, 'view.width * view.height'), s1)
+    check(tag + ' gratuit : il ne glisse pas (même place de 1 à 4,9 s)', s4 is not None and abs(s4[0] - s1[0]) < 4 and abs(s4[1] - s1[1]) < 4, (s1, s4))
+    check(tag + ' gratuit : il saute d’un coup à 5 s (en bas à gauche)', s5 is not None and s6 is not None and s5[:4] == s6[:4] and s5[0] < 120 and s5[1] > 1500, (s5, s6))
+    check(tag + ' gratuit : puis en bas à droite, puis à gauche au tiers', s11 is not None and s16 is not None and s11[2] > 900 and s11[1] > 1500 and s16[0] < 120 and 500 < s16[1] < 900, (s11, s16))
     # padlocks: the right plan
     check(tag + ' gratuit : « ou passe à Pro » → Pro', lock(pg, "$('#outroPro').click()")[0] == ['nowm', 'pro'])
     check(tag + ' gratuit : karaoké → Pro', lock(pg, "document.querySelector('#stAnim button[data-v=\"kara\"]').click()")[0] == ['text', 'pro'])
@@ -129,14 +138,20 @@ def run(b, base, lang, iphone):
       kara: document.querySelector('#stAnim button[data-v="kara"]').dataset.plan, filt: document.querySelectorAll('#filtRow .filtpro').length,
       filtTag: (document.querySelector('#filtRow .filtpro') || {}).textContent })""")
     check(tag + ' gratuit : étiquettes PRO / CREATOR+', tags['clip'] == 'PRO' and tags['pack'] == 'CREATOR+' and tags['kara'] == 'PRO' and tags['filt'] == 23 and tags['filtTag'] == 'PRO', tags)
+    pk = pg.evaluate("""() => { const b = document.querySelector('#packBtn'), a = getComputedStyle(b, '::after'), z = getComputedStyle(b, '::before');
+      return [b.classList.contains('protag'), z.content, a.content, a.backgroundImage, parseFloat(a.fontSize), a.display]; }""")
+    check(tag + ' gratuit : « Générer le pack » avec cadenas et CREATOR+ bien visibles', pk[0] and '🔒' in pk[1] and 'CREATOR+' in pk[2] and 'gradient' in pk[3] and pk[4] >= 11 and pk[5] != 'none', pk)
+    tip = pg.locator('.packtip').inner_text()
+    check(tag + ' gratuit : conseil du pack (dès 2 playbacks, plus de prises = plus varié)', ('2 playbacks' in tip and 'more varied' in tip) if lang == 'en' else ('2 playbacks' in tip and 'plus les vidéos sont variées' in tip), tip)
     if SHOTS:
         pg.locator('#outroNote').scroll_into_view_if_needed()
-        pg.locator('#outroNote').screenshot(path=os.path.join(SHOTS, 'note-' + ('iphone' if iphone else 'ordi') + '-' + lang + '.png'))
+        pg.locator('#expRow').screenshot(path=os.path.join(SHOTS, 'boutons-' + ('iphone' if iphone else 'ordi') + '-' + lang + '.png'))
+        pg.locator('#packBtn').scroll_into_view_if_needed(); pg.locator('#packBtn').screenshot(path=os.path.join(SHOTS, 'pack-' + ('iphone' if iphone else 'ordi') + '-' + lang + '.png'))
         ev(pg, "showFrame(1.0)"); pg.wait_for_timeout(400); pg.locator('#view').screenshot(path=os.path.join(SHOTS, 'filigrane-' + ('iphone' if iphone else 'ordi') + '-' + lang + '.png'))
 
     # ---- the rewarded ad: the 4 cases ----
     def ad(mode):
-        pg.evaluate('m => { window.__adMode = m; window.__visible = false; }', mode)
+        pg.evaluate('m => { window.__adMode = m; window.__visible = false; window.__began = false; window.__wmAt = null; }', mode)
         ev(pg, 'wmPass = false, lastBlob = null, lastWm = false, adUI()')
         pg.locator('#adBtn').click()
         pg.wait_for_function('() => __ev("!adBusy")', timeout=20000); pg.wait_for_timeout(100)
@@ -144,10 +159,11 @@ def run(b, base, lang, iphone):
     st, ok = ad('reward')
     check(tag + ' pub : unité de test de Google, format récompensé, pubs limitées', pg.evaluate('[window.__adUnit, window.__adFmt, window.__privacy && window.__privacy.limitedAds]') == ['/22639388115/rewarded_web_example', 5, True])
     check(tag + ' pub regardée : pas de filigrane pour cette vidéo', ok and pg.evaluate('window.__visible') and ('without the watermark' in st if lang == 'en' else 'sans filigrane' in st), st)
-    check(tag + ' pub regardée : note « pas de filigrane sur cette vidéo », bouton caché', ('No watermark on this video' if lang == 'en' else 'Pas de filigrane sur cette vidéo') in pg.locator('#wmNoteT').inner_text() and not pg.locator('#adBtn').is_visible())
+    check(tag + ' pub regardée : note « pas de filigrane sur cette vidéo », bouton caché', ('no watermark on this video' if lang == 'en' else 'pas de filigrane sur cette vidéo') in pg.locator('#wmNoteT').inner_text().lower() and not pg.locator('#adBtn').is_visible())
     check(tag + ' pub regardée : aperçu sans filigrane', wm_spot(pg, 1.0) is None or ev(pg, 'wmPass') is False)
+    check(tag + ' pub regardée : l’export sans filigrane démarre tout seul', pg.evaluate('[window.__began, window.__wmAt]') == [True, False])
     st, ok = ad('close')
-    check(tag + ' pub fermée trop tôt : le filigrane reste', not ok and ('stays' in st if lang == 'en' else 'reste' in st), st)
+    check(tag + ' pub fermée trop tôt : le filigrane reste, pas d’export', not ok and ('stays' in st if lang == 'en' else 'reste' in st) and not pg.evaluate('window.__began'), st)
     st, ok = ad('empty')
     check(tag + ' pas de pub : message, filigrane gardé', not ok and ('No ad' in st if lang == 'en' else 'Pas de pub' in st), st)
     st, ok = ad('null')
@@ -168,9 +184,12 @@ def run(b, base, lang, iphone):
     ev(pg, "$('#packSel').value = '30', planTags()")
     check(tag + ' creator : packs sans cadenas', not pg.evaluate("() => document.querySelector('#packBtn').classList.contains('protag')") and ev(pg, "can('pack30')"))
     n = ev(pg, 'readyTakes().length')
-    o = lock(pg, "S.__takes = S.takes, S.takes = S.takes.filter(t => !t.broll).slice(0, 2), exportPack()")
+    o = lock(pg, "S.__takes = S.takes, S.takes = S.takes.filter(t => !t.broll).slice(0, 1), exportPack()")
     msg = pg.locator('#status').inner_text(); ev(pg, 'S.takes = S.__takes')
-    check(tag + ' creator : pack avec 2 playbacks → « au moins 3 »', o == [None, False] and '3' in msg, (n, o, msg))
+    check(tag + ' creator : pack avec 1 playback → « au moins 2 » et le conseil', o == [None, False] and '2' in msg and ('more varied' in msg if lang == 'en' else 'variées' in msg), (n, o, msg))
+    o = lock(pg, "$('#status').textContent = '', S.__takes = S.takes, S.takes = S.takes.filter(t => !t.broll).slice(0, 2), exportPack()")
+    msg = pg.locator('#status').inner_text(); ev(pg, 'S.takes = S.__takes')
+    check(tag + ' creator : pack avec 2 playbacks accepté', o[0] is None and 'at least 2' not in msg and 'au moins 2' not in msg, (n, o, msg))
     # ---- Comptes' own acctHas again ----
     # (the reward of the ad watched above was never used: the export of the test stops before; it would stay for the next video)
     ev(pg, "acctHas = window.__real, ACCT.state.user = null, wmPass = false, planTags()")

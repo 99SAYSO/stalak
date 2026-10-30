@@ -115,6 +115,8 @@
 
 - Prêt (branche `app/formules`) : offre hybride du 30/10 au soir dans l'app. Pro / Creator Plus (`can(feat)`), filigrane qui bouge sur les vidéos gratuites (« Clipped with stalak.app »), pub récompensée Google (unité de test) qui l'enlève pour une vidéo. Plus d'écran du jour ni de fin Stalak ; le gratuit exporte sans compte. Détail et suites pour Comptes et Juridique dans `docs/handoff/app-formules.md`.
 
+- Prêt (branche `app/export-pub`, demandes du 30/10 à 21 h) : deux boutons côte à côte en Gratuit, « Exporter » (avec filigrane) et « Regarder une pub (30 s) » (bleu, givré ; à la fin de la pub l'export sans filigrane part tout seul) ; bug d'export (la vidéo précédente est coupée et libérée avant un nouvel export, elle revient si on annule) ; poignées du passage libres (sans aimant) et curseur rouge déplaçable au doigt ; filigrane = logo seul, petit, qui saute d'un coin à l'autre toutes les 5 s ; cadenas et CREATOR+ visibles sur « Générer le pack » ; packs dès 2 playbacks avec le conseil « plus tu as de prises, plus les vidéos sont variées » ; plus aucun concurrent cité dans l'app. Détail dans `docs/handoff/app-export-pub.md`.
+
 ### Comptes, paiements & serveur
 - Offre du 30/10 au soir (`compte/formules`) : fait (voir « En cours »). Au Chef de projet : migration 0008 ; plus besoin de redéployer le Worker (aucun horaire ajouté).
   - Contrat livré : `acctHas(feat)` (`nowm`, `clip`, `fx`, `text`, `filters`, `lyrics` → Pro ; `pack5`, `pack10`, `pack30`, `cloud`, `human` → Creator Plus ; anciens noms `nologo` → Pro, `unlimited` → tous), `acctOpen(why, {plan})` avec `pro` ou `creator` (`basic` / `max` acceptés et convertis). `acctQuota` / `acctUseVideo` supprimées.
