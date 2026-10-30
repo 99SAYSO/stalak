@@ -163,6 +163,16 @@
 - **Au propriétaire** : adresses des comptes Instagram / TikTok / YouTube de Stalak ; une vraie vidéo montée avec Stalak ; vérifier dans Search Console (compte propriétaire) que `sitemap.xml` est envoyé et demander l'indexation ; Bing Webmaster Tools ; inscriptions aux annuaires (liste et textes dans le document).
 - **Suivant (Marketing)** : pages « faire un playback » (FR), « cut multiple takes to the beat » (EN/FR), « lip-sync videos for musicians » (EN), « paroles sur une vidéo TikTok » (FR/EN).
 - **À regarder (App)** : proposer aux visiteurs dont le navigateur est en anglais un petit lien « English version » sur la page française, plutôt que de changer la langue tout seul.
+- **Fait (branche `marketing/us-first`, 30/10, 21 h)** : aucun concurrent cité sur le site, et les textes anglais réécrits en anglais américain. Détail dans `docs/handoff/marketing-us-first.md`.
+  - Pages « Alternative à Triller » FR/EN supprimées, avec une redirection 301 vers l'accueil (`site_src/_redirects`). Elles sont aussi retirées du plan du site, du pied de page et de `build_site.py`.
+  - Triller retiré de l'accueil, de `llms.txt` et du guide du glaçon d'aide (`functions/_lib/help-guide.js` et `HELP_GUIDE` dans `src/app.js` : 2 mots chacun).
+  - Textes anglais réécrits : accueil, page Pricing, `llms.txt`. Dans l'app, 8 textes passent à l'orthographe américaine (canceled, analyzed).
+  - Page Tarifs mise à jour : filigrane = petit logo qui change de place, packs dès 2 prises, sauvegarde en ligne automatique.
+  - Plan « États-Unis d'abord » : `docs/marketing/US_FIRST.md` et document claude.ai « Stalak — États-Unis d'abord ». Il remplace `PLAN_TRILLER.md`.
+- **À décider (propriétaire)** :
+  - passer l'anglais à l'adresse principale et le français dans `/fr/` : proposition et risques dans `US_FIRST.md`, partie A ; rien n'est appliqué ;
+  - citer ou non des concurrents dans ses propres posts sur les réseaux.
+- **Si l'anglais passe à la racine** : à faire en une seule mise en ligne, avec App (langue choisie d'après l'adresse) et Comptes (`oauth.js`, `email.js` et `social.js` prennent le français par défaut).
 - **Fait (branche `marketing/tarifs-formules`, 30/10 au soir)** : l'offre hybride affichée partout, en dollars. Remplace la version Basic / Pro / Max de la même branche. Détail dans `docs/handoff/marketing-tarifs-formules.md`.
   - Page Tarifs FR/EN et écran des formules de l'app (`#apPro`) : 3 colonnes Gratuit / Stalak Pro (7,99 $ ou 49,99 $) / Creator Plus (14,99 $ ou 99,99 $), générées d'une seule source.
   - Bouton Mensuel / Annuel, **annuel coché par défaut**, avec le badge « Meilleur prix » (pas de « le plus populaire »). Pro est mise en avant avec le ruban « Ni pub ni filigrane ».
