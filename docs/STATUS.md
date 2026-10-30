@@ -1,9 +1,22 @@
 # Stalak — état du projet
 
 > Tenu à jour par le Chef de projet. Chaque conversation le lit avant de commencer et met à jour sa section sur sa branche à la fin de chaque tâche.
-> Dernière mise à jour : 27/10/2026 (fusion et mise en ligne : assistant d'aide, connexion TikTok/Instagram éteinte, état des lieux juridique).
+> Dernière mise à jour : 30/10/2026 (prix Paddle de l'offre hybride, contrat App / Comptes).
 
 ## Décisions récentes du propriétaire
+- **30/10 au soir : l'offre change encore. Elle remplace « Gratuit 1 vidéo par jour + Basic / Pro / Max »** (voir STALAK_CONTEXTE.md, section 2) : Gratuit illimité avec filigrane et pub récompensée, Pro 7,99 $ / 49,99 $, Creator Plus 14,99 $ / 99,99 $. On reprend le travail fait sur `compte/formules`, `app/formules`, `marketing/tarifs-formules` et `legal/nouvelle-offre` (tableau des formules, Paddle, changement de formule, cadenas, pages), et on l'adapte. Ces branches ne seront pas fusionnées telles quelles. Les nouveaux prix Paddle sandbox seront créés par le Chef de projet et notés ici.
+  - **Prix Paddle sandbox de l'offre hybride (créés le 30/10 à 19 h 35 par le Chef de projet, en dollars ; Paddle convertit selon le pays)** :
+    | Formule | Produit | Mensuel | Annuel |
+    |---|---|---|---|
+    | Pro | `pro_01m5ygd6ra9bhd5vzy2v1rrk70` | 7,99 $ `pri_01m671bncd9qm3dqxjyqf127gn` | 49,99 $ `pri_01m671cexysycbr7wz1av55cvy` |
+    | Creator Plus | `pro_01m671d5b8wbm0dmmvjn7x8vx9` | 14,99 $ `pri_01m671dtkv0d5m0r2a4ek02a3e` | 99,99 $ `pri_01m671eex11hq295vhmsj723wm` |
+    - Anciens prix (tous encore actifs, abonnements de test seulement) : le webhook compte les prix Pro en euros (9,99 €, 79 €, 10,99 €, 109 €) et Basic comme `pro`, les prix Max comme `creator`. Ils seront archivés plus tard, avec l'accord du propriétaire.
+  - **Contrat App / Comptes pour l'offre hybride** (remplace le contrat Basic/Pro/Max ci-dessous) :
+    - Formules : `free`, `pro`, `creator`. Gratuit **sans compte obligatoire**, montage illimité, plus de vidéo du jour, plus d'e-mail de rappel, plus de fin Stalak de 3 s.
+    - `acctHas(feat)` : `nowm` (pas de filigrane ni de pub), `clip`, `fx` (effets premium), `text` (mot par mot / karaoké), `filters` (filtres pro), `lyrics` (paroles auto) → Pro et Creator Plus ; `pack5`, `pack10`, `pack30`, `cloud`, `human` → Creator Plus seulement.
+    - `acctOpen(why, { plan })` avec `plan` = `pro` ou `creator`. `acctQuota` et `acctUseVideo` ne servent plus.
+    - Filigrane : ajouté par l'App dans le navigateur à l'export pour Gratuit (logo + « Clipped with stalak.app », qui bouge). La pub récompensée (Google Ad Manager, format « rewarded » pour le web) l'enlève pour **cette** vidéo. Pas de vérification côté serveur : Google n'en propose pas pour le web.
+    - Paroles auto : proposition 20 par jour en Pro, 60 en Creator Plus ; sauvegarde en ligne 100 Go en Creator Plus.
 - 27/10 : « Parler à un humain » devient un avantage **Stalak Pro** : chat en direct si le propriétaire est disponible, sinon réponse par e-mail sous 24 h. Ne jamais écrire « 24 h/24 ». Les gratuits gardent le glaçon IA et contact@stalak.app (obligation légale de pouvoir joindre le vendeur). Comptes fait la restriction côté serveur et dans le glaçon ; Marketing a écrit les textes (branche `marketing/chat-pro`, à fusionner en même temps que la branche Comptes).
 - 27/10 : **menu du compte** (en haut à droite) et **Galerie** des projets en ligne, en grille avec couvertures, comme l'app Photos de l'iPhone → Comptes.
 
