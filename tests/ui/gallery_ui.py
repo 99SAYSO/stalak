@@ -6,7 +6,8 @@ Build the site first (python3 build_site.py …), then run node tests/ui/cloud-s
 run): the real Functions on node:sqlite with an in-memory R2. Accounts come from /__test/login?email=…&pro=1|0|ex.
 Checks: signed out → « Se connecter » opens the sign-in; the menu (5 entries, Stalak Pro / Gérer mon abonnement, closes on a tap
 outside, Escape, arrows, Aide, Mon compte, Se déconnecter); the Galerie for a free account and an ex-Pro (« réservée à Stalak
-Pro », button to the Pro page); for Pro: a real save from the example makes a 300 px cover, the grid (3 columns on a phone, more
+Pro », button to the Pro page); for Creator Plus: automatic saving (the example saves itself, « Enregistré ✓ », nothing sent
+when nothing changed or during an export, the Galerie name kept), a 300 px cover, the grid (3 columns on a phone, more
 on a computer, most recent first, name under the cover), a long press and « … » (rename, delete), a tap opens the project;
 FR and EN; no horizontal scroll; no page error. Run this file by absolute path from a clean directory."""
 import asyncio, json, os, sys, urllib.request
@@ -174,21 +175,44 @@ async def main():
         await pg.tap('#acctMenu [data-am=gallery]')
         await pg.wait_for_selector('#apGallery:not([hidden]) #clEmpty:not([hidden])', timeout=8000)
         empty = await pg.inner_text('#clEmpty')
-        check('fr-390 Pro: empty Galerie says how to fill it', 'Sauvegarder en ligne' in empty, empty)
+        check('fr-390 Pro: empty Galerie says projects save themselves', 's’enregistre tout seul' in empty, empty)
         await pg.click('#apBack')
         await pg.wait_for_timeout(400)
+        check('fr-390 Pro: no « Sauvegarder en ligne » button any more', await pg.locator('#cloudSaveBtn, #clSaveHere, #clNameF').count() == 0)
+        puts = []
+        pg.on('request', lambda r: puts.append((r.method, r.url)) if r.method in ('PUT', 'POST') and '/api/projects/' in r.url else None)
         await pg.click('#demoBtn')
-        await pg.wait_for_selector('#cloudSaveBtn:not([disabled])', state='visible', timeout=30000)
-        await pg.wait_for_timeout(800)
-        await pg.click('#cloudSaveBtn')
-        await pg.wait_for_selector('#cloudDlg:not([hidden]) #clName', timeout=5000)
-        await pg.fill('#clName', 'Démo glace')
-        await pg.click('#clGo')
-        await pg.wait_for_selector('#cloudDlg #clDone:not([hidden])', timeout=60000)
-        await pg.click('#clDone')
+        # automatic saving: the example saves itself, the header says « Enregistré ✓ »
+        await pg.wait_for_selector('#clAuto[data-st=saved]:not([hidden])', timeout=60000)
+        txt = await pg.text_content('#clAutoT')
+        check('fr-390 Pro: the example saved itself, « Enregistré ✓ » in the header', txt == 'Enregistré ✓', txt)
+        ab = await pg.eval_on_selector('#clAuto', 'e => { const r = e.getBoundingClientRect(); return [r.left, r.right, r.width, innerWidth]; }')
+        check('fr-390 Pro: the indicator is small and on the screen', ab[0] >= 0 and ab[1] <= ab[3] and ab[2] <= 140, ab)
+        await shot(pg, 'autosave-fr-390')
         stats = json.load(urllib.request.urlopen(BASE + '/__test/stats'))
         covers = [k for k in stats['keys'] if k.endswith('/cover')]
         check('fr-390 Pro: the save made a cover in R2, next to the project', len(covers) == 1 and '/p/' in covers[0], stats['keys'])
+        pid = await pg.evaluate('__ev("CL.cur && CL.cur.id")')
+        saves = [u for m, u in puts if m == 'PUT' and u.endswith('/api/projects/' + pid)]
+        check('fr-390 Pro: one save for the example', len(saves) == 1, puts)
+        # nothing changes: nothing is sent again
+        await pg.wait_for_timeout(9000)
+        saves = [u for m, u in puts if m == 'PUT' and u.endswith('/api/projects/' + pid)]
+        check('fr-390 Pro: nothing changed → nothing sent', len(saves) == 1, puts)
+        # renamed in the Galerie: the name stays after the next automatic save
+        await pg.evaluate("id => fetch('/api/projects/' + id, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'Démo glace' }) })", pid)
+        # during an export: nothing is sent; afterwards the change is saved
+        n0 = len(puts)
+        await pg.evaluate('__ev("S.exporting = true; S.seed = (S.seed || 0) + 7")')
+        await pg.wait_for_timeout(10000)
+        check('fr-390 Pro: nothing sent during an export', len(puts) == n0, puts[n0:])
+        await pg.evaluate('__ev("S.exporting = false")')
+        await pg.wait_for_function("id => performance.getEntriesByType('resource').filter(e => e.name.endsWith('/api/projects/' + id)).length >= 2", arg=pid, timeout=20000)
+        await pg.wait_for_selector('#clAuto[data-st=saved]', timeout=10000)
+        saves = [u for m, u in puts if m == 'PUT' and u.endswith('/api/projects/' + pid)]
+        check('fr-390 Pro: after the export, the change is saved (only the project, no file sent again)', len(saves) == 2 and not any('/files' in u for m, u in puts[n0:]), puts[n0:])
+        name = await pg.evaluate("id => fetch('/api/projects').then(r => r.json()).then(d => d.projects.find(p => p.id === id).name)", pid)
+        check('fr-390 Pro: the name given in the Galerie is kept', name == 'Démo glace', name)
         await make_projects(pg, ['Son deux', 'Son trois', 'Un nom de projet vraiment très long pour voir', 'Son cinq'])
         await menu_open(pg)
         await pg.tap('#acctMenu [data-am=gallery]')
@@ -257,6 +281,12 @@ async def main():
         except Exception:
             closed = False
         check('en-1280 Pro: the project opens, the Galerie closes', closed)
+        puts = []
+        pg.on('request', lambda r: puts.append(r.url) if r.method in ('PUT', 'POST') and '/api/projects/' in r.url else None)
+        await pg.wait_for_selector('#clAuto[data-st=saved]:not([hidden])', timeout=20000)
+        txt = await pg.text_content('#clAutoT')
+        check('en-1280 Pro: an opened project shows « Saved ✓ » without sending it again', txt == 'Saved ✓' and not puts, [txt, puts])
+        await shot(pg, 'autosave-en-1280')
         check('en-1280 Pro: no page error', not err, err)
         await ctx.close()
         await browser.close()

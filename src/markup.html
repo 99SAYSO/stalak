@@ -9,7 +9,8 @@
       <li><button type="button" data-go="3" data-i18n="step.3"><b>3</b>Paroles</button></li>
       <li><button type="button" data-go="4" data-i18n="step.4"><b>4</b>Montage</button></li>
     </ol>
-    <div class="hdtools"><button class="pricebtn" id="priceBtn" type="button" hidden aria-controls="acctPage"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.5v19M3.8 7.25l16.4 9.5M3.8 16.75l16.4-9.5"/></svg><span data-i18n="hd.price">Stalak Pro</span></button><button class="acctbtn" id="acctBtn" type="button" hidden aria-haspopup="dialog" aria-controls="acctPage"><span class="acctav" id="acctAv" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></span><span class="acctlbl" id="acctLbl">Se connecter</span><span class="acctpro" id="acctProTag" hidden>PRO</span></button>
+    <div class="hdtools"><!-- automatic online saving (Creator Plus; domaine Comptes): « Enregistré ✓ », discreet -->
+      <span class="cl-auto" id="clAuto" role="status" aria-live="polite" hidden><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 18.5h10.2a4.3 4.3 0 0 0 .5-8.6A6 6 0 0 0 6.2 9.4 4.6 4.6 0 0 0 7 18.5z"/><path class="cl-auto-ok" d="M9.3 13.6l2 2 3.6-3.8"/></svg><span id="clAutoT"></span></span><button class="pricebtn" id="priceBtn" type="button" hidden aria-controls="acctPage"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.5v19M3.8 7.25l16.4 9.5M3.8 16.75l16.4-9.5"/></svg><span data-i18n="hd.price">Stalak Pro</span></button><button class="acctbtn" id="acctBtn" type="button" hidden aria-haspopup="dialog" aria-controls="acctPage"><span class="acctav" id="acctAv" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></span><span class="acctlbl" id="acctLbl">Se connecter</span><span class="acctpro" id="acctProTag" hidden>PRO</span></button>
     <!-- account menu (signed in; domaine Comptes, paiements & serveur): opened by the account button, closed by a tap outside or Escape -->
     <div class="acctmenu" id="acctMenu" role="menu" aria-labelledby="acctBtn" hidden>
       <button type="button" role="menuitem" tabindex="-1" data-am="gallery"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.6"/></svg><span data-i18n="am.gallery">Galerie</span></button>
@@ -371,10 +372,6 @@
           </div>
           </div>
           <p class="note cover-note" id="coverNote" hidden></p>
-          <div class="cl-row" id="cloudRow" hidden>
-            <button class="btn tip" id="cloudSaveBtn" type="button" data-tip="Garde ce projet (son, prises, paroles, montage) dans ton compte, pour le rouvrir plus tard sur n’importe quel appareil." data-i18n="cl.save" data-i18n-attr="data-tip:cl.save.tip">Sauvegarder en ligne</button>
-            <span class="note" id="cloudSaveNote"></span>
-          </div>
           <div class="wmnote" id="outroNote" hidden>
             <p class="note"><span id="wmNoteT" data-i18n="wm.note">Les vidéos gratuites ont un petit filigrane qui bouge : « Clipped with stalak.app ».</span></p>
             <div class="row wmrow">
@@ -463,12 +460,6 @@
 <div class="askbox cl-dlg" id="cloudDlg" role="dialog" aria-modal="true" aria-labelledby="clDlgT" hidden>
   <div class="card">
     <h2 id="clDlgT"></h2>
-    <form id="clNameF" novalidate>
-      <label for="clName" data-i18n="cl.nameL">Nom du projet</label>
-      <input id="clName" type="text" maxlength="120" autocomplete="off" spellcheck="false">
-      <p class="hint" id="clSizeT"></p>
-      <div class="row"><button class="btn" type="button" id="clNo" data-i18n="cancel">Annuler</button><button class="btn primary" type="submit" id="clGo" data-i18n="cl.go">Sauvegarder</button></div>
-    </form>
     <div class="cl-prog" id="clProg" hidden>
       <div class="cl-bar big" id="clAllBar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-labelledby="clAllT"><i></i></div>
       <p class="cl-pct" id="clAllT"></p>
@@ -631,7 +622,7 @@
 
       <div class="card ap-card ap-galcard">
         <h3 data-i18n="gal.t">Galerie</h3>
-        <p class="hint" data-i18n="gal.cardP">Tes projets sauvegardés en ligne, à rouvrir sur n’importe quel appareil.</p>
+        <p class="hint" data-i18n="gal.cardP">Tes projets s’enregistrent tout seuls en ligne, à rouvrir sur n’importe quel appareil.</p>
         <button class="btn" type="button" id="apGalGo" data-i18n="gal.open">Ouvrir la Galerie</button>
       </div>
 
@@ -664,7 +655,6 @@
         </div>
         <ul class="gal-grid" id="clList" aria-live="polite"></ul>
         <p class="hint" id="clEmpty" hidden></p>
-        <div class="cl-actions" id="clActions" hidden><button class="btn" type="button" id="clSaveHere" data-i18n="cl.saveNow">Sauvegarder le projet en cours</button></div>
       </div>
     </section>
 

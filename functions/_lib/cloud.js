@@ -441,11 +441,11 @@ const WARN_TEXTS = {
 };
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 export function warningEmail(lang, names, deleteAt) {
-  const t = WARN_TEXTS[lang] || WARN_TEXTS.fr;
-  const d = new Date(deleteAt).toLocaleDateString(lang === 'en' ? 'en-GB' : 'fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Paris' });
+  const t = WARN_TEXTS[lang] || WARN_TEXTS.en;
+  const d = new Date(deleteAt).toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Paris' });
   const list = names.map((n) => '• ' + (n || 'Stalak')).join('\n');
   const text = `${t.intro}\n\n${list}\n\n${t.when(d)}\n${t.keep}\n\nStalak — stalak.app`;
-  const html = `<!doctype html><html lang="${lang === 'en' ? 'en' : 'fr'}"><body style="font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#111;padding:24px">
+  const html = `<!doctype html><html lang="${lang === 'fr' ? 'fr' : 'en'}"><body style="font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#111;padding:24px">
 <p>${esc(t.intro)}</p><ul>${names.map((n) => `<li>${esc(n || 'Stalak')}</li>`).join('')}</ul>
 <p>${esc(t.when(d))}<br>${esc(t.keep)}</p>
 <p style="color:#888;font-size:12px">Stalak — <a href="https://stalak.app" style="color:#888">stalak.app</a></p></body></html>`;

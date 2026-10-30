@@ -1024,14 +1024,20 @@ const I18N_EN = /*@EN*/{
   "am.manage": "Manage my subscription",
   "am.help": "Help",
   "gal.t": "Gallery",
-  "gal.cardP": "Your projects saved online, to open again on any device.",
+  "gal.cardP": "Your projects save themselves online, to open again on any device.",
   "gal.open": "Open the Gallery",
   "gal.lock": "Online saving is part of Stalak Creator Plus.",
-  "gal.lockFree": "With Stalak Creator Plus, every project (song, takes, lyrics, edit) is saved here, with its cover, and opens again on any device.",
+  "gal.lockFree": "With Stalak Creator Plus, every project (song, takes, lyrics, edit) saves itself here automatically, with its cover, and opens again on any device.",
   "gal.lockEx": "Your projects saved online are kept for 6 months after your subscription ends, and come back as soon as you take Creator Plus.",
   "gal.pro": "Discover Creator Plus",
-  "gal.empty": "No project yet. At the Edit step, tap “Save online”: it will show up here with its cover.",
+  "gal.empty": "No project yet. Start an edit: it saves itself and shows up here with its cover.",
   "gal.moreA": "More for “{name}”: rename, delete",
+  "_bloc.compte.sauvegarde": "Comptes, paiements & serveur : sauvegarde automatique (Creator Plus)",
+  "cl.auto.saved": "Saved ✓",
+  "cl.auto.saving": "Saving…",
+  "cl.auto.offline": "Offline",
+  "cl.auto.error": "Not saved",
+  "cl.auto.full": "Space full",
   "_bloc.compte.formules": "Comptes, paiements & serveur : formules Gratuit / Pro / Creator Plus (offre du 30/10 au soir)",
   "pl.n.free": "Free",
   "pl.n.pro": "Pro",
@@ -1685,10 +1691,16 @@ const I18N_FR = /*@FR*/{
   "_bloc.compte.galerie": "Comptes, paiements & serveur : menu du compte et Galerie",
   "am.pro": "Stalak Pro",
   "am.manage": "Gérer mon abonnement",
-  "gal.lockFree": "Avec Stalak Creator Plus, chaque projet (son, prises, paroles, montage) est gardé ici, avec sa couverture, et se rouvre sur n’importe quel appareil.",
+  "gal.lockFree": "Avec Stalak Creator Plus, chaque projet (son, prises, paroles, montage) s’enregistre tout seul ici, avec sa couverture, et se rouvre sur n’importe quel appareil.",
   "gal.lockEx": "Tes projets sauvegardés en ligne sont gardés 6 mois après la fin de ton abonnement, et reviennent dès que tu reprends Creator Plus.",
-  "gal.empty": "Aucun projet pour l’instant. À l’étape Montage, touche « Sauvegarder en ligne » : il apparaîtra ici avec sa couverture.",
+  "gal.empty": "Aucun projet pour l’instant. Commence un montage : il s’enregistre tout seul et apparaîtra ici avec sa couverture.",
   "gal.moreA": "Plus pour « {name} » : renommer, supprimer",
+  "_bloc.compte.sauvegarde": "Comptes, paiements & serveur : sauvegarde automatique (Creator Plus)",
+  "cl.auto.saved": "Enregistré ✓",
+  "cl.auto.saving": "Enregistrement…",
+  "cl.auto.offline": "Hors ligne",
+  "cl.auto.error": "Pas enregistré",
+  "cl.auto.full": "Espace plein",
   "_bloc.compte.formules": "Comptes, paiements & serveur : formules Gratuit / Pro / Creator Plus (offre du 30/10 au soir)",
   "pl.n.free": "Gratuit",
   "pl.n.pro": "Pro",
@@ -9695,23 +9707,18 @@ function clCheck(){
   if (!CL) return Promise.resolve(false);
   return ACCT.cloud.available().then(a => { CL.avail = a; clSync(); return a; }, () => { clSync(); return false; });
 }
-/* the button of the Montage step, the account card (not the list itself: see clRenderList) */
+/* the Galerie card and the indicator of automatic saving (not the list itself: see clRenderList) */
 function clSync(){
   if (!CL) return;
   const pro = acctHas('cloud'), st = ACCT.state, u = st.user, soon = CL.avail === false;
   // another person signed in (or signed out): their own list, nothing of the previous one
   const uid = u ? u.id : null;
   if (uid !== CL.uid){ CL.uid = uid; CL.list = null; CL.storage = null; CL.cur = null; CL.renaming = null; CL.lang = null; }
-  $('#cloudRow').hidden = !CL.avail || !S.song;
-  $('#cloudSaveBtn').classList.toggle('protag', !pro);
-  $('#cloudSaveBtn').disabled = CL.busy || S.exporting;
   // the Galerie: the grid for Pro; « Réservé à Stalak Pro » otherwise (an ex-Pro: his projects are kept 6 months)
   const locked = !!u && (!pro || !!CL.locked);
   $('#apProjects').hidden = !u || locked; $('#galLock').hidden = !locked;
   if (locked) setT('#galLockP', st.subscription ? 'gal.lockEx' : 'gal.lockFree');
   $('#clSoon').hidden = !soon; $('#clSoonP').hidden = !soon;
-  $('#clActions').hidden = soon || CL.avail == null || !S.song;
-  $('#clSaveHere').classList.toggle('protag', !pro); $('#clSaveHere').disabled = CL.busy;
   const stg = CL.storage, q = $('#clQuota');
   q.hidden = soon || !stg;
   if (stg){
@@ -9722,6 +9729,7 @@ function clSync(){
   }
   if (CL.lang !== LANG){ CL.lang = LANG; clRenderList(); }
   // Pro again: the list comes back; Pro lost: it goes
+  asShow();   // the « Enregistré ✓ » of automatic saving
   if (u && pro && CL.locked){ CL.locked = false; clLoadList(); }
   else if (u && !pro && !CL.locked && CL.list){ CL.locked = true; CL.list = null; CL.storage = null; clRenderList(); }
 }
@@ -9867,7 +9875,7 @@ function clDlgOpen(titleKey, vars){
 function clDlgClose(){
   const d = $('#cloudDlg'); if (d.hidden) return;
   d.hidden = true; modalOn(false); CL.retry = null;
-  try { (CL.back && CL.back.isConnected && !CL.back.closest('#cloudDlg') ? CL.back : $('#cloudSaveBtn')).focus(); } catch(e){}
+  try { (CL.back && CL.back.isConnected && !CL.back.closest('#cloudDlg') ? CL.back : $('#acctBtn')).focus(); } catch(e){}
 }
 function clMsg(key, vars, err){ const m = $('#clMsg'); m.classList.toggle('err', !!err); setT(m, key, vars); }
 function clBtns(st){ $('#clStop').hidden = st !== 'run'; $('#clRetry').hidden = st !== 'fail'; $('#clDone').hidden = st === 'run'; setT('#clDone', st === 'fail' ? 'cl.close' : 'cl.ok'); }
@@ -9916,20 +9924,6 @@ function clMediaFiles(){
   if (S.song && !S.song.demo) add(S.song.file);
   for (const tk of S.takes) if (tk.kind === 'video') add(tk.file);
   return out;
-}
-function clSaveAsk(){
-  if (!CL || CL.busy || S.exporting || askDone) return;
-  if (!acctHas('cloud')){ if (isShown($('#acctPage'))){ apGo('pro', { why: 'cloud' }); plFocus('creator'); } else acctOpen('cloud', { plan: 'creator' }); return; }
-  if (!CL.avail){ clSay('cl.soonSt'); return; }
-  if (!S.song){ clSay('cl.nothing'); return; }
-  if (S.takes.some(t => t.status === 'pending')){ clSay('cl.wait'); return; }
-  stop(true);
-  clDlgOpen('cl.saveT');
-  $('#clNameF').hidden = false; $('#clProg').hidden = true;
-  $('#clName').value = CL.cur ? CL.cur.name : clDefaultName();
-  const files = clMediaFiles(), size = files.reduce((a, f) => a + f.size, 0);
-  if (files.length) setT('#clSizeT', 'cl.sizeT', { n: files.length, size: clFmtBytes(size) }); else setT('#clSizeT', 'cl.sizeT0');
-  setTimeout(() => { try { $('#clName').focus(); $('#clName').select(); } catch(e){} }, 40);
 }
 async function clFingerprint(f){ let id = CL.fp.get(f); if (!id){ id = await ACCT.cloud.fingerprint(f); CL.fp.set(f, id); } return id; }
 const clFileRef = (f, id) => ({ id, name: f.name, type: f.type || '', size: f.size, lastModified: f.lastModified || 0 });
@@ -9982,39 +9976,101 @@ async function clCoverBlob(){
   if (b && b.size > 60000) b = await blob('image/jpeg', 0.6);
   return b && b.size <= 64 * 1024 ? b : null;
 }
-async function clSaveRun(name){
-  if (CL.busy) return;
-  CL.busy = true; CL.mode = 'save'; CL.ctl = new AbortController(); CL.retry = () => clSaveRun(name); clSync();
-  $('#clNameF').hidden = true; $('#clProg').hidden = false; clBtns('run');
-  setT('#clDlgT', 'cl.savingT', { name }); clMsg('cl.prep'); CL.files = []; clFilesUi();
-  const signal = CL.ctl.signal;
+/* ---- automatic saving (Creator Plus), like CapCut: no button. Every 4 s (nothing during an export), the project is read
+   again; once it has changed and stays the same for one more look, it is saved: the media files not yet online (each file
+   once: its fingerprint says whether it is already there), then the project itself (small JSON), then, when the edit
+   changed, its Galerie cover (at most once a minute). An export stops an upload at once; it goes on afterwards from the
+   parts already sent. The header shows « Enregistré ✓ » (« Enregistrement… », « Hors ligne », « Pas enregistré »). ---- */
+const AS = { timer: 0, running: false, ctl: null, saved: null, pending: null, sent: new Set(), coverSig: null, coverAt: 0,
+  state: null, err: null, fails: 0, waitUntil: 0, adopt: false, pid: null };
+const AS_EVERY = 4000;
+function asOn(){ return !!CL && !!ACCT.state.user && acctHas('cloud') && CL.avail === true; }
+function asHasWork(){ return !!S.song && S.takes.length > 0; }
+// the indicator in the header: hidden without Creator Plus or without a project
+function asShow(st){
+  if (st !== undefined) AS.state = st;
+  const el = $('#clAuto'); if (!el) return;
+  const on = asOn() && asHasWork() && !!AS.state;
+  el.hidden = !on; if (!on) return;
+  const k = { saved: 'cl.auto.saved', saving: 'cl.auto.saving', offline: 'cl.auto.offline', error: 'cl.auto.error', full: 'cl.auto.full' }[AS.state] || 'cl.auto.saving';
+  setT('#clAutoT', k);
+  el.dataset.st = AS.state;
+  el.title = (AS.state === 'error' || AS.state === 'full') && AS.errMsg ? _t(AS.errMsg[0], AS.errMsg[1]) : '';
+}
+function asSig(state){ const o = Object.assign({}, state); delete o.savedAt; return JSON.stringify(o); }
+async function asTick(){
+  if (!asOn() || !asHasWork()){ asShow(); return; }
+  if (S.exporting){ if (AS.ctl) AS.ctl.abort(); return; }   // nothing during an export
+  if (AS.running || CL.busy || S.takes.some(t => t.status === 'pending') || Date.now() < AS.waitUntil) return;
+  let col;
+  try { col = await clCollect(); } catch(e){ return; }
+  if (S.exporting) return;
+  const sig = asSig(col.state);
+  // a project just opened from the Galerie: what is on screen is what is online
+  if (AS.adopt){ AS.adopt = false; AS.saved = sig; AS.pending = null; asShow('saved'); return; }
+  if (sig === AS.saved){ if (AS.state !== 'saved') asShow('saved'); return; }
+  // changed: saved once it stays the same for one more look (not at every move of a slider)
+  if (sig !== AS.pending){ AS.pending = sig; if (AS.state === 'saved' || !AS.state) asShow('saving'); return; }
+  await asSave(col, sig);
+}
+async function asSave(col, sig){
+  AS.running = true; AS.ctl = new AbortController(); const signal = AS.ctl.signal; asShow('saving');
   try {
-    const { state, media } = await clCollect();
-    const id = (CL.cur && CL.cur.id) || ('p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8));
-    CL.files = media.map(m => ({ label: m.file.name, size: m.file.size, done: 0 })); clFilesUi();
-    for (let i = 0; i < media.length; i++){
-      const m = media[i], f = CL.files[i];
-      clMsg(null);
-      const r = await ACCT.cloud.upload(id, m.file, m.id, { signal, onProgress: b => { f.done = b; clProgUi(); }, onRetry: n => clMsg('cl.retrying', { n }) });
-      f.done = f.size; f.ok = true; f.skip = !!(r && r.skipped); clProgUi();
+    if (!CL.cur) CL.cur = { id: 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8), name: clDefaultName(), fresh: true };
+    const id = CL.cur.id;
+    if (AS.pid !== id){ AS.pid = id; AS.sent = new Set(); AS.coverSig = null; }   // files are kept per project
+    // only what changed: media files not yet online for this project
+    for (const m of col.media){
+      if (AS.sent.has(m.id)) continue;
+      if (S.exporting) throw Object.assign(new Error('aborted'), { code: 'aborted' });
+      await ACCT.cloud.upload(id, m.file, m.id, { signal, onProgress: () => { if (S.exporting && AS.ctl) AS.ctl.abort(); } });
+      AS.sent.add(m.id);
     }
-    if (signal.aborted) throw Object.assign(new Error('aborted'), { code: 'aborted' });
-    clMsg('cl.finishing');
-    const res = await ACCT.projects.save(id, name, state, media.map(m => m.id));
-    CL.cur = { id, name }; if (res && res.storage) CL.storage = res.storage;
-    // the Galerie's cover: a picture of the edit, small (300 px wide); never blocks the save
-    try { const cover = await clCoverBlob(); if (cover) await ACCT.projects.setCover(id, cover); }
-    catch(e){ diag('galerie : couverture non envoyée (' + (e && (e.code || e.message)) + ')'); }
-    CL.files.forEach(f => { f.ok = true; f.done = f.size; }); clProgUi();
-    $('#clAllBar').firstElementChild.style.width = '100%';
-    clMsg('cl.saved'); clBtns('done'); $('#clDone').focus();
-    setT('#cloudSaveNote', 'cl.savedNote', { t: new Date().toLocaleTimeString(LANG === 'en' ? 'en-GB' : 'fr-FR', { hour: '2-digit', minute: '2-digit' }) });
-    diag('sauvegarde en ligne : ' + media.length + ' fichier(s), ' + media.filter((m, i) => CL.files[i].skip).length + ' déjà en ligne');
-    clLoadList();
+    if (signal.aborted || S.exporting) throw Object.assign(new Error('aborted'), { code: 'aborted' });
+    // the project itself; its name only the first time (afterwards it may have been renamed in the Galerie)
+    const res = await ACCT.projects.save(id, CL.cur.fresh ? CL.cur.name : null, col.state, col.media.map(m => m.id));
+    if (CL.cur && CL.cur.id === id) CL.cur.fresh = false;
+    AS.saved = sig; AS.pending = null; AS.err = null; AS.fails = 0; AS.waitUntil = 0;
+    if (res && res.storage) CL.storage = res.storage;
+    // the Galerie's cover, when the edit changed (at most once a minute; never while playing or exporting)
+    const csig = JSON.stringify([col.state.cuts, col.state.set.filter, col.state.set.fmt, col.state.lyrics.style]);
+    if (csig !== AS.coverSig && Date.now() - AS.coverAt > 60e3 && !S.playing && !S.exporting){
+      try { const cover = await clCoverBlob(); if (cover){ await ACCT.projects.setCover(id, cover); AS.coverSig = csig; AS.coverAt = Date.now(); } }
+      catch(e){ diag('galerie : couverture non envoyée (' + (e && (e.code || e.message)) + ')'); }
+    }
+    asShow('saved');
+    if (isShown($('#apGallery'))) clLoadList();
   } catch(e){
-    if (e && e.code === 'aborted'){ CL.busy = false; clDlgClose(); clSay('cl.stopped'); }
-    else { const [k, v] = clErr(e, false); clMsg(k, v, true); clBtns('fail'); $('#clRetry').focus(); }
-  } finally { CL.busy = false; CL.ctl = null; clSync(); }
+    if (e && e.code === 'aborted'){ asShow('saving'); }   // an export started: it goes on afterwards
+    else {
+      const c = e && e.code, net = !c || c === 'network' || c === 'http_0' || e instanceof TypeError || (e && e.status >= 500);
+      AS.err = e; AS.errMsg = clErr(e, false); AS.fails++;
+      // tried again later, a little later each time (5 s … 2 min); a full space or too many projects: every 2 min
+      AS.waitUntil = Date.now() + (c === 'quota_exceeded' || c === 'too_many_projects' ? 120e3 : Math.min(120e3, 5e3 * Math.pow(2, AS.fails - 1)));
+      asShow(net && !navigator.onLine ? 'offline' : net ? 'offline' : c === 'quota_exceeded' ? 'full' : 'error');
+      if (c === 'pro_required') ACCT.me().catch(() => {});
+    }
+  } finally { AS.running = false; AS.ctl = null; }
+}
+// before the page goes (opening another project): what changed is saved first (20 s at most)
+async function asFlush(){
+  if (!asOn() || !asHasWork()) return;
+  const end = Date.now() + 20e3;
+  while (Date.now() < end){
+    if (!AS.running){
+      let col; try { col = await clCollect(); } catch(e){ return; }
+      const sig = asSig(col.state); if (sig === AS.saved) return;
+      await asSave(col, sig); if (AS.saved === sig || AS.err) return;
+    }
+    await new Promise(r => setTimeout(r, 300));
+  }
+}
+function asStart(){
+  if (!CL || AS.timer) return;
+  AS.timer = setInterval(() => { asTick().catch(e => diag('sauvegarde automatique : ' + (e && e.message))); }, AS_EVERY);
+  window.addEventListener('online', () => { AS.waitUntil = 0; });
+  // leaving while a file is being sent: the browser asks first
+  window.addEventListener('beforeunload', e => { if (asOn() && AS.running){ e.preventDefault(); e.returnValue = ''; } });
 }
 
 /* ---- opening ---- */
@@ -10022,6 +10078,7 @@ async function clOpenAsk(p){
   if (!CL || CL.busy || S.exporting || askDone || apBusy) return;
   if (S.song || S.takes.length){
     if (!await askSure(_t('cl.openAskT'), _t('cl.openAskP'), _t('cl.openYes'))) return;
+    await asFlush();   // the project on screen is saved first (automatic saving)
     // a clean page first: the project is opened again right after the reload (clBoot)
     try { sessionStorage.setItem(CL_OPEN_KEY, JSON.stringify({ id: p.id, name: p.name })); } catch(e){ return; }
     S.cancel = true; try { stop(true); } catch(e){}
@@ -10039,7 +10096,7 @@ async function clOpenRun(p){
   if (CL.busy) return;
   CL.busy = true; CL.mode = 'open'; CL.ctl = new AbortController(); CL.retry = () => clOpenAsk(p); clSync();
   clDlgOpen('cl.openingT', { name: p.name || _t('cl.noName') });
-  $('#clNameF').hidden = true; $('#clProg').hidden = false; clBtns('run'); clMsg('cl.fetching'); CL.files = []; clFilesUi();
+  $('#clProg').hidden = false; clBtns('run'); clMsg('cl.fetching'); CL.files = []; clFilesUi();
   const signal = CL.ctl.signal;
   try {
     const d = await ACCT.projects.get(p.id);
@@ -10057,12 +10114,15 @@ async function clOpenRun(p){
       const file = await ACCT.cloud.download(p.id, { id: r.id, name: r.name, type: r.type || o.type, size: o.size, lastModified: r.lastModified },
         { signal, onProgress: b => { f.done = b; clProgUi(); }, onRetry: n => clMsg('cl.retrying', { n }) });
       CL.fp.set(file, r.id);   // the same file saved again later: recognised at once, not sent again
+      AS.sent.add(r.id);
       files.set(r.id, file); f.ok = true; f.done = f.size; clProgUi();
     }
     if (signal.aborted) throw Object.assign(new Error('aborted'), { code: 'aborted' });
     clMsg('cl.restoring'); $('#clStop').hidden = true;
+    AS.pid = p.id; AS.sent = new Set(refs.map(r => r.id));   // already online: automatic saving sends none of them again
     const gated = await clApply(st, files);
-    CL.cur = { id: p.id, name: d.name };
+    CL.cur = { id: p.id, name: d.name, fresh: false };
+    AS.adopt = true; AS.coverSig = null; AS.coverAt = Date.now();   // the next look takes what is on screen as saved
     CL.busy = false; clDlgClose(); apHide();
     say(gated ? 'cl.clipNoPro' : 'cl.opened', { name: d.name || _t('cl.noName') });
     diag('sauvegarde en ligne : projet ouvert (' + refs.length + ' fichier(s))');
@@ -10145,15 +10205,12 @@ async function clApply(st, files){
 }
 
 if (CL){
-  $('#cloudSaveBtn').onclick = clSaveAsk;
-  $('#clSaveHere').onclick = clSaveAsk;
-  $('#clNameF').onsubmit = e => { e.preventDefault(); const v = $('#clName').value.replace(/\s+/g, ' ').trim().slice(0, 120); clSaveRun(v || clDefaultName()); };
-  $('#clNo').onclick = clDlgClose;
   $('#clStop').onclick = () => { if (CL.ctl) CL.ctl.abort(); };
-  $('#clRetry').onclick = () => { const r = CL.retry; if (!r) return; if (CL.mode === 'open'){ clDlgClose(); } r(); };
+  $('#clRetry').onclick = () => { const r = CL.retry; if (!r) return; clDlgClose(); r(); };
   $('#clDone').onclick = clDlgClose;
   $('#cloudDlg').addEventListener('keydown', e => { if (e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); if (CL.busy){ if (CL.ctl) CL.ctl.abort(); } else clDlgClose(); } });
   clCheck();
+  asStart();   // automatic saving (Creator Plus)
 }
 
 /* ---------- FR / EN: everything on screen is written again in the other language, the work stays as it is ---------- */

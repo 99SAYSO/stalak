@@ -22,8 +22,9 @@ export function normalizeEmail(v) {
   return e;
 }
 
+// English unless the person uses Stalak in French (the United States first: decision of 30/10)
 export function normalizeLang(v) {
-  return String(v || '').toLowerCase().startsWith('en') ? 'en' : 'fr';
+  return String(v || '').toLowerCase().startsWith('fr') ? 'fr' : 'en';
 }
 
 // Codes are hashed with the email and their purpose (and an optional server-side pepper AUTH_SECRET).
@@ -280,7 +281,7 @@ export async function loginPassword(request, env, body) {
   const lang = body.lang ? normalizeLang(body.lang) : null;
   if (lang) await env.DB.prepare('UPDATE users SET lang = ?2 WHERE id = ?1').bind(user.id, lang).run();
   if (!(await deviceTrusted(request, env, user.id))) {
-    return { needCode: await issueCode(request, env, email, 'login', lang || user.lang || 'fr', { u: user.id }) };
+    return { needCode: await issueCode(request, env, email, 'login', lang || user.lang || 'en', { u: user.id }) };
   }
   const fresh = await userById(env, user.id);
   return { user: fresh, cookies: [await createSession(env, fresh, 'password')] };

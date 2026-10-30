@@ -109,7 +109,7 @@ export async function helpChat(request, env) {
   await limit(env, `help:ipd:${ipKey}`, IP_PER_DAY, 86400e3, 'Too many questions today, try again tomorrow.');
 
   const body = await readJson(request, BODY_MAX);
-  const lang = body.lang === 'en' ? 'en' : 'fr';
+  const lang = body.lang === 'fr' ? 'fr' : 'en';
   const turns = cleanTurns(body.messages);
   const context = body.context == null ? '' : clean(typeof body.context === 'string' ? body.context : '', CONTEXT_MAX);
   if (!env.AI || typeof env.AI.run !== 'function') throw new HttpError(503, 'ai_unavailable', 'The assistant is not available right now.');

@@ -13,6 +13,7 @@ import { FEATURES, LIMITS, planHas, entitlementsOf } from '../../functions/_lib/
 import { verifyJwtSignature, decodeJwt } from '../../functions/_lib/jwt.js';
 import { resetJwksCache } from '../../functions/_lib/oauth.js';
 import { cleanPrompt, songPrompt, PROMPT_MAX } from '../../functions/_lib/lyrics.js';
+import { HELP_GUIDE_FR, HELP_GUIDE_EN } from '../../functions/_lib/help-guide.js';
 import { openToken, socialAccessToken, parseSignedRequest } from '../../functions/_lib/social.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -2308,7 +2309,7 @@ test('visits: one row per page load and day, live count, limited new visits per 
   assert.equal(r.status, 200); assert.equal(r.data.every, 60);
   r = await call(env, 'POST', '/api/presence', { body: { vid, lang: 'en' }, ip: '10.40.0.1' });
   assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM visits').get().n, 1);
-  await call(env, 'POST', '/api/presence', { body: { vid: 'v_' + 'b'.repeat(20) }, ip: '10.40.0.2' });
+  await call(env, 'POST', '/api/presence', { body: { vid: 'v_' + 'b'.repeat(20), lang: 'fr' }, ip: '10.40.0.2' });
   env.DB.raw.prepare("INSERT INTO visits (day, vid, first_at, last_at, lang) VALUES (?, 'old_visitor_0000000', 1, ?, 'fr')").run(new Date().toISOString().slice(0, 10), Date.now() - 600e3);
   r = await adminCall(env, 'GET', '/api/admin/live', { token });
   assert.deepEqual(r.data.visitors, { total: 2, fr: 1, en: 1 });
@@ -2609,6 +2610,57 @@ test('dashboard: subscribers and revenue per plan (dollars on sale, the first Pr
   assert.equal(t.plans.pro.revenue.USD.total, 799); assert.equal(t.plans.pro.revenue.EUR.total, 999); assert.equal(t.plans.creator.revenue30.USD.total, 1499);
   assert.ok(!('freeVideos' in r.data.usage));
   assert.equal(r.data.recentUsers.find((u) => u.email === 'db-c@example.com').plan, 'creator');
+});
+
+// ---- automatic saving (Creator Plus), English first, no competitor in the help guide (30/10, 21 h) ----
+test('automatic saving: PUT without a name keeps the name; counted once per new project; rate limit per account', async () => {
+  const env = makeEnv();
+  const u = await proUser(env, 'auto@example.com');
+  const count = () => (env.DB.raw.prepare("SELECT SUM(n) AS n FROM daily_counts WHERE name = 'cloud_save'").get() || {}).n || 0;
+  let r = await call(env, 'PUT', '/api/projects/pa', { cookie: u.cookie, body: { name: 'First name', state: { v: 1 } } });
+  assert.equal(r.status, 200, JSON.stringify(r.data)); assert.equal(r.data.created, true);
+  assert.equal(count(), 1);
+  r = await call(env, 'PATCH', '/api/projects/pa', { cookie: u.cookie, body: { name: 'Renamed in the Gallery' } });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  for (let i = 2; i <= 4; i++) {
+    r = await call(env, 'PUT', '/api/projects/pa', { cookie: u.cookie, body: { name: null, state: { v: i } } });
+    assert.equal(r.status, 200, JSON.stringify(r.data)); assert.equal(r.data.created, false);
+  }
+  assert.equal(count(), 1, 'an automatic save of an existing project is not a new project');
+  r = await call(env, 'GET', '/api/projects', { cookie: u.cookie });
+  assert.equal(r.data.projects[0].name, 'Renamed in the Gallery', 'name: null keeps the name');
+  r = await call(env, 'GET', '/api/projects/pa', { cookie: u.cookie });
+  assert.deepEqual(r.data.state, { v: 4 });
+  // a new project saved without a name: empty name, not an error
+  r = await call(env, 'PUT', '/api/projects/pb', { cookie: u.cookie, body: { state: { v: 1 } } });
+  assert.equal(r.status, 200); assert.equal(count(), 2);
+  // 900 saves an hour per account at most
+  env.DB.raw.exec("UPDATE rate_limits SET count = 900 WHERE key LIKE 'save:%'");
+  r = await call(env, 'PUT', '/api/projects/pa', { cookie: u.cookie, body: { name: null, state: { v: 5 } } });
+  assert.equal(r.status, 429, JSON.stringify(r.data));
+});
+
+test('English first: code e-mails in English unless the page is in French', async () => {
+  const env = makeEnv();
+  for (const [email, lang, fr] of [['l1@example.com', undefined, false], ['l2@example.com', 'es', false], ['l3@example.com', 'en-US', false],
+    ['l4@example.com', 'fr', true], ['l5@example.com', 'fr-CA', true]]) {
+    const r = await call(env, 'POST', '/api/auth/signup', { body: { email, password: PW, lang } });
+    assert.equal(r.status, 200, JSON.stringify(r.data));
+    const m = lastMail(email).body;
+    assert.equal(/code/i.test(m.subject) || /Stalak/.test(m.subject), true);
+    assert.equal(/[Tt]on code|Voici/.test(m.text), fr, `${lang}: ${m.subject}`);
+    assert.equal(m.html.includes('lang="fr"'), fr);
+  }
+  const r = await call(env, 'POST', '/api/auth/forgot', { body: { email: 'nobody-lang@example.com' } });
+  assert.equal(r.status, 200);
+});
+
+test('help guide: no other editing app named, and the rule is written in both languages', async () => {
+  for (const g of [HELP_GUIDE_FR, HELP_GUIDE_EN]) {
+    assert.ok(!/triller|capcut|inshot|vn editor|splice|premiere|final cut|imovie|davinci|kinemaster|veed|canva|camrip|filmora|vllo/i.test(g),
+      (g.match(/triller|capcut|inshot|vn editor|splice|premiere|final cut|imovie|davinci|kinemaster|veed|canva|camrip|filmora|vllo/i) || [])[0]);
+    assert.ok(!/Sauvegarder en ligne »|“Save online”/.test(g), 'no more save button in the guide');
+  }
 });
 
 // ---- runner --------------------------------------------------------------------------

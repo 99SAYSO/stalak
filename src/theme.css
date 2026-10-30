@@ -340,6 +340,16 @@ body::after{animation:al-snow-near 13s linear infinite}
 .askbox .card{max-width:420px;width:100%;animation:al-pop .18s var(--soft)}
 .askbox .row{justify-content:flex-end;gap:10px;margin-top:6px}
 /* online saving (stalak.app, Pro): the button of the Montage step, the save / open window, « Mes projets » in the account */
+.cl-auto{display:inline-flex;align-items:center;gap:4px;font:700 13px var(--body);color:#fff;opacity:.92;white-space:nowrap;padding:0 2px}
+.cl-auto[hidden]{display:none}
+.cl-auto svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.cl-auto .cl-auto-ok{opacity:0}
+.cl-auto[data-st=saved] .cl-auto-ok{opacity:1}
+.cl-auto[data-st=saving] svg{animation:clAutoPulse 1.4s ease-in-out infinite}
+.cl-auto[data-st=error],.cl-auto[data-st=full],.cl-auto[data-st=offline]{color:#ffd6e0;opacity:1}
+@keyframes clAutoPulse{50%{opacity:.4}}
+@media (prefers-reduced-motion:reduce){.cl-auto[data-st=saving] svg{animation:none}}
+@media (max-width:360px){.cl-auto #clAutoT{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}
 .cl-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-top:10px}
 .cl-row[hidden],.cl-prog[hidden],#clNameF[hidden],.cl-quota[hidden],.cl-actions[hidden]{display:none}
 #cloudSaveBtn.protag::after,#clSaveHere.protag::after{content:"PRO";font:700 10px/1 var(--body);letter-spacing:.04em;margin-left:8px;padding:3px 5px;border-radius:6px;background:var(--ink);color:#fff;vertical-align:2px}

@@ -268,7 +268,7 @@ export async function linkOrCreate(env, provider, claims, name, lang) {
     if (dn && [...dn].length > 30) dn = null;
     const id = randomId('u_');
     await env.DB.prepare('INSERT INTO users (id, email, lang, created_at, last_login_at, display_name, email_verified_at) VALUES (?1, ?2, ?3, ?4, ?4, ?5, ?4)')
-      .bind(id, email, lang === 'en' ? 'en' : 'fr', now, dn).run();
+      .bind(id, email, lang === 'fr' ? 'fr' : 'en', now, dn).run();
     user = await env.DB.prepare('SELECT * FROM users WHERE id = ?1').bind(id).first();
   }
   await env.DB.prepare('INSERT INTO identities (provider, subject, user_id, email, created_at, last_login_at) VALUES (?1, ?2, ?3, ?4, ?5, ?5)')

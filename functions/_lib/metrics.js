@@ -29,7 +29,7 @@ export async function presence(request, env) {
   const body = await readJson(request, 1024);
   const vid = typeof body.vid === 'string' && VID.test(body.vid) ? body.vid : null;
   if (!vid) throw new HttpError(400, 'invalid_vid', 'vid: 16-40 letters, digits, - or _.');
-  const lang = body.lang === 'en' ? 'en' : 'fr';
+  const lang = body.lang === 'fr' ? 'fr' : 'en';
   const now = Date.now(), day = today(now);
   const row = await env.DB.prepare(
     `INSERT INTO visits (day, vid, first_at, last_at, lang) VALUES (?1, ?2, ?3, ?3, ?4)

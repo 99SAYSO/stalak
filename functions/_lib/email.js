@@ -40,10 +40,10 @@ const TEXTS = {
 };
 
 export function codeEmail(code, lang, purpose = 'code') {
-  const t = TEXTS[lang] || TEXTS.fr;
+  const t = TEXTS[lang] || TEXTS.en;   // English unless the person uses Stalak in French
   const intro = t.intro[purpose] || t.intro.code, ignore = t.ignore[purpose] || t.ignore.code;
   const text = `${intro}\n\n${code}\n\n${t.expiry}\n${ignore}\n\nStalak — stalak.app`;
-  const html = `<!doctype html><html lang="${lang === 'en' ? 'en' : 'fr'}"><body style="font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#111;padding:24px">
+  const html = `<!doctype html><html lang="${lang === 'fr' ? 'fr' : 'en'}"><body style="font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#111;padding:24px">
 <p>${intro}</p>
 <p style="font-size:32px;font-weight:700;letter-spacing:6px;margin:16px 0">${code}</p>
 <p>${t.expiry}<br>${ignore}</p>

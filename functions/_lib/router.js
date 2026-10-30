@@ -110,7 +110,10 @@ async function projects(request, env, method, rest, ctx) {
     let body;
     try { body = JSON.parse(raw); } catch { throw new HttpError(400, 'invalid_json', 'Body must be JSON.'); }
     if (!body || typeof body !== 'object' || body.state === undefined) throw new HttpError(400, 'invalid_project', 'Body must be {name, state}.');
-    const name = String(body.name || '').slice(0, 120);
+    // automatic saving (Creator Plus) sends a new version every few seconds while the person edits: at most 900 an hour
+    await limit(env, `save:${user.id}`, 900, 3600e3, 'Too many saves, try again in a moment.');
+    // no name (automatic saving of a project already online): the name stays as it is (renamed in the Galerie, say)
+    const name = body.name == null ? null : String(body.name).slice(0, 120);
     const data = JSON.stringify(body.state);
     // more than the plan's space (e.g. Max 100 GB → Pro 20 GB): nothing is erased, new saves wait until it fits again
     const space = await storageInfo(env, user.id, plan);
@@ -125,13 +128,13 @@ async function projects(request, env, method, rest, ctx) {
       if (c.n >= PROJECT_MAX_COUNT) throw new HttpError(409, 'too_many_projects', `At most ${PROJECT_MAX_COUNT} saved projects.`);
     }
     await env.DB.prepare(
-      `INSERT INTO projects (user_id, id, name, data, size, created_at, updated_at, opened_at, media_bytes) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?6, ?6, COALESCE(?7, 0))
-       ON CONFLICT(user_id, id) DO UPDATE SET name = ?3, data = ?4, size = ?5, updated_at = ?6, opened_at = ?6, warned_at = NULL,
+      `INSERT INTO projects (user_id, id, name, data, size, created_at, updated_at, opened_at, media_bytes) VALUES (?1, ?2, COALESCE(?3, ''), ?4, ?5, ?6, ?6, ?6, COALESCE(?7, 0))
+       ON CONFLICT(user_id, id) DO UPDATE SET name = COALESCE(?3, name), data = ?4, size = ?5, updated_at = ?6, opened_at = ?6, warned_at = NULL,
          media_bytes = COALESCE(?7, media_bytes)`
     ).bind(user.id, id, name, data, data.length, now, mediaBytes).run();
     if (withFiles) await dropUnusedFiles(env, user.id, id, body.files);
-    await bump(env, 'cloud_save');
-    return json({ ok: true, id, updatedAt: new Date(now).toISOString(), mediaBytes: mediaBytes || 0, storage: await storageInfo(env, user.id, plan) });
+    if (!exists) await bump(env, 'cloud_save');   // the dashboard counts the projects started online, not every automatic save
+    return json({ ok: true, id, created: !exists, updatedAt: new Date(now).toISOString(), mediaBytes: mediaBytes || 0, storage: await storageInfo(env, user.id, plan) });
   }
   if (method === 'PATCH') {
     // rename only (Pro not needed: it is the user's own data)

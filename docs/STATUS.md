@@ -79,6 +79,12 @@
 - **Menu du compte + Galerie** (en ligne le 28/10) : un appui sur le compte en haut à droite ouvre un menu (Galerie, Mon compte, Stalak Pro ou « Gérer mon abonnement », Aide, Se déconnecter) ; la Galerie remplace « Mes projets » : grille avec couverture (image du montage, 300 px, rangée dans R2 avec le projet), nom dessous, appui = ouvrir, appui long ou « … » = renommer / supprimer. Sans Pro : « La sauvegarde en ligne est réservée à Stalak Pro ». Migration 0007 appliquée. À vérifier par le propriétaire sur iPhone : sauvegarder en ligne, puis voir la couverture dans la Galerie.
 - **« Parler à un humain » réservé à Stalak Pro** (branche `compte/humain-pro`, compte rendu `docs/handoff/compte-humain-pro.md`, Statut : PRÊT) : création et écriture réservées à Pro côté serveur ; sans Pro, écran « Réservé à Stalak Pro » (page Pro + contact@stalak.app) ; un ex-Pro garde les réponses reçues ; réponse « sous 24 h » par e-mail quand tu n'es pas là ; badge Pro dans le tableau de bord. Textes de vente : `marketing/chat-pro`, à fusionner ensemble. Aucune migration.
 
+- **Sauvegarde automatique + anglais d'abord** (branche `compte/sauvegarde-auto`, compte rendu `docs/handoff/compte-sauvegarde-auto.md`, Statut : PRÊT) :
+  - Creator Plus : chaque projet s'enregistre tout seul en ligne (toutes les 4 s si quelque chose a changé ; seulement ce qui a changé ; rien pendant un export) ; indicateur « Enregistré ✓ » en haut ; bouton « Sauvegarder en ligne » supprimé ; Galerie adaptée (« il s'enregistre tout seul ») ;
+  - e-mails (codes, support, rappel des 6 mois) et fenêtre de paiement Paddle en anglais par défaut, en français seulement si la page est en français ;
+  - aucun concurrent cité dans le guide de l'assistant d'aide (règle ajoutée en FR et EN) ;
+  - aucune migration.
+
 - **Offre du 30/10 au soir côté Comptes** (branche `compte/formules`, avec `main` et `app/formules` fusionnées, compte rendu `docs/handoff/compte-formules.md`, Statut : PRÊT) :
   - formules `free` / `pro` / `creator` ; tableau unique (`functions/_lib/entitlements.js`) selon le contrat de l'offre hybride ; sauvegarde en ligne (100 Go) et « Parler à un humain » en Creator Plus seulement ; paroles auto 20 / 60 par jour ;
   - 4 prix en dollars dans `wrangler.toml` ; anciens prix reconnus (euros et Basic → `pro`, Max → `creator`) ;
@@ -116,6 +122,8 @@
 - Prêt (branche `app/formules`) : offre hybride du 30/10 au soir dans l'app. Pro / Creator Plus (`can(feat)`), filigrane qui bouge sur les vidéos gratuites (« Clipped with stalak.app »), pub récompensée Google (unité de test) qui l'enlève pour une vidéo. Plus d'écran du jour ni de fin Stalak ; le gratuit exporte sans compte. Détail et suites pour Comptes et Juridique dans `docs/handoff/app-formules.md`.
 
 ### Comptes, paiements & serveur
+- Sauvegarde automatique, anglais d'abord, guide sans concurrent : fait sur `compte/sauvegarde-auto` (voir « En cours »).
+  - Pour App : les lignes du guide d'aide sur les packs (« au moins 3 playbacks ») et le filigrane sont à changer quand les packs dès 2 playbacks et le filigrane logo seul seront livrés (`functions/_lib/help-guide.js`, FR et EN).
 - Offre du 30/10 au soir (`compte/formules`) : fait (voir « En cours »). Au Chef de projet : migration 0008 ; plus besoin de redéployer le Worker (aucun horaire ajouté).
   - Contrat livré : `acctHas(feat)` (`nowm`, `clip`, `fx`, `text`, `filters`, `lyrics` → Pro ; `pack5`, `pack10`, `pack30`, `cloud`, `human` → Creator Plus ; anciens noms `nologo` → Pro, `unlimited` → tous), `acctOpen(why, {plan})` avec `pro` ou `creator` (`basic` / `max` acceptés et convertis). `acctQuota` / `acctUseVideo` supprimées.
   - Pour App : `FEAT_PLAN`, étiquettes BASIC/MAX, fin de 3 s (`outroOn` lit encore `nologo`) et `tests/ui/formules_ui.py` sont encore sur l'offre Basic / Pro / Max : à passer à Pro / Creator Plus.

@@ -26,7 +26,7 @@
      changePlan(plan, interval[, preview]) -> Promise<{kind: 'up'|'down', from, to, amount?, currency?, effectiveAt?}>: a subscriber
                              moves to another plan on the same subscription (up: now, prorated; down: at the renewal); preview: the price only
      deleteAccount()
-     projects.list() / get(id) / save(id, name, state[, fileIds]) / remove(id)
+     projects.list() / get(id) / save(id, name, state[, fileIds]) / remove(id)   (name null: the name online is kept)
      projects.listAll()   -> Promise<{projects, storage: {available, used, quota, partSize, maxFile}}>
      projects.rename(id, name)
      projects.setCover(id, blob) -> Promise<{coverUrl}>  (the Galerie's picture; listAll() gives each project's coverUrl)
@@ -54,9 +54,11 @@
   var paddlePromise = null;
   var checkoutOpen = false;   // Paddle's window is on screen
 
+  // the language the person uses Stalak in (the page's): French only for a page in French, English otherwise
+  // (the United States first: e-mails and the payment window in English by default)
   function lang() {
-    var l = (document.documentElement.lang || navigator.language || 'fr').toLowerCase();
-    return l.indexOf('en') === 0 ? 'en' : 'fr';
+    var l = (document.documentElement.lang || navigator.language || 'en').toLowerCase();
+    return l.indexOf('fr') === 0 ? 'fr' : 'en';
   }
 
   function api(method, path, body, rawType) {
@@ -150,7 +152,7 @@
           items: [{ priceId: priceId, quantity: 1 }],
           customer: { email: st.user.email },
           customData: { user_id: st.user.id },
-          settings: { displayMode: 'overlay', locale: st.user.lang || lang(), allowLogout: false }
+          settings: { displayMode: 'overlay', locale: lang(), allowLogout: false }   // the page's language, not the one at sign-up
         });
       });
     });

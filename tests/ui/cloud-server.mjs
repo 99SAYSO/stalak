@@ -111,7 +111,10 @@ async function file(req, url, res) {
     let s = await stat(full), f = full;
     if (s.isDirectory()) { f = join(full, 'index.html'); s = await stat(f); }
     res.writeHead(200, { 'Content-Type': TYPES[extname(f)] || 'application/octet-stream', 'Cache-Control': 'no-store' });
-    res.end(await readFile(f));
+    let data = await readFile(f);
+    // test probe: the app lives in a closure; __ev(code) evaluates code inside it (test server only, never in the build)
+    if (extname(f) === '.html') data = Buffer.from(data.toString('utf8').replace(/applyLang\(\);\n\}\)\(\);/, 'applyLang();\nwindow.__ev = (s) => eval(s);\n})();'));
+    res.end(data);
   } catch {
     try { await stat(full + '.html'); res.writeHead(200, { 'Content-Type': TYPES['.html'] }); res.end(await readFile(full + '.html')); }
     catch { res.writeHead(404); res.end('not found'); }

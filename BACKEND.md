@@ -339,10 +339,19 @@ adresse de retour mal recopiée (une lettre ou un `/` de trop), secret expiré (
 
 ## 11. Sauvegarde en ligne (Stalak Creator Plus, stockage R2)
 
-Un abonné Creator Plus peut sauvegarder un projet entier (son, prises, paroles et leurs temps, montage, effets, format, style du texte)
-avec « Sauvegarder en ligne » (étape Montage, ou Galerie dans le menu du compte), puis le rouvrir sur n'importe quel appareil.
-La **Galerie** montre les projets en grille, chacun avec sa couverture : une image du montage (300 px de large, 64 Ko au plus),
-faite par la page à chaque sauvegarde et rangée dans R2 à côté du projet (`u/<compte>/p/<projet>/cover`).
+Chez un abonné Creator Plus, chaque projet entier (son, prises, paroles et leurs temps, montage, effets, format, style du texte)
+**s'enregistre tout seul en ligne** (sauvegarde automatique, sans bouton, depuis le 30/10), puis se rouvre sur n'importe quel appareil
+depuis la **Galerie** (menu du compte). Un petit indicateur en haut de la page dit « Enregistré ✓ » (« Enregistrement… »,
+« Hors ligne », « Pas enregistré », « Espace plein »).
+La Galerie montre les projets en grille, chacun avec sa couverture : une image du montage (300 px de large, 64 Ko au plus),
+faite par la page quand le montage change (une fois par minute au plus) et rangée dans R2 à côté du projet (`u/<compte>/p/<projet>/cover`).
+
+Comment la page enregistre (bloc compte de `src/app.js`, objet `AS`) : toutes les 4 s elle relit le projet ; s'il a changé et ne
+bouge plus au passage suivant, elle envoie seulement ce qui a changé : les fichiers pas encore en ligne pour ce projet (chacun une
+seule fois, reconnu par son empreinte), puis l'état du projet (petit JSON), et la couverture si le montage a changé. **Rien pendant
+un export** : un envoi en cours s'arrête aussitôt et reprend après (les morceaux déjà envoyés restent). Après une erreur, nouvel
+essai de plus en plus espacé (5 s → 2 min). Le premier envoi d'un projet donne son nom (« Exemple · 30 oct. 2026 ») ; les suivants
+envoient `name: null`, ce qui garde un nom changé dans la Galerie. Avant d'ouvrir un autre projet, ce qui a changé est d'abord enregistré.
 Le petit état du projet (JSON) est dans D1 ; le son et les vidéos sont dans **Cloudflare R2**, dans le bucket privé `stalak-media`.
 
 | Règle | Valeur |
@@ -350,6 +359,7 @@ Le petit état du projet (JSON) est dans D1 ; le son et les vidéos sont dans **
 | Espace par compte | 100 Go en Creator Plus (son + prises + projets). Réglable avec la variable `CLOUD_QUOTA_BYTES` (en octets). Au-dessus (après un changement) : rien n'est effacé, les nouvelles sauvegardes attendent. |
 | Taille d'un fichier | 4 Go au plus. Au-delà de 8 Mo, il est envoyé en morceaux de 8 Mo (envoi « multipart » de R2). |
 | Projets | 200 au plus par compte, 64 fichiers au plus par projet. |
+| Enregistrements | 900 par heure et par compte au plus (`429`), largement au-dessus d'une séance de montage (un toutes les 4 s au pire). Le tableau de bord compte les **nouveaux** projets, pas chaque enregistrement. |
 | Fichier déjà envoyé | Pas renvoyé : chaque fichier a une empreinte (nom, taille, date, début et fin du fichier). |
 | Coupure réseau | Chaque morceau est réessayé (6 fois, attente croissante) ; « Réessayer » reprend où l'envoi s'était arrêté. |
 | Sans Creator Plus | Aucun accès : la Galerie affiche « La sauvegarde en ligne est réservée à Stalak Creator Plus » (bouton vers la page des formules). Un ancien abonné retrouve ses projets s'il reprend Creator Plus ; ils sont gardés (règle des 6 mois). |
@@ -554,7 +564,7 @@ Toutes les réponses sont en JSON. Les erreurs ont la forme `{"error":"code","me
 | `POST /api/paddle/change` | `{plan: 'pro'|'creator', interval: 'month'|'year', preview?}` : un abonné change de formule sur le **même** abonnement. Plus grande : tout de suite au prorata ; plus petite : au renouvellement (formule payée gardée). `preview: true` : `{kind, amount (centimes), currency, effectiveAt}` sans rien changer. `404 no_subscription`, `409 same_plan` / `subscription_ending` / `not_configured` / `change_at_renewal`. 30 par heure (aperçus compris). La formule change au webhook. |
 | `GET /api/projects` | `{projects: [{id, name, size, mediaBytes, createdAt, updatedAt, openedAt, coverUrl}], storage: {available, used, quota, partSize, maxFile}}` (sans le contenu). `available` = le bucket R2 est relié. |
 | `GET /api/projects/:id` | `{id, name, state, updatedAt, mediaBytes, files: [{id, name, type, size}]}`. Compte comme une ouverture (règle des 6 mois). |
-| `PUT /api/projects/:id` | `{name, state, files?}`, 256 Ko maximum, 200 projets maximum. **Creator Plus** : sinon `403 pro_required` (avec `need`). `files` = les ids des fichiers de cette version : tous doivent être envoyés (`409 files_missing`, avec `missing`) ; les autres fichiers du projet sont effacés. Sans `files`, les fichiers ne changent pas. |
+| `PUT /api/projects/:id` | `{name, state, files?}` (`name` absent ou `null` : le nom déjà en ligne est gardé ; sauvegarde automatique), 900 par heure, 256 Ko maximum, 200 projets maximum. **Creator Plus** : sinon `403 pro_required` (avec `need`). `files` = les ids des fichiers de cette version : tous doivent être envoyés (`409 files_missing`, avec `missing`) ; les autres fichiers du projet sont effacés. Sans `files`, les fichiers ne changent pas. |
 | `PATCH /api/projects/:id` | `{name}` : renomme. |
 | `PUT /api/projects/:id/cover` | Couverture de la Galerie : corps brut `image/jpeg` ou `image/webp`, 64 Ko au plus (`413 too_large`), vérifiée par ses premiers octets (`415 invalid_image`), 120 par heure. Répond `{coverAt, coverUrl}`. |
 | `GET /api/projects/:id/cover?v=` | L'image, **pour son propriétaire seulement** ; `?v=` change à chaque nouvelle couverture (`Cache-Control: private, immutable`, `nosniff`, `CSP sandbox`). `404` s'il n'y en a pas. |

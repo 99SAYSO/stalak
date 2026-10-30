@@ -73,7 +73,7 @@ async function sendMail(env, { to, subject, text, html, replyTo }) {
   return res.ok;
 }
 const supportAddress = (env) => cleanEmail(env.SUPPORT_EMAIL) || 'contact@stalak.app';
-const page = (lang, inner) => `<!doctype html><html lang="${lang === 'en' ? 'en' : 'fr'}"><body style="font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#111;padding:24px;max-width:600px">${inner}
+const page = (lang, inner) => `<!doctype html><html lang="${lang === 'fr' ? 'fr' : 'en'}"><body style="font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#111;padding:24px;max-width:600px">${inner}
 <p style="color:#888;font-size:12px">Stalak — <a href="https://stalak.app" style="color:#888">stalak.app</a></p></body></html>`;
 
 const REPLY = {
@@ -83,7 +83,7 @@ const REPLY = {
     more: 'To answer, just reply to this email, or open the help ice cube on stalak.app again.' },
 };
 export function replyEmail(lang, answer, question) {
-  const t = REPLY[lang] || REPLY.fr;
+  const t = REPLY[lang] || REPLY.en;
   const q = question ? `\n\n${t.yours}\n> ${question.slice(0, 600).replace(/\n/g, '\n> ')}` : '';
   const text = `${t.intro}\n\n${answer}${q}\n\n${t.more}\n\nStalak — stalak.app`;
   const html = page(lang, `<p>${esc(t.intro)}</p><div style="white-space:pre-wrap;border-left:3px solid #2a7de1;padding:4px 12px;margin:12px 0">${esc(answer)}</div>`
@@ -197,7 +197,7 @@ export async function support(request, env, method, rest, ctx) {
     await limit(env, `support:new:ip:${ipKey}`, 5, 3600e3, 'Too many new conversations, try again later.');
     await limit(env, `support:newd:ip:${ipKey}`, 20, 86400e3, 'Too many new conversations today, try again tomorrow.');
     const body = await readJson(request, 16 * 1024);
-    const lang = body.lang === 'en' ? 'en' : 'fr';
+    const lang = body.lang === 'fr' ? 'fr' : 'en';   // English unless the page is in French
     const message = clean(typeof body.message === 'string' ? body.message : '', MESSAGE_MAX);
     if (!message) throw new HttpError(400, 'invalid_message', 'message: 1-2000 characters.');
     const context = body.context == null ? null : clean(typeof body.context === 'string' ? body.context : '', CONTEXT_MAX) || null;

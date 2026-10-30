@@ -230,7 +230,7 @@ th{color:var(--text2);font-weight:600}
     { k: 'revenue', t: 'Encaissé (€)', f: function (v) { return money(v, 'EUR'); }, cents: true },
     { k: 'helpQuestions', t: 'Questions au glaçon', f: nf.format },
     { k: 'lyricsJobs', t: 'Paroles auto', f: nf.format },
-    { k: 'cloudSaves', t: 'Sauvegardes en ligne', f: nf.format },
+    { k: 'cloudSaves', t: 'Nouveaux projets en ligne', f: nf.format },
     { k: 'tickets', t: 'Nouveaux messages', f: nf.format },
   ];
   var PLAN_NAME = { pro: 'Pro', creator: 'Creator Plus', basic: 'Pro', max: 'Creator Plus' };
@@ -318,7 +318,7 @@ th{color:var(--text2);font-weight:600}
         us.append(b);
       }
       block('Paroles automatiques', [['Transcriptions sur 30 j :', nf.format(u.lyrics.jobs30)], ['Minutes de son sur 30 j :', nf.format(u.lyrics.minutes30)], ['Aujourd’hui :', nf.format(u.lyrics.today)]]);
-      block('Sauvegarde en ligne', [['Projets gardés :', nf.format(u.cloud.projects)], ['Comptes qui l’utilisent :', nf.format(u.cloud.users)], ['Place prise :', (u.cloud.bytes / 1e9).toLocaleString('fr-FR', { maximumFractionDigits: 2 }) + ' Go'], ['Sauvegardes sur 30 j :', nf.format(u.cloud.saves30)]]);
+      block('Sauvegarde en ligne', [['Projets gardés :', nf.format(u.cloud.projects)], ['Comptes qui l’utilisent :', nf.format(u.cloud.users)], ['Place prise :', (u.cloud.bytes / 1e9).toLocaleString('fr-FR', { maximumFractionDigits: 2 }) + ' Go'], ['Nouveaux projets sur 30 j :', nf.format(u.cloud.saves30)]]);
       block('Glaçon d’aide (IA)', [['Questions sur 30 j :', nf.format(u.help.questions30)], ['Sans réponse sur 30 j :', nf.format(u.help.failed30)]],
         [u.help.dailyMax ? u.help.today / u.help.dailyMax * 100 : 0, 'Aujourd’hui : ' + u.help.today + ' sur ' + u.help.dailyMax + ' (limite du jour)']);
       block('Parler à un humain', [['Conversations sur 30 j :', nf.format(u.tickets.created30)]]);
