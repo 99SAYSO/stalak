@@ -94,7 +94,7 @@
 - **À décider** : boutons Pro de la page Tarifs pendant que Paddle est en sandbox (« bientôt » ou Paddle réel) avant toute promo.
 - **À demander** : case « recevoir les nouveautés » à l'inscription (Comptes) ; mots « montage de playback » dans le H1 et JS/CSS en fichiers cachés (App).
 - **Fait (branche `marketing/idees-croissance`)** : recherche « idées de croissance » (concurrents, fonctions, Stalak Pro, acquisition), classée par impact et effort. Document « Stalak — idées de croissance » dans claude.ai ; résumé dans `docs/marketing/IDEES_CROISSANCE.md`.
-- **Fait, en attente de Comptes (branche `marketing/chat-pro`)** : nouvel avantage Pro « Chat en direct avec l'équipe Stalak (réponse sous 24 h si on n'est pas en ligne) ».
+- **Remplacé par `marketing/tarifs-formules` (30/10)** — ne pas fusionner `marketing/chat-pro`. Ancien texte : nouvel avantage Pro « Chat en direct avec l'équipe Stalak (réponse sous 24 h si on n'est pas en ligne) ».
   - Page Tarifs FR/EN : cartes Pro, tableau et FAQ.
   - Écran Pro de l'app : `pr.f.chat`, `acct.perk7`, `pr.r.chat`, `pr.q.chat` / `pr.a.chat`.
   - À ne pas mettre en ligne avant que « Parler à un humain » soit réservé à Pro (voir Comptes) : aujourd'hui il est ouvert à tous, donc l'annoncer comme avantage Pro serait faux.
