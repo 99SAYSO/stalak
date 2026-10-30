@@ -1,7 +1,7 @@
 # Stalak — contexte commun à toutes les conversations
 
 > À mettre dans les « connaissances du projet » Claude (Project knowledge).
-> Chaque conversation du projet le lit avant de travailler. Mis à jour le 27/10/2026 (règle 3 : comptes rendus automatiques ; « Parler à un humain » réservé à Pro).
+> Chaque conversation du projet le lit avant de travailler. Mis à jour le 30/10/2026 (nouvelle offre : Gratuit 1 vidéo par jour + Basic / Pro / Max).
 
 ## 1. Le produit en une minute
 
@@ -19,21 +19,15 @@
 
 ## 2. Offre et décisions déjà prises (ne pas les remettre en cause sans le dire)
 
-**Gratuit :**
-- Montage automatique, paroles taille M et « phrase entière », vidéos 9:16.
-- 3 s de logo Stalak à la fin.
-
-**Stalak Pro** : 9,99 €/mois ou 79 €/an (6,58 €/mois, −34 %), TTC en Europe. Débloque :
-- vidéos sans logo ;
-- mode Clip 16:9 ;
-- packs de 5, 10 ou 30 vidéos ;
-- toutes les tailles (S/M/L) et apparitions du texte (mot par mot, karaoké) ;
-- paroles automatiques (20 par jour, 8 min max) ;
-- sauvegarde en ligne (20 Go par compte, projet effacé après 6 mois sans ouverture, e-mail de rappel 14 jours avant) ;
-- « Parler à un humain » dans le glaçon d'aide : chat en direct avec le propriétaire quand il est disponible, sinon réponse par e-mail sous 24 h. Ne jamais écrire « 24 h/24 ». Les gratuits gardent le glaçon IA et contact@stalak.app.
+**Offre (décidée le 30/10/2026, en cours de mise en place) :**
+- **Gratuit** : 1 vidéo par jour, compte gratuit obligatoire, logo Stalak de 3 s à la fin, 3 filtres. E-mail de rappel quotidien si l'utilisateur l'accepte.
+- **Basic** : 4,99 €/mois ou 39 €/an. Vidéos illimitées sans logo, toutes les tailles et apparitions du texte, 3 filtres.
+- **Pro** : 10,99 €/mois ou 109 €/an. Basic, plus tous les filtres, le mode Clip 16:9, les packs de 5 et 10, les paroles automatiques (20 par jour) et la sauvegarde en ligne (20 Go).
+- **Max** : 13,99 €/mois ou 139 €/an. Pro, plus les packs de 30, les paroles automatiques (60 par jour), 100 Go et « Parler à un humain » (chat en direct, ou réponse par e-mail sous 24 h ; ne jamais écrire « 24 h/24 »). Carte mise en avant : « seulement 3 € de plus que Pro ».
+- Prix TTC en Europe. Un abonné garde son prix.
 
 **Règles commerciales :**
-- Un ancien Pro **perd l'accès** à ses projets en ligne. Ils restent gardés jusqu'à l'effacement des 6 mois et reviennent s'il reprend Pro.
+- Un abonné qui perd la sauvegarde en ligne (fin d’abonnement, ou passage à une formule sans sauvegarde) **perd l’accès** à ses projets en ligne. Ils restent gardés jusqu’à l’effacement des 6 mois et reviennent s’il reprend une formule qui la contient.
 - Remboursement : 14 jours, intégral, sans justification.
 - Paiement par **Paddle**, revendeur officiel (Merchant of Record). Aujourd'hui en mode **test (sandbox)**.
 - Le ruban de la carte annuelle dit « Meilleur prix », pas « Le plus populaire » : pas d'affirmation fausse.

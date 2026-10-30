@@ -13,6 +13,14 @@
   - Esthétique : Golden hour, Rêve, Y2K, Pastel.
   - Stalak Pro sauf 3 filtres gratuits (Noir & blanc, Givre, Film 35 mm), réglage modifiable. Les filtres « Clip rap » qui suivent le beat ne sont pas retenus pour l'instant.
 
+- 30/10 : **nouvelle offre, 1 gratuit + 3 abonnements** (remplace « Gratuit illimité + Stalak Pro ») :
+  - Gratuit : **1 vidéo par jour**, compte gratuit obligatoire, avec logo, 3 filtres. E-mail de rappel « ta vidéo du jour est disponible » (case à cocher, 1 par jour au plus, arrêt après 7 jours sans visite).
+  - **Basic 4,99 €/mois (39 €/an)** : vidéos illimitées sans logo, toutes tailles et apparitions du texte, 3 filtres.
+  - **Pro 10,99 €/mois (109 €/an)** : Basic + tous les filtres, mode Clip 16:9, packs de 5 et 10, paroles auto 20 par jour, sauvegarde en ligne 20 Go.
+  - **Max 13,99 €/mois (139 €/an)** : Pro + packs de 30, paroles auto 60 par jour, sauvegarde 100 Go, « Parler à un humain ». Carte mise en avant : « seulement 3 € de plus que Pro ».
+  - Un abonné garde son prix. Aujourd'hui, il n'y a que des abonnements de test (sandbox).
+  - Travail : Comptes (formules, compteur, e-mail de rappel, Paddle), App (ce que débloque chaque formule, écran « vidéo du jour utilisée »), Marketing (page Tarifs à 4 colonnes), Juridique (conditions de vente). Prix Paddle sandbox créés par le Chef de projet.
+
 ## En ligne (stalak.app)
 - App de montage FR/EN : son, prises, paroles, montage, export, packs, effets, mode Clip.
 - Caméra iPhone : minuteur, message « prise enregistrée », miroir de la caméra selfie, fichier vidéo remis en ordre.
