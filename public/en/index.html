@@ -8472,10 +8472,10 @@ async function exportPack(){
 let exportGate = false;
 async function exportPackRun(){
   const N = +$('#packSel').value; S.packN = N;
+  // Creator Plus: a pack needs at least 3 playbacks (sung takes); said first, before what the browser can do
+  if (readyTakes().length < 3){ say('pack.need3'); return; }
   const vcfg = await pickVideoConfig(), acfg = vcfg && await pickAudioConfig(S.song.buffer.sampleRate);
   if (!(vcfg && acfg)){ say('pack.nosupport'); return; }
-  // Creator Plus: a pack needs at least 3 playbacks (sung takes)
-  if (readyTakes().length < 3){ say('pack.need3'); return; }
   S.wm = wmOn(); beginExport(); await fontsReady();
   const sigs = [], files = [], list = []; let seed = S.seed * 1000 + 1;
   try {

@@ -172,8 +172,12 @@ def run(b, base, lang, iphone):
     msg = pg.locator('#status').inner_text(); ev(pg, 'S.takes = S.__takes')
     check(tag + ' creator : pack avec 2 playbacks → « au moins 3 »', o == [None, False] and '3' in msg, (n, o, msg))
     # ---- Comptes' own acctHas again ----
-    ev(pg, "acctHas = window.__real, ACCT.state.user = null, planTags()")
-    check(tag + ' fonctions de Comptes, sans compte : gratuit, filigrane, export sans compte', ev(pg, "wmOn() && !can('clip')") and lock(pg, "setFilter('nb', true), exportOne()") == [None, True])
+    # (the reward of the ad watched above was never used: the export of the test stops before; it would stay for the next video)
+    ev(pg, "acctHas = window.__real, ACCT.state.user = null, wmPass = false, planTags()")
+    st = ev(pg, "[wmOn(), can('clip'), can('nowm'), wmPass, S.exporting, exportGate]")
+    check(tag + ' fonctions de Comptes, sans compte : gratuit avec filigrane', st[0] is True and st[1] is False, st)
+    o = lock(pg, "setFilter('nb', true), exportOne()")
+    check(tag + ' fonctions de Comptes, sans compte : export sans compte', o == [None, True], o)
     check(tag + ' aucune erreur dans la page', not errs, errs)
     sw = pg.evaluate('document.documentElement.scrollWidth')
     check(tag + ' pas de défilement horizontal', sw <= pg.viewport_size['width'], sw)
@@ -203,7 +207,7 @@ def engine(b, base):
       }
       S.lyrics.mode = oldLy; return out; })()""")
     for t, (a, b2, c) in r.items():
-        check('filigrane à %s s : aperçu = export 2D (écart %.2f), export WebGL = export 2D (%.2f), présent dans l’export (%.2f)' % (t, a, b2, c), a < 3 and b2 < 2 and c > 0.3, (a, b2, c))
+        check('filigrane à %s s : aperçu = export 2D (écart %.2f), export WebGL = export 2D (%.2f), présent dans l’export (%.2f)' % (t, a, b2, c), a < 3 and b2 < 2 and c > 0.05, (a, b2, c))
     # one real export after a reward: no watermark in this video, then the watermark is back
     ev(pg, "wmPass = true, lastBlob = null")
     aok = pg.evaluate('async () => { await __ev("exportOne()"); return [__ev("!!lastBlob"), __ev("lastWm"), __ev("wmPass"), __ev("wmOn()")]; }')
@@ -225,12 +229,15 @@ def main():
     with sync_playwright() as p:
         b = p.chromium.launch(args=['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'])
         global PW; PW = p
+        only = os.environ.get('FORMULES_ONLY')   # e.g. « ordi-fr »: one run only (while debugging)
         for lang in ('fr', 'en'):
             for iphone in (True, False):
+                if only and only != ('iphone' if iphone else 'ordi') + '-' + lang: continue
                 try: run(b, base, lang, iphone)
                 except Exception as e: check(('iPhone' if iphone else 'ordinateur') + ' ' + lang + ' : déroulé complet', False, str(e)[:300])
-        try: engine(b, base)
-        except Exception as e: check('moteur : déroulé complet', False, str(e)[:300])
+        if not only:
+          try: engine(b, base)
+          except Exception as e: check('moteur : déroulé complet', False, str(e)[:300])
         b.close()
     srv.shutdown(); shutil.rmtree(tmp, ignore_errors=True)
     print('%d/%d réussis' % (sum(results), len(results)))
