@@ -4,6 +4,7 @@
 > Dernière mise à jour : 27/10/2026 (fusion et mise en ligne : assistant d'aide, connexion TikTok/Instagram éteinte, état des lieux juridique).
 
 ## Décisions récentes du propriétaire
+- **30/10 au soir : l'offre change encore. Elle remplace « Gratuit 1 vidéo par jour + Basic / Pro / Max »** (voir STALAK_CONTEXTE.md, section 2) : Gratuit illimité avec filigrane et pub récompensée, Pro 7,99 $ / 49,99 $, Creator Plus 14,99 $ / 99,99 $. On reprend le travail fait sur `compte/formules`, `app/formules`, `marketing/tarifs-formules` et `legal/nouvelle-offre` (tableau des formules, Paddle, changement de formule, cadenas, pages), et on l'adapte. Ces branches ne seront pas fusionnées telles quelles. Les nouveaux prix Paddle sandbox seront créés par le Chef de projet et notés ici.
 - 27/10 : « Parler à un humain » devient un avantage **Stalak Pro** : chat en direct si le propriétaire est disponible, sinon réponse par e-mail sous 24 h. Ne jamais écrire « 24 h/24 ». Les gratuits gardent le glaçon IA et contact@stalak.app (obligation légale de pouvoir joindre le vendeur). Comptes fait la restriction côté serveur et dans le glaçon ; Marketing a écrit les textes (branche `marketing/chat-pro`, à fusionner en même temps que la branche Comptes).
 - 27/10 : **menu du compte** (en haut à droite) et **Galerie** des projets en ligne, en grille avec couvertures, comme l'app Photos de l'iPhone → Comptes.
 
