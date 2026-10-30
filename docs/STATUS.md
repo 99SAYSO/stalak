@@ -113,7 +113,7 @@
 
 - Prêt (dans `app/formules`) : 26 filtres vidéo validés par le propriétaire le 30/10, plus « Aucun » : 4 thèmes, dont « Couleurs », avec 13 retouches façon stories Instagram sous des noms Stalak. Gratuits : Givre, Film 35 mm, Noir & blanc.
 
-- Prêt (branche `app/formules`, avec `app/filtres` et `compte/formules`) : ce que débloque chaque formule dans l'app, cadenas BASIC/PRO/MAX qui ouvrent la bonne formule, écran « Ta vidéo du jour est faite ✓ » avec le temps restant. Tous les tests passent sauf `support_ui.py`, qui échoue aussi sans cette fusion (à voir par Comptes).
+- En cours (branche `app/formules`) : offre hybride du 30/10 au soir dans l'app. Pro / Creator Plus (`can(feat)`), filigrane qui bouge sur les vidéos gratuites (« Clipped with stalak.app »), pub récompensée Google (unité de test) qui l'enlève pour une vidéo. Plus d'écran du jour ni de fin Stalak ; le gratuit exporte sans compte. Détail et suites pour Comptes et Juridique dans `docs/handoff/app-formules.md`.
 
 ### Comptes, paiements & serveur
 - Nouvelle offre (`compte/formules`) : les 6 prix sandbox sont dans `wrangler.toml`. Au Chef de projet : migration 0008, puis redéployer le Worker `workers/cloud-cleanup` (horaires des rappels).

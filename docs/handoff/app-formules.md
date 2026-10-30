@@ -1,45 +1,40 @@
-Statut : EN COURS (adaptation à l'offre hybride du 30/10 au soir : Pro / Creator Plus, filigrane, pub récompensée)
-Branche : app/formules. Contient `app/filtres` (validée par le propriétaire le 30/10) et `compte/formules` : une seule fusion suffit.
+Statut : EN COURS (tests en cours)
+Branche : app/formules. Contient `app/filtres` (filtres validés le 30/10), `compte/formules` et `main` du 30/10 au soir. Une seule fusion suffit.
+La copie de `docs/handoff/compte-formules.md` dans cette branche est marquée « INCLUSE » ; `compte/formules` garde son propre compte rendu.
 
-Résumé :
-- Ce que débloque chaque formule, dans l'app, décrit dans une seule table `FEAT_PLAN` (src/app.js, bloc « formules », juste avant les filtres) :
-  - Basic : nologo (pas de fin Stalak), text (toutes les tailles et apparitions du texte), unlimited (plus d'1 vidéo par jour) ;
-  - Pro : filters (tous les filtres ; Gratuit et Basic en ont 3), clip (mode Clip 16:9), pack5, pack10 ;
-  - Max : pack30.
-- Tous les contrôles passent par `can(feat)` :
-  - `acctHas(feat)` si la fonction existe ;
-  - sinon la règle d'avant (`acctPro()`), pour que rien ne change tant que Comptes n'a pas livré ;
-  - sur claude.ai (pas de comptes) : tout est ouvert, comme avant.
-- Cadenas : chaque cadenas appelle `lockOpen(feat)`, c'est-à-dire `acctOpen(raison, { plan: 'basic' | 'pro' | 'max' })`, pour ouvrir la page des formules sur la bonne formule.
-  - Les étiquettes affichent le nom de la formule (BASIC, PRO, MAX) : tailles de texte, mode Clip, pack (PRO ou MAX selon 5/10/30), filtres.
-  - Le lien de la fin Stalak devient « L'enlever avec Basic ».
-- Vidéo du jour (Gratuit) :
-  - avant un export, `dayGate()` lit `acctQuota()` ; si `left` vaut 0, l'écran « Ta vidéo du jour est faite ✓ » s'ouvre à la place de l'export ;
-  - l'écran affiche « Reviens demain, ou passe à Basic pour des vidéos illimitées », le temps restant avant la prochaine vidéo gratuite (mis à jour toutes les 15 s), « Passer à Basic » (formule Basic) et « Revenir demain » ;
-  - il est fermable avec Échap, le focus reste dedans, en FR et en EN ;
-  - une personne non connectée qui exporte voit la création de compte s'ouvrir (raison `daily`) ;
-  - quand la vidéo est prête, `dayUsed()` appelle `acctUseVideo()` pour la compter.
-- Textes : les raisons des cadenas nomment désormais la bonne formule (texte et logo : dès Basic ; Clip, filtres, packs 5/10 : Pro ; packs 30 : Max). Nouvelles clés dans un bloc « App & montage : formules » (`day.*`, `acct.why.daily`, `acct.why.pack30`, `acct.outroBasic`…).
+Résumé (offre hybride du 30/10 au soir, contrat App / Comptes de docs/STATUS.md) :
+1. Table des formules `FEAT_PLAN` (src/app.js, bloc « formules »), tout passe par `can(feat)` → `acctHas(feat)` :
+   - Pro : `nowm` (ni filigrane ni pub), `clip`, `fx` (effets premium du Clip), `text` (mot par mot, karaoké, toutes les tailles), `filters` (filtres pro ; 3 gratuits : Givre, Film 35 mm, Noir & blanc), `lyrics` (paroles auto) ;
+   - Creator Plus : `pack5`, `pack10`, `pack30` (à partir de 3 playbacks : message « Le pack demande au moins 3 playbacks », dit avant tout le reste), `cloud`, `human`.
+   - Sur claude.ai (pas de comptes) : tout est ouvert, sauf le filigrane, qui reste sans pub possible.
+2. Supprimés :
+   - l'écran « vidéo du jour » (balisage, styles, textes, `dayGate` / `dayUsed`) et la fin Stalak de 3 s (`outroOn()` renvoie `false`) ;
+   - le Gratuit exporte sans compte ;
+   - l'app n'appelle plus `acctQuota` ni `acctUseVideo` : à Comptes de les retirer de son bloc.
+3. Filigrane des vidéos gratuites (`wmDraw`) : le logo Stalak (icon.svg intégré au code, donc aussi sur claude.ai) et « Clipped with stalak.app », sur une pastille sombre transparente.
+   - Taille : environ 30 px de texte en 1080 px, lisible sur un téléphone.
+   - Position : il change de place toutes les 6 s (glissement de 1,2 s) entre 4 endroits (haut droite, gauche, bas droite, gauche). Il commence en haut à droite pour ne pas passer sous le nom de la prise dans l'aperçu.
+   - Rendu : dessiné par-dessus les paroles, dans l'aperçu et dans l'export (canvas 2D, WebGL de Safari, temps réel), d'après le temps du morceau : même image partout.
+   - Décision : prise au début de l'export (`S.wm`).
+4. Pub récompensée (`adWatch`), Google Publisher Tag, d'après l'exemple officiel de Google « display-rewarded-ad » :
+   - Bouton « Regarder une pub (30 s) pour enlever le filigrane » et lien « ou passe à Pro », sous Lecture / Régénérer, pour les gratuits sur stalak.app.
+   - Le script de Google n'est chargé qu'au toucher du bouton.
+   - Unité de test de Google `/22639388115/rewarded_web_example` (constante `AD_UNIT`, à remplacer par la vraie quand le compte Ad Manager existera).
+   - Format `OutOfPageFormat.REWARDED`. `rewardedSlotReady` → `makeRewardedVisible()` ; `rewardedSlotGranted` → récompense ; `rewardedSlotClosed` → fin ; `slotRenderEnded` vide → « Pas de pub disponible » ; créneau `null` → « Les pubs ne peuvent pas passer sur cet appareil » ; délai de 15 s.
+   - Mode « pubs limitées » (`setPrivacySettings({ limitedAds: true })`) tant qu'il n'y a pas d'outil de consentement.
+   - La récompense vaut pour CETTE vidéo : l'export suivant sort sans filigrane, puis le filigrane revient. Si la vidéo était déjà faite avec le filigrane, elle est refaite tout de suite sans.
+5. Cadenas : `acctOpen(why, { plan: 'pro' | 'creator' })`. Étiquettes PRO / CREATOR+. Raisons `nowm`, `fx`, `text`, `clip`, `filters`, `lyrics`, `pack` ; les textes `acct.why.*` / `ap.whyIn.*` nomment Pro ou Creator Plus (FR/EN).
 
-Fusions (30/10, demandées par le propriétaire) :
-- `app/filtres` est fusionnée : les 26 filtres validés. Les 13 « Couleurs » restent Pro, comme les 10 autres filtres Pro.
-- `origin/compte/formules` est fusionnée. Comptes a livré le contrat : `acctHas`, `acctQuota`, `acctUseVideo`, `acctOpen(why, { plan })`. Les noms correspondent (`pack5`, `pack10`, `pack30` existent côté serveur).
-- Conflits réglés :
-  - `src/app.js` : textes `acct.why.*` (raisons des cadenas) côté App ; `acct.proRenew`, `acct.proEnds`, `acct.proOn` (`{plan}`), `pr.promo`, `pr.sub` côté Comptes ; dans `acctSync`, la ligne de Comptes (`paid`) plus `planTags()` à la place des anciennes bascules « PRO » ;
-  - `src/theme.css` : les deux blocs gardés, ils ne se chevauchent pas ;
-  - `public/` : reconstruit.
-- Vérifié après la fusion : aucune clé de texte en double ; un seul contrôle par cadenas ; la vidéo du jour est demandée avant l'export et comptée une seule fois après.
+Pour les autres conversations :
+- Comptes : côté serveur, `acctHas` doit répondre avec les noms du contrat (`nowm`, `fx`…). Retirer `acctQuota`, `acctUseVideo`, la migration et l'e-mail de la vidéo du jour. Mettre à jour la page des formules (Pro / Creator Plus ; son test `plans_ui.py` porte encore sur Basic / Pro / Max). Le bouton du haut dit encore « Stalak Pro ».
+- Juridique : la confidentialité doit parler des pubs Google (Ad Manager) ; il faut un outil de consentement (CMP certifié par Google) avant des pubs personnalisées en Europe. D'ici là, mode « pubs limitées ».
+- Propriétaire : créer le compte Google Ad Manager et une unité « rewarded » web, puis donner son chemin pour remplacer `AD_UNIT`.
 
-Fichiers touchés : src/app.js (bloc formules, filtres, export, texte, Clip, fin Stalak ; 4 lignes du bloc compte : `acctSync` appelle `planTags()`, `#outroPro`, la restauration d'un projet Clip), src/markup.html (écran #dayDone, lien de la fin), src/theme.css (étiquettes BASIC/PRO/MAX, écran), public/ (reconstruit), tests/ui/formules_ui.py (nouveau), docs/STATUS.md, ce compte rendu.
-Migration SQL : aucune côté App (le compteur journalier est côté Comptes).
-Tests (après les fusions) :
-- `node tests/backend/run.mjs` : 70/70.
-- `plans_ui.py` (Comptes) : 38/38. `gallery_ui.py` : 40/40. `help_ui.py` : 42/42.
-- `formules_ui.py` : 128/128. Il tourne maintenant sur les vraies fonctions de Comptes, remplacées formule par formule, puis remises.
-- `filtres_ui.py` : 106/106. Adapté à l'offre : sans compte, un export ouvre la création du compte gratuit ; l'export y est mesuré avec un compte sans limite.
-- `filtres_comparaison.py` : 242/242. `son_passage.py` : 62/62. `paroles_suppr.py` : 44/44. `remux_frag.py` : 10/10.
-- Syntaxe de `src/app.js` OK ; `build.py` et `build_site.py` OK.
-- `support_ui.py` (Comptes) : s'arrête sur un délai d'attente dépassé, dans le tableau de bord, à l'étape « réponse envoyée par e-mail ». Le blocage est identique sur `origin/compte/formules` seule, sans cette fusion : il ne vient pas de cette branche. À voir par Comptes.
-
-Reste au propriétaire : après la mise en ligne, sur iPhone, avec un compte gratuit : faire un 1er export, puis vérifier que le 2e ouvre l'écran « vidéo du jour ». Toucher chaque cadenas pour vérifier qu'il ouvre la bonne formule.
-Skills utilisés : webapp-testing.
+Fichiers touchés : src/app.js, src/markup.html, src/theme.css, public/ (reconstruit), tests/ui/formules_ui.py (réécrit), tests/ui/filtres_ui.py, docs/STATUS.md, docs/handoff/compte-formules.md (copie marquée « INCLUSE »), ce compte rendu.
+Migration SQL : aucune côté App.
+Tests : en cours.
+Reste au propriétaire : après la mise en ligne, sur iPhone, sans compte :
+1. exporter une vidéo et vérifier que le filigrane bouge ;
+2. toucher « Regarder une pub », regarder la pub de test de Google jusqu'au bout, puis vérifier que la vidéo refaite n'a pas de filigrane ;
+3. vérifier que la vidéo suivante a de nouveau le filigrane.
+Skills utilisés : context7 (documentation et exemple officiels de Google Publisher Tag), webapp-testing.
