@@ -122,6 +122,8 @@
 
 - Prêt (branche `app/formules`) : offre hybride du 30/10 au soir dans l'app. Pro / Creator Plus (`can(feat)`), filigrane qui bouge sur les vidéos gratuites (« Clipped with stalak.app »), pub récompensée Google (unité de test) qui l'enlève pour une vidéo. Plus d'écran du jour ni de fin Stalak ; le gratuit exporte sans compte. Détail et suites pour Comptes et Juridique dans `docs/handoff/app-formules.md`.
 
+- Prêt (branche `app/export-pub`, demandes du 30/10 à 21 h) : deux boutons côte à côte en Gratuit, « Exporter » (avec filigrane) et « Regarder une pub (30 s) » (bleu, givré ; à la fin de la pub l'export sans filigrane part tout seul) ; bug d'export (la vidéo précédente est coupée et libérée avant un nouvel export, elle revient si on annule) ; poignées du passage libres (sans aimant) et curseur rouge déplaçable au doigt ; filigrane = logo seul, petit, qui saute d'un coin à l'autre toutes les 5 s ; cadenas et CREATOR+ visibles sur « Générer le pack » ; packs dès 2 playbacks avec le conseil « plus tu as de prises, plus les vidéos sont variées » ; plus aucun concurrent cité dans l'app. Détail dans `docs/handoff/app-export-pub.md`.
+
 ### Comptes, paiements & serveur
 - Sauvegarde automatique, anglais d'abord, guide sans concurrent : fait sur `compte/sauvegarde-auto` (voir « En cours »).
   - Pour App : les lignes du guide d'aide sur les packs (« au moins 3 playbacks ») et le filigrane sont à changer quand les packs dès 2 playbacks et le filigrane logo seul seront livrés (`functions/_lib/help-guide.js`, FR et EN).

@@ -1,4 +1,5 @@
-"""Test of the « Son » step: file dropped on the import square, the two handles of the passage, « Écouter le passage ».
+"""Test of the « Son » step: file dropped on the import square, the two handles of the passage (free: no magnet on the
+beat), the red playhead dragged to listen, « Écouter le passage ».
 Python Playwright (chromium) + ffmpeg.
 
     python3 /abs/path/tests/ui/son_passage.py <path of a built public/ folder> [folder for screenshots]
@@ -49,6 +50,11 @@ def on_bar(t, bars, dur):
     return any(abs(t - x) < 1e-6 for x in bars) or abs(t - dur) < 1e-6
 
 
+def near(t, want, dur, box_w):
+    """t is where the finger was let go (to a few pixels), not pulled to a bar"""
+    return abs(t - want) <= 3 * dur / box_w
+
+
 def run(b, base, wav, lang, phone):
     tag = ('téléphone' if phone else 'ordinateur') + ' ' + lang
     ctx = b.new_context(viewport={'width': 390, 'height': 844} if phone else {'width': 1280, 'height': 800},
@@ -84,21 +90,38 @@ def run(b, base, wav, lang, phone):
     cdp = ctx.new_cdp_session(pg) if phone else None
     box = pg.locator('#wave').bounding_box(); y = box['y'] + box['height'] / 2
     s0 = seg(pg)
-    # the end handle pulled back to about 60 % of the song
+    # the end handle pulled back to about 61 % of the song: it stays exactly where the finger lets go (between two bars)
     xr = box['x'] + s0['b'] / s0['dur'] * box['width']
-    drag(pg, cdp, phone, xr, y, box['x'] + 0.6 * box['width'])
+    drag(pg, cdp, phone, xr, y, box['x'] + 0.613 * box['width'])
     s1 = seg(pg)
-    check(tag + ' : poignée de fin tirée (fin avancée, sur une mesure)', s1['b'] < s0['b'] - 1 and on_bar(s1['b'], s1['bars'], s1['dur']) and abs(s1['a'] - s0['a']) < 1e-6, (s0['a'], s0['b'], s1['a'], s1['b']))
-    # the start handle pushed to about 25 %
+    check(tag + ' : poignée de fin libre (là où on la lâche, pas collée au rythme)', s1['b'] < s0['b'] - 1 and near(s1['b'], 0.613 * s1['dur'], s1['dur'], box['width']) and not on_bar(s1['b'], s1['bars'], s1['dur']) and abs(s1['a'] - s0['a']) < 1e-6, (s0['a'], s0['b'], s1['a'], s1['b']))
+    # the start handle pushed to about 26 %
     xl = box['x'] + s1['a'] / s1['dur'] * box['width']
-    drag(pg, cdp, phone, xl, y, box['x'] + 0.25 * box['width'])
+    drag(pg, cdp, phone, xl, y, box['x'] + 0.257 * box['width'])
     s2 = seg(pg)
-    check(tag + ' : poignée de début tirée (début reculé, fin gardée, sur une mesure)', s2['a'] > s1['a'] + 1 and abs(s2['b'] - s1['b']) < 1e-6 and on_bar(s2['a'], s2['bars'], s2['dur']), (s1['a'], s1['b'], s2['a'], s2['b']))
+    check(tag + ' : poignée de début libre (fin gardée)', s2['a'] > s1['a'] + 1 and abs(s2['b'] - s1['b']) < 1e-6 and near(s2['a'], 0.257 * s2['dur'], s2['dur'], box['width']) and not on_bar(s2['a'], s2['bars'], s2['dur']), (s1['a'], s1['b'], s2['a'], s2['b']))
+    # (no takes at this step: an edit on the beat over the bars that cover the passage, as generate() makes, is cut by segClamp)
+    ev(pg, "window.__cuts = (() => { const out = [], t0 = barTime(S.startBar), t1 = barTime(segEndBar()), st = (barTime(1) - barTime(0)) / 2; for (let t = t0; t < t1 - 1e-6; t += st) out.push({ t0: t, t1: Math.min(t1, t + st), take: null }); return segClamp(out); })()")
+    cu = ev(pg, '[__cuts[0].t0, __cuts[__cuts.length - 1].t1, __cuts.length, __cuts.every((c, i) => i === 0 || Math.abs(c.t0 - __cuts[i-1].t1) < 1e-6)]')
+    check(tag + ' : la vidéo commence et finit pile aux poignées, sans trou', abs(cu[0] - s2['a']) < 1e-6 and abs(cu[1] - s2['b']) < 1e-6 and cu[3], (cu, s2['a'], s2['b']))
+    inner = ev(pg, '__cuts.slice(1).map(c => c.t0)')
+    check(tag + ' : les coupes à l’intérieur restent sur le rythme', all(any(abs(t - x) < 0.02 for x in ev(pg, '[...Array(totalBars() * 16 + 1).keys()].map(k => barTime(0) + k * (barTime(1) - barTime(0)) / 16)')) for t in inner), inner)
     lbl = pg.evaluate("[document.querySelector('#startLbl').textContent, document.querySelector('#endLbl').textContent, document.querySelector('#barsSel').selectedOptions[0].textContent]")
     check(tag + ' : début, fin et durée écrits', lbl[0] != '0:00.00' and lbl[1] != '0:00.00' and str(s2['nb']) in lbl[2], (lbl, s2['nb']))
     gp = pg.evaluate("[parseFloat(document.querySelector('#gripL').style.left), parseFloat(document.querySelector('#gripR').style.left)]")
     check(tag + ' : poignées à la place du passage', abs(gp[0] - s2['a'] / s2['dur'] * 100) < 0.01 and abs(gp[1] - s2['b'] / s2['dur'] * 100) < 0.01, gp)
     check(tag + ' : montage refait pour le nouveau passage', ev(pg, 'S.cuts.every(c => c.t0 >= S.segStart - 1e-6 && c.t1 <= S.segEnd + 1e-6)'))
+    # the red playhead: dragged with a finger, the song plays from where it is let go
+    ph = pg.locator('#wph').bounding_box(); want = 0.45
+    check(tag + ' : curseur rouge prenable au doigt', pg.evaluate("getComputedStyle(document.querySelector('#wph')).pointerEvents") != 'none' and ph is not None)
+    # taken by its round red button (at the top), even where it sits on the start handle
+    drag(pg, cdp, phone, ph['x'] + ph['width'] / 2, box['y'] - 2, box['x'] + want * box['width'])
+    pg.wait_for_timeout(300)
+    lp = ev(pg, '({ at: S.listenAt, playing: S.playing, seg: listenSeg, a: S.segStart, b: S.segEnd })')
+    left = pg.evaluate("parseFloat(document.querySelector('#wph').style.left)")
+    check(tag + ' : curseur glissé → lecture à partir de là', lp['playing'] and not lp['seg'] and lp['at'] is not None and abs(lp['at'] - want * s2['dur']) < 1.5 and abs(left - lp['at'] / s2['dur'] * 100) < 1, (lp, left))
+    ev(pg, 'stop(true)'); pg.wait_for_timeout(200); sa = seg(pg)
+    check(tag + ' : glisser le curseur ne change pas le passage', abs(sa['a'] - s2['a']) < 1e-6 and abs(sa['b'] - s2['b']) < 1e-6, (sa['a'], sa['b'], s2['a'], s2['b']))
     # a touch in the middle of the passage (not on a handle) still moves the passage and plays it
     if SHOTS: pg.locator('#songBox').screenshot(path=os.path.join(SHOTS, 'passage-' + ('tel' if phone else 'ordi') + '-' + lang + '.png'))
     # « Écouter le passage »: plays from the start of the passage, the passage stays as chosen, and it stops at its end
@@ -113,6 +136,10 @@ def run(b, base, wav, lang, phone):
     pg.locator('#segPlay').click(); pg.wait_for_timeout(200)
     back = pg.locator('#segPlay').inner_text()
     check(tag + ' : deuxième appui = stop', not ev(pg, 'S.playing') and ('Play the part' in back if lang == 'en' else 'Écouter le passage' in back), back)
+    # the ‹ › buttons put the passage back on the bars
+    pg.locator('#barNext').click(); pg.wait_for_timeout(150)
+    bn = seg(pg)
+    check(tag + ' : « › » remet le passage sur les mesures', ev(pg, 'S.segA === null') and on_bar(bn['a'], bn['bars'], bn['dur']), (bn['a'], bn['b']))
     # end of the passage reached: playback stops by itself, the passage is kept
     ev(pg, 'S.nBars = 1, S.locks = [], rebuild(false)'); pg.wait_for_timeout(100)
     one = seg(pg); pg.locator('#segPlay').click()
@@ -127,7 +154,7 @@ def run(b, base, wav, lang, phone):
         c0 = ev(pg, '({ k: S.kind, a: S.segStart, b: S.segEnd, e: S.clipEnd, dur: S.song.duration })')
         drag(pg, cdp, False, box['x'] + c0['b'] / c0['dur'] * box['width'], y, box['x'] + 0.5 * box['width'])
         c1 = seg(pg); ce = ev(pg, 'S.clipEnd')
-        check(tag + ' : Clip, poignée de fin tirée', c0['k'] == 'clip' and c1['b'] < c0['b'] - 1 and ce is not None and on_bar(c1['b'], c1['bars'], c1['dur']), (c0, c1['b'], ce))
+        check(tag + ' : Clip, poignée de fin tirée (libre)', c0['k'] == 'clip' and c1['b'] < c0['b'] - 1 and ce is not None and near(c1['b'], 0.5 * c1['dur'], c1['dur'], box['width']), (c0, c1['b'], ce))
         pg.locator('#endPrev').click(); pg.wait_for_timeout(150)
         check(tag + ' : Clip, « Fin ‹ » finit une mesure plus tôt', ev(pg, 'S.clipEnd') == ce - 1)
         for _ in range(40): pg.locator('#endNext').click()

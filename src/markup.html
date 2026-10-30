@@ -74,7 +74,7 @@
           </select>
           <span class="meta" id="lenLbl"></span>
         </div>
-        <p class="hint" style="margin-top:8px" id="waveHint" data-i18n="wave.hint.reel">Tire les poignées pour choisir le début et la fin du passage. Touche l'onde pour déplacer le passage et l'écouter.</p>
+        <p class="hint" style="margin-top:8px" id="waveHint" data-i18n="wave.hint.reel">Tire les poignées pour placer exactement le début et la fin du passage. Fais glisser le curseur rouge pour écouter où tu veux.</p>
         <details class="beatfix" id="beatFix">
           <summary data-i18n="beat.sum">Les coupes ne tombent pas en rythme ?</summary>
           <p class="hint" data-i18n="beat.hint">Touche <b>TAP</b> en rythme avec la musique, en commençant sur un temps fort.</p>
@@ -353,8 +353,15 @@
 
         <div class="card">
           <h2 data-i18n="exp.h">Exporter</h2>
+          <div class="exprow" id="expRow">
+            <button class="btn primary big expgo" id="exportBtn" type="button"><span data-i18n="exp.btn">Exporter</span><small id="exportSub" hidden data-i18n="exp.sub.wm">avec filigrane</small></button>
+            <button class="btn big adgo" id="adBtn" type="button" hidden><span data-i18n="ad.btn">Regarder une pub (30 s)</span><small data-i18n="ad.sub">sans filigrane</small></button>
+          </div>
+          <div class="wmnote" id="outroNote" hidden>
+            <p class="note"><span id="wmNoteT" data-i18n="wm.note">Les vidéos gratuites portent un petit logo Stalak en filigrane.</span> <button class="linkbtn" id="outroPro" type="button" hidden data-i18n="ad.or">Sans filigrane ni pub : passe à Pro</button></p>
+            <p class="note adst" id="adStatus" role="status" aria-live="polite" hidden></p>
+          </div>
           <div class="row">
-            <button class="btn primary big" id="exportBtn" type="button" data-i18n="exp.btn">Exporter la vidéo</button>
             <button class="btn" id="cancelBtn" type="button" hidden data-i18n="cancel">Annuler</button>
             <span class="note" id="exportQ" data-i18n="exp.q">Pleine qualité, à partir de tes vidéos originales.</span>
           </div>
@@ -370,16 +377,9 @@
             </select>
             <button class="btn tip" id="packBtn" type="button" data-tip="Crée plusieurs montages différents du même passage, pour poster une vidéo par jour." data-i18n="pack.btn" data-i18n-attr="data-tip:pack.btn.tip">Générer le pack</button>
           </div>
+          <p class="hint packtip" data-i18n="pack.tip">Dès 2 playbacks. Plus tu as de prises, plus les vidéos sont variées.</p>
           </div>
           <p class="note cover-note" id="coverNote" hidden></p>
-          <div class="wmnote" id="outroNote" hidden>
-            <p class="note"><span id="wmNoteT" data-i18n="wm.note">Les vidéos gratuites ont un petit filigrane qui bouge : « Clipped with stalak.app ».</span></p>
-            <div class="row wmrow">
-              <button class="btn ad" id="adBtn" type="button" hidden data-i18n="ad.btn">Regarder une pub (30 s) pour enlever le filigrane</button>
-              <button class="linkbtn" id="outroPro" type="button" hidden data-i18n="ad.or">ou passe à Pro</button>
-            </div>
-            <p class="note adst" id="adStatus" role="status" aria-live="polite" hidden></p>
-          </div>
           <div class="result" id="result" hidden>
             <video id="resultVideo" controls playsinline hidden></video>
             <div class="row">
@@ -690,7 +690,7 @@
             <p class="pl-note" data-pl="note" hidden></p>
             <ul class="pr-feats">
               <li class="pr-plus" data-i18n="pl.f.plusPro">Tout Pro, plus :</li>
-              <li data-i18n="pl.f.packs"><strong>Le générateur de packs</strong> : 5 à 30 vidéos aux coupes différentes, à partir d’au moins 3 playbacks</li>
+              <li data-i18n="pl.f.packs"><strong>Le générateur de packs</strong> : 5 à 30 vidéos aux coupes différentes, dès 2 playbacks</li>
               <li data-i18n="pl.f.lyr60"><strong>Paroles écrites pour toi</strong>, 60 fois par jour</li>
               <li data-i18n="pl.f.cloud"><strong>Sauvegarde en ligne</strong> : 100 Go, sur tous tes appareils</li>
               <li data-i18n="pl.f.human"><strong>Parler à un humain</strong> : en direct, ou réponse par e-mail sous 24 h</li>

@@ -726,7 +726,12 @@ header .stepper{margin-left:auto}
 @media (max-width:380px){ .ap-tabs button{font-size:14px} }
 
 /* the pack button carries a PRO tag for free accounts (gating in app.js: exportPack) */
-#packBtn.protag::after{content:attr(data-plan);font:700 10px/1 var(--body);letter-spacing:.04em;margin-left:8px;padding:3px 5px;border-radius:6px;background:var(--ink);color:#fff;vertical-align:2px}
+/* « Générer le pack » locked: a padlock and CREATOR+ that are seen at once */
+#packBtn.protag{padding-right:12px}
+#packBtn.protag::before{content:"🔒";margin-right:8px;font-size:1.05em;line-height:1}
+/* the button's tooltip uses the same ::after: while locked, the CREATOR+ tag takes its place, always shown */
+#packBtn.protag::after,#packBtn.protag:hover::after,#packBtn.protag:focus-visible::after{content:attr(data-plan);display:inline-block;position:static;width:auto;max-width:none;white-space:nowrap;text-align:center;z-index:auto;font:800 11.5px/1 var(--body);letter-spacing:.06em;margin-left:10px;padding:5px 8px;border-radius:999px;background:linear-gradient(180deg,#8d57ff,#6a2fe0);color:#fff;border:2px solid var(--ink);box-shadow:0 2px 0 var(--ink);vertical-align:1px}
+.packtip{margin:6px 0 0}
 
 /* text size / appearance reserved to Stalak Pro */
 #stSize button.protag::after,#stAnim button.protag::after{content:attr(data-plan);font:700 9px/1 var(--body);letter-spacing:.04em;margin-left:5px;padding:2px 4px;border-radius:5px;background:var(--ink);color:#fff;vertical-align:1px}
@@ -847,6 +852,10 @@ header .stepper{margin-left:auto}
 .voxpick #lyVoxOn{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px}
 .voxpick #lyVoxOn[hidden]{display:none}
 /* App & montage : étape Son — dépôt du fichier et poignées du passage */
+/* the red playhead can be dragged with a finger: a 44 px touch zone around it, under the handles */
+.wavebox .wph{pointer-events:auto;touch-action:none;cursor:grab;z-index:1}
+.wavebox .wph::after{content:"";position:absolute;top:-14px;bottom:-6px;left:50%;width:44px;margin-left:-22px}
+.wavebox.dragging .wph{cursor:grabbing}
 .drop.over{background:var(--ice);border-color:var(--ink);border-style:solid;transform:scale(1.015);box-shadow:0 0 0 4px var(--frost),0 0 0 calc(4px + var(--stroke)) var(--ink)}
 .drop.over > *{visibility:hidden}
 .drop.over::after{content:attr(data-over);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:400 21px/1.15 var(--display);color:var(--ink);animation:al-shiver .5s ease-in-out infinite;pointer-events:none}
@@ -919,13 +928,29 @@ header .stepper{margin-left:auto}
 .filtnm{max-width:100%;text-align:center;overflow-wrap:anywhere}
 .filtpro{position:absolute;top:5px;right:5px;font:700 9.5px/1 var(--body);letter-spacing:.05em;color:#fff;background:#7a3ff2;border:1.5px solid var(--ink);border-radius:999px;padding:3px 5px}
 @media (prefers-reduced-motion:reduce){.filt canvas{transition:none}}
-/* App & montage : offre du 30/10 au soir — filigrane des vidéos gratuites et pub récompensée */
-.wmnote{display:flex;flex-direction:column;gap:6px}
+/* App & montage : offre du 30/10 au soir — filigrane des vidéos gratuites et pub récompensée.
+   Gratuit : « Exporter » et « Regarder une pub (30 s) » côte à côte ; le bouton pub est bleu, avec un reflet givré qui passe
+   et quelques cristaux qui scintillent. */
+.exprow{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap}
+.exprow .btn.big{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center;white-space:normal;line-height:1.1}
+.exprow.two .btn.big{flex:1 1 0;min-width:0;padding-left:14px;padding-right:14px}
+.exprow .btn.big small{font:600 12.5px/1.15 var(--body);letter-spacing:.01em;opacity:.85}
+@media (max-width:520px){.exprow.two .btn.big{font-size:17px;padding-left:8px;padding-right:8px}}
+.btn.adgo{position:relative;overflow:hidden;isolation:isolate;background:linear-gradient(180deg,#3d8bf0 0%,var(--sky) 55%,#1557b0 100%);color:#fff;border-color:var(--ink);text-shadow:0 1px 0 rgba(10,13,20,.35)}
+.btn.adgo span::before{content:"▶";font-size:.72em;margin-right:7px;vertical-align:1px}
+.btn.adgo::before{content:"";position:absolute;inset:-2px;z-index:-1;pointer-events:none;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.75) 46%,rgba(214,236,255,.9) 50%,transparent 64%);transform:translateX(-120%);animation:ad-frost 3.6s ease-in-out infinite}
+.btn.adgo::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.9;
+  background:radial-gradient(circle,#fff 0 1.2px,transparent 1.8px) 12% 22%/34px 30px,radial-gradient(circle,#fff 0 1px,transparent 1.6px) 72% 70%/41px 37px,radial-gradient(circle,#d6ecff 0 1.4px,transparent 2px) 40% 85%/29px 33px;
+  animation:ad-twinkle 2.4s ease-in-out infinite alternate}
+.btn.adgo:hover{filter:brightness(1.06)}
+.btn.adgo:disabled{filter:saturate(.6) brightness(.9);cursor:progress}
+.btn.adgo.busy::before{animation-duration:1.2s}
+@keyframes ad-frost{0%,55%{transform:translateX(-120%)}85%,100%{transform:translateX(120%)}}
+@keyframes ad-twinkle{from{opacity:.35}to{opacity:.95}}
+@media (prefers-reduced-motion:reduce){.btn.adgo::before,.btn.adgo::after{animation:none}.btn.adgo::before{display:none}}
+.wmnote{display:flex;flex-direction:column;gap:4px;margin-top:8px}
 .wmnote[hidden]{display:none}
 .wmnote .note{margin:0}
-.wmrow{gap:8px 14px;align-items:center;flex-wrap:wrap}
-.btn.ad{white-space:normal;text-align:left}
-.btn.ad::before{content:"▶";font-size:.8em;margin-right:8px}
 .adst{font-weight:600;color:var(--sky-deep)}
 .wmnote .linkbtn{background:none;border:0;padding:0 2px;min-height:44px;font:600 14.5px var(--body);color:var(--sky-deep);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 .wmnote .linkbtn:focus-visible{outline:3px solid var(--ink);outline-offset:2px;border-radius:8px}
