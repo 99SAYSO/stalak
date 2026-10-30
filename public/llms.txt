@@ -7,15 +7,17 @@ Stalak is not related to the Dofus game creature of the same name.
 ## Main pages
 - [Stalak (French)](https://stalak.app/): the editor, with "Stalak, c'est quoi ?" explaining the product.
 - [Stalak (English)](https://stalak.app/en/): same app in English.
-- [Pricing (French)](https://stalak.app/tarifs): Free (1 video a day) and the Basic, Pro and Max plans.
+- [Pricing (French)](https://stalak.app/tarifs): Free, Stalak Pro and Creator Plus.
 - [Pricing (English)](https://stalak.app/en/pricing): same in English.
 - [Triller alternative (English)](https://stalak.app/en/triller-alternative): honest comparison of Stalak, Triller, CapCut and camrip for lip-sync videos, with sources and dates.
 - [Alternative à Triller (French)](https://stalak.app/alternative-triller): same comparison in French.
 
 ## Facts
-- Free: 1 video a day with a free account; automatic editing on the beats, the words or every bar; on-screen lyrics (size M, whole sentence); 3 filters; 9:16 export; a 3-second Stalak logo at the end.
-- Basic (€4.99 a month or €39 a year): unlimited videos, no logo, every text size and style (word by word, karaoke).
-- Pro (€10.99 a month or €109 a year): Basic plus every filter, 16:9 music video mode, packs of 5 and 10 videos, automatic lyrics (20 a day), online saving (20 GB).
-- Max (€13.99 a month or €139 a year): Pro plus packs of 30 videos, automatic lyrics (60 a day), online saving (100 GB) and "Talk to a human" (live chat, or an email reply within 24 hours).
+- No download and no sign-up: Stalak runs in the browser. The free plan needs no account.
+- Free: unlimited videos; automatic editing on the beats, the words or every bar; on-screen lyrics as whole sentences (size M), pasted in and synced by tapping; 3 filters (Frost, 35 mm Film, Black & white); 9:16 export. Free videos carry a small moving watermark ("Clipped with stalak.app"); watching a ~30-second ad removes it from that video.
+- Stalak Pro ($7.99 a month or $49.99 a year): no ads, no watermark, 16:9 music video mode, premium effects, word-by-word and karaoke lyrics in every size, every filter, automatic lyrics.
+- Creator Plus ($14.99 a month or $99.99 a year): Pro plus a pack generator (5 to 30 differently cut videos from 3 takes or more), online saving and "Talk to a human" (live chat, or an email reply within 24 hours).
+- Prices are in US dollars; Paddle converts them and adds local taxes at checkout. Subscribers keep their price.
 - Payments are handled by Paddle. Full refund within 14 days.
+- Made by 99Sayso, a rapper from the Alaska collective, who coded Stalak for his own videos.
 - Contact: contact@stalak.app

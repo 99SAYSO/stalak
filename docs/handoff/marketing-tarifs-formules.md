@@ -1,45 +1,52 @@
 Statut : PRÊT
 Branche : marketing/tarifs-formules
 
-**À publier en même temps que la nouvelle offre côté Comptes et App** : 1 vidéo gratuite par jour, filtres, formules Basic / Pro / Max dans Paddle, « Parler à un humain » réservé à Max. Avant ça, la page annoncerait des fonctions et des achats qui ne marchent pas encore.
+**À publier en même temps que l'offre hybride côté Comptes et App** : gratuit sans compte, filigrane, pub récompensée, prix Paddle en dollars de Pro et Creator Plus. Sinon, la page annonce des choses qui ne marchent pas encore.
 
-Résumé : nouvelle offre (section 2 de STALAK_CONTEXTE.md) affichée sur la page Tarifs FR/EN et dans l'écran des formules de l'app.
-- 4 colonnes : Gratuit, Basic, Pro, Max. Max est mise en avant avec le ruban « Seulement 3 € de plus que Pro » (en annuel : « Seulement 30 € de plus que Pro par an », pour rester vrai). Aucun « le plus populaire ».
-- Bouton Mensuel / Annuel sans JavaScript (boutons radio et `:has()`), mensuel par défaut. Prix annuels ramenés au mois : 3,25 €, 9,08 €, 11,58 € ; économies de 35 % (Basic) et 17 % (Pro et Max).
-- Tableau comparatif à 5 colonnes, qui défile sur téléphone.
-- FAQ mise à jour. Elle contient notamment :
-  - « Une vidéo gratuite par jour, comment ça marche ? » ;
-  - « Quelle formule choisir ? » ;
-  - « Mon prix peut-il augmenter ? » ;
-  - « Comment je parle à l'équipe Stalak ? » (Max).
-- Sur téléphone, les cartes s'affichent dans l'ordre Max, Pro, Basic, Gratuit. Sur ordinateur : Gratuit, Basic, Pro, Max.
-- Anciens textes « Stalak Pro 9,99 € / 79 € » retirés : écran de l'app, 66 anciennes clés anglaises inutilisées de l'écran Pro, page Tarifs, textes de l'accueil, `llms.txt`.
-- Intègre la dernière version de `marketing/seo` : la page « Alternative à Triller » est à jour avec la nouvelle offre.
-- Remplace `marketing/chat-pro`, qui ne doit pas être fusionnée.
+Résumé : l'offre du 30/10 au soir (STALAK_CONTEXTE.md, section 2), en dollars. Elle remplace la version Basic / Pro / Max de cette même branche.
+- **Page Tarifs FR/EN et écran des formules de l'app** : 3 colonnes Gratuit / Stalak Pro / Creator Plus, générées d'une seule source.
+  - Pro : 7,99 $/mois ou 49,99 $/an (4,17 $/mois, −47 %) ; Creator Plus : 14,99 $/mois ou 99,99 $/an (8,33 $/mois, −44 %).
+  - Bouton Mensuel / Annuel, annuel coché par défaut, avec le badge « Meilleur prix ». Aucun « le plus populaire ».
+  - Pro est mise en avant (ruban « Ni pub ni filigrane »). Sur téléphone, l'ordre est Pro, Creator Plus, Gratuit ; sur ordinateur, Gratuit, Pro, Creator Plus.
+  - Tableau comparatif (15 lignes et les prix) et FAQ en 12 questions : gratuit, pub, quelle formule, mensuel ou annuel, dollars et taxes, compte, prix gardé, arrêt, humain, paiement, remboursement, vidéos.
+  - Données structurées (JSON-LD) en USD, sans « TVA comprise », puisque Paddle ajoute les taxes.
+- **« Alternative à Triller » FR/EN** et **`llms.txt`** : nouvelle offre, « sans téléchargement ni inscription », et le créateur (99Sayso) dans `llms.txt`.
+- **Accueil** (`build_site.py`) :
+  - le paragraphe « Aucun téléchargement, aucune inscription : 3 étapes et c'est posté » ;
+  - les meta descriptions ;
+  - les formules dans « Ce que tu peux faire ».
+  - J'ai écrit « 3 étapes » et non « 3 clics » : en vrai, il faut aussi choisir les fichiers et appuyer sur « Suivant ».
+- **Plan Triller au nom de 99Sayso** : `docs/marketing/PLAN_TRILLER.md`. Il contient les règles, où est le public, un calendrier de 4 semaines, des posts Reddit/X/TikTok/Instagram FR et EN, et des réponses types. Aucun faux compte ni faux avis.
+- **`marketing/chat-pro` abandonnée**, avec un compte rendu « Statut : ABANDONNÉE » sur cette branche. Ne pas la fusionner.
 
 Pour Comptes (détail dans `docs/STATUS.md`, section Marketing) :
-- Basic et Max appellent `buy('basic_month')`, `buy('max_year')`… ; `ACCT.checkout` doit accepter ces noms et les relier aux prix Paddle sandbox.
-- Les boutons Pro gardent `#apMonth` / `#apYear`, qui appellent encore les anciens prix : à passer sur `pro_month` / `pro_year`.
+- Creator Plus appelle `buy('creator_month')` / `buy('creator_year')`.
+- Pro garde `#apMonth` / `#apYear` (`buy('month')` / `buy('year')`) : à relier aux prix en dollars.
+- Les cartes s'appellent `.p4-free`, `.p4-pro` et `.p4-creator`.
 
 Fichiers touchés :
 - `site_src/tarifs.html`, `site_src/en/pricing.html` (refaits) ;
-- `src/markup.html` (section `#apPro`, entre `#apPromo` et `#apIsPro`) ;
+- `site_src/alternative-triller.html`, `site_src/en/triller-alternative.html`, `site_src/llms.txt` ;
+- `src/markup.html` (section `#apPro`, entre le commentaire Marketing et `#apIsPro`) ;
 - `src/app.js` :
-  - bloc de traductions `_bloc.marketing.formules` ;
-  - anciennes clés `pr.*` inutilisées retirées ;
-  - `acct.proT` devient « Pick your plan » ; `acct.month` et `acct.year` passent aux nouveaux prix ;
-  - 2 lignes pour les boutons Basic et Max, avec un commentaire ;
-- `src/pricing.css` (section « les 4 formules » ajoutée à la fin) ;
+  - bloc anglais `_bloc.marketing.formules` remplacé ;
+  - `acct.month` et `acct.year` en dollars ;
+  - commentaire du bouton Creator Plus ;
+- `src/pricing.css` (section « les 3 formules ») ;
 - `build_site.py` (textes de l'accueil) ;
 - `public/` (reconstruit) ;
-- `docs/STATUS.md`, `docs/handoff/marketing-tarifs-formules.md`.
+- `docs/STATUS.md`, `docs/marketing/PLAN_TRILLER.md`, ce compte rendu.
 
 Migration SQL : aucune.
 
 Tests :
 - `node tests/backend/run.mjs` : 63/63 ; `node --check src/app.js` passe ; `build.py` et `build_site.py` passent.
-- Playwright à 390 px et 1280 px, en FR et EN, sur `/tarifs`, `/en/pricing`, l'écran des formules de `/` et `/en/`, et `/alternative-triller` : pas de défilement horizontal, aucune erreur.
-- Le bouton Mensuel / Annuel change bien les prix, les montants facturés, les économies, les boutons et le ruban de Max.
-- Aucun « 9,99 € » ni « Stalak Pro » dans les pages publiées, sauf le prix de CapCut cité sur la page de comparaison.
+- Playwright à 390 px et 1280 px :
+  - pages vérifiées : `/tarifs`, `/en/pricing`, l'écran des formules sur `/` et `/en/`, `/alternative-triller` et `/en/triller-alternative` ;
+  - aucun défilement horizontal, aucune erreur ;
+  - le bouton Mensuel / Annuel change bien les prix (0 / 4,17 / 8,33 $, puis 0 / 7,99 / 14,99 $).
+- Plus aucun « Basic », « Max », « 1 vidéo par jour » ni prix en euros dans les pages publiées, sauf `conditions.html` (Juridique).
 
-Reste au propriétaire : rien pour ces textes. La relecture des conditions de vente revient à Juridique.
+Reste au propriétaire :
+- Décider si la page doit afficher les limites des paroles auto et les 100 Go (encore des propositions).
+- Publier les posts du plan Triller une fois l'offre en ligne, depuis ses propres comptes.

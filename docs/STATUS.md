@@ -146,22 +146,22 @@
 - **Au propriétaire** : adresses des comptes Instagram / TikTok / YouTube de Stalak ; une vraie vidéo montée avec Stalak ; vérifier dans Search Console (compte propriétaire) que `sitemap.xml` est envoyé et demander l'indexation ; Bing Webmaster Tools ; inscriptions aux annuaires (liste et textes dans le document).
 - **Suivant (Marketing)** : pages « faire un playback » (FR), « cut multiple takes to the beat » (EN/FR), « lip-sync videos for musicians » (EN), « paroles sur une vidéo TikTok » (FR/EN).
 - **À regarder (App)** : proposer aux visiteurs dont le navigateur est en anglais un petit lien « English version » sur la page française, plutôt que de changer la langue tout seul.
-- **Fait (branche `marketing/tarifs-formules`, 30/10)** : nouvelle offre affichée partout, avec 4 colonnes (Gratuit, Basic, Pro, Max). Détail dans `docs/handoff/marketing-tarifs-formules.md`.
-  - Page Tarifs FR/EN (`site_src/tarifs.html`, `site_src/en/pricing.html`) et écran des formules de l'app (`#apPro` dans `src/markup.html`) : mêmes textes, générés d'une seule source.
-  - Bouton **Mensuel / Annuel** (sans JavaScript : boutons radio et `:has()`), mensuel par défaut. Max est mise en avant avec le ruban « Seulement 3 € de plus que Pro » ; en annuel, le ruban devient « Seulement 30 € de plus que Pro par an », pour rester vrai. Aucun « le plus populaire ».
-  - Tableau comparatif à 5 colonnes (défile sur téléphone) et FAQ mise à jour : « Une vidéo gratuite par jour, comment ça marche ? », « Quelle formule choisir ? », « Mon prix peut-il augmenter ? », « Comment je parle à l'équipe Stalak ? » (Max)…
-  - Anciens textes « Stalak Pro 9,99 € / 79 € » retirés de l'app, du site, de l'accueil et de `llms.txt`. La section « Ce que Pro fait pour toi » est retirée.
-  - « Parler à un humain » est dans Max ; la branche `marketing/chat-pro` est remplacée et **ne doit pas être fusionnée**.
-- **À publier en même temps que la nouvelle offre côté Comptes et App** : la page annonce la limite de 1 vidéo par jour, les filtres et « Parler à un humain » réservé à Max ; tant que ces fonctions ne sont pas en ligne, ces textes seraient faux.
+- **Fait (branche `marketing/tarifs-formules`, 30/10 au soir)** : l'offre hybride affichée partout, en dollars. Remplace la version Basic / Pro / Max de la même branche. Détail dans `docs/handoff/marketing-tarifs-formules.md`.
+  - Page Tarifs FR/EN et écran des formules de l'app (`#apPro`) : 3 colonnes Gratuit / Stalak Pro (7,99 $ ou 49,99 $) / Creator Plus (14,99 $ ou 99,99 $), générées d'une seule source.
+  - Bouton Mensuel / Annuel, **annuel coché par défaut**, avec le badge « Meilleur prix » (pas de « le plus populaire »). Pro est mise en avant avec le ruban « Ni pub ni filigrane ».
+  - Tableau comparatif et FAQ refaits : gratuit sans compte, filigrane, pub de 30 s, prix en dollars et taxes par pays, compte nécessaire seulement pour s'abonner, sauvegarde en ligne dans Creator Plus.
+  - Page « Alternative à Triller » FR/EN, `llms.txt` et accueil à jour. Sur l'accueil : « Aucun téléchargement, aucune inscription : 3 étapes et c'est posté ».
+  - Plan pour récupérer le public de Triller au nom de 99Sayso : `docs/marketing/PLAN_TRILLER.md`, et document « Stalak — récupérer le public de Triller » dans claude.ai.
+  - La branche `marketing/chat-pro` est **abandonnée** : ne pas la fusionner.
+- **À publier en même temps que l'offre hybride côté Comptes et App** : la page annonce le gratuit sans compte, le filigrane, la pub qui l'enlève, et Creator Plus.
 - **Pour Comptes (boutons de l'écran des formules)** :
-  - chaque bouton porte `data-plan` (`basic`, `pro`, `max`) et `data-cycle` (`month`, `year`) ;
-  - Basic et Max appellent `buy('basic_month')`, `buy('max_year')`… : `ACCT.checkout` doit accepter ces noms et les relier aux prix Paddle sandbox listés en haut de ce fichier ;
-  - Pro garde les identifiants `#apMonth` et `#apYear`, qui appellent encore `buy('month')` / `buy('year')`, donc les anciens prix 9,99 € et 79 € : à passer sur `pro_month` / `pro_year` ;
-  - cartes : `.p4-basic`, `.p4-pro`, `.p4-max` (pour `acctOpen(why, { plan })`) ;
-  - sur le site, les boutons mènent à `/?plan=<formule>-<cycle>#pro` (ou `/en/?plan=…#pro`) : l'app peut s'en servir pour ouvrir la bonne carte ;
-  - encore à mettre à jour, hors de mon domaine : la liste des avantages d'un abonné (`acct.perk*`, à afficher selon la formule), les prix dans `functions/_lib/help-guide.js` (glaçon d'aide), `functions/_lib/router.js` et le revenu mensuel du tableau de bord (`admin.js`, 79 € / 12).
+  - chaque bouton porte `data-plan` (`pro`, `creator`) et `data-cycle` (`month`, `year`) ; les cartes s'appellent `.p4-free`, `.p4-pro` et `.p4-creator` (pour `acctOpen(why, { plan })`) ;
+  - Creator Plus appelle `buy('creator_month')` et `buy('creator_year')` ; Pro garde `#apMonth` / `#apYear`, qui appellent `buy('month')` / `buy('year')` : à relier aux nouveaux prix Paddle en dollars ;
+  - sur le site, les boutons mènent à `/?plan=pro-year#pro`, `/?plan=creator-month#pro`, etc. (ou `/en/?plan=…#pro`) ;
+  - encore à mettre à jour, hors de mon domaine : avantages d'un abonné (`acct.perk*`) selon la formule, prix dans `functions/_lib/help-guide.js`, `functions/_lib/router.js` et le revenu du tableau de bord.
+- **À décider (propriétaire)** : afficher les limites des paroles auto (20 par jour en Pro, 60 en Creator Plus) et les 100 Go de sauvegarde. Ce ne sont encore que des propositions dans le contrat App / Comptes, donc la page ne donne pas ces chiffres.
 - **Pour Juridique** : `site_src/conditions.html` parle encore de « Stalak Pro 9,99 € ou 79 € ».
-- **Pour App** : les messages qui ouvrent l'écran des formules (`acct.why.*`) disent encore « Stalak Pro ».
+- **Pour App** : les messages qui ouvrent l'écran des formules (`acct.why.*`) disent encore « Stalak Pro » seul.
 - **À regarder (Juridique)** : la page de comparaison est de la publicité comparative ; elle ne compare que des faits vérifiables, sourcés et datés. Revoir les prix des concurrents tous les 3 mois.
 
 ## Idées de croissance recommandées (à répartir par le propriétaire)
