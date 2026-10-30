@@ -158,6 +158,9 @@ def engine(b, base, video):
             ev(pg, "setFilter('%s', true), lastBlob = null" % fid)
             t = aev(pg, "const t0 = performance.now(); await exportOne(); return [performance.now() - t0, lastBlob ? lastBlob.size : 0];")
             times[fid] = t
+            if SHOTS and t[1]:
+                b64 = aev(pg, "const u = new Uint8Array(await lastBlob.arrayBuffer()); let s = ''; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s);")
+                open(os.path.join(SHOTS, 'export-' + fid + '.mp4'), 'wb').write(__import__('base64').b64decode(b64))
         print('export complet (exemple, %s) : ' % enc + ', '.join('%s %.1f s (%d ko)' % (k, v[0] / 1000, v[1] / 1024) for k, v in times.items()))
         slow = max(times['film35'][0], times['nb'][0]) / max(1, times['none'][0])
         check('export avec filtre pas beaucoup plus lent (x%.2f)' % slow, all(v[1] > 0 for v in times.values()) and slow < 1.6, times)
@@ -179,7 +182,8 @@ def main():
     base = 'http://127.0.0.1:%d/' % srv.server_address[1]
     with sync_playwright() as p:
         b = p.chromium.launch(args=['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--autoplay-policy=no-user-gesture-required'])
-        for lang in ('fr', 'en'):
+        # STALAK_ONLY=moteur: only the drawing, cost and export part (the long one is the export)
+        for lang in (() if os.environ.get('STALAK_ONLY') == 'moteur' else ('fr', 'en')):
             for phone in (True, False):
                 try: ui(b, base, lang, phone)
                 except Exception as e: check(('téléphone' if phone else 'ordinateur') + ' ' + lang + ' : déroulé complet', False, str(e)[:300])
