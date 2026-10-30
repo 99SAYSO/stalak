@@ -38,7 +38,9 @@ Tests :
 bandeau de consentement, et le lien « Gérer les cookies » doit exister quand la pub est en ligne.
 La page Tarifs (Marketing) doit afficher les mêmes prix.
 
+Décisions du propriétaire (30/10, 19 h 50), écrites dans les pages :
+- La pub est obligatoire pour exporter sans filigrane : sans pub disponible, la vidéo garde son filigrane.
+- Pas d'âge minimum. Les conditions demandent l'accord d'un parent pour un mineur qui s'abonne. La confidentialité demande aux moins de 15 ans l'accord d'un parent avant d'accepter les cookies publicitaires.
+
 Reste au propriétaire :
-- Décider si le filigrane est retiré quand aucune pub n'est disponible.
-- Décider de l'âge minimum (public jeune, règles de Google sur les moins de 13 ans).
 - Créer le compte Google Ad Manager, au même nom que Paddle et la banque une fois la structure créée.
