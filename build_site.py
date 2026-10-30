@@ -24,6 +24,9 @@ js = (src / 'app.js').read_text(encoding='utf-8')
 ACCOUNT_JS = (src / 'account.js').read_text(encoding='utf-8')   # stalak.app only: sign in, Stalak Pro
 
 # 1. head: fonts and libraries from the site itself
+# favicon: real files (Google Search cannot read an icon written inside the page as data:)
+head = re.sub(r'<link rel="icon" type="image/svg\+xml" href="data:[^"]*">',
+              '<link rel="icon" href="/favicon.ico" sizes="48x48">\n<link rel="icon" type="image/svg+xml" href="/icons/icon.svg">\n<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">', head)
 head = re.sub(r'<link rel="preconnect" href="https://fonts.googleapis.com">\n?', '', head)
 head = re.sub(r'<link rel="stylesheet" href="https://fonts.googleapis.com[^"]*">', '<link rel="stylesheet" href="/fonts/fonts.css">', head)
 head = head.replace('https://cdn.jsdelivr.net/npm/mp4-muxer@5.1.3/build/mp4-muxer.min.js', '/vendor/mp4-muxer.min.js')
