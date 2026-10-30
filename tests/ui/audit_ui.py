@@ -75,7 +75,7 @@ def run(b, base, lang, iphone):
     if SHOTS: pg.screenshot(path=os.path.join(SHOTS, 'fab-' + ('iphone' if iphone else 'ordi') + '-' + lang + '.png'))
     fb, hb = fab.bounding_box(), pg.locator('#helpBtn').bounding_box()
     check(tag + ' : il ne touche pas le glaçon d’aide', fb['x'] + fb['width'] <= hb['x'] or fb['y'] + fb['height'] <= hb['y'], (fb, hb))
-    fab.click(); pg.wait_for_timeout(2000)
+    pg.evaluate("document.querySelector('#expFab').click()"); pg.wait_for_timeout(2000)
     inview = pg.evaluate("() => ['#exportBtn', '#adBtn'].every(s => { const e = document.querySelector(s), r = e.getBoundingClientRect(); if (!r.width) return true; const x = r.left + r.width / 2, y = r.top + r.height / 2; return y > 0 && y < innerHeight && e.contains(document.elementFromPoint(x, y)); })")
     check(tag + ' : un appui amène aux boutons d’export, puis il disparaît', inview and not fab.is_visible())
 

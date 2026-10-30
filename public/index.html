@@ -8779,7 +8779,10 @@ function expFabUi(){
   const f = $('#expFab'); if (!f) return;
   f.hidden = S.step !== 4 || S.exporting || expSeen || !S.cuts.length || (document.querySelector('.wrap') || document.body).hasAttribute('inert');
 }
-if (window.IntersectionObserver) new IntersectionObserver(es => { expSeen = es.some(e => e.isIntersecting); expFabUi(); }, { rootMargin: '0px 0px -40px 0px' }).observe($('#expRow'));
+// seen or not: read on scroll (once per frame) and when the page size changes
+let expLook = 0;
+const expLookNow = () => { expLook = 0; const r = $('#expRow').getBoundingClientRect(); expSeen = r.height > 0 && r.bottom > 0 && r.top < window.innerHeight - 40; expFabUi(); };
+['scroll', 'resize'].forEach(n => window.addEventListener(n, () => { if (!expLook && S.step === 4) expLook = requestAnimationFrame(expLookNow); }, { passive: true }));
 $('#expFab').onclick = () => {
   // brought to the bottom of the screen (on a phone the preview stays at the top), with its note under it; looked at again
   // once the page has moved (the layout above can change while it scrolls)
@@ -9069,7 +9072,7 @@ function go(n){
   if (n !== 2 && recStream) closeCamera();
   // which way the steps glide: forward from the right, back from the left (CSS only)
   if (n !== S.step) $('.wrap').dataset.dir = n < S.step ? 'back' : 'fwd';
-  S.step = n; setTimeout(expFabUi, 0); $('#p1').hidden = n !== 1; $('#p2').hidden = n !== 2; $('#work').hidden = n < 3; $('#p3').hidden = n !== 3; $('#p4').hidden = n !== 4;
+  S.step = n; setTimeout(() => expLookNow(), 0); $('#p1').hidden = n !== 1; $('#p2').hidden = n !== 2; $('#work').hidden = n < 3; $('#p3').hidden = n !== 3; $('#p4').hidden = n !== 4;
   $('#shuffleBtn').hidden = n !== 4;
   if (n === 3) lyricsView();
   if (n === 4){ renderLyState(); logLyrics('étape Montage'); filtUI(); if (S.mode === 'mots' && S.cuts.length && S.genWords !== wordsKey()) rebuild(false); }
