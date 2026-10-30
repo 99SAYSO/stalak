@@ -34,6 +34,20 @@ DESC = {
     'reve': 'Halo lumineux sur les zones claires.',
     'y2k': 'Couleurs saturées, reflets années 2000, petites étoiles.',
     'pastel': 'Couleurs douces et claires.',
+    # « Couleurs »: the looks of the stories' colour filters (their name on Instagram in brackets, for comparing)
+    'velours': 'Doux et flatteur, léger halo, contraste adouci (façon « Paris »).',
+    'soleil': 'Chaud, lumineux, couleurs riches (façon « Los Angeles »).',
+    'cocon': 'Plus chaud, un peu délavé (façon « Oslo »).',
+    'lagon': 'Bleus et verts plus vifs, plus de contraste (façon « Lagos »).',
+    'eclat': 'Plus lumineux, un peu plus contrasté (façon « Melbourne »).',
+    'miel': 'Doux, chaud et clair (façon « Jakarta »).',
+    'dune': 'Chaud et doré, élégant (façon « Abu Dhabi »).',
+    'souvenir': 'Délavé, rose chaud, nostalgique (façon « Buenos Aires »).',
+    'beton': 'Plus sombre, plus froid, urbain (façon « New York »).',
+    'fuchsia': 'Teinte rose chaude, vive (façon « Jaipur »).',
+    'safran': 'Jaune doré, un peu délavé (façon « Le Caire »).',
+    'mono': 'Noir et blanc net, sans grain (façon « Tokyo »).',
+    'tropique': 'Dégradé coucher de soleil posé sur l’image (façon « Rio de Janeiro »).',
 }
 
 
@@ -53,7 +67,7 @@ SAMPLES = [   # free example pictures shipped with scikit-image / scikit-learn (
     {'id': 'jour', 'name': 'Jour', 'src': sample(os.path.join(SL, 'china.jpg'))},
 ]
 NAMES = {f: FR['filt.' + f] for f in ['none'] + list(DESC)}
-THEMES = {k: FR['filt.th.' + k] for k in ('cam', 'retro', 'esth')}
+THEMES = {k: FR['filt.th.' + k] for k in ('col', 'cam', 'retro', 'esth')}
 
 PAGE = r'''<title>Filtres Stalak</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -100,7 +114,7 @@ section h2{ font:400 26px/1.1 var(--display); color:var(--snow); margin:0 0 12px
 <div class="wrap">
   <header>
     <h1>Filtres Stalak</h1>
-    <p class="lead">Les 13 filtres, dessinés par le même code que l’app. Ce que tu vois ici est ce que l’aperçu et la vidéo exportée montreront. Touche un filtre pour le voir en grand et le comparer à l’original.</p>
+    <p class="lead">Les 26 filtres, dessinés par le même code que l’app. Ce que tu vois ici est ce que l’aperçu et la vidéo exportée montreront. Touche un filtre pour le voir en grand et le comparer à l’original.</p>
   </header>
   <div class="bar" role="group" aria-label="Réglages de la comparaison">
     <div class="grp" id="smp"><span>Image</span></div>
@@ -114,7 +128,7 @@ section h2{ font:400 26px/1.1 var(--display); color:var(--snow); margin:0 0 12px
   </div>
   <div class="note">
     <p><b>À valider :</b> l’ambiance de chaque filtre. Les paroles ne sont pas dessinées ici : dans l’app, elles restent au-dessus du filtre, sans changer.</p>
-    <p>Gratuit : Givre, Film 35 mm, Noir &amp; blanc. Les 10 autres sont Stalak Pro : on peut les essayer dans l’aperçu, l’export ouvre la page Pro.</p>
+    <p>Gratuit : Givre, Film 35 mm, Noir &amp; blanc. Les 23 autres sont Stalak Pro : on peut les essayer dans l’aperçu, l’export ouvre la page Pro.</p>
   </div>
   <div id="themes"></div>
 </div>

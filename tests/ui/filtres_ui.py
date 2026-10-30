@@ -48,14 +48,14 @@ def ui(b, base, lang, phone):
     pg.wait_for_timeout(800)
     n = pg.locator('#filtRow .filt').count()
     th = pg.locator('#filtRow .filtth').all_inner_texts()
-    want = ['Camera', 'Retro', 'Aesthetic'] if lang == 'en' else ['Caméra', 'Rétro', 'Esthétique']
-    check(tag + ' : 14 vignettes en 3 thèmes', n == 14 and [t.strip().lower() for t in th[1:]] == [w.lower() for w in want], (n, th))
+    want = ['Colors', 'Camera', 'Retro', 'Aesthetic'] if lang == 'en' else ['Couleurs', 'Caméra', 'Rétro', 'Esthétique']
+    check(tag + ' : 27 vignettes en 4 thèmes', n == 27 and [t.strip().lower() for t in th[1:]] == [w.lower() for w in want], (n, th))
     pro = pg.locator('#filtRow .filtpro').count()
-    check(tag + ' : 10 filtres marqués PRO (compte gratuit)', pro == 10, pro)
+    check(tag + ' : 23 filtres marqués PRO (compte gratuit)', pro == 23, pro)
     # the thumbnails show the picture, each through its own filter
     sig = pg.evaluate("""() => [...document.querySelectorAll('#filtRow canvas')].map(cv => { const d = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data; let r = 0, g = 0, b = 0; for (let i = 0; i < d.length; i += 4){ r += d[i]; g += d[i+1]; b += d[i+2]; } const n = d.length / 4; return [r / n, g / n, b / n].map(Math.round); })""")
     distinct = len({tuple(x) for x in sig})
-    check(tag + ' : vignettes dessinées et toutes différentes', distinct >= 13 and all(sum(x) > 30 for x in sig), sig)
+    check(tag + ' : vignettes dessinées et toutes différentes', distinct >= 26 and all(sum(x) > 30 for x in sig), sig)
     sw = pg.evaluate('document.documentElement.scrollWidth')
     check(tag + ' : pas de défilement horizontal de la page (la rangée défile seule)', sw <= (390 if phone else 1280), sw)
     if SHOTS:

@@ -365,6 +365,20 @@ const I18N_EN = /*@EN*/{
   "filt.th.cam": "Camera",
   "filt.th.retro": "Retro",
   "filt.th.esth": "Aesthetic",
+  "filt.th.col": "Colors",
+  "filt.velours": "Velvet",
+  "filt.soleil": "Sunny",
+  "filt.cocon": "Cozy",
+  "filt.lagon": "Lagoon",
+  "filt.eclat": "Bright",
+  "filt.miel": "Honey",
+  "filt.dune": "Dune",
+  "filt.souvenir": "Memory",
+  "filt.beton": "Concrete",
+  "filt.fuchsia": "Fuchsia",
+  "filt.safran": "Saffron",
+  "filt.mono": "Mono",
+  "filt.tropique": "Tropic",
   "filt.none": "None",
   "filt.givre": "Frost",
   "filt.la": "Vintage “LA”",
@@ -1108,6 +1122,20 @@ const I18N_FR = /*@FR*/{
   "filt.th.cam": "Caméra",
   "filt.th.retro": "Rétro",
   "filt.th.esth": "Esthétique",
+  "filt.th.col": "Couleurs",
+  "filt.velours": "Velours",
+  "filt.soleil": "Soleil",
+  "filt.cocon": "Cocon",
+  "filt.lagon": "Lagon",
+  "filt.eclat": "Éclat",
+  "filt.miel": "Miel",
+  "filt.dune": "Dune",
+  "filt.souvenir": "Souvenir",
+  "filt.beton": "Béton",
+  "filt.fuchsia": "Fuchsia",
+  "filt.safran": "Safran",
+  "filt.mono": "Mono",
+  "filt.tropique": "Tropique",
   "filt.none": "Aucun",
   "filt.givre": "Givre",
   "filt.la": "Grain vintage « LA »",
@@ -4496,8 +4524,22 @@ const FILTERS = [
   { id: 'reve',     th: 'esth', free: false },
   { id: 'y2k',      th: 'esth', free: false },
   { id: 'pastel',   th: 'esth', free: false },
+  // « Couleurs »: light colour retouches, in the spirit of the stories' colour filters (own names)
+  { id: 'velours',  th: 'col', free: false },
+  { id: 'soleil',   th: 'col', free: false },
+  { id: 'cocon',    th: 'col', free: false },
+  { id: 'lagon',    th: 'col', free: false },
+  { id: 'eclat',    th: 'col', free: false },
+  { id: 'miel',     th: 'col', free: false },
+  { id: 'dune',     th: 'col', free: false },
+  { id: 'souvenir', th: 'col', free: false },
+  { id: 'beton',    th: 'col', free: false },
+  { id: 'fuchsia',  th: 'col', free: false },
+  { id: 'safran',   th: 'col', free: false },
+  { id: 'mono',     th: 'col', free: false },
+  { id: 'tropique', th: 'col', free: false },
 ];
-const FILT_THEMES = ['cam', 'retro', 'esth'];
+const FILT_THEMES = ['col', 'cam', 'retro', 'esth'];
 const filtIdx = id => Math.max(0, FILTERS.findIndex(f => f.id === id));
 /* the filters that also draw text or shapes (filtOverlay) */
 const filtHasOverlay = i => { const f = FILTERS[i]; return !!f && (f.id === 'vhs' || f.id === 'y2k'); };
@@ -4649,6 +4691,56 @@ void main(){
     c = c * 0.60 + 0.37;
     c = mix(c, c * vec3(1.06, 0.95, 1.05), 0.6);
     c = mix(c, vec3(1.0, 0.94, 0.97), 0.12) + vec3(0.0, 0.015, 0.02) * (1.0 - lum(c));
+  } else if (u_f == 14){ // Velours: soft and flattering, a little glow, gentle contrast
+    c = mix(src(q), blur(q, 4.0), 0.35);
+    c = con(c, 0.92) * vec3(1.03, 1.0, 0.98) * 1.04 + 0.02;
+    c = sat(c, 1.05);
+  } else if (u_f == 15){ // Soleil: warm, bright, rich colours
+    c = src(q) * vec3(1.08, 1.02, 0.92);
+    c = con(sat(c, 1.25), 1.05) + 0.03;
+    c += smoothstep(0.55, 1.0, lum(c)) * vec3(0.05, 0.02, -0.02);
+  } else if (u_f == 16){ // Cocon: warmer, a little faded
+    c = src(q) * vec3(1.06, 1.0, 0.90);
+    c = mix(vec3(0.07, 0.06, 0.05), vec3(1.0, 0.98, 0.95), clamp(c, 0.0, 1.0));
+    c = con(c, 0.96);
+  } else if (u_f == 17){ // Lagon: livelier blues and greens, more contrast
+    c = src(q); float l = lum(c);
+    float cool = clamp((c.b + c.g * 0.5 - c.r * 1.2) * 2.0, 0.0, 1.0);
+    c = mix(c, sat(c, 1.55), cool);
+    c = con(sat(c, 1.12), 1.12) * vec3(0.97, 1.0, 1.05);
+  } else if (u_f == 18){ // Éclat: brighter, a little more contrast
+    c = pow(src(q), vec3(0.88)) * 1.06;
+    c = sat(con(c, 1.08), 1.06);
+  } else if (u_f == 19){ // Miel: soft, warm, light
+    c = src(q) * vec3(1.05, 1.0, 0.90);
+    c = con(sat(c, 0.85), 0.94) * 1.03 + 0.04;
+  } else if (u_f == 20){ // Dune: warm and golden, elegant
+    c = src(q) * vec3(1.10, 1.02, 0.85);
+    c += smoothstep(0.45, 1.0, lum(c)) * vec3(0.06, 0.04, 0.0);
+    c = sat(c, 1.05) + 0.02;
+  } else if (u_f == 21){ // Souvenir: faded, warm pink, nostalgic
+    c = sat(src(q), 0.80) * vec3(1.06, 0.97, 0.98);
+    c = mix(vec3(0.13, 0.08, 0.10), vec3(1.0, 0.95, 0.93), clamp(c, 0.0, 1.0));
+    c = con(c, 0.92);
+  } else if (u_f == 22){ // Béton: darker, cooler, urban
+    c = pow(src(q), vec3(1.15)) * vec3(0.95, 0.98, 1.04);
+    c = con(sat(c, 0.80), 1.15);
+  } else if (u_f == 23){ // Fuchsia: a warm pink tint, lively
+    c = src(q);
+    c = mix(c, c * vec3(1.12, 0.90, 1.05), 0.7);
+    c = sat(c, 1.15) + smoothstep(0.6, 1.0, lum(c)) * vec3(0.04, 0.0, 0.02);
+  } else if (u_f == 24){ // Safran: golden yellow, slightly faded
+    c = src(q) * vec3(1.08, 1.04, 0.78);
+    c = mix(vec3(0.07, 0.06, 0.02), vec3(1.0, 0.98, 0.90), clamp(c, 0.0, 1.0));
+    c = sat(c, 0.95);
+  } else if (u_f == 25){ // Mono: clean black and white, no grain
+    c = vec3(con(vec3(lum(src(q))), 1.08).x);
+  } else if (u_f == 26){ // Tropique: a sunset gradient laid over the picture
+    c = sat(src(q), 1.10);
+    vec3 gtop = vec3(1.0, 0.42, 0.62), gmid = vec3(1.0, 0.66, 0.30), gbot = vec3(0.55, 0.35, 0.92);
+    vec3 gr = q.y < 0.5 ? mix(gtop, gmid, q.y * 2.0) : mix(gmid, gbot, (q.y - 0.5) * 2.0);
+    vec3 ov = mix(2.0 * c * gr, 1.0 - 2.0 * (1.0 - c) * (1.0 - gr), step(0.5, c));
+    c = mix(c, ov, 0.45);
   } else {
     c = src(q);
   }
@@ -7683,7 +7775,7 @@ $('#exportBtn').onclick = exportOne;
 $('#filtRow').addEventListener('click', e => { const b = e.target.closest('.filt'); if (b && !S.exporting) setFilter(b.dataset.v); });
 $('#filtRow').addEventListener('keydown', e => {
   const k = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key]; if (!k || S.exporting) return; e.preventDefault();
-  const ids = FILTERS.map(f => f.id), i = (ids.indexOf(S.filter) + k + ids.length) % ids.length; setFilter(ids[i]);
+  const ids = $$('#filtRow .filt').map(b => b.dataset.v), i = (ids.indexOf(S.filter) + k + ids.length) % ids.length; setFilter(ids[i]);
   const b = $('#filtRow .filt[data-v="' + ids[i] + '"]'); if (b){ b.focus(); b.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }
 });
 $('#packBtn').onclick = exportPack;
