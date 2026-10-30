@@ -14,7 +14,9 @@ export const FEATURES = Object.freeze({
   text: 'basic',        // every size and appearance of the lyrics on screen
   filters: 'pro',       // every video filter (the free and Basic plans keep 3)
   clip: 'pro',          // Clip mode, 16:9
-  packs: 'pro',         // packs of 5 and 10 videos
+  packs: 'pro',         // packs of 5 and 10 videos (pack5 / pack10: the same, by size, as the page asks)
+  pack5: 'pro',
+  pack10: 'pro',
   lyrics: 'pro',        // automatic lyrics (Workers AI)
   cloud: 'pro',         // online saving (R2) and the Galerie
   pack30: 'max',        // packs of 30 videos
@@ -84,11 +86,14 @@ export function intervalOf(env, priceId) {
 }
 // The plan of a subscription row: the plan saved by the webhook, else its price; rows from before this version
 // (no plan, old price) were Stalak Pro.
-export function planOfSub(env, sub) {
+export function planOfSub(env, sub, now = Date.now()) {
   if (!sub) return 'free';
-  if (isPlan(sub.plan) && sub.plan !== 'free') return sub.plan;
-  return planOfPrice(env, sub.price_id) || 'pro';
+  const plan = isPlan(sub.plan) && sub.plan !== 'free' ? sub.plan : planOfPrice(env, sub.price_id) || 'pro';
+  // moved to a smaller plan: the bigger one stays until the end of the period already paid (paddle.js changePlan)
+  if (isPlan(sub.keep_plan) && sub.keep_until > now && rank(sub.keep_plan) > rank(plan)) return sub.keep_plan;
+  return plan;
 }
+export const planRank = rank;
 
 export async function userSubscription(env, userId) {
   const { results } = await env.DB.prepare(

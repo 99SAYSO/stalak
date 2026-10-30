@@ -117,6 +117,9 @@ async function projects(request, env, method, rest, ctx) {
     if (!body || typeof body !== 'object' || body.state === undefined) throw new HttpError(400, 'invalid_project', 'Body must be {name, state}.');
     const name = String(body.name || '').slice(0, 120);
     const data = JSON.stringify(body.state);
+    // more than the plan's space (e.g. Max 100 GB → Pro 20 GB): nothing is erased, new saves wait until it fits again
+    const space = await storageInfo(env, user.id, plan);
+    if (space.used > space.quota) throw new HttpError(413, 'quota_exceeded', 'Your online space is full for your plan: delete projects first.', { used: space.used, quota: space.quota, needed: 0 });
     // with media: body.files = the ids of the uploaded files this version uses (all must be there); the others are erased
     const withFiles = body.files !== undefined;
     const mediaBytes = withFiles ? await checkProjectFiles(env, user.id, id, body.files) : null;

@@ -4,8 +4,8 @@
 //                                     again at midnight, Paris time), an account is needed. Answers the « jeton du jour »,
 //                                     or 429 daily_video_used with nextAt. The same video may be exported again that day
 //                                     (an export that failed or was cancelled is not lost). Paid plans: {unlimited: true}.
-// GET  /api/reminders/stop?u=&t=      unsubscribe page (a button: mail scanners that open links do not unsubscribe)
-// POST /api/reminders/stop?u=&t=      unsubscribes (the button, or the « one click » of the mail app: RFC 8058)
+// GET  /api/reminders/stop?u=&t=      unsubscribes at once, without signing in (conditions: the link stops it right away)
+// POST /api/reminders/stop?u=&t=      the same, for the « one click » of the mail app (RFC 8058)
 // Reminders: at most 1 a day, only the day after a video made on the free plan, never after 7 days without a visit, and
 // only to accounts that ticked the box (sign-up or account page). Sent from 10:00 to 21:00, Paris time, by the
 // scheduled Worker (workers/cloud-cleanup), POST /api/cron/reminders, or lazily after the site's own requests.
@@ -93,36 +93,37 @@ export async function freeVideoState(env, user, now = Date.now()) {
   return { usedToday: !!row, nextAt: new Date(nextParisMidnight(now)).toISOString() };
 }
 
-// ---- the reminder e-mail ------------------------------------------------------------------------------------------------
+// ---- the consent: the exact words of the box (the page shows the same), kept as proof with the date and the language ------
+// (kept in profile.js: REMINDER_BOX, reminderProof)
+export { REMINDER_BOX, reminderProof } from './profile.js';
+
+// ---- the reminder e-mail (nothing else in it: no offer, as the box says) -------------------------------------------------
 const TEXTS = {
   fr: {
     subject: 'Ta vidéo gratuite du jour est disponible',
     hello: 'Salut !',
     body: 'Ta vidéo gratuite du jour t’attend sur Stalak : importe ton son, tes prises, et Stalak monte tout sur le rythme.',
     cta: 'Faire ma vidéo du jour',
-    plans: 'Envie de vidéos sans limite et sans logo ? Stalak Basic commence à 4,99 € par mois.',
-    why: 'Tu reçois cet e-mail parce que tu as coché « Me prévenir quand ma vidéo gratuite du jour est disponible ». Au plus un par jour, seulement le lendemain d’une vidéo gratuite.',
-    stop: 'Ne plus recevoir ces rappels',
+    why: 'Tu reçois cet e-mail parce que tu as coché « Me prévenir par e-mail quand ma vidéo du jour est disponible ». Au plus un par jour, seulement le lendemain d’une vidéo gratuite.',
+    stop: 'Ne plus recevoir ce rappel',
   },
   en: {
     subject: 'Your free video of the day is ready',
     hello: 'Hey!',
     body: 'Your free video of the day is waiting on Stalak: drop in your song and your takes, and Stalak cuts it all on the beat.',
     cta: 'Make my video of the day',
-    plans: 'Want unlimited videos with no logo? Stalak Basic starts at €4.99 a month.',
-    why: 'You get this email because you ticked “Tell me when my free video of the day is ready”. At most one a day, only the day after a free video.',
-    stop: 'Stop these reminders',
+    why: 'You get this email because you ticked “Email me when my video of the day is ready”. At most one a day, only the day after a free video.',
+    stop: 'Stop this reminder',
   },
 };
 export function reminderEmail(lang, stop) {
   const en = lang === 'en', t = en ? TEXTS.en : TEXTS.fr;
   const go = SITE + (en ? '/en/' : '/') + '?ref=reminder';
-  const text = `${t.hello}\n\n${t.body}\n\n${t.cta} : ${go}\n\n${t.plans}\n\n—\n${t.why}\n${t.stop} : ${stop}\n\nStalak — stalak.app`;
+  const text = `${t.hello}\n\n${t.body}\n\n${t.cta} : ${go}\n\n—\n${t.why}\n${t.stop} : ${stop}\n\nStalak — stalak.app`;
   const html = `<!doctype html><html lang="${en ? 'en' : 'fr'}"><body style="font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#0a0d14;padding:24px;max-width:520px">
 <p style="font-size:18px;font-weight:700">${t.hello}</p>
 <p>${t.body}</p>
 <p style="margin:24px 0"><a href="${go}" style="background:#0a0d14;color:#fff;text-decoration:none;padding:12px 20px;border-radius:12px;font-weight:700;display:inline-block">${t.cta}</a></p>
-<p>${t.plans}</p>
 <p style="color:#666;font-size:12px;margin-top:32px">${t.why}<br><a href="${stop}" style="color:#666">${t.stop}</a></p>
 <p style="color:#888;font-size:12px">Stalak — <a href="${SITE}" style="color:#888">stalak.app</a></p>
 </body></html>`;
@@ -194,12 +195,11 @@ export async function maybeReminders(env, ctx, now = Date.now()) {
 
 // ---- unsubscribe ----------------------------------------------------------------------------------------------------------
 const STOP_TEXTS = {
-  fr: { title: 'Rappels Stalak', ask: 'Ne plus recevoir l’e-mail « Ta vidéo gratuite du jour est disponible » ?', btn: 'Me désabonner',
-    done: 'C’est fait : tu ne recevras plus ces rappels.', again: 'Tu peux les remettre à tout moment dans ton compte.', bad: 'Ce lien n’est pas valable.', back: 'Retour sur Stalak' },
-  en: { title: 'Stalak reminders', ask: 'Stop getting the “Your free video of the day is ready” email?', btn: 'Unsubscribe',
-    done: 'Done: you won’t get these reminders anymore.', again: 'You can turn them back on any time in your account.', bad: 'This link is not valid.', back: 'Back to Stalak' },
+  fr: { title: 'Rappel Stalak',
+    done: 'C’est fait : tu ne recevras plus le rappel « Ta vidéo gratuite du jour est disponible ».', again: 'Tu peux les remettre à tout moment dans ton compte.', bad: 'Ce lien n’est pas valable.', back: 'Retour sur Stalak' },
+  en: { title: 'Stalak reminder',
+    done: 'Done: you won’t get the “Your free video of the day is ready” reminder anymore.', again: 'You can turn them back on any time in your account.', bad: 'This link is not valid.', back: 'Back to Stalak' },
 };
-const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 function stopPage(lang, inner, status = 200) {
   const t = lang === 'en' ? STOP_TEXTS.en : STOP_TEXTS.fr;
   const html = `<!doctype html><html lang="${lang === 'en' ? 'en' : 'fr'}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -209,7 +209,7 @@ main{background:#fff;border:3px solid #0a0d14;border-radius:22px;padding:28px;ma
 h1{font-size:22px;margin:0 0 12px}p{line-height:1.5}button{font:inherit;font-weight:700;background:#0a0d14;color:#fff;border:0;border-radius:14px;padding:12px 22px;min-height:44px;cursor:pointer}
 a{color:#0a0d14}</style></head><body><main><h1>${t.title}</h1>${inner(t)}<p><a href="${SITE}${lang === 'en' ? '/en/' : '/'}">${t.back}</a></p></main></body></html>`;
   return new Response(html, { status, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store',
-    'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'",
+    'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'; form-action 'none'; base-uri 'none'; frame-ancestors 'none'",
     'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer', 'X-Robots-Tag': 'noindex' } });
 }
 
@@ -221,11 +221,7 @@ export async function remindersStop(request, env, method) {
   const u = row && row.reminder_key && timingSafeEqual(row.reminder_key, sig) ? row : null;
   const lang = (u && u.lang) || (/^en\b/i.test(request.headers.get('Accept-Language') || '') ? 'en' : 'fr');
   if (!u) return stopPage(lang, (t) => `<p>${t.bad}</p>`, 404);
-  if (method === 'GET') {
-    // a button, not a change on opening: mail scanners open links
-    const action = `/api/reminders/stop?u=${encodeURIComponent(uid)}&t=${encodeURIComponent(sig)}`;
-    return stopPage(lang, (t) => `<p>${t.ask}</p><form method="post" action="${esc(action)}"><button type="submit">${t.btn}</button></form>`);
-  }
+  // opening the link is enough (the conditions ask for it to stop at once); turning it back on is in the account page
   await env.DB.prepare('UPDATE users SET reminders = 0 WHERE id = ?1').bind(uid).run();
   return stopPage(lang, (t) => `<p>${t.done}</p><p>${t.again}</p>`);
 }

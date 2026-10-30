@@ -79,6 +79,9 @@ globalThis.fetch = async (url, init = {}) => {
   if (m) return Response.json({ data: { id: m[1], status: 'canceled' } });
   m = url.match(/paddle\.com\/subscriptions\/(sub_\w+)$/);
   if (m && init.method === 'PATCH') return Response.json({ data: { id: m[1], status: 'active', items: body.items } });
+  m = url.match(/paddle\.com\/subscriptions\/(sub_\w+)\/preview$/);
+  if (m && init.method === 'PATCH') return Response.json({ data: { id: m[1], currency_code: 'EUR', immediate_transaction: body.proration_billing_mode === 'prorated_immediately'
+    ? { details: { totals: { grand_total: '2310', currency_code: 'EUR' } } } : null, update_summary: null } });
   return new Response('not mocked: ' + url, { status: 599 });
 };
 const origLog = console.log, origWarn = console.warn;
@@ -178,7 +181,7 @@ const tests = [];
 const test = (name, fn) => tests.push({ name, fn });
 const FREE_ENT = { plan: 'free', features: [], limits: { videosPerDay: 1, lyricsPerDay: 0, lyricsMinutesPerDay: 0, cloudBytes: 0 },
   outro: true, cloudSave: false, clipMode: false, autoLyrics: false, packs: false };
-const PRO_ENT = { plan: 'pro', features: ['unlimited', 'nologo', 'text', 'filters', 'clip', 'packs', 'lyrics', 'cloud'],
+const PRO_ENT = { plan: 'pro', features: ['unlimited', 'nologo', 'text', 'filters', 'clip', 'packs', 'pack5', 'pack10', 'lyrics', 'cloud'],
   limits: { videosPerDay: null, lyricsPerDay: 20, lyricsMinutesPerDay: 90, cloudBytes: 20 * 1024 ** 3 },
   outro: false, cloudSave: true, clipMode: true, autoLyrics: true, packs: true };
 
@@ -2448,9 +2451,9 @@ test('galerie: covers saved next to the project (Pro, owner only), listed with t
 
 // ---- offer of 30/10/2026: plans (entitlements.js), free video of the day and reminders (videos.js) — domaine Comptes ----
 test('plans: one table feature → plan; each plan has the features of the plans before it; limits by plan', () => {
-  assert.deepEqual(Object.keys(FEATURES).sort(), ['clip', 'cloud', 'filters', 'human', 'lyrics', 'nologo', 'pack30', 'packs', 'text', 'unlimited']);
+  assert.deepEqual(Object.keys(FEATURES).sort(), ['clip', 'cloud', 'filters', 'human', 'lyrics', 'nologo', 'pack10', 'pack30', 'pack5', 'packs', 'text', 'unlimited']);
   for (const f of ['unlimited', 'nologo', 'text']) assert.ok(!planHas('free', f) && planHas('basic', f) && planHas('pro', f) && planHas('max', f), f);
-  for (const f of ['filters', 'clip', 'packs', 'lyrics', 'cloud']) assert.ok(!planHas('basic', f) && planHas('pro', f) && planHas('max', f), f);
+  for (const f of ['filters', 'clip', 'packs', 'pack5', 'pack10', 'lyrics', 'cloud']) assert.ok(!planHas('basic', f) && planHas('pro', f) && planHas('max', f), f);
   for (const f of ['pack30', 'human']) assert.ok(!planHas('pro', f) && planHas('max', f), f);
   assert.equal(LIMITS.pro.lyricsPerDay, 20); assert.equal(LIMITS.max.lyricsPerDay, 60);
   assert.equal(LIMITS.pro.cloudBytes, 20 * 1024 ** 3); assert.equal(LIMITS.max.cloudBytes, 100 * 1024 ** 3);
@@ -2488,6 +2491,14 @@ test('plans: the webhook finds the plan from the price (or the price custom_data
   assert.equal(r.data.storage.quota, 20 * 1024 ** 3);
   r = await call(env, 'GET', '/api/projects', { cookie: max.cookie });
   assert.equal(r.data.storage.quota, 100 * 1024 ** 3);
+  // Max → Pro with more than 20 GB online: nothing erased, but no new save until it fits again
+  r = await call(env, 'PUT', '/api/projects/big_one', { cookie: pro.cookie, body: { name: 'Gros', state: { app: 'stalak' } } });
+  assert.equal(r.status, 200);
+  env.DB.raw.prepare('UPDATE projects SET size = ? WHERE user_id = ?').run(21 * 1024 ** 3, pro.user.id);
+  r = await call(env, 'PUT', '/api/projects/big_one', { cookie: pro.cookie, body: { name: 'Gros 2', state: { app: 'stalak' } } });
+  assert.equal(r.status, 413); assert.equal(r.data.error, 'quota_exceeded');
+  r = await call(env, 'GET', '/api/projects', { cookie: pro.cookie });
+  assert.equal(r.data.projects.length, 1, 'kept');
   // automatic lyrics: 20 a day in Pro, 60 in Max
   const day = new Date().toISOString().slice(0, 10);
   for (const u of [pro, max]) env.DB.raw.prepare('INSERT INTO lyrics_usage (user_id, day, jobs, pieces, seconds, updated_at) VALUES (?, ?, 20, 20, 60, ?)').run(u.user.id, day, Date.now());
@@ -2500,26 +2511,60 @@ test('plans: the webhook finds the plan from the price (or the price custom_data
   assert.equal(r.status, 429); assert.equal(r.data.limit, 60);
 });
 
-test('plans: a subscriber changes plan on the same subscription (Paddle PATCH, prorated); checks', async () => {
+test('plans: change of plan on the same subscription: up now prorated (amount shown first), down at the renewal; checks', async () => {
   const env = makeEnv();
   const pro = await proUser(env, 'up@example.com', 'pro');
-  const n0 = outbound.length;
-  let r = await call(env, 'POST', '/api/paddle/change', { cookie: pro.cookie, body: { plan: 'max', interval: 'year' } });
-  assert.equal(r.status, 200, JSON.stringify(r.data)); assert.equal(r.data.from, 'pro'); assert.equal(r.data.to, 'max');
-  const p = outbound.slice(n0).find((x) => /paddle\.com\/subscriptions\/sub_c\d+$/.test(x.url));
-  assert.equal(p.method, 'PATCH');
-  assert.deepEqual(p.body, { items: [{ price_id: 'pri_max_y', quantity: 1 }], proration_billing_mode: 'prorated_immediately', on_payment_failure: 'prevent_change' });
-  // the plan changes when Paddle says so (webhook), not before
-  assert.equal((await call(env, 'GET', '/api/me', { cookie: pro.cookie })).data.entitlements.plan, 'pro');
   const sid = env.DB.raw.prepare('SELECT id, customer_id FROM subscriptions WHERE user_id = ?').get(pro.user.id);
-  await webhook(env, subEvent('subscription.updated', sub(pro.user.id, { id: sid.id, customer_id: sid.customer_id,
-    items: [{ status: 'active', quantity: 1, price: { id: 'pri_max_y', product_id: 'pro_max' } }] })));
-  assert.equal((await call(env, 'GET', '/api/me', { cookie: pro.cookie })).data.entitlements.plan, 'max');
+  const patches = (n0) => outbound.slice(n0).filter((x) => /paddle\.com\/subscriptions\/sub_c\d+(\/preview)?$/.test(x.url));
+  const paddleSays = (price) => webhook(env, subEvent('subscription.updated', sub(pro.user.id, { id: sid.id, customer_id: sid.customer_id,
+    items: [{ status: 'active', quantity: 1, price: { id: price, product_id: 'pro_x' } }] })));
+  const planNow = async () => (await call(env, 'GET', '/api/me', { cookie: pro.cookie })).data.entitlements.plan;
+  // up (Pro monthly → Max yearly): the amount first (preview: nothing changes), then the change, prorated now
+  let n0 = outbound.length;
+  let r = await call(env, 'POST', '/api/paddle/change', { cookie: pro.cookie, body: { plan: 'max', interval: 'year', preview: true } });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.deepEqual([r.data.kind, r.data.amount, r.data.currency], ['up', 2310, 'EUR']);
+  let p = patches(n0); assert.equal(p.length, 1); assert.ok(p[0].url.endsWith('/preview'));
+  n0 = outbound.length;
+  r = await call(env, 'POST', '/api/paddle/change', { cookie: pro.cookie, body: { plan: 'max', interval: 'year' } });
+  assert.equal(r.status, 200, JSON.stringify(r.data)); assert.equal(r.data.from, 'pro'); assert.equal(r.data.to, 'max');
+  p = patches(n0); assert.equal(p.length, 1); assert.equal(p[0].method, 'PATCH');
+  assert.deepEqual(p[0].body, { items: [{ price_id: 'pri_max_y', quantity: 1 }], proration_billing_mode: 'prorated_immediately', on_payment_failure: 'prevent_change' });
+  assert.equal(await planNow(), 'pro', 'the plan changes when Paddle says so (webhook)');
+  await paddleSays('pri_max_y');
+  assert.equal(await planNow(), 'max');
   r = await call(env, 'POST', '/api/paddle/change', { cookie: pro.cookie, body: { plan: 'max', interval: 'year' } });
   assert.equal(r.status, 409); assert.equal(r.data.error, 'same_plan');
+  // down (Max yearly → Pro yearly): at the renewal, nothing refunded; Max kept until the end of the period paid
+  n0 = outbound.length;
+  r = await call(env, 'POST', '/api/paddle/change', { cookie: pro.cookie, body: { plan: 'pro', interval: 'year', preview: true } });
+  assert.deepEqual([r.data.kind, r.data.amount], ['down', 0]); assert.ok(r.data.effectiveAt);
+  r = await call(env, 'POST', '/api/paddle/change', { cookie: pro.cookie, body: { plan: 'pro', interval: 'year' } });
+  assert.equal(r.status, 200); assert.equal(r.data.kind, 'down');
+  p = patches(n0).filter((x) => !x.url.endsWith('/preview'));
+  assert.equal(p[0].body.proration_billing_mode, 'full_next_billing_period');
+  await paddleSays('pri_pro_y');
+  assert.equal(await planNow(), 'max', 'Max stays until the renewal');
+  // back up to Max in the same period: already paid, no new charge
+  n0 = outbound.length;
+  r = await call(env, 'POST', '/api/paddle/change', { cookie: pro.cookie, body: { plan: 'max', interval: 'year', preview: true } });
+  assert.equal(r.data.amount, 0);
+  r = await call(env, 'POST', '/api/paddle/change', { cookie: pro.cookie, body: { plan: 'max', interval: 'year' } });
+  assert.equal(patches(n0).filter((x) => !x.url.endsWith('/preview'))[0].body.proration_billing_mode, 'do_not_bill');
+  await paddleSays('pri_max_y');
+  assert.equal(await planNow(), 'max');
+  // down again, then the period ends: Pro
+  await call(env, 'POST', '/api/paddle/change', { cookie: pro.cookie, body: { plan: 'pro', interval: 'year' } });
+  await paddleSays('pri_pro_y');
+  env.DB.raw.prepare('UPDATE subscriptions SET keep_until = ? WHERE id = ?').run(Date.now() - 1000, sid.id);
+  assert.equal(await planNow(), 'pro');
+  // a smaller plan with another billing interval: refused (Paddle cannot schedule it)
+  r = await call(env, 'POST', '/api/paddle/change', { cookie: pro.cookie, body: { plan: 'basic', interval: 'month' } });
+  assert.equal(r.status, 409); assert.equal(r.data.error, 'change_at_renewal');
+  // checks
   r = await call(env, 'POST', '/api/paddle/change', { cookie: pro.cookie, body: { plan: 'gold', interval: 'year' } });
   assert.equal(r.status, 400);
-  r = await call(env, 'POST', '/api/paddle/change', { cookie: pro.cookie, body: { plan: 'basic', interval: 'month' }, origin: 'https://evil.example' });
+  r = await call(env, 'POST', '/api/paddle/change', { cookie: pro.cookie, body: { plan: 'basic', interval: 'year' }, origin: 'https://evil.example' });
   assert.equal(r.status, 403, 'CSRF: Origin checked');
   const free = await login(env, 'nosub@example.com');
   r = await call(env, 'POST', '/api/paddle/change', { cookie: free.cookie, body: { plan: 'pro', interval: 'month' } });
@@ -2588,13 +2633,18 @@ test('reminders: box at sign-up or in the account; 1 a day, only the day after a
   r = await call(env, 'POST', '/api/auth/signup/verify', { body: { email: 'remind@example.com', code: lastCode('remind@example.com') } });
   const a = { cookie: r.jar('stalak_s'), user: r.data.user };
   assert.equal(r.data.user.reminders, true);
+  // the proof of the consent: date, exact words of the box, language
+  let proof = JSON.parse(env.DB.raw.prepare('SELECT reminders_proof FROM users WHERE id = ?').get(a.user.id).reminders_proof);
+  assert.deepEqual([proof.text, proof.lang, proof.from], ['Email me when my video of the day is ready', 'en', 'signup']); assert.ok(proof.at > 0);
   const b = await login(env, 'noremind@example.com');
   assert.equal(b.user.reminders, false, 'not ticked: no reminder');
   // in the account
   r = await call(env, 'PATCH', '/api/me', { cookie: b.cookie, body: { reminders: 'yes' } });
   assert.equal(r.status, 400);
-  r = await call(env, 'PATCH', '/api/me', { cookie: b.cookie, body: { reminders: true } });
+  r = await call(env, 'PATCH', '/api/me', { cookie: b.cookie, body: { reminders: true, lang: 'fr' } });
   assert.equal(r.status, 200); assert.equal(r.data.user.reminders, true);
+  proof = JSON.parse(env.DB.raw.prepare('SELECT reminders_proof FROM users WHERE id = ?').get(b.user.id).reminders_proof);
+  assert.deepEqual([proof.text, proof.lang, proof.from], ['Me prévenir par e-mail quand ma vidéo du jour est disponible', 'fr', 'account']);
   const c = await login(env, 'away@example.com');
   await call(env, 'PATCH', '/api/me', { cookie: c.cookie, body: { reminders: true } });
   const d = await proUser(env, 'paid@example.com', 'basic');
@@ -2625,26 +2675,28 @@ test('reminders: box at sign-up or in the account; 1 a day, only the day after a
   const stop = mail.headers['List-Unsubscribe'].slice(1, -1);
   assert.match(stop, /^https:\/\/stalak\.app\/api\/reminders\/stop\?u=u_[0-9a-f]+&t=[A-Za-z0-9_-]{32}$/);
   assert.equal(mail.headers['List-Unsubscribe-Post'], 'List-Unsubscribe=One-Click');
-  assert.ok(mail.html.includes(stop.replace(/&/g, '&')) && mail.text.includes(stop));
+  assert.ok(mail.html.includes(stop) && mail.text.includes(stop) && mail.html.includes('Stop this reminder'));
+  assert.ok(!/Basic|Pro|€/.test(mail.text), 'nothing else in it: no offer');
   // at most 1 a day: a second run sends nothing
   n0 = outbound.length;
   await sendReminders(env, now + 3600e3);
   assert.equal(outbound.slice(n0).filter((x) => x.url === 'https://api.resend.com/emails').length, 0);
 
-  // unsubscribe: the page asks (a GET changes nothing: mail scanners open links), the button (POST) does it
+  // unsubscribe: wrong key → nothing; the link stops it at once, without signing in
   const path = stop.replace('https://stalak.app', '');
-  r = await call(env, 'GET', path);
-  assert.equal(r.status, 200); assert.ok(String(r.data).includes('<form method="post"'));
-  assert.equal(env.DB.raw.prepare('SELECT reminders FROM users WHERE id = ?').get(a.user.id).reminders, 1);
   r = await call(env, 'GET', path.replace(/t=[^&]+$/, 't=' + 'A'.repeat(32)));
   assert.equal(r.status, 404, 'wrong key');
   r = await call(env, 'POST', path.replace(/t=[^&]+$/, 't=' + 'A'.repeat(32)), { raw: 'List-Unsubscribe=One-Click', ct: 'application/x-www-form-urlencoded', origin: null });
   assert.equal(r.status, 404);
   assert.equal(env.DB.raw.prepare('SELECT reminders FROM users WHERE id = ?').get(a.user.id).reminders, 1);
-  // one click from the mail app: a form POST without Origin
-  r = await call(env, 'POST', path, { raw: 'List-Unsubscribe=One-Click', ct: 'application/x-www-form-urlencoded', origin: null });
-  assert.equal(r.status, 200); assert.ok(String(r.data).includes('won’t get these reminders'));
+  r = await call(env, 'GET', path);
+  assert.equal(r.status, 200); assert.ok(String(r.data).includes('won’t get the'));
   assert.equal(env.DB.raw.prepare('SELECT reminders FROM users WHERE id = ?').get(a.user.id).reminders, 0);
+  // one click from the mail app: a form POST without Origin (b's link)
+  env.DB.raw.prepare('UPDATE users SET reminder_key = ? WHERE id = ?').run('B'.repeat(32), b.user.id);
+  r = await call(env, 'POST', `/api/reminders/stop?u=${b.user.id}&t=${'B'.repeat(32)}`, { raw: 'List-Unsubscribe=One-Click', ct: 'application/x-www-form-urlencoded', origin: null });
+  assert.equal(r.status, 200);
+  assert.equal(env.DB.raw.prepare('SELECT reminders FROM users WHERE id = ?').get(b.user.id).reminders, 0);
   r = await call(env, 'GET', '/api/me', { cookie: a.cookie });
   assert.equal(r.data.user.reminders, false);
   // the cron route needs its secret

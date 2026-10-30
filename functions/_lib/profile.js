@@ -33,12 +33,29 @@ export function sniffImage(b) {
 }
 
 // PATCH /api/me {displayName}
+// The box « Me prévenir par e-mail quand ma vidéo du jour est disponible » (reminder of the free video, videos.js): its exact
+// words (the page shows the same), kept as proof of the consent with the date and the language.
+export const REMINDER_BOX = Object.freeze({
+  fr: 'Me prévenir par e-mail quand ma vidéo du jour est disponible',
+  en: 'Email me when my video of the day is ready',
+});
+export function reminderProof(lang, from, now = Date.now()) {
+  const l = lang === 'en' ? 'en' : 'fr';
+  return JSON.stringify({ at: now, text: REMINDER_BOX[l], lang: l, from: from === 'signup' ? 'signup' : 'account' });
+}
+
 export async function updateProfile(env, user, body) {
   if (!('displayName' in body) && !('reminders' in body)) throw new HttpError(400, 'nothing_to_update', 'Send {"displayName": "..."} or {"reminders": true|false}.');
   if ('reminders' in body) {
     // the reminder e-mail « Ta vidéo gratuite du jour est disponible » (videos.js)
     if (typeof body.reminders !== 'boolean') throw new HttpError(400, 'invalid_reminders', 'reminders: true or false.');
-    await env.DB.prepare('UPDATE users SET reminders = ?2 WHERE id = ?1').bind(user.id, body.reminders ? 1 : 0).run();
+    if (body.reminders) {
+      // the proof: when, the words of the box, in the language of the page that showed it
+      const proof = reminderProof(body.lang === 'en' ? 'en' : body.lang === 'fr' ? 'fr' : user.lang, 'account');
+      await env.DB.prepare('UPDATE users SET reminders = 1, reminders_proof = ?2 WHERE id = ?1').bind(user.id, proof).run();
+    } else {
+      await env.DB.prepare('UPDATE users SET reminders = 0 WHERE id = ?1').bind(user.id).run();
+    }
     user.reminders = body.reminders ? 1 : 0;
   }
   if ('displayName' in body) {

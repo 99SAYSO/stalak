@@ -27,7 +27,8 @@
      videos.claim(videoId) -> Promise<{unlimited} | {token, day, nextAt}>: the « jeton du jour » asked before a free export;
                              error daily_video_used (data.nextAt), not_logged_in
      portal()             -> Promise<{url, cancelUrl, updatePaymentUrl}> (manage / cancel)
-     changePlan(plan, interval) -> Promise<{ok, from, to}>: a subscriber moves to another plan (prorated, same subscription)
+     changePlan(plan, interval[, preview]) -> Promise<{kind: 'up'|'down', from, to, amount?, currency?, effectiveAt?}>: a subscriber
+                             moves to another plan on the same subscription (up: now, prorated; down: at the renewal); preview: the price only
      deleteAccount()
      projects.list() / get(id) / save(id, name, state[, fileIds]) / remove(id)
      projects.listAll()   -> Promise<{projects, storage: {available, used, quota, partSize, maxFile}}>
@@ -46,7 +47,7 @@
   var FREE = { plan: 'free', features: [], limits: { videosPerDay: 1 }, outro: true, cloudSave: false, clipMode: false, autoLyrics: false, packs: false };
   var state = { user: null, session: null, entitlements: FREE, subscription: null, freeVideo: null };
   // a server from before the 30/10 offer sends no features list: its Pro had everything but « pack30 » and « human »
-  var OLD_PRO = ['unlimited', 'nologo', 'text', 'filters', 'clip', 'packs', 'lyrics', 'cloud', 'pack30', 'human'];
+  var OLD_PRO = ['unlimited', 'nologo', 'text', 'filters', 'clip', 'packs', 'pack5', 'pack10', 'lyrics', 'cloud', 'pack30', 'human'];
   function has(feature) {
     var e = state.entitlements || FREE;
     if (Array.isArray(e.features)) return e.features.indexOf(feature) >= 0;
@@ -299,8 +300,9 @@
     checkout: checkout,
     portal: function () { return api('POST', 'paddle/portal'); },
     // a subscriber moves to another plan (same subscription, the difference billed now): then wait for the webhook
-    changePlan: function (plan, interval) {
-      return api('POST', 'paddle/change', { plan: plan, interval: interval }).then(function (d) { buying = plan; waitForPlan(20); return d; });
+    changePlan: function (plan, interval, preview) {
+      if (preview) return api('POST', 'paddle/change', { plan: plan, interval: interval, preview: true });
+      return api('POST', 'paddle/change', { plan: plan, interval: interval }).then(function (d) { if (d.kind !== 'down') { buying = plan; waitForPlan(20); } return d; });
     },
     deleteAccount: function () { return api('DELETE', 'account', { confirm: true }).then(function () { return setState({}); }); },
     videos: {

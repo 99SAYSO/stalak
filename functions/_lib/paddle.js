@@ -198,12 +198,20 @@ export async function cancelSubscriptionNow(env, subscriptionId) {
   return paddleApi(env, 'POST', `/subscriptions/${encodeURIComponent(subscriptionId)}/cancel`, { effective_from: 'immediately' });
 }
 
-// POST /api/paddle/change {plan, interval}: a subscriber moves to another plan (Pro → Max, Basic → Pro…) on the SAME
-// subscription, instead of buying a second one. Paddle bills the difference now, prorated, with the saved payment method;
-// if that payment fails nothing changes (on_payment_failure: prevent_change). The webhook (subscription.updated) then
-// sets the new plan. developer.paddle.com/build/subscriptions/replace-products-prices-upgrade-downgrade
+// POST /api/paddle/change {plan, interval, preview?}: a subscriber moves to another plan on the SAME subscription, instead of
+// buying a second one. Rules of the conditions of sale (Juridique, 30/10):
+// - up (a bigger plan, or monthly → yearly): now, prorated (Paddle prorated_immediately), the amount shown before confirming
+//   ({preview: true} asks Paddle's preview: nothing changes); if the payment fails nothing changes (prevent_change);
+// - down (a smaller plan, same billing interval): at the next renewal, nothing refunded: Paddle bills the new price from the
+//   next renewal (full_next_billing_period) and the plan paid for stays until then (subscriptions.keep_plan / keep_until);
+// - down with a change of interval (yearly → monthly, or a smaller plan billed yearly): Paddle cannot schedule a change of
+//   billing interval, so it is refused (409 change_at_renewal): stop the renewal, then take the new plan when it ends.
+// The new plan is set by the webhook (subscription.updated). Prices of the change: the prices of today (env), never the
+// subscriber's old price. developer.paddle.com/build/subscriptions/replace-products-prices-upgrade-downgrade
+const RANK = { basic: 1, pro: 2, max: 3 };
+function cents2(v) { return v == null || v === '' || !/^-?\d+$/.test(String(v)) ? null : Number(v); }
 export async function changePlan(env, user, body) {
-  const plan = body && body.plan, interval = body && body.interval;
+  const plan = body && body.plan, interval = body && body.interval, preview = !!(body && body.preview === true);
   if (!['basic', 'pro', 'max'].includes(plan) || !['month', 'year'].includes(interval)) {
     throw new HttpError(400, 'invalid_plan', 'plan: basic, pro or max; interval: month or year.');
   }
@@ -214,10 +222,39 @@ export async function changePlan(env, user, body) {
   if (!sub) throw new HttpError(404, 'no_subscription', 'No running subscription to change: buy a plan instead.');
   if (sub.cancel_at) throw new HttpError(409, 'subscription_ending', 'This subscription is ending: buy a new plan once it has stopped, or resume it first.');
   if (sub.price_id === priceId) throw new HttpError(409, 'same_plan', 'This is already your plan.');
-  await paddleApi(env, 'PATCH', `/subscriptions/${encodeURIComponent(sub.id)}`, {
+  // the plan paid for now (a smaller plan already chosen does not count: the comparison is with what the person has)
+  const paid = planOfPrice(env, sub.price_id) || (isPlan(sub.plan) ? sub.plan : 'pro');
+  const curInterval = (priceTable(env)[sub.price_id] || {}).interval || 'month';
+  const up = RANK[plan] > RANK[paid] || (plan === paid && curInterval === 'month' && interval === 'year');
+  if (!up && interval !== curInterval) {
+    throw new HttpError(409, 'change_at_renewal', 'A smaller plan with another billing interval starts at the end of the current one: stop the renewal, then take it.');
+  }
+  // back up to a plan already paid for this period (a smaller one was chosen, the bigger one is still kept): no new charge
+  const keepOn = isPlan(sub.keep_plan) && sub.keep_until > Date.now();
+  const repaid = up && keepOn && RANK[plan] <= RANK[sub.keep_plan] && interval === curInterval;
+  const req = {
     items: [{ price_id: priceId, quantity: 1 }],
-    proration_billing_mode: 'prorated_immediately',
+    proration_billing_mode: repaid ? 'do_not_bill' : up ? 'prorated_immediately' : 'full_next_billing_period',
     on_payment_failure: 'prevent_change',
-  });
-  return { ok: true, from: planOfSub(env, sub), to: plan, interval };
+  };
+  const path = `/subscriptions/${encodeURIComponent(sub.id)}`;
+  if (preview) {
+    const r = await paddleApi(env, 'PATCH', path + '/preview', req);
+    const d = (r && r.data) || {}, t = d.immediate_transaction && d.immediate_transaction.details && d.immediate_transaction.details.totals;
+    const res = d.update_summary && d.update_summary.result;
+    const amount = repaid ? 0 : up ? (t ? cents2(t.grand_total != null ? t.grand_total : t.total) : res ? cents2(res.amount) : null) : 0;
+    const currency = String((t && t.currency_code) || (res && res.currency_code) || d.currency_code || 'EUR').toUpperCase().slice(0, 3);
+    return { preview: true, kind: up ? 'up' : 'down', from: paid, to: plan, interval, amount, currency,
+      effectiveAt: up ? null : (sub.current_period_end ? new Date(sub.current_period_end).toISOString() : null) };
+  }
+  await paddleApi(env, 'PATCH', path, req);
+  if (up && !(repaid && RANK[plan] < RANK[sub.keep_plan])) {
+    await env.DB.prepare('UPDATE subscriptions SET keep_plan = NULL, keep_until = NULL WHERE id = ?1').bind(sub.id).run();
+  } else if (!up) {
+    // the plan paid for stays until the end of the period (the earlier one, if a smaller plan was already chosen)
+    const keep = isPlan(sub.keep_plan) && sub.keep_until > Date.now() && RANK[sub.keep_plan] > RANK[paid] ? sub.keep_plan : paid;
+    await env.DB.prepare('UPDATE subscriptions SET keep_plan = ?2, keep_until = ?3 WHERE id = ?1').bind(sub.id, keep, sub.current_period_end || null).run();
+  }
+  return { ok: true, kind: up ? 'up' : 'down', from: paid, to: plan, interval,
+    effectiveAt: up ? null : (sub.current_period_end ? new Date(sub.current_period_end).toISOString() : null) };
 }
