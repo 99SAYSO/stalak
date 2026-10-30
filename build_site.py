@@ -15,6 +15,18 @@ EMAIL = arg('--email')
 DOMAIN = arg('--domain', 'stalak.app')
 SELLER = arg('--seller')   # legal name of the seller (company or sole proprietor), shown in the terms of sale
 URL = 'https://' + DOMAIN
+# Marketing & croissance : comptes officiels de Stalak, déclarés à Google (schema.org « sameAs ») et en liens dans le pied de page.
+# Mettre l'adresse complète du profil (ex. 'https://www.instagram.com/<compte>/') ; une case vide n'apparaît nulle part.
+SOCIAL = {
+    'Instagram': '',
+    'TikTok': '',
+    'YouTube': '',
+}
+SOCIAL = {k: v for k, v in SOCIAL.items() if v}
+# pages FR / EN du plan du site (en plus de l'accueil)
+SITEMAP_PAIRS = [('/tarifs', '/en/pricing'), ('/conditions', '/en/terms'), ('/remboursement', '/en/refunds'),
+                 ('/confidentialite', '/en/privacy'), ('/mentions-legales', '/en/legal-notice'),
+                 ('/alternative-triller', '/en/triller-alternative')]
 
 head = (src / 'head.html').read_text(encoding='utf-8')
 css = (src / 'style.css').read_text(encoding='utf-8') + '\n/* ---- theme ---- */\n' + (src / 'theme.css').read_text(encoding='utf-8') + '\n' + (src / 'pricing.css').read_text(encoding='utf-8')
@@ -63,7 +75,7 @@ PAGE = {
       <li>Le montage se fait dans ton navigateur, sur iPhone, Android ou ordinateur : tes vidéos restent sur ton appareil, sauf si tu sauvegardes un projet en ligne ou demandes tes paroles automatiques (Stalak Pro).</li>
     </ul>
   """,
-    'legal': '<a href="/tarifs">Tarifs</a> · <a href="/conditions">Conditions</a> · <a href="/remboursement">Remboursement</a> · <a href="/confidentialite">Confidentialité</a> · <a href="/mentions-legales">Mentions légales</a>',
+    'legal': '<a href="/tarifs">Tarifs</a> · <a href="/alternative-triller">Alternative à Triller</a> · <a href="/conditions">Conditions</a> · <a href="/remboursement">Remboursement</a> · <a href="/confidentialite">Confidentialité</a> · <a href="/mentions-legales">Mentions légales</a>',
   },
   'en': {
     'path': '/en/', 'locale': 'en_US',
@@ -91,10 +103,14 @@ PAGE = {
       <li>Editing happens in your browser, on iPhone, Android or computer: your videos stay on your device, unless you save a project online or ask for automatic lyrics (Stalak Pro).</li>
     </ul>
   """,
-    'legal': '<a href="/en/pricing">Pricing</a> · <a href="/en/terms">Terms</a> · <a href="/en/refunds">Refunds</a> · <a href="/en/privacy">Privacy</a> · <a href="/en/legal-notice">Legal notice</a>',
+    'legal': '<a href="/en/pricing">Pricing</a> · <a href="/en/triller-alternative">Triller alternative</a> · <a href="/en/terms">Terms</a> · <a href="/en/refunds">Refunds</a> · <a href="/en/privacy">Privacy</a> · <a href="/en/legal-notice">Legal notice</a>',
   },
 }
 
+# Marketing & croissance : liens vers les comptes officiels dans le pied de page (rel="me")
+if SOCIAL:
+    for L in PAGE:
+        PAGE[L]['legal'] += ' · ' + ' · '.join(f'<a href="{H.escape(u)}" rel="me noopener" target="_blank">{n}</a>' for n, u in SOCIAL.items())
 # 2. the app: contact address for the help bubble; « Stalak, c'est quoi ? » and the links to the legal pages under the « by Alaska » badge
 if EMAIL:
     assert "const SUPPORT_EMAIL = '';" in js
@@ -161,9 +177,15 @@ def meta(lang):
     LD = {'@context': 'https://schema.org', '@graph': [
       {'@type': 'WebApplication', 'name': 'Stalak', 'url': url, 'applicationCategory': 'MultimediaApplication', 'operatingSystem': 'Web, iOS, Android, macOS, Windows',
        'inLanguage': lang, 'isAccessibleForFree': True, 'offers': {'@type': 'Offer', 'price': '0', 'priceCurrency': 'EUR'},
-       'description': P['ld'], 'image': URL + '/og.png', 'creator': {'@type': 'Organization', 'name': 'Alaska'}},
-      {'@type': 'WebSite', 'name': 'Stalak', 'alternateName': 'Stalak app', 'url': url, 'inLanguage': lang},
+       'description': P['ld'], 'image': URL + '/og.png', 'creator': {'@type': 'Organization', 'name': 'Alaska'}, 'publisher': {'@id': URL + '/#organization'}},
+      {'@type': 'WebSite', '@id': URL + '/#website', 'name': 'Stalak', 'alternateName': ['Stalak app', 'stalak.app'], 'url': url, 'inLanguage': lang, 'publisher': {'@id': URL + '/#organization'}},
+      dict({'@type': 'Organization', '@id': URL + '/#organization', 'name': 'Stalak', 'alternateName': 'stalak.app', 'url': URL + '/',
+            'logo': {'@type': 'ImageObject', 'url': URL + '/icons/icon-512.png', 'width': 512, 'height': 512}, 'image': URL + '/og.png',
+            'description': P['ld'], 'email': EMAIL or None, 'parentOrganization': {'@type': 'Organization', 'name': 'Alaska'}},
+           **({'sameAs': list(SOCIAL.values())} if SOCIAL else {})),
     ]}
+    for n in LD['@graph']:
+        for k in [k for k, v in n.items() if v is None]: del n[k]
     return f'''<meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="{H.escape(P['desc'])}">
@@ -210,13 +232,19 @@ for f in list(out.glob('*.html')) + list((out / 'en').glob('*.html')):
 (out / 'en' / 'index.html').write_text(page('en', markup_en), encoding='utf-8')
 
 # 4. legal pages (to complete with the publisher's details: see the [ … ] parts)
-for name in ['mentions-legales.html', 'confidentialite.html', 'en/legal-notice.html', 'en/privacy.html', 'tarifs.html', 'conditions.html', 'remboursement.html', 'en/pricing.html', 'en/terms.html', 'en/refunds.html']:
+for name in ['mentions-legales.html', 'confidentialite.html', 'en/legal-notice.html', 'en/privacy.html', 'tarifs.html', 'conditions.html', 'remboursement.html', 'en/pricing.html', 'en/terms.html', 'en/refunds.html', 'alternative-triller.html', 'en/triller-alternative.html']:
     p = out / name
     p.write_text(p.read_text(encoding='utf-8').replace('{{EMAIL}}', EMAIL or ('[E-MAIL ADDRESS]' if name.startswith('en/') else '[ADRESSE E-MAIL]')).replace('{{URL}}', URL).replace('{{SELLER}}', SELLER or ('the publisher of the site, a private individual' if name.startswith('en/') else 'l’éditeur du site, un particulier')), encoding='utf-8')
+# Marketing & croissance : la vidéo d'exemple des pages de comparaison n'apparaît que si public/demo/exemple.mp4 existe
+# (à déposer dans site_src/demo/exemple.mp4 : une vraie vidéo montée avec Stalak)
+for name in ['alternative-triller.html', 'en/triller-alternative.html']:
+    p = out / name; t = p.read_text(encoding='utf-8')
+    if not (out / 'demo' / 'exemple.mp4').exists(): t = re.sub(r'<!--DEMO-->.*?<!--/DEMO-->', '', t, flags=re.S)
+    p.write_text(t.replace('<!--DEMO-->', '').replace('<!--/DEMO-->', ''), encoding='utf-8')
 (out / 'robots.txt').write_text(f'User-agent: *\nAllow: /\nSitemap: {URL}/sitemap.xml\n', encoding='utf-8')
 today = datetime.date.today().isoformat()
 alts = ''.join(f'<xhtml:link rel="alternate" hreflang="{l}" href="{u}"/>' for l, u in [('fr', URL + '/'), ('en', URL + '/en/'), ('x-default', URL + '/en/')])
 (out / 'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">'
-    + ''.join(f'<url><loc>{u}</loc><lastmod>{today}</lastmod>{alts}</url>' for u in [URL + '/', URL + '/en/']) + ''.join(f'<url><loc>{URL}{a}</loc><lastmod>{today}</lastmod><xhtml:link rel="alternate" hreflang="fr" href="{URL}{a}"/><xhtml:link rel="alternate" hreflang="en" href="{URL}{b}"/></url><url><loc>{URL}{b}</loc><lastmod>{today}</lastmod><xhtml:link rel="alternate" hreflang="fr" href="{URL}{a}"/><xhtml:link rel="alternate" hreflang="en" href="{URL}{b}"/></url>' for a, b in [('/tarifs', '/en/pricing')]) + '</urlset>\n', encoding='utf-8')
+    + ''.join(f'<url><loc>{u}</loc><lastmod>{today}</lastmod>{alts}</url>' for u in [URL + '/', URL + '/en/']) + ''.join(f'<url><loc>{URL}{a}</loc><lastmod>{today}</lastmod><xhtml:link rel="alternate" hreflang="fr" href="{URL}{a}"/><xhtml:link rel="alternate" hreflang="en" href="{URL}{b}"/></url><url><loc>{URL}{b}</loc><lastmod>{today}</lastmod><xhtml:link rel="alternate" hreflang="fr" href="{URL}{a}"/><xhtml:link rel="alternate" hreflang="en" href="{URL}{b}"/></url>' for a, b in SITEMAP_PAIRS) + '</urlset>\n', encoding='utf-8')
 n = sum(1 for _ in out.rglob('*') if _.is_file()); size = sum(f.stat().st_size for f in out.rglob('*') if f.is_file())
 print('site built in', out, '·', n, 'files ·', round(size / 1048576, 1), 'MB')

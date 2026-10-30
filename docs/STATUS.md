@@ -125,6 +125,15 @@
 - **À décider** : boutons Pro de la page Tarifs pendant que Paddle est en sandbox (« bientôt » ou Paddle réel) avant toute promo.
 - **À demander** : case « recevoir les nouveautés » à l'inscription (Comptes) ; mots « montage de playback » dans le H1 et JS/CSS en fichiers cachés (App).
 - **Fait (branche `marketing/idees-croissance`)** : recherche « idées de croissance » (concurrents, fonctions, Stalak Pro, acquisition), classée par impact et effort. Document « Stalak — idées de croissance » dans claude.ai ; résumé dans `docs/marketing/IDEES_CROISSANCE.md`.
+- **Fait (branche `marketing/seo`, 30/10)** : référencement du nom « Stalak » et de la niche. Détail dans `docs/marketing/SEO.md` ; plan complet dans le document claude.ai « Stalak — passer premier sur Google ».
+  - Fiche de la marque pour Google (Organization : logo, e-mail, noms) ; liste `SOCIAL` dans `build_site.py` pour les comptes officiels (déclarés en `sameAs` et en liens `rel="me"` dans le pied de page) — **vide pour l'instant, en attente des adresses du propriétaire**.
+  - `llms.txt` pour les IA de recherche ; plan du site passé de 4 à 14 pages (pages légales + comparatif).
+  - Nouvelles pages **`/alternative-triller`** et **`/en/triller-alternative`** : comparatif sourcé et daté Stalak / Triller / CapCut / camrip, FAQ, données structurées Article + FAQ + fil d'Ariane, liens depuis le pied de page de l'accueil. Vidéo d'exemple affichée seulement si `site_src/demo/exemple.mp4` existe.
+  - **Correction (touche `src/app.js`, à relire par App)** : sur stalak.app, la page française passait en anglais selon la langue du navigateur, donc Google la lisait en anglais (titre anglais sur la recherche « stalak » en France). Elle reste maintenant en français ; l'anglais reste disponible par le bouton FR / EN et `/en/`. La version claude.ai n'est pas touchée.
+- **Au propriétaire** : adresses des comptes Instagram / TikTok / YouTube de Stalak ; une vraie vidéo montée avec Stalak ; vérifier dans Search Console (compte propriétaire) que `sitemap.xml` est envoyé et demander l'indexation ; Bing Webmaster Tools ; inscriptions aux annuaires (liste et textes dans le document).
+- **Suivant (Marketing)** : pages « faire un playback » (FR), « cut multiple takes to the beat » (EN/FR), « lip-sync videos for musicians » (EN), « paroles sur une vidéo TikTok » (FR/EN).
+- **À regarder (App)** : proposer aux visiteurs dont le navigateur est en anglais un petit lien « English version » sur la page française, plutôt que de changer la langue tout seul.
+- **À regarder (Juridique)** : la page de comparaison est de la publicité comparative ; elle ne compare que des faits vérifiables, sourcés et datés. Revoir les prix des concurrents tous les 3 mois.
 
 ## Idées de croissance recommandées (à répartir par le propriétaire)
 
