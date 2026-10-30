@@ -256,9 +256,24 @@ Ces montants sont avant TVA et frais. Réaliste : 10 000 € par mois en avril 2
   - Remboursement : Pro et Creator Plus, retour du filigrane en Gratuit.
   - Confidentialité devient « Confidentialité et cookies » : section `#cookies` (pub Google Ad Manager, choix accepter/refuser, pub limitée si refus, durée 6 mois, liens Google) ; Google ajouté aux prestataires (connexion, pub, boîte contact@) ; sauvegarde 100 Go et « Parler à un humain » en Creator Plus.
   - Mentions légales : phrase sur le filigrane (marque de Stalak, aucun droit sur la vidéo).
+- **Fait (branche `legal/etats-unis`, 30/10, 21 h)** : état des lieux « vendre et diffuser des pubs aux États-Unis avec une micro-entreprise et Paddle » dans `docs/juridique/ETATS_UNIS.md` (CCPA et autres États, COPPA, renouvellement automatique, pages, bandeau). Pages anglaises adaptées aux États-Unis : conditions (encadré renouvellement automatique, rappels, arrêt en ligne), confidentialité (« Your Privacy Choices », GPC, « Your US privacy rights », enfants), lien « Your Privacy Choices » en bas des pages légales anglaises. Corrigé aussi en FR : filigrane logo seul, packs dès 2 playbacks, sauvegarde automatique, annuel → mensuel en deux temps.
+- **À décider (propriétaire)** : pub **personnalisée avec possibilité de refuser** (ce qu'écrivent les pages ; plus de revenu) ou **pub non personnalisée pour tous les visiteurs américains** (RDP dans Ad Manager ; presque plus de risque avec les moins de 13/16 ans ; moins de revenu). Les pages se changent en une phrase.
+- **À faire par Comptes (renouvellement automatique, règles de Californie appliquées à tous les Américains)** :
+  - à l'écran des formules, près du bouton d'achat : « $7.99/month, renews automatically until you cancel. Cancel anytime in Account. » (même chose pour chaque prix) ;
+  - e-mail de confirmation après l'achat (formule, prix, fréquence, comment arrêter, lien) si le reçu Paddle ne le dit pas déjà : **à vérifier sur un achat sandbox** ;
+  - **rappel une fois par an aux abonnés mensuels** (Paddle ne le fait pas) : formule, prix, fréquence, lien pour arrêter ;
+  - abonnés annuels : vérifier que Paddle envoie bien le rappel 30 jours avant pour les Américains ; sinon l'envoyer nous-mêmes 15 à 45 jours avant ;
+  - « Gérer mon abonnement » → arrêt en 1 ou 2 appuis, sans offre de rétention (ou avec le bouton « Arrêter » juste à côté) ; un e-mail « cancel » à contact@ doit suffire (à traiter sous 1 jour ouvré) ;
+  - garder la preuve de l'accord (date, formule, prix, texte affiché) 3 ans.
+- **À faire par App ou Comptes (vie privée, États-Unis)** :
+  - lien « Your Privacy Choices » en bas de l'app et de la page Tarifs, vers un vrai bouton de refus (message « États américains » de Google « Confidentialité et messages », ou petite page maison qui enregistre le refus) ;
+  - respecter **GPC** (`navigator.globalPrivacyControl`) : si actif, pub non personnalisée (drapeau RDP de GPT) ;
+  - un refus enregistré (navigateur, et compte si connecté) → RDP sur toutes les pubs ;
+  - Europe : bandeau inchangé (TCF). États-Unis : pas de fenêtre d'accord, refus par le lien ou GPC.
+- **À faire par Marketing** : la page Tarifs et les pages « alternative » parlent encore du filigrane « Clipped with stalak.app » et citent Triller (décision 30/10 : aucun concurrent cité) ; lien « Your Privacy Choices » dans leur pied de page.
 - **À suivre par Comptes (règles écrites dans les conditions)** :
   - montée en gamme (Pro → Creator Plus, mensuel → annuel) **immédiate, au prorata**, montant affiché avant confirmation ;
-  - descente en gamme (Creator Plus → Pro, annuel → mensuel) **au prochain renouvellement**, sans remboursement (changement programmé) ;
+  - descente en gamme (Creator Plus → Pro) **au prochain renouvellement** ; annuel → mensuel en deux temps (arrêter l'annuel puis prendre le mensuel), comme le fait déjà Comptes, sans remboursement (changement programmé) ;
   - prix gardé tant que l'abonnement continue, même formule et même période ; un changement de formule prend le prix du moment ;
   - remboursement d'un paiement de changement de formule = retour à la formule d'avant jusqu'à la fin de la période ;
   - **à vérifier dans Paddle sandbox** : si un abonné payant en euros voit le montant de son renouvellement changer avec le taux de change, ou si Paddle fige le montant converti. Les conditions annoncent une « légère variation possible » ; me dire si c'est faux.
