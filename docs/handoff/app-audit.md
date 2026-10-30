@@ -1,4 +1,4 @@
-Statut : EN COURS (tests en cours)
+Statut : PRÊT
 Branche : app/audit (créée depuis `main` du 30/10 au soir, avec l'audit). Elle contient `app/export-pub` (fusionnée dedans, conflit réglé : le bloc filigrane/pub déplacé par App et le bouton de sauvegarde retiré par Comptes). Une seule fusion suffit : `app/export-pub` n'a plus besoin d'être fusionnée à part.
 
 Résumé (priorités du propriétaire, audit du 30/10 : `docs/audit/2026-10-30-ux.md` et `-technique.md`) :
@@ -25,3 +25,10 @@ Note sur le bug de ré-export (technique, note pour App) : corrigé dans `app/ex
 - faire un montage avec ses prises, aller dans Photos ou TikTok, revenir (ou recharger la page) : « Reprendre ton dernier montage ? » ;
 - un export : l'écran ne s'éteint pas ; puis « Enregistrer dans Photos / Partager » → « Enregistrer la vidéo » ;
 - un pack de 30 sur un long passage (Creator Plus) : le message de mémoire au lieu d'un plantage de Safari.
+
+Tests (31/10, iPhone 15 Pro émulé + ordinateur, FR + EN) :
+- nouveau `tests/ui/projet_local_ui.py` (son + 2 vraies prises, rechargement, « Reprendre », tout revient à l'identique, images des prises, « Non merci », fichier manquant, question avant de quitter) : 48/48
+- nouveau `tests/ui/audit_ui.py` (erreur sous le carré, bouton Exporter fixe, filtres groupés, question du filtre Pro, écran allumé, légende, offre Pro, Photos/Partager sur iPhone, app quittée pendant l'export, mémoire du pack et de la vidéo, budget par appareil, bulle d'aide, compteurs anonymes sans cookie) : 130/130
+- `formules_ui.py` 169/169, `son_passage.py` 86/86, `export_pub_ui.py` 22/22, `filtres_ui.py` 106/106 (mis à jour : filtres gratuits d'abord, question du filtre Pro), `remux_frag.py`, `paroles_suppr.py`, `plans_ui.py`, `gallery_ui.py`, `help_ui.py` : tous réussis ; `tests/backend/run.mjs` 70/70
+- `support_ui.py` et `lyrics_ui.py` : même arrêt sur une attente trop longue que sur `main`, sans lien avec cette branche.
+

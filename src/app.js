@@ -7822,7 +7822,7 @@ $('#expFab').onclick = () => {
   // once the page has moved (the layout above can change while it scrolls)
   const aim = smooth => { const r = $('#expRow').getBoundingClientRect(), top = window.scrollY + r.bottom - window.innerHeight + Math.min(130, window.innerHeight * 0.18);
     if (Math.abs(top - window.scrollY) < 4) return; try { window.scrollTo({ top, behavior: smooth ? 'smooth' : 'auto' }); } catch(e){ window.scrollTo(0, top); } };
-  aim(true); setTimeout(() => aim(true), 700); setTimeout(() => aim(false), 1400);
+  aim(true); setTimeout(() => { aim(true); expLookNow(); }, 700); setTimeout(() => { aim(false); expLookNow(); }, 1400); setTimeout(expLookNow, 1700);
   setTimeout(() => { try { $('#exportBtn').focus({ preventScroll: true }); } catch(e){} }, 450);
 };
 function setBusy(b){ expFabUi();  ['#playBtn','#shuffleBtn','#exportBtn','#packBtn','#packSel','#cutFx','#fxDel','#fxSee'].forEach(s => $(s).disabled = b); $$('#paceSeg button, #modeSeg button, #brollSeg button, #fxSeg button, #fmtSeg button, #stepper button').forEach(x => x.disabled = b); if (!b){ updateNav(); renderFxBar(); } }
