@@ -69,7 +69,6 @@ Ordre de mise en ligne (Chef de projet) :
 3. redéployer le Worker : `npx wrangler deploy -c workers/cloud-cleanup/wrangler.toml` (s'il est déployé ; sinon la tâche du jour
    tourne depuis le site) ;
 4. vérifier : tableau de bord (blocs « Entonnoir » et « Santé du serveur »), écran des formules.
-Note : si GitHub refuse l'envoi des fichiers `.github/workflows/` (droit « workflow » du jeton), les ajouter depuis un ordinateur.
 
 Reste au propriétaire (rien à me donner, tout se saisit dans Cloudflare ou GitHub ; BACKEND.md 3.1, 7.1, 15) :
 - Cloudflare : passer à Workers Paid (5 $/mois) et activer les alertes d'usage et de facturation ;
