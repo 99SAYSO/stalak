@@ -7,6 +7,12 @@
 - 27/10 : « Parler à un humain » devient un avantage **Stalak Pro** : chat en direct si le propriétaire est disponible, sinon réponse par e-mail sous 24 h. Ne jamais écrire « 24 h/24 ». Les gratuits gardent le glaçon IA et contact@stalak.app (obligation légale de pouvoir joindre le vendeur). Comptes fait la restriction côté serveur et dans le glaçon ; Marketing a écrit les textes (branche `marketing/chat-pro`, à fusionner en même temps que la branche Comptes).
 - 27/10 : **menu du compte** (en haut à droite) et **Galerie** des projets en ligne, en grille avec couvertures, comme l'app Photos de l'iPhone → Comptes.
 
+- 30/10 : **filtres vidéo** à l'étape Montage, comme les filtres des stories Instagram → App & montage. Liste choisie par le propriétaire :
+  - Caméra : Givre, Grain vintage « LA », Vision nocturne, Démon, Halloween ;
+  - Rétro : VHS, Film 35 mm, Super 8, Noir & blanc ;
+  - Esthétique : Golden hour, Rêve, Y2K, Pastel.
+  - Stalak Pro sauf 3 filtres gratuits (Noir & blanc, Givre, Film 35 mm), réglage modifiable. Les filtres « Clip rap » qui suivent le beat ne sont pas retenus pour l'instant.
+
 ## En ligne (stalak.app)
 - App de montage FR/EN : son, prises, paroles, montage, export, packs, effets, mode Clip.
 - Caméra iPhone : minuteur, message « prise enregistrée », miroir de la caméra selfie, fichier vidéo remis en ordre.
