@@ -8,6 +8,8 @@ Résumé : référencement du nom « Stalak » (pour passer devant le monstre de
 - Pages `/alternative-triller` et `/en/triller-alternative` : comparatif sourcé et daté, FAQ, données structurées, liens depuis le pied de page de l'accueil.
 - Correction dans `src/app.js`, à relire par App : sur stalak.app, la page française reste en français au lieu de passer en anglais selon la langue du navigateur. Google lisait la page française en anglais.
 
+Mise à jour du 30/10 : la page « Alternative à Triller » et `llms.txt` décrivent la nouvelle offre (Gratuit 1 vidéo par jour, Basic, Pro, Max).
+
 Fichiers touchés : `build_site.py`, `site_src/llms.txt`, `site_src/alternative-triller.html`, `site_src/en/triller-alternative.html`, `src/app.js` (3 lignes dans la détection de la langue, avec un commentaire), `public/` (reconstruit), `docs/STATUS.md`, `docs/marketing/SEO.md`, `docs/handoff/marketing-seo.md`.
 
 Migration SQL : aucune.
