@@ -10917,7 +10917,7 @@ async function clCoverBlob(){
   if (b && b.size > 60000) b = await blob('image/jpeg', 0.6);
   return b && b.size <= 64 * 1024 ? b : null;
 }
-/* ---- automatic saving (Creator Plus), like CapCut: no button. Every 4 s (nothing during an export), the project is read
+/* ---- automatic saving (Creator Plus): no button. Every 4 s (nothing during an export), the project is read
    again; once it has changed and stays the same for one more look, it is saved: the media files not yet online (each file
    once: its fingerprint says whether it is already there), then the project itself (small JSON), then, when the edit
    changed, its Galerie cover (at most once a minute). An export stops an upload at once; it goes on afterwards from the
