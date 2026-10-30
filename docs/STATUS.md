@@ -31,7 +31,7 @@
     2. `acctQuota()` → `{ left, resetAt }` pour un gratuit connecté (vidéos restantes aujourd'hui, heure en ms de la prochaine), `null` pour une formule payante.
     3. `acctUseVideo()` → compte la vidéo du jour côté serveur (peut renvoyer une promesse).
     4. `acctOpen(why, { plan })` → ouvre la page des formules sur `plan` (`basic`, `pro` ou `max`). Nouvelles raisons : `daily`, `pack30` et `filters`. `daily` pour une personne non connectée ouvre la création de compte.
-    - Juridique a déjà écrit les règles côté serveur (remise à zéro, prorata, changement programmé, prix gardé) dans la section Juridique de ce fichier : à appliquer.
+    - Juridique a écrit les règles côté serveur (remise à zéro, prorata, changement programmé, prix gardé) dans `docs/STATUS.md` de la branche `legal/nouvelle-offre` (`git show origin/legal/nouvelle-offre:docs/STATUS.md`), section Juridique : à appliquer.
   - Travail : Comptes (formules, compteur, e-mail de rappel, Paddle), App (ce que débloque chaque formule, écran « vidéo du jour utilisée »), Marketing (page Tarifs à 4 colonnes), Juridique (conditions de vente). Prix Paddle sandbox créés par le Chef de projet.
 
 ## En ligne (stalak.app)
