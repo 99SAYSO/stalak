@@ -1,9 +1,10 @@
 # Stalak — état du projet
 
 > Tenu à jour par le Chef de projet. Chaque conversation le lit avant de commencer et met à jour sa section sur sa branche à la fin de chaque tâche.
-> Dernière mise à jour : 30/10/2026 (prix Paddle de l'offre hybride, contrat App / Comptes).
+> Dernière mise à jour : 30/10/2026 à 21 h (offre hybride fusionnée et en ligne : App, Comptes, Juridique, Marketing ; migration 0008 appliquée).
 
 ## Décisions récentes du propriétaire
+- **30/10, 21 h : offre hybride en ligne.** Fusionnées : `app/formules` (filtres, filigrane, pub récompensée de test, cadenas Pro / Creator Plus), `compte/formules`, `legal/nouvelle-offre`, `marketing/tarifs-formules` (contient `marketing/seo`). Écran des formules dans l'app : version de Comptes (branchée sur Paddle et le changement de formule) ; celle de Marketing n'est pas reprise, la page Tarifs du site l'est. `marketing/chat-pro` abandonnée. Reste au propriétaire : compte Google Ad Manager (unité « rewarded » web, puis remplacer `AD_UNIT`), outil de consentement, test sur iPhone (filigrane, pub de test).
 - **30/10 au soir : l'offre change encore. Elle remplace « Gratuit 1 vidéo par jour + Basic / Pro / Max »** (voir STALAK_CONTEXTE.md, section 2) : Gratuit illimité avec filigrane et pub récompensée, Pro 7,99 $ / 49,99 $, Creator Plus 14,99 $ / 99,99 $. On reprend le travail fait sur `compte/formules`, `app/formules`, `marketing/tarifs-formules` et `legal/nouvelle-offre` (tableau des formules, Paddle, changement de formule, cadenas, pages), et on l'adapte. Ces branches ne seront pas fusionnées telles quelles. Les nouveaux prix Paddle sandbox seront créés par le Chef de projet et notés ici.
   - **Prix Paddle sandbox de l'offre hybride (créés le 30/10 à 19 h 35 par le Chef de projet, en dollars ; Paddle convertit selon le pays)** :
     | Formule | Produit | Mensuel | Annuel |
@@ -81,11 +82,11 @@
   - formules `free` / `pro` / `creator` ; tableau unique (`functions/_lib/entitlements.js`) selon le contrat de l'offre hybride ; sauvegarde en ligne (100 Go) et « Parler à un humain » en Creator Plus seulement ; paroles auto 20 / 60 par jour ;
   - 4 prix en dollars dans `wrangler.toml` ; anciens prix reconnus (euros et Basic → `pro`, Max → `creator`) ;
   - vidéo du jour, compteur et e-mail de rappel supprimés ; page des formules à 3 colonnes en dollars ; tableau de bord par formule (Pro, Creator Plus) ;
-  - **migration 0008 (`migrations/0008_plans.sql`, 3 colonnes) à appliquer avant de publier**.
+  - migration 0008 (`migrations/0008_plans.sql`, 3 colonnes) appliquée le 30/10 au soir.
 
 ## Base de données D1
-- Migrations appliquées : 0001, 0002, 0003, 0004_lyrics_usage, 0004_cloud_save, 0005_social_accounts (27/10), 0006_admin_support (27/10), 0007_project_covers (28/10).
-- En attente : **0008_plans** (branche `compte/formules`, 3 colonnes de `subscriptions`), à coller dans la console D1 avant de publier cette branche.
+- Migrations appliquées : 0001, 0002, 0003, 0004_lyrics_usage, 0004_cloud_save, 0005_social_accounts (27/10), 0006_admin_support (27/10), 0007_project_covers (28/10), 0008_plans (30/10).
+- En attente : aucune.
 
 ## À faire, par rôle
 
