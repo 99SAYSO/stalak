@@ -25,8 +25,7 @@ SOCIAL = {
 SOCIAL = {k: v for k, v in SOCIAL.items() if v}
 # pages FR / EN du plan du site (en plus de l'accueil)
 SITEMAP_PAIRS = [('/tarifs', '/en/pricing'), ('/conditions', '/en/terms'), ('/remboursement', '/en/refunds'),
-                 ('/confidentialite', '/en/privacy'), ('/mentions-legales', '/en/legal-notice'),
-                 ('/alternative-triller', '/en/triller-alternative')]
+                 ('/confidentialite', '/en/privacy'), ('/mentions-legales', '/en/legal-notice')]
 
 head = (src / 'head.html').read_text(encoding='utf-8')
 css = (src / 'style.css').read_text(encoding='utf-8') + '\n/* ---- theme ---- */\n' + (src / 'theme.css').read_text(encoding='utf-8') + '\n' + (src / 'pricing.css').read_text(encoding='utf-8')
@@ -56,7 +55,7 @@ PAGE = {
     'ld': 'Stalak est un site de montage de playback (lip sync) : il coupe tes prises sur le rythme de ton son, garde la synchro des lèvres parfaite et exporte pour TikTok, Reels, Shorts et YouTube.',
     'about': """
     <h2 id="aboutT">Stalak, c’est quoi ?</h2>
-    <p><strong>Stalak</strong> est un site de <strong>montage de playback</strong> (lip sync), dans l’esprit de Triller :
+    <p><strong>Stalak</strong> est un site de <strong>montage de playback</strong> (lip sync) :
     tu importes ton son et plusieurs vidéos où tu chantes dessus, et Stalak coupe sur le rythme en passant d’une prise à l’autre,
     avec une <strong>synchro des lèvres parfaite</strong>. Tu exportes pour <strong>TikTok, Instagram Reels, YouTube Shorts</strong> ou un clip <strong>YouTube</strong> en 16:9.</p>
     <p><strong>Aucun téléchargement, aucune inscription : 3 étapes et c’est posté.</strong> Stalak marche dans ton navigateur, sur iPhone, Android ou ordinateur, gratuitement et sans créer de compte.</p>
@@ -72,40 +71,40 @@ PAGE = {
       <li>Paroles à l’écran en phrase entière ; mot par mot et karaoké avec Stalak Pro.</li>
       <li>Paroles écrites et calées automatiquement à partir de ta voix (Stalak Pro).</li>
       <li>Mode Clip 16:9 pour YouTube, avec effets : flash, zoom, secousse, ralenti… (Stalak Pro)</li>
-      <li>Packs de 5 à 30 vidéos aux coupes différentes du même son (Creator Plus).</li>
-      <li>Le montage se fait dans ton navigateur, sur iPhone, Android ou ordinateur : tes vidéos restent sur ton appareil, sauf si tu sauvegardes un projet en ligne ou demandes tes paroles automatiques.</li>
+      <li>Packs de 5 à 30 vidéos aux coupes différentes du même son, dès 2 prises (Creator Plus).</li>
+      <li>Le montage se fait dans ton navigateur, sur iPhone, Android ou ordinateur : tes vidéos restent sur ton appareil, sauf tes projets en ligne, enregistrés automatiquement avec Creator Plus, et le son envoyé pour tes paroles automatiques.</li>
     </ul>
   """,
-    'legal': '<a href="/tarifs">Tarifs</a> · <a href="/alternative-triller">Alternative à Triller</a> · <a href="/conditions">Conditions</a> · <a href="/remboursement">Remboursement</a> · <a href="/confidentialite">Confidentialité</a> · <a href="/mentions-legales">Mentions légales</a>',
+    'legal': '<a href="/tarifs">Tarifs</a> · <a href="/conditions">Conditions</a> · <a href="/remboursement">Remboursement</a> · <a href="/confidentialite">Confidentialité</a> · <a href="/mentions-legales">Mentions légales</a>',
   },
   'en': {
     'path': '/en/', 'locale': 'en_US',
-    'title': 'Stalak — your lip-sync video, cut to the beat',
-    'desc': 'Stalak cuts your lip-sync video to the beat: import your song and takes, the lips stay in sync. Free, with no download and no sign-up.',
-    'ld': 'Stalak is a lip-sync video editor: it cuts your takes to the beat of your song, keeps the lip sync perfect and exports for TikTok, Reels, Shorts and YouTube.',
+    'title': 'Stalak: free lip-sync video editor that cuts your takes to the beat',
+    'desc': 'Drop in your song and a few takes of you rapping or singing. Stalak cuts between them on the beat, perfectly in sync. Free, no download, no sign-up.',
+    'ld': 'Stalak is a free, browser-based lip-sync video editor for rappers and singers. It cuts between your takes on the beat of your song, keeps the lip sync tight and exports for TikTok, Reels, YouTube Shorts and YouTube.',
     'about': """
     <h2 id="aboutT">What is Stalak?</h2>
-    <p><strong>Stalak</strong> is a <strong>lip-sync video editor</strong> in the spirit of Triller:
-    you import your song and several videos of you singing along, and Stalak cuts on the beat, switching from one take to another,
-    with <strong>perfect lip sync</strong>. You export for <strong>TikTok, Instagram Reels, YouTube Shorts</strong> or a 16:9 <strong>YouTube</strong> music video.</p>
-    <p><strong>No download, no sign-up: 3 steps and it’s posted.</strong> Stalak runs in your browser, on iPhone, Android or computer, for free and without creating an account.</p>
+    <p><strong>Stalak</strong> is a <strong>lip-sync video editor</strong> for rappers and singers.
+    Drop in your song and a few videos of you performing it, and Stalak cuts between your takes on the beat,
+    with <strong>the lip sync locked in</strong>. Export for <strong>TikTok, Instagram Reels and YouTube Shorts</strong>, or a full 16:9 music video for <strong>YouTube</strong>.</p>
+    <p><strong>No download. No sign-up. 3 steps and you’re ready to post.</strong> Stalak runs right in your browser on iPhone, Android or desktop. It’s free, and you don’t need an account.</p>
     <p><strong>How to make a lip-sync video with Stalak:</strong></p>
     <ul>
-      <li>Import your song.</li>
-      <li>Add several takes of you singing along, filmed beforehand or right in Stalak’s camera.</li>
-      <li>Stalak cuts on the beat, switches from one take to another, and you export your video.</li>
+      <li>Upload your song.</li>
+      <li>Add a few takes of you performing it. Film them ahead of time, or right in Stalak’s camera.</li>
+      <li>Stalak cuts between your takes on the beat. Hit export and post.</li>
     </ul>
     <p><strong>What you can do:</strong></p>
     <ul>
-      <li>Automatic cuts on the beats, on the words or every bar.</li>
-      <li>On-screen lyrics as whole sentences; word by word and karaoke with Stalak Pro.</li>
-      <li>Lyrics written and synced automatically from your voice (Stalak Pro).</li>
-      <li>16:9 music video mode for YouTube, with effects: flash, zoom, shake, slow-mo… (Stalak Pro)</li>
-      <li>Packs of 5 to 30 differently cut videos from one song (Creator Plus).</li>
-      <li>Editing happens in your browser, on iPhone, Android or computer: your videos stay on your device, unless you save a project online or ask for automatic lyrics.</li>
+      <li>Auto cuts on the beat, on every word or every bar.</li>
+      <li>On-screen lyrics, one line at a time; word-by-word and karaoke styles with Stalak Pro.</li>
+      <li>Auto lyrics: Stalak writes and syncs your lyrics from your vocals (Stalak Pro).</li>
+      <li>16:9 music video mode for YouTube, with effects like flash, zoom, shake and slow-mo (Stalak Pro).</li>
+      <li>Video packs: 5 to 30 differently cut videos from one song, from just 2 takes (Creator Plus).</li>
+      <li>Everything happens in your browser, so your videos stay on your device. The only exceptions: your cloud projects, saved automatically with Creator Plus, and the audio sent for auto lyrics.</li>
     </ul>
   """,
-    'legal': '<a href="/en/pricing">Pricing</a> · <a href="/en/triller-alternative">Triller alternative</a> · <a href="/en/terms">Terms</a> · <a href="/en/refunds">Refunds</a> · <a href="/en/privacy">Privacy</a> · <a href="/en/legal-notice">Legal notice</a>',
+    'legal': '<a href="/en/pricing">Pricing</a> · <a href="/en/terms">Terms</a> · <a href="/en/refunds">Refunds</a> · <a href="/en/privacy">Privacy</a> · <a href="/en/legal-notice">Legal notice</a>',
   },
 }
 
@@ -234,15 +233,9 @@ for f in list(out.glob('*.html')) + list((out / 'en').glob('*.html')):
 (out / 'en' / 'index.html').write_text(page('en', markup_en), encoding='utf-8')
 
 # 4. legal pages (to complete with the publisher's details: see the [ … ] parts)
-for name in ['mentions-legales.html', 'confidentialite.html', 'en/legal-notice.html', 'en/privacy.html', 'tarifs.html', 'conditions.html', 'remboursement.html', 'en/pricing.html', 'en/terms.html', 'en/refunds.html', 'alternative-triller.html', 'en/triller-alternative.html']:
+for name in ['mentions-legales.html', 'confidentialite.html', 'en/legal-notice.html', 'en/privacy.html', 'tarifs.html', 'conditions.html', 'remboursement.html', 'en/pricing.html', 'en/terms.html', 'en/refunds.html']:
     p = out / name
     p.write_text(p.read_text(encoding='utf-8').replace('{{EMAIL}}', EMAIL or ('[E-MAIL ADDRESS]' if name.startswith('en/') else '[ADRESSE E-MAIL]')).replace('{{URL}}', URL).replace('{{SELLER}}', SELLER or ('the publisher of the site, a private individual' if name.startswith('en/') else 'l’éditeur du site, un particulier')), encoding='utf-8')
-# Marketing & croissance : la vidéo d'exemple des pages de comparaison n'apparaît que si public/demo/exemple.mp4 existe
-# (à déposer dans site_src/demo/exemple.mp4 : une vraie vidéo montée avec Stalak)
-for name in ['alternative-triller.html', 'en/triller-alternative.html']:
-    p = out / name; t = p.read_text(encoding='utf-8')
-    if not (out / 'demo' / 'exemple.mp4').exists(): t = re.sub(r'<!--DEMO-->.*?<!--/DEMO-->', '', t, flags=re.S)
-    p.write_text(t.replace('<!--DEMO-->', '').replace('<!--/DEMO-->', ''), encoding='utf-8')
 (out / 'robots.txt').write_text(f'User-agent: *\nAllow: /\nSitemap: {URL}/sitemap.xml\n', encoding='utf-8')
 today = datetime.date.today().isoformat()
 alts = ''.join(f'<xhtml:link rel="alternate" hreflang="{l}" href="{u}"/>' for l, u in [('fr', URL + '/'), ('en', URL + '/en/'), ('x-default', URL + '/en/')])

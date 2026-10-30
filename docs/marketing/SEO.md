@@ -17,7 +17,7 @@ Skills utilisés : `seo-audit`, `ai-seo`, `directory-submissions`, `competitors`
   - lien « Alternative à Triller » dans le pied de page de l'accueil ;
   - bloc vidéo affiché seulement si `site_src/demo/exemple.mp4` existe.
 - `site_src/llms.txt` : présentation de Stalak pour les IA de recherche.
-- `site_src/alternative-triller.html` et `site_src/en/triller-alternative.html` : comparatif honnête, sourcé et daté. Une seule balise H1, des titres sous forme de questions, une réponse courte sous chacun, et les données structurées Article + FAQPage + BreadcrumbList.
+- ~~`site_src/alternative-triller.html` et `site_src/en/triller-alternative.html`~~ : **retirées le 30/10 à 21 h** (aucun concurrent cité sur le site), redirigées vers l'accueil par `site_src/_redirects`.
 - `src/app.js` : sur stalak.app (balise canonical présente et `lang="fr"`), la page française reste en français.
 
 ## Recherches de la niche

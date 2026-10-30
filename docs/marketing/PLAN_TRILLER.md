@@ -1,3 +1,5 @@
+> **Remplacé le 30/10 à 21 h par `US_FIRST.md`** (décision : aucun concurrent cité sur le site, États-Unis d'abord). Gardé pour l'historique.
+
 # Récupérer le public de Triller, au nom de 99Sayso (30/10/2026)
 
 Skills utilisés : `community-marketing`, `social`, `copywriting`.
