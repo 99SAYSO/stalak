@@ -46,12 +46,14 @@ def ui(b, base, lang, phone):
     pg.locator('#demoBtn').click()
     pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=40000)
     pg.wait_for_timeout(800)
+    # (audit 30/10) without Pro the Pro filters are behind the « + 23 » tile: opened here to see them all
+    pg.locator('#filtMore').click(); pg.wait_for_timeout(300)
     n = pg.locator('#filtRow .filt').count()
     th = pg.locator('#filtRow .filtth').all_inner_texts()
     want = ['Colors', 'Camera', 'Retro', 'Aesthetic'] if lang == 'en' else ['Couleurs', 'Caméra', 'Rétro', 'Esthétique']
-    check(tag + ' : 27 vignettes en 4 thèmes', n == 27 and [t.strip().lower() for t in th[1:]] == [w.lower() for w in want], (n, th))
+    check(tag + ' : 27 vignettes en 4 thèmes', n == 27 and [t.replace('PRO', '').strip().lower() for t in th[1:]] == [w.lower() for w in want], (n, th))
     pro = pg.locator('#filtRow .filtpro').count()
-    check(tag + ' : 23 filtres marqués PRO (compte gratuit)', pro == 23, pro)
+    check(tag + ' : 23 filtres Pro derrière une tuile, une étiquette PRO par thème (compte gratuit)', pro == 5 and pg.locator('#filtMore b').inner_text() == '+23', pro)
     # the thumbnails show the picture, each through its own filter
     sig = pg.evaluate("""() => [...document.querySelectorAll('#filtRow canvas')].map(cv => { const d = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data; let r = 0, g = 0, b = 0; for (let i = 0; i < d.length; i += 4){ r += d[i]; g += d[i+1]; b += d[i+2]; } const n = d.length / 4; return [r / n, g / n, b / n].map(Math.round); })""")
     distinct = len({tuple(x) for x in sig})

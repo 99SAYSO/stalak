@@ -48,6 +48,7 @@
         <span data-i18n="p1.import.sub">MP3, WAV, M4A, ou une vidéo : on prend son son</span>
       </label>
       <input type="file" id="songFile" accept="audio/*,video/*,.mp3,.wav,.m4a,.aac,.flac,.ogg,.mp4,.mov,.m4v">
+      <div class="nearbox" id="songNear"></div>
       <div id="songBox" hidden>
         <div class="meta" id="songMeta" style="margin-bottom:10px"></div>
         <div class="listen">
@@ -123,6 +124,7 @@
           <span data-i18n="p2.rec.sub">Ton son se lance pendant que tu filmes</span>
         </button>
       </div>
+      <div class="nearbox" id="takesNear"></div>
       <div id="recPanel" hidden>
         <div class="recbox"><video id="recVideo" muted playsinline></video><div class="count" id="recCount"></div><div class="rt" id="recTime" hidden></div><div class="recn" id="recN" hidden></div><div class="reccd" id="recCd" hidden aria-live="assertive"></div><div class="recdone" id="recDone" hidden role="status"><span id="recDoneT"></span></div></div>
         <div class="rectimer">
@@ -369,6 +371,7 @@
             <p class="note"><span id="wmNoteT" data-i18n="wm.note">Les vidéos gratuites portent un petit logo Stalak en filigrane.</span> <button class="linkbtn" id="outroPro" type="button" hidden data-i18n="ad.or">Sans filigrane ni pub : passe à Pro</button></p>
             <p class="note adst" id="adStatus" role="status" aria-live="polite" hidden></p>
           </div>
+          <div class="nearbox" id="expNear"></div>
           <div class="row">
             <button class="btn" id="cancelBtn" type="button" hidden data-i18n="cancel">Annuler</button>
             <span class="note" id="exportQ" data-i18n="exp.q">Pleine qualité, à partir de tes vidéos originales.</span>
@@ -403,6 +406,20 @@
                 <a class="btn sm" href="https://www.youtube.com/upload" target="_blank" rel="noopener">YouTube Shorts</a>
               </div>
               <p class="hint" id="postHint" data-i18n="post.hint">Enregistre ta vidéo, puis ouvre le réseau de ton choix et ajoute-la.</p>
+              <div class="capbox" id="capBox">
+                <label class="label" for="capText" data-i18n="cap.t">Légende prête à copier</label>
+                <textarea id="capText" rows="3" spellcheck="false"></textarea>
+                <div class="row">
+                  <button class="btn sm" id="capCopy" type="button" data-i18n="cap.copy">Copier la légende</button>
+                  <span class="note" id="capNote" role="status" aria-live="polite"></span>
+                </div>
+              </div>
+            </div>
+            <div class="prooffer" id="proOffer" hidden>
+              <button class="po-x" id="proOfferX" type="button" aria-label="Fermer" data-i18n-attr="aria-label:close">×</button>
+              <p class="po-t" data-i18n="po.t">Sans filigrane et sans pub, à chaque vidéo ?</p>
+              <p class="po-p" id="proOfferP" data-i18n="po.p">Avec Pro : tous les filtres, le karaoké, et la version Clip 16:9 de ce son. Dès 4,17 $/mois, facturé à l’année.</p>
+              <button class="btn primary sm" id="proOfferGo" type="button" data-i18n="po.go">Voir Pro</button>
             </div>
           </div>
         </div>
@@ -448,11 +465,24 @@
     <div class="exppct" id="expPct">0 %</div>
     <p class="expmsg" id="expMsg" data-i18n="exps.m0">Je découpe la glace…</p>
     <div class="progress"><i id="expBar"></i></div>
+    <p class="expstay" data-i18n="exps.stay">Reste sur Stalak jusqu’à la fin : l’écran reste allumé.</p>
     <button class="btn" id="expCancel" type="button" data-i18n="cancel">Annuler</button>
   </div>
 </div>
 
 <!-- start over: asked before everything is cleared -->
+<div class="askbox" id="filtAsk" role="alertdialog" aria-modal="true" aria-labelledby="filtAskT" hidden>
+  <div class="card">
+    <h2 id="filtAskT"></h2>
+    <p data-i18n="fa.p">Tu peux l’essayer dans l’aperçu. Pour l’exporter, passe à Pro, ou exporte ta vidéo sans ce filtre.</p>
+    <div class="row fa-row">
+      <button class="btn primary" id="faPro" type="button" data-i18n="fa.pro">Passer à Pro, dès 4,17 $/mois</button>
+      <button class="btn" id="faWithout" type="button" data-i18n="fa.without">Exporter sans ce filtre</button>
+      <button class="linkbtn" id="faNo" type="button" data-i18n="cancel">Annuler</button>
+    </div>
+  </div>
+</div>
+
 <div class="askbox" id="homeAsk" role="alertdialog" aria-modal="true" aria-labelledby="homeAskT" hidden>
   <div class="card">
     <h2 id="homeAskT" data-i18n="home.askT">Recommencer à zéro ?</h2>
@@ -806,6 +836,7 @@
 </div>
 
 <!-- help: the ice cube in the corner opens a little chat with an assistant -->
+<button class="btn primary expfab" id="expFab" type="button" hidden><span data-i18n="exp.fab">Exporter</span> <span aria-hidden="true">↓</span></button>
 <button class="help-cube" id="helpBtn" type="button" aria-label="Aide" data-i18n-attr="aria-label:help.aria" aria-expanded="false" aria-controls="helpPanel">
   <svg viewBox="0 0 64 64" focusable="false" aria-hidden="true">
     <path class="hc-top" d="M14 20 L30 11 Q33 9.5 36 11 L52 20 L36 28.5 Q33 30 30 28.5 Z"/>

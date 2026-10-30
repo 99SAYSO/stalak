@@ -131,13 +131,14 @@ def run(b, base, lang, iphone):
     check(tag + ' gratuit : karaoké → Pro', lock(pg, "document.querySelector('#stAnim button[data-v=\"kara\"]').click()")[0] == ['text', 'pro'])
     check(tag + ' gratuit : taille L → Pro', lock(pg, "document.querySelector('#stSize button[data-v=\"l\"]').click()")[0] == ['text', 'pro'])
     check(tag + ' gratuit : mode Clip → Pro', lock(pg, "document.querySelector('#kindSeg button[data-v=\"clip\"]').click()")[0] == ['clip', 'pro'])
+    ev(pg, "filtAsk = async () => 'pro'")   # (audit 30/10) the question « Pro, or without this filter »: answered Pro here (audit_ui.py tests it)
     check(tag + ' gratuit : filtre Pro à l’export → Pro', lock(pg, "setFilter('demon', true), exportOne()") == [['filters', 'pro'], False])
     check(tag + ' gratuit : pack → Creator Plus', lock(pg, "setFilter('nb', true), $('#packSel').value = '10', exportPack()")[0] == ['pack', 'creator'])
     check(tag + ' gratuit : paroles automatiques → Pro', lock(pg, "lockOpen('lyrics')")[0] == ['lyrics', 'pro'])
     tags = pg.evaluate("""() => ({ clip: document.querySelector('#kindSeg button[data-v="clip"]').dataset.plan, pack: document.querySelector('#packBtn').dataset.plan,
       kara: document.querySelector('#stAnim button[data-v="kara"]').dataset.plan, filt: document.querySelectorAll('#filtRow .filtpro').length,
       filtTag: (document.querySelector('#filtRow .filtpro') || {}).textContent })""")
-    check(tag + ' gratuit : étiquettes PRO / CREATOR+', tags['clip'] == 'PRO' and tags['pack'] == 'CREATOR+' and tags['kara'] == 'PRO' and tags['filt'] == 23 and tags['filtTag'] == 'PRO', tags)
+    check(tag + ' gratuit : étiquettes PRO / CREATOR+', tags['clip'] == 'PRO' and tags['pack'] == 'CREATOR+' and tags['kara'] == 'PRO' and tags['filt'] == 5 and tags['filtTag'] == 'PRO', tags)
     pk = pg.evaluate("""() => { const b = document.querySelector('#packBtn'), a = getComputedStyle(b, '::after'), z = getComputedStyle(b, '::before');
       return [b.classList.contains('protag'), z.content, a.content, a.backgroundImage, parseFloat(a.fontSize), a.display]; }""")
     check(tag + ' gratuit : « Générer le pack » avec cadenas et CREATOR+ bien visibles', pk[0] and '🔒' in pk[1] and 'CREATOR+' in pk[2] and 'gradient' in pk[3] and pk[4] >= 11 and pk[5] != 'none', pk)

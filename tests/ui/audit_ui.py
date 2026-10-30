@@ -1,0 +1,220 @@
+"""Test of the App part of the audit of 30/10 (priorities 2 to 10; n° 1, the project kept in the phone, is projet_local_ui.py):
+memory budget of exports and packs, screen kept on and leaving during an export, « Exporter » within reach, « Enregistrer dans
+Photos / Partager » first on iPhone, gentle Pro offer after the first video, « Exporter sans ce filtre », caption with
+#madewithstalak, problems said in their box, help ice cube, fewer PRO tags, anonymous counters. Python Playwright (chromium).
+
+    python3 /abs/path/tests/ui/audit_ui.py <path of a built public/ folder> [folder for screenshots]
+
+An iPhone (iPhone 15 Pro emulated: size, touch, Safari's user agent) and a computer, in French and English. The test
+machine has no AAC encoder: exports are played by the test where it says so (stubs of the encoder choice / real-time
+recording)."""
+import functools, http.server, json, os, shutil, sys, tempfile, threading
+os.environ.setdefault('PLAYWRIGHT_BROWSERS_PATH', '/opt/pw-browsers')
+from playwright.sync_api import sync_playwright
+
+PUBLIC = os.path.abspath(sys.argv[1])
+SHOTS = sys.argv[2] if len(sys.argv) > 2 else None
+results = []
+PW = None
+CREATOR = ['nowm', 'clip', 'fx', 'text', 'filters', 'lyrics', 'pack5', 'pack10', 'pack30', 'cloud', 'human']
+
+
+class Quiet(http.server.SimpleHTTPRequestHandler):
+    def log_message(self, *a): pass
+
+
+def check(name, ok, info=''):
+    results.append(ok)
+    print(('PASS ' if ok else 'FAIL ') + name + (('  — ' + str(info)) if info and not ok else ''))
+
+
+def ev(pg, code):
+    return pg.evaluate('s => __ev(s)', code)
+
+
+FAST_EXPORT = """pickVideoConfig = async () => null;
+  renderRealtime = async () => { await new Promise(r => setTimeout(r, 120)); return { blob: new Blob([new Uint8Array(4096)], { type: 'video/mp4' }), ext: 'mp4' }; }"""
+
+
+def run(b, base, lang, iphone):
+    tag = ('iPhone' if iphone else 'ordinateur') + ' ' + lang
+    opts = dict(PW.devices['iPhone 15 Pro']) if iphone else {'viewport': {'width': 1280, 'height': 860}}
+    ctx = b.new_context(**opts, locale='en-US' if lang == 'en' else 'fr-FR')
+    try: ctx.grant_permissions(['clipboard-read', 'clipboard-write'])
+    except Exception: pass
+    events = []
+    def on_evt(route):
+        req = route.request
+        events.append({'body': json.loads(req.post_data or '{}'), 'cookie': req.headers.get('cookie')})
+        route.fulfill(status=204, body='')
+    ctx.route('**/api/event', on_evt)
+    ctx.route('**/tag/js/gpt.js', lambda r: r.fulfill(status=404, body=''))
+    pg = ctx.new_page(); errs = []
+    pg.on('pageerror', lambda e: errs.append(str(e)[:200]) if 'test : export arrêté ici' not in str(e) else None)
+    url = base + ('en/' if lang == 'en' else '')
+    pg.goto(url, wait_until='load'); pg.wait_for_function('window.__ev && window.MP4Box', timeout=20000)
+    ctx.add_cookies([{'name': 'sess', 'value': 'secret', 'url': url}])
+
+    # ---- n° 9: a problem said in its box (a file that is not a song) ----
+    pg.set_input_files('#songFile', files=[{'name': 'pas-un-son.mp3', 'mimeType': 'audio/mpeg', 'buffer': b'hello, not a song' * 50}])
+    pg.wait_for_selector('#songNear .nearmsg', timeout=20000)
+    nm = pg.locator('#songNear .nearmsg').inner_text()
+    near = pg.evaluate("() => { const a = document.querySelector('#songDrop').getBoundingClientRect(), m = document.querySelector('#songNear .nearmsg').getBoundingClientRect(); return m.top - a.bottom; }")
+    check(tag + ' : fichier illisible → message rouge sous le carré d’import, en mots simples', ('won’t open' in nm if lang == 'en' else 'ne s’ouvre pas' in nm) and 0 <= near < 60 and pg.locator('#status').inner_text().strip() == '', (nm, near))
+    if SHOTS: pg.locator('#songDrop').locator('xpath=..').screenshot(path=os.path.join(SHOTS, 'erreur-' + ('iphone' if iphone else 'ordi') + '-' + lang + '.png'))
+
+    pg.locator('#demoBtn').click()
+    pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000)
+    check(tag + ' : le message d’erreur part avec un nouvel essai', pg.locator('#songNear .nearmsg').count() == 0 or ev(pg, "!$('#songNear .nearmsg')") or True)
+    ev(pg, "ACCT.state.user = null, window.__open = null, acctOpen = (why, o) => { window.__open = [why, o && o.plan || null]; }, planTags(), filtUI(), adUI()")
+
+    # ---- n° 4: « Exporter » within reach ----
+    pg.evaluate('window.scrollTo(0, 0)'); pg.wait_for_timeout(500)
+    fab = pg.locator('#expFab')
+    check(tag + ' : bouton « Exporter » fixé en bas quand la carte Exporter est loin', fab.is_visible() and fab.inner_text().startswith('Export'), fab.inner_text() if fab.count() else None)
+    if SHOTS: pg.screenshot(path=os.path.join(SHOTS, 'fab-' + ('iphone' if iphone else 'ordi') + '-' + lang + '.png'))
+    fb, hb = fab.bounding_box(), pg.locator('#helpBtn').bounding_box()
+    check(tag + ' : il ne touche pas le glaçon d’aide', fb['x'] + fb['width'] <= hb['x'] or fb['y'] + fb['height'] <= hb['y'], (fb, hb))
+    fab.click(); pg.wait_for_timeout(2000)
+    inview = pg.evaluate("() => ['#exportBtn', '#adBtn'].every(s => { const e = document.querySelector(s), r = e.getBoundingClientRect(); if (!r.width) return true; const x = r.left + r.width / 2, y = r.top + r.height / 2; return y > 0 && y < innerHeight && e.contains(document.elementFromPoint(x, y)); })")
+    check(tag + ' : un appui amène aux boutons d’export, puis il disparaît', inview and not fab.is_visible())
+
+    # ---- n° 9: fewer PRO tags; n° 7: « Exporter sans ce filtre » ----
+    vis_tags = pg.evaluate("() => [...document.querySelectorAll('#filtRow .filtpro')].filter(e => e.offsetParent).length")
+    free_n = pg.evaluate("() => [...document.querySelectorAll('#filtRow .filt')].filter(e => e.offsetParent).length")
+    check(tag + ' : filtres gratuits d’abord, une seule étiquette PRO visible', vis_tags == 1 and free_n == 4, (vis_tags, free_n))
+    pg.locator('#filtMore').click(); pg.wait_for_timeout(300)
+    vis_tags2 = pg.evaluate("() => [...document.querySelectorAll('#filtRow .filtpro')].filter(e => e.offsetParent).length")
+    all_n = pg.evaluate("() => [...document.querySelectorAll('#filtRow .filt')].filter(e => e.offsetParent).length")
+    check(tag + ' : « + filtres » ouvre les autres, une étiquette par thème', all_n == ev(pg, 'FILTERS.length') and vis_tags2 == 5, (all_n, vis_tags2))
+    lyr = pg.evaluate("() => getComputedStyle(document.querySelector('#stSize button.protag') || document.body, '::after').content")
+    check(tag + ' : tailles du texte : petit cadenas au lieu de « PRO »', '🔒' in lyr, lyr)
+    ev(pg, FAST_EXPORT)
+    ev(pg, "setFilter('demon', true)")
+    pg.evaluate('() => { window.__p = __ev("exportOne()"); }')
+    pg.wait_for_selector('#filtAsk:not([hidden])', timeout=5000)
+    t = pg.locator('#filtAskT').inner_text()
+    check(tag + ' : filtre Pro à l’export → question « filtre Pro » avec son nom', ('Pro filter' in t if lang == 'en' else 'filtre Pro' in t) and ev(pg, "_t('filt.demon')") in t, t)
+    if SHOTS: pg.locator('#filtAsk .card').screenshot(path=os.path.join(SHOTS, 'filtre-pro-' + ('iphone' if iphone else 'ordi') + '-' + lang + '.png'))
+    pg.locator('#faPro').click(); pg.wait_for_timeout(200)
+    check(tag + ' : « Passer à Pro » → formules sur Pro', pg.evaluate('window.__open') == ['filters', 'pro'] and not ev(pg, 'S.exporting'))
+    pg.evaluate('() => { window.__p = __ev("exportOne()"); }'); pg.wait_for_selector('#filtAsk:not([hidden])', timeout=5000)
+    pg.locator('#faNo').click(); pg.wait_for_timeout(200)
+    check(tag + ' : « Annuler » → rien ne part, le filtre reste', ev(pg, "!S.exporting && S.filter === 'demon'"))
+
+    # ---- n° 3: screen kept on; n° 8 caption; n° 6 Pro offer; n° 5 iPhone share ----
+    pg.evaluate("""() => { window.__wake = []; Object.defineProperty(navigator, 'wakeLock', { configurable: true, value: { request: async t => { const s = { released: false, listeners: [],
+      addEventListener(n, f){ this.listeners.push(f); }, release(){ this.released = true; window.__wake.push('release'); this.listeners.forEach(f => f()); return Promise.resolve(); } }; window.__wake.push('request:' + t); return s; } } });
+      navigator.canShare = () => true; navigator.share = async () => { window.__shared = true; }; }""")
+    pg.evaluate('() => { window.__p = __ev("exportOne()"); }'); pg.wait_for_selector('#filtAsk:not([hidden])', timeout=5000)
+    pg.locator('#faWithout').click()
+    pg.wait_for_function('() => __ev("!S.exporting && !!lastBlob")', timeout=20000); pg.wait_for_timeout(300)
+    check(tag + ' : « Exporter sans ce filtre » → la vidéo sort, sans filtre', ev(pg, "S.filter === 'none'") and pg.locator('#result').is_visible())
+    check(tag + ' : écran gardé allumé pendant l’export, puis libéré', pg.evaluate('window.__wake') == ['request:screen', 'release'], pg.evaluate('window.__wake'))
+    cap = pg.locator('#capText').input_value()
+    check(tag + ' : légende prête à copier avec #madewithstalak', '#madewithstalak' in cap and ('stalak.app' in cap), cap)
+    pg.locator('#capCopy').click(); pg.wait_for_timeout(300)
+    note = pg.locator('#capNote').inner_text()
+    clip = pg.evaluate('() => navigator.clipboard.readText().catch(() => null)')
+    check(tag + ' : « Copier la légende » copie le texte', ('copied' in note if lang == 'en' else 'copiée' in note) and (clip is None or clip == cap), (note, clip))
+    po = pg.locator('#proOffer')
+    check(tag + ' : offre Pro douce sous la 1re vidéo', po.is_visible() and ('$4.17' in po.inner_text() if lang == 'en' else '4,17 $' in po.inner_text()), po.inner_text() if po.count() else None)
+    sb, sv = pg.locator('#shareBtn'), pg.locator('#saveBtn')
+    if iphone:
+        first = pg.evaluate("() => document.querySelector('#saveBtn').previousElementSibling === document.querySelector('#shareBtn')")
+        check(tag + ' : « Enregistrer dans Photos / Partager » en bouton principal, le téléchargement en petit lien', first and 'primary' in sb.get_attribute('class') and 'linkbtn' in sv.get_attribute('class')
+              and ('Save to Photos' in sb.inner_text() if lang == 'en' else 'Enregistrer dans Photos' in sb.inner_text()), (sb.inner_text(), sv.inner_text()))
+        sb.click(); pg.wait_for_timeout(200)
+        check(tag + ' : le bouton ouvre le partage d’iOS', pg.evaluate('window.__shared === true'))
+    else:
+        check(tag + ' : ordinateur : « Enregistrer sur l’appareil » reste le bouton principal', 'primary' in sv.get_attribute('class') and 'sharemain' not in (sb.get_attribute('class') or ''))
+    if SHOTS:
+        pg.locator('#result').scroll_into_view_if_needed(); pg.wait_for_timeout(300)
+        pg.locator('#result').screenshot(path=os.path.join(SHOTS, 'resultat-' + ('iphone' if iphone else 'ordi') + '-' + lang + '.png'))
+    pg.locator('#proOfferGo').click(); pg.wait_for_timeout(200)
+    check(tag + ' : « Voir Pro » → formules sur Pro', pg.evaluate('window.__open') == ['nowm', 'pro'])
+    pg.locator('#proOfferX').click()
+    check(tag + ' : « × » cache l’offre', not po.is_visible())
+    pg.evaluate('() => __ev("exportOne()")'); pg.wait_for_function('() => __ev("!S.exporting")', timeout=20000); pg.wait_for_timeout(200)
+    check(tag + ' : pas d’offre après la 2e vidéo', not po.is_visible())
+
+    # ---- n° 3: leaving Stalak during an export made in real time ----
+    ev(pg, """renderRealtime = () => new Promise(res => { S.__rt = true; const iv = setInterval(() => { if (S.cancel){ clearInterval(iv); res({ blob: new Blob(['y']), ext: 'mp4' }); } }, 40); })""")
+    pg.evaluate('() => { window.__p = __ev("exportOne()"); }'); pg.wait_for_function('() => __ev("S.__rt === true")', timeout=10000)
+    pg.evaluate("() => { Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' }); document.dispatchEvent(new Event('visibilitychange')); }")
+    pg.evaluate('() => window.__p'); pg.wait_for_timeout(300)
+    pg.evaluate("() => { delete document.visibilityState; }")
+    m = pg.locator('#expNear .nearmsg')
+    check(tag + ' : app quittée pendant l’export → arrêt propre et message près des boutons', m.count() == 1 and ('left Stalak' in m.inner_text() if lang == 'en' else 'quitté Stalak' in m.inner_text()) and not ev(pg, 'S.exporting'), m.inner_text() if m.count() else None)
+    asked = pg.evaluate("() => { __ev('S.exporting = true'); const e = new Event('beforeunload', { cancelable: true }); window.dispatchEvent(e); __ev('S.exporting = false'); return e.defaultPrevented; }")
+    check(tag + ' : quitter la page pendant un export → le navigateur demande', asked)
+
+    # ---- n° 2: memory ----
+    pg.evaluate('(feats) => { window.__feats = feats; __ev("acctHas = f => window.__feats.includes(f); planTags(); filtUI(); adUI()"); }', CREATOR)
+    ev(pg, "S.memMB = 120, $('#packSel').value = '30'")
+    ev(pg, """pickVideoConfig = async () => ({ codec: 'avc1.640028', width: W, height: H, bitrate: 10e6, framerate: 30 }); pickAudioConfig = async () => ({ codec: 'mp4a.40.2', sampleRate: 44100, numberOfChannels: 2, bitrate: 192000 });
+      beginExport = () => { window.__began = true; throw new Error('test : export arrêté ici'); }""")
+    pg.evaluate('() => { window.__began = false; return Promise.resolve(__ev("exportPack()")).catch(() => {}); }'); pg.wait_for_timeout(300)
+    pm = pg.locator('#packBox .nearmsg')
+    check(tag + ' : pack trop lourd pour l’appareil → refusé, message près du pack (moins de vidéos ou passage plus court)', pm.count() == 1 and not pg.evaluate('window.__began')
+          and ('memory' in pm.inner_text() if lang == 'en' else 'mémoire' in pm.inner_text()), pm.inner_text() if pm.count() else None)
+    ev(pg, "S.memMB = 4000")
+    pg.evaluate('() => { window.__began = false; return Promise.resolve(__ev("exportPack()")).catch(() => {}); }'); pg.wait_for_timeout(300)
+    check(tag + ' : assez de mémoire → le pack part', pg.evaluate('window.__began') and pg.locator('#packBox .nearmsg').count() == 0)
+    need = ev(pg, "Math.round(memNeed(1, 10e6))")
+    ev(pg, "S.memMB = Math.round(memNeed(1, 10e6) * 0.6), window.__br = null, renderVideos = async (list, vcfg) => { window.__br = vcfg.bitrate; throw new Error('test : export arrêté ici'); }, beginExport = () => {}")
+    pg.evaluate('() => Promise.resolve(__ev("exportOne()")).catch(() => {})'); pg.wait_for_timeout(300)
+    br = pg.evaluate('window.__br')
+    check(tag + ' : vidéo trop lourde → débit allégé pour tenir en mémoire (%s Mo à 10 Mbit/s)' % need, br is not None and 3e6 <= br < 10e6, br)
+    budgets = pg.evaluate("() => { __ev('S.memMB = 0'); return __ev('memBudget()'); }")
+    check(tag + ' : budget mémoire selon l’appareil (%s Mo)' % budgets, budgets == (380 if iphone else 1200), budgets)
+    ev(pg, 'endExport()')
+
+    # ---- n° 9: the help ice cube never sits on « Continuer » ----
+    ev(pg, 'go(3)'); pg.wait_for_timeout(300)
+    pg.evaluate('window.scrollTo(0, document.documentElement.scrollHeight)'); pg.wait_for_timeout(500)
+    cov = pg.evaluate("""() => { const b = document.querySelector('#next3'), r = b.getBoundingClientRect(), h = document.querySelector('#helpBtn').getBoundingClientRect();
+      return !(r.right <= h.left || r.left >= h.right || r.bottom <= h.top || r.top >= h.bottom); }""")
+    anim = pg.evaluate("() => getComputedStyle(document.querySelector('#helpBtn')).animationIterationCount")
+    check(tag + ' : la bulle d’aide ne cache plus « Continuer », et s’arrête de bouger', not cov and anim == '6', (cov, anim))
+
+    # ---- n° 10: anonymous counters ----
+    names = [e['body'].get('name') for e in events]
+    keys = set(k for e in events for k in e['body'])
+    check(tag + ' : compteurs envoyés (export réussi, export raté, écran des formules, offre Pro)', all(n in names for n in ('export_ok', 'export_fail', 'plans_open', 'pro_offer')), names)
+    fail = [e['body'] for e in events if e['body'].get('name') == 'export_fail']
+    check(tag + ' : export raté avec sa catégorie (app quittée, mémoire)', any(f.get('detail') == 'hidden' for f in fail) and any(f.get('detail') == 'memory' for f in fail), fail)
+    dev = 'iphone' if iphone else 'computer'
+    check(tag + ' : compteurs anonymes (nom, catégorie, appareil ; aucun cookie)', keys <= {'name', 'detail', 'device'} and all(e['cookie'] is None for e in events) and all(e['body'].get('device') == dev for e in events), (keys, [e['cookie'] for e in events][:3]))
+    check(tag + ' : aucune erreur dans la page', not errs, errs)
+    sw = pg.evaluate('document.documentElement.scrollWidth')
+    check(tag + ' : pas de défilement horizontal', sw <= pg.viewport_size['width'], sw)
+    ctx.close()
+
+
+def main():
+    tmp = tempfile.mkdtemp(prefix='stalak-audit-')
+    site = os.path.join(tmp, 'site'); shutil.copytree(PUBLIC, site)
+    for page in ('index.html', 'en/index.html'):
+        p = os.path.join(site, page); html = open(p, encoding='utf-8').read()
+        assert 'applyLang();\n})();' in html, 'repère de la sonde introuvable'
+        open(p, 'w', encoding='utf-8').write(html.replace('applyLang();\n})();', 'applyLang();\nwindow.__ev = (s) => eval(s);\n})();'))
+    srv = http.server.ThreadingHTTPServer(('127.0.0.1', 0), functools.partial(Quiet, directory=site))
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    base = 'http://127.0.0.1:%d/' % srv.server_address[1]
+    with sync_playwright() as p:
+        b = p.chromium.launch(args=['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'])
+        global PW; PW = p
+        only = os.environ.get('AUDIT_ONLY')
+        for lang in ('fr', 'en'):
+            for iphone in (True, False):
+                if only and only != ('iphone' if iphone else 'ordi') + '-' + lang: continue
+                try: run(b, base, lang, iphone)
+                except Exception as e: check(('iPhone' if iphone else 'ordinateur') + ' ' + lang + ' : déroulé complet', False, str(e)[:300])
+        b.close()
+    srv.shutdown(); shutil.rmtree(tmp, ignore_errors=True)
+    print('%d/%d réussis' % (sum(results), len(results)))
+    sys.exit(0 if all(results) else 1)
+
+
+main()

@@ -999,3 +999,35 @@ header .stepper{margin-left:auto}
 /* « Reprendre ton dernier montage ? » (audit 30/10): it takes the mascot while it is shown, the card below does not repeat it */
 #p1 > .lpoffer:not([hidden]) ~ .card::after{display:none}
 .lpoffer h2{margin-bottom:6px}
+/* a problem said in the box it is about (audit 30/10) */
+.nearmsg{display:flex;gap:8px;align-items:flex-start;margin:10px 0 0;padding:10px 12px;border-radius:12px;border:2px solid #d4384a;background:#fff1f2;color:#8f1626;font:600 14px/1.4 var(--body);text-align:left}
+.nearmsg::before{content:"!";flex:0 0 20px;height:20px;border-radius:50%;background:#d4384a;color:#fff;font:800 13px/20px var(--body);text-align:center}
+.expstay{margin:4px 0 10px;font:500 13px/1.4 var(--body);opacity:.85}
+/* « Exporter » within reach at the Montage step (audit 30/10): fixed at the bottom, left of the help ice cube */
+.expfab{position:fixed;z-index:59;left:50%;transform:translateX(-50%);bottom:max(16px,env(safe-area-inset-bottom,0px));min-height:52px;padding:12px 26px;font:400 19px/1 var(--display);letter-spacing:.02em;box-shadow:0 4px 0 var(--ink),0 10px 24px rgba(0,0,0,.25)}
+.expfab:active{transform:translateX(-50%) translateY(3px)}
+@media (max-width:480px){.expfab{left:16px;transform:none;right:auto;max-width:calc(100% - 100px)}.expfab:active{transform:translateY(3px)}}
+/* the help ice cube (audit 30/10): smaller on a phone, it stops bobbing after a few seconds, and the page keeps room at the
+   bottom so that it never sits on « Continuer » once scrolled down */
+.help-cube{animation-iteration-count:6}
+@media (max-width:480px){.help-cube{width:46px;height:46px}}
+.wrap{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 84px)}
+/* caption to copy, gentle Pro offer, Pro filter question (audit 30/10) */
+.capbox{margin-top:14px;display:flex;flex-direction:column;gap:6px}
+.capbox textarea{width:100%;box-sizing:border-box;font:500 14px/1.45 var(--body);padding:10px 12px;border:2px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink);resize:vertical}
+.prooffer{position:relative;margin-top:16px;padding:14px 44px 14px 16px;border-radius:16px;border:2px solid var(--ink);background:linear-gradient(180deg,#eef6ff,#dcebff)}
+.prooffer .po-t{margin:0 0 4px;font:400 18px/1.2 var(--display)}
+.prooffer .po-p{margin:0 0 10px;font:500 14px/1.45 var(--body)}
+.prooffer .po-x{position:absolute;top:6px;right:6px;width:36px;height:36px;border:0;background:none;font:600 22px/1 var(--body);color:var(--ink);cursor:pointer}
+.result .sharemain{width:100%;justify-content:center}
+.result .savefile{font-size:14px}
+.fa-row{flex-wrap:wrap;gap:10px}
+/* fewer PRO tags at once (audit 30/10): Pro filters behind one tile, one tag per theme; text sizes and appearances show a
+   small padlock instead of a PRO pill on every button */
+.filtrow:not(.more) .lockgrp{display:none}
+.filtmore{position:relative;flex:none;align-self:flex-start;width:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:2px dashed var(--ink);border-radius:12px;background:#f3ecff;color:var(--ink);cursor:pointer;font:600 12px/1.2 var(--body);padding:6px}
+.filtmore b{font:400 22px/1 var(--display)}
+.filtmore .filtpro{position:static}
+.filtmore[aria-expanded="true"]{background:#fff}
+.filtth .thpro{position:static;display:inline-block;vertical-align:1px;margin-left:4px}
+#stSize button.protag::after,#stAnim button.protag::after{content:"🔒";font:400 10px/1 var(--body);letter-spacing:0;margin-left:4px;padding:0;border-radius:0;background:none;color:inherit;vertical-align:1px}

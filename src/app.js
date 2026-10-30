@@ -45,6 +45,28 @@ let sayLast = null;
 const status = msg => { sayLast = null; $('#status').textContent = msg || ''; };
 /* a message from the dictionary, said again in the new language if it changes: say(key, vars) or say(() => text) */
 const say = (key, vars) => { const f = typeof key === 'function' ? key : () => _t(key, vars); status(f()); sayLast = f; };
+/* a problem said where one is looking (audit 30/10): inside the box it is about (import square, takes, export…), in red with
+   its way out, instead of the line at the top of the page (kept for news). Gone at the next try (nearClear). */
+function sayNear(sel, key, vars){
+  const box = typeof sel === 'string' ? $(sel) : sel; if (!box){ say(key, vars); return; }
+  let m = box.querySelector(':scope > .nearmsg');
+  if (!m){ m = document.createElement('p'); m.className = 'nearmsg'; m.setAttribute('role', 'alert'); m.append(document.createElement('span')); box.append(m); }
+  m._f = typeof key === 'function' ? key : () => _t(key, vars); m.firstChild.textContent = m._f(); m.hidden = false;
+  if (box.closest('label')) m.onclick = e => e.preventDefault();
+  try { m.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch(e){}
+}
+function nearClear(sel){ const box = typeof sel === 'string' ? $(sel) : sel; const m = box && box.querySelector(':scope > .nearmsg'); if (m) m.remove(); }
+/* anonymous counters (audit 30/10, with Comptes): only a name from a closed list and a category, plus the kind of device;
+   no cookie, no account, nothing about the person. Only on stalak.app (the account block is there). */
+const EVT_NAMES = ['export_ok', 'export_fail', 'pack_ok', 'pack_fail', 'ad_shown', 'ad_reward', 'plans_open', 'pro_offer'];
+function evt(name, detail){
+  try {
+    if (typeof ACCT === 'undefined' || !ACCT || !EVT_NAMES.includes(name)) return;
+    const dev = /iPhone|iPod/.test(navigator.userAgent) ? 'iphone' : /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) ? 'ipad' : /Android/.test(navigator.userAgent) ? 'android' : 'computer';
+    const body = JSON.stringify({ name, detail: detail ? String(detail).slice(0, 24) : null, device: dev });
+    fetch('/api/event', { method: 'POST', headers: { 'content-type': 'application/json' }, body, keepalive: true, credentials: 'omit' }).catch(() => {});
+  } catch(e){}
+}
 let progMax = 0;
 const progress = p => { $('#prog').hidden = p == null; if (p != null){ if (p === 0) progMax = 0; p = Math.max(progMax, p); progMax = p; $('#progBar').style.width = Math.round(p*100) + '%'; expUpdate(p); } };
 function rng(seed){ return () => { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed>>>15, 1|seed); t = t + Math.imul(t ^ t>>>7, 61|t) ^ t; return ((t ^ t>>>14)>>>0)/4294967296; }; }
@@ -305,7 +327,7 @@ const I18N_EN = /*@EN*/{
   "br.prep": "Preparing {pct}%",
   "br.tag": "B-roll",
   "br.remove": "Remove this B-roll clip",
-  "st.unreadable": "The take “{name}” can’t be played here{c}. Export it as MP4 H.264 or HEVC (iPhone format) and import it again.",
+  "st.unreadable": "The video “{name}” won’t open here. Try again with a video from the iPhone camera, or save it as MP4 first.",
   "st.brollReady": "B-roll clip ready: it’s been added to the edit.",
   "fxn.flash": "White flash",
   "fxn.flash.tip": "A white flash on the strong beat.",
@@ -469,7 +491,7 @@ const I18N_EN = /*@EN*/{
   "exp.nosupport": "your browser can’t export, try an up-to-date Chrome or Safari",
   "exp.ready": "Video ready ({mb} MB).",
   "exp.cancelled": "Export canceled.",
-  "exp.fail": "The export failed: {msg}. Tap the help ice cube at the bottom right, then “Copy info for the team”, and send it.",
+  "exp.fail": "The export didn’t work. Try again; if it happens again, tap the help ice cube at the bottom right, then “Copy info for the team”.",
   "save.mp4clip": "MP4 ready for YouTube and social apps.",
   "save.mp4reel": "MP4 ready for TikTok and Insta.",
   "save.webm": "WebM format: for MP4, use a recent Chrome.",
@@ -487,7 +509,7 @@ const I18N_EN = /*@EN*/{
   "pack.zip": "{n} MP4 videos in a zip file ({mb} MB).",
   "pack.ready": "Pack ready: {n} videos, all different.",
   "pack.cancelled": "Pack canceled.",
-  "pack.fail": "The pack failed: {msg}. Tap the help ice cube at the bottom right, then “Copy info for the team”, and send it.",
+  "pack.fail": "The pack didn’t work. Try again; if it happens again, tap the help ice cube at the bottom right, then “Copy info for the team”.",
   "post.shareHint": "Pick TikTok, Instagram or YouTube in the list: the video opens right there.",
   "post.sent": "Sent!",
   "post.noshare": "Direct sharing isn’t possible here. Save your video, then open the app of your choice and add it.",
@@ -556,8 +578,8 @@ const I18N_EN = /*@EN*/{
   "song.analyse": "Analyzing the sound…",
   "song.change": "Change song",
   "song.tempo": "Tempo detected: {bpm} BPM.",
-  "song.nosound": "This video has no sound: import a video with your music, or the audio file.",
-  "song.bad": "Can’t read this file. Try an MP3, a WAV or an MP4/MOV video.",
+  "song.nosound": "This video has no sound. Import a video with your song playing, or the audio file.",
+  "song.bad": "This file won’t open here. Try an MP3, a WAV, or a video from your phone’s camera.",
   "demo.wait": "Wait for the example to finish loading.",
   "demo.songFirst": "The example uses a demo song: import your own song here first, then your takes.",
   "demo.askT": "Load the example?",
@@ -1118,7 +1140,32 @@ const I18N_EN = /*@EN*/{
   "lp.ok": "OK",
   "lp.restoring": "Bringing your edit back…",
   "lp.done": "“{name}” is back, just as you left it.",
-  "lp.fail": "This edit can’t come back: one of its files is missing from this phone. Import your song and takes again."
+  "lp.fail": "This edit can’t come back: one of its files is missing from this phone. Import your song and takes again.",
+  "exp.left": "The export stopped because you left Stalak (another app or the screen locked). Try again and stay on this page until the end.",
+  "exp.failMem": "This video is too heavy for this device’s memory. Pick a shorter part of the song, then try again.",
+  "exps.stay": "Stay on Stalak until it’s done: the screen stays on.",
+  "pack.mem": "Too heavy for this device’s memory: {n} videos of {s} s. Pick a pack of {nmax} videos, or a shorter part (up to {smax} s).",
+  "pack.mem1": "Too heavy for this device’s memory: {n} videos of {s} s. Pick a shorter part of the song (up to {smax} s).",
+  "exp.fab": "Export",
+  "post.sharePhotos": "Save to Photos / Share",
+  "save.file": "Download the file instead",
+  "post.shareHintIos": "In the list, tap “Save Video” to put it in Photos, or pick TikTok or Instagram: the video opens right there.",
+  "cap.t": "Caption, ready to copy",
+  "cap.copy": "Copy caption",
+  "cap.ok": "Caption copied ✓",
+  "cap.sel": "Select the text and copy it.",
+  "cap.tags": "#lipsync #rap #newmusic #madewithstalak",
+  "cap.made": "Made with stalak.app",
+  "po.t": "No watermark and no ads, on every video?",
+  "po.p": "With Pro: every filter, karaoke lyrics, and the 16:9 music video of this song. From $4.17/mo, billed yearly.",
+  "po.go": "See Pro",
+  "fa.t": "“{name}” is a Pro filter",
+  "fa.p": "You can try it in the preview. To export it, go Pro, or export your video without this filter.",
+  "fa.pro": "Go Pro, from $4.17/mo",
+  "fa.without": "Export without this filter",
+  "filt.th.free": "Free",
+  "filt.more": "more filters",
+  "filt.less": "fewer filters"
 }/*EN@*/;
 const I18N_FR = /*@FR*/{
   "kind.hint.reel": "Une vidéo verticale 9:16, de tout le son ou de quelques mesures.",
@@ -1164,7 +1211,7 @@ const I18N_FR = /*@FR*/{
   "br.prep": "Préparation {pct} %",
   "br.tag": "Plan d'ambiance",
   "br.remove": "Retirer ce plan d’ambiance",
-  "st.unreadable": "La prise « {name} » ne peut pas être lue ici{c}. Exporte-la en MP4 H.264 ou HEVC (format iPhone) et réimporte-la.",
+  "st.unreadable": "La vidéo « {name} » ne s’ouvre pas ici. Réessaie avec une vidéo de l’appareil photo de l’iPhone, ou enregistre-la d’abord en MP4.",
   "st.brollReady": "Plan d’ambiance prêt : il est ajouté au montage.",
   "fxn.flash": "Flash blanc",
   "fxn.flash.tip": "Un éclair blanc sur le temps fort.",
@@ -1329,7 +1376,7 @@ const I18N_FR = /*@FR*/{
   "exp.nosupport": "ton navigateur ne permet pas l’export, essaie Chrome ou Safari à jour",
   "exp.ready": "Vidéo prête ({mb} Mo).",
   "exp.cancelled": "Export annulé.",
-  "exp.fail": "L’export a échoué : {msg}. Touche le glaçon d’aide en bas à droite, puis « Copier les infos pour l’équipe », et envoie-les.",
+  "exp.fail": "L’export n’a pas marché. Réessaie ; si ça recommence, touche le glaçon d’aide en bas à droite, puis « Copier les infos pour l’équipe ».",
   "save.mp4clip": "MP4 prêt pour YouTube et les réseaux.",
   "save.mp4reel": "MP4 prêt pour TikTok et Insta.",
   "save.webm": "Format WebM : pour du MP4, utilise un Chrome récent.",
@@ -1347,7 +1394,7 @@ const I18N_FR = /*@FR*/{
   "pack.zip": "{n} vidéos MP4 dans un dossier compressé ({mb} Mo).",
   "pack.ready": "Pack prêt : {n} vidéos toutes différentes.",
   "pack.cancelled": "Pack annulé.",
-  "pack.fail": "Le pack a échoué : {msg}. Touche le glaçon d’aide en bas à droite, puis « Copier les infos pour l’équipe », et envoie-les.",
+  "pack.fail": "Le pack n’a pas marché. Réessaie ; si ça recommence, touche le glaçon d’aide en bas à droite, puis « Copier les infos pour l’équipe ».",
   "post.shareHint": "Choisis TikTok, Instagram ou YouTube dans la liste : la vidéo s’y ouvre directement.",
   "post.sent": "Envoyé !",
   "post.noshare": "Le partage direct n’est pas possible ici. Enregistre ta vidéo, puis ouvre le réseau de ton choix et ajoute-la.",
@@ -1415,8 +1462,8 @@ const I18N_FR = /*@FR*/{
   "song.analyse": "Analyse du son…",
   "song.change": "Changer de son",
   "song.tempo": "Tempo détecté : {bpm} BPM.",
-  "song.nosound": "Cette vidéo n’a pas de son : importe une vidéo avec ta musique, ou le fichier audio.",
-  "song.bad": "Impossible de lire ce fichier. Essaie un MP3, un WAV ou une vidéo MP4/MOV.",
+  "song.nosound": "Cette vidéo n’a pas de son. Importe une vidéo où ton son passe, ou le fichier audio.",
+  "song.bad": "Ce fichier ne s’ouvre pas ici. Essaie un MP3, un WAV, ou une vidéo de l’appareil photo de ton téléphone.",
   "demo.wait": "Attends la fin du chargement de l’exemple.",
   "demo.songFirst": "L’exemple utilise un son de démo : importe d’abord ton son ici, puis tes prises.",
   "demo.askT": "Charger l’exemple ?",
@@ -1760,7 +1807,34 @@ const I18N_FR = /*@FR*/{
   "lp.ok": "OK",
   "lp.restoring": "Ton montage revient…",
   "lp.done": "« {name} » est revenu, comme tu l’avais laissé.",
-  "lp.fail": "Ce montage ne peut pas revenir : un de ses fichiers n’est plus dans ce téléphone. Importe à nouveau ton son et tes prises."
+  "lp.fail": "Ce montage ne peut pas revenir : un de ses fichiers n’est plus dans ce téléphone. Importe à nouveau ton son et tes prises.",
+  "exp.left": "L’export s’est arrêté parce que tu as quitté Stalak (autre appli ou écran verrouillé). Réessaie et reste sur cette page jusqu’à la fin.",
+  "exp.failMem": "Cette vidéo est trop lourde pour la mémoire de cet appareil. Choisis un passage plus court du son, puis réessaie.",
+  "exps.stay": "Reste sur Stalak jusqu’à la fin : l’écran reste allumé.",
+  "pack.mem": "Trop lourd pour la mémoire de cet appareil : {n} vidéos de {s} s. Choisis un pack de {nmax} vidéos, ou un passage plus court (jusqu’à {smax} s).",
+  "pack.mem1": "Trop lourd pour la mémoire de cet appareil : {n} vidéos de {s} s. Choisis un passage plus court du son (jusqu’à {smax} s).",
+  "exp.fab": "Exporter",
+  "post.share": "Partager vers TikTok, Insta, YouTube…",
+  "save.btn": "Enregistrer sur l'appareil",
+  "post.sharePhotos": "Enregistrer dans Photos / Partager",
+  "save.file": "Télécharger le fichier à la place",
+  "post.shareHintIos": "Dans la liste, touche « Enregistrer la vidéo » pour la mettre dans Photos, ou choisis TikTok ou Instagram : la vidéo s’y ouvre directement.",
+  "cap.t": "Légende prête à copier",
+  "cap.copy": "Copier la légende",
+  "cap.ok": "Légende copiée ✓",
+  "cap.sel": "Sélectionne le texte et copie-le.",
+  "cap.tags": "#playback #rap #lipsync #madewithstalak",
+  "cap.made": "Fait avec stalak.app",
+  "po.t": "Sans filigrane et sans pub, à chaque vidéo ?",
+  "po.p": "Avec Pro : tous les filtres, le karaoké, et la version Clip 16:9 de ce son. Dès 4,17 $/mois, facturé à l’année.",
+  "po.go": "Voir Pro",
+  "fa.t": "« {name} » est un filtre Pro",
+  "fa.p": "Tu peux l’essayer dans l’aperçu. Pour l’exporter, passe à Pro, ou exporte ta vidéo sans ce filtre.",
+  "fa.pro": "Passer à Pro, dès 4,17 $/mois",
+  "fa.without": "Exporter sans ce filtre",
+  "filt.th.free": "Gratuits",
+  "filt.more": "filtres en plus",
+  "filt.less": "moins de filtres"
 }/*FR@*/;
 let STATIC_FR = /*@STATIC_FR*/null/*STATIC_FR@*/;
 const LANGS = ['fr', 'en'];
@@ -3014,7 +3088,7 @@ async function addVideo(file, hint){
       tk.unreadable = true; renderTakes();
       const c = tk.meta && tk.meta.vcodec ? ' (' + tk.meta.vcodec + ')' : '';
       diagT(tk, 'images illisibles sur ce navigateur' + c);
-      say('st.unreadable', { name: tk.name, c });
+      sayNear('#takesNear', 'st.unreadable', { name: tk.name, c });
     }
     queueProxy(tk);
   }
@@ -5016,7 +5090,7 @@ function can(feat){
   return acctPro();
 }
 /* a padlock: opens the plans page on the plan that unlocks feat (why: the sentence shown at the top of that page) */
-function lockOpen(feat, why){ acctOpen(why || feat, { plan: FEAT_PLAN[feat] || 'pro' }); }
+function lockOpen(feat, why){ evt('plans_open', why || feat); acctOpen(why || feat, { plan: FEAT_PLAN[feat] || 'pro' }); }
 /* the small tag on a locked control: the plan's name (PRO, CREATOR+), or nothing when it is open */
 function planTag(el, feat, on){
   if (!el) return; const locked = on == null ? !!ACCT && !can(feat) : !!on;
@@ -5118,7 +5192,7 @@ async function adWatch(){
       adUI(); adSay(k); diag('pub : ' + k);
     };
     const timer = setTimeout(() => end('ad.none'), 15000);
-    pa.addEventListener('rewardedSlotReady', e => { if (e.slot !== slot || done) return; clearTimeout(timer); e.makeRewardedVisible(); adSay(null); });
+    pa.addEventListener('rewardedSlotReady', e => { if (e.slot !== slot || done) return; clearTimeout(timer); e.makeRewardedVisible(); adSay(null); evt('ad_shown'); });
     pa.addEventListener('rewardedSlotGranted', e => { if (e.slot === slot) granted = true; });
     pa.addEventListener('rewardedSlotClosed', e => { if (e.slot === slot) end(granted ? 'ok' : 'ad.closed'); });
     pa.addEventListener('slotRenderEnded', e => { if (e.slot === slot && e.isEmpty) end('ad.none'); });
@@ -5127,6 +5201,7 @@ async function adWatch(){
 }
 /* the reward: no watermark for this video, and its export starts at once, without another touch */
 function adReward(){
+  evt('ad_reward');
   wmPass = true; diag('pub : récompense accordée, export sans filigrane lancé');
   adUI(); adSay('ad.okRe');
   if (!S.playing) showFrame(S.cursor);
@@ -5171,15 +5246,31 @@ function filtThumbs(){
     if (i){ x.save(); x.scale(w / W, h / H); filtOverlay(x, i, thumbT, W, H); x.restore(); }
   });
 }
+let filtMore = false;
 function filtUI(){
   const row = $('#filtRow'); if (!row) return;
   const th = 96, tw = Math.max(40, Math.round(th * W / H)), dpr = Math.min(2, window.devicePixelRatio || 1);
   if (row.dataset.shape !== tw + 'x' + th || row.dataset.lang !== LANG || row.dataset.pro !== String(can('filters'))){
     row.innerHTML = ''; row.dataset.shape = tw + 'x' + th; row.dataset.lang = LANG; row.dataset.pro = String(can('filters'));
-    const groups = [[null, [0]]].concat(FILT_THEMES.map(k => [k, FILTERS.map((f, i) => f.th === k ? i : -1).filter(i => i >= 0)]));
+    // without Pro (audit 30/10): the free filters first, then one tile « + N filtres PRO » that opens the others, grouped by
+    // theme with one PRO tag per theme (instead of one on every filter)
+    const pro = can('filters'), locked = FILTERS.filter(f => !f.free).length;
+    const groups = pro ? [[null, [0]]].concat(FILT_THEMES.map(k => [k, FILTERS.map((f, i) => f.th === k ? i : -1).filter(i => i >= 0)]))
+      : [['free', FILTERS.map((f, i) => f.free || i === 0 ? i : -1).filter(i => i >= 0)], ['more', []]]
+        .concat(FILT_THEMES.map(k => [k, FILTERS.map((f, i) => f.th === k && !f.free && i ? i : -1).filter(i => i >= 0)]));
     for (const [k, list] of groups){
-      const gr = document.createElement('div'); gr.className = 'filtgrp';
+      if (k === 'more'){
+        const mb = document.createElement('button'); mb.type = 'button'; mb.className = 'filtmore'; mb.id = 'filtMore';
+        mb.style.height = th + 'px'; mb.style.marginTop = '18px';
+        const n = document.createElement('b'); n.textContent = '+' + locked; const t = document.createElement('span'); t.className = 'fm-t';
+        const tg = document.createElement('span'); tg.className = 'filtpro'; tg.textContent = PLAN_TAG[FEAT_PLAN.filters];
+        mb.append(n, t, tg); mb.onclick = () => { filtMore = !filtMore; filtUI(); if (filtMore) try { row.querySelector('.lockgrp').scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' }); } catch(e){} };
+        row.append(mb); continue;
+      }
+      if (!list.length) continue;
+      const gr = document.createElement('div'); gr.className = 'filtgrp' + (!pro && k !== 'free' ? ' lockgrp' : '');
       const lb = document.createElement('span'); lb.className = 'filtth'; lb.textContent = k ? _t('filt.th.' + k) : '\u00a0'; gr.append(lb);
+      if (!pro && k !== 'free'){ const tg = document.createElement('span'); tg.className = 'filtpro thpro'; tg.textContent = PLAN_TAG[FEAT_PLAN.filters]; lb.append(' ', tg); }
       const items = document.createElement('div'); items.className = 'filtitems'; gr.append(items);
       for (const i of list){
         const f = FILTERS[i], b = document.createElement('button'); b.type = 'button'; b.className = 'filt'; b.dataset.v = f.id; b.setAttribute('role', 'radio');
@@ -5187,12 +5278,15 @@ function filtUI(){
         const cv = document.createElement('canvas'); cv.dataset.i = i; cv.width = Math.round(tw * dpr); cv.height = Math.round(th * dpr); cv.style.width = tw + 'px'; cv.style.height = th + 'px';
         const nm = document.createElement('span'); nm.className = 'filtnm'; nm.textContent = _t('filt.' + f.id);
         b.append(cv, nm);
-        if (!f.free && !can('filters')){ const tg = document.createElement('span'); tg.className = 'filtpro'; tg.textContent = PLAN_TAG[FEAT_PLAN.filters]; b.append(tg); }
+
         items.append(b);
       }
       row.append(gr);
     }
   }
+  if (!filtFree(S.filter)) filtMore = true;   // a Pro filter chosen: its group stays open
+  row.classList.toggle('more', filtMore);
+  const mb = $('#filtMore'); if (mb){ mb.setAttribute('aria-expanded', String(filtMore)); setT(mb.querySelector('.fm-t'), filtMore ? 'filt.less' : 'filt.more'); }
   $$('#filtRow .filt').forEach(b => { const on = b.dataset.v === S.filter; b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; });
   filtThumbs();
 }
@@ -6745,6 +6839,35 @@ async function pickVideoConfig(){
   }
   return null;
 }
+/* ---- the memory an export takes (audit 30/10): everything is made in memory (pieces of each take, finished videos until
+   the zip, one video being put together), and Safari on an iPhone closes the tab well before a computer would. A budget per
+   device; a video that would not fit is made with a lighter bitrate (not below 3 Mbit/s for one video, 5 for a pack);
+   a pack that still does not fit is not started: shorter passage or a smaller pack. S.memMB: set by the tests. ---- */
+const IOS_DEV = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+function memBudget(){
+  if (S.memMB) return S.memMB;
+  if (IOS_DEV) return 380;
+  const dm = navigator.deviceMemory;
+  if (dm && dm <= 2) return 300;
+  if (dm && dm <= 4 || /Android/.test(navigator.userAgent)) return 550;
+  return 1200;
+}
+// MB at the busiest moment, for n videos of the passage at this bitrate
+function memNeed(n, bitrate, secs){
+  const vid = (secs == null ? S.segEnd - S.segStart : secs) * (bitrate + 192000) / 8 / 1048576;
+  const streams = Math.max(1, new Set(S.cuts.map(c => baseOf(c.take))).size);
+  return vid * (Math.min(streams, n) + (n > 1 ? n : 1) + 2);
+}
+function memPlan(n, bitrate){
+  const budget = memBudget(), floor = n > 1 ? 5e6 : 3e6, need = memNeed(n, bitrate);
+  if (need <= budget) return { ok: true, bitrate, need, budget };
+  const br = Math.floor(bitrate * budget / need / 1e5) * 1e5;
+  if (br >= floor) return { ok: true, bitrate: br, need: memNeed(n, br), budget };
+  // what would fit: the biggest pack of this passage, the longest passage for this pack
+  const nMax = [30, 10, 5, 2].find(k => k < n && memNeed(k, floor) <= budget) || 0;
+  let sMax = 0; for (let t = Math.floor(S.segEnd - S.segStart); t >= 3; t--) if (memNeed(n, floor, t) <= budget){ sMax = t; break; }
+  return { ok: false, bitrate: floor, need: memNeed(n, floor), budget, nMax, sMax };
+}
 const plainCfg = cfg => { const c = Object.assign({}, cfg); delete c.hardwareAcceleration; return c; };
 async function pickAudioConfig(sr){
   if (!window.AudioEncoder) return null;
@@ -7299,7 +7422,7 @@ function tilesCheck(plan, total){
   }
   return null;
 }
-function muxEdit(plan, k, total, audio){
+function muxEdit(plan, k, total, audio, last){
   const u = plan.use[k], byView = new Map(plan.streams.map(s => [s.view, s])); if (plan.outroHost) byView.set(OUTRO_VIEW, plan.outroHost);
   const dur = Math.round(1e6/OUT_FPS);
   const muxer = new Mp4Muxer.Muxer({ target: new Mp4Muxer.ArrayBufferTarget(), video:{ codec:'avc', width:W, height:H, frameRate:OUT_FPS },
@@ -7308,7 +7431,9 @@ function muxEdit(plan, k, total, audio){
   for (let f=0; f<total; f++){
     const s = byView.get(u[f]), c = s.chunks[f];
     muxer.addVideoChunkRaw(c.data, c.key ? 'key' : 'delta', Math.round(f*1e6/OUT_FPS), dur, f === 0 ? s.meta : undefined);
+    if (last) s.chunks[f] = null;   // the last video: each piece let go of once it is in the file
   }
+  if (last) audio.chunks = [];
   muxer.finalize();
   return muxer.target.buffer;
 }
@@ -7320,7 +7445,7 @@ async function renderVideos(list, vcfg, acfg, onProg, onVideo){
   const extra = outroOn() ? OUTRO_N : 0, all = total + extra;
   const plan = planStreams(list, total, extra), work = plan.streams.reduce((a, s) => a + s.n, 0);
   const estMB = work * vcfg.bitrate / OUT_FPS / 8 / 1048576;
-  let why = tilesBad || (S.noTiles ? 'désactivé' : null) || (estMB > 1200 ? 'trop long pour la mémoire (' + Math.round(estMB) + ' Mo)' : null);
+  let why = tilesBad || (S.noTiles ? 'désactivé' : null) || (estMB > memBudget() * 0.6 ? 'trop long pour la mémoire de cet appareil (' + Math.round(estMB) + ' Mo)' : null);
   if (!why){
     // a few streams at a time: each has its own decoder and encoder, they work side by side
     const K = Math.min(plan.streams.length, 3);
@@ -7359,7 +7484,7 @@ async function renderVideos(list, vcfg, acfg, onProg, onVideo){
       for (let k=0; k<list.length; k++){
         if (S.cancel) throw new Error('annulé');
         onProg(0.92 + 0.08 * k / list.length, 'assemblage', k);
-        const ab = muxEdit(plan, k, all, audio);
+        const ab = muxEdit(plan, k, all, audio, k === list.length - 1);
         await onVideo(k, ab);
         await nextFrame();
       }
@@ -7413,7 +7538,7 @@ async function renderRealtime(){
   await sleep(150); rec.stop(); await done; stream.getVideoTracks().forEach(t => t.stop()); setRes(PREV);
   return { blob: new Blob(chunks, { type: mime || 'video/webm' }), ext: mime.includes('mp4') ? 'mp4' : 'webm' };
 }
-function beginExport(){ expOpen(); stop(true); S.exporting = true; liveTidy();   /* the preview's decoders let go: the export gets the graphics chip to itself */
+function beginExport(){ expOpen(); stop(true); S.exporting = true; S.leftDuring = false; wakeOn(); liveTidy(); nearClear('#expNear'); nearClear('#packBox');   /* the preview's decoders let go: the export gets the graphics chip to itself */
   resultPark();
   S.takes.forEach(t => { if (t.orig && !t.orig.parentNode) $('#vpool').append(t.orig); }); S.cancel = false; setBusy(true); progress(0); $('#cancelBtn').hidden = false; $('#result').hidden = true; }
 /* the video already made, during a new export: stopped and let go of (a video playing behind kept its sound going, and on
@@ -7434,7 +7559,34 @@ function resultBack(){
 }
 /* the new video is ready: the old file can go */
 function resultDone(){ const p = parked; parked = null; if (p && p.src) URL.revokeObjectURL(p.src); }
-function endExport(){ expClose(!$('#result').hidden); S.exporting = false; if (RES !== PREV) setRes(PREV); if (S.rebuildLater){ S.rebuildLater = false; setTimeout(() => rebuild(false), 0); } specCache.clear(); S.takes.forEach(t => { if (t.orig && t.el !== t.orig) t.orig.remove(); }); S.takes.forEach(t => { if (t.proxyWaiting) applyProxy(t); }); setBusy(false); progress(null); $('#cancelBtn').hidden = true; showFrame(cursorIn()); }
+/* during an export (audit 30/10): the screen stays on (Safari 16.4 and later); leaving Stalak (another app, the screen
+   locked) is noted: a video made in real time stops at once (it would come out with frozen pictures), and if the export
+   fails afterwards the message says why */
+let wakeLk = null;
+async function wakeOn(){
+  if (!navigator.wakeLock || wakeLk) return;
+  try { wakeLk = await navigator.wakeLock.request('screen'); wakeLk.addEventListener('release', () => { wakeLk = null; }); }
+  catch(e){ diag('export : écran allumé refusé (' + (e && e.name || e) + ')'); }
+}
+function wakeOff(){ try { if (wakeLk) wakeLk.release(); } catch(e){} wakeLk = null; }
+document.addEventListener('visibilitychange', () => {
+  if (!S.exporting) return;
+  if (document.visibilityState === 'hidden'){
+    S.leftDuring = true; diag('export : page quittée pendant l’export' + (S.realtime ? ', vidéo en temps réel arrêtée' : ''));
+    if (S.realtime) S.cancel = true;
+  } else wakeOn();   // the lock goes when the page is hidden: asked again
+});
+// the message of an export that stopped
+function expFailSay(e, cancelKey, failKey){
+  const m = e && e.message || String(e);
+  const cat = S.leftDuring ? 'hidden' : m === 'annulé' ? 'cancel' : /mémoire|memory|quota|allocation/i.test(m) ? 'memory' : /decod|décod/i.test(m) ? 'decoder' : /codec|reclaim|encod/i.test(m) ? 'encoder' : 'other';
+  if (S.leftDuring) sayNear('#expNear', 'exp.left');
+  else if (m === 'annulé') say(cancelKey);
+  else if (cat === 'memory') sayNear('#expNear', 'exp.failMem');
+  else sayNear('#expNear', failKey, { msg: m });
+  return cat;
+}
+function endExport(){ wakeOff(); S.realtime = false; expClose(!$('#result').hidden); S.exporting = false; proOfferUi(); if (RES !== PREV) setRes(PREV); if (S.rebuildLater){ S.rebuildLater = false; setTimeout(() => rebuild(false), 0); } specCache.clear(); S.takes.forEach(t => { if (t.orig && t.el !== t.orig) t.orig.remove(); }); S.takes.forEach(t => { if (t.proxyWaiting) applyProxy(t); }); setBusy(false); progress(null); $('#cancelBtn').hidden = true; showFrame(cursorIn()); }
 /* the export screen: the igloo gets one more block as the video advances; done, the mascot waves and the screen goes */
 const EXP_MSG = [[0, 'exps.m0'], [0.12, 'exps.m1'], [0.35, 'exps.m2'], [0.6, 'exps.m3'], [0.85, 'exps.m4'], [0.97, 'exps.m5']];   // keys (t)
 let expBlocks = null, expShown = -1, expT = 0;
@@ -7528,10 +7680,13 @@ $('#expScreen').addEventListener('keydown', e => { if (e.key === 'Escape'){ e.pr
 async function exportOne(){
   logLyrics('export');
   if (!S.cuts.length || S.exporting || exportGate) return;
-  if (filtLocked()){ lockOpen('filters'); return; }
+  if (filtLocked()){ const c = await filtAsk(); if (c === 'pro'){ lockOpen('filters', 'filters'); return; } if (c !== 'without') return; setFilter('none', true); diag('filtre Pro : export sans ce filtre'); }
+  if (S.exporting || exportGate) return;
   S.packN = 1; S.wm = wmOn(); beginExport(); const TX = performance.now(); await fontsReady();
   try {
-    const vcfg = await pickVideoConfig(), acfg = vcfg && await pickAudioConfig(S.song.buffer.sampleRate);
+    let vcfg = await pickVideoConfig(); const acfg = vcfg && await pickAudioConfig(S.song.buffer.sampleRate);
+    if (vcfg){ const mp = memPlan(1, vcfg.bitrate);
+      if (mp.bitrate < vcfg.bitrate){ vcfg = Object.assign({}, vcfg, { bitrate: mp.bitrate }); diag('mémoire : ' + Math.round(memNeed(1, 10e6)) + ' Mo à 10 Mbit/s pour ' + mp.budget + ' Mo sur cet appareil, débit ' + (mp.bitrate / 1e6).toFixed(1) + ' Mbit/s'); } }
     let ext = 'mp4', blob = null;
     if (vcfg && acfg){
       const T0 = performance.now(); S.lastEdits = [S.cuts.slice()];
@@ -7541,7 +7696,7 @@ async function exportOne(){
       await renderVideos(S.lastEdits, vcfg, acfg, p => { progress(p); say('exp.render', { pct: Math.round(p*100) }); }, (k, ab) => { blob = new Blob([ab], { type:'video/mp4' }); });
       diag('export : ' + ((performance.now() - T0) / 1000).toFixed(1) + ' s (' + ((performance.now() - TX) / 1000).toFixed(1) + ' s depuis le clic)');
     }
-    else if (window.MediaRecorder && view.captureStream){ say('exp.rt'); const r = await renderRealtime(); blob = r.blob; ext = r.ext; }
+    else if (window.MediaRecorder && view.captureStream){ say('exp.rt'); S.realtime = true; const r = await renderRealtime(); blob = r.blob; ext = r.ext; }
     else throw new Error(_t('exp.nosupport'));
     if (S.cancel) throw new Error('annulé');
     if (!blob) throw new Error(_t('exp.nosupport'));
@@ -7553,7 +7708,9 @@ async function exportOne(){
     // the reward of an ad was for this video: used now
     lastWm = !!S.wm; if (!S.wm && wmPass){ wmPass = false; diag('pub : vidéo faite sans filigrane, récompense utilisée'); }
     adUI(); if (!lastWm) adSay(null);
-  } catch(e){ diag('export : ' + (e && e.message || e)); resultBack(); if (e.message === 'annulé') say('exp.cancelled'); else say('exp.fail', { msg: e && e.message || e }); }
+    S.okCount = (S.okCount || 0) + 1; if (S.okCount === 1) S.okFirst = lastBlob; proOfferUi();
+    evt('export_ok', S.wm ? 'wm' : 'nowm');
+  } catch(e){ diag('export : ' + (e && e.message || e)); resultBack(); evt('export_fail', expFailSay(e, 'exp.cancelled', 'exp.fail')); }
   endExport();
 }
 /* pack: a b-roll shot is drawn and encoded once per moment of the clip it shows. When several videos put a b-roll shot at the
@@ -7574,6 +7731,7 @@ async function exportPack(){
   if (filtLocked()){ lockOpen('filters'); return; }
   logLyrics('pack');
   if (!S.cuts.length || S.exporting || exportGate) return;
+  nearClear('#packBox');
   exportGate = true; try { await exportPackRun(); } finally { exportGate = false; }
 }
 let exportGate = false;
@@ -7581,8 +7739,12 @@ async function exportPackRun(){
   const N = +$('#packSel').value; S.packN = N;
   // Creator Plus: a pack needs at least 2 playbacks (sung takes); said first, before what the browser can do
   if (readyTakes().length < 2){ say('pack.need2'); return; }
-  const vcfg = await pickVideoConfig(), acfg = vcfg && await pickAudioConfig(S.song.buffer.sampleRate);
+  let vcfg = await pickVideoConfig(); const acfg = vcfg && await pickAudioConfig(S.song.buffer.sampleRate);
   if (!(vcfg && acfg)){ say('pack.nosupport'); return; }
+  { const mp = memPlan(N, vcfg.bitrate), secs = Math.round(S.segEnd - S.segStart);
+    diag('mémoire du pack : ' + Math.round(mp.need) + ' Mo pour ' + mp.budget + ' Mo sur cet appareil' + (mp.ok ? (mp.bitrate < vcfg.bitrate ? ', débit ' + (mp.bitrate / 1e6).toFixed(1) + ' Mbit/s' : '') : ', pack refusé'));
+    if (!mp.ok){ sayNear('#packBox', mp.nMax ? 'pack.mem' : 'pack.mem1', { n: N, s: secs, nmax: mp.nMax, smax: mp.sMax }); evt('export_fail', 'memory'); return; }
+    if (mp.bitrate < vcfg.bitrate) vcfg = Object.assign({}, vcfg, { bitrate: mp.bitrate }); }
   S.wm = wmOn(); beginExport(); await fontsReady();
   const sigs = [], files = [], list = []; let seed = S.seed * 1000 + 1;
   try {
@@ -7607,7 +7769,8 @@ async function exportPackRun(){
     lastBlob = makeZip(files); lastName = 'pack-' + N + '-videos.zip'; resultDone();
     { const rv = $('#resultVideo'); rv.removeAttribute('src'); rv.hidden = true; } $('#result').hidden = false; postShow(); setT('#saveNote', 'pack.zip', { n: N, mb: (lastBlob.size/1048576).toFixed(0) });
     say('pack.ready', { n: N });
-  } catch(e){ diag('pack : ' + (e && e.message || e)); resultBack(); if (e.message === 'annulé') say('pack.cancelled'); else say('pack.fail', { msg: e && e.message || e }); }
+    evt('pack_ok', String(N));
+  } catch(e){ diag('pack : ' + (e && e.message || e)); resultBack(); evt('pack_fail', expFailSay(e, 'pack.cancelled', 'pack.fail')); }
   renderTimeline(); endExport();
 }
 /* zip checksum, 8 bytes at a time (a pack holds hundreds of MB: byte by byte it took seconds) */
@@ -7643,7 +7806,23 @@ function makeZip(files){
   e.setUint32(0,0x06054b50,true); e.setUint16(8,files.length,true); e.setUint16(10,files.length,true); e.setUint32(12,csize,true); e.setUint32(16,off,true);
   return new Blob([...parts, ...central, e.buffer], { type:'application/zip' });
 }
-function setBusy(b){ ['#playBtn','#shuffleBtn','#exportBtn','#packBtn','#packSel','#cutFx','#fxDel','#fxSee'].forEach(s => $(s).disabled = b); $$('#paceSeg button, #modeSeg button, #brollSeg button, #fxSeg button, #fmtSeg button, #stepper button').forEach(x => x.disabled = b); if (!b){ updateNav(); renderFxBar(); } }
+/* « Exporter » always within reach at the Montage step (audit 30/10): while the export card is out of sight, a button
+   fixed at the bottom of the screen takes you to it (the two buttons, with or without the watermark, are there) */
+let expSeen = false;
+function expFabUi(){
+  const f = $('#expFab'); if (!f) return;
+  f.hidden = S.step !== 4 || S.exporting || expSeen || !S.cuts.length || (document.querySelector('.wrap') || document.body).hasAttribute('inert');
+}
+if (window.IntersectionObserver) new IntersectionObserver(es => { expSeen = es.some(e => e.isIntersecting); expFabUi(); }, { rootMargin: '0px 0px -40px 0px' }).observe($('#expRow'));
+$('#expFab').onclick = () => {
+  // brought to the bottom of the screen (on a phone the preview stays at the top), with its note under it; looked at again
+  // once the page has moved (the layout above can change while it scrolls)
+  const aim = smooth => { const r = $('#expRow').getBoundingClientRect(), top = window.scrollY + r.bottom - window.innerHeight + Math.min(130, window.innerHeight * 0.18);
+    if (Math.abs(top - window.scrollY) < 4) return; try { window.scrollTo({ top, behavior: smooth ? 'smooth' : 'auto' }); } catch(e){ window.scrollTo(0, top); } };
+  aim(true); setTimeout(() => aim(true), 700); setTimeout(() => aim(false), 1400);
+  setTimeout(() => { try { $('#exportBtn').focus({ preventScroll: true }); } catch(e){} }, 450);
+};
+function setBusy(b){ expFabUi();  ['#playBtn','#shuffleBtn','#exportBtn','#packBtn','#packSel','#cutFx','#fxDel','#fxSee'].forEach(s => $(s).disabled = b); $$('#paceSeg button, #modeSeg button, #brollSeg button, #fxSeg button, #fmtSeg button, #stepper button').forEach(x => x.disabled = b); if (!b){ updateNav(); renderFxBar(); } }
 let downloads = null;
 if (window.claude && window.claude.use) window.claude.use('downloads').then(d => { downloads = d; }).catch(() => {});
 /* posting: on phones the share sheet sends the video straight to the TikTok / Instagram / YouTube apps; elsewhere, links to
@@ -7655,7 +7834,13 @@ function postShow(){
   let can = false;
   try { can = !!(navigator.canShare && navigator.share && lastBlob && navigator.canShare({ files: [new File([lastBlob], lastName || 'stalak.mp4', { type: lastBlob.type || 'video/mp4' })] })); } catch(e){}
   $('#shareBtn').hidden = !can || S.noShare === true;
-  setT('#postHint', can && !S.noShare ? 'post.shareHint' : 'post.hint');
+  // iPhone / iPad (audit 30/10): the share sheet is the main button (« Enregistrer la vidéo » puts it in Photos, and TikTok /
+  // Instagram are there); the download (to the Files app) becomes a small link
+  const sb = $('#shareBtn'), sv = $('#saveBtn'), iosMain = IOS_DEV && can && !S.noShare && !zip;
+  if (iosMain){ if (sb.nextElementSibling !== sv) sv.parentNode.insertBefore(sb, sv); sb.className = 'btn primary big sharemain'; sv.className = 'linkbtn savefile'; setT(sb, 'post.sharePhotos'); setT(sv, 'save.file'); }
+  else if (sb.classList.contains('sharemain')){ $('#postBox .row').prepend(sb); sb.className = 'btn'; sv.className = 'btn primary'; setT(sb, 'post.share'); setT(sv, 'save.btn'); }
+  setT('#postHint', iosMain ? 'post.shareHintIos' : can && !S.noShare ? 'post.shareHint' : 'post.hint');
+  capUi(); proOfferUi();
 }
 $('#shareBtn').onclick = async () => {
   if (!lastBlob) return;
@@ -7677,6 +7862,48 @@ function askSure(title, text, yes){
     $('#homeAsk').hidden = false; modalOn(true); $('#homeNo').focus();
   });
 }
+/* a Pro filter at the export (audit 30/10): Pro, or the video without this filter, or nothing */
+let faDone = null;
+function filtAsk(){
+  return new Promise(res => {
+    const back = document.activeElement;
+    setT('#filtAskT', 'fa.t', { name: _t('filt.' + S.filter) });
+    faDone = v => { $('#filtAsk').hidden = true; modalOn(false); faDone = null; try { back && back.focus(); } catch(e){} res(v); };
+    $('#filtAsk').hidden = false; modalOn(true); $('#faWithout').focus();
+  });
+}
+$('#faPro').onclick = () => { if (faDone) faDone('pro'); };
+$('#faWithout').onclick = () => { if (faDone) faDone('without'); };
+$('#faNo').onclick = () => { if (faDone) faDone(null); };
+$('#filtAsk').addEventListener('keydown', e => { if (e.key === 'Escape'){ e.stopPropagation(); $('#faNo').click(); } });
+$('#filtAsk').addEventListener('click', e => { if (e.target === e.currentTarget) $('#faNo').click(); });
+/* the caption to copy for TikTok / Reels (audit 30/10), with #madewithstalak; written again until the person changes it */
+let capEdited = false;
+function capMake(){
+  const sg = S.song, title = sg && !sg.demo ? String(sg.name || '').replace(/\.[a-z0-9]{2,4}$/i, '').trim() : '';
+  return (title ? '🎤 ' + title + '\n' : '') + _t('cap.tags') + '\n' + _t('cap.made');
+}
+function capUi(){ const t = $('#capText'); if (!t) return; if (!capEdited) t.value = capMake(); $('#capNote').textContent = ''; }
+$('#capText').addEventListener('input', () => { capEdited = true; });
+$('#capCopy').onclick = async () => {
+  const t = $('#capText'), v = t.value; let ok = false;
+  try { await navigator.clipboard.writeText(v); ok = true; } catch(e){}
+  if (!ok){ try { t.focus(); t.select(); ok = document.execCommand('copy'); } catch(e){} }
+  setT('#capNote', ok ? 'cap.ok' : 'cap.sel');
+};
+/* a gentle Pro offer under the first video made (audit 30/10): free plan on stalak.app, after the first successful video of
+   the visit, never during an export; « × » hides it for 7 days */
+let poShown = false;
+const PO_KEY = 'stalak:proOfferX';
+function proOfferUi(){
+  const box = $('#proOffer'); if (!box) return;
+  const x = store.get(PO_KEY), quiet = x && Date.now() - x < 7 * 864e5;
+  const on = !!ACCT && !can('nowm') && !!lastBlob && !/\.zip$/i.test(lastName) && (S.okCount || 0) >= 1 && S.okFirst === lastBlob && !quiet && !S.exporting;
+  box.hidden = !on;
+  if (on && !poShown){ poShown = true; evt('pro_offer'); }
+}
+$('#proOfferX').onclick = () => { store.set(PO_KEY, Date.now()); $('#proOffer').hidden = true; };
+$('#proOfferGo').onclick = () => { evt('plans_open', 'offer'); acctOpen('nowm', { plan: 'pro' }); };
 $('#homeBtn').onclick = async () => { if (S.exporting || askDone) return; if (!S.song && !S.takes.length){ homeGo(); return; }
   if (await askSure(_t('home.askT'), _t('home.askP'), _t('home.title'))) homeGo(); };
 $('#homeNo').onclick = () => { if (askDone) askDone(false); };
@@ -7876,7 +8103,7 @@ function go(n){
   if (n !== 2 && recStream) closeCamera();
   // which way the steps glide: forward from the right, back from the left (CSS only)
   if (n !== S.step) $('.wrap').dataset.dir = n < S.step ? 'back' : 'fwd';
-  S.step = n; $('#p1').hidden = n !== 1; $('#p2').hidden = n !== 2; $('#work').hidden = n < 3; $('#p3').hidden = n !== 3; $('#p4').hidden = n !== 4;
+  S.step = n; setTimeout(expFabUi, 0); $('#p1').hidden = n !== 1; $('#p2').hidden = n !== 2; $('#work').hidden = n < 3; $('#p3').hidden = n !== 3; $('#p4').hidden = n !== 4;
   $('#shuffleBtn').hidden = n !== 4;
   if (n === 3) lyricsView();
   if (n === 4){ renderLyState(); logLyrics('étape Montage'); filtUI(); if (S.mode === 'mots' && S.cuts.length && S.genWords !== wordsKey()) rebuild(false); }
@@ -8362,7 +8589,7 @@ $('#songFile').onchange = async e => {
 /* the song from a file: picked with the button or dropped on the import square */
 async function loadSongFile(f){
   if (demoLoading){ say('demo.wait'); return; }
-  stop(true);
+  stop(true); nearClear('#songNear');
   say('song.analyse');
   try {
     if (beatOn) beatTestEnd(); tapReset();
@@ -8376,7 +8603,7 @@ async function loadSongFile(f){
     $('#lyText').value = S.lyrics.lines.map(l => l.text).join('\n');
     $('#songBox').hidden = false; setT($('#songDrop').querySelector('strong'), 'song.change');
     rebuild(false); say('song.tempo', { bpm: S.song.bpm.toFixed(1) });
-  } catch(err){ diag('son : ' + (err && err.message || err)); say(err && err.noSound ? 'song.nosound' : 'song.bad'); }
+  } catch(err){ diag('son : ' + (err && err.message || err)); status(''); sayNear('#songNear', err && err.noSound ? 'song.nosound' : 'song.bad'); }
 }
 /* computer: the file can be dropped on the import square (it turns to ice while a file is over it) */
 {
@@ -8395,7 +8622,7 @@ $('#takeFiles').onchange = async e => {
   const files = [...e.target.files]; if (!files.length) return;
   if (demoLoading){ e.target.value = ''; say('demo.wait'); return; }
   if (S.song && S.song.demo){ e.target.value = ''; go(1); say('demo.songFirst'); return; }
-  stop(true);
+  stop(true); nearClear('#takesNear');
   if (S.song && S.song.demo) S.takes = S.takes.filter(t => t.kind !== 'demo');
   say('takes.analyse');
   for (const f of files){ await addVideo(f); renderTakes(); await nextFrame(); }
