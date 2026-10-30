@@ -1,4 +1,4 @@
-Statut : EN COURS (tests en cours)
+Statut : PRÊT
 Branche : app/export-pub (créée depuis `main` du 30/10 à 21 h). Une seule fusion suffit.
 
 Résumé (demandes du propriétaire du 30/10, 21 h) :
@@ -30,3 +30,10 @@ Pour le Chef de projet :
 - le bouton pub : la pub de test de Google, puis l'export sans filigrane qui part tout seul ;
 - le filigrane dans la vidéo exportée (petit logo qui saute d'un coin à l'autre) ;
 - l'étape Son : poignées libres au doigt, et curseur rouge qu'on fait glisser pour écouter.
+
+Tests (30/10 au soir, iPhone 15 Pro émulé + ordinateur, FR + EN) :
+- `tests/ui/formules_ui.py` (mis à jour : deux boutons, pub bleue givrée, export qui part tout seul après la pub, filigrane logo seul qui saute toutes les 5 s, cadenas CREATOR+ visible, packs dès 2 playbacks) : 169/169
+- `tests/ui/export_pub_ui.py` (nouveau : vidéo précédente coupée et libérée, rendue si on annule, deux vrais exports de suite) : 22/22
+- `tests/ui/son_passage.py` (mis à jour : poignées libres au doigt, coupes pile aux poignées, curseur rouge glissé → lecture, ‹ › remet sur les mesures) : 86/86
+- `filtres_ui.py` 106/106, `remux_frag.py` 10/10, `paroles_suppr.py` 44/44, `plans_ui.py` 30/30, `gallery_ui.py` 40/40, `help_ui.py` 42/42, `tests/backend/run.mjs` 67/67
+- `support_ui.py` et `lyrics_ui.py` : s'arrêtent sur une attente trop longue, exactement pareil sur `main` (vérifié pour support_ui) : sans lien avec cette branche.
