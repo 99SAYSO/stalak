@@ -1,4 +1,4 @@
-Statut : PRÊT
+Statut : INCLUSE dans app/formules (voir docs/handoff/app-formules.md pour l'état de cette branche ; la branche compte/formules garde son propre compte rendu)
 Branche : compte/formules
 Conversation : 3. Comptes, paiements & serveur
 À fusionner avec : `app/formules` (App), qui appelle les fonctions livrées ici (contrat du 30/10 dans STATUS).
