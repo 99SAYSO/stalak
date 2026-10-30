@@ -27,6 +27,6 @@ Tests :
   - filtre sauvegardé dans le projet (`clCollect`).
   - Dernier passage : 75/80, puis 32/32 pour la partie moteur. Les 4 échecs « aperçu en gris » venaient du test, qui mesurait sous l'étiquette colorée de la prise ; corrigé après ce passage. Le 5e venait d'un filtre Pro utilisé pour mesurer la vitesse, remplacé par des filtres gratuits ; la partie moteur repasse ensuite à 32/32.
 - Vitesse d'export : pas mesurable ici. Le navigateur de test n'a ni carte graphique ni encodeur AAC, donc l'export passe par l'enregistrement en temps réel. Images exportées vérifiées à l'œil : filtre appliqué, paroles intactes. À mesurer sur iPhone, ligne « rendu par prise … i/s » du journal, sans filtre puis avec Noir & blanc.
-- `node tests/backend/run.mjs` 63/63 ; `paroles_suppr.py` 44/44 ; `remux_frag.py` 10/10 ; syntaxe et builds OK.
+- `node tests/backend/run.mjs` 63/63 ; `paroles_suppr.py` 44/44 ; `son_passage.py` 62/62 ; `remux_frag.py` 10/10 ; syntaxe et builds OK.
 Reste au propriétaire : valider le rendu sur la page « Filtres Stalak », puis tester sur iPhone après la mise en ligne.
 Skills utilisés : webapp-testing, artifact-design (page de comparaison).
