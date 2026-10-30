@@ -19,6 +19,19 @@
   - **Pro 10,99 €/mois (109 €/an)** : Basic + tous les filtres, mode Clip 16:9, packs de 5 et 10, paroles auto 20 par jour, sauvegarde en ligne 20 Go.
   - **Max 13,99 €/mois (139 €/an)** : Pro + packs de 30, paroles auto 60 par jour, sauvegarde 100 Go, « Parler à un humain ». Carte mise en avant : « seulement 3 € de plus que Pro ».
   - Un abonné garde son prix. Aujourd'hui, il n'y a que des abonnements de test (sandbox).
+  - **Prix Paddle sandbox créés le 30/10 par le Chef de projet** (taxe : réglage du compte, catégorie « Standard digital goods ») :
+    | Formule | Produit | Mensuel | Annuel |
+    |---|---|---|---|
+    | Basic | `pro_01m66r6h2rkefmaxn31gckec3n` | 4,99 € `pri_01m66r80jxszc4yxggqvwak5p5` | 39 € `pri_01m66r8g1bhvhnk6x1z9m0x894` |
+    | Pro | `pro_01m5ygd6ra9bhd5vzy2v1rrk70` | 10,99 € `pri_01m66r4d7mtzps3wmycfmv8pk9` | 109 € `pri_01m66r5nakxvg6cxjcgc1vv7j7` |
+    | Max | `pro_01m66r71dy61a2qaqsrrxgq12n` | 13,99 € `pri_01m66r9m12ckfttnrr5h3vhfgc` | 139 € `pri_01m66r9tmrfg7fxfrb5dpnk5s3` |
+    - Anciens prix Pro, toujours actifs pour les abonnés existants : 9,99 € `pri_01m5ygermd2pjw66mgdsh4f4rw` et 79 € `pri_01m5ygfwqdq8h2ax297c6qagjs`. Le webhook doit les compter comme « pro ».
+  - **Contrat entre App et Comptes (30/10, à respecter tel quel par Comptes)** : App a déjà écrit son côté sur la branche `app/formules`, encore à l'état EN COURS. Comptes doit fournir dans le bloc compte de `app.js`, sous ces noms exacts :
+    1. `acctHas(feat)` → `true` ou `false` pour `nologo`, `text`, `unlimited` (Basic) ; `filters`, `clip`, `pack5`, `pack10` (Pro) ; `pack30` (Max). Ajouter aussi `cloud`, `lyrics` et `human` côté serveur.
+    2. `acctQuota()` → `{ left, resetAt }` pour un gratuit connecté (vidéos restantes aujourd'hui, heure en ms de la prochaine), `null` pour une formule payante.
+    3. `acctUseVideo()` → compte la vidéo du jour côté serveur (peut renvoyer une promesse).
+    4. `acctOpen(why, { plan })` → ouvre la page des formules sur `plan` (`basic`, `pro` ou `max`). Nouvelles raisons : `daily`, `pack30` et `filters`. `daily` pour une personne non connectée ouvre la création de compte.
+    - Juridique a écrit les règles côté serveur (remise à zéro, prorata, changement programmé, prix gardé) dans `docs/STATUS.md` de la branche `legal/nouvelle-offre` (`git show origin/legal/nouvelle-offre:docs/STATUS.md`), section Juridique : à appliquer.
   - Travail : Comptes (formules, compteur, e-mail de rappel, Paddle), App (ce que débloque chaque formule, écran « vidéo du jour utilisée »), Marketing (page Tarifs à 4 colonnes), Juridique (conditions de vente). Prix Paddle sandbox créés par le Chef de projet.
 
 ## En ligne (stalak.app)
@@ -57,7 +70,7 @@
   - e-mail de rappel (case à l'inscription et dans le compte, lien de désabonnement, 1 par jour au plus, le lendemain d'une vidéo gratuite, arrêt après 7 jours sans visite) ;
   - page des formules dans l'app : 4 cartes, mensuel / annuel, Max mis en avant ; un abonné change de formule sur le même abonnement (prorata) ;
   - webhook : la formule vient du prix ; tableau de bord : abonnés et revenu par formule, vidéos gratuites du jour ;
-  - **migration 0008 à appliquer avant de publier** ; les 6 prix Paddle à créer et à mettre dans `wrangler.toml` (BACKEND.md, étape 14).
+  - **migration 0008 à appliquer avant de publier** ; les 6 prix sandbox sont déjà dans `wrangler.toml` (BACKEND.md, étape 14).
 
 ## Base de données D1
 - Migrations appliquées : 0001, 0002, 0003, 0004_lyrics_usage, 0004_cloud_save, 0005_social_accounts (27/10), 0006_admin_support (27/10), 0007_project_covers (28/10).
@@ -86,10 +99,11 @@
 - En cours : « un peu de lag » dans la vidéo exportée, signalé par le propriétaire. La cause n'est pas visible dans le journal. Vidéo exportée et précisions demandées au propriétaire : saccade continue, à chaque coupe, ou lèvres en retard.
 
 ### Comptes, paiements & serveur
-- Nouvelle offre (`compte/formules`) : à faire par le Chef de projet : 3 produits et 6 prix dans Paddle sandbox, identifiants ici et dans `wrangler.toml` (vides pour l'instant : les boutons disent « Bientôt »), redéployer le Worker `workers/cloud-cleanup` (horaires des rappels).
-  - Prix Paddle sandbox (à remplir) : Basic mensuel `pri_…`, Basic annuel `pri_…`, Pro mensuel `pri_…`, Pro annuel `pri_…`, Max mensuel `pri_…`, Max annuel `pri_…`.
-  - Pour App : `acctHas('filters')` pour les filtres (ancien nom `acctPro()` gardé pour la branche `app/filtres`), `acctHas('pack30')` déjà demandé pour le pack de 30, `acctFreeVideo()` = `{usedToday, nextAt}` pour l'écran « vidéo du jour utilisée » (aujourd'hui : la page des formules s'ouvre avec la raison).
-  - Pour Marketing : les textes de la page des formules dans l'app (clés `pl.*`) sont simples, à relire ; la page Tarifs du site reste à faire (4 colonnes).
+- Nouvelle offre (`compte/formules`) : les 6 prix sandbox sont dans `wrangler.toml`. Au Chef de projet : migration 0008, puis redéployer le Worker `workers/cloud-cleanup` (horaires des rappels).
+  - Contrat App / Comptes livré sous les noms exacts : `acctHas(feat)` (dont `pack5`, `pack10`, `pack30`, `filters`, `unlimited`, `nologo`, `text`, `clip`, `cloud`, `lyrics`, `human`), `acctQuota()` → `{left, resetAt}` ou `null`, `acctUseVideo()` → promesse (compte la vidéo du jour sur le serveur), `acctOpen(why, {plan})` (`daily` non connecté → création de compte). Les lignes de l'app que `app/formules` remplace (texte, Clip, packs, export, restauration d'un Clip) sont laissées comme sur main : à fusionner avec `app/formules`. `acctPro()` reste (= Pro ou Max) pour `app/filtres`.
+  - Règles de Juridique appliquées : remise à zéro à minuit (Paris) ; montée immédiate au prorata avec le montant affiché avant ; descente au renouvellement sans remboursement (formule payée gardée jusque-là) ; prix du moment pour un changement ; Max → Pro au-dessus de 20 Go : rien d'effacé, nouvelles sauvegardes bloquées ; rappel : case décochée au texte exact, preuve gardée (date, texte, langue), lien « Ne plus recevoir ce rappel » qui arrête tout de suite sans connexion, en-têtes un clic, rien d'autre dans l'e-mail.
+  - Pas fait (limite Paddle) : descente vers une formule facturée autrement (annuel → mensuel) : refusée avec une explication (arrêter le renouvellement, puis reprendre). Remboursement d'un changement de formule : à la main.
+  - Pour Marketing : textes de la page des formules dans l'app (clés `pl.*`, bandeau `pr.promo`) à relire.
   - Limite connue : l'export se fait sur l'appareil, donc la limite d'1 vidéo par jour est comptée et refusée par le serveur, mais une page modifiée à la main pourrait l'ignorer (comme le logo de fin).
 - Paddle en réel une fois la structure créée : nouveaux produits, prix, clés et webhook, puis `PADDLE_ENV=production`.
 - Microsoft (création du compte bloquée, à retenter) et Apple (programme développeur à 99 $/an).
@@ -125,6 +139,15 @@
 - **À décider** : boutons Pro de la page Tarifs pendant que Paddle est en sandbox (« bientôt » ou Paddle réel) avant toute promo.
 - **À demander** : case « recevoir les nouveautés » à l'inscription (Comptes) ; mots « montage de playback » dans le H1 et JS/CSS en fichiers cachés (App).
 - **Fait (branche `marketing/idees-croissance`)** : recherche « idées de croissance » (concurrents, fonctions, Stalak Pro, acquisition), classée par impact et effort. Document « Stalak — idées de croissance » dans claude.ai ; résumé dans `docs/marketing/IDEES_CROISSANCE.md`.
+- **Fait (branche `marketing/seo`, 30/10)** : référencement du nom « Stalak » et de la niche. Détail dans `docs/marketing/SEO.md` ; plan complet dans le document claude.ai « Stalak — passer premier sur Google ».
+  - Fiche de la marque pour Google (Organization : logo, e-mail, noms) ; liste `SOCIAL` dans `build_site.py` pour les comptes officiels (déclarés en `sameAs` et en liens `rel="me"` dans le pied de page) — **vide pour l'instant, en attente des adresses du propriétaire**.
+  - `llms.txt` pour les IA de recherche ; plan du site passé de 4 à 14 pages (pages légales + comparatif).
+  - Nouvelles pages **`/alternative-triller`** et **`/en/triller-alternative`** : comparatif sourcé et daté Stalak / Triller / CapCut / camrip, FAQ, données structurées Article + FAQ + fil d'Ariane, liens depuis le pied de page de l'accueil. Vidéo d'exemple affichée seulement si `site_src/demo/exemple.mp4` existe.
+  - **Correction (touche `src/app.js`, à relire par App)** : sur stalak.app, la page française passait en anglais selon la langue du navigateur, donc Google la lisait en anglais (titre anglais sur la recherche « stalak » en France). Elle reste maintenant en français ; l'anglais reste disponible par le bouton FR / EN et `/en/`. La version claude.ai n'est pas touchée.
+- **Au propriétaire** : adresses des comptes Instagram / TikTok / YouTube de Stalak ; une vraie vidéo montée avec Stalak ; vérifier dans Search Console (compte propriétaire) que `sitemap.xml` est envoyé et demander l'indexation ; Bing Webmaster Tools ; inscriptions aux annuaires (liste et textes dans le document).
+- **Suivant (Marketing)** : pages « faire un playback » (FR), « cut multiple takes to the beat » (EN/FR), « lip-sync videos for musicians » (EN), « paroles sur une vidéo TikTok » (FR/EN).
+- **À regarder (App)** : proposer aux visiteurs dont le navigateur est en anglais un petit lien « English version » sur la page française, plutôt que de changer la langue tout seul.
+- **À regarder (Juridique)** : la page de comparaison est de la publicité comparative ; elle ne compare que des faits vérifiables, sourcés et datés. Revoir les prix des concurrents tous les 3 mois.
 
 ## Idées de croissance recommandées (à répartir par le propriétaire)
 

@@ -26,7 +26,18 @@ const r2 = createR2();
 const env = { DB: createD1(join(root, 'migrations')), MEDIA: r2, APP_ORIGIN: origin, DEV_MODE: '1', PADDLE_ENV: 'sandbox', PADDLE_CLIENT_TOKEN: 'test_x',
   // the offer of 30/10 (entitlements.js): Max yearly is left without a price, to see « Bientôt »
   PADDLE_PRICE_BASIC_MONTH: 'pri_basic_m', PADDLE_PRICE_BASIC_YEAR: 'pri_basic_y', PADDLE_PRICE_PRO_MONTH: 'pri_pro_m', PADDLE_PRICE_PRO_YEAR: 'pri_pro_y',
-  PADDLE_PRICE_MAX_MONTH: 'pri_max_m' };
+  PADDLE_PRICE_MAX_MONTH: 'pri_max_m', PADDLE_API_KEY: 'pdl_test_key_not_real' };
+// Paddle, imitated: the preview of a change of plan (23.10 € now for a bigger plan) and the change itself
+const realFetch = globalThis.fetch;
+globalThis.fetch = async (url, init = {}) => {
+  const u = String(url);
+  if (/paddle\.com\/subscriptions\/sub_[\w-]+\/preview$/.test(u)) {
+    const b = JSON.parse(init.body || '{}');
+    return Response.json({ data: { currency_code: 'EUR', immediate_transaction: b.proration_billing_mode === 'prorated_immediately' ? { details: { totals: { grand_total: '2310', currency_code: 'EUR' } } } : null } });
+  }
+  if (/paddle\.com\/subscriptions\/sub_[\w-]+$/.test(u) && init.method === 'PATCH') return Response.json({ data: { status: 'active' } });
+  return realFetch(url, init);
+};
 const fails = [];
 console.log = () => {};   // dev codes etc.
 

@@ -510,16 +510,24 @@ Elle ajoute des colonnes vides et une table : rien d'existant ne change.
 2. Pour chacun, 2 prix récurrents en EUR, taxe incluse : Basic 4,99 €/mois et 39 €/an ; Pro 10,99 €/mois et 109 €/an ;
    Max 13,99 €/mois et 139 €/an. Facultatif mais conseillé : dans chaque prix, « Custom data » `{"plan": "basic"}` (ou `pro`,
    `max`) — le serveur s'en sert si un prix manque dans `wrangler.toml`.
-3. Copie les 6 identifiants `pri_…` dans `wrangler.toml` (`PADDLE_PRICE_BASIC_MONTH`, `…_BASIC_YEAR`, `…_PRO_MONTH`, `…_PRO_YEAR`,
-   `…_MAX_MONTH`, `…_MAX_YEAR`) et dans `docs/STATUS.md`. Une formule sans prix affiche « Bientôt ».
+3. Les 6 identifiants `pri_…` sont dans `wrangler.toml` (`PADDLE_PRICE_BASIC_MONTH`, `…_BASIC_YEAR`, `…_PRO_MONTH`, `…_PRO_YEAR`,
+   `…_MAX_MONTH`, `…_MAX_YEAR` ; ceux de la sandbox, créés le 30/10) et dans `docs/STATUS.md`. En réel : les remplacer.
+   Une formule sans prix affiche « Bientôt ».
 4. Ne supprime pas les 2 prix de la première offre : leurs abonnés gardent leur prix.
-5. Changement de formule (un Pro passe à Max) : bouton dans la page des formules, même abonnement, la différence est payée
-   tout de suite au prorata (`PATCH /subscriptions/{id}`, `on_payment_failure: prevent_change`). Rien à régler dans Paddle.
+5. Changement de formule, sur le même abonnement (règles des conditions de vente) :
+   - plus grande formule (ou mensuel → annuel) : tout de suite, au prorata ; le montant est montré avant de confirmer ;
+   - plus petite formule : au prochain renouvellement, rien n'est remboursé ; la formule payée reste jusque-là ;
+   - plus petite formule facturée autrement (annuel → mensuel) : refusée, la page explique d'arrêter le renouvellement puis de
+     reprendre une formule à la fin (Paddle ne sait pas programmer ce changement).
+   Rien à régler dans Paddle. Un remboursement d'un changement de formule (14 jours) se fait à la main : rembourser dans
+   Paddle, puis remettre l'ancienne formule (même bouton).
 
 ### 14.3 L'e-mail de rappel « Ta vidéo gratuite du jour est disponible »
-- Seulement si la case est cochée (inscription ou page Compte) ; au plus 1 par jour, le lendemain d'une vidéo gratuite,
-  jamais après 7 jours sans visite, jamais à un abonné ; de 10 h à 21 h (Paris). Lien de désabonnement dans chaque e-mail
-  (et en-tête `List-Unsubscribe` pour le bouton « Se désabonner » de Gmail / Apple Mail).
+- Seulement si la case « Me prévenir par e-mail quand ma vidéo du jour est disponible » est cochée (décochée par défaut,
+  inscription ou page Compte) ; preuve gardée (date, texte, langue). Au plus 1 par jour, le lendemain d'une vidéo gratuite,
+  jamais après 7 jours sans visite, jamais à un abonné ; de 10 h à 21 h (Paris) ; rien d'autre dedans (pas d'offre).
+  Lien « Ne plus recevoir ce rappel » qui arrête tout de suite, sans connexion (et en-têtes `List-Unsubscribe` pour Gmail /
+  Apple Mail).
 - Envoi : par le Worker `workers/cloud-cleanup` (2 fois par jour : redéploie-le, `npx wrangler deploy -c workers/cloud-cleanup/wrangler.toml`),
   par `POST /api/cron/reminders` avec `CRON_SECRET`, ou tout seul après les visites du site (au plus toutes les 20 minutes).
 - Il faut `RESEND_API_KEY` (déjà en place). Les lignes du compteur sont effacées après 100 jours.
@@ -540,7 +548,7 @@ Toutes les réponses sont en JSON. Les erreurs ont la forme `{"error":"code","me
 |---|---|
 | `GET /api/config` | Réglages publics : `paddle.environment`, `paddle.clientToken`, `paddle.prices.month` et `.year` ; `auth.providers` = les services de connexion configurés (`google`, `microsoft`, `apple`). |
 | `GET /api/me` | `{user, session, entitlements, subscription}`. `user` = `{id, email, lang, createdAt, displayName, avatarUrl, hasPassword, passwordSetAt, emailVerified, providers}` ; `session` = `{method, recentCode}` (`method` : `signup`, `password`, `password+code`, `reset`, `oauth:google`…, ou `code` pour une session d'avant la v3) ; `entitlements` = `{plan: 'free'|'basic'|'pro'|'max', features: [...], limits: {videosPerDay, lyricsPerDay, lyricsMinutesPerDay, cloudBytes}, outro, cloudSave, clipMode, autoLyrics, packs}` (étape 14) ; `user.reminders` (case du rappel) ; `freeVideo` = `{usedToday, nextAt}` en gratuit, sinon `null`. |
-| `PATCH /api/me` | `{reminders: true|false}` (rappel de la vidéo gratuite) et/ou `{displayName}` : 2 à 30 caractères (espaces regroupés, caractères invisibles retirés), `null` ou `""` pour l'effacer. Renvoie la même chose que `/api/me`. Erreur `invalid_name`. |
+| `PATCH /api/me` | `{reminders: true|false, lang}` (rappel de la vidéo gratuite ; preuve gardée avec la langue de la page) et/ou `{displayName}` : 2 à 30 caractères (espaces regroupés, caractères invisibles retirés), `null` ou `""` pour l'effacer. Renvoie la même chose que `/api/me`. Erreur `invalid_name`. |
 | `PUT /api/me/avatar` | Corps = l'image brute, `Content-Type: image/jpeg`, `image/webp` ou `image/png` (vérifié avec les premiers octets du fichier), 80 Ko maximum, 20 changements par heure. Renvoie `{avatarUrl}`. Erreurs `invalid_image` (415), `too_large` (413). |
 | `GET /api/me/avatar?v=…` | La photo, **seulement pour la personne connectée** (sinon 401 / 404). `Cache-Control: private, max-age=31536000, immutable` : l'adresse change à chaque nouvelle photo (`v` = date de mise à jour). |
 | `DELETE /api/me/avatar` | Retire la photo. |
@@ -557,9 +565,9 @@ Toutes les réponses sont en JSON. Les erreurs ont la forme `{"error":"code","me
 | `POST /api/auth/logout` | Supprime la session. |
 | `POST /api/paddle/webhook` | Pour Paddle uniquement (signature vérifiée). |
 | `POST /api/paddle/portal` | `{url, cancelUrl, updatePaymentUrl}` : liens temporaires vers l'espace client Paddle. |
-| `POST /api/paddle/change` | `{plan: 'basic'|'pro'|'max', interval: 'month'|'year'}` : un abonné change de formule sur le **même** abonnement (prorata immédiat). `404 no_subscription`, `409 same_plan` / `subscription_ending` / `not_configured`. 10 par heure. La formule change au webhook. |
+| `POST /api/paddle/change` | `{plan: 'basic'|'pro'|'max', interval: 'month'|'year', preview?}` : un abonné change de formule sur le **même** abonnement. Plus grande : tout de suite au prorata ; plus petite : au renouvellement (formule payée gardée). `preview: true` : `{kind, amount (centimes), currency, effectiveAt}` sans rien changer. `404 no_subscription`, `409 same_plan` / `subscription_ending` / `not_configured` / `change_at_renewal`. 10 par heure. La formule change au webhook. |
 | `POST /api/videos/claim` | `{video}` (8-40 caractères) : le « jeton du jour » avant un export gratuit. Compte obligatoire (`401`). Gratuit : `{token, day, nextAt}` la première fois du jour de Paris (le même `video` peut redemander), sinon `429 daily_video_used` avec `nextAt`. Formules payantes : `{unlimited: true}`. 60 par heure. |
-| `GET` / `POST /api/reminders/stop?u=&t=` | Lien de désabonnement des rappels (clé aléatoire par compte) : `GET` montre un bouton, `POST` désabonne (aussi « un clic » RFC 8058). `404` si le lien n'est pas valable. |
+| `GET` / `POST /api/reminders/stop?u=&t=` | Lien de désabonnement des rappels (clé aléatoire par compte) : désabonne tout de suite, sans connexion (`POST` : « un clic » RFC 8058). `404` si le lien n'est pas valable. |
 | `POST /api/cron/reminders` | Envoie les rappels dus, pour un cron externe : `Authorization: Bearer <CRON_SECRET>` (sinon `404`). |
 | `GET /api/projects` | `{projects: [{id, name, size, mediaBytes, createdAt, updatedAt, openedAt, coverUrl}], storage: {available, used, quota, partSize, maxFile}}` (sans le contenu). `available` = le bucket R2 est relié. |
 | `GET /api/projects/:id` | `{id, name, state, updatedAt, mediaBytes, files: [{id, name, type, size}]}`. Compte comme une ouverture (règle des 6 mois). |

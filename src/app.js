@@ -1639,6 +1639,9 @@ let LANG = (() => {
   try { const q = new URLSearchParams(location.search).get('lang'); if (LANGS.includes(q)) return q; } catch(e){}
   const saved = store.get('stalak:lang'); if (LANGS.includes(saved)) return saved;
   try { if (/^\/en(\/|$)/.test(location.pathname) || document.documentElement.getAttribute('lang') === 'en') return 'en'; } catch(e){}
+  // Marketing & croissance (SEO) : sur stalak.app, la page française reste en français (Google la lisait en anglais) ;
+  // le visiteur choisit l'anglais avec le bouton FR / EN ou la page /en/. La version claude.ai (sans balise canonical) suit la langue du navigateur.
+  try { if (document.documentElement.getAttribute('lang') === 'fr' && document.querySelector('link[rel="canonical"]')) return 'fr'; } catch(e){}
   const nl = (navigator.languages && navigator.languages[0]) || navigator.language || '';
   return /^fr/i.test(nl) ? 'fr' : 'en';
 })();

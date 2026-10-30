@@ -1,0 +1,19 @@
+# Stalak
+
+> Stalak (https://stalak.app) is a free web app that edits lip-sync videos for musicians and rappers. You import your song and several takes of you singing along; Stalak cuts between the takes on the beat, keeps the lip sync, adds the lyrics on screen and exports for TikTok, Instagram Reels, YouTube Shorts or a 16:9 YouTube video. Editing runs in the browser, on iPhone, Android or computer. French and English.
+
+Stalak is not related to the Dofus game creature of the same name.
+
+## Main pages
+- [Stalak (French)](https://stalak.app/): the editor, with "Stalak, c'est quoi ?" explaining the product.
+- [Stalak (English)](https://stalak.app/en/): same app in English.
+- [Pricing (French)](https://stalak.app/tarifs): free plan and Stalak Pro (€9.99 a month or €79 a year).
+- [Pricing (English)](https://stalak.app/en/pricing): same in English.
+- [Triller alternative (English)](https://stalak.app/en/triller-alternative): honest comparison of Stalak, Triller, CapCut and camrip for lip-sync videos, with sources and dates.
+- [Alternative à Triller (French)](https://stalak.app/alternative-triller): same comparison in French.
+
+## Facts
+- Free plan: automatic editing on the beats, the words or every bar; on-screen lyrics; 9:16 export; a 3-second Stalak logo at the end.
+- Stalak Pro: no logo, 16:9 music video mode with effects, packs of 5, 10 or 30 different videos from one song, word-by-word and karaoke lyrics, automatic lyrics transcription, online project saving.
+- Payments are handled by Paddle. Full refund within 14 days.
+- Contact: contact@stalak.app

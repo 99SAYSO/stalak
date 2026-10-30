@@ -7,10 +7,10 @@ Build the site first (python3 build_site.py …), then run node tests/ui/cloud-s
 run): the real Functions on node:sqlite. Accounts come from /__test/login?email=…&pro=1&plan=basic|pro|max (or pro=0).
 In that server, Max yearly has no Paddle price: its button must say « Bientôt ».
 Checks: signed out, FR, 390 px: 4 cards (Max first on a phone), prices, the yearly switch (Basic 3,25 €/mois, 39 € a year,
-« Économise 35 % »), a plan asks to sign in, the export asks for a free account; free, EN, 1280 px: 4 cards side by side
-(Gratuit → Max), a real export from the example uses the free video of the day, a second one opens the plans page with the
-reason, the account page says so, the reminder box is saved; Basic at 390 px: unlimited exports, no reminder box; Pro at
-1280 px: « Ta formule », « Passer à Max » asks to confirm first; Max: the perks list with « Parler à un humain »; no horizontal
+« Économise 35 % »), a plan asks to sign in, the free video needs an account; free, EN, 1280 px: 4 cards side by side
+(Gratuit → Max), 1 free video a day (the server refuses the 2nd; App's export calls the same route), the account page says
+so, the reminder box is saved; Basic at 390 px: unlimited exports, no reminder box; Pro at
+1280 px: « Ta formule », « Passer à Max » shows today's price before confirming, Basic starts at the renewal; Max: the perks list with « Parler à un humain »; no horizontal
 scroll; no page error. Run this file by absolute path from a clean directory."""
 import asyncio, json, os, sys, urllib.request
 from playwright.async_api import async_playwright
@@ -128,13 +128,9 @@ async def main():
         await pg.tap('#apBuy [data-buy=basic]')
         await pg.wait_for_selector('#apLogin:not([hidden])', timeout=5000)
         check('fr-390 signed out: a plan asks to sign in first', True)
-        await close_pages(pg)
-        await demo_ready(pg)
-        r = await export_once(pg, 20000)
-        await pg.wait_for_selector('#apLogin:not([hidden])', timeout=5000)
-        w = await why(pg)
-        check('fr-390 signed out: the export asks for a free account', not r['result'] and 'compte gratuit' in w, (r, w))
-        await shot(pg, 'export-signedout-fr-390')
+        # (signed out, an export opens « Créer un compte »: App's side, acctOpen('daily'), tests/ui/formules_ui.py)
+        r = await pg.evaluate("() => fetch('/api/videos/claim', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{\"video\":\"vid_anon0001\"}' }).then(r => r.status)")
+        check('fr-390 signed out: the free video needs an account (401)', r == 401, r)
         check('fr-390: no page error', not err, err)
         await ctx.close()
 
@@ -149,15 +145,13 @@ async def main():
         await shot(pg, 'plans-en-1280')
         await shot(pg, 'plans-en-1280-full', True)
         await close_pages(pg)
-        await demo_ready(pg)
-        r1 = await export_once(pg)
-        check('en-1280 free: the first export of the day works', r1['result'] and not r1['plans'], r1)
-        me = json.loads(await pg.evaluate("() => fetch('/api/me').then(r => r.text())"))
-        check('en-1280 free: counted by the server (used today)', me['freeVideo']['usedToday'] is True, me['freeVideo'])
-        r2 = await export_once(pg)
-        w = await why(pg)
-        check('en-1280 free: a second export opens the plans page with the reason', r2['plans'] and 'free video of the day is done' in w and 'midnight' in w, (r2, w))
-        await shot(pg, 'daily-used-en-1280')
+        # the « jeton du jour » (App calls acctUseVideo() after an export: the same request)
+        claim = "v => fetch('/api/videos/claim', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ video: v }) }).then(r => r.status)"
+        s1 = await pg.evaluate(claim, 'vid_first001')
+        s2 = await pg.evaluate(claim, 'vid_second02')
+        check('en-1280 free: 1 video a day (the 2nd is refused by the server)', s1 == 200 and s2 == 429, (s1, s2))
+        await pg.reload(wait_until='load')
+        await pg.wait_for_function("() => !document.querySelector('#acctBtn').hidden", timeout=15000)
         await pg.evaluate("() => { location.hash = '#compte'; }")
         await pg.wait_for_selector('#apAccount:not([hidden])', timeout=8000)
         fv = await pg.inner_text('#apFv')
@@ -176,7 +170,8 @@ async def main():
         await demo_ready(pg)
         a = await export_once(pg); b = await export_once(pg)
         check('fr-390 Basic: two exports in a row, no limit', a['result'] and b['result'] and not b['plans'], (a, b))
-        check('fr-390 Basic: Clip still tagged PRO, text sizes unlocked', await pg.evaluate("() => document.querySelector('#kindSeg button[data-v=clip]').classList.contains('protag') && !document.querySelector('#stSize button.protag')"))
+        # (the text sizes for Basic, and the tags BASIC / PRO / MAX: App's side, branch app/formules)
+        check('fr-390 Basic: Clip still tagged PRO', await pg.evaluate("() => document.querySelector('#kindSeg button[data-v=clip]').classList.contains('protag')"))
         await pg.evaluate("() => { location.hash = '#compte'; }")
         await pg.wait_for_selector('#apAccount:not([hidden])', timeout=8000)
         sub = await pg.inner_text('#apSubT')
@@ -197,10 +192,17 @@ async def main():
         perks = await pg.inner_text('#apPerks')
         check('fr-1280 Pro: its perks (20 a day, 20 Go), not Max', '20 fois par jour' in perks and '20 Go' in perks and 'humain' not in perks, perks)
         await pg.click('#apBuy [data-buy=max]')
-        await pg.wait_for_timeout(200)
+        await pg.wait_for_function("() => /23,10/.test(document.querySelector('.pl-max [data-pl=note]').textContent)", timeout=8000)
         b = await pg.inner_text('#apBuy [data-buy=max]')
         note = await pg.inner_text('.pl-max [data-pl=note]')
-        check('fr-1280 Pro: a first tap asks to confirm (prorated)', b == 'Confirmer : passer à Max' and 'prorata' in note, (b, note))
+        check('fr-1280 Pro: a first tap shows the price of today and asks to confirm', b == 'Confirmer : passer à Max' and '23,10' in note and 'prorata' in note, (b, note))
+        await pg.click('#apBuy [data-buy=basic]')
+        await pg.wait_for_function("() => /renouvellement/.test(document.querySelector('.pl-basic [data-pl=note]').textContent)", timeout=8000)
+        note = await pg.inner_text('.pl-basic [data-pl=note]')
+        check('fr-1280 Pro: a smaller plan starts at the renewal, nothing refunded', 'rien n’est remboursé' in note and 'Pro reste actif' in note, note)
+        await pg.click('#apBuy [data-buy=basic]')
+        await pg.wait_for_function("() => /commence le/.test(document.querySelector('#apMsgT').textContent)", timeout=8000)
+        check('fr-1280 Pro: the change to Basic is planned for the renewal', 'Basic commence le' in await pg.inner_text('#apMsgT'))
         await shot(pg, 'plans-pro-fr-1280')
         check('fr-1280 Pro: no page error', not err, err)
         await ctx.close()
@@ -220,7 +222,7 @@ async def main():
         await pg.evaluate("() => { location.hash = '#inscription'; }")
         await pg.wait_for_selector('#apUpF:not([hidden])', timeout=8000)
         lbl = await pg.inner_text('label[for=apUpRemind]')
-        check('fr-390 sign-up: the reminder box, not ticked', not await pg.is_checked('#apUpRemind') and 'vidéo gratuite du jour' in lbl, lbl)
+        check('fr-390 sign-up: the reminder box, not ticked, with the words of the conditions', not await pg.is_checked('#apUpRemind') and lbl.strip() == 'Me prévenir par e-mail quand ma vidéo du jour est disponible', lbl)
         check('fr-390 sign-up: no horizontal scroll', await no_scroll(pg))
         await shot(pg, 'signup-fr-390')
         await ctx.close()
