@@ -1,4 +1,4 @@
-Statut : PRÊT
+Statut : EN COURS (adaptation à l'offre hybride du 30/10 au soir : Pro / Creator Plus, filigrane, pub récompensée)
 Branche : app/formules. Contient `app/filtres` (validée par le propriétaire le 30/10) et `compte/formules` : une seule fusion suffit.
 
 Résumé :
