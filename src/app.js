@@ -359,20 +359,22 @@ const I18N_EN = /*@EN*/{
   "ly.del": "Delete line {n}",
   "ly.removed": "Line deleted: “{text}”.",
   "ly.undo": "Undo",
-  "_bloc.app.formules": "App & montage : formules et vidéo du jour",
-  "acct.outroBasic": "Remove it with Basic",
-  "acct.why.pack30": "Packs of 30 videos come with Max.",
-  "ap.whyIn.pack30": "Packs of 30 videos come with Max. Sign in or create an account to get it.",
-  "acct.why.daily": "Unlimited videos start with Basic.",
-  "ap.whyIn.daily": "Free videos need a free account: 1 video a day. Sign in or create your account.",
-  "day.t": "Today’s video is done ✓",
-  "day.p": "Come back tomorrow, or switch to Basic for unlimited videos.",
-  "day.left": "Next free video in {t}.",
-  "day.hm": "{h} h {m}",
-  "day.m": "{m} min",
-  "day.ready": "Your next free video is ready.",
-  "day.go": "Switch to Basic",
-  "day.close": "Come back tomorrow",
+  "_bloc.app.formules": "App & montage : formules, filigrane et pub récompensée (offre du 30/10 au soir)",
+  "acct.why.nowm": "No watermark and no ads with Pro.",
+  "ap.whyIn.nowm": "No watermark and no ads with Pro. Sign in or create an account to get it.",
+  "acct.why.fx": "Premium effects come with Pro.",
+  "ap.whyIn.fx": "Premium effects come with Pro. Sign in or create an account to get it.",
+  "wm.note": "Free videos carry a small moving watermark: “Clipped with stalak.app”.",
+  "wm.passed": "No watermark on this video ✓",
+  "ad.btn": "Watch an ad (30 s) to remove the watermark",
+  "ad.or": "or go Pro",
+  "ad.load": "Loading the ad…",
+  "ad.ok": "Thanks! Your next video comes out without the watermark.",
+  "ad.okRe": "Thanks! Making your video again without the watermark…",
+  "ad.closed": "Ad closed before the end: the watermark stays.",
+  "ad.none": "No ad available right now. Try again in a moment.",
+  "ad.na": "Ads can’t play on this device.",
+  "pack.need3": "A pack needs at least 3 playbacks (sung takes).",
   "_bloc.app.filtres": "App & montage : filtres vidéo",
   "filt.title": "Filter",
   "filt.hint": "One look for the whole video. The lyrics stay on top, unchanged.",
@@ -410,7 +412,7 @@ const I18N_EN = /*@EN*/{
   "filt.st": "Filter: {name}.",
   "filt.st.pro": "Filter: {name}. You can try it here; exporting with it comes with Stalak Pro.",
   "filt.aria": "Filter {name}",
-  "acct.why.filters": "All the filters come with Pro. Free and Basic have 3.",
+  "acct.why.filters": "All the filters come with Pro.",
   "ap.whyIn.filters": "All the filters come with Pro. Sign in or create an account to get it.",
   "ly.st.paste": "Paste your lyrics first, one line per row.",
   "tap.nextLine": "Next line: {text}",
@@ -625,8 +627,8 @@ const I18N_EN = /*@EN*/{
   "lyr.e.pro": "Automatic lyrics are part of Stalak Pro.",
   "lyr.e.unavail": "Automatic lyrics aren’t available right now. Try again later, or paste your lyrics.",
   "lyr.e.fail": "The transcription didn’t work. Try again, or paste your lyrics.",
-  "acct.why.lyrics": "Automatic lyrics are part of Stalak Pro.",
-  "ap.whyIn.lyrics": "Automatic lyrics are part of Stalak Pro. Sign in or create an account to get it.",
+  "acct.why.lyrics": "Automatic lyrics come with Pro.",
+  "ap.whyIn.lyrics": "Automatic lyrics come with Pro. Sign in or create an account to get it.",
   "lyr.vox.pick": "Got the vocals alone (a cappella)? Import them for an even more accurate transcription",
   "lyr.vox.on": "Vocals alone used: {name}",
   "lyr.vox.del": "Remove",
@@ -831,10 +833,10 @@ const I18N_EN = /*@EN*/{
   "ap.oauth.oauth_no_email": "That account didn’t give us an email. Create an account with your email instead.",
   "ap.oauth.not_enabled": "This sign-in option isn’t available yet.",
   "ap.oauth.oauth_failed": "Sign-in didn’t work. Try again, or use your email.",
-  "acct.why.pack": "Packs of 5 and 10 videos come with Pro.",
-  "ap.whyIn.pack": "Packs of 5 and 10 videos come with Pro. Sign in or create an account to get it.",
+  "acct.why.pack": "Packs of 5 to 30 videos come with Creator Plus (from 3 playbacks).",
+  "ap.whyIn.pack": "Packs of 5 to 30 videos come with Creator Plus. Sign in or create an account to get it.",
   "acct.perk6": "Every text size and style: word by word, karaoke",
-  "acct.why.text": "All text sizes and styles start with Basic.",
+  "acct.why.text": "Word by word, karaoke and all text sizes come with Pro.",
   "pr.promo": "Unlimited videos, no logo, from <b>€3.25/mo</b> with Basic yearly",
   "pr.sub": "Stalak edits your videos for you. With a plan, you post more, faster, and every video looks studio-made.",
   "pr.popular": "Best value",
@@ -1209,20 +1211,22 @@ const I18N_FR = /*@FR*/{
   "ly.del": "Supprimer la ligne {n}",
   "ly.removed": "Ligne supprimée : « {text} ».",
   "ly.undo": "Annuler",
-  "_bloc.app.formules": "App & montage : formules et vidéo du jour",
-  "acct.outroBasic": "L’enlever avec Basic",
-  "acct.why.pack30": "Les packs de 30 vidéos, c’est avec Max.",
-  "ap.whyIn.pack30": "Les packs de 30 vidéos, c’est avec Max. Connecte-toi ou crée un compte pour en profiter.",
-  "acct.why.daily": "Les vidéos illimitées, c’est dès Basic.",
-  "ap.whyIn.daily": "Les vidéos gratuites demandent un compte gratuit : 1 vidéo par jour. Connecte-toi ou crée ton compte.",
-  "day.t": "Ta vidéo du jour est faite ✓",
-  "day.p": "Reviens demain, ou passe à Basic pour des vidéos illimitées.",
-  "day.left": "Prochaine vidéo gratuite dans {t}.",
-  "day.hm": "{h} h {m}",
-  "day.m": "{m} min",
-  "day.ready": "Ta prochaine vidéo gratuite est disponible.",
-  "day.go": "Passer à Basic",
-  "day.close": "Revenir demain",
+  "_bloc.app.formules": "App & montage : formules, filigrane et pub récompensée (offre du 30/10 au soir)",
+  "acct.why.nowm": "Ni filigrane ni pub avec Pro.",
+  "ap.whyIn.nowm": "Ni filigrane ni pub avec Pro. Connecte-toi ou crée un compte pour en profiter.",
+  "acct.why.fx": "Les effets premium, c’est avec Pro.",
+  "ap.whyIn.fx": "Les effets premium, c’est avec Pro. Connecte-toi ou crée un compte pour en profiter.",
+  "wm.note": "Les vidéos gratuites ont un petit filigrane qui bouge : « Clipped with stalak.app ».",
+  "wm.passed": "Pas de filigrane sur cette vidéo ✓",
+  "ad.btn": "Regarder une pub (30 s) pour enlever le filigrane",
+  "ad.or": "ou passe à Pro",
+  "ad.load": "Chargement de la pub…",
+  "ad.ok": "Merci ! Ta prochaine vidéo sort sans filigrane.",
+  "ad.okRe": "Merci ! Je refais ta vidéo sans filigrane…",
+  "ad.closed": "Pub fermée avant la fin : le filigrane reste.",
+  "ad.none": "Pas de pub disponible pour l’instant. Réessaie dans un moment.",
+  "ad.na": "Les pubs ne peuvent pas passer sur cet appareil.",
+  "pack.need3": "Le pack demande au moins 3 playbacks (prises chantées).",
   "_bloc.app.filtres": "App & montage : filtres vidéo",
   "filt.title": "Filtre",
   "filt.hint": "Un style pour toute la vidéo. Les paroles restent au-dessus, sans changer.",
@@ -1260,7 +1264,7 @@ const I18N_FR = /*@FR*/{
   "filt.st": "Filtre : {name}.",
   "filt.st.pro": "Filtre : {name}. Tu peux l’essayer ici ; l’export avec ce filtre fait partie de Stalak Pro.",
   "filt.aria": "Filtre {name}",
-  "acct.why.filters": "Tous les filtres, c’est avec Pro. Gratuit et Basic en ont 3.",
+  "acct.why.filters": "Tous les filtres, c’est avec Pro.",
   "ap.whyIn.filters": "Tous les filtres, c’est avec Pro. Connecte-toi ou crée un compte pour en profiter.",
   "ly.st.paste": "Colle d’abord tes paroles, une phrase par ligne.",
   "tap.nextLine": "Prochaine phrase : {text}",
@@ -1470,8 +1474,8 @@ const I18N_FR = /*@FR*/{
   "lyr.e.pro": "Les paroles automatiques font partie de Stalak Pro.",
   "lyr.e.unavail": "Les paroles automatiques ne sont pas disponibles pour le moment. Réessaie plus tard, ou colle tes paroles.",
   "lyr.e.fail": "La transcription n’a pas marché. Réessaie, ou colle tes paroles.",
-  "acct.why.lyrics": "Les paroles automatiques font partie de Stalak Pro.",
-  "ap.whyIn.lyrics": "Les paroles automatiques font partie de Stalak Pro. Connecte-toi ou crée un compte pour en profiter.",
+  "acct.why.lyrics": "Les paroles automatiques, c’est avec Pro.",
+  "ap.whyIn.lyrics": "Les paroles automatiques, c’est avec Pro. Connecte-toi ou crée un compte pour en profiter.",
   "lyr.vox.pick": "Tu as la voix seule (a cappella) ? Importe-la pour une transcription encore plus précise",
   "lyr.vox.on": "Voix seule utilisée : {name}",
   "lyr.vox.del": "Retirer",
@@ -1590,10 +1594,10 @@ const I18N_FR = /*@FR*/{
   "ap.oauth.oauth_no_email": "Ce compte ne nous a pas donné d’e-mail. Crée plutôt un compte avec ton e-mail.",
   "ap.oauth.not_enabled": "Ce mode de connexion n’est pas encore disponible.",
   "ap.oauth.oauth_failed": "La connexion n’a pas marché. Réessaie, ou utilise ton e-mail.",
-  "acct.why.pack": "Les packs de 5 et 10 vidéos, c’est avec Pro.",
-  "ap.whyIn.pack": "Les packs de 5 et 10 vidéos, c’est avec Pro. Connecte-toi ou crée un compte pour en profiter.",
+  "acct.why.pack": "Les packs de 5 à 30 vidéos, c’est avec Creator Plus (à partir de 3 playbacks).",
+  "ap.whyIn.pack": "Les packs de 5 à 30 vidéos, c’est avec Creator Plus. Connecte-toi ou crée un compte pour en profiter.",
   "acct.perk6": "Toutes les tailles et apparitions du texte : mot par mot, karaoké",
-  "acct.why.text": "Toutes les tailles et apparitions du texte, c’est dès Basic.",
+  "acct.why.text": "Le mot par mot, le karaoké et toutes les tailles du texte, c’est avec Pro.",
   "cl.ok": "OK",
   "cl.saveT": "Sauvegarder en ligne",
   "cl.savingT": "Sauvegarde de « {name} »",
@@ -3401,7 +3405,7 @@ const FX_ICON = {
 };
 const fxSvg = type => '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' + FX_ICON[type] + '</svg>';
 const FX_NONE = [];
-const fxOn = () => isClip() && S.fxLevel !== 'aucun' && !!S.song;
+const fxOn = () => isClip() && S.fxLevel !== 'aucun' && !!S.song && can('fx');
 /* the effect controls are shown: a clip, effects not turned off */
 const fxUi = () => fxOn() && S.cuts.length > 0;
 function spbNow(){ const bt = S.song.beats; return bt.length > 1 ? bt[1] - bt[0] : 60 / S.song.bpm; }
@@ -3885,6 +3889,7 @@ function drawComposite(c, d, pics, overlay, t){
   if (d.black > 0.001){ c.fillStyle = 'rgba(0,0,0,' + Math.min(1, d.black).toFixed(4) + ')'; c.fillRect(0, 0, W, H); }
   filtPass(c, t);
   drawLyrics(c, t);
+  if (c === g && wmShow()) wmDraw(c, t, W, H);
   if (overlay) fxLabel(c, d.A.cut.take);
 }
 
@@ -4528,7 +4533,7 @@ async function trPost(body){
 async function transcribeLyrics(){
   if (!S.song || trBusy || autoBusy || S.exporting) return;
   if (!trAvail()) return;
-  if (!acctHas('lyrics')){ acctOpen('lyrics'); return; }
+  if (!can('lyrics')){ lockOpen('lyrics'); return; }
   const a = Math.max(0, S.segStart - 1), b = Math.min(S.song.duration, S.segEnd + 1);
   if (b - a > TR_MAX + 2){ say('lyr.e.long'); return; }
   if (typeof navigator !== 'undefined' && navigator.onLine === false){ say('lyr.e.network'); return; }
@@ -4596,12 +4601,12 @@ async function transcribeLyrics(){
     const k = trError(e && e.code, e && e.status);
     diag('paroles auto : erreur ' + ((e && (e.code + ' ' + (e.status || ''))) || e) + ' ' + (e && e.message || ''));
     say(k);
-    if (k === 'lyr.e.pro') acctOpen('lyrics');
+    if (k === 'lyr.e.pro') lockOpen('lyrics');
   } finally { clearInterval(trTick); trTick = null; trBusy = false; progress(null); trUi(); trv.L = trv.R = trv.oc = trv.om = null; }   // (the ~8 MB of work buffers go back)
 }
 /* the « Transcription auto » panel: Pro tag, the button's words, busy state; on the claude.ai page, the « stalak.app only » note */
 function trUi(){
-  const avail = trAvail(), pro = acctHas('lyrics'), ab = $('#lyrMode button[data-mode="auto"]');
+  const avail = trAvail(), pro = can('lyrics'), ab = $('#lyrMode button[data-mode="auto"]');
   if (ab) ab.classList.toggle('protag', avail && !pro);
   $('#lyTr').hidden = !avail; $('#lyTrNA').hidden = avail;
   const has = S.lyrics.lines.some(l => l.t != null);
@@ -4976,65 +4981,137 @@ function filtOverlay(c, idx, t, lw, lh){
   }
 }
 /*FILTERS@*/
-/* ---------- the plans (Gratuit / Basic / Pro / Max): what each one unlocks in the app ----------
-   One table, FEAT_PLAN: the smallest plan that has each feature. The account side (Comptes) answers acctHas(feat) for the
-   person signed in; until that function exists, the rule before the new offer stays: everything with Stalak Pro.
-   On the claude.ai page there are no accounts (ACCT is null): everything is open, as before.
-   Features: nologo (no Stalak ending), text (all text sizes and appearances), unlimited (more than 1 video a day),
-   filters (all the filters; 3 are free), clip (16:9 Clip mode), pack5, pack10, pack30. */
-const FEAT_PLAN = { nologo: 'basic', text: 'basic', unlimited: 'basic', filters: 'pro', clip: 'pro', pack5: 'pro', pack10: 'pro', pack30: 'max' };
-const PLAN_TAG = { basic: 'BASIC', pro: 'PRO', max: 'MAX' };
+/* ---------- the plans (offer of 30/10 in the evening): Gratuit / Stalak Pro / Stalak Creator Plus ----------
+   One table, FEAT_PLAN: the plan that has each feature. The account side (Comptes) answers acctHas(feat) for the person
+   signed in. On the claude.ai page there are no accounts (ACCT is null): everything is open, with the watermark.
+   Features: nowm (no watermark, no ad), clip (16:9 Clip mode), fx (premium effects), text (word by word, karaoke, all
+   sizes), filters (all the filters; 3 are free), lyrics (automatic lyrics) → Pro; pack5, pack10, pack30 (from 3 playbacks),
+   cloud, human → Creator Plus. Free needs no account: unlimited exports, with a moving watermark that a rewarded ad
+   removes from one video. */
+const FEAT_PLAN = { nowm: 'pro', clip: 'pro', fx: 'pro', text: 'pro', filters: 'pro', lyrics: 'pro', pack5: 'creator', pack10: 'creator', pack30: 'creator', cloud: 'creator', human: 'creator' };
+const PLAN_TAG = { pro: 'PRO', creator: 'CREATOR+' };
 function can(feat){
-  if (!ACCT) return true;
+  if (!ACCT) return feat !== 'nowm';
   if (typeof acctHas === 'function') return !!acctHas(feat);
   return acctPro();
 }
 /* a padlock: opens the plans page on the plan that unlocks feat (why: the sentence shown at the top of that page) */
 function lockOpen(feat, why){ acctOpen(why || feat, { plan: FEAT_PLAN[feat] || 'pro' }); }
-/* the small tag on a locked control: the plan's name (BASIC, PRO, MAX), or nothing when it is open */
+/* the small tag on a locked control: the plan's name (PRO, CREATOR+), or nothing when it is open */
 function planTag(el, feat, on){
   if (!el) return; const locked = on == null ? !!ACCT && !can(feat) : !!on;
   el.classList.toggle('protag', locked); if (locked) el.dataset.plan = PLAN_TAG[FEAT_PLAN[feat]] || 'PRO'; else delete el.dataset.plan;
 }
 const packFeat = n => +n >= 30 ? 'pack30' : +n >= 10 ? 'pack10' : 'pack5';
-/* « 1 vidéo par jour » (free plan): what the account side says is left today. acctQuota() (Comptes) gives
-   { left, resetAt } (resetAt: when the next free video comes, in ms); without it, no limit is applied here. */
-function dayQuota(){
-  if (!ACCT || can('unlimited') || typeof acctQuota !== 'function') return null;
-  try { const q = acctQuota(); return q && typeof q.left === 'number' ? q : null; } catch(e){ return null; }
-}
-/* before an export: a free account that has used its video of the day sees « Ta vidéo du jour est faite ✓ » instead.
-   Signed out (the free plan needs an account): the account creation opens. true: the export may go on */
-function dayGate(){
-  if (!ACCT || can('unlimited')) return true;
-  if (!ACCT.state.user && typeof acctQuota === 'function'){ acctOpen('daily'); return false; }
-  const q = dayQuota(); if (!q || q.left > 0) return true;
-  dayDoneOpen(q); return false;
-}
-/* after an export that worked: the account side counts the video of the day */
-function dayUsed(){ if (ACCT && !can('unlimited') && typeof acctUseVideo === 'function'){ try { Promise.resolve(acctUseVideo()).catch(e => diag('vidéo du jour : non comptée (' + (e && e.message || e) + ')')); } catch(e){} } }
-let dayTimer = 0;
-function dayLeftText(q){
-  const ms = Math.max(0, (q && q.resetAt ? q.resetAt : dayMidnight()) - Date.now());
-  if (ms <= 0) return _t('day.ready');
-  const m = Math.ceil(ms / 60000), h = Math.floor(m / 60), mm = m % 60;
-  return _t('day.left', { t: h ? _t('day.hm', { h, m: String(mm).padStart(2, '0') }) : _t('day.m', { m: Math.max(1, mm) }) });
-}
-function dayMidnight(){ const d = new Date(); d.setHours(24, 0, 0, 0); return d.getTime(); }
-function dayDoneOpen(q){
-  const box = $('#dayDone'); if (!box) return;
-  const tick = () => { const cur = dayQuota() || q; $('#dayLeft').textContent = dayLeftText(cur); if (cur && cur.left > 0){ $('#dayLeft').textContent = _t('day.ready'); } };
-  tick(); clearInterval(dayTimer); dayTimer = setInterval(tick, 15000);
-  box.hidden = false; modalOn(true); diag('vidéo du jour : déjà faite, écran affiché');
-  setTimeout(() => { try { $('#dayGo').focus({ preventScroll: true }); } catch(e){} }, 50);
-}
-function dayDoneClose(){ const box = $('#dayDone'); if (!box || box.hidden) return; box.hidden = true; clearInterval(dayTimer); modalOn(false); try { $('#exportBtn').focus({ preventScroll: true }); } catch(e){} }
 /* the padlocks drawn again when the account or the pack size changes */
 function planTags(){
   planTag($('#kindSeg button[data-v="clip"]'), 'clip');
   planTag($('#packBtn'), packFeat($('#packSel') ? $('#packSel').value : 10));
   $$('#stSize button, #stAnim button').forEach(b => { const k = b.closest('#stSize') ? 'size' : 'anim'; planTag(b, 'text', !!ACCT && !can('text') && b.dataset.v !== TEXT_FREE[k]); });
-  const op = $('#outroPro'); if (op) setT(op, 'acct.outroBasic');
+  $$('#fxSeg button').forEach(b => planTag(b, 'fx', !!ACCT && !can('fx') && b.dataset.v !== 'aucun'));
+  adUI();
+}
+
+/* ---------- the watermark of free videos: the Stalak logo and « Clipped with stalak.app », moving from corner to corner ----------
+   Drawn on top of everything (lyrics included) in the preview and in the export, from the song's time: a given moment looks
+   the same in both. Sizes are in pixels of the finished video (a share of its short side). Every 6 s it glides (1.2 s)
+   to the next of 4 spots near the edges, so it cannot be cut out with one crop. wmPass: a rewarded ad watched for this video. */
+const WM_TEXT = 'Clipped with stalak.app';
+const WM_LOGO = new Image(); WM_LOGO.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'><rect x='4' y='4' width='120' height='120' rx='28' fill='#1f6fd6'/><path d='M5 30V30Q5 5 30 5H98Q123 5 123 30V30L114 30Q111 44 108 50Q104 40 100 30H30Q26 42 22 48Q19 38 16 30Z' fill='#fff' stroke='#0a0d14' stroke-width='4' stroke-linejoin='round'/><rect x='4' y='4' width='120' height='120' rx='28' fill='none' stroke='#0a0d14' stroke-width='7'/><g transform='translate(44 23) scale(.7)' fill='none' stroke-linecap='round' stroke-linejoin='round'><path d='M51 20.0C46 12.0 38 11.0 30 11.0C18 11.0 9 18.0 9 29.0C9 41.0 20 44.0 30 48.0C42 52.0 52 57.0 52 69.0C52 87.0 42 89.0 30 89.0C20 89.0 12 86.0 7 79.0' stroke='#0a0d14' stroke-width='34' transform='translate(3 6)'/><path d='M21.0 100.0Q27.5 114.3 31.0 126.0Q34.5 114.3 41.0 100.0Z' fill='#d6ecff' stroke='#0a0d14' stroke-width='5'/><path d='M51 20.0C46 12.0 38 11.0 30 11.0C18 11.0 9 18.0 9 29.0C9 41.0 20 44.0 30 48.0C42 52.0 52 57.0 52 69.0C52 87.0 42 89.0 30 89.0C20 89.0 12 86.0 7 79.0' stroke='#0a0d14' stroke-width='34'/><path d='M51 20.0C46 12.0 38 11.0 30 11.0C18 11.0 9 18.0 9 29.0C9 41.0 20 44.0 30 48.0C42 52.0 52 57.0 52 69.0C52 87.0 42 89.0 30 89.0C20 89.0 12 86.0 7 79.0' stroke='#fff' stroke-width='22'/></g></svg>");
+let wmPass = false, lastWm = false;
+const wmOn = () => !can('nowm') && !wmPass;
+/* what the picture shows: during an export, what was decided when it started (S.wm); otherwise the plan of now */
+const wmShow = () => S.exporting ? !!S.wm : wmOn();
+function wmBox(c, lw, lh){
+  const m = Math.min(lw, lh), h = Math.round(m * 0.044), fs = Math.round(h * 0.46), pad = Math.round(h * 0.28), lg = Math.round(h * 0.74);
+  c.font = '600 ' + fs + 'px "Rubik", "DM Sans", system-ui, sans-serif';
+  const w = Math.round(pad + lg + pad * 0.8 + c.measureText(WM_TEXT).width + pad * 1.3);
+  return { m, h, fs, pad, lg, w };
+}
+function wmPos(t, lw, lh, B){
+  const mx = B.m * 0.045, my = B.m * 0.06;
+  const spots = [[mx, my], [lw - B.w - mx, lh * 0.30], [lw - B.w - mx, lh - B.h - my], [mx, lh * 0.62]];
+  const P = 6, G = 1.2, tt = Math.max(0, t), i = Math.floor(tt / P) % 4, k = tt % P;
+  const a = spots[i], b = spots[(i + 1) % 4];
+  if (k < P - G) return a;
+  const u = (k - (P - G)) / G, e = u * u * (3 - 2 * u);
+  return [a[0] + (b[0] - a[0]) * e, a[1] + (b[1] - a[1]) * e];
+}
+function wmDraw(c, t, lw, lh){
+  c.save(); const B = wmBox(c, lw, lh), [x, y] = wmPos(t, lw, lh, B);
+  c.globalAlpha = 0.85; c.fillStyle = 'rgba(10,13,20,.38)';
+  c.beginPath(); if (c.roundRect) c.roundRect(x, y, B.w, B.h, B.h / 2); else c.rect(x, y, B.w, B.h); c.fill();
+  if (WM_LOGO.complete && WM_LOGO.naturalWidth) c.drawImage(WM_LOGO, x + B.pad, y + (B.h - B.lg) / 2, B.lg, B.lg);
+  c.fillStyle = '#ffffff'; c.textAlign = 'left'; c.textBaseline = 'middle';
+  c.fillText(WM_TEXT, x + B.pad + B.lg + B.pad * 0.8, y + B.h / 2 + B.fs * 0.04);
+  c.restore();
+}
+
+/* ---------- « Regarder une pub (30 s) pour enlever le filigrane »: a rewarded ad (Google Ad Manager, Google Publisher Tag) ----------
+   Free plan on stalak.app only (the claude.ai page cannot load it). Google's script is loaded only when the button is
+   touched. The reward is for THIS video: the next export goes without the watermark (or, when the video was already made
+   with it, it is made again at once without it), then the watermark is back. Nothing is checked on the server: Google has no
+   such check for the web. Until there is a consent tool, ads are asked in « limited ads » mode. AD_UNIT: Google's test unit,
+   to be replaced by the real one once the Ad Manager account exists. */
+const AD_UNIT = '/22639388115/rewarded_web_example';
+let adBusy = false, gptP = null;
+const adAvail = () => !!ACCT && !can('nowm');
+function adSay(k){ const el = $('#adStatus'); if (!el) return; el.hidden = !k; if (k) setT(el, k); else setT(el, null); }
+function adUI(){
+  const note = $('#outroNote'); if (!note) return;
+  const free = !can('nowm');
+  note.hidden = !free;
+  setT($('#wmNoteT'), wmPass ? 'wm.passed' : 'wm.note');
+  $('#adBtn').hidden = !adAvail() || wmPass; $('#adBtn').disabled = adBusy || S.exporting;
+  $('#outroPro').hidden = !ACCT || !free;
+}
+function gptLoad(){
+  if (window.googletag && googletag.apiReady) return Promise.resolve();
+  if (gptP) return gptP;
+  gptP = new Promise((res, rej) => {
+    window.googletag = window.googletag || { cmd: [] };
+    const s = document.createElement('script'); s.async = true; s.crossOrigin = 'anonymous';
+    s.src = 'https://securepubads.g.doubleclick.net/tag/js/gpt.js';
+    s.onerror = () => { gptP = null; rej(new Error('script')); };
+    document.head.append(s);
+    const t0 = performance.now(), chk = () => { if (window.googletag && googletag.apiReady) return res(); if (performance.now() - t0 > 12000){ gptP = null; return rej(new Error('délai')); } setTimeout(chk, 100); };
+    chk();
+  });
+  return gptP;
+}
+async function adWatch(){
+  if (adBusy || S.exporting || !adAvail()) return;
+  adBusy = true; adUI(); adSay('ad.load');
+  try { await gptLoad(); } catch(e){ diag('pub : script de Google indisponible (' + (e && e.message || e) + ')'); adBusy = false; adUI(); adSay('ad.none'); return; }
+  googletag.cmd.push(() => {
+    const pa = googletag.pubads();
+    try { pa.setPrivacySettings({ limitedAds: true }); } catch(e){}
+    const slot = googletag.defineOutOfPageSlot(AD_UNIT, googletag.enums.OutOfPageFormat.REWARDED);
+    // null: this page or this device cannot show rewarded ads
+    if (!slot){ diag('pub : format récompensé non pris en charge ici'); adBusy = false; adUI(); adSay('ad.na'); return; }
+    slot.addService(pa);
+    let granted = false, done = false;
+    const end = k => {
+      if (done) return; done = true; clearTimeout(timer);
+      try { googletag.destroySlots([slot]); } catch(e){}
+      adBusy = false;
+      if (k === 'ok'){ adReward(); return; }
+      adUI(); adSay(k); diag('pub : ' + k);
+    };
+    const timer = setTimeout(() => end('ad.none'), 15000);
+    pa.addEventListener('rewardedSlotReady', e => { if (e.slot !== slot || done) return; clearTimeout(timer); e.makeRewardedVisible(); adSay(null); });
+    pa.addEventListener('rewardedSlotGranted', e => { if (e.slot === slot) granted = true; });
+    pa.addEventListener('rewardedSlotClosed', e => { if (e.slot === slot) end(granted ? 'ok' : 'ad.closed'); });
+    pa.addEventListener('slotRenderEnded', e => { if (e.slot === slot && e.isEmpty) end('ad.none'); });
+    googletag.enableServices(); googletag.display(slot);
+  });
+}
+/* the reward: no watermark for this video */
+function adReward(){
+  wmPass = true; diag('pub : récompense accordée, pas de filigrane pour cette vidéo');
+  if (!S.playing) showFrame(S.cursor);
+  if (lastBlob && lastWm){ adUI(); adSay('ad.okRe'); exportOne(); }
+  else { adUI(); adSay('ad.ok'); }
 }
 
 /* ---- the filters in the app: preview, thumbnails, export, Stalak Pro ----
@@ -5132,6 +5209,7 @@ function drawFrame(c, cut, t, overlay, src){
   }
   filtPass(c, t);
   const l0 = performance.now(); drawLyrics(c, t); lyrMs = performance.now() - l0;
+  if (c === g && wmShow()) wmDraw(c, t, W, H);
   if (overlay){
     const lbl = takeName(tk).toUpperCase();
     c.save(); c.font = '600 38px "JetBrains Mono", monospace'; const bw = Math.max(230, c.measureText(lbl).width + 70);
@@ -6663,7 +6741,7 @@ async function fontsReady(){
    Drawn on the canvas, in vector (the logo's own SVG paths, design/logo/stalak-A2.svg), so it is sharp in every format.
    Never shown by the preview: only the export draws it. */
 const OUTRO_S = 3, OUTRO_N = OUTRO_S * OUT_FPS;
-function outroOn(){ return ACCT ? !can('nologo') : !S.pro; }
+function outroOn(){ return false; }   // the 3 s Stalak ending is gone (offer of 30/10 in the evening): the watermark replaces it
 // the logo (viewBox -16 -6 370 163): letters (black shadow, black outline, white), then the icicles, each its own path
 const LOGO_LETTERS = 'M51 19.0C46 11.0 38 10.0 30 10.0C18 10.0 9 17.0 9 28.0C9 40.0 20 43.0 30 47.0C42 51.0 52 56.0 52 68.0C52 88.0 42 90.0 30 90.0C20 90.0 12 87.0 7 80.0 M79 14.0L79 76.0Q79 90.0 93 90.0L96 90.0 M68 37.0L97 37.0 M166.0 37.0L166.0 90.0 M166.0 63.5A26.5 26.5 0 1 0 113 63.5A26.5 26.5 0 1 0 166.0 63.5 M193.0 10.0L193.0 90.0 M273.0 37.0L273.0 90.0 M273.0 63.5A26.5 26.5 0 1 0 220.0 63.5A26.5 26.5 0 1 0 273.0 63.5 M302.0 10.0L302.0 90.0 M332.0 37.0L305.0 65.5L334.0 90.0';
 const LOGO_ICICLES = [ // [path, x of the middle, y of the top, y of the tip]
@@ -7072,8 +7150,9 @@ function expGL(){
     const pt = (x, y) => [W/2 + fx * (x*co - y*si), H/2 + x*si + y*co];
     quad([pt(-hw, -hh), pt(hw, -hh), pt(-hw, hh), pt(hw, hh)], !!FP); draw(tVid, pic.img, false);
     if (FP){ gl.bindFramebuffer(gl.FRAMEBUFFER, null); FP.draw(fTex, fi, t, W, H); mine(); }
-    if (lyricsOn(t) || (FP && filtHasOverlay(fi))){
-      const x = R.ox; x.setTransform(RES, 0, 0, RES, 0, 0); x.clearRect(0, 0, W, H); if (FP) filtOverlay(x, fi, t, W, H); drawLyrics(x, t);
+    const wm = wmShow();
+    if (lyricsOn(t) || (FP && filtHasOverlay(fi)) || wm){
+      const x = R.ox; x.setTransform(RES, 0, 0, RES, 0, 0); x.clearRect(0, 0, W, H); if (FP) filtOverlay(x, fi, t, W, H); drawLyrics(x, t); if (wm) wmDraw(x, t, W, H);
       gl.enable(gl.BLEND); quad(full); draw(tOv, R.ov, true);
     }
     return R.cv;
@@ -7089,7 +7168,7 @@ function coverScale(pic){
 }
 const PASS_ON = false;   // off: on Safari the encoder writes other settings for these pictures, the pieces no longer fit
 function passOk(pic, tk, t, job){
-  if (job.noPass || !PASS_ON || S.filter !== 'none' || pic.rot || isMirror(tk) || pic.w !== W || pic.h !== H) return false;
+  if (job.noPass || !PASS_ON || S.filter !== 'none' || S.wm || pic.rot || isMirror(tk) || pic.w !== W || pic.h !== H) return false;
   const vr = pic.img.visibleRect; if (vr && (vr.x || vr.y || vr.width !== W || vr.height !== H)) return false;
   const lt = t - tk.offset; if (lt < -0.05 || lt > tk.duration + 0.05) return false;
   if (S.lyrics.mode !== 'none' && timedLines().some(l => t >= l.t - 0.001 && t < l.end)) return false;
@@ -7375,7 +7454,7 @@ function modalOn(on){
 }
 document.addEventListener('keydown', e => {
   if (e.key !== 'Tab') return;
-  const box = isShown($('#proThx')) ? $('#proThx') : !$('#dayDone').hidden ? $('#dayDone') : !$('#homeAsk').hidden ? $('#homeAsk') : !$('#cloudDlg').hidden ? $('#cloudDlg') : isShown($('#acctPage')) ? $('#acctPage') : !$('#expScreen').hidden ? $('#expScreen') : null; if (!box) return;
+  const box = isShown($('#proThx')) ? $('#proThx') : !$('#homeAsk').hidden ? $('#homeAsk') : !$('#cloudDlg').hidden ? $('#cloudDlg') : isShown($('#acctPage')) ? $('#acctPage') : !$('#expScreen').hidden ? $('#expScreen') : null; if (!box) return;
   const f = [...box.querySelectorAll('button:not([disabled]),input:not([tabindex="-1"]),a[href]')].filter(x => x.offsetParent && !x.closest('[inert]')); if (!f.length) return;
   const i = f.indexOf(document.activeElement);
   if (i < 0){ e.preventDefault(); f[0].focus(); return; }
@@ -7412,8 +7491,7 @@ async function exportOne(){
   logLyrics('export');
   if (!S.cuts.length || S.exporting || exportGate) return;
   if (filtLocked()){ lockOpen('filters'); return; }
-  if (!dayGate()) return;
-  S.packN = 1; beginExport(); const TX = performance.now(); await fontsReady();
+  S.packN = 1; S.wm = wmOn(); beginExport(); const TX = performance.now(); await fontsReady();
   try {
     const vcfg = await pickVideoConfig(), acfg = vcfg && await pickAudioConfig(S.song.buffer.sampleRate);
     let ext = 'mp4';
@@ -7432,7 +7510,9 @@ async function exportOne(){
     const rv = $('#resultVideo'); if (rv.src) URL.revokeObjectURL(rv.src); rv.src = URL.createObjectURL(lastBlob); rv.hidden = false;
     $('#result').hidden = false; postShow(); setT('#saveNote', ext === 'mp4' ? (isClip() ? 'save.mp4clip' : 'save.mp4reel') : 'save.webm');
     say('exp.ready', { mb: (lastBlob.size/1048576).toFixed(1) });
-    dayUsed();
+    // the reward of an ad was for this video: used now
+    lastWm = !!S.wm; if (!S.wm && wmPass){ wmPass = false; diag('pub : vidéo faite sans filigrane, récompense utilisée'); }
+    adUI(); if (!lastWm) adSay(null);
   } catch(e){ diag('export : ' + (e && e.message || e)); if (e.message === 'annulé') say('exp.cancelled'); else say('exp.fail', { msg: e && e.message || e }); }
   endExport();
 }
@@ -7450,7 +7530,7 @@ function shareBroll(list){
 }
 /* pack: N different edits of the same passage, zipped */
 async function exportPack(){
-  { const f = packFeat($('#packSel').value); if (!can(f)){ lockOpen(f, f === 'pack30' ? 'pack30' : 'pack'); return; } }
+  { const f = packFeat($('#packSel').value); if (!can(f)){ lockOpen(f, 'pack'); return; } }
   if (filtLocked()){ lockOpen('filters'); return; }
   logLyrics('pack');
   if (!S.cuts.length || S.exporting || exportGate) return;
@@ -7461,8 +7541,9 @@ async function exportPackRun(){
   const N = +$('#packSel').value; S.packN = N;
   const vcfg = await pickVideoConfig(), acfg = vcfg && await pickAudioConfig(S.song.buffer.sampleRate);
   if (!(vcfg && acfg)){ say('pack.nosupport'); return; }
-  if (readyTakes().length + (S.brollAmt !== 'aucun' && brollPool().length ? 1 : 0) < 2){ say('pack.need2'); return; }
-  beginExport(); await fontsReady();
+  // Creator Plus: a pack needs at least 3 playbacks (sung takes)
+  if (readyTakes().length < 3){ say('pack.need3'); return; }
+  S.wm = wmOn(); beginExport(); await fontsReady();
   const sigs = [], files = [], list = []; let seed = S.seed * 1000 + 1;
   try {
     const T0 = performance.now();
@@ -7716,7 +7797,7 @@ function canGo(n){ if (n <= 1) return true; if (!S.song) return false; if (n ===
 function updateNav(){
   $('#next1').disabled = !canGo(2); $('#next2').disabled = !canGo(3);
   $$('#stepper button').forEach(b => { const n = +b.dataset.go; b.disabled = S.exporting || !canGo(n); b.setAttribute('aria-current', n === S.step ? 'step' : 'false'); b.classList.toggle('done', n < S.step); });
-  $('#outroNote').hidden = !outroOn(); $('#outroPro').hidden = !ACCT;
+  adUI();
   const gap = uncovered(); $('#coverNote').hidden = !gap;
   if (gap){ const n = (gap < 10 ? gap.toFixed(1) : Math.round(gap)) + ' s';
     $('#coverNote').textContent = _t(isClip() ? 'cover.clip' : 'cover.reel', { n }); }
@@ -7947,6 +8028,7 @@ function initPickers(){
   });
   bindSeg('#fmtSeg', v => { stop(true); setFormat(v); });
   bindSeg('#fxSeg', v => {
+    if (v !== 'aucun' && !can('fx')){ $$('#fxSeg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === S.fxLevel)); lockOpen('fx'); return; }
     S.fxLevel = v; store.set('stalak:fx', v); const was = S.playing; stop(true); rebuild(false);
     const n = fxItems().filter(it => it.ok).length, mine = S.fxUser.filter(u => u.type !== 'none').length;
     say(() => v === 'aucun' ? _t('fxl.st.none') + (mine ? _t('fxl.st.mine') : '') : _t(v === 'sobre' ? 'fxl.st.sobre' : 'fxl.st.intense') + tn('fxl.st.n', n));
@@ -7997,9 +8079,7 @@ $('#filtRow').addEventListener('keydown', e => {
 });
 $('#packBtn').onclick = exportPack;
 $('#packSel').addEventListener('change', planTags);
-$('#dayGo').onclick = () => { dayDoneClose(); lockOpen('unlimited', 'daily'); };
-$('#dayClose').onclick = dayDoneClose;
-$('#dayDone').addEventListener('keydown', e => { if (e.key === 'Escape'){ e.preventDefault(); dayDoneClose(); } });
+$('#adBtn').onclick = adWatch;
 $('#cancelBtn').onclick = () => { S.cancel = true; };
 $('#barsSel').onchange = e => { const v = e.target.value; if (v === 'all'){ S.nBars = 0; S.startBar = 0; } else S.nBars = +v; S.locks = []; stop(true); rebuild(false); };
 /* « Tester le rythme »: the passage with a beep on each beat (a higher one, ✂, where a bar starts: where the edit can cut),
@@ -8167,7 +8247,7 @@ bindSeg('#lyTrLang', v => { trLang = v; });
 $('#lyVoxFile').onchange = e => { const f = e.target.files[0]; e.target.value = ''; trVoxFile(f); };
 $('#lyVoxDel').onclick = () => { if (S.song) S.song.vox = null; trUi(); say('lyr.vox.off'); };
 /* « Transcription auto » is Stalak Pro on stalak.app: a PRO tag, and the Pro page (« why ») instead of the panel for the others */
-$('#lyrMode').addEventListener('click', e => { const b = e.target.closest('button[data-mode="auto"]'); if (b && trAvail() && !acctHas('lyrics')){ e.stopPropagation(); acctOpen('lyrics'); } }, true);
+$('#lyrMode').addEventListener('click', e => { const b = e.target.closest('button[data-mode="auto"]'); if (b && trAvail() && !can('lyrics')){ e.stopPropagation(); lockOpen('lyrics'); } }, true);
 if (ACCT) ACCT.onChange(() => trUi());
 trUi();
 $('#tapAgain').onclick = () => { $('#lyText').value = S.lyrics.lines.map(l => l.text).join('\n'); startTap(); };
@@ -9361,7 +9441,7 @@ if (ACCT){
   $$('img[data-emo]').forEach(i => { i.src = '/emoji/' + i.dataset.emo + '.webp?v=2'; });
   $('#acctBtn').onclick = e => { if (!ACCT.state.user){ acctMenu(false); acctOpen(); return; } acctMenu(!amOpen, e.detail === 0); };
   amInit();
-  $('#outroPro').onclick = () => lockOpen('nologo', 'outro');
+  $('#outroPro').onclick = () => lockOpen('nowm');
   $('#apBack').onclick = apBackBtn;
   $('#acctPage').addEventListener('keydown', e => { if (e.key === 'Escape'){ e.stopPropagation(); e.preventDefault(); apBackBtn(); } });
   window.addEventListener('popstate', e => {

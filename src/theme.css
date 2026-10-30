@@ -909,13 +909,14 @@ header .stepper{margin-left:auto}
 .filtnm{max-width:100%;text-align:center;overflow-wrap:anywhere}
 .filtpro{position:absolute;top:5px;right:5px;font:700 9.5px/1 var(--body);letter-spacing:.05em;color:#fff;background:#7a3ff2;border:1.5px solid var(--ink);border-radius:999px;padding:3px 5px}
 @media (prefers-reduced-motion:reduce){.filt canvas{transition:none}}
-/* App & montage : formules — l'écran « Ta vidéo du jour est faite » */
-.daydone .card{text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px}
-.daydone h2{margin:0;font:400 26px/1.15 var(--display);text-wrap:balance}
-.daydone p{margin:0;max-width:34ch}
-.daydone .dayemo{width:96px;height:96px;object-fit:contain}
-.daydone .dayleft{font:700 15px/1.3 var(--body);font-variant-numeric:tabular-nums;color:var(--sky-deep);background:var(--frost);border:2px solid var(--ink);border-radius:999px;padding:8px 14px}
-.daydone .row{justify-content:center;flex-wrap:wrap}
+/* App & montage : offre du 30/10 au soir — filigrane des vidéos gratuites et pub récompensée */
+.wmnote{display:flex;flex-direction:column;gap:6px}
+.wmnote[hidden]{display:none}
+.wmnote .note{margin:0}
+.wmrow{gap:8px 14px;align-items:center;flex-wrap:wrap}
+.btn.ad{white-space:normal;text-align:left}
+.btn.ad::before{content:"▶";font-size:.8em;margin-right:8px}
+.adst{font-weight:600;color:var(--sky-deep)}
 
 /* ---- domaine Comptes, paiements & serveur : the plans (offer of 30/10/2026), Gratuit + Basic / Pro / Max ----
    Monthly / yearly switch, 4 cards (Max first on a phone, Gratuit → Max from left to right on a computer), the 5-column

@@ -1,11 +1,18 @@
-"""Test of what each plan unlocks in the app (Gratuit / Basic / Pro / Max) and of the « Ta vidéo du jour est faite ✓ » screen.
-Python Playwright (chromium).
+"""Test of the offer of 30/10 in the evening in the app: Gratuit / Stalak Pro / Stalak Creator Plus, the moving watermark of
+free videos and the rewarded ad that removes it from one video. Python Playwright (chromium) + ffmpeg.
 
     python3 /abs/path/tests/ui/formules_ui.py <path of a built public/ folder> [folder for screenshots]
 
-The account side (Comptes) is played by the test: acctHas(feat), acctQuota(), acctUseVideo() (the account block of app.js)
-are replaced inside the app for each plan, and acctOpen is watched to check that each padlock opens the plans page on the
-right plan. At the end, Comptes' own functions are put back and a visitor signed out is checked."""
+- Gratuit: no account needed to export; the watermark is in the preview and in the export (2D and WebGL, same picture), it
+  moves; every padlock opens the plans page on Pro or Creator Plus.
+- Pro / Creator Plus are played by the test: acctHas(feat) is replaced inside the app; at the end Comptes' own function is
+  put back. acctOpen is watched.
+- The rewarded ad: Google's script (securepubads.g.doubleclick.net/tag/js/gpt.js) cannot be reached from the test machine,
+  so the test serves an imitation of its documented interface (defineOutOfPageSlot + OutOfPageFormat.REWARDED, events
+  rewardedSlotReady / rewardedSlotGranted / rewardedSlotClosed / slotRenderEnded, makeRewardedVisible, destroySlots) and
+  plays the 4 cases: reward, closed too early, no ad, device not supported. One real export checks that the reward is
+  for this video only.
+- An iPhone (iPhone 15 Pro: size, touch, Safari's user agent) and a computer, in French and English."""
 import functools, http.server, os, shutil, sys, tempfile, threading
 os.environ.setdefault('PLAYWRIGHT_BROWSERS_PATH', '/opt/pw-browsers')
 from playwright.sync_api import sync_playwright
@@ -13,12 +20,34 @@ from playwright.sync_api import sync_playwright
 PUBLIC = os.path.abspath(sys.argv[1])
 SHOTS = sys.argv[2] if len(sys.argv) > 2 else None
 results = []
-PLANS = {   # what each plan has, as the offer of 30/10 says
+PW = None
+PLANS = {
     'gratuit': [],
-    'basic': ['nologo', 'text', 'unlimited'],
-    'pro': ['nologo', 'text', 'unlimited', 'filters', 'clip', 'pack5', 'pack10'],
-    'max': ['nologo', 'text', 'unlimited', 'filters', 'clip', 'pack5', 'pack10', 'pack30'],
+    'pro': ['nowm', 'clip', 'fx', 'text', 'filters', 'lyrics'],
+    'creator': ['nowm', 'clip', 'fx', 'text', 'filters', 'lyrics', 'pack5', 'pack10', 'pack30', 'cloud', 'human'],
 }
+# an imitation of Google Publisher Tag's rewarded API (as in Google's sample « display-rewarded-ad »); window.__adMode: the case
+FAKE_GPT = r"""
+(function(){
+  var gt = window.googletag = window.googletag || { cmd: [] }, L = {}, pa = {
+    addEventListener: function(n, f){ (L[n] = L[n] || []).push(f); return pa; },
+    setPrivacySettings: function(o){ window.__privacy = o; return pa; }
+  };
+  function fire(n, e){ (L[n] || []).forEach(function(f){ f(e); }); }
+  gt.apiReady = true; gt.enums = { OutOfPageFormat: { REWARDED: 5 } }; gt.pubads = function(){ return pa; };
+  gt.defineOutOfPageSlot = function(u, f){ window.__adUnit = u; window.__adFmt = f; window.__adAsked = (window.__adAsked || 0) + 1;
+    if (window.__adMode === 'null') return null; var s = { addService: function(){ return s; } }; return s; };
+  gt.destroySlots = function(){ window.__destroyed = (window.__destroyed || 0) + 1; };
+  gt.enableServices = function(){};
+  gt.display = function(s){ setTimeout(function(){
+    if (window.__adMode === 'empty'){ fire('slotRenderEnded', { slot: s, isEmpty: true }); return; }
+    fire('slotRenderEnded', { slot: s, isEmpty: false });
+    fire('rewardedSlotReady', { slot: s, makeRewardedVisible: function(){ window.__visible = true; setTimeout(function(){
+      if (window.__adMode === 'reward') fire('rewardedSlotGranted', { slot: s, payload: { type: 'reward', amount: 1 } });
+      fire('rewardedSlotClosed', { slot: s }); }, 300); } }); }, 150); };
+  var q = gt.cmd; gt.cmd = { push: function(f){ f(); } }; (q || []).forEach(function(f){ f(); });
+})();
+"""
 
 
 class Quiet(http.server.SimpleHTTPRequestHandler):
@@ -34,117 +63,152 @@ def ev(pg, code):
     return pg.evaluate('s => __ev(s)', code)
 
 
-def setup(pg, plan, left=1, signed=True):
-    feats = PLANS[plan]
-    pg.evaluate("""([feats, left, signed]) => {
-      window.__feats = feats;
-      window.__q = { left, resetAt: Date.now() + (5 * 60 + 12) * 60000 };
-      window.__used = 0;
-      if (!window.__real) window.__real = __ev("({ acctHas, acctQuota, acctUseVideo })");
-      __ev("acctHas = f => window.__feats.includes(f); acctQuota = () => window.__q; acctUseVideo = async () => { window.__used++; window.__q.left = Math.max(0, window.__q.left - 1); }");
-      window.__open = null;
-      __ev("acctOpen = (why, o) => { window.__open = [why, o && o.plan || null]; }");
-      __ev("beginExport = () => { window.__began = true; throw new Error('test : export arrêté ici'); }");
-      __ev("ACCT.state.user = " + (signed ? "{ id: 'u1', email: 'test@example.com' }" : "null"));
-      window.__began = false;
-      __ev("textGate(); planTags(); filtUI(); kindUI()");
-    }""", [feats, left, signed])
+def plan(pg, name):
+    pg.evaluate("""feats => { window.__feats = feats; if (!window.__real) window.__real = __ev("acctHas");
+      __ev("acctHas = f => window.__feats.includes(f); acctOpen = (why, o) => { window.__open = [why, o && o.plan || null]; }; textGate(); planTags(); filtUI(); kindUI(); adUI()"); }""", PLANS[name])
 
 
-def lock(pg, code):
+def lock(pg, code, stop_export=True):
     pg.evaluate('() => { window.__open = null; window.__began = false; }')
+    if stop_export: ev(pg, "beginExport = () => { window.__began = true; throw new Error('test : export arrêté ici'); }")
     try: pg.evaluate('s => Promise.resolve(__ev(s)).catch(() => {})', code)
     except Exception: pass
-    pg.wait_for_timeout(150)
+    pg.wait_for_timeout(200)
     return pg.evaluate('() => [window.__open, window.__began]')
 
 
-def run(b, base, lang, phone):
-    tag = ('téléphone' if phone else 'ordinateur') + ' ' + lang
-    ctx = b.new_context(viewport={'width': 390, 'height': 844} if phone else {'width': 1280, 'height': 860},
-                        has_touch=phone, is_mobile=phone, locale='en-US' if lang == 'en' else 'fr-FR')
+def wm_spot(pg, t, res=0.5):
+    """where the watermark is on the preview picture at t: the box of the pixels it changes (logical units)"""
+    return ev(pg, """(() => { const t = %f, take = { kind: 'video', offset: 0, duration: 999, live: null, el: { readyState: 0 }, color: '#fff', name: 't' };
+      const pic = { img: window.__flat, w: 1080, h: 1920, rot: 0 }, oldLy = S.lyrics.mode; S.lyrics.mode = 'none'; setRes(%f);
+      const grab = () => g.getImageData(0, 0, view.width, view.height).data;
+      const keep = wmPass; wmPass = true; drawFrame(g, { take }, t, false, pic); const a = grab();
+      wmPass = keep; drawFrame(g, { take }, t, false, pic); const b = grab();
+      let x0 = 1e9, y0 = 1e9, x1 = -1, y1 = -1, n = 0;
+      for (let i = 0; i < a.length; i += 4) if (Math.abs(a[i] - b[i]) + Math.abs(a[i+1] - b[i+1]) + Math.abs(a[i+2] - b[i+2]) > 30){ const p = i / 4, x = p %% view.width, y = Math.floor(p / view.width); n++; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+      S.lyrics.mode = oldLy; setRes(0.5); const k = 1 / %f;
+      return n ? [Math.round(x0 * k), Math.round(y0 * k), Math.round(x1 * k), Math.round(y1 * k), n] : null; })()""" % (t, res, res))
+
+
+def run(b, base, lang, iphone):
+    tag = ('iPhone' if iphone else 'ordinateur') + ' ' + lang
+    opts = dict(PW.devices['iPhone 15 Pro']) if iphone else {'viewport': {'width': 1280, 'height': 860}}
+    ctx = b.new_context(**opts, locale='en-US' if lang == 'en' else 'fr-FR')
+    ctx.route('**/tag/js/gpt.js', lambda r: r.fulfill(status=200, content_type='application/javascript', body=FAKE_GPT))
     pg = ctx.new_page(); errs = []
     pg.on('pageerror', lambda e: errs.append(str(e)[:200]) if 'test : export arrêté ici' not in str(e) else None)
     pg.goto(base + ('en/' if lang == 'en' else ''), wait_until='load')
     pg.wait_for_function('window.__ev && window.MP4Box', timeout=20000)
     pg.locator('#demoBtn').click()
     pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000)
+    ev(pg, "window.__flat = (() => { const c = document.createElement('canvas'); c.width = 1080; c.height = 1920; const x = c.getContext('2d'); x.fillStyle = '#7a8fa8'; x.fillRect(0, 0, 1080, 1920); return c; })()")
 
-    # ---- Gratuit ----
-    setup(pg, 'gratuit', left=1)
-    check(tag + ' gratuit : logo Stalak à la fin', ev(pg, 'outroOn()'))
+    # ---- Gratuit, no account (Comptes' own acctHas, signed out) ----
+    ev(pg, "ACCT.state.user = null, acctOpen = (why, o) => { window.__open = [why, o && o.plan || null]; }, textGate(), planTags(), filtUI(), adUI()")
+    note = pg.locator('#outroNote')
+    check(tag + ' gratuit : note du filigrane, bouton pub et « ou passe à Pro » visibles', note.is_visible() and pg.locator('#adBtn').is_visible() and pg.locator('#outroPro').is_visible())
+    want = 'Watch an ad (30 s) to remove the watermark' if lang == 'en' else 'Regarder une pub (30 s) pour enlever le filigrane'
+    check(tag + ' gratuit : texte du bouton', pg.locator('#adBtn').inner_text().strip().endswith(want), pg.locator('#adBtn').inner_text())
+    o = lock(pg, "setFilter('nb', true), exportOne()")
+    check(tag + ' gratuit : export sans compte, sans écran du jour', o == [None, True] and ev(pg, 'S.wm === true') and pg.locator('#dayDone').count() == 0, o)
+    check(tag + ' gratuit : plus de fin Stalak de 3 s', ev(pg, 'outroOn() === false'))
+    # the watermark: in the preview, moving from spot to spot
+    s1, s2, s3 = wm_spot(pg, 1.0), wm_spot(pg, 7.0), wm_spot(pg, 13.0)
+    check(tag + ' gratuit : filigrane dans l’aperçu (en haut à gauche au début)', s1 is not None and s1[0] < 120 and s1[1] < 200, s1)
+    check(tag + ' gratuit : le filigrane bouge (à droite à 7 s, en bas à 13 s)', s2 is not None and s3 is not None and s2[2] > 900 and s3[1] > 1500, (s2, s3))
+    check(tag + ' gratuit : filigrane discret (moins de 6 % de l’image)', s1 is not None and s1[4] < 0.06 * ev(pg, 'view.width * view.height'), s1)
+    # padlocks: the right plan
+    check(tag + ' gratuit : « ou passe à Pro » → Pro', lock(pg, "$('#outroPro').click()")[0] == ['nowm', 'pro'])
+    check(tag + ' gratuit : karaoké → Pro', lock(pg, "document.querySelector('#stAnim button[data-v=\"kara\"]').click()")[0] == ['text', 'pro'])
+    check(tag + ' gratuit : taille L → Pro', lock(pg, "document.querySelector('#stSize button[data-v=\"l\"]').click()")[0] == ['text', 'pro'])
+    check(tag + ' gratuit : mode Clip → Pro', lock(pg, "document.querySelector('#kindSeg button[data-v=\"clip\"]').click()")[0] == ['clip', 'pro'])
+    check(tag + ' gratuit : filtre Pro à l’export → Pro', lock(pg, "setFilter('demon', true), exportOne()") == [['filters', 'pro'], False])
+    check(tag + ' gratuit : pack → Creator Plus', lock(pg, "setFilter('nb', true), $('#packSel').value = '10', exportPack()")[0] == ['pack', 'creator'])
+    check(tag + ' gratuit : paroles automatiques → Pro', lock(pg, "lockOpen('lyrics')")[0] == ['lyrics', 'pro'])
     tags = pg.evaluate("""() => ({ clip: document.querySelector('#kindSeg button[data-v="clip"]').dataset.plan, pack: document.querySelector('#packBtn').dataset.plan,
-      size: document.querySelector('#stSize button[data-v="l"]') && document.querySelector('#stSize button[data-v="l"]').dataset.plan,
-      filt: document.querySelectorAll('#filtRow .filtpro').length })""")
-    check(tag + ' gratuit : cadenas BASIC (texte), PRO (Clip, pack), 23 filtres PRO', tags['clip'] == 'PRO' and tags['pack'] == 'PRO' and tags['size'] == 'BASIC' and tags['filt'] == 23, tags)
-    check(tag + ' gratuit : taille de texte L → formule Basic', lock(pg, "document.querySelector('#stSize button[data-v=\"l\"]').click()")[0] == ['text', 'basic'])
-    check(tag + ' gratuit : mode Clip → formule Pro', lock(pg, "document.querySelector('#kindSeg button[data-v=\"clip\"]').click()")[0] == ['clip', 'pro'])
-    check(tag + ' gratuit : pack de 10 → formule Pro', lock(pg, "$('#packSel').value = '10', exportPack()")[0] == ['pack', 'pro'])
-    check(tag + ' gratuit : « L’enlever avec Basic » → formule Basic', lock(pg, "$('#outroPro').click()")[0] == ['outro', 'basic'])
-    o = lock(pg, "setFilter('demon', true), exportOne()")
-    check(tag + ' gratuit : export avec un filtre Pro → formule Pro, pas d’export', o == [['filters', 'pro'], False], o)
-    o = lock(pg, "setFilter('nb', true), exportOne()")
-    check(tag + ' gratuit : vidéo du jour disponible → l’export part', o == [None, True], o)
-    # the video of the day used: the screen instead of the export
-    pg.evaluate('() => { window.__q.left = 0; }')
-    o = lock(pg, 'exportOne()')
-    shown = pg.evaluate("() => !document.querySelector('#dayDone').hidden")
-    t = pg.locator('#dayDoneT').inner_text(); p = pg.locator('#dayDoneP').inner_text(); left = pg.locator('#dayLeft').inner_text()
-    want_t = 'Today’s video is done ✓' if lang == 'en' else 'Ta vidéo du jour est faite ✓'
-    check(tag + ' gratuit : vidéo du jour faite → écran, pas d’export', shown and o[1] is False and t == want_t, (shown, o, t))
-    check(tag + ' gratuit : temps restant affiché (5 h 12)', ('5 h 12' in left) and (('Next free video' in left) if lang == 'en' else ('Prochaine vidéo gratuite' in left)), left)
-    check(tag + ' gratuit : texte « passe à Basic »', ('Basic' in p) and (('tomorrow' in p) if lang == 'en' else ('demain' in p)), p)
-    sw = pg.evaluate('document.documentElement.scrollWidth')
-    check(tag + ' gratuit : écran sans défilement horizontal', sw <= (390 if phone else 1280), sw)
-    if SHOTS: pg.screenshot(path=os.path.join(SHOTS, 'jour-' + ('tel' if phone else 'ordi') + '-' + lang + '.png'))
-    # the keyboard stays in the screen; « Passer à Basic » opens the plans page on Basic
-    foc = pg.evaluate("() => document.activeElement && document.activeElement.id")
-    pg.keyboard.press('Tab'); pg.keyboard.press('Tab'); pg.keyboard.press('Tab')
-    inside = pg.evaluate("() => !!document.activeElement.closest('#dayDone')")
-    check(tag + ' gratuit : focus sur « Passer à Basic », Tab reste dans l’écran', foc == 'dayGo' and inside, (foc, inside))
-    pg.locator('#dayGo').click(); pg.wait_for_timeout(150)
-    check(tag + ' gratuit : « Passer à Basic » → formule Basic, écran fermé', pg.evaluate('window.__open') == ['daily', 'basic'] and pg.evaluate("() => document.querySelector('#dayDone').hidden"))
-    lock(pg, 'exportOne()'); pg.locator('#dayClose').click(); pg.wait_for_timeout(100)
-    check(tag + ' gratuit : « Revenir demain » ferme l’écran', pg.evaluate("() => document.querySelector('#dayDone').hidden"))
-    lock(pg, 'exportOne()'); pg.keyboard.press('Escape'); pg.wait_for_timeout(100)
-    check(tag + ' gratuit : Échap ferme l’écran', pg.evaluate("() => document.querySelector('#dayDone').hidden"))
-    # counted once the video is ready
-    pg.evaluate('() => { window.__used = 0; }'); ev(pg, 'dayUsed()'); pg.wait_for_timeout(100)
-    check(tag + ' gratuit : la vidéo faite est comptée', pg.evaluate('window.__used') == 1)
-    # signed out: the free plan needs an account
-    setup(pg, 'gratuit', left=1, signed=False)
-    o = lock(pg, "setFilter('nb', true), exportOne()")
-    check(tag + ' sans compte : export → création de compte', o[0] and o[0][0] == 'daily' and o[1] is False, o)
+      kara: document.querySelector('#stAnim button[data-v="kara"]').dataset.plan, filt: document.querySelectorAll('#filtRow .filtpro').length,
+      filtTag: (document.querySelector('#filtRow .filtpro') || {}).textContent })""")
+    check(tag + ' gratuit : étiquettes PRO / CREATOR+', tags['clip'] == 'PRO' and tags['pack'] == 'CREATOR+' and tags['kara'] == 'PRO' and tags['filt'] == 23 and tags['filtTag'] == 'PRO', tags)
+    if SHOTS:
+        pg.locator('#outroNote').scroll_into_view_if_needed()
+        pg.locator('#outroNote').screenshot(path=os.path.join(SHOTS, 'note-' + ('iphone' if iphone else 'ordi') + '-' + lang + '.png'))
+        ev(pg, "showFrame(1.0)"); pg.wait_for_timeout(400); pg.locator('#view').screenshot(path=os.path.join(SHOTS, 'filigrane-' + ('iphone' if iphone else 'ordi') + '-' + lang + '.png'))
 
-    # ---- Basic ----
-    setup(pg, 'basic', left=0)
-    check(tag + ' basic : sans logo', not ev(pg, 'outroOn()'))
-    check(tag + ' basic : toutes les tailles de texte', ev(pg, "textFree('size', 'l') && textFree('anim', 'kara')") and not pg.evaluate("() => document.querySelector('#stSize button[data-v=\"l\"]').classList.contains('protag')"))
-    check(tag + ' basic : vidéos illimitées (pas d’écran du jour)', lock(pg, "setFilter('nb', true), exportOne()") == [None, True])
-    check(tag + ' basic : 3 filtres seulement (Démon → Pro)', lock(pg, "setFilter('demon', true), exportOne()")[0] == ['filters', 'pro'] and pg.locator('#filtRow .filtpro').count() == 23)
-    check(tag + ' basic : Clip → Pro', lock(pg, "document.querySelector('#kindSeg button[data-v=\"clip\"]').click()")[0] == ['clip', 'pro'])
-    check(tag + ' basic : pack de 5 → Pro', lock(pg, "$('#packSel').value = '5', planTags(), exportPack()")[0] == ['pack', 'pro'])
+    # ---- the rewarded ad: the 4 cases ----
+    def ad(mode):
+        pg.evaluate('m => { window.__adMode = m; window.__visible = false; }', mode)
+        ev(pg, 'wmPass = false, lastBlob = null, lastWm = false, adUI()')
+        pg.locator('#adBtn').click()
+        pg.wait_for_function('() => __ev("!adBusy")', timeout=20000); pg.wait_for_timeout(100)
+        return pg.locator('#adStatus').inner_text(), ev(pg, 'wmPass')
+    st, ok = ad('reward')
+    check(tag + ' pub : unité de test de Google, format récompensé, pubs limitées', pg.evaluate('[window.__adUnit, window.__adFmt, window.__privacy && window.__privacy.limitedAds]') == ['/22639388115/rewarded_web_example', 5, True])
+    check(tag + ' pub regardée : pas de filigrane pour cette vidéo', ok and pg.evaluate('window.__visible') and ('without the watermark' in st if lang == 'en' else 'sans filigrane' in st), st)
+    check(tag + ' pub regardée : note « pas de filigrane sur cette vidéo », bouton caché', ('No watermark on this video' if lang == 'en' else 'Pas de filigrane sur cette vidéo') in pg.locator('#wmNoteT').inner_text() and not pg.locator('#adBtn').is_visible())
+    check(tag + ' pub regardée : aperçu sans filigrane', wm_spot(pg, 1.0) is None or ev(pg, 'wmPass') is False)
+    st, ok = ad('close')
+    check(tag + ' pub fermée trop tôt : le filigrane reste', not ok and ('stays' in st if lang == 'en' else 'reste' in st), st)
+    st, ok = ad('empty')
+    check(tag + ' pas de pub : message, filigrane gardé', not ok and ('No ad' in st if lang == 'en' else 'Pas de pub' in st), st)
+    st, ok = ad('null')
+    check(tag + ' appareil non compatible : message', not ok and ('device' in st if lang == 'en' else 'appareil' in st), st)
+    # a video already made with the watermark: the ad makes it again at once, without it
+    pg.evaluate('() => { window.__adMode = "reward"; }')
+    ev(pg, "wmPass = false, lastBlob = new Blob(['x']), lastWm = true, adUI(), window.__began = false, beginExport = () => { window.__began = true; window.__wmAt = S.wm; throw new Error('test : export arrêté ici'); }")
+    pg.locator('#adBtn').click(); pg.wait_for_function('() => __ev("!adBusy")', timeout=20000); pg.wait_for_timeout(300)
+    check(tag + ' pub après l’export : la vidéo est refaite sans filigrane', pg.evaluate('[window.__began, window.__wmAt]') == [True, False])
 
     # ---- Pro ----
-    setup(pg, 'pro', left=0)
-    check(tag + ' pro : tous les filtres', lock(pg, "setFilter('demon', true), exportOne()") == [None, True] and pg.locator('#filtRow .filtpro').count() == 0)
-    check(tag + ' pro : mode Clip ouvert', not pg.evaluate("() => document.querySelector('#kindSeg button[data-v=\"clip\"]').classList.contains('protag')") and ev(pg, "can('clip')"))
-    ev(pg, "$('#packSel').value = '30'"); pg.dispatch_event('#packSel', 'change')
-    check(tag + ' pro : pack de 30 marqué MAX', pg.evaluate("() => document.querySelector('#packBtn').dataset.plan") == 'MAX')
-    check(tag + ' pro : pack de 30 → formule Max', lock(pg, 'exportPack()')[0] == ['pack30', 'max'])
-    ev(pg, "$('#packSel').value = '10'"); pg.dispatch_event('#packSel', 'change')
-    check(tag + ' pro : pack de 10 sans cadenas', not pg.evaluate("() => document.querySelector('#packBtn').classList.contains('protag')"))
-
-    # ---- Max ----
-    setup(pg, 'max', left=0)
-    ev(pg, "$('#packSel').value = '30'"); pg.dispatch_event('#packSel', 'change')
-    check(tag + ' max : pack de 30 sans cadenas', not pg.evaluate("() => document.querySelector('#packBtn').classList.contains('protag')") and ev(pg, "can('pack30')"))
-
-    # ---- Comptes' own functions, signed out: the free plan, and an export asks for a free account ----
-    pg.evaluate('() => __ev("acctHas = window.__real.acctHas; acctQuota = window.__real.acctQuota; acctUseVideo = window.__real.acctUseVideo; ACCT.state.user = null; textGate(); planTags(); filtUI()")')
-    o = lock(pg, "setFilter('nb', true), exportOne()")
-    check(tag + ' fonctions de Comptes, sans compte : logo, Clip fermé, export → compte gratuit', ev(pg, "outroOn() && !can('clip') && !can('filters')") and o == [['daily', None], False], o)
+    plan(pg, 'pro')
+    check(tag + ' pro : ni filigrane ni pub', not pg.locator('#outroNote').is_visible() and ev(pg, 'wmOn() === false') and wm_spot(pg, 1.0) is None)
+    check(tag + ' pro : Clip, karaoké, filtres ouverts', ev(pg, "can('clip') && textFree('anim', 'kara') && !filtLocked()") and pg.locator('#filtRow .filtpro').count() == 0)
+    check(tag + ' pro : pack → Creator Plus', lock(pg, "$('#packSel').value = '5', planTags(), exportPack()")[0] == ['pack', 'creator'])
+    # ---- Creator Plus ----
+    plan(pg, 'creator')
+    ev(pg, "$('#packSel').value = '30', planTags()")
+    check(tag + ' creator : packs sans cadenas', not pg.evaluate("() => document.querySelector('#packBtn').classList.contains('protag')") and ev(pg, "can('pack30')"))
+    n = ev(pg, 'readyTakes().length')
+    o = lock(pg, "S.__takes = S.takes, S.takes = S.takes.filter(t => !t.broll).slice(0, 2), exportPack()")
+    msg = pg.locator('#status').inner_text(); ev(pg, 'S.takes = S.__takes')
+    check(tag + ' creator : pack avec 2 playbacks → « au moins 3 »', o == [None, False] and '3' in msg, (n, o, msg))
+    # ---- Comptes' own acctHas again ----
+    ev(pg, "acctHas = window.__real, ACCT.state.user = null, planTags()")
+    check(tag + ' fonctions de Comptes, sans compte : gratuit, filigrane, export sans compte', ev(pg, "wmOn() && !can('clip')") and lock(pg, "setFilter('nb', true), exportOne()") == [None, True])
     check(tag + ' aucune erreur dans la page', not errs, errs)
+    sw = pg.evaluate('document.documentElement.scrollWidth')
+    check(tag + ' pas de défilement horizontal', sw <= pg.viewport_size['width'], sw)
+    ctx.close()
+
+
+def engine(b, base):
+    """the watermark is the same in the preview, the export's 2D canvas and its WebGL drawing; one real export with a reward"""
+    ctx = b.new_context(viewport={'width': 1280, 'height': 860}, locale='fr-FR'); pg = ctx.new_page(); errs = []
+    ctx.route('**/tag/js/gpt.js', lambda r: r.fulfill(status=200, content_type='application/javascript', body=FAKE_GPT))
+    pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
+    pg.goto(base, wait_until='load'); pg.wait_for_function('window.__ev && window.MP4Box', timeout=20000)
+    pg.locator('#demoBtn').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000)
+    ev(pg, "ACCT.state.user = null")
+    r = ev(pg, """(() => {
+      const c0 = document.createElement('canvas'); c0.width = 1080; c0.height = 1920; const x0 = c0.getContext('2d'); const gr = x0.createLinearGradient(0, 0, 1080, 1920); gr.addColorStop(0, '#203a80'); gr.addColorStop(1, '#e0a050'); x0.fillStyle = gr; x0.fillRect(0, 0, 1080, 1920);
+      const pic = { img: c0, w: 1080, h: 1920, rot: 0 }, take = { kind: 'video', offset: 0, duration: 999, live: null, el: { readyState: 0 }, color: '#fff', name: 't' };
+      const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
+      const small = src => { const c = mk(270, 480); c.getContext('2d').drawImage(src, 0, 0, 270, 480); return c.getContext('2d').getImageData(0, 0, 270, 480).data; };
+      const diff = (a, b) => { let s = 0; for (let i = 0; i < a.length; i += 4) for (let k = 0; k < 3; k++) s += Math.abs(a[i+k] - b[i+k]); return s / (a.length / 4 * 3); };
+      const oldLy = S.lyrics.mode; S.lyrics.mode = 'none'; const out = {};
+      for (const t of [1, 6.6, 9]){
+        setRes(0.5); drawFrame(g, { take }, t, false, pic); const pv = small(view);
+        S.exporting = true; S.wm = true; setRes(1); drawFrame(g, { take }, t, false, pic); const e2 = small(view);
+        const R = expGL(); const eg = small(R.video(pic, 1, t, false)); R.close(); S.wm = false; const R2 = expGL(); const none = small(R2.video(pic, 1, t, false)); R2.close(); S.exporting = false;
+        setRes(0.5); out[t] = [diff(pv, e2), diff(e2, eg), diff(eg, none)];
+      }
+      S.lyrics.mode = oldLy; return out; })()""")
+    for t, (a, b2, c) in r.items():
+        check('filigrane à %s s : aperçu = export 2D (écart %.2f), export WebGL = export 2D (%.2f), présent dans l’export (%.2f)' % (t, a, b2, c), a < 3 and b2 < 2 and c > 0.3, (a, b2, c))
+    # one real export after a reward: no watermark in this video, then the watermark is back
+    ev(pg, "wmPass = true, lastBlob = null")
+    aok = pg.evaluate('async () => { await __ev("exportOne()"); return [__ev("!!lastBlob"), __ev("lastWm"), __ev("wmPass"), __ev("wmOn()")]; }')
+    check('export après une pub : vidéo sans filigrane, puis le filigrane revient', aok == [True, False, False, True], aok)
+    check('moteur : aucune erreur dans la page', not errs, errs)
     ctx.close()
 
 
@@ -160,10 +224,13 @@ def main():
     base = 'http://127.0.0.1:%d/' % srv.server_address[1]
     with sync_playwright() as p:
         b = p.chromium.launch(args=['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'])
+        global PW; PW = p
         for lang in ('fr', 'en'):
-            for phone in (True, False):
-                try: run(b, base, lang, phone)
-                except Exception as e: check(('téléphone' if phone else 'ordinateur') + ' ' + lang + ' : déroulé complet', False, str(e)[:300])
+            for iphone in (True, False):
+                try: run(b, base, lang, iphone)
+                except Exception as e: check(('iPhone' if iphone else 'ordinateur') + ' ' + lang + ' : déroulé complet', False, str(e)[:300])
+        try: engine(b, base)
+        except Exception as e: check('moteur : déroulé complet', False, str(e)[:300])
         b.close()
     srv.shutdown(); shutil.rmtree(tmp, ignore_errors=True)
     print('%d/%d réussis' % (sum(results), len(results)))
