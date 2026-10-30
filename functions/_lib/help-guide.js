@@ -23,16 +23,16 @@ LE SITE, EN 4 ÉTAPES (onglets en haut : 1 Son, 2 Prises, 3 Paroles, 4 Montage)
 - « Coller mes paroles » (une phrase par ligne), « Importer un .txt », ou « Sans paroles ».
 - « Caler automatiquement » place chaque phrase ; c'est une proposition : écouter chaque phrase avec ▶ et la décaler avec − / + ; les phrases « à vérifier » sont les moins sûres. « Caler au tap » : toucher TAP (ou la barre espace) au début de chaque phrase.
 - « Transcription auto » (Stalak Pro) : choisir la langue chantée (Auto, Français, English), puis « Écrire mes paroles » : Stalak écrit les paroles du passage, déjà calées. Ensuite on relit : toucher une phrase pour corriger un mot, ▶ pour écouter, − / + pour décaler. « Les réécrire » recommence. Limites : 8 minutes de passage au plus, 20 transcriptions par jour.
-- Style : position (haut, milieu, bas), police, couleur, contour, taille S/M/L, apparition (mot par mot, phrase entière, karaoké, surlignage). En gratuit : taille M et « phrase entière » ; les autres tailles et apparitions viennent avec un abonnement (Basic, Pro ou Max).
+- Style : position (haut, milieu, bas), police, couleur, contour, taille S/M/L, apparition (mot par mot, phrase entière, karaoké, surlignage). En gratuit : taille M et « phrase entière » ; les autres tailles, le mot par mot et le karaoké sont dans Stalak Pro.
 4. Montage
 - Coupes : Auto, Sur les mots, Par mesure. Rythme : Posé, Normal, Nerveux. Ambiance : Aucun, Un peu, Beaucoup.
 - Effets (Clip seulement) : Aucun, Sobre, Intense. Les ronds au-dessus des plans sont les effets : en toucher un pour le changer ou le supprimer, « + Effet » pour en ajouter.
 - Format : en TikTok / Reels 9:16, 4:5 ou 1:1 ; en Clip 16:9 (ou 9:16). « Meilleure prise auto ». « ↻ Régénérer » donne un autre montage.
 - Toucher un plan : « Changer de prise », « Garder ce plan », « Exclure ce passage », « Ajouter un plan ».
 - L'aperçu est allégé pour rester fluide ; la vidéo exportée est en pleine qualité.
-- « Exporter la vidéo », ou un pack de 5 ou 10 vidéos toutes différentes (« Générer le pack », Stalak Pro ; 30 avec Stalak Max), puis « Enregistrer sur l'appareil ». Pendant l'export, la mascotte construit un igloo ; « Annuler » l'arrête.
-- « Sauvegarder en ligne » (Stalak Pro ; à l'étape Montage, ou Galerie dans le menu du compte en haut à droite) : garde le projet entier dans le compte, 20 Go au plus, et le rouvre sur n'importe quel appareil depuis la Galerie (menu du compte en haut à droite : toucher un projet pour l'ouvrir ; appui long ou « … » pour Renommer, Supprimer). Après une coupure, « Réessayer » reprend l'envoi. Un projet non ouvert depuis 6 mois est supprimé, après un e-mail de rappel 14 jours avant.
-- Les vidéos gratuites se terminent par 3 secondes avec le logo Stalak. En gratuit : 1 vidéo par jour, avec un compte ; la suivante est possible après minuit (heure de Paris). Un e-mail de rappel peut prévenir quand elle est disponible (case dans le compte).
+- « Exporter la vidéo », ou un pack de 5, 10 ou 30 vidéos aux coupes différentes, à partir d'au moins 3 playbacks (« Générer le pack », Stalak Creator Plus), puis « Enregistrer sur l'appareil ». Pendant l'export, la mascotte construit un igloo ; « Annuler » l'arrête.
+- « Sauvegarder en ligne » (Stalak Creator Plus ; à l'étape Montage, ou Galerie dans le menu du compte en haut à droite) : garde le projet entier dans le compte, 100 Go au plus, et le rouvre sur n'importe quel appareil depuis la Galerie (menu du compte en haut à droite : toucher un projet pour l'ouvrir ; appui long ou « … » pour Renommer, Supprimer). Après une coupure, « Réessayer » reprend l'envoi. Un projet non ouvert depuis 6 mois est supprimé, après un e-mail de rappel 14 jours avant.
+- En gratuit, sans compte obligatoire : montage illimité ; la vidéo exportée porte un petit filigrane qui se déplace (le logo et « Clipped with stalak.app »). Regarder une pub vidéo d'environ 30 s l'enlève pour cette vidéo, gratuitement. Pro et Creator Plus : ni pub ni filigrane.
 - « Poster ta vidéo » : sur téléphone, « Partager vers TikTok, Insta, YouTube… » ouvre la liste de partage. Sinon, enregistrer la vidéo puis toucher TikTok, Instagram ou YouTube Shorts. La publication automatique n'existe pas encore.
 - Toucher le logo Stalak en haut à gauche : nouveau projet (tout est effacé, après confirmation). Le bouton FR / EN change la langue.
 - En cas de problème : dans cette fenêtre d'aide, « Copier les infos pour l'équipe » (sous la zone de texte) copie le journal technique, à envoyer à l'équipe Stalak.
@@ -41,16 +41,16 @@ COMPTE ET STALAK PRO
 - Bouton « Connexion » en haut (il devient « Compte » une fois connecté). « Créer un compte » : e-mail + mot de passe (8 caractères au moins), puis un code à 6 chiffres reçu par e-mail (regarder aussi les spams ; le code marche 10 minutes). Aussi « Continuer avec Google ».
 - Sur un nouvel appareil, un code est envoyé par e-mail après le mot de passe ; l'appareil est ensuite reconnu 90 jours.
 - Mot de passe perdu : « Mot de passe oublié ? » sur la page de connexion. Compte créé avec un code seul : « Crée ton mot de passe ». Trop d'erreurs : attendre 15 minutes ou choisir un nouveau mot de passe.
-- Gratuit : 1 vidéo par jour avec un compte gratuit, montage automatique, vidéos 9:16, paroles taille M et « phrase entière », 3 filtres, 3 s de logo Stalak à la fin.
-- Basic : 4,99 € par mois ou 39 € par an. Vidéos illimitées sans logo, toutes les tailles et apparitions du texte, 3 filtres.
-- Pro : 10,99 € par mois ou 109 € par an. Tout Basic, plus tous les filtres, le mode Clip 16:9, les packs de 5 et 10 vidéos, la transcription auto des paroles (20 par jour) et la sauvegarde en ligne (20 Go).
-- Max : 13,99 € par mois ou 139 € par an. Tout Pro, plus les packs de 30, la transcription auto (60 par jour), 100 Go en ligne et « Parler à un humain ». Seulement 3 € de plus que Pro.
-- Prix TTC en Europe. Un abonné garde son prix. Page des formules : bouton « Pro » en haut, ou « Voir les formules → » dans le compte ; page Tarifs du site.
+- Gratuit, sans compte : montage illimité sur le rythme, paroles en phrases entières taille M, import des paroles et calage au tap (pas de paroles automatiques), 3 filtres (Givre, Film 35 mm, Noir & blanc), filigrane qu'une pub d'environ 30 s enlève pour une vidéo.
+- Stalak Pro : 7,99 $ par mois ou 49,99 $ par an. Ni pub ni filigrane, mode Clip 16:9, effets premium, paroles mot par mot et karaoké (toutes les tailles), tous les filtres, paroles automatiques (20 par jour).
+- Stalak Creator Plus : 14,99 $ par mois ou 99,99 $ par an. Tout Pro, plus le générateur de packs (5 à 30 vidéos aux coupes différentes, à partir d'au moins 3 playbacks), les paroles automatiques 60 par jour, la sauvegarde en ligne (100 Go) et « Parler à un humain ».
+- Prix en dollars : Paddle les convertit dans la monnaie du pays et ajoute la TVA. Un abonné garde son prix.
+- Changer de formule : page des formules. Passer à Creator Plus (ou à l'annuel) : tout de suite, la différence au prorata, montant affiché avant. Revenir à Pro : au prochain renouvellement, rien n'est remboursé.
 - Paiement sécurisé par Paddle (revendeur officiel, qui envoie le reçu). Après le paiement, le compte passe à la formule choisie en quelques secondes.
 - Résilier, changer de carte, factures : Compte → Abonnement → « Gérer » (ou « Gérer mon abonnement » sur la page Stalak Pro). Après une résiliation, la formule reste active jusqu'à la fin de la période payée.
 - Remboursement intégral sur demande dans les 14 jours après un paiement, sans justification : écrire à l'équipe Stalak avec l'e-mail du compte, ou répondre à l'e-mail de reçu de Paddle.
-- Sans Pro ni Max (gratuit, Basic, ou après la fin de l'abonnement), la Galerie affiche « La sauvegarde en ligne est réservée à Stalak Pro » et les projets en ligne ne sont plus accessibles ; ils restent gardés (jusqu'à la règle des 6 mois) et reviennent si on reprend Pro ou Max.
-- « Parler à un humain » (bouton sous la zone de texte de cette fenêtre, Stalak Max) : écrire à l'équipe Stalak ; réponse en direct si quelqu'un est en ligne, sinon par e-mail à l'adresse du compte, sous 24 h. Sans Stalak Max, on peut toujours écrire à contact@stalak.app.
+- Sans Creator Plus (gratuit, Pro, ou après la fin de l'abonnement), la Galerie affiche que la sauvegarde en ligne est réservée à Stalak Creator Plus et les projets en ligne ne sont plus accessibles ; ils restent gardés (jusqu'à la règle des 6 mois) et reviennent si on reprend Creator Plus.
+- « Parler à un humain » (bouton sous la zone de texte de cette fenêtre, Stalak Creator Plus) : écrire à l'équipe Stalak ; réponse en direct si quelqu'un est en ligne, sinon par e-mail à l'adresse du compte, sous 24 h. Sans Stalak Creator Plus, on peut toujours écrire à contact@stalak.app.
 - « Supprimer mon compte » (page Compte) efface le compte et les projets en ligne, et arrête l'abonnement tout de suite.
 
 PROBLÈMES CONNUS ET SOLUTIONS
@@ -91,16 +91,16 @@ THE SITE, IN 4 STEPS (tabs at the top: 1 Sound, 2 Takes, 3 Lyrics, 4 Edit)
 - "Paste my lyrics" (one line per row), "Import a .txt", or "No lyrics".
 - "Sync automatically" places each line; it's a suggestion: listen to each line with ▶ and nudge it with − / +; lines marked "check" are the least sure. "Sync by tapping": tap TAP (or the space bar) at the start of each line.
 - "Auto transcription" (Stalak Pro): pick the sung language (Auto, Français, English), then "Write my lyrics": Stalak writes the lyrics of the part, already synced. Then read them over: tap a line to fix a word, ▶ to listen, − / + to nudge. "Write them again" starts over. Limits: a part of 8 minutes at most, 20 transcriptions a day.
-- Style: position (top, middle, bottom), font, color, outline, size S/M/L, reveal (word by word, whole line, karaoke, highlight). On the free plan: size M and "whole line"; the other sizes and reveals come with a subscription (Basic, Pro or Max).
+- Style: position (top, middle, bottom), font, color, outline, size S/M/L, reveal (word by word, whole line, karaoke, highlight). On the free plan: size M and "whole line"; the other sizes, word by word and karaoke come with Stalak Pro.
 4. Edit
 - Cuts: Auto, On the words, Every bar. Pace: Chill, Normal, Punchy. B-roll: None, A little, A lot.
 - Effects (music video only): None, Subtle, Intense. The dots above the shots are the effects: tap one to change or remove it, "+ Effect" to add one.
 - Format: for TikTok / Reels 9:16, 4:5 or 1:1; for a music video 16:9 (or 9:16). "Auto best take". "↻ Shuffle" makes another edit.
 - Tapping a shot: "Swap take", "Keep this shot", "Exclude this part", "Add a shot".
 - The preview is lighter so it stays smooth; the exported video is full quality.
-- "Export video", or a pack of 5 or 10 all-different videos ("Make the pack", Stalak Pro; 30 with Stalak Max), then "Save to device". During the export, the mascot builds an igloo; "Cancel" stops it.
-- "Save online" (Stalak Pro; at the Edit step, or Gallery in the account menu at the top right): keeps the whole project in the account, up to 20 GB, and opens it again on any device from the Gallery (account menu at the top right: tap a project to open it; long press or "…" to Rename, Delete). After a connection drop, "Try again" resumes the upload. A project not opened for 6 months is deleted, after a reminder email 14 days before.
-- Free videos end with 3 seconds of the Stalak logo. Free plan: 1 video a day, with an account; the next one is possible after midnight (Paris time). A reminder email can say when it's ready (box in the account).
+- "Export video", or a pack of 5, 10 or 30 videos with different cuts, from at least 3 playbacks ("Make the pack", Stalak Creator Plus), then "Save to device". During the export, the mascot builds an igloo; "Cancel" stops it.
+- "Save online" (Stalak Creator Plus; at the Edit step, or Gallery in the account menu at the top right): keeps the whole project in the account, up to 100 GB, and opens it again on any device from the Gallery (account menu at the top right: tap a project to open it; long press or "…" to Rename, Delete). After a connection drop, "Try again" resumes the upload. A project not opened for 6 months is deleted, after a reminder email 14 days before.
+- Free plan, no account needed: unlimited editing; the exported video has a small moving watermark (the logo and "Clipped with stalak.app"). Watching a video ad of about 30 s removes it for that video, for free. Pro and Creator Plus: no ad, no watermark.
 - "Post your video": on a phone, "Share to TikTok, Insta, YouTube…" opens the share sheet. Otherwise, save the video then tap TikTok, Instagram or YouTube Shorts. Automatic posting doesn't exist yet.
 - Tapping the Stalak logo at the top left: new project (everything is cleared, after confirming). The FR / EN switch changes the language.
 - If something goes wrong: in this help window, "Copy info for the team" (under the text box) copies the technical log, to send to the Stalak team.
@@ -109,16 +109,16 @@ ACCOUNT AND STALAK PRO
 - "Sign in" button at the top (it becomes "Account" once signed in). "Create account": email + password (at least 8 characters), then a 6-digit code sent by email (check the spam folder too; the code works for 10 minutes). Also "Continue with Google".
 - On a new device, a code is emailed after the password; the device is then remembered for 90 days.
 - Lost password: "Forgot your password?" on the sign-in page. Account made with an email code only: "Create your password". Too many tries: wait 15 minutes or choose a new password.
-- Free: 1 video a day with a free account, automatic edit, 9:16 videos, lyrics in size M and "whole line", 3 filters, 3 s of the Stalak logo at the end.
-- Basic: €4.99 a month or €39 a year. Unlimited videos without the logo, all text sizes and reveals, 3 filters.
-- Pro: €10.99 a month or €109 a year. Everything in Basic, plus all filters, 16:9 music video mode, packs of 5 and 10 videos, auto lyrics transcription (20 a day) and online saving (20 GB).
-- Max: €13.99 a month or €139 a year. Everything in Pro, plus packs of 30, auto transcription (60 a day), 100 GB online and "Talk to a human". Only €3 more than Pro.
-- Prices include VAT in Europe. Subscribers keep their price. Plans page: the "Pro" button at the top, or "See the plans →" in the account; the site's Pricing page.
+- Free, no account: unlimited editing on the beat, lyrics as whole lines in size M, lyrics import and tap sync (no auto lyrics), 3 filters (Frost, 35 mm film, Black & white), a watermark that a ~30 s ad removes for one video.
+- Stalak Pro: $7.99 a month or $49.99 a year. No ad, no watermark, 16:9 music video mode, premium effects, word-by-word and karaoke lyrics (all sizes), every filter, auto lyrics (20 a day).
+- Stalak Creator Plus: $14.99 a month or $99.99 a year. Everything in Pro, plus the pack generator (5 to 30 videos with different cuts, from at least 3 playbacks), auto lyrics 60 a day, online saving (100 GB) and "Talk to a human".
+- Prices in dollars: Paddle converts them to the local currency and adds the VAT. Subscribers keep their price.
+- Changing plan: the plans page. Up to Creator Plus (or to yearly): right away, the difference prorated, amount shown first. Back to Pro: at the next renewal, nothing refunded.
 - Secure payment by Paddle (the official reseller, which sends the receipt). After paying, the account switches to the chosen plan in a few seconds.
 - Cancel, change card, invoices: Account → Subscription → "Manage" (or "Manage my subscription" on the Stalak Pro page). After cancelling, the plan stays on until the end of the paid period.
 - Full refund on request within 14 days of a payment, no questions asked: write to the Stalak team with the account's email, or reply to Paddle's receipt email.
-- Without Pro or Max (free, Basic, or once the subscription ends), the Gallery says online saving is part of Stalak Pro and online projects can't be opened; they're kept (until the 6-month rule) and come back if you take Pro or Max again.
-- "Talk to a human" (button under the text box of this window, Stalak Max): write to the Stalak team; a live answer if someone is online, otherwise by email to the account's address, within 24 hours. Without Stalak Max, you can still write to contact@stalak.app.
+- Without Creator Plus (free, Pro, or once the subscription ends), the Gallery says online saving is part of Stalak Creator Plus and online projects can't be opened; they're kept (until the 6-month rule) and come back if you take Creator Plus again.
+- "Talk to a human" (button under the text box of this window, Stalak Creator Plus): write to the Stalak team; a live answer if someone is online, otherwise by email to the account's address, within 24 hours. Without Stalak Creator Plus, you can still write to contact@stalak.app.
 - "Delete my account" (Account page) erases the account and online projects, and stops the subscription right away.
 
 KNOWN PROBLEMS AND FIXES

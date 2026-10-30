@@ -98,7 +98,7 @@ async def main():
         check('fr-390 signed out: no page error', not err, err)
         await ctx.close()
 
-        # 2. a free account on a phone: the menu, the Galerie « réservée à Stalak Pro »
+        # 2. a free account on a phone: the menu, the Galerie « réservée à Stalak Creator Plus »
         ctx, pg, err = await ctx_page(browser, 'fr', 390, 844, 'free-gal@example.com', '0')
         await menu_open(pg)
         items = await pg.eval_on_selector_all('#acctMenu [role=menuitem]', 'els => els.map(e => e.innerText.trim())')
@@ -115,7 +115,7 @@ async def main():
         await pg.tap('#acctMenu [data-am=gallery]')
         await pg.wait_for_selector('#apGallery:not([hidden]) #galLock:not([hidden])', timeout=8000)
         lock = await pg.inner_text('#galLock')
-        check('fr-390 free: Galerie « réservée à Stalak Pro »', 'réservée à Stalak Pro' in lock and 'Avec Stalak Pro' in lock, lock)
+        check('fr-390 free: Galerie « réservée à Stalak Creator Plus »', 'réservée à Stalak Creator Plus' in lock and 'Avec Stalak Creator Plus' in lock, lock)
         check('fr-390 free: no grid', await pg.is_hidden('#apProjects'))
         check('fr-390 free: address #galerie', (await pg.evaluate('location.hash')) == '#galerie')
         check('fr-390 free: no horizontal scroll', await no_scroll(pg))
@@ -123,7 +123,7 @@ async def main():
         await pg.tap('#galPro')
         await pg.wait_for_selector('#apPro:not([hidden])', timeout=5000)
         why = await pg.inner_text('#apProWhy')
-        check('fr-390 free: the button opens the Pro page, with the reason', 'Stalak Pro' in why, why)
+        check('fr-390 free: the button opens the plans page, with the reason', 'Stalak Creator Plus' in why, why)
         await pg.go_back()
         await pg.wait_for_selector('#apGallery:not([hidden])', timeout=5000)
         check('fr-390 free: Back goes back to the Galerie', True)
@@ -162,7 +162,7 @@ async def main():
         await pg.click('#acctMenu [data-am=gallery]')
         await pg.wait_for_selector('#galLock:not([hidden])', timeout=8000)
         lock = await pg.inner_text('#galLock')
-        check('en-1280 ex-Pro: « part of Stalak Pro », kept 6 months', 'part of Stalak Pro' in lock and '6 months' in lock, lock)
+        check('en-1280 ex-Pro: « part of Stalak Creator Plus », kept 6 months', 'part of Stalak Creator Plus' in lock and '6 months' in lock, lock)
         await shot(pg, 'gallery-expro-en-1280')
         check('en-1280 ex-Pro: no page error', not err, err)
         await ctx.close()

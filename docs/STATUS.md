@@ -77,17 +77,15 @@
 - **Menu du compte + Galerie** (en ligne le 28/10) : un appui sur le compte en haut à droite ouvre un menu (Galerie, Mon compte, Stalak Pro ou « Gérer mon abonnement », Aide, Se déconnecter) ; la Galerie remplace « Mes projets » : grille avec couverture (image du montage, 300 px, rangée dans R2 avec le projet), nom dessous, appui = ouvrir, appui long ou « … » = renommer / supprimer. Sans Pro : « La sauvegarde en ligne est réservée à Stalak Pro ». Migration 0007 appliquée. À vérifier par le propriétaire sur iPhone : sauvegarder en ligne, puis voir la couverture dans la Galerie.
 - **« Parler à un humain » réservé à Stalak Pro** (branche `compte/humain-pro`, compte rendu `docs/handoff/compte-humain-pro.md`, Statut : PRÊT) : création et écriture réservées à Pro côté serveur ; sans Pro, écran « Réservé à Stalak Pro » (page Pro + contact@stalak.app) ; un ex-Pro garde les réponses reçues ; réponse « sous 24 h » par e-mail quand tu n'es pas là ; badge Pro dans le tableau de bord. Textes de vente : `marketing/chat-pro`, à fusionner ensemble. Aucune migration.
 
-- **Nouvelle offre côté Comptes** (branche `compte/formules`, compte rendu `docs/handoff/compte-formules.md`, Statut : PRÊT) :
-  - formules `free` / `basic` / `pro` / `max` ; un seul tableau « fonction → formule » (`functions/_lib/entitlements.js`), `acctHas('…')` dans la page, `requirePlan(env, user, '…')` sur le serveur ; paroles auto 20/jour (Pro) et 60 (Max), sauvegarde 20 Go (Pro) et 100 Go (Max), « Parler à un humain » Max seulement ;
-  - gratuit : 1 vidéo par jour avec un compte, « jeton du jour » du serveur, compteur remis à zéro à minuit (Paris) ;
-  - e-mail de rappel (case à l'inscription et dans le compte, lien de désabonnement, 1 par jour au plus, le lendemain d'une vidéo gratuite, arrêt après 7 jours sans visite) ;
-  - page des formules dans l'app : 4 cartes, mensuel / annuel, Max mis en avant ; un abonné change de formule sur le même abonnement (prorata) ;
-  - webhook : la formule vient du prix ; tableau de bord : abonnés et revenu par formule, vidéos gratuites du jour ;
-  - **migration 0008 à appliquer avant de publier** ; les 6 prix sandbox sont déjà dans `wrangler.toml` (BACKEND.md, étape 14).
+- **Offre du 30/10 au soir côté Comptes** (branche `compte/formules`, avec `main` et `app/formules` fusionnées, compte rendu `docs/handoff/compte-formules.md`, Statut : PRÊT) :
+  - formules `free` / `pro` / `creator` ; tableau unique (`functions/_lib/entitlements.js`) selon le contrat de l'offre hybride ; sauvegarde en ligne (100 Go) et « Parler à un humain » en Creator Plus seulement ; paroles auto 20 / 60 par jour ;
+  - 4 prix en dollars dans `wrangler.toml` ; anciens prix reconnus (euros et Basic → `pro`, Max → `creator`) ;
+  - vidéo du jour, compteur et e-mail de rappel supprimés ; page des formules à 3 colonnes en dollars ; tableau de bord par formule (Pro, Creator Plus) ;
+  - **migration 0008 (`migrations/0008_plans.sql`, 3 colonnes) à appliquer avant de publier**.
 
 ## Base de données D1
 - Migrations appliquées : 0001, 0002, 0003, 0004_lyrics_usage, 0004_cloud_save, 0005_social_accounts (27/10), 0006_admin_support (27/10), 0007_project_covers (28/10).
-- En attente : **0008_plans_free_video** (branche `compte/formules`), à coller dans la console D1 avant de publier cette branche.
+- En attente : **0008_plans** (branche `compte/formules`, 3 colonnes de `subscriptions`), à coller dans la console D1 avant de publier cette branche.
 
 ## À faire, par rôle
 
@@ -116,12 +114,11 @@
 - Prêt (branche `app/formules`) : offre hybride du 30/10 au soir dans l'app. Pro / Creator Plus (`can(feat)`), filigrane qui bouge sur les vidéos gratuites (« Clipped with stalak.app »), pub récompensée Google (unité de test) qui l'enlève pour une vidéo. Plus d'écran du jour ni de fin Stalak ; le gratuit exporte sans compte. Détail et suites pour Comptes et Juridique dans `docs/handoff/app-formules.md`.
 
 ### Comptes, paiements & serveur
-- Nouvelle offre (`compte/formules`) : les 6 prix sandbox sont dans `wrangler.toml`. Au Chef de projet : migration 0008, puis redéployer le Worker `workers/cloud-cleanup` (horaires des rappels).
-  - Contrat App / Comptes livré sous les noms exacts : `acctHas(feat)` (dont `pack5`, `pack10`, `pack30`, `filters`, `unlimited`, `nologo`, `text`, `clip`, `cloud`, `lyrics`, `human`), `acctQuota()` → `{left, resetAt}` ou `null`, `acctUseVideo()` → promesse (compte la vidéo du jour sur le serveur), `acctOpen(why, {plan})` (`daily` non connecté → création de compte). Les lignes de l'app que `app/formules` remplace (texte, Clip, packs, export, restauration d'un Clip) sont laissées comme sur main : à fusionner avec `app/formules`. `acctPro()` reste (= Pro ou Max) pour `app/filtres`.
-  - Règles de Juridique appliquées : remise à zéro à minuit (Paris) ; montée immédiate au prorata avec le montant affiché avant ; descente au renouvellement sans remboursement (formule payée gardée jusque-là) ; prix du moment pour un changement ; Max → Pro au-dessus de 20 Go : rien d'effacé, nouvelles sauvegardes bloquées ; rappel : case décochée au texte exact, preuve gardée (date, texte, langue), lien « Ne plus recevoir ce rappel » qui arrête tout de suite sans connexion, en-têtes un clic, rien d'autre dans l'e-mail.
-  - Pas fait (limite Paddle) : descente vers une formule facturée autrement (annuel → mensuel) : refusée avec une explication (arrêter le renouvellement, puis reprendre). Remboursement d'un changement de formule : à la main.
-  - Pour Marketing : textes de la page des formules dans l'app (clés `pl.*`, bandeau `pr.promo`) à relire.
-  - Limite connue : l'export se fait sur l'appareil, donc la limite d'1 vidéo par jour est comptée et refusée par le serveur, mais une page modifiée à la main pourrait l'ignorer (comme le logo de fin).
+- Offre du 30/10 au soir (`compte/formules`) : fait (voir « En cours »). Au Chef de projet : migration 0008 ; plus besoin de redéployer le Worker (aucun horaire ajouté).
+  - Contrat livré : `acctHas(feat)` (`nowm`, `clip`, `fx`, `text`, `filters`, `lyrics` → Pro ; `pack5`, `pack10`, `pack30`, `cloud`, `human` → Creator Plus ; anciens noms `nologo` → Pro, `unlimited` → tous), `acctOpen(why, {plan})` avec `pro` ou `creator` (`basic` / `max` acceptés et convertis). `acctQuota` / `acctUseVideo` supprimées.
+  - Pour App : `FEAT_PLAN`, étiquettes BASIC/MAX, fin de 3 s (`outroOn` lit encore `nologo`) et `tests/ui/formules_ui.py` sont encore sur l'offre Basic / Pro / Max : à passer à Pro / Creator Plus.
+  - Règles de Juridique gardées : montée immédiate au prorata avec le montant affiché avant ; descente au renouvellement sans remboursement ; annuel → mensuel refusé avec une explication (limite Paddle) ; remboursement d'un changement à la main.
+  - Pour Marketing : textes de la page des formules dans l'app (clés `pl.*`, `pr.promo`) à relire.
 - Paddle en réel une fois la structure créée : nouveaux produits, prix, clés et webhook, puis `PADDLE_ENV=production`.
 - Microsoft (création du compte bloquée, à retenter) et Apple (programme développeur à 99 $/an).
 - Ménage quotidien automatique des projets (Worker `workers/cloud-cleanup`, à déployer avec wrangler depuis un ordinateur). Pour l'instant, le ménage se fait quand quelqu'un ouvre la Galerie.
@@ -133,7 +130,7 @@
 - Tableau de bord + « Parler à un humain » : fait sur `compte/tableau-de-bord` (le jeton Access est vérifié par le serveur : hôte, signature des clés de l'équipe, AUD, e-mail). Reste : 2 secrets, domaine personnalisé, événements Paddle `adjustment.*` (BACKEND.md, étape 13).
 - Si des faux messages arrivent : Cloudflare Turnstile sur « Parler à un humain ».
 - Tableau de bord et « Parler à un humain » : fusionnés et en ligne le 27/10, migration 0006 appliquée. Le tableau de bord est en marche (connexion du propriétaire vérifiée le 27/10). Les chiffres Pro et revenu viennent pour l'instant des abonnements de test Paddle (sandbox).
-  - À regarder (Comptes) : dans l'espace de travail du Chef de projet, `tests/ui/support_ui.py` s'arrête après 17 PASS, à l'étape « reply e-mailed to the visitor who left » (attente de « envoyé par e-mail » dépassée après 50 s). C'est pareil sur la branche seule, donc la fusion n'y est pour rien. Les tests serveur (62/62) couvrent le même parcours.
+  - Réglé (Comptes, `compte/formules`) : `tests/ui/support_ui.py` s'arrêtait à « reply e-mailed to the visitor who left ». Cause : un visiteur parti juste avant la réponse recevait l'e-mail après ≈ 30 s (attente de 20 s + passage du tableau de bord toutes les 10 s), au-delà des 50 s du test sur une machine lente. L'attente passe à 12 s (≈ 20 s au total) et le test laisse 90 s.
 - Galerie : les projets sauvegardés avant cette version n'ont pas de couverture (carré de couleur avec un numéro) ; ils en reçoivent une à la prochaine sauvegarde.
 - Plus tard : saler l'empreinte des IP des compteurs (paroles, aide, visites, messages) avec `AUTH_SECRET`.
 - Plus de 210 minutes de transcription par jour : passer au forfait Workers payant (5 $/mois).

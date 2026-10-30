@@ -15,14 +15,15 @@ PADDLE_ENV = "sandbox"             # switch to "production" once Paddle has appr
 PADDLE_CLIENT_TOKEN = "test_6ba61e76a40fdce6b9d25c3eb9a"           # client-side token: test_... (sandbox) or live_... (production)
 PADDLE_PRICE_MONTH = "pri_01m5ygermd2pjw66mgdsh4f4rw"            # first offer, Stalak Pro 9.99 EUR / month: kept, its subscribers stay Pro
 PADDLE_PRICE_YEAR = "pri_01m5ygfwqdq8h2ax297c6qagjs"             # first offer, Stalak Pro 79 EUR / year: kept, its subscribers stay Pro
-# Offer of 30/10/2026: the 6 prices (pri_...), made in Paddle sandbox by the Chef de projet on 30/10 (docs/STATUS.md,
-# BACKEND.md step 14). Empty = that plan cannot be bought yet (the page says « Bientôt »). Live prices: replace them.
-PADDLE_PRICE_BASIC_MONTH = "pri_01m66r80jxszc4yxggqvwak5p5"      # Basic 4.99 EUR / month
-PADDLE_PRICE_BASIC_YEAR = "pri_01m66r8g1bhvhnk6x1z9m0x894"       # Basic 39 EUR / year
-PADDLE_PRICE_PRO_MONTH = "pri_01m66r4d7mtzps3wmycfmv8pk9"        # Pro 10.99 EUR / month
-PADDLE_PRICE_PRO_YEAR = "pri_01m66r5nakxvg6cxjcgc1vv7j7"         # Pro 109 EUR / year
-PADDLE_PRICE_MAX_MONTH = "pri_01m66r9m12ckfttnrr5h3vhfgc"        # Max 13.99 EUR / month
-PADDLE_PRICE_MAX_YEAR = "pri_01m66r9tmrfg7fxfrb5dpnk5s3"         # Max 139 EUR / year
+# Offer of 30/10/2026 (evening), in dollars (Paddle converts them and adds the VAT of the country); sandbox prices made by
+# the Chef de projet on 30/10 (docs/STATUS.md, BACKEND.md step 14). Empty = that plan cannot be bought yet (« Bientôt »).
+PADDLE_PRICE_PRO_MONTH = "pri_01m671bncd9qm3dqxjyqf127gn"         # Stalak Pro 7.99 USD / month
+PADDLE_PRICE_PRO_YEAR = "pri_01m671cexysycbr7wz1av55cvy"          # Stalak Pro 49.99 USD / year
+PADDLE_PRICE_CREATOR_MONTH = "pri_01m671dtkv0d5m0r2a4ek02a3e"     # Stalak Creator Plus 14.99 USD / month
+PADDLE_PRICE_CREATOR_YEAR = "pri_01m671eex11hq295vhmsj723wm"      # Stalak Creator Plus 99.99 USD / year
+# Older prices of 30/10 (test subscriptions only), still recognised so their subscribers keep their price:
+# Basic and Pro in euros → pro, Max → creator. Format: id:plan:interval, comma between them.
+PADDLE_PRICES_OLD = "pri_01m66r80jxszc4yxggqvwak5p5:pro:month,pri_01m66r8g1bhvhnk6x1z9m0x894:pro:year,pri_01m66r4d7mtzps3wmycfmv8pk9:pro:month,pri_01m66r5nakxvg6cxjcgc1vv7j7:pro:year,pri_01m66r9m12ckfttnrr5h3vhfgc:creator:month,pri_01m66r9tmrfg7fxfrb5dpnk5s3:creator:year"
 SOCIAL_CONNECT_ENABLED = "0"
 ADMIN_HOST = "admin.stalak.app"   # the owner's dashboard (BACKEND.md, step 13); off until the secrets ACCESS_AUD and ADMIN_EMAILS are set
 ACCESS_TEAM_DOMAIN = "https://small-band-a6ef.cloudflareaccess.com"   # Cloudflare Zero Trust team (public); its keys sign the Access tokens

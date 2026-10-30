@@ -123,7 +123,6 @@ th{color:var(--text2);font-weight:600}
     <div class="kpi"><div class="k">Revenu mensuel (estimé)</div><div class="v" id="kMrr">–</div><div class="s" id="kMrrS">&nbsp;</div></div>
     <div class="kpi"><div class="k">Encaissé sur 30 jours</div><div class="v" id="kRev">–</div><div class="s" id="kRevS">&nbsp;</div></div>
     <div class="kpi"><div class="k">Messages à traiter</div><div class="v" id="kTix">–</div><div class="s" id="kTixS">&nbsp;</div></div>
-    <div class="kpi"><div class="k">Vidéos gratuites aujourd’hui</div><div class="v" id="kFree">–</div><div class="s" id="kFreeS">&nbsp;</div></div>
   </section>
 
   <section class="card" aria-labelledby="hSup">
@@ -141,7 +140,7 @@ th{color:var(--text2);font-weight:600}
   <section class="card" aria-labelledby="hPlans">
     <h2 id="hPlans">Par formule</h2>
     <div class="scroll-x"><table id="plans"><thead><tr><th scope="col">Formule</th><th scope="col">Abonnés</th><th scope="col">Mensuels</th><th scope="col">Annuels</th><th scope="col">Résiliés en cours</th><th scope="col">Revenu mensuel (estimé)</th><th scope="col">Encaissé 30 j</th><th scope="col">Depuis le début</th></tr></thead><tbody></tbody></table></div>
-    <p class="note">Chaque abonné compte à son prix (un abonné garde son prix : les Pro à 9,99 € / 79 € de la première offre restent comptés ainsi). Encaissé : TTC, remboursements à part.</p>
+    <p class="note">Chaque abonné compte à son prix (un abonné garde son prix) : prix en dollars hors TVA, anciens Pro (9,99 € / 79 €) en euros ; les abonnements de test Basic / Max sont comptés en Pro / Creator Plus, sans montant. Encaissé : remboursements à part.</p>
   </section>
 
   <section class="card" aria-labelledby="hEvo">
@@ -233,9 +232,8 @@ th{color:var(--text2);font-weight:600}
     { k: 'lyricsJobs', t: 'Paroles auto', f: nf.format },
     { k: 'cloudSaves', t: 'Sauvegardes en ligne', f: nf.format },
     { k: 'tickets', t: 'Nouveaux messages', f: nf.format },
-    { k: 'freeVideos', t: 'Vidéos gratuites', f: nf.format },
   ];
-  var PLAN_NAME = { basic: 'Basic', pro: 'Pro', max: 'Max' };
+  var PLAN_NAME = { pro: 'Pro', creator: 'Creator Plus', basic: 'Pro', max: 'Creator Plus' };
   function niceMax(v) { if (v <= 4) return 4; var p = Math.pow(10, Math.floor(Math.log10(v))), m = v / p; return (m <= 1 ? 1 : m <= 2 ? 2 : m <= 5 ? 5 : 10) * p; }
   function chart(box, days, c) {
     var W = 300, H = 110, L = 30, B = 16, T = 6, n = days.length;
@@ -287,6 +285,7 @@ th{color:var(--text2);font-weight:600}
     });
     t.append(tb); return t;
   }
+  function cents(o) { var r = {}; for (var c in o) r[c] = { total: o[c] }; return r; }
   function totalsByCur(o) { var parts = []; for (var cur in o) parts.push(money(o[cur].total, cur)); return parts.length ? parts.join(' + ') : money(0, 'EUR'); }
   function stats() {
     return api('GET', 'stats?days=' + S.days).then(function (d) {
@@ -296,16 +295,13 @@ th{color:var(--text2);font-weight:600}
       $('#kUsersS').textContent = '+' + last30 + ' sur 30 j · ' + t.verified + ' vérifiés';
       $('#kPro').textContent = nf.format(t.pro.total);
       $('#kProS').textContent = t.pro.month + ' mensuels · ' + t.pro.year + ' annuels' + (t.pro.ending ? ' · ' + t.pro.ending + ' résiliés' : '');
-      $('#kMrr').textContent = money(t.mrrCents, 'EUR');
-      $('#kMrrS').textContent = 'TTC, annuels comptés au douzième';
-      var fv = d.usage.freeVideos || { today: 0, last30: 0 };
-      $('#kFree').textContent = nf.format(fv.today);
-      $('#kFreeS').textContent = nf.format(fv.last30) + ' sur 30 j · jour de Paris';
+      $('#kMrr').textContent = totalsByCur(cents(t.mrr || { USD: t.mrrCents }));
+      $('#kMrrS').textContent = 'Annuels comptés au douzième ; prix en dollars hors TVA, anciens Pro en euros';
       var pb = $('#plans tbody'); pb.textContent = '';
-      ['basic', 'pro', 'max'].forEach(function (k) {
-        var p = (t.plans || {})[k] || { total: 0, month: 0, year: 0, ending: 0, mrrCents: 0, revenue: {}, revenue30: {} };
+      ['pro', 'creator'].forEach(function (k) {
+        var p = (t.plans || {})[k] || { total: 0, month: 0, year: 0, ending: 0, mrr: {}, revenue: {}, revenue30: {} };
         var tr = el('tr'); tr.append(el('th', { scope: 'row' }, PLAN_NAME[k]), el('td', null, nf.format(p.total)), el('td', null, nf.format(p.month)),
-          el('td', null, nf.format(p.year)), el('td', null, nf.format(p.ending)), el('td', null, money(p.mrrCents, 'EUR')),
+          el('td', null, nf.format(p.year)), el('td', null, nf.format(p.ending)), el('td', null, totalsByCur(cents(p.mrr || {}))),
           el('td', null, totalsByCur(p.revenue30)), el('td', null, totalsByCur(p.revenue)));
         pb.append(tr);
       });

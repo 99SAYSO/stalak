@@ -10,17 +10,16 @@
 import { HttpError, json, readJson } from './http.js';
 import { verifyJwtSignature } from './jwt.js';
 import { jwksFor } from './oauth.js';
-import { subscriptionGivesPro, intervalOf, planOfSub, planOfPrice } from './entitlements.js';
-import { parisDay } from './videos.js';
+import { subscriptionGivesPro, intervalOf, planOfSub, planOfPrice, salePrices } from './entitlements.js';
 import { getState, setState, isAvailable, messagesOf, deliverReply, catchUpReplies, MESSAGE_MAX, cleanupTickets } from './support.js';
 import { LIVE_MS, today } from './metrics.js';
 
 const TEAM = /^https:\/\/[a-z0-9][a-z0-9-]{0,62}\.cloudflareaccess\.com$/;
 const TICKET = /^t_[A-Za-z0-9_-]{16,32}$/;
 export const PRICE_CENTS = { month: 999, year: 7900 };   // first offer, Stalak Pro, EUR tax included (its subscribers keep it)
-// offer of 30/10/2026, EUR tax included (STALAK_CONTEXTE.md, section 2)
-export const PLAN_CENTS = { basic: { month: 499, year: 3900 }, pro: { month: 1099, year: 10900 }, max: { month: 1399, year: 13900 } };
-export const PAID_PLANS = ['basic', 'pro', 'max'];
+// offer of 30/10/2026 (evening), in dollars before the VAT Paddle adds per country (STALAK_CONTEXTE.md, section 2)
+export const PLAN_CENTS = { pro: { month: 799, year: 4999 }, creator: { month: 1499, year: 9999 } };
+export const PAID_PLANS = ['pro', 'creator'];
 
 export function adminConfig(env) {
   const host = String(env.ADMIN_HOST || '').trim().toLowerCase();
@@ -89,7 +88,7 @@ export async function stats(env, days = 30, now = Date.now()) {
   const list = dayList(days, now), from = list[0], fromMs = Date.parse(from + 'T00:00:00Z');
   const since30 = now - 30 * 864e5;
   const q = (sql, ...b) => env.DB.prepare(sql).bind(...b);
-  const [users, signups, subs, payDays, payAll, pay30, refDays, refAll, visitDays, lyrDays, counts, cloud, ticketDays, recent, payPlans, freeDays] = await env.DB.batch([
+  const [users, signups, subs, payDays, payAll, pay30, refDays, refAll, visitDays, lyrDays, counts, cloud, ticketDays, recent, payPlans] = await env.DB.batch([
     q('SELECT COUNT(*) AS n, SUM(email_verified_at IS NOT NULL) AS verified FROM users'),
     q("SELECT date(created_at / 1000, 'unixepoch') AS d, COUNT(*) AS n FROM users WHERE created_at >= ?1 GROUP BY d", fromMs),
     q('SELECT id, user_id, status, price_id, plan, current_period_end, cancel_at FROM subscriptions'),
@@ -108,14 +107,12 @@ export async function stats(env, days = 30, now = Date.now()) {
     q('SELECT id, email, display_name, created_at, email_verified_at FROM users ORDER BY created_at DESC LIMIT 20'),
     // revenue per plan: payments by price (the plan comes from the price, entitlements.js)
     q('SELECT price_id, currency, SUM(total) AS total, SUM(billed_at >= ?1) AS n30, SUM(CASE WHEN billed_at >= ?1 THEN total ELSE 0 END) AS total30, COUNT(*) AS n FROM payments GROUP BY price_id, currency', since30),
-    // free videos (videos.js): one row per account and per Paris day
-    q('SELECT day AS d, COUNT(*) AS n FROM free_videos WHERE day >= ?1 GROUP BY day', from),
   ]);
   const R = (r) => r.results || [];
 
   const series = {};
   for (const d of list) series[d] = { day: d, signups: 0, visits: 0, newPro: 0, payments: 0, revenue: 0, refunds: 0,
-    lyricsJobs: 0, lyricsMinutes: 0, lyricsUsers: 0, cloudSaves: 0, helpQuestions: 0, helpFailed: 0, tickets: 0, ticketMessages: 0, freeVideos: 0 };
+    lyricsJobs: 0, lyricsMinutes: 0, lyricsUsers: 0, cloudSaves: 0, helpQuestions: 0, helpFailed: 0, tickets: 0, ticketMessages: 0 };
   const at = (d) => series[d];
   for (const r of R(signups)) if (at(r.d)) at(r.d).signups = r.n;
   for (const r of R(visitDays)) if (at(r.d)) at(r.d).visits = r.n;
@@ -126,16 +123,17 @@ export async function stats(env, days = 30, now = Date.now()) {
   const KEY = { help_q: 'helpQuestions', help_fail: 'helpFailed', cloud_save: 'cloudSaves', ticket: 'tickets', ticket_msg: 'ticketMessages' };
   for (const r of R(counts)) if (at(r.d) && KEY[r.name] && r.name !== 'ticket') at(r.d)[KEY[r.name]] = r.n;
   for (const r of R(ticketDays)) if (at(r.d)) at(r.d).tickets = r.n;
-  for (const r of R(freeDays)) if (at(r.d)) at(r.d).freeVideos = r.n;
 
   // Stalak Pro now: the same rule as the site (entitlements.js)
   // pro = every paying subscriber (all plans); plans = the same, plan by plan, with the monthly revenue estimated from
-  // each subscription's price (a subscriber keeps his price: the first offer's 9.99 € / 79 € count as they are)
+  // each subscription's price (a subscriber keeps his price: the first offer's 9.99 € / 79 € count in euros, the prices on
+  // sale in dollars; the other older prices (test subscriptions of Basic / Pro / Max in euros) are counted, without amount)
   const pro = { month: 0, year: 0, other: 0, total: 0, ending: 0, pastDue: 0 };
   const plans = {};
-  for (const p of PAID_PLANS) plans[p] = { month: 0, year: 0, other: 0, total: 0, ending: 0, mrrCents: 0, revenue: {}, revenue30: {} };
+  for (const p of PAID_PLANS) plans[p] = { month: 0, year: 0, other: 0, total: 0, ending: 0, mrr: {}, revenue: {}, revenue30: {} };
   const proUsers = new Map();   // account → its plan now
-  let mrr = 0;
+  const mrr = {};
+  const sale = salePrices(env);
   for (const s of R(subs)) {
     if (!subscriptionGivesPro(s, now)) continue;
     const k = intervalOf(env, s.price_id) || 'other', plan = planOfSub(env, s), pl = plans[plan];
@@ -143,18 +141,20 @@ export async function stats(env, days = 30, now = Date.now()) {
     if (s.cancel_at) pro.ending++;
     if (s.status === 'past_due') pro.pastDue++;
     if (s.user_id) proUsers.set(s.user_id, plan);
-    const legacy = s.price_id && (s.price_id === env.PADDLE_PRICE_MONTH || s.price_id === env.PADDLE_PRICE_YEAR);
-    const cents = legacy ? PRICE_CENTS : PLAN_CENTS[plan];
-    const m = k === 'year' ? cents.year / 12 : k === 'month' ? cents.month : 0;
-    if (pl) { pl[k]++; pl.total++; if (s.cancel_at) pl.ending++; pl.mrrCents += m; }
-    mrr += m;
+    const first = s.price_id && (s.price_id === env.PADDLE_PRICE_MONTH || s.price_id === env.PADDLE_PRICE_YEAR);
+    const cents = first ? PRICE_CENTS : sale[s.price_id] ? PLAN_CENTS[sale[s.price_id].plan] : null, cur = first ? 'EUR' : 'USD';
+    const m = !cents ? 0 : k === 'year' ? cents.year / 12 : k === 'month' ? cents.month : 0;
+    if (pl) { pl[k]++; pl.total++; if (s.cancel_at) pl.ending++; if (m) addTo(pl.mrr, cur, m); }
+    if (m) addTo(mrr, cur, m);
   }
   for (const r of R(payPlans)) {
     const pl = plans[planOfPrice(env, r.price_id) || 'pro'], cur = r.currency || '?';
     pl.revenue[cur] = { total: ((pl.revenue[cur] || {}).total || 0) + (r.total || 0), n: ((pl.revenue[cur] || {}).n || 0) + (r.n || 0) };
     pl.revenue30[cur] = { total: ((pl.revenue30[cur] || {}).total || 0) + (r.total30 || 0), n: ((pl.revenue30[cur] || {}).n || 0) + (r.n30 || 0) };
   }
-  for (const p of PAID_PLANS) plans[p].mrrCents = Math.round(plans[p].mrrCents);
+  const round = (o) => { for (const c in o) o[c] = Math.round(o[c]); return o; };
+  for (const p of PAID_PLANS) round(plans[p].mrr);
+  round(mrr);
   const byCur = (rows) => { const o = {}; for (const r of rows) o[r.currency || '?'] = { total: r.total || 0, n: r.n || 0, ...(r.tax != null ? { tax: r.tax, earnings: r.earnings } : {}) }; return o; };
   const u = R(users)[0] || {}, c = R(cloud)[0] || {};
   const s30 = (k) => list.slice(-30).reduce((n, d) => n + (series[d][k] || 0), 0);
@@ -164,8 +164,8 @@ export async function stats(env, days = 30, now = Date.now()) {
     totals: {
       users: u.n || 0, verified: u.verified || 0,
       pro, plans,
-      // monthly recurring revenue, estimated from the subscriptions running now (yearly price / 12)
-      mrrCents: Math.round(mrr),
+      // monthly recurring revenue, estimated from the subscriptions running now (yearly price / 12), by currency
+      mrr, mrrCents: mrr.USD || 0,
       revenue: { all: byCur(R(payAll)), last30: byCur(R(pay30)), refunds: byCur(R(refAll)) },
     },
     usage: {
@@ -174,8 +174,6 @@ export async function stats(env, days = 30, now = Date.now()) {
       help: { questions30: s30('helpQuestions'), failed30: s30('helpFailed'), today: series[list[list.length - 1]].helpQuestions,
         dailyMax: Number.isFinite(Number.parseInt(env.HELP_DAILY_MAX, 10)) ? Number.parseInt(env.HELP_DAILY_MAX, 10) : 60 },
       tickets: { created30: s30('tickets') },
-      // the free video of the day (videos.js): accounts that made it today (Paris day), and over 30 days
-      freeVideos: { today: (R(freeDays).find((r) => r.d === parisDay(now)) || {}).n || 0, last30: s30('freeVideos') },
     },
     recentUsers: R(recent).map((r) => ({ email: r.email, name: r.display_name || null, createdAt: new Date(r.created_at).toISOString(),
       verified: !!r.email_verified_at, pro: proUsers.has(r.id), plan: proUsers.get(r.id) || null })),

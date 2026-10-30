@@ -11,7 +11,6 @@ import { timingSafeEqual } from './crypto.js';
 import { limit } from './ratelimit.js';
 import { transcribe } from './lyrics.js';
 import { helpChat } from './help.js';
-import { claimVideo, freeVideoState, remindersStop, sendReminders, maybeReminders, seen } from './videos.js';
 import { admin } from './admin.js';
 import { support } from './support.js';
 import { presence, bump } from './metrics.js';
@@ -30,7 +29,6 @@ function publicUser(u) {
     passwordSetAt: u.password_set_at ? new Date(u.password_set_at).toISOString() : null,
     emailVerified: !!u.email_verified_at,
     providers: u.providers || [],
-    reminders: !!u.reminders,   // the reminder e-mail of the free video of the day (videos.js)
   } : null;
 }
 
@@ -45,9 +43,7 @@ async function meResponse(env, user, headers) {
     const { results } = await env.DB.prepare('SELECT provider FROM identities WHERE user_id = ?1 ORDER BY created_at').bind(user.id).all();
     user.providers = results.map((r) => r.provider);
   }
-  // free plan: is today's free video used, and when the next one comes (midnight, Paris time)
-  const freeVideo = user && !entitlements.features.includes('unlimited') ? await freeVideoState(env, user) : null;
-  return json({ user: publicUser(user), session: publicSession(user), entitlements, subscription, freeVideo }, 200, headers);
+  return json({ user: publicUser(user), session: publicSession(user), entitlements, subscription }, 200, headers);
 }
 
 function config(env) {
@@ -55,20 +51,19 @@ function config(env) {
     paddle: {
       environment: env.PADDLE_ENV === 'production' ? 'production' : 'sandbox',
       clientToken: env.PADDLE_CLIENT_TOKEN || null,
-      // the 3 plans of the 30/10 offer, by billing interval (null = not on sale yet); month / year = Pro, for pages opened
-      // before this version
+      // the 2 plans on sale (offer of 30/10, evening), by billing interval (null = not on sale yet); month / year = Pro,
+      // for pages opened before this version
       prices: {
-        basic: { month: env.PADDLE_PRICE_BASIC_MONTH || null, year: env.PADDLE_PRICE_BASIC_YEAR || null },
         pro: { month: env.PADDLE_PRICE_PRO_MONTH || null, year: env.PADDLE_PRICE_PRO_YEAR || null },
-        max: { month: env.PADDLE_PRICE_MAX_MONTH || null, year: env.PADDLE_PRICE_MAX_YEAR || null },
-        month: env.PADDLE_PRICE_PRO_MONTH || env.PADDLE_PRICE_MONTH || null, year: env.PADDLE_PRICE_PRO_YEAR || env.PADDLE_PRICE_YEAR || null,
+        creator: { month: env.PADDLE_PRICE_CREATOR_MONTH || null, year: env.PADDLE_PRICE_CREATOR_YEAR || null },
+        month: env.PADDLE_PRICE_PRO_MONTH || null, year: env.PADDLE_PRICE_PRO_YEAR || null,
       },
     },
-    // prices shown (TTC, Europe), and what each plan unlocks (entitlements.js: the same table as the server)
+    // prices shown (in dollars: Paddle converts them and adds the VAT of the country), and what each plan unlocks
+    // (entitlements.js: the same table as the server)
     plans: {
-      basic: { month: { amount: '4.99', currency: 'EUR' }, year: { amount: '39.00', currency: 'EUR' } },
-      pro: { month: { amount: '10.99', currency: 'EUR' }, year: { amount: '109.00', currency: 'EUR' } },
-      max: { month: { amount: '13.99', currency: 'EUR' }, year: { amount: '139.00', currency: 'EUR' } },
+      pro: { month: { amount: '7.99', currency: 'USD' }, year: { amount: '49.99', currency: 'USD' } },
+      creator: { month: { amount: '14.99', currency: 'USD' }, year: { amount: '99.99', currency: 'USD' } },
     },
     planFeatures: FEATURES,
     planLimits: LIMITS,
@@ -198,7 +193,6 @@ async function deleteAccount(request, env) {
     // « Parler à un humain »: the conversations of this account go too; payments stay (accounting) without the link
     env.DB.prepare('DELETE FROM ticket_messages WHERE ticket_id IN (SELECT id FROM tickets WHERE user_id = ?1)').bind(user.id),
     env.DB.prepare('DELETE FROM tickets WHERE user_id = ?1').bind(user.id),
-    env.DB.prepare('DELETE FROM free_videos WHERE user_id = ?1').bind(user.id),
     env.DB.prepare('UPDATE payments SET user_id = NULL WHERE user_id = ?1').bind(user.id),
     // the users row holds the display name, the photo and the password hash: all gone with it
     env.DB.prepare('DELETE FROM users WHERE id = ?1').bind(user.id),
@@ -243,14 +237,6 @@ async function dispatch(request, env, ctx) {
       if (method !== 'POST') throw new HttpError(405, 'method_not_allowed', 'Method not allowed.');
       return cronCleanup(request, env);
     }
-    if (route === 'cron/reminders') {
-      if (method !== 'POST') throw new HttpError(405, 'method_not_allowed', 'Method not allowed.');
-      cronAuth(request, env);
-      return json({ ok: true, ...(await sendReminders(env)) });
-    }
-    // unsubscribe link of the reminder e-mails: authenticated by the random key of the link, not by a session; the POST
-    // comes from the page's own form or from the mail app (one click, RFC 8058), so no Origin / JSON check here
-    if (route === 'reminders/stop') return remindersStop(request, env, method);
     // raw media bytes (project files): application/octet-stream, which a plain cross-site form cannot send either
     const rawUpload = method === 'PUT' && parts[0] === 'projects' && parts[2] === 'files' && parts.length >= 4;
     const coverUpload = method === 'PUT' && parts[0] === 'projects' && parts[2] === 'cover' && parts.length === 3;
@@ -259,14 +245,9 @@ async function dispatch(request, env, ctx) {
     switch (route) {
       case 'config':
         if (method !== 'GET') break;
-        await maybeReminders(env, ctx);   // the reminder e-mails due now, in the background (videos.js)
         return json(config(env), 200, { 'Cache-Control': 'no-store' });
       case 'me':
-        if (method === 'GET') {
-          const u = await currentUser(request, env);
-          await seen(env, u);   // a visit (the reminders stop after 7 days without one)
-          return meResponse(env, u);
-        }
+        if (method === 'GET') return meResponse(env, await currentUser(request, env));
         if (method !== 'PATCH') break;
         return meResponse(env, await updateProfile(env, await requireUser(request, env), await readJson(request)));
       case 'me/avatar':
@@ -310,19 +291,15 @@ async function dispatch(request, env, ctx) {
         if (method !== 'POST') break;
         return json(await portalLinks(env, await requireUser(request, env)));
       case 'paddle/change': {
-        // another plan on the same subscription (paddle.js changePlan): at most 10 changes an hour per account
+        // another plan on the same subscription (paddle.js changePlan): at most 30 requests (previews included) an hour per account
         if (method !== 'POST') break;
         const u = await requireUser(request, env);
-        await limit(env, `plan:${u.id}`, 10, 3600e3, 'Too many plan changes, try again later.');
+        await limit(env, `plan:${u.id}`, 30, 3600e3, 'Too many plan changes, try again later.');
         return json(await changePlan(env, u, await readJson(request, 1024)));
       }
       case 'account':
         if (method !== 'DELETE') break;
         return deleteAccount(request, env);
-      case 'videos/claim':
-        // the free video of the day: the « jeton du jour » asked before a free export (videos.js)
-        if (method !== 'POST') break;
-        return claimVideo(request, env);
       case 'lyrics/transcribe':
         // « Paroles automatiques » (Stalak Pro): one piece of the song's voice → timed words (functions/_lib/lyrics.js)
         if (method !== 'POST') break;

@@ -10,7 +10,7 @@ nobody is there (answer by e-mail « sous 24 h », owner told by e-mail); the da
 on a computer and a phone; the owner's answer e-mailed to the member who left; the live chat when the owner is « disponible »;
 an ex-Pro keeps the answers already received but cannot write; FR and EN; no horizontal scroll; no page error (strict CSP);
 the claude.ai build. Run this file by absolute path from a clean directory."""
-import asyncio, json, os, sys, urllib.request
+import asyncio, json, os, sys, time, urllib.request
 from playwright.async_api import async_playwright
 
 BASE, CLAUDE_BUILD = sys.argv[1].rstrip('/'), sys.argv[2]
@@ -76,7 +76,7 @@ async def main():
         await v.click('#helpHuman')
         await v.wait_for_selector('#helpLog .hp-gate')
         gate = await v.inner_text('#helpLog .hp-gate')
-        check('fr-390 signed out: reserved to Stalak Pro', 'réservé à Stalak Max' in gate and 'sous 24 h' in gate, gate)
+        check('fr-390 signed out: reserved to Stalak Pro', 'réservé à Stalak Creator Plus' in gate and 'sous 24 h' in gate, gate)
         href = await v.get_attribute('#helpLog .hp-gate a', 'href')
         check('fr-390 signed out: contact address still offered', href == 'mailto:contact@stalak.app', href)
         check('fr-390 signed out: no message box for the team', 'équipe' not in (await v.get_attribute('#helpIn', 'placeholder')))
@@ -95,7 +95,7 @@ async def main():
         await v.click('#helpHuman')
         await v.wait_for_selector('#helpLog .hp-gate')
         gate = await v.inner_text('#helpLog .hp-gate')
-        check('en-1280 free: reserved to Stalak Pro', 'part of Stalak Max' in gate and 'within 24 hours' in gate, gate)
+        check('en-1280 free: reserved to Stalak Pro', 'part of Stalak Creator Plus' in gate and 'within 24 hours' in gate, gate)
         await v.click('#helpLog .hp-gate button')
         await v.wait_for_timeout(600)
         why = await v.evaluate("() => { const e = document.querySelector('#apProWhy'); return e && !e.hidden ? e.innerText : ''; }")
@@ -104,7 +104,7 @@ async def main():
         await vctx.close()
 
         # 3. a Pro member on a phone, nobody on the dashboard: answer by e-mail within 24 h, to the account's address
-        pro = post('/__test/user', {'pro': True, 'plan': 'max'})
+        pro = post('/__test/user', {'pro': True, 'plan': 'creator'})
         vctx, v, verr = await visitor(browser, 'fr', 390, 844, pro)
         await v.click('#helpHuman')
         await v.wait_for_function("() => /sous 24 h/.test(document.querySelector('#helpLog').innerText)", timeout=10000)
@@ -119,7 +119,7 @@ async def main():
         check('fr-390 Pro: sent', True)
         await shot(v, 'humain-pro-member-fr-390')
         new = get('/__test/mails')[m0:]
-        check('owner told by e-mail, marked Pro', any(x.startswith('contact@stalak.app: Stalak Max : nouveau message') for x in new), new)
+        check('owner told by e-mail, marked Pro', any(x.startswith('contact@stalak.app: Stalak Creator Plus : nouveau message') for x in new), new)
         check('fr-390 Pro: no page error', not verr, verr)
         await vctx.close()
 
@@ -131,11 +131,11 @@ async def main():
         await a.goto(BASE + '/__test/admin-login', wait_until='load')
         await a.wait_for_selector('#charts .chart', timeout=15000)
         await a.wait_for_function("() => document.querySelector('#who').textContent.includes('@')", timeout=10000)
-        check('admin-1280: 9 day-by-day charts (with the free videos)', await a.eval_on_selector_all('#charts .chart', 'e => e.length') == 9)
+        check('admin-1280: 8 day-by-day charts', await a.eval_on_selector_all('#charts .chart', 'e => e.length') == 8)
         check('admin-1280: Pro subscribers counted', (await a.inner_text('#kPro')).strip() == '1', await a.inner_text('#kPro'))
         await a.wait_for_selector('#tlist button', timeout=10000)
         item = await a.inner_text('#tlist button')
-        check('admin-1280: conversation listed, new, with the « Max » badge', 'nouveau' in item and 'Max' in item, item)
+        check('admin-1280: conversation listed, new, with the « Creator Plus » badge', 'nouveau' in item and 'Creator Plus' in item, item)
         await a.click('#tableBtn')
         check('admin-1280: table view', await a.is_visible('#tableWrap table'))
         await a.hover('#charts .chart .hit >> nth=-1')
@@ -144,10 +144,14 @@ async def main():
         await a.click('#tlist button')
         await a.wait_for_selector('#replyText')
         head = await a.inner_text('#conv .head')
-        check('admin-1280: « Max » shown in the open conversation', 'Max' in head and 'gratuit' not in head, head)
+        check('admin-1280: « Creator Plus » shown in the open conversation', 'Creator Plus' in head and 'gratuit' not in head, head)
         await a.fill('#replyText', 'Essaie sur Chrome, ça devrait passer.')
         await a.click('#conv button[type=submit]')
-        await a.wait_for_function("() => /envoyé par e-mail/.test(document.querySelector('#conv .msgs').innerText)", timeout=50000)
+        t_reply = time.time()
+        # the visitor left a few seconds ago: the answer goes by e-mail once his page has not asked for 12 s (support.js CATCH_UP_MS),
+        # at the dashboard's next refresh (every 10 s): about 20 s; 90 s allowed for slow machines
+        await a.wait_for_function("() => /envoyé par e-mail/.test(document.querySelector('#conv .msgs').innerText)", timeout=90000)
+        print('   (reply e-mailed after %.1f s)' % (time.time() - t_reply), flush=True)
         check('admin-1280: reply e-mailed to the member who left', any('Réponse de l’équipe Stalak' in x for x in get('/__test/mails')[m0:]))
         check('admin-1280: no horizontal scroll', await no_scroll(a))
         await shot(a, 'humain-pro-admin-1280')
@@ -155,7 +159,7 @@ async def main():
         # 5. « disponible » on: another Pro member in English gets the live chat
         await a.check('#availSw')
         await a.wait_for_function("() => /Direct/.test(document.querySelector('#availTxt').textContent)", timeout=15000)
-        pro2 = post('/__test/user', {'pro': True, 'plan': 'max'})
+        pro2 = post('/__test/user', {'pro': True, 'plan': 'creator'})
         vctx, v, verr = await visitor(browser, 'en', 1280, 800, pro2)
         await v.click('#helpHuman')
         await v.wait_for_function("() => /team is here/.test(document.querySelector('#helpLog').innerText)", timeout=10000)
@@ -186,7 +190,7 @@ async def main():
         await v.wait_for_function("() => /export again/.test(document.querySelector('#helpLog').innerText)", timeout=10000)
         await v.wait_for_selector('#helpLog .hp-gate')
         gate = await v.inner_text('#helpLog .hp-gate')
-        check('en-390 ex-Pro: answers kept, writing needs Pro', 'need Stalak Max' in gate and 'stay right above' in gate, gate)
+        check('en-390 ex-Pro: answers kept, writing needs Pro', 'need Stalak Creator Plus' in gate and 'stay right above' in gate, gate)
         check('en-390 ex-Pro: the box goes back to the assistant', 'team' not in (await v.get_attribute('#helpIn', 'placeholder')))
         check('en-390 ex-Pro: no horizontal scroll', await no_scroll(v))
         await shot(v, 'humain-pro-expro-en-390')

@@ -18,7 +18,7 @@ Compte environ 1 h 30 la première fois, plus le délai de validation de Paddle 
 | Profil | Un pseudo (2 à 30 caractères) et une photo (recadrée et réduite à 256 × 256 dans le navigateur, 80 Ko maximum côté serveur). |
 | Session | Un cookie `stalak_s` sécurisé (HttpOnly, Secure, SameSite=Lax) qui reste valable 60 jours. |
 | Abonnement Pro | 9,99 € / mois ou 79 € / an, payé via **Paddle**. Paddle est le revendeur officiel : c'est lui qui encaisse, gère la TVA et envoie les factures. |
-| Avantages Pro | Pas d'outro Stalak à la fin des exports, mode Clip (16:9, chanson entière), packs de vidéos (5, 10 ou 30 vidéos différentes d'un coup), sauvegarde des projets en ligne (son et vidéos compris) et transcription automatique des paroles (à venir). |
+| Avantages | Formules Gratuit / Pro / Creator Plus : voir l'étape 14 (tableau unique dans `functions/_lib/entitlements.js`). |
 | Sauvegarde en ligne | Pro : un projet entier (son, prises, paroles, montage) gardé dans le compte, 20 Go par compte, rouvert sur n'importe quel appareil (étape 11). |
 | Gérer / résilier | Un lien vers l'espace client Paddle. |
 | Supprimer son compte | Le compte et toutes ses données sont effacés, et l'abonnement en cours est arrêté. Les boutiques d'apps, Meta et TikTok l'exigent. |
@@ -28,7 +28,7 @@ Fichiers ajoutés :
 
 - `functions/` contient le code serveur (Cloudflare Pages Functions). Il est placé **à la racine du dépôt** et non dans `public/`, comme Cloudflare le demande : « Make sure that the `/functions` directory is at the root of your Pages project (and not in the static root) » ([doc Cloudflare](https://developers.cloudflare.com/pages/functions/get-started/)).
 - `migrations/0001_init.sql` crée les tables de la base de données ; `0002_…`, `0003_…` et `0004_cloud_save.sql` (sauvegarde en ligne) les complètent.
-- `functions/_lib/cloud.js` : la sauvegarde en ligne (fichiers dans R2, espace de 20 Go, règle des 6 mois) ; `workers/cloud-cleanup/` : le Worker planifié de la règle des 6 mois.
+- `functions/_lib/cloud.js` : la sauvegarde en ligne (fichiers dans R2, espace de 100 Go en Creator Plus, règle des 6 mois) ; `workers/cloud-cleanup/` : le Worker planifié de la règle des 6 mois.
 - `wrangler.toml` contient la configuration Cloudflare (base `DB`, réglages publics).
 - `src/account.js` est le petit module côté site (`window.StalakAccount`).
 - `tests/backend/` contient les tests automatiques.
@@ -337,9 +337,9 @@ adresse de retour mal recopiée (une lettre ou un `/` de trop), secret expiré (
 
 ---
 
-## 11. Sauvegarde en ligne (Stalak Pro, stockage R2)
+## 11. Sauvegarde en ligne (Stalak Creator Plus, stockage R2)
 
-Un abonné Pro peut sauvegarder un projet entier (son, prises, paroles et leurs temps, montage, effets, format, style du texte)
+Un abonné Creator Plus peut sauvegarder un projet entier (son, prises, paroles et leurs temps, montage, effets, format, style du texte)
 avec « Sauvegarder en ligne » (étape Montage, ou Galerie dans le menu du compte), puis le rouvrir sur n'importe quel appareil.
 La **Galerie** montre les projets en grille, chacun avec sa couverture : une image du montage (300 px de large, 64 Ko au plus),
 faite par la page à chaque sauvegarde et rangée dans R2 à côté du projet (`u/<compte>/p/<projet>/cover`).
@@ -347,12 +347,12 @@ Le petit état du projet (JSON) est dans D1 ; le son et les vidéos sont dans **
 
 | Règle | Valeur |
 |---|---|
-| Espace par compte | 20 Go (son + prises + projets). Réglable avec la variable `CLOUD_QUOTA_BYTES` (en octets). |
+| Espace par compte | 100 Go en Creator Plus (son + prises + projets). Réglable avec la variable `CLOUD_QUOTA_BYTES` (en octets). Au-dessus (après un changement) : rien n'est effacé, les nouvelles sauvegardes attendent. |
 | Taille d'un fichier | 4 Go au plus. Au-delà de 8 Mo, il est envoyé en morceaux de 8 Mo (envoi « multipart » de R2). |
 | Projets | 200 au plus par compte, 64 fichiers au plus par projet. |
 | Fichier déjà envoyé | Pas renvoyé : chaque fichier a une empreinte (nom, taille, date, début et fin du fichier). |
 | Coupure réseau | Chaque morceau est réessayé (6 fois, attente croissante) ; « Réessayer » reprend où l'envoi s'était arrêté. |
-| Sans Pro | Aucun accès : la Galerie affiche « La sauvegarde en ligne est réservée à Stalak Pro » (bouton vers la page Pro). Un ex-Pro retrouve ses projets s'il reprend Pro ; ils sont gardés (règle des 6 mois). |
+| Sans Creator Plus | Aucun accès : la Galerie affiche « La sauvegarde en ligne est réservée à Stalak Creator Plus » (bouton vers la page des formules). Un ancien abonné retrouve ses projets s'il reprend Creator Plus ; ils sont gardés (règle des 6 mois). |
 | 6 mois | Un projet ni ouvert ni sauvegardé depuis 6 mois est supprimé avec ses fichiers, **après un e-mail de rappel** envoyé au moins 14 jours avant. Sans e-mail envoyé, rien n'est supprimé. |
 | Suppression | Supprimer un projet efface ses fichiers R2 et sa couverture ; supprimer son compte efface tout (et arrête les envois en cours). |
 
@@ -463,7 +463,7 @@ rediriger (302) vers `https://admin.stalak.app/admin/`. Sinon, garde le favori `
 ### Comment marche « Parler à un humain » (Stalak Pro)
 - Réservé à **Stalak Pro** (décision du 27/10). Sans Pro, déconnecté ou gratuit, le bouton du glaçon affiche
   « Réservé à Stalak Pro », un bouton vers la page Pro (`acctOpen('support')`) et l'adresse contact@stalak.app.
-  Le serveur l'impose : créer une conversation ou y écrire demande une session d'un compte Max (offre du 30/10) (`401` / `403 pro_required`),
+  Le serveur l'impose : créer une conversation ou y écrire demande une session d'un compte Creator Plus (offre du 30/10 au soir) (`401` / `403 pro_required`),
   et écrire demande que la conversation soit celle de ce compte (`404` sinon).
 - Un ex-Pro ne peut plus écrire, mais garde les réponses déjà reçues (lecture par le jeton de la conversation, sur son appareil).
 - Les réponses par e-mail vont à l'adresse du compte, annoncées « sous 24 h ». Badge « Pro » / « ex-Pro » / « invité » sur
@@ -486,73 +486,59 @@ L'audience détaillée (pays, appareils) reste dans **Web Analytics**.
 
 ---
 
-## 14. Les formules : Gratuit + Basic / Pro / Max (offre du 30/10/2026)
+## 14. Les formules : Gratuit + Stalak Pro + Stalak Creator Plus (offre du 30/10/2026 au soir)
 
 Ce que débloque chaque formule est dans **un seul tableau** : `functions/_lib/entitlements.js` (`FEATURES` : fonction → plus
 petite formule ; `LIMITS` : chiffres par formule). La page le reçoit avec `/api/me` (`entitlements.features`) et demande
-`acctHas('clip')`, `acctHas('cloud')`… ; le serveur demande `requirePlan(env, user, 'cloud')`.
+`acctHas('clip')`… ; le serveur demande `requirePlan(env, user, 'cloud')`.
 
-| Formule | Prix TTC | Ce qu'elle ajoute |
+| Formule | Prix (dollars, Paddle convertit et ajoute la TVA) | Ce qu'elle ajoute |
 |---|---|---|
-| Gratuit | 0 € | 1 vidéo par jour avec un compte (compteur du serveur, minuit heure de Paris), logo de 3 s, 3 filtres |
-| Basic | 4,99 €/mois ou 39 €/an | vidéos illimitées (`unlimited`), sans logo (`nologo`), toutes les tailles et apparitions du texte (`text`) |
-| Pro | 10,99 €/mois ou 109 €/an | tous les filtres (`filters`), Clip (`clip`), packs de 5 et 10 (`packs`), paroles auto 20/jour (`lyrics`), 20 Go en ligne (`cloud`) |
-| Max | 13,99 €/mois ou 139 €/an | packs de 30 (`pack30`), paroles auto 60/jour, 100 Go, « Parler à un humain » (`human`) |
+| Gratuit | 0, sans compte obligatoire | montage illimité, paroles en phrases entières taille M, 3 filtres ; filigrane (ajouté par l'app) qu'une pub récompensée enlève pour une vidéo |
+| Pro | 7,99 $/mois ou 49,99 $/an | `nowm` (ni pub ni filigrane), `clip`, `fx` (effets premium), `text` (mot par mot, karaoké, toutes les tailles), `filters`, `lyrics` (20 par jour) |
+| Creator Plus | 14,99 $/mois ou 99,99 $/an | `pack5` / `pack10` / `pack30` (générateur de packs), `cloud` (100 Go), `human`, paroles auto 60 par jour |
 
-Les abonnés de la première offre (9,99 € / 79 €, `PADDLE_PRICE_MONTH` / `PADDLE_PRICE_YEAR`) restent **Pro** à leur prix.
+La vidéo gratuite du jour, l'e-mail de rappel et la fin de 3 s sont abandonnés. Les anciens prix restent reconnus pour leurs
+abonnés (ils gardent leur prix) : Pro en euros (9,99 € / 79 € et 10,99 € / 109 €) et Basic → `pro`, Max → `creator`
+(`PADDLE_PRICE_MONTH` / `PADDLE_PRICE_YEAR` et `PADDLE_PRICES_OLD` dans `wrangler.toml`). Seuls les 4 nouveaux prix se vendent.
 
 ### 14.1 La base (avant de publier)
-Dans la **Console** de la base D1 `stalak`, colle **tout** `migrations/0008_plans_free_video.sql` et clique sur **Execute** (une fois).
-Elle ajoute des colonnes vides et une table : rien d'existant ne change.
+Dans la **Console** de la base D1 `stalak`, colle **tout** `migrations/0008_plans.sql` et clique sur **Execute** (une fois).
+Elle ajoute 3 colonnes vides à `subscriptions` : rien d'existant ne change.
 
-### 14.2 Paddle (sandbox d'abord)
-1. **Catalog → Products** : 3 produits « Stalak Basic », « Stalak Pro », « Stalak Max ».
-2. Pour chacun, 2 prix récurrents en EUR, taxe incluse : Basic 4,99 €/mois et 39 €/an ; Pro 10,99 €/mois et 109 €/an ;
-   Max 13,99 €/mois et 139 €/an. Facultatif mais conseillé : dans chaque prix, « Custom data » `{"plan": "basic"}` (ou `pro`,
-   `max`) — le serveur s'en sert si un prix manque dans `wrangler.toml`.
-3. Les 6 identifiants `pri_…` sont dans `wrangler.toml` (`PADDLE_PRICE_BASIC_MONTH`, `…_BASIC_YEAR`, `…_PRO_MONTH`, `…_PRO_YEAR`,
-   `…_MAX_MONTH`, `…_MAX_YEAR` ; ceux de la sandbox, créés le 30/10) et dans `docs/STATUS.md`. En réel : les remplacer.
-   Une formule sans prix affiche « Bientôt ».
-4. Ne supprime pas les 2 prix de la première offre : leurs abonnés gardent leur prix.
-5. Changement de formule, sur le même abonnement (règles des conditions de vente) :
-   - plus grande formule (ou mensuel → annuel) : tout de suite, au prorata ; le montant est montré avant de confirmer ;
-   - plus petite formule : au prochain renouvellement, rien n'est remboursé ; la formule payée reste jusque-là ;
-   - plus petite formule facturée autrement (annuel → mensuel) : refusée, la page explique d'arrêter le renouvellement puis de
-     reprendre une formule à la fin (Paddle ne sait pas programmer ce changement).
-   Rien à régler dans Paddle. Un remboursement d'un changement de formule (14 jours) se fait à la main : rembourser dans
-   Paddle, puis remettre l'ancienne formule (même bouton).
+### 14.2 Paddle
+Les 4 prix sandbox (créés le 30/10 par le Chef de projet) sont dans `wrangler.toml` : `PADDLE_PRICE_PRO_MONTH`, `…_PRO_YEAR`,
+`PADDLE_PRICE_CREATOR_MONTH`, `…_CREATOR_YEAR`. En réel : les remplacer. Une formule sans prix affiche « Bientôt ».
+Facultatif : dans chaque prix, « Custom data » `{"plan": "pro"}` ou `{"plan": "creator"}` (le serveur s'en sert si un prix
+manque dans `wrangler.toml`).
 
-### 14.3 L'e-mail de rappel « Ta vidéo gratuite du jour est disponible »
-- Seulement si la case « Me prévenir par e-mail quand ma vidéo du jour est disponible » est cochée (décochée par défaut,
-  inscription ou page Compte) ; preuve gardée (date, texte, langue). Au plus 1 par jour, le lendemain d'une vidéo gratuite,
-  jamais après 7 jours sans visite, jamais à un abonné ; de 10 h à 21 h (Paris) ; rien d'autre dedans (pas d'offre).
-  Lien « Ne plus recevoir ce rappel » qui arrête tout de suite, sans connexion (et en-têtes `List-Unsubscribe` pour Gmail /
-  Apple Mail).
-- Envoi : par le Worker `workers/cloud-cleanup` (2 fois par jour : redéploie-le, `npx wrangler deploy -c workers/cloud-cleanup/wrangler.toml`),
-  par `POST /api/cron/reminders` avec `CRON_SECRET`, ou tout seul après les visites du site (au plus toutes les 20 minutes).
-- Il faut `RESEND_API_KEY` (déjà en place). Les lignes du compteur sont effacées après 100 jours.
+Changement de formule, sur le même abonnement (règles des conditions de vente) :
+- vers Creator Plus (ou de mensuel à annuel) : tout de suite, au prorata ; le montant est montré avant de confirmer ;
+- vers Pro : au prochain renouvellement, rien n'est remboursé ; Creator Plus reste jusque-là ;
+- d'annuel à mensuel : refusé, la page explique d'arrêter le renouvellement puis de reprendre une formule à la fin (Paddle ne
+  sait pas programmer ce changement).
+Un remboursement de changement de formule (14 jours) se fait à la main : rembourser dans Paddle, puis remettre l'ancienne formule.
 
-### 14.4 Vérifier
-- `https://stalak.app/api/config` : `paddle.prices.basic.month` etc. remplis.
-- Un compte gratuit : 1 export, le 2e ouvre la page des formules (« Ta vidéo gratuite du jour est faite »).
-- Un achat Basic en sandbox : le compte passe en Basic ; puis « Passer à Pro » ; tableau de bord : « Par formule ».
+### 14.3 Vérifier
+- `https://stalak.app/api/config` : `paddle.prices.pro.month`… remplis, `plans.pro.month.amount` = `7.99` (USD).
+- Un achat Pro sandbox : le compte passe en Pro ; « Passer à Creator Plus » (montant affiché) ; tableau de bord : « Par formule ».
 
 ---
 
 ## Pour le développeur
 
 ### Routes (`/api/…`)
-Toutes les réponses sont en JSON. Les erreurs ont la forme `{"error":"code","message":"…"}`. Une fonction réservée à une formule répond `403 pro_required` avec `need` (`basic`, `pro` ou `max`) et `plan` (la formule du compte).
+Toutes les réponses sont en JSON. Les erreurs ont la forme `{"error":"code","message":"…"}`. Une fonction réservée à une formule répond `403 pro_required` avec `need` (`pro` ou `creator`) et `plan` (la formule du compte).
 
 | Méthode et chemin | Rôle |
 |---|---|
 | `GET /api/config` | Réglages publics : `paddle.environment`, `paddle.clientToken`, `paddle.prices.month` et `.year` ; `auth.providers` = les services de connexion configurés (`google`, `microsoft`, `apple`). |
-| `GET /api/me` | `{user, session, entitlements, subscription}`. `user` = `{id, email, lang, createdAt, displayName, avatarUrl, hasPassword, passwordSetAt, emailVerified, providers}` ; `session` = `{method, recentCode}` (`method` : `signup`, `password`, `password+code`, `reset`, `oauth:google`…, ou `code` pour une session d'avant la v3) ; `entitlements` = `{plan: 'free'|'basic'|'pro'|'max', features: [...], limits: {videosPerDay, lyricsPerDay, lyricsMinutesPerDay, cloudBytes}, outro, cloudSave, clipMode, autoLyrics, packs}` (étape 14) ; `user.reminders` (case du rappel) ; `freeVideo` = `{usedToday, nextAt}` en gratuit, sinon `null`. |
-| `PATCH /api/me` | `{reminders: true|false, lang}` (rappel de la vidéo gratuite ; preuve gardée avec la langue de la page) et/ou `{displayName}` : 2 à 30 caractères (espaces regroupés, caractères invisibles retirés), `null` ou `""` pour l'effacer. Renvoie la même chose que `/api/me`. Erreur `invalid_name`. |
+| `GET /api/me` | `{user, session, entitlements, subscription}`. `user` = `{id, email, lang, createdAt, displayName, avatarUrl, hasPassword, passwordSetAt, emailVerified, providers}` ; `session` = `{method, recentCode}` (`method` : `signup`, `password`, `password+code`, `reset`, `oauth:google`…, ou `code` pour une session d'avant la v3) ; `entitlements` = `{plan: 'free'|'pro'|'creator', features: [...], limits: {lyricsPerDay, lyricsMinutesPerDay, cloudBytes}, outro, cloudSave, clipMode, autoLyrics, packs}` (étape 14). |
+| `PATCH /api/me` | `{displayName}` : 2 à 30 caractères (espaces regroupés, caractères invisibles retirés), `null` ou `""` pour l'effacer. Renvoie la même chose que `/api/me`. Erreur `invalid_name`. |
 | `PUT /api/me/avatar` | Corps = l'image brute, `Content-Type: image/jpeg`, `image/webp` ou `image/png` (vérifié avec les premiers octets du fichier), 80 Ko maximum, 20 changements par heure. Renvoie `{avatarUrl}`. Erreurs `invalid_image` (415), `too_large` (413). |
 | `GET /api/me/avatar?v=…` | La photo, **seulement pour la personne connectée** (sinon 401 / 404). `Cache-Control: private, max-age=31536000, immutable` : l'adresse change à chaque nouvelle photo (`v` = date de mise à jour). |
 | `DELETE /api/me/avatar` | Retire la photo. |
-| `POST /api/auth/signup` | `{email, password, displayName?, lang, reminders?}` (`reminders: true` = case du rappel cochée). Vérifie le mot de passe (8 à 200 caractères, pas parmi les plus courants, différent de l'e-mail) et le pseudo, puis envoie un code. Renvoie `{ok, needCode: true, expiresIn, resent}`. Rien n'est créé avant le code. `409 email_taken` si l'adresse a déjà un compte. Limite : 20 demandes par heure et par IP. |
+| `POST /api/auth/signup` | `{email, password, displayName?, lang}`. Vérifie le mot de passe (8 à 200 caractères, pas parmi les plus courants, différent de l'e-mail) et le pseudo, puis envoie un code. Renvoie `{ok, needCode: true, expiresIn, resent}`. Rien n'est créé avant le code. `409 email_taken` si l'adresse a déjà un compte. Limite : 20 demandes par heure et par IP. |
 | `POST /api/auth/signup/verify` | `{email, code}`. Crée le compte (e-mail vérifié), pose les cookies `stalak_s` et `stalak_d`, renvoie la même chose que `/api/me`. |
 | `POST /api/auth/login` | `{email, password}`. Navigateur reconnu : pose le cookie et renvoie la même chose que `/api/me`. Navigateur inconnu : envoie un code et renvoie `{needCode: true, expiresIn}`, sans session. Réponse unique `401 invalid_login` (« Wrong email or password. ») que l'e-mail existe ou non, ait un mot de passe ou non. Limites : 30 essais par IP et 10 par e-mail toutes les 10 min ; après 5 mauvais mots de passe d'affilée pour un e-mail, `429 too_many_attempts` pendant 15 min (même pour un e-mail inconnu). |
 | `POST /api/auth/login/verify` | `{email, code}`. Le code n'existe que si le mot de passe était juste. Pose `stalak_s` et `stalak_d` (navigateur reconnu 90 jours), renvoie la même chose que `/api/me`. |
@@ -565,13 +551,10 @@ Toutes les réponses sont en JSON. Les erreurs ont la forme `{"error":"code","me
 | `POST /api/auth/logout` | Supprime la session. |
 | `POST /api/paddle/webhook` | Pour Paddle uniquement (signature vérifiée). |
 | `POST /api/paddle/portal` | `{url, cancelUrl, updatePaymentUrl}` : liens temporaires vers l'espace client Paddle. |
-| `POST /api/paddle/change` | `{plan: 'basic'|'pro'|'max', interval: 'month'|'year', preview?}` : un abonné change de formule sur le **même** abonnement. Plus grande : tout de suite au prorata ; plus petite : au renouvellement (formule payée gardée). `preview: true` : `{kind, amount (centimes), currency, effectiveAt}` sans rien changer. `404 no_subscription`, `409 same_plan` / `subscription_ending` / `not_configured` / `change_at_renewal`. 10 par heure. La formule change au webhook. |
-| `POST /api/videos/claim` | `{video}` (8-40 caractères) : le « jeton du jour » avant un export gratuit. Compte obligatoire (`401`). Gratuit : `{token, day, nextAt}` la première fois du jour de Paris (le même `video` peut redemander), sinon `429 daily_video_used` avec `nextAt`. Formules payantes : `{unlimited: true}`. 60 par heure. |
-| `GET` / `POST /api/reminders/stop?u=&t=` | Lien de désabonnement des rappels (clé aléatoire par compte) : désabonne tout de suite, sans connexion (`POST` : « un clic » RFC 8058). `404` si le lien n'est pas valable. |
-| `POST /api/cron/reminders` | Envoie les rappels dus, pour un cron externe : `Authorization: Bearer <CRON_SECRET>` (sinon `404`). |
+| `POST /api/paddle/change` | `{plan: 'pro'|'creator', interval: 'month'|'year', preview?}` : un abonné change de formule sur le **même** abonnement. Plus grande : tout de suite au prorata ; plus petite : au renouvellement (formule payée gardée). `preview: true` : `{kind, amount (centimes), currency, effectiveAt}` sans rien changer. `404 no_subscription`, `409 same_plan` / `subscription_ending` / `not_configured` / `change_at_renewal`. 30 par heure (aperçus compris). La formule change au webhook. |
 | `GET /api/projects` | `{projects: [{id, name, size, mediaBytes, createdAt, updatedAt, openedAt, coverUrl}], storage: {available, used, quota, partSize, maxFile}}` (sans le contenu). `available` = le bucket R2 est relié. |
 | `GET /api/projects/:id` | `{id, name, state, updatedAt, mediaBytes, files: [{id, name, type, size}]}`. Compte comme une ouverture (règle des 6 mois). |
-| `PUT /api/projects/:id` | `{name, state, files?}`, 256 Ko maximum, 200 projets maximum. **Pro ou Max** : sinon `403 pro_required` (avec `need`). `files` = les ids des fichiers de cette version : tous doivent être envoyés (`409 files_missing`, avec `missing`) ; les autres fichiers du projet sont effacés. Sans `files`, les fichiers ne changent pas. |
+| `PUT /api/projects/:id` | `{name, state, files?}`, 256 Ko maximum, 200 projets maximum. **Creator Plus** : sinon `403 pro_required` (avec `need`). `files` = les ids des fichiers de cette version : tous doivent être envoyés (`409 files_missing`, avec `missing`) ; les autres fichiers du projet sont effacés. Sans `files`, les fichiers ne changent pas. |
 | `PATCH /api/projects/:id` | `{name}` : renomme. |
 | `PUT /api/projects/:id/cover` | Couverture de la Galerie : corps brut `image/jpeg` ou `image/webp`, 64 Ko au plus (`413 too_large`), vérifiée par ses premiers octets (`415 invalid_image`), 120 par heure. Répond `{coverAt, coverUrl}`. |
 | `GET /api/projects/:id/cover?v=` | L'image, **pour son propriétaire seulement** ; `?v=` change à chaque nouvelle couverture (`Cache-Control: private, immutable`, `nosniff`, `CSP sandbox`). `404` s'il n'y en a pas. |
@@ -585,9 +568,9 @@ Toutes les réponses sont en JSON. Les erreurs ont la forme `{"error":"code","me
 | `POST /api/help/chat` | `{lang: 'fr'\|'en', messages: [{role: 'user'\|'assistant', content}], context}` (sans compte). 10 derniers tours, 6 000 caractères au plus, le dernier de l'utilisateur ; `context` (4 000 caractères) = ce que montre la page. Renvoie `{answer}` (texte simple). Erreurs `invalid_messages`, `rate_limited` (429, `retryAfter`), `help_busy` (503, budget du jour épuisé), `ai_unavailable` (503), `help_failed` (503 : un 502 serait remplacé par la page d'erreur de Cloudflare ; la réponse vide est redemandée une fois avant). |
 | `POST /api/presence` | `{vid, lang}` : la page est ouverte (signe de vie, 1 par minute). `vid` = 16 à 40 lettres ou chiffres tirés au hasard par la page. 60 nouvelles visites par heure et par connexion (`429` au-delà). |
 | `GET /api/support/status` | `{available}` : l'équipe propose le direct (interrupteur allumé et tableau de bord ouvert depuis moins de 3 min). |
-| `POST /api/support/tickets` | **Stalak Max.** `{lang, message, email?, context?}` ; réponses à l'e-mail du compte (ou `email`). Renvoie `{id, token, available, email, messages}`. Erreurs `not_logged_in` (401), `pro_required` (403), `invalid_email`, `invalid_message`, `rate_limited`, `support_busy` (503). |
+| `POST /api/support/tickets` | **Stalak Creator Plus.** `{lang, message, email?, context?}` ; réponses à l'e-mail du compte (ou `email`). Renvoie `{id, token, available, email, messages}`. Erreurs `not_logged_in` (401), `pro_required` (403), `invalid_email`, `invalid_message`, `rate_limited`, `support_busy` (503). |
 | `GET /api/support/tickets/:id?after=<id>` | En-tête `X-Ticket-Token`. `{status, available, email, messages: [{id, from: 'user'\|'admin', text, at, emailed}]}`. Mauvais jeton = `404`. |
-| `POST /api/support/tickets/:id/messages` | **Stalak Max**, conversation de ce compte. En-tête `X-Ticket-Token`, `{text, email?, after?}`. Rouvre une conversation fermée. Erreurs `401`, `403 pro_required`, `404` (pas sa conversation). |
+| `POST /api/support/tickets/:id/messages` | **Stalak Creator Plus**, conversation de ce compte. En-tête `X-Ticket-Token`, `{text, email?, after?}`. Rouvre une conversation fermée. Erreurs `401`, `403 pro_required`, `404` (pas sa conversation). |
 | `GET\|POST\|DELETE /api/admin/*` | Tableau de bord (hôte `ADMIN_HOST` + jeton Cloudflare Access ; écritures : JSON + `Origin` du tableau de bord) : `me`, `stats?days=7..120`, `live`, `available`, `tickets[?status=open\|closed\|all]`, `tickets/:id` (GET, DELETE), `tickets/:id/messages` (`{text, email: 'auto'\|'yes'\|'no'}`), `tickets/:id/status`. Ailleurs : `404`. |
 | `POST /api/cron/cloud-cleanup` | Règle des 6 mois, pour un cron externe : `Authorization: Bearer <CRON_SECRET>` (sinon `404`). |
 | `DELETE /api/account` | `{confirm:true}`. Arrête l'abonnement Paddle, puis efface toutes les données (dont le pseudo, la photo et le mot de passe, qui sont dans la ligne `users`). |
