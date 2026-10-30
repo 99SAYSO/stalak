@@ -23,6 +23,7 @@ const S = {
   lyrics:{ mode:'paste', lines:[], style:{ pos:'mid', font:'tiktok', color:'#ffffff', deco:'outline', size:'m', anim:'line', hl:'auto' } },
   // effects and transitions (Clip only): level, effects placed by the site, the user's own choices, the one selected
   fxLevel:'sobre', fxAuto:[], fxUser:[], fxSelT:null, fxVer:0, fxMusic:null, fx:[],
+  filter:'none',   // video filter of the project (FILTERS), the same for the whole video
   // Pro account (to come with the real site): true = the exported videos end without the 3 s Stalak ending
   pro:false
 };
@@ -358,6 +359,31 @@ const I18N_EN = /*@EN*/{
   "ly.del": "Delete line {n}",
   "ly.removed": "Line deleted: “{text}”.",
   "ly.undo": "Undo",
+  "_bloc.app.filtres": "App & montage : filtres vidéo",
+  "filt.title": "Filter",
+  "filt.hint": "One look for the whole video. The lyrics stay on top, unchanged.",
+  "filt.th.cam": "Camera",
+  "filt.th.retro": "Retro",
+  "filt.th.esth": "Aesthetic",
+  "filt.none": "None",
+  "filt.givre": "Frost",
+  "filt.la": "Vintage “LA”",
+  "filt.nuit": "Night vision",
+  "filt.demon": "Demon",
+  "filt.hallo": "Halloween",
+  "filt.vhs": "VHS",
+  "filt.film35": "35 mm film",
+  "filt.super8": "Super 8",
+  "filt.nb": "Black & white",
+  "filt.golden": "Golden hour",
+  "filt.reve": "Dream",
+  "filt.y2k": "Y2K",
+  "filt.pastel": "Pastel",
+  "filt.st": "Filter: {name}.",
+  "filt.st.pro": "Filter: {name}. You can try it here; exporting with it comes with Stalak Pro.",
+  "filt.aria": "Filter {name}",
+  "acct.why.filters": "This filter is part of Stalak Pro.",
+  "ap.whyIn.filters": "This filter is part of Stalak Pro. Sign in or create an account to get it.",
   "ly.st.paste": "Paste your lyrics first, one line per row.",
   "tap.nextLine": "Next line: {text}",
   "tap.allDone": "All the lines are synced.",
@@ -1076,6 +1102,31 @@ const I18N_FR = /*@FR*/{
   "ly.del": "Supprimer la ligne {n}",
   "ly.removed": "Ligne supprimée : « {text} ».",
   "ly.undo": "Annuler",
+  "_bloc.app.filtres": "App & montage : filtres vidéo",
+  "filt.title": "Filtre",
+  "filt.hint": "Un style pour toute la vidéo. Les paroles restent au-dessus, sans changer.",
+  "filt.th.cam": "Caméra",
+  "filt.th.retro": "Rétro",
+  "filt.th.esth": "Esthétique",
+  "filt.none": "Aucun",
+  "filt.givre": "Givre",
+  "filt.la": "Grain vintage « LA »",
+  "filt.nuit": "Vision nocturne",
+  "filt.demon": "Démon",
+  "filt.hallo": "Halloween",
+  "filt.vhs": "VHS",
+  "filt.film35": "Film 35 mm",
+  "filt.super8": "Super 8",
+  "filt.nb": "Noir & blanc",
+  "filt.golden": "Golden hour",
+  "filt.reve": "Rêve",
+  "filt.y2k": "Y2K",
+  "filt.pastel": "Pastel",
+  "filt.st": "Filtre : {name}.",
+  "filt.st.pro": "Filtre : {name}. Tu peux l’essayer ici ; l’export avec ce filtre fait partie de Stalak Pro.",
+  "filt.aria": "Filtre {name}",
+  "acct.why.filters": "Ce filtre fait partie de Stalak Pro.",
+  "ap.whyIn.filters": "Ce filtre fait partie de Stalak Pro. Connecte-toi ou crée un compte pour en profiter.",
   "ly.st.paste": "Colle d’abord tes paroles, une phrase par ligne.",
   "tap.nextLine": "Prochaine phrase : {text}",
   "tap.allDone": "Toutes les phrases sont calées.",
@@ -3651,6 +3702,7 @@ function drawComposite(c, d, pics, overlay, t){
   if (d.B && d.B.a > 0.001) fxLayer(c, d.B, pics ? pics[1] : null, Object.assign({}, d, { blur: 0 }), d.B.a);
   if (d.white > 0.001){ c.fillStyle = 'rgba(255,255,255,' + Math.min(1, d.white).toFixed(4) + ')'; c.fillRect(0, 0, W, H); }
   if (d.black > 0.001){ c.fillStyle = 'rgba(0,0,0,' + Math.min(1, d.black).toFixed(4) + ')'; c.fillRect(0, 0, W, H); }
+  filtPass(c, t);
   drawLyrics(c, t);
   if (overlay) fxLabel(c, d.A.cut.take);
 }
@@ -4419,6 +4471,334 @@ function placeImg(c, img, sw, sh, rot, sc, mir){
   c.save(); c.translate(W/2, H/2); if (mir) c.scale(-1, 1); if (rot) c.rotate(rot*Math.PI/180);
   c.drawImage(img, -sw*sc/2, -sh*sc/2, sw*sc, sh*sc); c.restore();
 }
+/*@FILTERS*/
+/* ---------- video filters (App & montage), like the filters of Instagram stories ----------
+   One look for the whole video, chosen at the Montage step. Everything is drawn by the graphics card with ONE shader (FILT_FRAG):
+   the preview, the export and the comparison page all run this same code, so what is seen is what is exported.
+   - The filter changes the video only: the lyrics are drawn after it, on top, untouched.
+   - Every size is in pixels of the finished video (1080 wide in 9:16, 1920 wide in 16:9; u_res), so the half-size preview and
+     the full-size export look the same. Everything that moves (grain, VHS lines, the Super 8 jumps, the Démon shake) is a
+     function of the song's time (u_t), so a given moment looks the same in the preview and in the exported file.
+   - The few things drawn as text or shapes (the VHS date, the Y2K stars) are drawn by filtOverlay, on the 2D canvas, under
+     the lyrics. This block uses nothing else from the app: the comparison page (tests/ui/filtres_comparaison.py) runs it as it is. */
+const FILTERS = [
+  { id: 'none',     th: null,   free: true },
+  { id: 'givre',    th: 'cam',  free: true },
+  { id: 'la',       th: 'cam',  free: false },
+  { id: 'nuit',     th: 'cam',  free: false },
+  { id: 'demon',    th: 'cam',  free: false },
+  { id: 'hallo',    th: 'cam',  free: false },
+  { id: 'vhs',      th: 'retro', free: false },
+  { id: 'film35',   th: 'retro', free: true },
+  { id: 'super8',   th: 'retro', free: false },
+  { id: 'nb',       th: 'retro', free: true },
+  { id: 'golden',   th: 'esth', free: false },
+  { id: 'reve',     th: 'esth', free: false },
+  { id: 'y2k',      th: 'esth', free: false },
+  { id: 'pastel',   th: 'esth', free: false },
+];
+const FILT_THEMES = ['cam', 'retro', 'esth'];
+const filtIdx = id => Math.max(0, FILTERS.findIndex(f => f.id === id));
+/* the filters that also draw text or shapes (filtOverlay) */
+const filtHasOverlay = i => { const f = FILTERS[i]; return !!f && (f.id === 'vhs' || f.id === 'y2k'); };
+const FILT_VERT = 'attribute vec2 p;attribute vec2 u;varying vec2 v;void main(){v=u;gl_Position=vec4(p,0.,1.);}';
+const FILT_FRAG = `
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+varying vec2 v;
+uniform sampler2D u_tex;
+uniform int u_f;
+uniform float u_t;
+uniform vec2 u_res;
+vec3 src(vec2 q){ return texture2D(u_tex, clamp(q, vec2(0.0005), vec2(0.9995))).rgb; }
+float lum(vec3 c){ return dot(c, vec3(0.2126, 0.7152, 0.0722)); }
+float h12(vec2 p){ vec3 p3 = fract(vec3(p.xyx) * 0.1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }
+vec3 sat(vec3 c, float s){ return mix(vec3(lum(c)), c, s); }
+vec3 con(vec3 c, float k){ return (c - 0.5) * k + 0.5; }
+vec3 scurve(vec3 c, float k){ c = clamp(c, 0.0, 1.0); return mix(c, c * c * (3.0 - 2.0 * c), k); }
+/* film grain: one value per cell of sz pixels of the finished video, new 24 times a second */
+float grain(vec2 q, float sz){ float fr = mod(floor(u_t * 24.0), 509.0); return h12(floor(q * u_res / sz) + fr * vec2(17.31, 41.77)) - 0.5; }
+/* soft value noise (frost, patches), in cells of sz pixels */
+float vnoise(vec2 q, float sz){ vec2 x = q * u_res / sz, i = floor(x), f = fract(x); f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(h12(i), h12(i + vec2(1.0, 0.0)), f.x), mix(h12(i + vec2(0.0, 1.0)), h12(i + vec2(1.0, 1.0)), f.x), f.y); }
+/* 0 in the middle, 1 in the corners */
+float vig(vec2 q){ vec2 d = q - 0.5; return dot(d, d) * 2.0; }
+/* 0 inside, 1 on the borders of the frame */
+float edge(vec2 q, float inner){ vec2 d = abs(q - 0.5) * 2.0; return clamp(length(max(d - vec2(inner), 0.0)) / (1.0 - inner), 0.0, 1.0); }
+/* 1 on the borders, 0 from w pixels in (w: a share of the short side, so a border is as wide in 9:16 as in 16:9) */
+float border(vec2 q, float w){ vec2 p = min(q, 1.0 - q) * u_res; float d = min(p.x, p.y), r = w * min(u_res.x, u_res.y);
+  vec2 k = max(vec2(r) - p, 0.0); return clamp(max(1.0 - d / r, length(k) / r), 0.0, 1.0); }
+/* a cheap blur: 8 samples on a circle of r pixels and the middle */
+vec3 blur(vec2 q, float r){ vec2 k = r / u_res; vec3 s = src(q) * 2.0;
+  s += src(q + k * vec2(1.0, 0.0)) + src(q - k * vec2(1.0, 0.0)) + src(q + k * vec2(0.0, 1.0)) + src(q - k * vec2(0.0, 1.0));
+  s += src(q + k * vec2(0.7, 0.7)) + src(q - k * vec2(0.7, 0.7)) + src(q + k * vec2(0.7, -0.7)) + src(q - k * vec2(0.7, -0.7));
+  return s / 10.0; }
+vec3 bright(vec3 c, float th){ return max(c - th, 0.0) / (1.0 - th); }
+void main(){
+  vec2 q = v; vec3 c;
+  if (u_f == 1){ // Givre: cold blue, bright whites, an icy veil on the borders
+    c = src(q); float e = border(q, 0.17);
+    c = mix(c, blur(q, 8.0), smoothstep(0.0, 0.6, e) * 0.9);
+    c = sat(c, 0.72) * vec3(0.82, 0.97, 1.18);
+    c += smoothstep(0.5, 1.0, lum(c)) * vec3(0.12, 0.15, 0.18);
+    c = con(c, 1.12) + vec3(0.0, 0.01, 0.03);
+    float fr = vnoise(q, 30.0) * 0.55 + vnoise(q, 8.0) * 0.30 + vnoise(q, 2.5) * 0.15;
+    float a = smoothstep(0.25, 0.95, e + (fr - 0.5) * 0.6);
+    c = mix(c, mix(vec3(0.80, 0.90, 1.0), vec3(0.96, 0.99, 1.0), fr), a * 0.92);
+  } else if (u_f == 2){ // Grain vintage « LA »: grain, warm faded tones, grey blacks
+    c = src(q);
+    c = sat(c, 0.80) * vec3(1.08, 1.0, 0.86);
+    c = mix(vec3(0.15, 0.13, 0.13), vec3(0.98, 0.94, 0.86), clamp(c, 0.0, 1.0));
+    c = con(c, 0.94);
+    c += grain(q, 2.2) * 0.085;
+  } else if (u_f == 3){ // Vision nocturne: green, strong grain, blurred borders
+    float r = smoothstep(0.55, 1.20, length((q - 0.5) * 2.0));
+    vec3 b = mix(src(q), blur(q, 9.0), r);
+    float l = pow(lum(b), 0.72) * 1.45;
+    l += grain(q, 2.0) * 0.30;
+    l *= 0.94 + 0.06 * sin(q.y * u_res.y * 1.4);
+    c = vec3(0.16, 1.0, 0.28) * l + vec3(0.0, 0.035, 0.0);
+    c *= 1.0 - smoothstep(0.35, 1.05, vig(q) * 1.6);
+  } else if (u_f == 4){ // Démon: deep reds, crushed blacks, bright parts that glow, a slight shake
+    vec2 j = vec2(sin(u_t * 41.0) * 0.0016 + sin(u_t * 13.0) * 0.0011, cos(u_t * 33.0) * 0.0014 + sin(u_t * 7.0) * 0.0008);
+    q = 0.5 + (q - 0.5) / 1.025 + j;
+    c = src(q); float l = lum(c);
+    c = vec3(l * 1.05 + (c.r - l) * 0.35, l * 0.16, l * 0.14);
+    c = smoothstep(vec3(0.05, 0.03, 0.03), vec3(0.80, 0.75, 0.75), c);
+    vec3 g = bright(blur(q, 16.0), 0.55);
+    c += vec3(1.0, 0.30, 0.16) * lum(g) * 1.6 + vec3(1.0, 0.85, 0.75) * pow(lum(g), 2.0) * 0.6;
+    c *= 1.0 - vig(q) * 0.5;
+  } else if (u_f == 5){ // Halloween: orange and violet, strong contrast, dark vignette
+    c = src(q); float l = lum(c);
+    vec3 tone = mix(vec3(0.46, 0.12, 0.78), vec3(1.0, 0.50, 0.06), smoothstep(0.18, 0.75, l));
+    c = mix(c, tone * (l * 1.35 + 0.08), 0.85);
+    c = scurve(con(c, 1.22), 0.6);
+    c *= 1.0 - smoothstep(0.15, 1.0, vig(q) * 1.15) * 0.82;
+  } else if (u_f == 6){ // VHS: tape lines, colours that bleed
+    float fr = mod(floor(u_t * 30.0), 997.0), row = floor(q.y * u_res.y / 2.0);
+    q.x += (h12(vec2(row, fr)) - 0.5) * 0.0011 + sin(q.y * 23.0 + u_t * 2.7) * 0.0009;
+    float by = fract(u_t * 0.11 + 0.35), band = smoothstep(0.022, 0.0, abs(q.y - by));
+    q.x += band * (h12(vec2(row, fr + 3.0)) - 0.5) * 0.03;
+    vec2 px = vec2(1.0 / u_res.x, 0.0);
+    vec3 a = (src(q - px * 2.0) + src(q) * 2.0 + src(q + px * 2.0)) / 4.0;
+    vec3 cb = (src(q + px * 6.0) + src(q + px * 12.0) + src(q + px * 18.0) + src(q + px * 24.0) + src(q)) / 5.0;
+    float Y = dot(a, vec3(0.299, 0.587, 0.114));
+    float I = dot(cb, vec3(0.596, -0.274, -0.322)) * 1.35 + 0.012, Q = dot(cb, vec3(0.211, -0.523, 0.312)) * 1.35 + 0.01;
+    c = vec3(Y + 0.956 * I + 0.621 * Q, Y - 0.272 * I - 0.647 * Q, Y - 1.106 * I + 1.703 * Q);
+    c = con(c, 0.9) * vec3(1.04, 0.98, 1.02);
+    c *= 0.88 + 0.12 * step(0.5, fract(q.y * u_res.y / 5.0));
+    c = mix(c, vec3(h12(vec2(floor(q.x * u_res.x / 3.0), row + fr))), band * 0.55);
+    c += grain(q, 2.5) * 0.07;
+    c = mix(vec3(0.07, 0.06, 0.09), vec3(0.95, 0.95, 0.92), clamp(c, 0.0, 1.0));
+  } else if (u_f == 7){ // Film 35 mm: film grain, warm tones
+    c = src(q);
+    c = scurve(c, 0.45) * vec3(1.05, 1.0, 0.90);
+    c = c / (1.0 + max(c - 0.85, 0.0) * 1.5);
+    float l = lum(c);
+    c += grain(q, 1.6) * 0.075 * (0.55 + 1.6 * l * (1.0 - l));
+    c *= 1.0 - vig(q) * 0.22;
+  } else if (u_f == 8){ // Super 8: yellowed picture, dark corners, small jumps
+    float fr = floor(u_t * 18.0), fm = mod(fr, 997.0);
+    vec2 j = (vec2(h12(vec2(fm, 1.0)), h12(vec2(fm, 2.0))) - 0.5) * vec2(0.004, 0.006);
+    if (h12(vec2(fm, 3.0)) > 0.92) j.y += 0.012;
+    q = 0.5 + (q - 0.5) / 1.035 + j;
+    c = mix(src(q), blur(q, 2.5), 0.45); float l = lum(c);
+    vec3 sep = vec3(l) * vec3(1.10, 0.93, 0.60) + vec3(0.05, 0.03, 0.0);
+    c = mix(c, sep, 0.6) * vec3(1.04, 1.0, 0.86);
+    c = mix(vec3(0.07, 0.05, 0.03), vec3(1.0, 0.96, 0.84), clamp(c, 0.0, 1.0));
+    c *= 1.0 + (h12(vec2(fm, 7.0)) - 0.5) * 0.10;
+    c += grain(q, 2.6) * 0.10;
+    vec2 d = abs(v - 0.5) * 2.0; float cr = length(max(d - vec2(0.62), 0.0)) / 0.38;
+    c *= 1.0 - smoothstep(0.25, 1.0, cr) * 0.85 - vig(v) * 0.18;
+  } else if (u_f == 9){ // Noir & blanc: contrasted and grainy
+    float l = lum(src(q));
+    l = scurve(vec3(con(vec3(l), 1.30).x), 0.5).x;
+    l += grain(q, 1.8) * 0.11;
+    l *= 1.0 - vig(q) * 0.25;
+    c = vec3(l);
+  } else if (u_f == 10){ // Golden hour: golden light
+    c = src(q);
+    c = sat(c, 1.10) * vec3(1.12, 1.01, 0.80);
+    c += smoothstep(0.5, 1.0, lum(c)) * vec3(0.10, 0.05, -0.02);
+    vec2 lp = vec2(0.86, 0.06); float d = length((q - lp) * vec2(u_res.x / u_res.y, 1.0) / max(u_res.x / u_res.y, 1.0));
+    c += vec3(1.0, 0.62, 0.22) * smoothstep(0.85, 0.0, d) * 0.30;
+    c = mix(c, c * vec3(1.0, 0.86, 0.62), 0.15);
+  } else if (u_f == 11){ // Rêve: a glowing halo on the bright parts
+    c = src(q);
+    vec3 b1 = blur(q, 10.0), b2 = blur(q, 22.0);
+    vec3 glow = bright(b1 * 0.4 + b2 * 0.6, 0.58);
+    c = mix(c, b1, 0.18);
+    c = c * 0.93 + 0.05;
+    c += mix(vec3(lum(glow)), glow, 0.35) * vec3(1.0, 0.97, 1.0) * 1.15;
+    c = sat(c, 0.92) * vec3(1.02, 0.98, 1.04);
+  } else if (u_f == 12){ // Y2K: saturated colours, 2000s shine
+    vec2 d = (q - 0.5) * 0.006;
+    c = vec3(src(q + d).r, src(q).g, src(q - d).b);
+    c = con(sat(c, 1.55), 1.12);
+    float l = lum(c);
+    c = mix(c, c * vec3(0.80, 0.90, 1.25), (1.0 - smoothstep(0.0, 0.5, l)) * 0.5);
+    c = mix(c, c * vec3(1.15, 0.92, 1.12), smoothstep(0.5, 1.0, l) * 0.45);
+    float s = q.x * 0.8 + q.y * 0.45 - fract(u_t * 0.08) * 2.2 + 0.4;
+    c += vec3(0.85, 0.95, 1.0) * smoothstep(0.08, 0.0, abs(s)) * 0.16;
+  } else if (u_f == 13){ // Pastel: soft, light colours
+    c = src(q);
+    c = sat(c, 0.88);
+    c = c * 0.60 + 0.37;
+    c = mix(c, c * vec3(1.06, 0.95, 1.05), 0.6);
+    c = mix(c, vec3(1.0, 0.94, 0.97), 0.12) + vec3(0.0, 0.015, 0.02) * (1.0 - lum(c));
+  } else {
+    c = src(q);
+  }
+  gl_FragColor = vec4(clamp(c, 0.0, 1.0), 1.0);
+}`;
+/* the filter's program in a WebGL context (each context has its own: the preview's, the export's, the comparison page's).
+   draw(tex, idx, t, lw, lh): the texture through the filter, on the whole viewport; lw × lh: the size of the finished video */
+function filtProgram(gl){
+  const sh = (type, s) => { const x = gl.createShader(type); gl.shaderSource(x, s); gl.compileShader(x); if (!gl.getShaderParameter(x, gl.COMPILE_STATUS)) throw new Error('filtre : ' + gl.getShaderInfoLog(x)); return x; };
+  const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, FILT_VERT)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, FILT_FRAG));
+  gl.linkProgram(pr); if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) throw new Error('filtre : programme');
+  const pb = gl.createBuffer(), ub = gl.createBuffer(), lp = gl.getAttribLocation(pr, 'p'), lu = gl.getAttribLocation(pr, 'u');
+  gl.bindBuffer(gl.ARRAY_BUFFER, pb); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,1, 1,1, -1,-1, 1,-1]), gl.STATIC_DRAW);
+  gl.bindBuffer(gl.ARRAY_BUFFER, ub); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0,0, 1,0, 0,1, 1,1]), gl.STATIC_DRAW);
+  const U = n => gl.getUniformLocation(pr, n), uF = U('u_f'), uT = U('u_t'), uR = U('u_res'), uX = U('u_tex');
+  return {
+    draw(tex, idx, t, lw, lh){
+      gl.useProgram(pr); gl.disable(gl.BLEND);
+      gl.bindBuffer(gl.ARRAY_BUFFER, pb); gl.enableVertexAttribArray(lp); gl.vertexAttribPointer(lp, 2, gl.FLOAT, false, 0, 0);
+      gl.bindBuffer(gl.ARRAY_BUFFER, ub); gl.enableVertexAttribArray(lu); gl.vertexAttribPointer(lu, 2, gl.FLOAT, false, 0, 0);
+      gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, tex); gl.uniform1i(uX, 0);
+      gl.uniform1i(uF, idx); gl.uniform1f(uT, t); gl.uniform2f(uR, lw, lh);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    }
+  };
+}
+function filtTex(gl){ const t = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, t);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE); return t; }
+/* a small graphics-card canvas that runs a filter over any picture (a 2D canvas, a video, an image) and gives it back */
+function filtRunner(){
+  const cv = document.createElement('canvas'); cv.width = 2; cv.height = 2;
+  const gl = cv.getContext('webgl', { alpha: false, antialias: false, premultipliedAlpha: true, preserveDrawingBuffer: true });
+  if (!gl) return null;
+  const P = filtProgram(gl), tex = filtTex(gl);
+  return {
+    cv, gl,
+    /* pic through filter idx at the size pw × ph (pixels); lw × lh: the finished video's size; returns the canvas */
+    run(pic, idx, t, pw, ph, lw, lh){
+      if (cv.width !== pw || cv.height !== ph){ cv.width = pw; cv.height = ph; }
+      gl.viewport(0, 0, pw, ph);
+      gl.bindTexture(gl.TEXTURE_2D, tex); gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, pic);
+      P.draw(tex, idx, t, lw, lh);
+      return cv;
+    },
+    close(){ try { const e = gl.getExtension('WEBGL_lose_context'); if (e) e.loseContext(); } catch(e){} }
+  };
+}
+/* the parts drawn as text and shapes, on a 2D canvas whose units are the finished video's pixels (lw × lh), under the lyrics:
+   the VHS camera's writing (PLAY and the date), the Y2K stars that twinkle */
+const FILT_MONTHS = ['JAN.', 'FEB.', 'MAR.', 'APR.', 'MAY', 'JUN.', 'JUL.', 'AUG.', 'SEP.', 'OCT.', 'NOV.', 'DEC.'];
+let filtDay = null;
+function filtOverlay(c, idx, t, lw, lh){
+  const id = FILTERS[idx] && FILTERS[idx].id, m = Math.min(lw, lh);
+  if (id === 'vhs'){
+    if (!filtDay){ const d = new Date(); filtDay = FILT_MONTHS[d.getMonth()] + ' ' + String(d.getDate()).padStart(2, '0') + ' ' + d.getFullYear(); }
+    const fs = Math.round(m * 0.052), x = m * 0.07, y1 = m * 0.08, y2 = lh - m * 0.08;
+    c.save(); c.font = '700 ' + fs + 'px "JetBrains Mono", "Courier New", monospace'; c.textBaseline = 'middle'; c.textAlign = 'left';
+    const tc = Math.floor(Math.max(0, t)), hms = '0:' + String(Math.floor(tc / 60)).padStart(2, '0') + ':' + String(tc % 60).padStart(2, '0');
+    for (const [txt, yy, al] of [['PLAY ▶', y1, 'left'], ['SP', y1, 'right'], [filtDay, y2, 'left'], [hms, y2, 'right']]){
+      const xx = al === 'left' ? x : lw - x; c.textAlign = al;
+      c.fillStyle = 'rgba(0,0,0,.55)'; c.fillText(txt, xx + fs * 0.08, yy + fs * 0.08);
+      c.fillStyle = 'rgba(255,60,60,.55)'; c.fillText(txt, xx - fs * 0.05, yy);
+      c.fillStyle = '#f4f4ee'; c.fillText(txt, xx, yy);
+    }
+    c.restore();
+  } else if (id === 'y2k'){
+    const pos = [[0.14, 0.12], [0.82, 0.18], [0.70, 0.40], [0.18, 0.55], [0.88, 0.70], [0.30, 0.84], [0.62, 0.92]];
+    c.save();
+    pos.forEach(([px, py], i) => {
+      const k = Math.pow(Math.max(0, Math.sin(t * 2.1 + i * 1.9)), 3); if (k < 0.04) return;
+      const x = px * lw, y = py * lh, r = m * (0.022 + 0.012 * (i % 3)) * (0.5 + 0.5 * k);
+      const star = (rr, w) => { c.beginPath(); c.moveTo(x, y - rr); c.quadraticCurveTo(x + w, y - w, x + rr, y); c.quadraticCurveTo(x + w, y + w, x, y + rr); c.quadraticCurveTo(x - w, y + w, x - rr, y); c.quadraticCurveTo(x - w, y - w, x, y - rr); c.fill(); };
+      c.globalAlpha = 0.35 * k; c.fillStyle = '#c9f1ff'; star(r * 1.6, r * 0.28);
+      c.globalAlpha = 0.95 * k; c.fillStyle = '#ffffff'; star(r, r * 0.14);
+    });
+    c.restore();
+  }
+}
+/*FILTERS@*/
+/* ---- the filters in the app: preview, thumbnails, export, Stalak Pro ----
+   The preview draws the video picture on its 2D canvas, then filtPass runs the filter over it (graphics card, filtRunner) and
+   draws it back, then the lyrics go on top. The export does the same on its 2D canvas, or, when it draws with WebGL (Safari),
+   runs the same program inside its own context (expGL). Free: none, Givre, Film 35 mm, Noir & blanc; the rest is Stalak Pro
+   (seen in the preview by everyone, exported only with Pro). */
+let filtR = null, filtMs = 0, filtBroken = false;
+const filtFree = id => { const f = FILTERS[filtIdx(id)]; return !f || f.free; };
+const filtLocked = () => !!ACCT && !acctPro() && !filtFree(S.filter);
+function filtPass(c, t){
+  if (c === g && !S.exporting && !S.playing && S.step === 4) thumbGrab(c);
+  const i = filtBroken ? 0 : filtIdx(S.filter); if (!i){ filtMs = 0; return; }
+  const t0 = performance.now();
+  if (!filtR){ filtR = filtRunner(); if (!filtR){ filtBroken = true; diag('filtre : WebGL indisponible sur ce navigateur, filtre ignoré'); return; } }
+  try {
+    const cv = c.canvas, out = filtR.run(cv, i, t, cv.width, cv.height, W, H);
+    c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.globalAlpha = 1; c.drawImage(out, 0, 0, cv.width, cv.height); c.restore();
+  } catch(e){ filtBroken = true; diag('filtre : erreur (' + (e && e.message || e) + '), filtre ignoré'); return; }
+  if (filtHasOverlay(i)){ c.save(); c.setTransform(c.canvas.width / W, 0, 0, c.canvas.height / H, 0, 0); filtOverlay(c, i, t, W, H); c.restore(); }
+  filtMs = performance.now() - t0;
+}
+/* ---- the row of thumbnails: each filter on the picture under the playhead (without the lyrics), as on Instagram ---- */
+const thumbSrc = document.createElement('canvas'), thumbCx = thumbSrc.getContext('2d');
+let thumbT = 0, thumbTimer = 0, thumbR = null, thumbOk = false;
+function thumbGrab(c){
+  const cv = c.canvas, h = 192, w = Math.max(2, Math.round(h * W / H));
+  if (thumbSrc.width !== w || thumbSrc.height !== h){ thumbSrc.width = w; thumbSrc.height = h; }
+  thumbCx.drawImage(cv, 0, 0, w, h); thumbT = S.cursor; thumbOk = true;
+  clearTimeout(thumbTimer); thumbTimer = setTimeout(filtThumbs, 120);
+}
+function filtThumbs(){
+  if (!thumbOk || S.playing || S.exporting) return;
+  if (!thumbR){ thumbR = filtRunner(); if (!thumbR) return; }
+  $$('#filtRow canvas').forEach(cv => {
+    const i = +cv.dataset.i, w = cv.width, h = cv.height, x = cv.getContext('2d');
+    try { x.drawImage(i ? thumbR.run(thumbSrc, i, thumbT, w, h, W, H) : thumbSrc, 0, 0, w, h); } catch(e){ return; }
+    if (i){ x.save(); x.scale(w / W, h / H); filtOverlay(x, i, thumbT, W, H); x.restore(); }
+  });
+}
+function filtUI(){
+  const row = $('#filtRow'); if (!row) return;
+  const th = 96, tw = Math.max(40, Math.round(th * W / H)), dpr = Math.min(2, window.devicePixelRatio || 1);
+  if (row.dataset.shape !== tw + 'x' + th || row.dataset.lang !== LANG || row.dataset.pro !== String(!ACCT || acctPro())){
+    row.innerHTML = ''; row.dataset.shape = tw + 'x' + th; row.dataset.lang = LANG; row.dataset.pro = String(!ACCT || acctPro());
+    const groups = [[null, [0]]].concat(FILT_THEMES.map(k => [k, FILTERS.map((f, i) => f.th === k ? i : -1).filter(i => i >= 0)]));
+    for (const [k, list] of groups){
+      const gr = document.createElement('div'); gr.className = 'filtgrp';
+      const lb = document.createElement('span'); lb.className = 'filtth'; lb.textContent = k ? _t('filt.th.' + k) : '\u00a0'; gr.append(lb);
+      const items = document.createElement('div'); items.className = 'filtitems'; gr.append(items);
+      for (const i of list){
+        const f = FILTERS[i], b = document.createElement('button'); b.type = 'button'; b.className = 'filt'; b.dataset.v = f.id; b.setAttribute('role', 'radio');
+        b.setAttribute('aria-label', _t('filt.aria', { name: _t('filt.' + f.id) }) + (f.free || !ACCT || acctPro() ? '' : ' (Stalak Pro)'));
+        const cv = document.createElement('canvas'); cv.dataset.i = i; cv.width = Math.round(tw * dpr); cv.height = Math.round(th * dpr); cv.style.width = tw + 'px'; cv.style.height = th + 'px';
+        const nm = document.createElement('span'); nm.className = 'filtnm'; nm.textContent = _t('filt.' + f.id);
+        b.append(cv, nm);
+        if (!f.free && ACCT && !acctPro()){ const tg = document.createElement('span'); tg.className = 'filtpro'; tg.textContent = 'PRO'; b.append(tg); }
+        items.append(b);
+      }
+      row.append(gr);
+    }
+  }
+  $$('#filtRow .filt').forEach(b => { const on = b.dataset.v === S.filter; b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; });
+  filtThumbs();
+}
+function setFilter(id, quiet){
+  if (!FILTERS.some(f => f.id === id)) id = 'none';
+  S.filter = id; filtUI();
+  if (S.playing){} else showFrame(S.cursor);
+  if (!quiet){ const name = _t('filt.' + id); say(filtLocked() ? 'filt.st.pro' : 'filt.st', { name }); diag('filtre : ' + id + (filtFree(id) ? '' : ' (Pro)')); }
+}
 /* blur on the cheap (canvas filters are missing on some Safari): the picture is drawn tiny, then stretched back */
 const blurCv = document.createElement('canvas'), blurCx = blurCv.getContext('2d');
 function drawBlurFill(c, img, sw, sh, rot, rw, rh){
@@ -4443,6 +4823,7 @@ function drawFrame(c, cut, t, overlay, src){
     else if (!S.exporting && tk.live){ const ls = liveSrc(tk, Math.max(0, lt), 0.25); if (ls){ c.fillStyle='#000'; c.fillRect(0,0,W,H); drawCover(c, ls.img, ls.w, ls.h, 0, isMirror(tk)); } }
     else { const ve = S.exporting ? fullEl(tk) : tk.el; if (ve.readyState >= 2){ c.fillStyle='#000'; c.fillRect(0,0,W,H); drawCover(c, ve, ve.videoWidth, ve.videoHeight, 0, isMirror(tk)); } }
   }
+  filtPass(c, t);
   const l0 = performance.now(); drawLyrics(c, t); lyrMs = performance.now() - l0;
   if (overlay){
     const lbl = takeName(tk).toUpperCase();
@@ -4454,9 +4835,9 @@ function drawFrame(c, cut, t, overlay, src){
 }
 /* how smooth the last playback was, written to the technical info when it stops */
 let lyrMs = 0, pstat = null;
-function frameStat(ms, lms){ const p = pstat || (pstat = { n:0, slow:0, worst:0, worstLyr:0, lyr:0 }); p.n++; p.lyr += lms; if (ms > 80) p.slow++; if (ms > p.worst){ p.worst = ms; p.worstLyr = lms; } }
+function frameStat(ms, lms){ const p = pstat || (pstat = { n:0, slow:0, worst:0, worstLyr:0, lyr:0, filt:0 }); p.n++; p.lyr += lms; p.filt += filtMs; if (ms > 80) p.slow++; if (ms > p.worst){ p.worst = ms; p.worstLyr = lms; } }
 function logStat(){ const p = pstat; pstat = null; if (!p || p.n < 10) return;
-  diag('lecture : ' + p.n + ' images, ' + p.slow + ' lentes (> 80 ms), pire ' + Math.round(p.worst) + ' ms (dont paroles ' + p.worstLyr.toFixed(1) + ' ms), paroles en moyenne ' + (p.lyr / p.n).toFixed(2) + ' ms' + (tapping ? ' · Tap' : '')); }
+  diag('lecture : ' + p.n + ' images, ' + p.slow + ' lentes (> 80 ms), pire ' + Math.round(p.worst) + ' ms (dont paroles ' + p.worstLyr.toFixed(1) + ' ms), paroles en moyenne ' + (p.lyr / p.n).toFixed(2) + ' ms' + (S.filter !== 'none' ? ', filtre ' + S.filter + ' en moyenne ' + (p.filt / p.n).toFixed(1) + ' ms' : '') + (tapping ? ' · Tap' : '')); }
 function drawEmpty(){ g.setTransform(RES, 0, 0, RES, 0, 0); g.fillStyle = '#111'; g.fillRect(0,0,W,H); }
 /* redraws the picture already on screen (no seeking), used when only the text style changes */
 function redraw(){
@@ -6306,7 +6687,7 @@ async function encodeStream(s, vcfg, job){
       const pass = pic && passOk(pic, tk, t, job);
       let src = view;
       if (!pass){
-        const lt0 = t - tk.offset, inTake = lt0 >= -0.05 && lt0 <= tk.duration + 0.05, sc = job.gl && pic && inTake ? coverScale(pic) : null;
+        const lt0 = t - tk.offset, inTake = lt0 >= -0.05 && lt0 <= tk.duration + 0.05, sc = job.gl && job.gl.filt && pic && inTake ? coverScale(pic) : null;
         if (sc) src = job.gl.video(pic, sc, t, isMirror(tk));
         else { drawFrame(g, { take: tk }, t, false, pic); if (job.gl) src = job.gl.copy(view); }
       }
@@ -6360,18 +6741,32 @@ function expGL(){
   const tVid = tex(), tOv = tex();
   gl.viewport(0, 0, W, H); gl.clearColor(0, 0, 0, 1);
   gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-  const quad = pts => { const a = new Float32Array(8); for (let i=0; i<4; i++){ a[2*i] = pts[i][0] / W * 2 - 1; a[2*i+1] = 1 - pts[i][1] / H * 2; } gl.bindBuffer(gl.ARRAY_BUFFER, pb); gl.bufferSubData(gl.ARRAY_BUFFER, 0, a); };
+  const quad = (pts, flip) => { const a = new Float32Array(8); for (let i=0; i<4; i++){ a[2*i] = pts[i][0] / W * 2 - 1; a[2*i+1] = (1 - pts[i][1] / H * 2) * (flip ? -1 : 1); } gl.bindBuffer(gl.ARRAY_BUFFER, pb); gl.bufferSubData(gl.ARRAY_BUFFER, 0, a); };
   const full = [[0,0],[W,0],[0,H],[W,H]];
+  // the filter (FILTERS): the video picture is drawn into a texture (fbo, upside down so that its first row is the top),
+  // then the filter's program draws it on the canvas, then the lyrics and the filter's text go over it
+  const fi = filtIdx(S.filter); let FP = null, fbo = null, fTex = null;
+  if (fi){
+    try { FP = filtProgram(gl); fTex = tex(); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, W, H, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+      fbo = gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER, fbo); gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, fTex, 0);
+      if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) throw new Error('fbo'); }
+    catch(e){ FP = null; diag('rendu WebGL : filtre impossible ici (' + (e && e.message || e) + '), filtre dessiné en 2D'); }
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null); gl.useProgram(pr);
+  }
+  const mine = () => { gl.useProgram(pr); gl.bindBuffer(gl.ARRAY_BUFFER, ub); gl.enableVertexAttribArray(lu); gl.vertexAttribPointer(lu, 2, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, pb); gl.enableVertexAttribArray(lp); gl.vertexAttribPointer(lp, 2, gl.FLOAT, false, 0, 0); };
+  R.filt = !!FP || !fi;
   const draw = (t, src, pre) => { gl.bindTexture(gl.TEXTURE_2D, t); gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, !!pre); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); };
   R.copy = c2d => { gl.disable(gl.BLEND); quad(full); draw(tVid, c2d, false); return R.cv; };
   // mir: the picture flipped left to right on the frame (a selfie take filmed here); the lyrics laid over it are not
   R.video = (pic, sc, t, mir) => {
-    gl.disable(gl.BLEND); gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.disable(gl.BLEND); if (FP) gl.bindFramebuffer(gl.FRAMEBUFFER, fbo); gl.clear(gl.COLOR_BUFFER_BIT);
     const hw = pic.w * sc / 2, hh = pic.h * sc / 2, a = (pic.rot || 0) * Math.PI / 180, co = Math.cos(a), si = Math.sin(a), fx = mir ? -1 : 1;
     const pt = (x, y) => [W/2 + fx * (x*co - y*si), H/2 + x*si + y*co];
-    quad([pt(-hw, -hh), pt(hw, -hh), pt(-hw, hh), pt(hw, hh)]); draw(tVid, pic.img, false);
-    if (lyricsOn(t)){
-      const x = R.ox; x.setTransform(RES, 0, 0, RES, 0, 0); x.clearRect(0, 0, W, H); drawLyrics(x, t);
+    quad([pt(-hw, -hh), pt(hw, -hh), pt(-hw, hh), pt(hw, hh)], !!FP); draw(tVid, pic.img, false);
+    if (FP){ gl.bindFramebuffer(gl.FRAMEBUFFER, null); FP.draw(fTex, fi, t, W, H); mine(); }
+    if (lyricsOn(t) || (FP && filtHasOverlay(fi))){
+      const x = R.ox; x.setTransform(RES, 0, 0, RES, 0, 0); x.clearRect(0, 0, W, H); if (FP) filtOverlay(x, fi, t, W, H); drawLyrics(x, t);
       gl.enable(gl.BLEND); quad(full); draw(tOv, R.ov, true);
     }
     return R.cv;
@@ -6387,7 +6782,7 @@ function coverScale(pic){
 }
 const PASS_ON = false;   // off: on Safari the encoder writes other settings for these pictures, the pieces no longer fit
 function passOk(pic, tk, t, job){
-  if (job.noPass || !PASS_ON || pic.rot || isMirror(tk) || pic.w !== W || pic.h !== H) return false;
+  if (job.noPass || !PASS_ON || S.filter !== 'none' || pic.rot || isMirror(tk) || pic.w !== W || pic.h !== H) return false;
   const vr = pic.img.visibleRect; if (vr && (vr.x || vr.y || vr.width !== W || vr.height !== H)) return false;
   const lt = t - tk.offset; if (lt < -0.05 || lt > tk.duration + 0.05) return false;
   if (S.lyrics.mode !== 'none' && timedLines().some(l => t >= l.t - 0.001 && t < l.end)) return false;
@@ -6709,6 +7104,7 @@ $('#expScreen').addEventListener('keydown', e => { if (e.key === 'Escape'){ e.pr
 async function exportOne(){
   logLyrics('export');
   if (!S.cuts.length || S.exporting || exportGate) return;
+  if (filtLocked()){ acctOpen('filters'); return; }
   S.packN = 1; beginExport(); const TX = performance.now(); await fontsReady();
   try {
     const vcfg = await pickVideoConfig(), acfg = vcfg && await pickAudioConfig(S.song.buffer.sampleRate);
@@ -6717,6 +7113,7 @@ async function exportOne(){
       const T0 = performance.now(); S.lastEdits = [S.cuts.slice()];
       // the clip's effects go with the edit (fixed for the whole export)
       { const P = fxPlan(); if (P){ S.lastEdits[0].fxp = P; const ok = P.items.filter(it => it.ok); diag('export : ' + ok.length + ' effet' + (ok.length > 1 ? 's' : '') + ' (' + ok.map(it => it.type + ' ' + fmt(it.t)).join(', ') + ')'); } }
+      if (S.filter !== 'none') diag('export : filtre ' + S.filter);
       await renderVideos(S.lastEdits, vcfg, acfg, p => { progress(p); say('exp.render', { pct: Math.round(p*100) }); }, (k, ab) => { lastBlob = new Blob([ab], { type:'video/mp4' }); });
       diag('export : ' + ((performance.now() - T0) / 1000).toFixed(1) + ' s (' + ((performance.now() - TX) / 1000).toFixed(1) + ' s depuis le clic)');
     }
@@ -6745,6 +7142,7 @@ function shareBroll(list){
 /* pack: N different edits of the same passage, zipped */
 async function exportPack(){
   if (ACCT && !acctPro()){ acctOpen('pack'); return; }
+  if (filtLocked()){ acctOpen('filters'); return; }
   logLyrics('pack');
   if (!S.cuts.length || S.exporting || exportGate) return;
   exportGate = true; try { await exportPackRun(); } finally { exportGate = false; }
@@ -7051,7 +7449,7 @@ function go(n){
   S.step = n; $('#p1').hidden = n !== 1; $('#p2').hidden = n !== 2; $('#work').hidden = n < 3; $('#p3').hidden = n !== 3; $('#p4').hidden = n !== 4;
   $('#shuffleBtn').hidden = n !== 4;
   if (n === 3) lyricsView();
-  if (n === 4){ renderLyState(); logLyrics('étape Montage'); if (S.mode === 'mots' && S.cuts.length && S.genWords !== wordsKey()) rebuild(false); }
+  if (n === 4){ renderLyState(); logLyrics('étape Montage'); filtUI(); if (S.mode === 'mots' && S.cuts.length && S.genWords !== wordsKey()) rebuild(false); }
   if (n >= 3){ if (!S.cuts.length) rebuild(false); renderTimeline(); showFrame(n === 3 && S.lyrics.mode !== 'none' ? lyricShowTime() : S.segStart); }
   status(''); updateNav(); window.scrollTo({ top: 0 });
 }
@@ -7060,7 +7458,7 @@ function setFormat(f){ S.fmt = f; [W, H] = FORMATS[f]; setRes(RES); view.style.a
   // the width comes from the style sheet (desktop / phone), from the shape given here
   view.style.width = ''; view.style.setProperty('--ar', String(W / H)); $('#work').classList.toggle('wide', W > H);
   $$('#fmtSeg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === f));
-  showFrame(S.cursor); }
+  filtUI(); showFrame(S.cursor); }
 
 /* ---------- what is being made: a TikTok / Reels (vertical, a few bars) or a clip (the whole song, 16:9 landscape) ---------- */
 function kindUI(){
@@ -7253,6 +7651,7 @@ function textFree(k, v){ return !ACCT || acctPro() || v === TEXT_FREE[k]; }
 function textPressed(){ $$('#stSize button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === S.lyrics.style.size))); $$('#stAnim button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === S.lyrics.style.anim))); }
 function textGate(){
   if (!ACCT) return;
+  filtUI();   // the PRO marks on the filters follow the account
   const pro = acctPro();
   $$('#stSize button, #stAnim button').forEach(b => { const k = b.closest('#stSize') ? 'size' : 'anim'; b.classList.toggle('protag', !pro && b.dataset.v !== TEXT_FREE[k]); });
   // only once the account is known (a Pro member's style is not reset while the page is still asking)
@@ -7281,6 +7680,12 @@ $('#endPrev').onclick = () => { if (!S.song) return; if (segMove('r', segEndBar(
 $('#endNext').onclick = () => { if (!S.song) return; if (segMove('r', segEndBar() + 1)){ stop(true); rebuild(false); } };
 $('#shuffleBtn').onclick = () => { const was = S.playing; stop(true); rebuild(true); if (S.locks.length) say('shuffle.st'); else status(''); if (was) play(startPoint()); };
 $('#exportBtn').onclick = exportOne;
+$('#filtRow').addEventListener('click', e => { const b = e.target.closest('.filt'); if (b && !S.exporting) setFilter(b.dataset.v); });
+$('#filtRow').addEventListener('keydown', e => {
+  const k = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key]; if (!k || S.exporting) return; e.preventDefault();
+  const ids = FILTERS.map(f => f.id), i = (ids.indexOf(S.filter) + k + ids.length) % ids.length; setFilter(ids[i]);
+  const b = $('#filtRow .filt[data-v="' + ids[i] + '"]'); if (b){ b.focus(); b.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }
+});
 $('#packBtn').onclick = exportPack;
 $('#cancelBtn').onclick = () => { S.cancel = true; };
 $('#barsSel').onchange = e => { const v = e.target.value; if (v === 'all'){ S.nBars = 0; S.startBar = 0; } else S.nBars = +v; S.locks = []; stop(true); rebuild(false); };
@@ -9047,7 +9452,7 @@ async function clCollect(){
   const state = {
     app: 'stalak', v: 1, savedAt: new Date().toISOString(), lang: LANG, song, takes,
     set: { kind: S.kind, fmt: S.fmt, clipFmt: S.clipFmt || null, startBar: S.startBar, nBars: S.nBars, clipEnd: S.clipEnd, pace: S.pace, mode: S.mode,
-      brollAmt: S.brollAmt, bestTake: S.bestTake, fxLevel: S.fxLevel, seed: S.seed, version: S.version, reelStart: S.reelStart || 0, lyrUser: !!S.lyrUser },
+      brollAmt: S.brollAmt, bestTake: S.bestTake, fxLevel: S.fxLevel, filter: S.filter, seed: S.seed, version: S.version, reelStart: S.reelStart || 0, lyrUser: !!S.lyrUser },
     lyrics: { mode: S.lyrics.mode, lines: S.lyrics.lines, style: S.lyrics.style },
     cuts: S.cuts.map(cut), locks: S.locks.map(cut), fxUser: S.fxUser, fxAuto: S.fxAuto,
   };
@@ -9176,6 +9581,7 @@ async function clApply(st, files){
   // what is made and its settings
   S.kind = clip ? 'clip' : 'reel'; S.reelSave = null; S.clipFmt = set.clipFmt || null; S.lyrUser = !!set.lyrUser;
   S.pace = set.pace || S.pace; S.mode = set.mode || S.mode; S.brollAmt = set.brollAmt || S.brollAmt; S.fxLevel = set.fxLevel || S.fxLevel;
+  S.filter = FILTERS.some(f => f.id === set.filter) ? set.filter : 'none';
   S.bestTake = set.bestTake !== false; S.seed = set.seed || 1; S.version = set.version || 1;
   if (clip || !wantClip){ S.startBar = set.startBar || 0; S.nBars = set.nBars || 0; S.clipEnd = set.clipEnd == null ? null : set.clipEnd; S.reelStart = set.reelStart || 0; }
   else { S.startBar = set.reelStart || 0; S.nBars = 0; S.clipEnd = null; S.reelStart = S.startBar; }
@@ -9223,7 +9629,7 @@ async function clApply(st, files){
   // the pickers show what is set
   const pr = (sel, v) => $$(sel + ' button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === v)));
   const sty = S.lyrics.style;
-  pr('#paceSeg', S.pace); pr('#brollSeg', S.brollAmt); pr('#fxSeg', S.fxLevel); pr('#fmtSeg', S.fmt);
+  pr('#paceSeg', S.pace); pr('#brollSeg', S.brollAmt); pr('#fxSeg', S.fxLevel); pr('#fmtSeg', S.fmt); filtUI();
   pr('#stFont', sty.font); pr('#stColor', sty.color); pr('#stPos', sty.pos); pr('#stDeco', sty.deco); pr('#stSize', sty.size); pr('#stAnim', sty.anim); pr('#stHl', sty.hl || 'auto');
   $('#bestChk').checked = S.bestTake; hlView(); barsSync();
   $('#verLbl').textContent = 'Version ' + S.version;
@@ -9254,7 +9660,7 @@ function applyLang(){
   if (hasT('doc.title')) document.title = _t('doc.title');
   $$('.langsw button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === LANG)));
   // what is written from here: drawn again as it is now
-  kindUI(); renderTakes(); renderLines(); tapShow(); if (tapping) tapUi();
+  kindUI(); renderTakes(); renderLines(); tapShow(); if (tapping) tapUi(); filtUI();
   $('#playBtn').textContent = S.playing ? '■ Stop' : _t('play.play');
   $('#songPlay').textContent = S.playing && !listenSeg ? (listenOn ? '❚❚ Pause' : '■ Stop') : _t('listen.play');
   $('#segPlay').textContent = _t(S.playing && listenSeg ? 'listen.segStop' : 'listen.seg');

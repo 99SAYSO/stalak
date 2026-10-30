@@ -69,6 +69,12 @@
 - Confirmé sur iPhone par le journal du 27/10 à 23 h : prises filmées lisibles, copie légère 360×640 faite en 3 s, son des prises lu (calage automatique), lecture sans image lente, export de 25 s en 7,7 s par WebCodecs (aucun repli sur le lecteur vidéo).
 - En cours : « un peu de lag » dans la vidéo exportée, signalé par le propriétaire. La cause n'est pas visible dans le journal. Vidéo exportée et précisions demandées au propriétaire : saccade continue, à chaque coupe, ou lèvres en retard.
 
+- En cours (branche `app/filtres`) : 13 filtres vidéo à l'étape Montage, plus « Aucun ».
+  - Un seul code de filtre (shader WebGL, bloc `/*@FILTERS*/` de `src/app.js`), utilisé par l'aperçu, l'export (2D et WebGL) et la page de comparaison.
+  - Rangée de vignettes par thème, limite Pro (`acctOpen('filters')` à l'export), filtre sauvegardé dans le projet.
+  - Page de comparaison publiée pour validation (artifact « Filtres Stalak »), générée par `tests/ui/filtres_comparaison.py`.
+  - À décider : retouches du propriétaire filtre par filtre, puis passage en PRÊT.
+
 ### Comptes, paiements & serveur
 - Paddle en réel une fois la structure créée : nouveaux produits, prix, clés et webhook, puis `PADDLE_ENV=production`.
 - Microsoft (création du compte bloquée, à retenter) et Apple (programme développeur à 99 $/an).

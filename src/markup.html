@@ -316,6 +316,11 @@
             <span class="label" data-i18n="p4.takes">Prises</span>
             <label class="chk best tip" for="bestChk" data-tip="Le site regarde tes prises (netteté, lumière, image qui saute, visage au centre) et met plus souvent la plus belle à chaque moment, en gardant de la variété. Les plans gardés ou exclus passent avant." data-i18n-attr="data-tip:best.tip"><input type="checkbox" id="bestChk" checked> <span data-i18n="best">Meilleure prise auto</span></label>
           </div>
+          <div class="filtbox" id="filtBox">
+            <span class="label" data-i18n="filt.title">Filtre</span>
+            <p class="hint" data-i18n="filt.hint">Un style pour toute la vidéo. Les paroles restent au-dessus, sans changer.</p>
+            <div class="filtrow" id="filtRow" role="radiogroup" aria-label="Filtre" data-i18n-attr="aria-label:filt.title"></div>
+          </div>
           <div class="tlwrap">
             <div class="row" style="justify-content:space-between;margin-bottom:6px"><span class="label" id="verLbl">Version 1</span><span class="row" style="gap:10px"><span class="meta" id="tlMeta"></span><button class="btn sm" id="tlZoom" type="button" hidden aria-pressed="false" data-i18n="tl.zoom">Zoom +</button></span></div>
             <div class="tlmini" id="tlMini" hidden aria-label="Tout le morceau : touche pour t'y placer" data-i18n-attr="aria-label:tl.mini.aria"><i id="tlWin"></i><b id="tlMiniPh"></b></div>
