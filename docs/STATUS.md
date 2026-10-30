@@ -19,6 +19,13 @@
   - **Pro 10,99 €/mois (109 €/an)** : Basic + tous les filtres, mode Clip 16:9, packs de 5 et 10, paroles auto 20 par jour, sauvegarde en ligne 20 Go.
   - **Max 13,99 €/mois (139 €/an)** : Pro + packs de 30, paroles auto 60 par jour, sauvegarde 100 Go, « Parler à un humain ». Carte mise en avant : « seulement 3 € de plus que Pro ».
   - Un abonné garde son prix. Aujourd'hui, il n'y a que des abonnements de test (sandbox).
+  - **Prix Paddle sandbox créés le 30/10 par le Chef de projet** (taxe : réglage du compte, catégorie « Standard digital goods ») :
+    | Formule | Produit | Mensuel | Annuel |
+    |---|---|---|---|
+    | Basic | `pro_01m66r6h2rkefmaxn31gckec3n` | 4,99 € `pri_01m66r80jxszc4yxggqvwak5p5` | 39 € `pri_01m66r8g1bhvhnk6x1z9m0x894` |
+    | Pro | `pro_01m5ygd6ra9bhd5vzy2v1rrk70` | 10,99 € `pri_01m66r4d7mtzps3wmycfmv8pk9` | 109 € `pri_01m66r5nakxvg6cxjcgc1vv7j7` |
+    | Max | `pro_01m66r71dy61a2qaqsrrxgq12n` | 13,99 € `pri_01m66r9m12ckfttnrr5h3vhfgc` | 139 € `pri_01m66r9tmrfg7fxfrb5dpnk5s3` |
+    - Anciens prix Pro, toujours actifs pour les abonnés existants : 9,99 € `pri_01m5ygermd2pjw66mgdsh4f4rw` et 79 € `pri_01m5ygfwqdq8h2ax297c6qagjs`. Le webhook doit les compter comme « pro ».
   - Travail : Comptes (formules, compteur, e-mail de rappel, Paddle), App (ce que débloque chaque formule, écran « vidéo du jour utilisée »), Marketing (page Tarifs à 4 colonnes), Juridique (conditions de vente). Prix Paddle sandbox créés par le Chef de projet.
 
 ## En ligne (stalak.app)
