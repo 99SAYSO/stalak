@@ -233,6 +233,34 @@ Ces montants sont avant TVA et frais. Réaliste : 10 000 € par mois en avril 2
 ### Juridique & business
 - **Fait (branche `legal/etat-des-lieux`)** : état des lieux du statut, de Paddle en réel et des pages légales (infos pour décider, pas un avis juridique).
 - **À décider (propriétaire)** : statut. La LLC prévue est remise en question : pour un résident français, elle ne supprime ni l'impôt ni les cotisations en France et ajoute des obligations (formulaire américain 5472, 25 000 $ d'amende si oublié ; compte étranger à déclarer). La micro-entreprise paraît plus simple. Rendez-vous avec un expert-comptable avant de créer quoi que ce soit (BIC ou BNC, ACRE).
+- **Fait (branche `legal/nouvelle-offre`, 30/10 au soir)** : pages légales FR/EN adaptées à l'offre Gratuit (filigrane + pub récompensée) / Pro / Creator Plus en dollars. Tout ce qui parlait de la vidéo du jour, de l'e-mail de rappel et de Basic / Max est retiré.
+  - Conditions : Gratuit sans compte ; formules et prix en dollars (conversion et taxes par Paddle, variation possible avec le taux de change) ; nouvelle section 4 « Filigrane et publicité récompensée » ; prix gardé ; changement de formule ; anti-fraude.
+  - Remboursement : Pro et Creator Plus, retour du filigrane en Gratuit.
+  - Confidentialité devient « Confidentialité et cookies » : section `#cookies` (pub Google Ad Manager, choix accepter/refuser, pub limitée si refus, durée 6 mois, liens Google) ; Google ajouté aux prestataires (connexion, pub, boîte contact@) ; sauvegarde 100 Go et « Parler à un humain » en Creator Plus.
+  - Mentions légales : phrase sur le filigrane (marque de Stalak, aucun droit sur la vidéo).
+- **À suivre par Comptes (règles écrites dans les conditions)** :
+  - montée en gamme (Pro → Creator Plus, mensuel → annuel) **immédiate, au prorata**, montant affiché avant confirmation ;
+  - descente en gamme (Creator Plus → Pro, annuel → mensuel) **au prochain renouvellement**, sans remboursement (changement programmé) ;
+  - prix gardé tant que l'abonnement continue, même formule et même période ; un changement de formule prend le prix du moment ;
+  - remboursement d'un paiement de changement de formule = retour à la formule d'avant jusqu'à la fin de la période ;
+  - **à vérifier dans Paddle sandbox** : si un abonné payant en euros voit le montant de son renouvellement changer avec le taux de change, ou si Paddle fige le montant converti. Les conditions annoncent une « légère variation possible » ; me dire si c'est faux.
+  - paroles auto 20 par jour (Pro) et 60 (Creator Plus), 8 min max, sauvegarde 100 Go : écrits tels quels dans les conditions. Me prévenir si les limites changent.
+- **À faire par App (pub récompensée et filigrane)**, règles de Google et de la CNIL :
+  - filigrane : logo + « Clipped with stalak.app », visible et qui bouge, ajouté à l'export en Gratuit seulement ;
+  - **aucun script Google (GPT) ni fenêtre de cookies avant que l'utilisateur touche « Regarder une pub pour retirer le filigrane »** : rien ne se charge pour Pro, Creator Plus ou un gratuit qui ne choisit pas la pub ;
+  - avant la pub, écran d'accord qui dit clairement l'action et la récompense (« Regarde une pub d'environ 30 s pour retirer le filigrane de cette vidéo »), avec « Non merci » aussi visible ; pas de texte qui pousse (interdit par Google : « regarde pour nous soutenir ») ;
+  - si l'utilisateur ferme la pub avant la fin : lui confirmer qu'il perd la récompense ; filigrane retiré seulement à l'événement `rewardedSlotGranted` ; l'utilisateur ferme la pub lui-même ;
+  - **décidé (propriétaire, 30/10)** : la pub est obligatoire pour exporter sans filigrane. Si aucune pub n'est disponible : message « Pas de pub disponible pour l'instant », bouton « Réessayer », et la vidéo s'exporte avec filigrane si l'utilisateur continue ;
+  - le refus ne doit jamais bloquer l'export avec filigrane.
+- **À faire par App ou Comptes : bandeau de consentement (CMP)**, nécessaire pour la pub en Europe, au Royaume-Uni et en Suisse :
+  - outil **certifié par Google et compatible IAB TCF v2.2**, obligatoire pour des pubs personnalisées. Le plus simple : le message RGPD gratuit de Google Ad Manager (« Confidentialité et messages »). Sans outil certifié, seules des pubs limitées sont possibles ;
+  - s'affiche au moment de la première pub (pas à l'ouverture du site), seulement pour ces pays ;
+  - boutons « Tout accepter », « Tout refuser » et « Personnaliser » au même niveau (même taille, même couleur) ; pas de case pré-cochée ;
+  - choix gardé 6 mois au plus, puis reposé ; refus = pub limitée (le filigrane peut quand même être retiré) ;
+  - lien « Gérer les cookies » en bas des pages (app, Tarifs et pages légales) qui rouvre la fenêtre ; à défaut tant que ce n'est pas branché, lien « Cookies » vers `/confidentialite#cookies` ;
+  - **décidé (propriétaire, 30/10) : pas d'âge minimum.** Les conditions disent « ouvert à tous ; si tu es mineur, demande l'accord d'un parent avant de t'abonner », et la confidentialité « moins de 15 ans : demande à un parent avant d'accepter les cookies publicitaires, ou refuse ». Stalak n'est pas un site fait pour les enfants : ne pas le déclarer « destiné aux enfants » dans Ad Manager. Si un utilisateur dit avoir moins de 13 ans (par exemple dans l'aide), ne lui servir que des pubs non personnalisées.
+- **À faire (propriétaire)** : compte Google Ad Manager (paiement et informations fiscales au nom de la future structure : même nom que Paddle et la banque).
+- **À faire (Marketing)** : la page Tarifs doit reprendre exactement les prix et contenus des conditions (en dollars, avec la mention « prix final avec taxes affiché avant le paiement »). En Europe, le prix montré au consommateur doit être le prix final taxes comprises : afficher les prix localisés de Paddle (aperçu des prix) plutôt que « 7,99 $ » seul.
 - **À faire (Comptes)** : bouton de rétractation « Renoncer au contrat ici », obligatoire depuis le 19/06/2026 (ordonnance n° 2026-2) : visible pendant 14 jours après l'achat, gratuit, avec accusé de réception par e-mail. Cahier des charges à écrire par Juridique.
-- **À faire (Juridique, sans attendre le statut)** : confidentialité complétée (Google pour la connexion et la boîte contact@, statistiques Cloudflare) ; règle pour les mineurs qui paient.
+- Mineurs : réglé par la décision « pas d'âge minimum » (phrases sur l'accord d'un parent dans les conditions et la confidentialité). Google (connexion, pub, boîte contact@) est maintenant dans la confidentialité.
 - **À faire une fois la structure créée** : nom, adresse (ou domiciliation) et SIRET dans les mentions légales ; nom légal dans les conditions (`--seller`) ; médiateur de la consommation désigné et nommé ; responsable du traitement nommé ; validation du site par Paddle (même nom sur le site, le compte Paddle et la banque).
