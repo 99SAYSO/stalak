@@ -83,6 +83,8 @@
   - Page de comparaison publiée pour validation (artifact « Filtres Stalak »), générée par `tests/ui/filtres_comparaison.py`.
   - À décider : retouches du propriétaire filtre par filtre, puis passage en PRÊT.
 
+- En cours (branche `app/formules`, après `app/filtres`) : ce que débloque chaque formule dans l'app (table `FEAT_PLAN`, `can(feat)`), cadenas BASIC/PRO/MAX qui ouvrent la bonne formule, écran « Ta vidéo du jour est faite ✓ » avec le temps restant. Attend de Comptes : `acctHas`, `acctQuota`, `acctUseVideo`, `acctOpen(why, { plan })` (détail dans `docs/handoff/app-formules.md`). D'ici là, la règle d'avant s'applique.
+
 ### Comptes, paiements & serveur
 - Paddle en réel une fois la structure créée : nouveaux produits, prix, clés et webhook, puis `PADDLE_ENV=production`.
 - Microsoft (création du compte bloquée, à retenter) et Apple (programme développeur à 99 $/an).

@@ -359,6 +359,20 @@ const I18N_EN = /*@EN*/{
   "ly.del": "Delete line {n}",
   "ly.removed": "Line deleted: “{text}”.",
   "ly.undo": "Undo",
+  "_bloc.app.formules": "App & montage : formules et vidéo du jour",
+  "acct.outroBasic": "Remove it with Basic",
+  "acct.why.pack30": "Packs of 30 videos come with Max.",
+  "ap.whyIn.pack30": "Packs of 30 videos come with Max. Sign in or create an account to get it.",
+  "acct.why.daily": "Unlimited videos start with Basic.",
+  "ap.whyIn.daily": "Free videos need a free account: 1 video a day. Sign in or create your account.",
+  "day.t": "Today’s video is done ✓",
+  "day.p": "Come back tomorrow, or switch to Basic for unlimited videos.",
+  "day.left": "Next free video in {t}.",
+  "day.hm": "{h} h {m}",
+  "day.m": "{m} min",
+  "day.ready": "Your next free video is ready.",
+  "day.go": "Switch to Basic",
+  "day.close": "Come back tomorrow",
   "_bloc.app.filtres": "App & montage : filtres vidéo",
   "filt.title": "Filter",
   "filt.hint": "One look for the whole video. The lyrics stay on top, unchanged.",
@@ -396,8 +410,8 @@ const I18N_EN = /*@EN*/{
   "filt.st": "Filter: {name}.",
   "filt.st.pro": "Filter: {name}. You can try it here; exporting with it comes with Stalak Pro.",
   "filt.aria": "Filter {name}",
-  "acct.why.filters": "This filter is part of Stalak Pro.",
-  "ap.whyIn.filters": "This filter is part of Stalak Pro. Sign in or create an account to get it.",
+  "acct.why.filters": "All the filters come with Pro. Free and Basic have 3.",
+  "ap.whyIn.filters": "All the filters come with Pro. Sign in or create an account to get it.",
   "ly.st.paste": "Paste your lyrics first, one line per row.",
   "tap.nextLine": "Next line: {text}",
   "tap.allDone": "All the lines are synced.",
@@ -650,8 +664,8 @@ const I18N_EN = /*@EN*/{
   "acct.proRenew": "Stalak Pro renews on {d}.",
   "acct.proEnds": "Stalak Pro stays on until {d}, then stops.",
   "acct.proOn": "Stalak Pro is on.",
-  "acct.why.clip": "Music video mode is part of Stalak Pro.",
-  "acct.why.outro": "Videos without the Stalak logo come with Stalak Pro.",
+  "acct.why.clip": "Music video mode comes with Pro.",
+  "acct.why.outro": "Videos without the Stalak logo start with Basic.",
   "acct.sending": "Sending…",
   "acct.checking": "Checking…",
   "acct.welcome": "You’re signed in.",
@@ -714,8 +728,8 @@ const I18N_EN = /*@EN*/{
   "pt.next": "Next",
   "ap.hide": "Hide",
   "ap.btnAria": "Your account ({name})",
-  "ap.whyIn.clip": "Music video mode is part of Stalak Pro. Sign in or create an account to get it.",
-  "ap.whyIn.outro": "Videos without the Stalak logo come with Stalak Pro. Sign in or create an account to get it.",
+  "ap.whyIn.clip": "Music video mode comes with Pro. Sign in or create an account to get it.",
+  "ap.whyIn.outro": "Videos without the Stalak logo start with Basic. Sign in or create an account to get it.",
   "ap.whyIn.pro": "Sign in or create an account to get Stalak Pro.",
   "ap.pwOn": "Set on {d}",
   "ap.pwOnNoDate": "Set",
@@ -817,10 +831,10 @@ const I18N_EN = /*@EN*/{
   "ap.oauth.oauth_no_email": "That account didn’t give us an email. Create an account with your email instead.",
   "ap.oauth.not_enabled": "This sign-in option isn’t available yet.",
   "ap.oauth.oauth_failed": "Sign-in didn’t work. Try again, or use your email.",
-  "acct.why.pack": "Video packs are part of Stalak Pro.",
-  "ap.whyIn.pack": "Video packs are part of Stalak Pro. Sign in or create an account to get it.",
+  "acct.why.pack": "Packs of 5 and 10 videos come with Pro.",
+  "ap.whyIn.pack": "Packs of 5 and 10 videos come with Pro. Sign in or create an account to get it.",
   "acct.perk6": "Every text size and style: word by word, karaoke",
-  "acct.why.text": "These text sizes and styles are part of Stalak Pro.",
+  "acct.why.text": "All text sizes and styles start with Basic.",
   "pr.promo": "Stalak Pro for <b>€6.58/mo</b> with the yearly plan",
   "pr.sub": "Stalak edits your videos for you. With Pro, you post more, faster, and every video looks studio-made.",
   "pr.popular": "Best value",
@@ -1116,6 +1130,20 @@ const I18N_FR = /*@FR*/{
   "ly.del": "Supprimer la ligne {n}",
   "ly.removed": "Ligne supprimée : « {text} ».",
   "ly.undo": "Annuler",
+  "_bloc.app.formules": "App & montage : formules et vidéo du jour",
+  "acct.outroBasic": "L’enlever avec Basic",
+  "acct.why.pack30": "Les packs de 30 vidéos, c’est avec Max.",
+  "ap.whyIn.pack30": "Les packs de 30 vidéos, c’est avec Max. Connecte-toi ou crée un compte pour en profiter.",
+  "acct.why.daily": "Les vidéos illimitées, c’est dès Basic.",
+  "ap.whyIn.daily": "Les vidéos gratuites demandent un compte gratuit : 1 vidéo par jour. Connecte-toi ou crée ton compte.",
+  "day.t": "Ta vidéo du jour est faite ✓",
+  "day.p": "Reviens demain, ou passe à Basic pour des vidéos illimitées.",
+  "day.left": "Prochaine vidéo gratuite dans {t}.",
+  "day.hm": "{h} h {m}",
+  "day.m": "{m} min",
+  "day.ready": "Ta prochaine vidéo gratuite est disponible.",
+  "day.go": "Passer à Basic",
+  "day.close": "Revenir demain",
   "_bloc.app.filtres": "App & montage : filtres vidéo",
   "filt.title": "Filtre",
   "filt.hint": "Un style pour toute la vidéo. Les paroles restent au-dessus, sans changer.",
@@ -1153,8 +1181,8 @@ const I18N_FR = /*@FR*/{
   "filt.st": "Filtre : {name}.",
   "filt.st.pro": "Filtre : {name}. Tu peux l’essayer ici ; l’export avec ce filtre fait partie de Stalak Pro.",
   "filt.aria": "Filtre {name}",
-  "acct.why.filters": "Ce filtre fait partie de Stalak Pro.",
-  "ap.whyIn.filters": "Ce filtre fait partie de Stalak Pro. Connecte-toi ou crée un compte pour en profiter.",
+  "acct.why.filters": "Tous les filtres, c’est avec Pro. Gratuit et Basic en ont 3.",
+  "ap.whyIn.filters": "Tous les filtres, c’est avec Pro. Connecte-toi ou crée un compte pour en profiter.",
   "ly.st.paste": "Colle d’abord tes paroles, une phrase par ligne.",
   "tap.nextLine": "Prochaine phrase : {text}",
   "tap.allDone": "Toutes les phrases sont calées.",
@@ -1385,8 +1413,8 @@ const I18N_FR = /*@FR*/{
   "acct.proRenew": "Stalak Pro se renouvelle le {d}.",
   "acct.proEnds": "Stalak Pro reste actif jusqu’au {d}, puis s’arrête.",
   "acct.proOn": "Stalak Pro est actif.",
-  "acct.why.clip": "Le mode Clip fait partie de Stalak Pro.",
-  "acct.why.outro": "Les vidéos sans le logo Stalak, c’est avec Stalak Pro.",
+  "acct.why.clip": "Le mode Clip, c’est avec Pro.",
+  "acct.why.outro": "Les vidéos sans le logo Stalak, c’est dès Basic.",
   "acct.sending": "Envoi…",
   "acct.checking": "Vérification…",
   "acct.welcome": "Tu es connecté.",
@@ -1408,8 +1436,8 @@ const I18N_FR = /*@FR*/{
   "acct.e.other": "Un souci est survenu. Réessaie dans un moment.",
   "ap.hide": "Masquer",
   "ap.btnAria": "Ton compte ({name})",
-  "ap.whyIn.clip": "Le mode Clip fait partie de Stalak Pro. Connecte-toi ou crée un compte pour en profiter.",
-  "ap.whyIn.outro": "Les vidéos sans le logo Stalak, c’est avec Stalak Pro. Connecte-toi ou crée un compte pour en profiter.",
+  "ap.whyIn.clip": "Le mode Clip, c’est avec Pro. Connecte-toi ou crée un compte pour en profiter.",
+  "ap.whyIn.outro": "Les vidéos sans le logo Stalak, c’est dès Basic. Connecte-toi ou crée un compte pour en profiter.",
   "ap.whyIn.pro": "Connecte-toi ou crée un compte pour passer à Stalak Pro.",
   "ap.pwOn": "Défini le {d}",
   "ap.pwOnNoDate": "Défini",
@@ -1483,10 +1511,10 @@ const I18N_FR = /*@FR*/{
   "ap.oauth.oauth_no_email": "Ce compte ne nous a pas donné d’e-mail. Crée plutôt un compte avec ton e-mail.",
   "ap.oauth.not_enabled": "Ce mode de connexion n’est pas encore disponible.",
   "ap.oauth.oauth_failed": "La connexion n’a pas marché. Réessaie, ou utilise ton e-mail.",
-  "acct.why.pack": "Les packs de vidéos font partie de Stalak Pro.",
-  "ap.whyIn.pack": "Les packs de vidéos font partie de Stalak Pro. Connecte-toi ou crée un compte pour en profiter.",
+  "acct.why.pack": "Les packs de 5 et 10 vidéos, c’est avec Pro.",
+  "ap.whyIn.pack": "Les packs de 5 et 10 vidéos, c’est avec Pro. Connecte-toi ou crée un compte pour en profiter.",
   "acct.perk6": "Toutes les tailles et apparitions du texte : mot par mot, karaoké",
-  "acct.why.text": "Ces tailles et apparitions du texte font partie de Stalak Pro.",
+  "acct.why.text": "Toutes les tailles et apparitions du texte, c’est dès Basic.",
   "cl.ok": "OK",
   "cl.saveT": "Sauvegarder en ligne",
   "cl.savingT": "Sauvegarde de « {name} »",
@@ -4823,6 +4851,67 @@ function filtOverlay(c, idx, t, lw, lh){
   }
 }
 /*FILTERS@*/
+/* ---------- the plans (Gratuit / Basic / Pro / Max): what each one unlocks in the app ----------
+   One table, FEAT_PLAN: the smallest plan that has each feature. The account side (Comptes) answers acctHas(feat) for the
+   person signed in; until that function exists, the rule before the new offer stays: everything with Stalak Pro.
+   On the claude.ai page there are no accounts (ACCT is null): everything is open, as before.
+   Features: nologo (no Stalak ending), text (all text sizes and appearances), unlimited (more than 1 video a day),
+   filters (all the filters; 3 are free), clip (16:9 Clip mode), pack5, pack10, pack30. */
+const FEAT_PLAN = { nologo: 'basic', text: 'basic', unlimited: 'basic', filters: 'pro', clip: 'pro', pack5: 'pro', pack10: 'pro', pack30: 'max' };
+const PLAN_TAG = { basic: 'BASIC', pro: 'PRO', max: 'MAX' };
+function can(feat){
+  if (!ACCT) return true;
+  if (typeof acctHas === 'function') return !!acctHas(feat);
+  return acctPro();
+}
+/* a padlock: opens the plans page on the plan that unlocks feat (why: the sentence shown at the top of that page) */
+function lockOpen(feat, why){ acctOpen(why || feat, { plan: FEAT_PLAN[feat] || 'pro' }); }
+/* the small tag on a locked control: the plan's name (BASIC, PRO, MAX), or nothing when it is open */
+function planTag(el, feat, on){
+  if (!el) return; const locked = on == null ? !!ACCT && !can(feat) : !!on;
+  el.classList.toggle('protag', locked); if (locked) el.dataset.plan = PLAN_TAG[FEAT_PLAN[feat]] || 'PRO'; else delete el.dataset.plan;
+}
+const packFeat = n => +n >= 30 ? 'pack30' : +n >= 10 ? 'pack10' : 'pack5';
+/* « 1 vidéo par jour » (free plan): what the account side says is left today. acctQuota() (Comptes) gives
+   { left, resetAt } (resetAt: when the next free video comes, in ms); without it, no limit is applied here. */
+function dayQuota(){
+  if (!ACCT || can('unlimited') || typeof acctQuota !== 'function') return null;
+  try { const q = acctQuota(); return q && typeof q.left === 'number' ? q : null; } catch(e){ return null; }
+}
+/* before an export: a free account that has used its video of the day sees « Ta vidéo du jour est faite ✓ » instead.
+   Signed out (the free plan needs an account): the account creation opens. true: the export may go on */
+function dayGate(){
+  if (!ACCT || can('unlimited')) return true;
+  if (!ACCT.state.user && typeof acctQuota === 'function'){ acctOpen('daily'); return false; }
+  const q = dayQuota(); if (!q || q.left > 0) return true;
+  dayDoneOpen(q); return false;
+}
+/* after an export that worked: the account side counts the video of the day */
+function dayUsed(){ if (ACCT && !can('unlimited') && typeof acctUseVideo === 'function'){ try { Promise.resolve(acctUseVideo()).catch(e => diag('vidéo du jour : non comptée (' + (e && e.message || e) + ')')); } catch(e){} } }
+let dayTimer = 0;
+function dayLeftText(q){
+  const ms = Math.max(0, (q && q.resetAt ? q.resetAt : dayMidnight()) - Date.now());
+  if (ms <= 0) return _t('day.ready');
+  const m = Math.ceil(ms / 60000), h = Math.floor(m / 60), mm = m % 60;
+  return _t('day.left', { t: h ? _t('day.hm', { h, m: String(mm).padStart(2, '0') }) : _t('day.m', { m: Math.max(1, mm) }) });
+}
+function dayMidnight(){ const d = new Date(); d.setHours(24, 0, 0, 0); return d.getTime(); }
+function dayDoneOpen(q){
+  const box = $('#dayDone'); if (!box) return;
+  const tick = () => { const cur = dayQuota() || q; $('#dayLeft').textContent = dayLeftText(cur); if (cur && cur.left > 0){ $('#dayLeft').textContent = _t('day.ready'); } };
+  tick(); clearInterval(dayTimer); dayTimer = setInterval(tick, 15000);
+  box.hidden = false; modalOn(true); diag('vidéo du jour : déjà faite, écran affiché');
+  setTimeout(() => { try { $('#dayGo').focus({ preventScroll: true }); } catch(e){} }, 50);
+}
+function dayDoneClose(){ const box = $('#dayDone'); if (!box || box.hidden) return; box.hidden = true; clearInterval(dayTimer); modalOn(false); try { $('#exportBtn').focus({ preventScroll: true }); } catch(e){} }
+/* the padlocks drawn again when the account or the pack size changes */
+function planTags(){
+  planTag($('#kindSeg button[data-v="clip"]'), 'clip');
+  planTag($('#packBtn'), packFeat($('#packSel') ? $('#packSel').value : 10));
+  $$('#stSize button, #stAnim button').forEach(b => { const k = b.closest('#stSize') ? 'size' : 'anim'; planTag(b, 'text', !!ACCT && !can('text') && b.dataset.v !== TEXT_FREE[k]); });
+  const op = $('#outroPro'); if (op) setT(op, 'acct.outroBasic');
+}
+
 /* ---- the filters in the app: preview, thumbnails, export, Stalak Pro ----
    The preview draws the video picture on its 2D canvas, then filtPass runs the filter over it (graphics card, filtRunner) and
    draws it back, then the lyrics go on top. The export does the same on its 2D canvas, or, when it draws with WebGL (Safari),
@@ -4830,7 +4919,7 @@ function filtOverlay(c, idx, t, lw, lh){
    (seen in the preview by everyone, exported only with Pro). */
 let filtR = null, filtMs = 0, filtBroken = false;
 const filtFree = id => { const f = FILTERS[filtIdx(id)]; return !f || f.free; };
-const filtLocked = () => !!ACCT && !acctPro() && !filtFree(S.filter);
+const filtLocked = () => !!ACCT && !can('filters') && !filtFree(S.filter);
 function filtPass(c, t){
   if (c === g && !S.exporting && !S.playing && S.step === 4) thumbGrab(c);
   const i = filtBroken ? 0 : filtIdx(S.filter); if (!i){ filtMs = 0; return; }
@@ -4864,8 +4953,8 @@ function filtThumbs(){
 function filtUI(){
   const row = $('#filtRow'); if (!row) return;
   const th = 96, tw = Math.max(40, Math.round(th * W / H)), dpr = Math.min(2, window.devicePixelRatio || 1);
-  if (row.dataset.shape !== tw + 'x' + th || row.dataset.lang !== LANG || row.dataset.pro !== String(!ACCT || acctPro())){
-    row.innerHTML = ''; row.dataset.shape = tw + 'x' + th; row.dataset.lang = LANG; row.dataset.pro = String(!ACCT || acctPro());
+  if (row.dataset.shape !== tw + 'x' + th || row.dataset.lang !== LANG || row.dataset.pro !== String(can('filters'))){
+    row.innerHTML = ''; row.dataset.shape = tw + 'x' + th; row.dataset.lang = LANG; row.dataset.pro = String(can('filters'));
     const groups = [[null, [0]]].concat(FILT_THEMES.map(k => [k, FILTERS.map((f, i) => f.th === k ? i : -1).filter(i => i >= 0)]));
     for (const [k, list] of groups){
       const gr = document.createElement('div'); gr.className = 'filtgrp';
@@ -4873,11 +4962,11 @@ function filtUI(){
       const items = document.createElement('div'); items.className = 'filtitems'; gr.append(items);
       for (const i of list){
         const f = FILTERS[i], b = document.createElement('button'); b.type = 'button'; b.className = 'filt'; b.dataset.v = f.id; b.setAttribute('role', 'radio');
-        b.setAttribute('aria-label', _t('filt.aria', { name: _t('filt.' + f.id) }) + (f.free || !ACCT || acctPro() ? '' : ' (Stalak Pro)'));
+        b.setAttribute('aria-label', _t('filt.aria', { name: _t('filt.' + f.id) }) + (f.free || can('filters') ? '' : ' (Pro)'));
         const cv = document.createElement('canvas'); cv.dataset.i = i; cv.width = Math.round(tw * dpr); cv.height = Math.round(th * dpr); cv.style.width = tw + 'px'; cv.style.height = th + 'px';
         const nm = document.createElement('span'); nm.className = 'filtnm'; nm.textContent = _t('filt.' + f.id);
         b.append(cv, nm);
-        if (!f.free && ACCT && !acctPro()){ const tg = document.createElement('span'); tg.className = 'filtpro'; tg.textContent = 'PRO'; b.append(tg); }
+        if (!f.free && !can('filters')){ const tg = document.createElement('span'); tg.className = 'filtpro'; tg.textContent = PLAN_TAG[FEAT_PLAN.filters]; b.append(tg); }
         items.append(b);
       }
       row.append(gr);
@@ -6449,7 +6538,7 @@ async function fontsReady(){
    Drawn on the canvas, in vector (the logo's own SVG paths, design/logo/stalak-A2.svg), so it is sharp in every format.
    Never shown by the preview: only the export draws it. */
 const OUTRO_S = 3, OUTRO_N = OUTRO_S * OUT_FPS;
-function outroOn(){ return !S.pro; }
+function outroOn(){ return ACCT ? !can('nologo') : !S.pro; }
 // the logo (viewBox -16 -6 370 163): letters (black shadow, black outline, white), then the icicles, each its own path
 const LOGO_LETTERS = 'M51 19.0C46 11.0 38 10.0 30 10.0C18 10.0 9 17.0 9 28.0C9 40.0 20 43.0 30 47.0C42 51.0 52 56.0 52 68.0C52 88.0 42 90.0 30 90.0C20 90.0 12 87.0 7 80.0 M79 14.0L79 76.0Q79 90.0 93 90.0L96 90.0 M68 37.0L97 37.0 M166.0 37.0L166.0 90.0 M166.0 63.5A26.5 26.5 0 1 0 113 63.5A26.5 26.5 0 1 0 166.0 63.5 M193.0 10.0L193.0 90.0 M273.0 37.0L273.0 90.0 M273.0 63.5A26.5 26.5 0 1 0 220.0 63.5A26.5 26.5 0 1 0 273.0 63.5 M302.0 10.0L302.0 90.0 M332.0 37.0L305.0 65.5L334.0 90.0';
 const LOGO_ICICLES = [ // [path, x of the middle, y of the top, y of the tip]
@@ -7161,7 +7250,7 @@ function modalOn(on){
 }
 document.addEventListener('keydown', e => {
   if (e.key !== 'Tab') return;
-  const box = isShown($('#proThx')) ? $('#proThx') : !$('#homeAsk').hidden ? $('#homeAsk') : !$('#cloudDlg').hidden ? $('#cloudDlg') : isShown($('#acctPage')) ? $('#acctPage') : !$('#expScreen').hidden ? $('#expScreen') : null; if (!box) return;
+  const box = isShown($('#proThx')) ? $('#proThx') : !$('#dayDone').hidden ? $('#dayDone') : !$('#homeAsk').hidden ? $('#homeAsk') : !$('#cloudDlg').hidden ? $('#cloudDlg') : isShown($('#acctPage')) ? $('#acctPage') : !$('#expScreen').hidden ? $('#expScreen') : null; if (!box) return;
   const f = [...box.querySelectorAll('button:not([disabled]),input:not([tabindex="-1"]),a[href]')].filter(x => x.offsetParent && !x.closest('[inert]')); if (!f.length) return;
   const i = f.indexOf(document.activeElement);
   if (i < 0){ e.preventDefault(); f[0].focus(); return; }
@@ -7197,7 +7286,8 @@ $('#expScreen').addEventListener('keydown', e => { if (e.key === 'Escape'){ e.pr
 async function exportOne(){
   logLyrics('export');
   if (!S.cuts.length || S.exporting || exportGate) return;
-  if (filtLocked()){ acctOpen('filters'); return; }
+  if (filtLocked()){ lockOpen('filters'); return; }
+  if (!dayGate()) return;
   S.packN = 1; beginExport(); const TX = performance.now(); await fontsReady();
   try {
     const vcfg = await pickVideoConfig(), acfg = vcfg && await pickAudioConfig(S.song.buffer.sampleRate);
@@ -7217,6 +7307,7 @@ async function exportOne(){
     const rv = $('#resultVideo'); if (rv.src) URL.revokeObjectURL(rv.src); rv.src = URL.createObjectURL(lastBlob); rv.hidden = false;
     $('#result').hidden = false; postShow(); setT('#saveNote', ext === 'mp4' ? (isClip() ? 'save.mp4clip' : 'save.mp4reel') : 'save.webm');
     say('exp.ready', { mb: (lastBlob.size/1048576).toFixed(1) });
+    dayUsed();
   } catch(e){ diag('export : ' + (e && e.message || e)); if (e.message === 'annulé') say('exp.cancelled'); else say('exp.fail', { msg: e && e.message || e }); }
   endExport();
 }
@@ -7234,8 +7325,8 @@ function shareBroll(list){
 }
 /* pack: N different edits of the same passage, zipped */
 async function exportPack(){
-  if (ACCT && !acctPro()){ acctOpen('pack'); return; }
-  if (filtLocked()){ acctOpen('filters'); return; }
+  { const f = packFeat($('#packSel').value); if (!can(f)){ lockOpen(f, f === 'pack30' ? 'pack30' : 'pack'); return; } }
+  if (filtLocked()){ lockOpen('filters'); return; }
   logLyrics('pack');
   if (!S.cuts.length || S.exporting || exportGate) return;
   exportGate = true; try { await exportPackRun(); } finally { exportGate = false; }
@@ -7707,8 +7798,8 @@ function initPickers(){
   bindSeg('#stColor', v => { S.lyrics.style.color = v; styleChanged(); });
   bindSeg('#stPos', v => { S.lyrics.style.pos = v; styleChanged(); });
   bindSeg('#stDeco', v => { S.lyrics.style.deco = v; styleChanged(); });
-  bindSeg('#stSize', v => { if (!textFree('size', v)){ textPressed(); acctOpen('text'); return; } S.lyrics.style.size = v; styleChanged(); });
-  bindSeg('#stAnim', v => { if (!textFree('anim', v)){ textPressed(); acctOpen('text'); return; } S.lyrics.style.anim = v; hlView(); styleChanged();
+  bindSeg('#stSize', v => { if (!textFree('size', v)){ textPressed(); lockOpen('text'); return; } S.lyrics.style.size = v; styleChanged(); });
+  bindSeg('#stAnim', v => { if (!textFree('anim', v)){ textPressed(); lockOpen('text'); return; } S.lyrics.style.anim = v; hlView(); styleChanged();
     // karaoke: show a line half sung, so the effect is seen at once
     if (v === 'kara' && !S.playing && !S.exporting && timedLines().length) showFrame(lyricShowTime()); });
   const hp = $('#stHl');
@@ -7740,13 +7831,13 @@ function initPickers(){
 /* free plan (stalak.app only): text size M and « phrase entière »; the other sizes and appearances come with Stalak Pro */
 const TEXT_FREE = { size: 'm', anim: 'line' };
 let acctKnown = false;
-function textFree(k, v){ return !ACCT || acctPro() || v === TEXT_FREE[k]; }
+function textFree(k, v){ return !ACCT || can('text') || v === TEXT_FREE[k]; }
 function textPressed(){ $$('#stSize button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === S.lyrics.style.size))); $$('#stAnim button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === S.lyrics.style.anim))); }
 function textGate(){
   if (!ACCT) return;
   filtUI();   // the PRO marks on the filters follow the account
-  const pro = acctPro();
-  $$('#stSize button, #stAnim button').forEach(b => { const k = b.closest('#stSize') ? 'size' : 'anim'; b.classList.toggle('protag', !pro && b.dataset.v !== TEXT_FREE[k]); });
+  const pro = can('text');
+  planTags();
   // only once the account is known (a Pro member's style is not reset while the page is still asking)
   if (!pro && acctKnown && !S.exporting && (S.lyrics.style.size !== TEXT_FREE.size || S.lyrics.style.anim !== TEXT_FREE.anim)){
     S.lyrics.style.size = TEXT_FREE.size; S.lyrics.style.anim = TEXT_FREE.anim; textPressed(); hlView(); styleChanged();
@@ -7767,7 +7858,7 @@ $('#next1').onclick = () => go(2); $('#next2').onclick = () => go(3); $('#next3'
 function togglePlay(){ if (S.exporting) return; if (S.playing) stop(); else play(S.step === 4 ? startPoint() : null); }
 $('#playBtn').onclick = togglePlay;
 $('#songPlay').onclick = listenToggle;
-bindSeg('#kindSeg', k => { if (k === 'clip' && ACCT && !acctPro()){ kindUI(); acctOpen('clip'); return; } setKind(k); });
+bindSeg('#kindSeg', k => { if (k === 'clip' && !can('clip')){ kindUI(); lockOpen('clip'); return; } setKind(k); });
 // the end of the passage, one bar earlier or later (both modes: the same as the end handle)
 $('#endPrev').onclick = () => { if (!S.song) return; if (segMove('r', segEndBar() - 1)){ stop(true); rebuild(false); } };
 $('#endNext').onclick = () => { if (!S.song) return; if (segMove('r', segEndBar() + 1)){ stop(true); rebuild(false); } };
@@ -7780,6 +7871,10 @@ $('#filtRow').addEventListener('keydown', e => {
   const b = $('#filtRow .filt[data-v="' + ids[i] + '"]'); if (b){ b.focus(); b.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }
 });
 $('#packBtn').onclick = exportPack;
+$('#packSel').addEventListener('change', planTags);
+$('#dayGo').onclick = () => { dayDoneClose(); lockOpen('unlimited', 'daily'); };
+$('#dayClose').onclick = dayDoneClose;
+$('#dayDone').addEventListener('keydown', e => { if (e.key === 'Escape'){ e.preventDefault(); dayDoneClose(); } });
 $('#cancelBtn').onclick = () => { S.cancel = true; };
 $('#barsSel').onchange = e => { const v = e.target.value; if (v === 'all'){ S.nBars = 0; S.startBar = 0; } else S.nBars = +v; S.locks = []; stop(true); rebuild(false); };
 /* « Tester le rythme »: the passage with a beep on each beat (a higher one, ✂, where a bar starts: where the edit can cut),
@@ -8778,8 +8873,7 @@ function acctSync(){
   // signed in: the button opens the account menu; signed out: « Se connecter »
   b.setAttribute('aria-haspopup', u ? 'menu' : 'dialog'); b.setAttribute('aria-controls', u ? 'acctMenu' : 'acctPage');
   if (!u) acctMenu(false); else setT('#amProT', pro ? 'am.manage' : 'am.pro');
-  const cb = $('#kindSeg button[data-v="clip"]'); if (cb) cb.classList.toggle('protag', !pro);
-  const pb = $('#packBtn'); if (pb) pb.classList.toggle('protag', !pro);
+  planTags();   // the padlocks of the plans (App & montage)
   textGate();
   if (!pro && isClip() && !S.exporting) setKind('reel', true);
   if (pro && !acctWasPro && store.get('stalak:kind') === 'clip' && !isClip() && !S.song && !S.exporting) setKind('clip', true);
@@ -8985,7 +9079,7 @@ if (ACCT){
   $$('img[data-emo]').forEach(i => { i.src = '/emoji/' + i.dataset.emo + '.webp?v=2'; });
   $('#acctBtn').onclick = e => { if (!ACCT.state.user){ acctMenu(false); acctOpen(); return; } acctMenu(!amOpen, e.detail === 0); };
   amInit();
-  $('#outroPro').onclick = () => acctOpen('outro');
+  $('#outroPro').onclick = () => lockOpen('nologo', 'outro');
   $('#apBack').onclick = apBackBtn;
   $('#acctPage').addEventListener('keydown', e => { if (e.key === 'Escape'){ e.stopPropagation(); e.preventDefault(); apBackBtn(); } });
   window.addEventListener('popstate', e => {
@@ -9664,7 +9758,7 @@ async function clOpenRun(p){
 /* puts everything back as it was saved; returns true when a clip had to open as a TikTok / Reels (no Pro any more) */
 async function clApply(st, files){
   stop(true);
-  const set = st.set || {}, wantClip = set.kind === 'clip', clip = wantClip && (!ACCT || acctPro());
+  const set = st.set || {}, wantClip = set.kind === 'clip', clip = wantClip && can('clip');
   // the song (its beat grid as it was, with any change made by hand)
   if (st.song.demo) await setSong(await makeDemoSong(), _t('demo.song'), true);
   else { const f = files.get(st.song.file.id); await setSong(await songFromFile(f), st.song.name, false); S.song.file = f; }
