@@ -142,3 +142,40 @@
 .pr-why h4{margin:2px 0 4px;font:400 19px/1.2 var(--display);color:var(--sky-deep)}
 .pr-why p{margin:0;font-size:15px;line-height:1.5}
 @media (min-width:880px){ .pr-why ul{grid-template-columns:1fr 1fr} .pr-why-i:nth-child(2){border-top:0} }
+
+/* ---- Marketing & croissance : les 4 formules (Gratuit, Basic, Pro, Max), avec le bouton Mensuel / Annuel ----
+   Sans JavaScript : deux boutons radio et :has(). Mensuel par défaut (le ruban de Max dit « 3 € de plus que Pro »,
+   vrai au mois) ; en annuel, chaque carte montre son prix annuel et le ruban dit « 30 € de plus que Pro par an ». */
+.p4-cycle{position:relative;align-self:center;display:inline-flex;gap:4px;padding:5px;background:#fff;border:2.5px solid var(--ink);border-radius:99px;box-shadow:0 4px 0 var(--ink)}
+.p4-cycle input{position:absolute;opacity:0;width:1px;height:1px;margin:0;pointer-events:none}
+.p4-cycle label{display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:0 18px;border-radius:99px;font:700 15px/1.2 var(--body);color:var(--ink);cursor:pointer;white-space:nowrap}
+.p4-cycle label b{font-weight:700;font-size:12.5px;background:#d9f5e4;color:#0b5a33;border:1.5px solid var(--ink);border-radius:99px;padding:1px 7px}
+.p4-cycle input:checked + label{background:var(--sky-deep);color:#fff}
+.p4-cycle input:focus-visible + label{outline:3px solid var(--ink);outline-offset:2px}
+.p4 .is-y{display:none}
+.p4:has(#p4y:checked) .is-m{display:none}
+.p4:has(#p4y:checked) .pr-price.is-y{display:flex}
+.p4:has(#p4y:checked) .pr-pill.is-y,.p4:has(#p4y:checked) .pr-cta.is-y{display:inline-flex}
+.p4:has(#p4y:checked) .pr-bill.is-y,.p4:has(#p4y:checked) .pr-ribbon.is-y{display:block}
+.p4-plans{display:grid;grid-template-columns:minmax(0,1fr);gap:78px;padding-top:60px}
+/* a phone: the recommended plan first, the free one last */
+.p4-max{order:-3}.p4-pro{order:-2}.p4-basic{order:-1}
+.p4 .pr-ribbon{position:static;transform:none;animation:none;margin:0 0 10px;white-space:normal;text-align:center;line-height:1.15}
+.p4-free .pr-name{color:#3f5170}.p4-basic .pr-name{color:var(--sky-deep)}.p4-pro .pr-name{color:#0e3f8f}.p4-max .pr-name{color:#c8186a}
+.p4 .pr-cta.primary{margin-bottom:0}
+.p4-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.p4-table{min-width:600px}
+.p4-table th:first-child{width:34%}
+.p4-table thead th{font-size:19px}
+@media (min-width:700px){
+  .p4-plans{grid-template-columns:repeat(2,minmax(0,1fr));gap:84px 22px}
+  .p4-plan{order:0}
+}
+@media (min-width:1100px){
+  .p4-plans{grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;align-items:stretch;padding-top:70px}
+  .p4-plan{padding:74px 16px 22px}
+  .p4-max{top:-14px}
+  .p4 .pr-amt{font-size:46px}
+  .p4 .pr-feats li{font-size:14.5px}
+}
+@media (max-width:520px){ .p4-cycle label{padding:0 13px;font-size:14.5px} }
