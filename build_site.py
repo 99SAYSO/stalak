@@ -52,13 +52,14 @@ PAGE = {
   'fr': {
     'path': '/', 'locale': 'fr_FR',
     'title': 'Stalak — ton playback monté sur le rythme',
-    'desc': 'Monte ton playback sur le rythme : importe ton son et tes prises, Stalak coupe en gardant la synchro des lèvres. Gratuit, pour TikTok, Reels et Shorts.',
+    'desc': 'Monte ton playback sur le rythme : importe ton son et tes prises, Stalak coupe en gardant la synchro des lèvres. Gratuit, sans téléchargement ni inscription.',
     'ld': 'Stalak est un site de montage de playback (lip sync) : il coupe tes prises sur le rythme de ton son, garde la synchro des lèvres parfaite et exporte pour TikTok, Reels, Shorts et YouTube.',
     'about': """
     <h2 id="aboutT">Stalak, c’est quoi ?</h2>
-    <p><strong>Stalak</strong> est un site gratuit de <strong>montage de playback</strong> (lip sync), dans l’esprit de Triller :
+    <p><strong>Stalak</strong> est un site de <strong>montage de playback</strong> (lip sync), dans l’esprit de Triller :
     tu importes ton son et plusieurs vidéos où tu chantes dessus, et Stalak coupe sur le rythme en passant d’une prise à l’autre,
     avec une <strong>synchro des lèvres parfaite</strong>. Tu exportes pour <strong>TikTok, Instagram Reels, YouTube Shorts</strong> ou un clip <strong>YouTube</strong> en 16:9.</p>
+    <p><strong>Aucun téléchargement, aucune inscription : 3 étapes et c’est posté.</strong> Stalak marche dans ton navigateur, sur iPhone, Android ou ordinateur, gratuitement et sans créer de compte.</p>
     <p><strong>Comment faire un playback avec Stalak :</strong></p>
     <ul>
       <li>Importe ton son.</li>
@@ -71,8 +72,8 @@ PAGE = {
       <li>Paroles à l’écran en phrase entière ; mot par mot et karaoké avec Stalak Pro.</li>
       <li>Paroles écrites et calées automatiquement à partir de ta voix (Stalak Pro).</li>
       <li>Mode Clip 16:9 pour YouTube, avec effets : flash, zoom, secousse, ralenti… (Stalak Pro)</li>
-      <li>Packs de 5 à 30 vidéos différentes pour poster tous les jours (Stalak Pro).</li>
-      <li>Le montage se fait dans ton navigateur, sur iPhone, Android ou ordinateur : tes vidéos restent sur ton appareil, sauf si tu sauvegardes un projet en ligne ou demandes tes paroles automatiques (Stalak Pro).</li>
+      <li>Packs de 5 à 30 vidéos aux coupes différentes du même son (Creator Plus).</li>
+      <li>Le montage se fait dans ton navigateur, sur iPhone, Android ou ordinateur : tes vidéos restent sur ton appareil, sauf si tu sauvegardes un projet en ligne ou demandes tes paroles automatiques.</li>
     </ul>
   """,
     'legal': '<a href="/tarifs">Tarifs</a> · <a href="/alternative-triller">Alternative à Triller</a> · <a href="/conditions">Conditions</a> · <a href="/remboursement">Remboursement</a> · <a href="/confidentialite">Confidentialité</a> · <a href="/mentions-legales">Mentions légales</a>',
@@ -80,13 +81,14 @@ PAGE = {
   'en': {
     'path': '/en/', 'locale': 'en_US',
     'title': 'Stalak — your lip-sync video, cut to the beat',
-    'desc': 'Stalak cuts your lip-sync video to the beat: import your song and takes, the lips stay in sync. Free, for TikTok, Reels and Shorts, in your browser.',
+    'desc': 'Stalak cuts your lip-sync video to the beat: import your song and takes, the lips stay in sync. Free, with no download and no sign-up.',
     'ld': 'Stalak is a lip-sync video editor: it cuts your takes to the beat of your song, keeps the lip sync perfect and exports for TikTok, Reels, Shorts and YouTube.',
     'about': """
     <h2 id="aboutT">What is Stalak?</h2>
-    <p><strong>Stalak</strong> is a free <strong>lip-sync video editor</strong>, in the spirit of Triller:
+    <p><strong>Stalak</strong> is a <strong>lip-sync video editor</strong> in the spirit of Triller:
     you import your song and several videos of you singing along, and Stalak cuts on the beat, switching from one take to another,
     with <strong>perfect lip sync</strong>. You export for <strong>TikTok, Instagram Reels, YouTube Shorts</strong> or a 16:9 <strong>YouTube</strong> music video.</p>
+    <p><strong>No download, no sign-up: 3 steps and it’s posted.</strong> Stalak runs in your browser, on iPhone, Android or computer, for free and without creating an account.</p>
     <p><strong>How to make a lip-sync video with Stalak:</strong></p>
     <ul>
       <li>Import your song.</li>
@@ -99,8 +101,8 @@ PAGE = {
       <li>On-screen lyrics as whole sentences; word by word and karaoke with Stalak Pro.</li>
       <li>Lyrics written and synced automatically from your voice (Stalak Pro).</li>
       <li>16:9 music video mode for YouTube, with effects: flash, zoom, shake, slow-mo… (Stalak Pro)</li>
-      <li>Packs of 5 to 30 different videos to post every day (Stalak Pro).</li>
-      <li>Editing happens in your browser, on iPhone, Android or computer: your videos stay on your device, unless you save a project online or ask for automatic lyrics (Stalak Pro).</li>
+      <li>Packs of 5 to 30 differently cut videos from one song (Creator Plus).</li>
+      <li>Editing happens in your browser, on iPhone, Android or computer: your videos stay on your device, unless you save a project online or ask for automatic lyrics.</li>
     </ul>
   """,
     'legal': '<a href="/en/pricing">Pricing</a> · <a href="/en/triller-alternative">Triller alternative</a> · <a href="/en/terms">Terms</a> · <a href="/en/refunds">Refunds</a> · <a href="/en/privacy">Privacy</a> · <a href="/en/legal-notice">Legal notice</a>',

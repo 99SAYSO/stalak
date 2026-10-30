@@ -1,19 +1,23 @@
 # Stalak
 
-> Stalak (https://stalak.app) is a free web app that edits lip-sync videos for musicians and rappers. You import your song and several takes of you singing along; Stalak cuts between the takes on the beat, keeps the lip sync, adds the lyrics on screen and exports for TikTok, Instagram Reels, YouTube Shorts or a 16:9 YouTube video. Editing runs in the browser, on iPhone, Android or computer. French and English.
+> Stalak (https://stalak.app) is a web app that edits lip-sync videos for musicians and rappers. You import your song and several takes of you singing along; Stalak cuts between the takes on the beat, keeps the lip sync, adds the lyrics on screen and exports for TikTok, Instagram Reels, YouTube Shorts or a 16:9 YouTube video. Editing runs in the browser, on iPhone, Android or computer. French and English.
 
 Stalak is not related to the Dofus game creature of the same name.
 
 ## Main pages
 - [Stalak (French)](https://stalak.app/): the editor, with "Stalak, c'est quoi ?" explaining the product.
 - [Stalak (English)](https://stalak.app/en/): same app in English.
-- [Pricing (French)](https://stalak.app/tarifs): free plan and Stalak Pro (€9.99 a month or €79 a year).
+- [Pricing (French)](https://stalak.app/tarifs): Free, Stalak Pro and Creator Plus.
 - [Pricing (English)](https://stalak.app/en/pricing): same in English.
 - [Triller alternative (English)](https://stalak.app/en/triller-alternative): honest comparison of Stalak, Triller, CapCut and camrip for lip-sync videos, with sources and dates.
 - [Alternative à Triller (French)](https://stalak.app/alternative-triller): same comparison in French.
 
 ## Facts
-- Free plan: automatic editing on the beats, the words or every bar; on-screen lyrics; 9:16 export; a 3-second Stalak logo at the end.
-- Stalak Pro: no logo, 16:9 music video mode with effects, packs of 5, 10 or 30 different videos from one song, word-by-word and karaoke lyrics, automatic lyrics transcription, online project saving.
+- No download and no sign-up: Stalak runs in the browser. The free plan needs no account.
+- Free: unlimited videos; automatic editing on the beats, the words or every bar; on-screen lyrics as whole sentences (size M), pasted in and synced by tapping; 3 filters (Frost, 35 mm Film, Black & white); 9:16 export. Free videos carry a small moving watermark ("Clipped with stalak.app"); watching a ~30-second ad removes it from that video.
+- Stalak Pro ($7.99 a month or $49.99 a year): no ads, no watermark, 16:9 music video mode, premium effects, word-by-word and karaoke lyrics in every size, every filter, automatic lyrics.
+- Creator Plus ($14.99 a month or $99.99 a year): Pro plus a pack generator (5 to 30 differently cut videos from 3 takes or more), online saving and "Talk to a human" (live chat, or an email reply within 24 hours).
+- Prices are in US dollars; Paddle converts them and adds local taxes at checkout. Subscribers keep their price.
 - Payments are handled by Paddle. Full refund within 14 days.
+- Made by 99Sayso, a rapper from the Alaska collective, who coded Stalak for his own videos.
 - Contact: contact@stalak.app
