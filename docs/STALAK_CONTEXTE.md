@@ -47,7 +47,7 @@
 - Un mauvais mot de passe donne toujours le même message, pour ne pas révéler quels e-mails ont un compte.
 
 **Statut légal :**
-- Éditeur anonyme (particulier) pour l'instant. Une LLC américaine est prévue.
+- Éditeur anonyme (particulier) pour l'instant. **Le propriétaire crée une micro-entreprise française (décision du 30/10)** ; la LLC américaine n'est plus prévue. Plafond de la micro-entreprise : environ 83 600 € encaissés par an ; passage en société si Stalak dépasse.
 - Les vrais paiements attendent la structure. Les mentions légales et les conditions recevront le nom légal (option `--seller` du build).
 
 ## 3. Technique (où sont les choses)
