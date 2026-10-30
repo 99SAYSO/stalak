@@ -18,7 +18,7 @@ import { sniffImage } from './profile.js';
 
 export const PART_SIZE = 8 * 1024 * 1024;                 // 8 MiB: above R2's 5 MiB minimum, far below the 100 MB body limit
 export const MAX_FILE_BYTES = 4 * 1024 * 1024 * 1024;     // 4 GiB per file (512 parts)
-export const DEFAULT_QUOTA = LIMITS.pro.cloudBytes;       // 20 GiB in Pro, 100 GiB in Max (entitlements.js LIMITS)
+export const DEFAULT_QUOTA = LIMITS.creator.cloudBytes;   // 100 GiB in Creator Plus (entitlements.js LIMITS)
 export const MAX_FILES_PER_PROJECT = 64;
 export const FILE_ID = /^[A-Za-z0-9_-]{8,64}$/;
 const MEDIA_TYPE = /^(audio|video)\/[a-z0-9][a-z0-9.+-]{0,60}$/;
@@ -30,12 +30,11 @@ export const ORPHAN_MS = 2 * DAY;          // files whose project was never save
 export const CLEANUP_EVERY_MS = 6 * 3600e3;
 
 export const cloudAvailable = (env) => !!(env.MEDIA && typeof env.MEDIA.get === 'function');
-// The space of a plan (entitlements.js). CLOUD_QUOTA_BYTES (tests, or an emergency) replaces the Pro space; Max keeps
-// the same ratio (5 times Pro).
-export const quotaOf = (env, plan = 'pro') => {
+// The space of a plan (entitlements.js: only Creator Plus has one). CLOUD_QUOTA_BYTES (tests, or an emergency) replaces it.
+export const quotaOf = (env, plan = 'creator') => {
   const q = Number(env.CLOUD_QUOTA_BYTES);
   const base = (LIMITS[plan] && LIMITS[plan].cloudBytes) || 0;
-  if (Number.isFinite(q) && q > 0 && base) return Math.round(q * base / LIMITS.pro.cloudBytes);
+  if (Number.isFinite(q) && q > 0 && base) return q;
   return base;
 };
 const keyOf = (userId, projectId, fileId) => `u/${userId}/p/${projectId}/${fileId}`;
@@ -54,7 +53,7 @@ export async function usedBytes(env, userId) {
   return Number(r.n) || 0;
 }
 
-export async function storageInfo(env, userId, plan = 'pro') {
+export async function storageInfo(env, userId, plan = 'creator') {
   return { available: cloudAvailable(env), used: await usedBytes(env, userId), quota: quotaOf(env, plan), partSize: PART_SIZE, maxFile: MAX_FILE_BYTES };
 }
 

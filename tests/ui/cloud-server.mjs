@@ -3,7 +3,7 @@
 // Serves the built site (python3 build_site.py, in a copy of the repo) and runs the real Pages Function
 // (functions/api/[[path]].js) on an in-memory SQLite "D1" and an in-memory fake R2 bucket.
 // Test-only helpers under /__test/ (never part of the site):
-//   GET /__test/login?email=…&pro=1  -> creates the account if needed (Pro with pro=1, &plan=basic|pro|max, ex-Pro with pro=ex), signs in (cookie), redirects to ?to=
+//   GET /__test/login?email=…&pro=1  -> creates the account if needed (Creator Plus with pro=1, or &plan=pro; ex-subscriber with pro=ex), signs in (cookie), redirects to ?to=
 //   POST /__test/r2?on=0|1           -> removes / puts back the MEDIA binding (R2 not configured)
 //   POST /__test/quota?bytes=N       -> per-user quota (default: 20 GB)
 //   GET /__test/stats                -> {objects, uploads, files, projects}
@@ -24,9 +24,9 @@ const port = Number(process.argv[3] || 8790);
 const origin = `http://localhost:${port}`;
 const r2 = createR2();
 const env = { DB: createD1(join(root, 'migrations')), MEDIA: r2, APP_ORIGIN: origin, DEV_MODE: '1', PADDLE_ENV: 'sandbox', PADDLE_CLIENT_TOKEN: 'test_x',
-  // the offer of 30/10 (entitlements.js): Max yearly is left without a price, to see « Bientôt »
-  PADDLE_PRICE_BASIC_MONTH: 'pri_basic_m', PADDLE_PRICE_BASIC_YEAR: 'pri_basic_y', PADDLE_PRICE_PRO_MONTH: 'pri_pro_m', PADDLE_PRICE_PRO_YEAR: 'pri_pro_y',
-  PADDLE_PRICE_MAX_MONTH: 'pri_max_m', PADDLE_API_KEY: 'pdl_test_key_not_real' };
+  // the offer of 30/10, evening (entitlements.js): Creator Plus yearly is left without a price, to see « Bientôt »
+  PADDLE_PRICE_PRO_MONTH: 'pri_pro_m', PADDLE_PRICE_PRO_YEAR: 'pri_pro_y', PADDLE_PRICE_CREATOR_MONTH: 'pri_creator_m',
+  PADDLE_API_KEY: 'pdl_test_key_not_real' };
 // Paddle, imitated: the preview of a change of plan (23.10 € now for a bigger plan) and the change itself
 const realFetch = globalThis.fetch;
 globalThis.fetch = async (url, init = {}) => {
@@ -57,10 +57,10 @@ async function testRoute(req, url, res) {
       u = { id };
     }
     if (q.get('pro') === '1') {
-      // &plan=basic|pro|max (offer of 30/10); without it, Pro at the first offer's price
-      const plan = ['basic', 'pro', 'max'].includes(q.get('plan')) ? q.get('plan') : null;
+      // &plan=pro|creator (offer of 30/10, evening); without it, Creator Plus (everything: online saving, « humain »)
+      const plan = q.get('plan') === 'pro' ? 'pro' : 'creator';
       env.DB.raw.prepare(`INSERT OR REPLACE INTO subscriptions (id, user_id, customer_id, status, price_id, current_period_end, last_event_at, updated_at, plan)
-        VALUES (?, ?, ?, 'active', ?, ?, ?, ?, ?)`).run('sub_' + u.id, u.id, 'ctm_' + u.id, plan ? 'pri_' + plan + '_m' : 'pri_month', now + 30 * 864e5, now, now, plan);
+        VALUES (?, ?, ?, 'active', ?, ?, ?, ?, ?)`).run('sub_' + u.id, u.id, 'ctm_' + u.id, 'pri_' + plan + '_m', now + 30 * 864e5, now, now, plan);
     } else if (q.get('pro') === 'ex') {
       // Stalak Pro has ended (the subscription stays, canceled): an ex-Pro
       env.DB.raw.prepare(`INSERT OR REPLACE INTO subscriptions (id, user_id, customer_id, status, price_id, current_period_end, last_event_at, updated_at)

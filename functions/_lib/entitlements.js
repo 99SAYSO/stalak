@@ -1,35 +1,41 @@
 // What each plan unlocks. The server is the source of truth; the client only reads this (GET /api/me → entitlements).
 import { HttpError } from './http.js';
 
-// Offer of 30/10/2026: Gratuit (1 video a day, account needed) + Basic / Pro / Max (STALAK_CONTEXTE.md, section 2).
+// Offer of 30/10/2026 (evening), STALAK_CONTEXTE.md section 2: Gratuit (no account needed, unlimited, watermark that a
+// rewarded ad removes for one video) + Stalak Pro + Stalak Creator Plus.
 
 // The plans, from the smallest. A plan has everything the plans before it have.
-export const PLANS = ['free', 'basic', 'pro', 'max'];
+export const PLANS = ['free', 'pro', 'creator'];
+// plans of the earlier offers of 30/10 (only test subscriptions): Basic counts as Pro, Max as Creator Plus
+const OLD_PLANS = { basic: 'pro', max: 'creator' };
+export const normPlan = (p) => (PLANS.includes(p) ? p : OLD_PLANS[p] || null);
 
-// THE table: each feature → the smallest plan that unlocks it. The page asks acctHas('<feature>'), the server
-// requirePlan(env, user, '<feature>'). Add a feature here, nowhere else.
+// THE table (contract App / Comptes, docs/STATUS.md): each feature → the smallest plan that unlocks it. The page asks
+// acctHas('<feature>'), the server requirePlan(env, user, '<feature>'). Add a feature here, nowhere else.
 export const FEATURES = Object.freeze({
-  unlimited: 'basic',   // videos without the daily limit of the free plan
-  nologo: 'basic',      // no 3-second Stalak logo at the end
-  text: 'basic',        // every size and appearance of the lyrics on screen
-  filters: 'pro',       // every video filter (the free and Basic plans keep 3)
+  nowm: 'pro',          // no watermark, no ad
   clip: 'pro',          // Clip mode, 16:9
-  packs: 'pro',         // packs of 5 and 10 videos (pack5 / pack10: the same, by size, as the page asks)
-  pack5: 'pro',
-  pack10: 'pro',
+  fx: 'pro',            // premium effects
+  text: 'pro',          // lyrics word by word, karaoke, every size
+  filters: 'pro',       // every video filter (the free plan keeps 3)
   lyrics: 'pro',        // automatic lyrics (Workers AI)
-  cloud: 'pro',         // online saving (R2) and the Galerie
-  pack30: 'max',        // packs of 30 videos
-  human: 'max',         // « Parler à un humain »
+  pack5: 'creator',     // the pack generator: 5, 10 or 30 videos with different cuts
+  pack10: 'creator',
+  pack30: 'creator',
+  packs: 'creator',
+  cloud: 'creator',     // online saving (R2) and the Galerie
+  human: 'creator',     // « Parler à un humain »
+  // names of the Basic / Pro / Max offer, still asked by pages of that time (same meaning in the new offer)
+  nologo: 'pro',
+  unlimited: 'free',
 });
 
-// Numbers per plan. null = no limit.
+// Numbers per plan.
 const GB = 1024 * 1024 * 1024;
 export const LIMITS = Object.freeze({
-  free: Object.freeze({ videosPerDay: 1, lyricsPerDay: 0, lyricsMinutesPerDay: 0, cloudBytes: 0 }),
-  basic: Object.freeze({ videosPerDay: null, lyricsPerDay: 0, lyricsMinutesPerDay: 0, cloudBytes: 0 }),
-  pro: Object.freeze({ videosPerDay: null, lyricsPerDay: 20, lyricsMinutesPerDay: 90, cloudBytes: 20 * GB }),
-  max: Object.freeze({ videosPerDay: null, lyricsPerDay: 60, lyricsMinutesPerDay: 270, cloudBytes: 100 * GB }),
+  free: Object.freeze({ lyricsPerDay: 0, lyricsMinutesPerDay: 0, cloudBytes: 0 }),
+  pro: Object.freeze({ lyricsPerDay: 20, lyricsMinutesPerDay: 90, cloudBytes: 0 }),
+  creator: Object.freeze({ lyricsPerDay: 60, lyricsMinutesPerDay: 270, cloudBytes: 100 * GB }),
 });
 
 export const isPlan = (p) => PLANS.includes(p);
@@ -44,7 +50,7 @@ export function entitlementsOf(plan) {
     features: featuresOf(p),
     limits: { ...LIMITS[p] },
     // older names, still read by pages opened before this version
-    outro: !planHas(p, 'nologo'), cloudSave: planHas(p, 'cloud'), clipMode: planHas(p, 'clip'),
+    outro: false, cloudSave: planHas(p, 'cloud'), clipMode: planHas(p, 'clip'),
     autoLyrics: planHas(p, 'lyrics'), packs: planHas(p, 'packs'),
   };
 }
@@ -63,18 +69,28 @@ export function subscriptionActive(sub, now = Date.now()) {
 // older name (dashboard, support): « this subscription gives a paid plan now »
 export const subscriptionGivesPro = subscriptionActive;
 
-// Paddle prices → plan and billing interval. The 6 prices of the offer are set in wrangler.toml; the 2 prices of the
-// first offer (Stalak Pro 9.99 € / 79 €) stay Pro: a subscriber keeps his price.
-export function priceTable(env) {
+// Paddle prices → plan and billing interval. The 4 prices on sale (wrangler.toml: PADDLE_PRICE_PRO_MONTH / _YEAR,
+// PADDLE_PRICE_CREATOR_MONTH / _YEAR, in dollars) and the older prices still known, so their subscribers keep their price:
+// PADDLE_PRICE_MONTH / _YEAR (first Stalak Pro, euros) and PADDLE_PRICES_OLD = "pri_…:pro:month,pri_…:creator:year,…"
+// (Basic and Pro in euros → pro, Max → creator). Only the 4 prices on sale can be bought or chosen in a change of plan.
+export function salePrices(env) {
   const t = {};
-  const add = (id, plan, interval) => { if (id) t[id] = { plan, interval }; };
-  add(env.PADDLE_PRICE_MONTH, 'pro', 'month');
-  add(env.PADDLE_PRICE_YEAR, 'pro', 'year');
-  for (const plan of ['basic', 'pro', 'max']) {
-    add(env[`PADDLE_PRICE_${plan.toUpperCase()}_MONTH`], plan, 'month');
-    add(env[`PADDLE_PRICE_${plan.toUpperCase()}_YEAR`], plan, 'year');
+  for (const plan of ['pro', 'creator']) for (const iv of ['month', 'year']) {
+    const id = env[`PADDLE_PRICE_${plan.toUpperCase()}_${iv.toUpperCase()}`];
+    if (id) t[id] = { plan, interval: iv };
   }
   return t;
+}
+export function priceTable(env) {
+  const t = {};
+  const add = (id, plan, interval) => { if (id && !t[id]) t[id] = { plan, interval }; };
+  add(env.PADDLE_PRICE_MONTH, 'pro', 'month');
+  add(env.PADDLE_PRICE_YEAR, 'pro', 'year');
+  for (const part of String(env.PADDLE_PRICES_OLD || '').split(',')) {
+    const [id, plan, iv] = part.trim().split(':');
+    if (/^pri_\w+$/.test(id || '') && normPlan(plan) && normPlan(plan) !== 'free' && (iv === 'month' || iv === 'year')) add(id, normPlan(plan), iv);
+  }
+  return Object.assign(t, salePrices(env));
 }
 export function planOfPrice(env, priceId) {
   const p = priceId && priceTable(env)[priceId];
@@ -88,9 +104,11 @@ export function intervalOf(env, priceId) {
 // (no plan, old price) were Stalak Pro.
 export function planOfSub(env, sub, now = Date.now()) {
   if (!sub) return 'free';
-  const plan = isPlan(sub.plan) && sub.plan !== 'free' ? sub.plan : planOfPrice(env, sub.price_id) || 'pro';
+  const stored = normPlan(sub.plan);
+  const plan = stored && stored !== 'free' ? stored : planOfPrice(env, sub.price_id) || 'pro';
   // moved to a smaller plan: the bigger one stays until the end of the period already paid (paddle.js changePlan)
-  if (isPlan(sub.keep_plan) && sub.keep_until > now && rank(sub.keep_plan) > rank(plan)) return sub.keep_plan;
+  const keep = normPlan(sub.keep_plan);
+  if (keep && sub.keep_until > now && rank(keep) > rank(plan)) return keep;
   return plan;
 }
 export const planRank = rank;
@@ -126,13 +144,13 @@ export async function entitlementsFor(env, user) {
   };
 }
 
-// 403 pro_required (the name the pages already know) with the plan needed: {need: 'basic' | 'pro' | 'max'}.
+// 403 pro_required (the name the pages already know) with the plan needed: {need: 'pro' | 'creator'}.
 // Returns the user's plan, for the limits that depend on it.
 export async function requirePlan(env, user, feature) {
   if (!FEATURES[feature]) throw new Error('unknown feature ' + feature);
   const { plan } = await planFor(env, user);
   if (!planHas(plan, feature)) {
-    throw new HttpError(403, 'pro_required', `This feature needs Stalak ${FEATURES[feature][0].toUpperCase() + FEATURES[feature].slice(1)}.`,
+    throw new HttpError(403, 'pro_required', `This feature needs Stalak ${FEATURES[feature] === 'creator' ? 'Creator Plus' : 'Pro'}.`,
       { need: FEATURES[feature], plan });
   }
   return plan;

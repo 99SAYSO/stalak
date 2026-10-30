@@ -1,17 +1,16 @@
-"""UI test of the offer of 30/10/2026 (domaine Comptes, paiements & serveur), Python Playwright (chromium):
-the plans page (Gratuit + Basic / Pro / Max, monthly / yearly), the free video of the day and its reminder box.
+"""UI test of the offer of 30/10/2026, evening (domaine Comptes, paiements & serveur), Python Playwright (chromium):
+the plans page (Gratuit + Stalak Pro + Stalak Creator Plus, monthly / yearly, in dollars) and the change of plan.
 
     python3 /abs/path/tests/ui/plans_ui.py <base url of tests/ui/cloud-server.mjs> [folder for screenshots]
 
 Build the site first (python3 build_site.py …), then run node tests/ui/cloud-server.mjs <repo>/public <port> (a fresh one per
-run): the real Functions on node:sqlite. Accounts come from /__test/login?email=…&pro=1&plan=basic|pro|max (or pro=0).
-In that server, Max yearly has no Paddle price: its button must say « Bientôt ».
-Checks: signed out, FR, 390 px: 4 cards (Max first on a phone), prices, the yearly switch (Basic 3,25 €/mois, 39 € a year,
-« Économise 35 % »), a plan asks to sign in, the free video needs an account; free, EN, 1280 px: 4 cards side by side
-(Gratuit → Max), 1 free video a day (the server refuses the 2nd; App's export calls the same route), the account page says
-so, the reminder box is saved; Basic at 390 px: unlimited exports, no reminder box; Pro at
-1280 px: « Ta formule », « Passer à Max » shows today's price before confirming, Basic starts at the renewal; Max: the perks list with « Parler à un humain »; no horizontal
-scroll; no page error. Run this file by absolute path from a clean directory."""
+run): the real Functions on node:sqlite, Paddle imitated. Accounts come from /__test/login?email=…&pro=1[&plan=pro] (or pro=0).
+In that server, Creator Plus yearly has no Paddle price: its button must say « Bientôt ».
+Checks: signed out, FR, 390 px: 3 cards (Creator Plus first on a phone), dollar prices, the yearly switch (Pro 4,16 $/mois,
+49,99 $ a year, « Économise 48 % »), a plan asks to sign in; free, EN, 1280 px: 3 cards side by side (Free → Creator Plus), no
+reminder box any more; Pro at 1280 px: « Ta formule », « Passer à Creator Plus » shows today's price before confirming; Creator
+Plus at 390 px EN: its perks (60 a day, 100 GB, Talk to a human), Pro starts at the renewal; sign-up without the reminder box;
+no horizontal scroll; no page error. Run this file by absolute path from a clean directory."""
 import asyncio, json, os, sys, urllib.request
 from playwright.async_api import async_playwright
 
@@ -109,122 +108,91 @@ async def main():
         ctx, pg, err = await open_page(browser, 'fr', 390, 844)
         await plans_page(pg)
         c = await cards(pg)
-        check('fr-390: 4 cards, Max first on a phone', [x['plan'] for x in c] == ['max', 'pro', 'basic', 'free'], c)
+        check('fr-390: 3 cards, Creator Plus first on a phone', [x['plan'] for x in c] == ['creator', 'pro', 'free'], c)
         check('fr-390: one column', max(x['x'] for x in c) - min(x['x'] for x in c) <= 2, c)
         by = {x['plan']: x for x in c}
-        check('fr-390: monthly prices', by['basic']['amt'] == '4,99 €' and by['pro']['amt'] == '10,99 €' and by['max']['amt'] == '13,99 €', [x['amt'] for x in c])
-        rib = await pg.inner_text('#plMaxRib')
-        check('fr-390: Max put forward: « Seulement 3 € de plus que Pro »', 'Seulement 3' in rib and 'Pro' in rib, rib)
+        check('fr-390: monthly prices in dollars', by['pro']['amt'] == '7,99 $' and by['creator']['amt'] == '14,99 $', [x['amt'] for x in c])
+        rib = await pg.inner_text('#apBuy .pl-creator .pl-ribbon')
+        check('fr-390: Creator Plus put forward', rib == 'Tout Stalak', rib)
+        save = await pg.inner_text('#plIntSave')
+        check('fr-390: the yearly switch says the biggest saving', '48' in save, save)
         await shot(pg, 'plans-fr-390')
         await pg.tap('#plInt [data-int=year]')
         await pg.wait_for_timeout(200)
         c = await cards(pg); by = {x['plan']: x for x in c}
-        check('fr-390 yearly: Basic 3,25 €/mois, 39 € once a year, saves 35 %', by['basic']['amt'] == '3,25 €' and '39 €' in by['basic']['bill'] and '35' in by['basic']['pill'], by['basic'])
-        check('fr-390 yearly: Pro 9,08 €/mois (109 € a year)', by['pro']['amt'] == '9,08 €' and '109 €' in by['pro']['bill'], by['pro'])
-        check('fr-390 yearly: a plan without a price says « Bientôt »', by['max']['btn'] == 'Bientôt' and by['max']['off'], by['max'])
+        check('fr-390 yearly: Pro 4,16 $/mois, 49,99 $ once a year, saves 48 %', by['pro']['amt'] == '4,16 $' and '49,99 $' in by['pro']['bill'] and '48' in by['pro']['pill'], by['pro'])
+        check('fr-390 yearly: a plan without a price says « Bientôt »', by['creator']['btn'] == 'Bientôt' and by['creator']['off'], by['creator'])
         check('fr-390: no horizontal scroll (the comparison scrolls inside its card)', await no_scroll(pg))
         await shot(pg, 'plans-year-fr-390')
         await pg.tap('#plInt [data-int=month]')
-        await pg.tap('#apBuy [data-buy=basic]')
+        await pg.tap('#apBuy [data-buy=pro]')
         await pg.wait_for_selector('#apLogin:not([hidden])', timeout=5000)
         check('fr-390 signed out: a plan asks to sign in first', True)
-        # (signed out, an export opens « Créer un compte »: App's side, acctOpen('daily'), tests/ui/formules_ui.py)
-        r = await pg.evaluate("() => fetch('/api/videos/claim', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{\"video\":\"vid_anon0001\"}' }).then(r => r.status)")
-        check('fr-390 signed out: the free video needs an account (401)', r == 401, r)
         check('fr-390: no page error', not err, err)
         await ctx.close()
 
-        # 2. free account, EN, computer: 4 cards in a row; the free video of the day
+        # 2. free account, EN, computer: 3 cards in a row; no reminder box any more
         ctx, pg, err = await open_page(browser, 'en', 1280, 900, 'free-plan@example.com', 'pro=0')
         await plans_page(pg)
         c = await cards(pg)
         row = sorted(c, key=lambda x: x['x'])
-        check('en-1280: 4 cards side by side, Free → Max', [x['plan'] for x in row] == ['free', 'basic', 'pro', 'max'] and len({x['x'] for x in c}) == 4, row)
-        check('en-1280: « Your current plan » on Free', 'current plan' in {x['plan']: x for x in c}['free']['pill'], c)
+        check('en-1280: 3 cards side by side, Free → Creator Plus', [x['plan'] for x in row] == ['free', 'pro', 'creator'] and len({x['x'] for x in c}) == 3, row)
+        by = {x['plan']: x for x in c}
+        check('en-1280: dollar prices', by['pro']['amt'] == '$7.99' and by['creator']['amt'] == '$14.99', [x['amt'] for x in c])
+        check('en-1280: « Your current plan » on Free', 'current plan' in by['free']['pill'], c)
         check('en-1280: no horizontal scroll', await no_scroll(pg))
         await shot(pg, 'plans-en-1280')
         await shot(pg, 'plans-en-1280-full', True)
-        await close_pages(pg)
-        # the « jeton du jour » (App calls acctUseVideo() after an export: the same request)
-        claim = "v => fetch('/api/videos/claim', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ video: v }) }).then(r => r.status)"
-        s1 = await pg.evaluate(claim, 'vid_first001')
-        s2 = await pg.evaluate(claim, 'vid_second02')
-        check('en-1280 free: 1 video a day (the 2nd is refused by the server)', s1 == 200 and s2 == 429, (s1, s2))
-        await pg.reload(wait_until='load')
-        await pg.wait_for_function("() => !document.querySelector('#acctBtn').hidden", timeout=15000)
         await pg.evaluate("() => { location.hash = '#compte'; }")
         await pg.wait_for_selector('#apAccount:not([hidden])', timeout=8000)
-        fv = await pg.inner_text('#apFv')
-        check('en-1280 free: the account page says the video of the day is done', 'done' in fv and 'midnight' in fv, fv)
-        check('en-1280 free: the reminder box is there, not ticked', await pg.is_visible('#apRemind') and not await pg.is_checked('#apRemind'))
-        await pg.click('#apRemind')
-        await pg.wait_for_timeout(800)
-        me = json.loads(await pg.evaluate("() => fetch('/api/me').then(r => r.text())"))
-        check('en-1280 free: the reminder box is saved', me['user']['reminders'] is True, me['user'])
-        await shot(pg, 'account-free-en-1280')
+        check('en-1280 free: no free-video line nor reminder box', await pg.evaluate("() => !document.querySelector('#apRemind') && !document.querySelector('#apFv')"))
+        sub = await pg.inner_text('#apSub')
+        check('en-1280 free: « See the plans »', 'See the plans' in sub, sub)
         check('en-1280 free: no page error', not err, err)
         await ctx.close()
 
-        # 3. Basic on a phone: unlimited exports, no logo, no reminder box
-        ctx, pg, err = await open_page(browser, 'fr', 390, 844, 'basic-plan@example.com', 'pro=1&plan=basic')
-        await demo_ready(pg)
-        a = await export_once(pg); b = await export_once(pg)
-        check('fr-390 Basic: two exports in a row, no limit', a['result'] and b['result'] and not b['plans'], (a, b))
-        # (the text sizes for Basic, and the tags BASIC / PRO / MAX: App's side, branch app/formules)
-        check('fr-390 Basic: Clip still tagged PRO', await pg.evaluate("() => document.querySelector('#kindSeg button[data-v=clip]').classList.contains('protag')"))
-        await pg.evaluate("() => { location.hash = '#compte'; }")
-        await pg.wait_for_selector('#apAccount:not([hidden])', timeout=8000)
-        sub = await pg.inner_text('#apSubT')
-        check('fr-390 Basic: the account says « Stalak Basic »', 'Stalak Basic' in sub, sub)
-        check('fr-390 Basic: no reminder box, no free-video line', not await pg.is_visible('#apRemind') and not await pg.is_visible('#apFv'))
-        check('fr-390 Basic: no horizontal scroll', await no_scroll(pg))
-        check('fr-390 Basic: no page error', not err, err)
-        await ctx.close()
-
-        # 4. Pro on a computer: its plan, and the switch to Max asks to confirm first
+        # 3. Pro on a computer: its plan, and the move to Creator Plus shows today's price before confirming
         ctx, pg, err = await open_page(browser, 'fr', 1280, 900, 'pro-plan@example.com', 'pro=1&plan=pro')
         await plans_page(pg)
         c = await cards(pg); by = {x['plan']: x for x in c}
         check('fr-1280 Pro: « Ta formule » on Pro', by['pro']['btn'] == 'Ta formule' and by['pro']['off'], by['pro'])
-        check('fr-1280 Pro: « Passer à Max »', by['max']['btn'] == 'Passer à Max', by['max'])
+        check('fr-1280 Pro: « Passer à Creator Plus »', by['creator']['btn'] == 'Passer à Creator Plus', by['creator'])
         t = await pg.inner_text('#apProT')
         check('fr-1280 Pro: title « Tu es en Stalak Pro »', t == 'Tu es en Stalak Pro', t)
         perks = await pg.inner_text('#apPerks')
-        check('fr-1280 Pro: its perks (20 a day, 20 Go), not Max', '20 fois par jour' in perks and '20 Go' in perks and 'humain' not in perks, perks)
-        await pg.click('#apBuy [data-buy=max]')
-        await pg.wait_for_function("() => /23,10/.test(document.querySelector('.pl-max [data-pl=note]').textContent)", timeout=8000)
-        b = await pg.inner_text('#apBuy [data-buy=max]')
-        note = await pg.inner_text('.pl-max [data-pl=note]')
-        check('fr-1280 Pro: a first tap shows the price of today and asks to confirm', b == 'Confirmer : passer à Max' and '23,10' in note and 'prorata' in note, (b, note))
-        await pg.click('#apBuy [data-buy=basic]')
-        await pg.wait_for_function("() => /renouvellement/.test(document.querySelector('.pl-basic [data-pl=note]').textContent)", timeout=8000)
-        note = await pg.inner_text('.pl-basic [data-pl=note]')
-        check('fr-1280 Pro: a smaller plan starts at the renewal, nothing refunded', 'rien n’est remboursé' in note and 'Pro reste actif' in note, note)
-        await pg.click('#apBuy [data-buy=basic]')
-        await pg.wait_for_function("() => /commence le/.test(document.querySelector('#apMsgT').textContent)", timeout=8000)
-        check('fr-1280 Pro: the change to Basic is planned for the renewal', 'Basic commence le' in await pg.inner_text('#apMsgT'))
+        check('fr-1280 Pro: its perks (no watermark, 20 a day), not Creator Plus', 'filigrane' in perks and '20 fois par jour' in perks and 'humain' not in perks and 'Go' not in perks, perks)
+        await pg.click('#apBuy [data-buy=creator]')
+        await pg.wait_for_function("() => /23,10/.test(document.querySelector('.pl-creator [data-pl=note]').textContent)", timeout=8000)
+        b = await pg.inner_text('#apBuy [data-buy=creator]')
+        note = await pg.inner_text('.pl-creator [data-pl=note]')
+        check('fr-1280 Pro: a first tap shows the price of today and asks to confirm', b == 'Confirmer : passer à Creator Plus' and '23,10' in note and 'prorata' in note, (b, note))
         await shot(pg, 'plans-pro-fr-1280')
         check('fr-1280 Pro: no page error', not err, err)
         await ctx.close()
 
-        # 5. Max on a phone, EN: « Talk to a human » in its perks; the menu says « Manage my subscription »
-        ctx, pg, err = await open_page(browser, 'en', 390, 844, 'max-plan@example.com', 'pro=1&plan=max')
+        # 4. Creator Plus on a phone, EN: its perks; Pro starts at the renewal
+        ctx, pg, err = await open_page(browser, 'en', 390, 844, 'creator-plan@example.com', 'pro=1&plan=creator')
         await plans_page(pg)
         perks = await pg.inner_text('#apPerks')
-        check('en-390 Max: perks with 60 a day, 100 GB, Talk to a human', '60 times' in perks and '100 GB' in perks and 'Talk to a human' in perks, perks)
-        check('en-390 Max: no horizontal scroll', await no_scroll(pg))
-        await shot(pg, 'plans-max-en-390')
-        check('en-390 Max: no page error', not err, err)
+        check('en-390 Creator Plus: perks with 60 a day, 100 GB, Talk to a human', '60 times' in perks and '100 GB' in perks and 'Talk to a human' in perks, perks)
+        await pg.tap('#apBuy [data-buy=pro]')
+        await pg.wait_for_function("() => /renewal/.test(document.querySelector('.pl-pro [data-pl=note]').textContent)", timeout=8000)
+        note = await pg.inner_text('.pl-pro [data-pl=note]')
+        check('en-390 Creator Plus: Pro starts at the renewal, nothing refunded', 'nothing is refunded' in note and 'Creator Plus stays on' in note, note)
+        await pg.tap('#apBuy [data-buy=pro]')
+        await pg.wait_for_function("() => /starts on/.test(document.querySelector('#apMsgT').textContent)", timeout=8000)
+        check('en-390 Creator Plus: the move to Pro is planned for the renewal', 'Stalak Pro starts on' in await pg.inner_text('#apMsgT'))
+        check('en-390 Creator Plus: no horizontal scroll', await no_scroll(pg))
+        await shot(pg, 'plans-creator-en-390')
+        check('en-390 Creator Plus: no page error', not err, err)
         await ctx.close()
 
-        # 6. the sign-up form has the reminder box (not ticked)
+        # 5. the sign-up form: no reminder box any more
         ctx, pg, err = await open_page(browser, 'fr', 390, 844)
         await pg.evaluate("() => { location.hash = '#inscription'; }")
         await pg.wait_for_selector('#apUpF:not([hidden])', timeout=8000)
-        lbl = await pg.inner_text('label[for=apUpRemind]')
-        check('fr-390 sign-up: the reminder box, not ticked, with the words of the conditions', not await pg.is_checked('#apUpRemind') and lbl.strip() == 'Me prévenir par e-mail quand ma vidéo du jour est disponible', lbl)
+        check('fr-390 sign-up: no reminder box', await pg.evaluate("() => !document.querySelector('#apUpRemind')"))
         check('fr-390 sign-up: no horizontal scroll', await no_scroll(pg))
-        await shot(pg, 'signup-fr-390')
         await ctx.close()
         await browser.close()
 

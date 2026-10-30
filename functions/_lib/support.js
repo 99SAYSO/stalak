@@ -1,4 +1,4 @@
-// « Parler à un humain » (the help ice cube), a Stalak Max feature (offer of 30/10): a support ticket the owner answers from the dashboard
+// « Parler à un humain » (the help ice cube), a Stalak Creator Plus feature (offer of 30/10): a support ticket the owner answers from the dashboard
 // (admin.js). Starting a conversation or writing in it needs a signed-in Pro account (the conversation must be this
 // account's). Reading it needs only the ticket's token: someone who is no longer Pro keeps the answers already received.
 // The page holds the ticket id and a random token (only its SHA-256 is stored) and asks for news every few seconds while
@@ -20,7 +20,10 @@ export const MESSAGE_MAX = 2000;
 export const CONTEXT_MAX = 3000;
 export const AVAILABLE_MS = 180e3;        // the dashboard said « I'm here » less than 3 minutes ago
 export const USER_LIVE_MS = 15e3;         // the visitor's page asked for news less than 15 s ago (it asks every 5 s): he sees it live
-export const CATCH_UP_MS = 20e3;          // an answer the visitor's page has not fetched after 20 s goes by e-mail
+// an answer the visitor's page has not fetched after 12 s goes by e-mail: the page asks every 5 s, so 2 missed asks = gone.
+// (It was 20 s: with the dashboard's 10-s refresh, a visitor who left just before the answer got it after ~30 s, and
+// tests/ui/support_ui.py ran out of time on slower machines.)
+export const CATCH_UP_MS = 12e3;
 export const OWNER_MAIL_EVERY_MS = 15 * 60e3; // at most one e-mail to the owner per ticket every 15 minutes
 export const OWNER_MAILS_PER_DAY = 50;
 export const TICKETS_PER_DAY = 200;       // for the whole site
@@ -94,9 +97,9 @@ export function ownerEmail(env, ticket, text) {
   const who = ticket.email || 'visiteur sans e-mail';
   const body = String(text).slice(0, 1000);
   return {
-    subject: `Stalak Max : nouveau message (${who})`,
-    text: `Nouveau message d’un abonné Stalak Max, de ${who} :\n\n${body}\n\nRépondre : ${link}`,
-    html: page('fr', `<p>Nouveau message d’un abonné Stalak Max, de <b>${esc(who)}</b> :</p><div style="white-space:pre-wrap;border-left:3px solid #2a7de1;padding:4px 12px;margin:12px 0">${esc(body)}</div><p><a href="${esc(link)}">Répondre depuis le tableau de bord</a></p>`),
+    subject: `Stalak Creator Plus : nouveau message (${who})`,
+    text: `Nouveau message d’un abonné Stalak Creator Plus, de ${who} :\n\n${body}\n\nRépondre : ${link}`,
+    html: page('fr', `<p>Nouveau message d’un abonné Stalak Creator Plus, de <b>${esc(who)}</b> :</p><div style="white-space:pre-wrap;border-left:3px solid #2a7de1;padding:4px 12px;margin:12px 0">${esc(body)}</div><p><a href="${esc(link)}">Répondre depuis le tableau de bord</a></p>`),
   };
 }
 
@@ -113,7 +116,7 @@ async function tellOwner(env, ticket, text, ctx) {
 
 // A reply from the owner goes by e-mail (when an address is known) unless the visitor's page sees it:
 //   mode 'yes' → now; 'no' → never (emailed_at = 0); 'auto' → now if the visitor is away, else catchUpReplies() sends it
-//   when his page has not fetched it within 20 s (he closed the window just before the answer, say).
+//   when his page has not fetched it within 12 s (he closed the window just before the answer, say).
 async function sendReply(env, ticket, msgId, text, now = Date.now()) {
   const q = await env.DB.prepare("SELECT body FROM ticket_messages WHERE ticket_id = ?1 AND sender = 'user' ORDER BY id DESC LIMIT 1").bind(ticket.id).first();
   const ok = await sendMail(env, { to: ticket.email, replyTo: supportAddress(env), ...replyEmail(ticket.lang, text, q && q.body) }).catch(() => false);
@@ -188,7 +191,7 @@ export async function support(request, env, method, rest, ctx) {
   // a new ticket
   if (rest.length === 1) {
     if (method !== 'POST') throw new HttpError(405, 'method_not_allowed', 'Method not allowed.');
-    // Stalak Max only (401 not_logged_in / 403 pro_required, need: 'max'); checked before anything is counted
+    // Stalak Creator Plus only (401 not_logged_in / 403 pro_required, need: 'creator'); checked before anything is counted
     const user = await requireUser(request, env);
     await requirePlan(env, user, 'human');
     await limit(env, `support:new:ip:${ipKey}`, 5, 3600e3, 'Too many new conversations, try again later.');
@@ -234,7 +237,7 @@ export async function support(request, env, method, rest, ctx) {
   }
   if (rest[2] !== 'messages') throw new HttpError(404, 'not_found', 'Unknown API route.');
   if (method !== 'POST') throw new HttpError(405, 'method_not_allowed', 'Method not allowed.');
-  // writing: Stalak Max, and only in this account's own conversation (older ones without an account stay read-only)
+  // writing: Stalak Creator Plus, and only in this account's own conversation (older ones without an account stay read-only)
   const user = await requireUser(request, env);
   await requirePlan(env, user, 'human');
   if (t.user_id !== user.id) throw new HttpError(404, 'not_found', 'Ticket not found.');

@@ -917,8 +917,8 @@ header .stepper{margin-left:auto}
 .daydone .dayleft{font:700 15px/1.3 var(--body);font-variant-numeric:tabular-nums;color:var(--sky-deep);background:var(--frost);border:2px solid var(--ink);border-radius:999px;padding:8px 14px}
 .daydone .row{justify-content:center;flex-wrap:wrap}
 
-/* ---- domaine Comptes, paiements & serveur : the plans (offer of 30/10/2026), Gratuit + Basic / Pro / Max ----
-   Monthly / yearly switch, 4 cards (Max first on a phone, Gratuit → Max from left to right on a computer), the 5-column
+/* ---- domaine Comptes, paiements & serveur : the plans (offer of 30/10/2026, evening), Gratuit + Pro + Creator Plus ----
+   Monthly / yearly switch, 3 cards (Creator Plus first on a phone, Gratuit → Creator Plus on a computer), the 4-column
    comparison (scrolls inside its card on a phone), the reminder boxes. */
 .pl-int{align-self:center;display:inline-flex;gap:4px;padding:4px;margin:0 auto;background:#fff;border:2.5px solid var(--ink);border-radius:99px;box-shadow:0 4px 0 var(--ink);max-width:100%;box-sizing:border-box}
 .pl-int button{appearance:none;border:0;background:transparent;color:var(--ink);font:700 15px/1.2 var(--body);min-height:44px;padding:8px 18px;border-radius:99px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
@@ -929,9 +929,8 @@ header .stepper{margin-left:auto}
 #apBuy .pl-card .pr-amt{font-size:52px}
 #apBuy .pl-card [data-buy][disabled]{opacity:.6;cursor:default}
 #apBuy .pl-mine{box-shadow:0 0 0 5px var(--sky-deep),0 0 0 8px var(--ink),0 12px 0 5px var(--ink)}
-#apBuy .pl-max .pr-name{color:#c8186a}
+#apBuy .pl-creator .pr-name{color:#c8186a}
 #apBuy .pl-pro .pr-name{color:var(--sky-deep)}
-#apBuy .pl-basic .pr-name{color:#2f6f5a}
 .pl-note{margin:2px 0 0;color:var(--muted);font-size:14px;line-height:1.4}
 .pl-change{margin:6px 0 0;color:var(--muted);font-size:14.5px;line-height:1.4;text-align:center}
 .pl-cmpwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -4px;padding:0 4px}
@@ -939,13 +938,12 @@ header .stepper{margin-left:auto}
 .pl-compare .pr-table th:first-child{width:34%}
 .pl-compare .pr-table thead th{font-size:19px}
 .pl-compare .pr-table td{font-size:14px}
-@media (min-width:640px){
-  #apBuy .pl-plans{grid-template-columns:repeat(2,minmax(0,1fr));gap:78px 22px;align-items:stretch}
+@media (min-width:880px){
+  #apBuy .pl-plans{grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:stretch;padding-top:70px}
   #apBuy .pl-card{top:0}
+  #apBuy .pl-free{order:1}#apBuy .pl-pro{order:2}#apBuy .pl-creator{order:3;top:-14px}
 }
 @media (min-width:1000px){
-  #apBuy .pl-plans{grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;padding-top:70px}
-  #apBuy .pl-free{order:1}#apBuy .pl-basic{order:2}#apBuy .pl-pro{order:3}#apBuy .pl-max{order:4;top:-14px}
   #apBuy .pl-card{padding-left:16px;padding-right:16px}
   #apBuy .pl-card .pr-amt{font-size:44px}
   #apBuy .pl-card .pr-feats li{font-size:14px}
@@ -956,7 +954,7 @@ header .stepper{margin-left:auto}
 .ap-check input{flex:none;width:22px;height:22px;margin:0;accent-color:var(--sky-deep);cursor:pointer}
 .ap-check span{padding-top:1px}
 .ap-fv{margin:6px 0 0}
-/* the Max ribbon sits in the card, above the name (as a ribbon on the edge it would hide the mascot) */
-#apBuy .pl-max .pl-ribbon{position:relative;top:auto;right:auto;align-self:center;margin:0 0 10px;transform:rotate(-2deg)}
+/* the Creator Plus ribbon sits in the card, above the name (as a ribbon on the edge it would hide the mascot) */
+#apBuy .pl-creator .pl-ribbon{position:relative;top:auto;right:auto;align-self:center;margin:0 0 10px;transform:rotate(-2deg)}
 #apBuy .pl-card .pr-cta{white-space:normal;line-height:1.15;text-align:center;padding-left:12px;padding-right:12px}
 @media (min-width:1000px){ #apBuy .pl-card .pr-cta{font-size:16px} }
