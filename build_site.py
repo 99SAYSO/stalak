@@ -31,6 +31,8 @@ head = (src / 'head.html').read_text(encoding='utf-8')
 css = (src / 'style.css').read_text(encoding='utf-8') + '\n/* ---- theme ---- */\n' + (src / 'theme.css').read_text(encoding='utf-8') + '\n' + (src / 'pricing.css').read_text(encoding='utf-8')
 PRICING_CSS = (src / 'pricing.css').read_text(encoding='utf-8')   # plan cards: in the app's Stalak Pro page and in /pricing.css for /tarifs
 markup = (src / 'markup.html').read_text(encoding='utf-8')
+# Marketing & croissance : la vidéo du premier écran n'apparaît que si site_src/demo/hero.mp4 existe (une vraie vidéo finie, 9:16, 5 à 8 s, sans son)
+markup = re.sub(r'<!--HEROVIDEO-->.*?<!--/HEROVIDEO-->', '', markup, flags=re.S) if not (extra / 'demo' / 'hero.mp4').exists() else markup.replace('<!--HEROVIDEO-->', '').replace('<!--/HEROVIDEO-->', '')
 js = (src / 'app.js').read_text(encoding='utf-8')
 ACCOUNT_JS = (src / 'account.js').read_text(encoding='utf-8')   # stalak.app only: sign in, Stalak Pro
 
@@ -177,7 +179,12 @@ def meta(lang):
     P = PAGE[lang]; url = URL + P['path']; other = 'en' if lang == 'fr' else 'fr'
     LD = {'@context': 'https://schema.org', '@graph': [
       {'@type': 'WebApplication', 'name': 'Stalak', 'url': url, 'applicationCategory': 'MultimediaApplication', 'operatingSystem': 'Web, iOS, Android, macOS, Windows',
-       'inLanguage': lang, 'isAccessibleForFree': True, 'offers': {'@type': 'Offer', 'price': '0', 'priceCurrency': 'EUR'},
+       'inLanguage': lang, 'isAccessibleForFree': True,
+       # Marketing & croissance : les offres en dollars (comme la page Tarifs) ; Paddle ajoute les taxes au paiement
+       'offers': [dict({'@type': 'Offer', 'name': n, 'price': pr, 'priceCurrency': 'USD', 'url': URL + ('/tarifs' if lang == 'fr' else '/en/pricing')},
+                       **({'priceSpecification': {'@type': 'UnitPriceSpecification', 'price': pr, 'priceCurrency': 'USD', 'billingDuration': d}} if d else {}))
+                  for n, pr, d in [('Free', '0', None), ('Stalak Pro (monthly)', '7.99', 'P1M'), ('Stalak Pro (yearly)', '49.99', 'P1Y'),
+                                   ('Creator Plus (monthly)', '14.99', 'P1M'), ('Creator Plus (yearly)', '99.99', 'P1Y')]],
        'description': P['ld'], 'image': URL + '/og.png', 'creator': {'@type': 'Organization', 'name': 'Alaska'}, 'publisher': {'@id': URL + '/#organization'}},
       {'@type': 'WebSite', '@id': URL + '/#website', 'name': 'Stalak', 'alternateName': ['Stalak app', 'stalak.app'], 'url': url, 'inLanguage': lang, 'publisher': {'@id': URL + '/#organization'}},
       dict({'@type': 'Organization', '@id': URL + '/#organization', 'name': 'Stalak', 'alternateName': 'stalak.app', 'url': URL + '/',
@@ -240,6 +247,6 @@ for name in ['mentions-legales.html', 'confidentialite.html', 'en/legal-notice.h
 today = datetime.date.today().isoformat()
 alts = ''.join(f'<xhtml:link rel="alternate" hreflang="{l}" href="{u}"/>' for l, u in [('fr', URL + '/'), ('en', URL + '/en/'), ('x-default', URL + '/en/')])
 (out / 'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">'
-    + ''.join(f'<url><loc>{u}</loc><lastmod>{today}</lastmod>{alts}</url>' for u in [URL + '/', URL + '/en/']) + ''.join(f'<url><loc>{URL}{a}</loc><lastmod>{today}</lastmod><xhtml:link rel="alternate" hreflang="fr" href="{URL}{a}"/><xhtml:link rel="alternate" hreflang="en" href="{URL}{b}"/></url><url><loc>{URL}{b}</loc><lastmod>{today}</lastmod><xhtml:link rel="alternate" hreflang="fr" href="{URL}{a}"/><xhtml:link rel="alternate" hreflang="en" href="{URL}{b}"/></url>' for a, b in SITEMAP_PAIRS) + '</urlset>\n', encoding='utf-8')
+    + ''.join(f'<url><loc>{u}</loc><lastmod>{today}</lastmod>{alts}</url>' for u in [URL + '/', URL + '/en/']) + ''.join(f'<url><loc>{URL}{a}</loc><lastmod>{today}</lastmod><xhtml:link rel="alternate" hreflang="fr" href="{URL}{a}"/><xhtml:link rel="alternate" hreflang="en" href="{URL}{b}"/><xhtml:link rel="alternate" hreflang="x-default" href="{URL}{b}"/></url><url><loc>{URL}{b}</loc><lastmod>{today}</lastmod><xhtml:link rel="alternate" hreflang="fr" href="{URL}{a}"/><xhtml:link rel="alternate" hreflang="en" href="{URL}{b}"/><xhtml:link rel="alternate" hreflang="x-default" href="{URL}{b}"/></url>' for a, b in SITEMAP_PAIRS) + '</urlset>\n', encoding='utf-8')
 n = sum(1 for _ in out.rglob('*') if _.is_file()); size = sum(f.stat().st_size for f in out.rglob('*') if f.is_file())
 print('site built in', out, '·', n, 'files ·', round(size / 1048576, 1), 'MB')
