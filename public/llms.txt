@@ -9,6 +9,8 @@ Stalak is not related to the Dofus game creature of the same name.
 - [Stalak (English)](https://stalak.app/en/): same app in English.
 - [Pricing (French)](https://stalak.app/tarifs): free plan and Stalak Pro (€9.99 a month or €79 a year).
 - [Pricing (English)](https://stalak.app/en/pricing): same in English.
+- [Triller alternative (English)](https://stalak.app/en/triller-alternative): honest comparison of Stalak, Triller, CapCut and camrip for lip-sync videos, with sources and dates.
+- [Alternative à Triller (French)](https://stalak.app/alternative-triller): same comparison in French.
 
 ## Facts
 - Free plan: automatic editing on the beats, the words or every bar; on-screen lyrics; 9:16 export; a 3-second Stalak logo at the end.

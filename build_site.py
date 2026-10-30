@@ -25,7 +25,8 @@ SOCIAL = {
 SOCIAL = {k: v for k, v in SOCIAL.items() if v}
 # pages FR / EN du plan du site (en plus de l'accueil)
 SITEMAP_PAIRS = [('/tarifs', '/en/pricing'), ('/conditions', '/en/terms'), ('/remboursement', '/en/refunds'),
-                 ('/confidentialite', '/en/privacy'), ('/mentions-legales', '/en/legal-notice')]
+                 ('/confidentialite', '/en/privacy'), ('/mentions-legales', '/en/legal-notice'),
+                 ('/alternative-triller', '/en/triller-alternative')]
 
 head = (src / 'head.html').read_text(encoding='utf-8')
 css = (src / 'style.css').read_text(encoding='utf-8') + '\n/* ---- theme ---- */\n' + (src / 'theme.css').read_text(encoding='utf-8') + '\n' + (src / 'pricing.css').read_text(encoding='utf-8')
@@ -74,7 +75,7 @@ PAGE = {
       <li>Le montage se fait dans ton navigateur, sur iPhone, Android ou ordinateur : tes vidéos restent sur ton appareil, sauf si tu sauvegardes un projet en ligne ou demandes tes paroles automatiques (Stalak Pro).</li>
     </ul>
   """,
-    'legal': '<a href="/tarifs">Tarifs</a> · <a href="/conditions">Conditions</a> · <a href="/remboursement">Remboursement</a> · <a href="/confidentialite">Confidentialité</a> · <a href="/mentions-legales">Mentions légales</a>',
+    'legal': '<a href="/tarifs">Tarifs</a> · <a href="/alternative-triller">Alternative à Triller</a> · <a href="/conditions">Conditions</a> · <a href="/remboursement">Remboursement</a> · <a href="/confidentialite">Confidentialité</a> · <a href="/mentions-legales">Mentions légales</a>',
   },
   'en': {
     'path': '/en/', 'locale': 'en_US',
@@ -102,7 +103,7 @@ PAGE = {
       <li>Editing happens in your browser, on iPhone, Android or computer: your videos stay on your device, unless you save a project online or ask for automatic lyrics (Stalak Pro).</li>
     </ul>
   """,
-    'legal': '<a href="/en/pricing">Pricing</a> · <a href="/en/terms">Terms</a> · <a href="/en/refunds">Refunds</a> · <a href="/en/privacy">Privacy</a> · <a href="/en/legal-notice">Legal notice</a>',
+    'legal': '<a href="/en/pricing">Pricing</a> · <a href="/en/triller-alternative">Triller alternative</a> · <a href="/en/terms">Terms</a> · <a href="/en/refunds">Refunds</a> · <a href="/en/privacy">Privacy</a> · <a href="/en/legal-notice">Legal notice</a>',
   },
 }
 
@@ -231,9 +232,15 @@ for f in list(out.glob('*.html')) + list((out / 'en').glob('*.html')):
 (out / 'en' / 'index.html').write_text(page('en', markup_en), encoding='utf-8')
 
 # 4. legal pages (to complete with the publisher's details: see the [ … ] parts)
-for name in ['mentions-legales.html', 'confidentialite.html', 'en/legal-notice.html', 'en/privacy.html', 'tarifs.html', 'conditions.html', 'remboursement.html', 'en/pricing.html', 'en/terms.html', 'en/refunds.html']:
+for name in ['mentions-legales.html', 'confidentialite.html', 'en/legal-notice.html', 'en/privacy.html', 'tarifs.html', 'conditions.html', 'remboursement.html', 'en/pricing.html', 'en/terms.html', 'en/refunds.html', 'alternative-triller.html', 'en/triller-alternative.html']:
     p = out / name
     p.write_text(p.read_text(encoding='utf-8').replace('{{EMAIL}}', EMAIL or ('[E-MAIL ADDRESS]' if name.startswith('en/') else '[ADRESSE E-MAIL]')).replace('{{URL}}', URL).replace('{{SELLER}}', SELLER or ('the publisher of the site, a private individual' if name.startswith('en/') else 'l’éditeur du site, un particulier')), encoding='utf-8')
+# Marketing & croissance : la vidéo d'exemple des pages de comparaison n'apparaît que si public/demo/exemple.mp4 existe
+# (à déposer dans site_src/demo/exemple.mp4 : une vraie vidéo montée avec Stalak)
+for name in ['alternative-triller.html', 'en/triller-alternative.html']:
+    p = out / name; t = p.read_text(encoding='utf-8')
+    if not (out / 'demo' / 'exemple.mp4').exists(): t = re.sub(r'<!--DEMO-->.*?<!--/DEMO-->', '', t, flags=re.S)
+    p.write_text(t.replace('<!--DEMO-->', '').replace('<!--/DEMO-->', ''), encoding='utf-8')
 (out / 'robots.txt').write_text(f'User-agent: *\nAllow: /\nSitemap: {URL}/sitemap.xml\n', encoding='utf-8')
 today = datetime.date.today().isoformat()
 alts = ''.join(f'<xhtml:link rel="alternate" hreflang="{l}" href="{u}"/>' for l, u in [('fr', URL + '/'), ('en', URL + '/en/'), ('x-default', URL + '/en/')])
