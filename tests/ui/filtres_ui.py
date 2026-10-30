@@ -75,12 +75,15 @@ def ui(b, base, lang, phone):
     check(tag + ' : message du filtre', ('Black & white' if lang == 'en' else 'Noir & blanc') in stt, stt)
     # keyboard: arrows move in the row
     pg.locator('#filtRow .filt[data-v="nb"]').focus(); pg.keyboard.press('ArrowRight'); pg.wait_for_timeout(200)
-    check(tag + ' : flèche → filtre suivant', ev(pg, 'S.filter') == 'golden' and pg.evaluate('document.activeElement.dataset.v') == 'golden', ev(pg, 'S.filter'))
+    # (audit 30/10) without Pro the free filters come first: the next one is the first filter after them
+    want_next = pg.evaluate("() => { const l = [...document.querySelectorAll('#filtRow .filt')].map(b => b.dataset.v); return l[l.indexOf('nb') + 1]; }")
+    check(tag + ' : flèche → filtre suivant', ev(pg, 'S.filter') == want_next and pg.evaluate('document.activeElement.dataset.v') == want_next, (ev(pg, 'S.filter'), want_next))
     # a Pro filter: tried in the preview, the export opens the Pro page
     ev(pg, "window.__why = null, acctOpen = w => { window.__why = w; }")
     pg.locator('#filtRow .filt[data-v="demon"]').click(); pg.wait_for_timeout(300)
     stt = pg.locator('#status').inner_text()
     check(tag + ' : filtre Pro essayé dans l’aperçu', ev(pg, 'S.filter') == 'demon' and 'Pro' in stt, stt)
+    ev(pg, "filtAsk = async () => 'pro'")   # (audit 30/10) the question « Pro, or without this filter », answered Pro here
     ev(pg, 'exportOne()'); pg.wait_for_timeout(300)
     check(tag + ' : export avec un filtre Pro → page Pro « filters »', pg.evaluate('window.__why') == 'filters' and not ev(pg, 'S.exporting'), pg.evaluate('window.__why'))
     ev(pg, 'exportPack()'); pg.wait_for_timeout(200)
