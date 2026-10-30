@@ -84,7 +84,8 @@ def ui(b, base, lang, phone):
     ev(pg, 'exportPack()'); pg.wait_for_timeout(200)
     check(tag + ' : pack → page Pro', pg.evaluate('window.__why') in ('pack', 'filters'))
     ev(pg, "window.__why = null, setFilter('film35', true), exportOne()"); pg.wait_for_timeout(300)
-    check(tag + ' : filtre gratuit → pas de page Pro', pg.evaluate('window.__why') is None)
+    # offer of 30/10: signed out, a free filter does not ask for a plan, only for the free account (the video of the day)
+    check(tag + ' : filtre gratuit → pas de page Pro (sans compte : création du compte gratuit)', pg.evaluate('window.__why') in (None, 'daily'), pg.evaluate('window.__why'))
     pg.wait_for_function('() => __ev("!S.exporting")', timeout=120000)
     if SHOTS and not phone:
         ev(pg, "setFilter('vhs', true)"); pg.wait_for_timeout(400)
@@ -151,6 +152,8 @@ def engine(b, base, video):
     ev(pg, "setFilter('none', true)")
     # whole exports, without and with a filter (when this browser has a video encoder)
     enc = aev(pg, "const c = await pickVideoConfig(); return c ? c.codec : null;")
+    # an account without the daily limit, so that the exports go through (offer of 30/10: signed out, an export asks for an account)
+    ev(pg, "acctHas = f => f === 'unlimited'")
     if enc:
         times = {}
         # free filters only: this test page has no Pro account, a Pro filter would open the Pro page instead of exporting
