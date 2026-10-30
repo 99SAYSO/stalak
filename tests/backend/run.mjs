@@ -59,8 +59,10 @@ const tokenRequests = [];
 // ---- fake outside world -------------------------------------------------------------
 const outbound = [];
 let socialFetch = null;
+let extraFetch = null;   // a test's own fake answers (Resend down, Turnstile, Paddle errors); return nothing to fall through
 globalThis.fetch = async (url, init = {}) => {
   url = String(url);
+  if (extraFetch) { const r = await extraFetch(url, init); if (r) return r; }
   if (JWKS[url]) return Response.json(JWKS[url]);
   if (TOKEN_URLS[url]) {
     tokenRequests.push({ provider: TOKEN_URLS[url], form: new URLSearchParams(init.body) });
@@ -2306,7 +2308,7 @@ test('visits: one row per page load and day, live count, limited new visits per 
   const env = makeEnv(ADMIN_ENV), token = await accessToken();
   const vid = 'v_' + 'a'.repeat(20);
   let r = await call(env, 'POST', '/api/presence', { body: { vid, lang: 'en' }, ip: '10.40.0.1' });
-  assert.equal(r.status, 200); assert.equal(r.data.every, 60);
+  assert.equal(r.status, 200); assert.equal(r.data.every, 300, 'one sign of life every 5 minutes');
   r = await call(env, 'POST', '/api/presence', { body: { vid, lang: 'en' }, ip: '10.40.0.1' });
   assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM visits').get().n, 1);
   await call(env, 'POST', '/api/presence', { body: { vid: 'v_' + 'b'.repeat(20), lang: 'fr' }, ip: '10.40.0.2' });
@@ -2661,6 +2663,204 @@ test('help guide: no other editing app named, and the rule is written in both la
       (g.match(/triller|capcut|inshot|vn editor|splice|premiere|final cut|imovie|davinci|kinemaster|veed|canva|camrip|filmora|vllo/i) || [])[0]);
     assert.ok(!/Sauvegarder en ligne »|“Save online”/.test(g), 'no more save button in the guide');
   }
+});
+
+// ---- audit of 30/10: code e-mails, Turnstile, funnel, test/real payments, account delete, yearly reminder, alerts ----
+const alertMails = (from = 0) => outbound.slice(from).filter((o) => o.url.includes('resend') && /^\[Stalak\]/.test(o.body.subject || ''));
+
+test('code e-mail not sent (Resend down): the code is forgotten, a new try within 30 s really sends one; owner alerted', async () => {
+  const env = makeEnv(), start = outbound.length;
+  const tried = [];
+  extraFetch = async (url, init) => {
+    if (url !== 'https://api.resend.com/emails' || !extraFetch.down) return null;
+    tried.push(JSON.parse(init.body).subject);
+    return new Response('{"message":"down"}', { status: 500 });
+  };
+  extraFetch.down = true;
+  try {
+    let r = await call(env, 'POST', '/api/auth/signup', { body: { email: 'down@example.com', password: PW, lang: 'en' } });
+    assert.equal(r.status, 502); assert.equal(r.data.error, 'email_failed');
+    assert.equal(env.DB.raw.prepare("SELECT COUNT(*) AS n FROM auth_codes WHERE email = 'down@example.com'").get().n, 0, 'no code kept');
+    extraFetch.down = false;
+    await new Promise((res) => setTimeout(res, 50));   // the alert goes out after the answer (waitUntil)
+    const before = mailCount('down@example.com');
+    r = await call(env, 'POST', '/api/auth/signup', { body: { email: 'down@example.com', password: PW, lang: 'en' } });
+    assert.equal(r.status, 200, JSON.stringify(r.data));
+    assert.equal(mailCount('down@example.com'), before + 1, 'the second try sends the e-mail');
+    // with Resend down the alerts cannot leave either: they were tried, and are tried again at the next failure
+    assert.ok(tried.some((x) => /Code e-mails are failing/.test(x)), tried);
+    assert.ok(tried.some((x) => /Server error 502/.test(x)), tried);
+    assert.equal(env.DB.raw.prepare("SELECT COUNT(*) AS n FROM rate_limits WHERE key = 'alert:email_failed'").get().n, 0);
+    assert.ok(alertMails(start).every((o) => !JSON.stringify(o.body).includes('down@example.com')), 'no address in the alerts');
+  } finally { extraFetch = null; }
+});
+
+test('code e-mails: daily ceiling for all addresses together (503 email_busy), owner alerted at 80 % and 100 %', async () => {
+  const env = makeEnv({ EMAIL_DAILY_MAX: '5' }), start = outbound.length;
+  for (let i = 0; i < 5; i++) {
+    const r = await call(env, 'POST', '/api/auth/signup', { body: { email: `cap${i}@example.com`, password: PW, lang: 'en' }, ip: '10.50.0.' + i });
+    assert.equal(r.status, 200, JSON.stringify(r.data));
+  }
+  const r = await call(env, 'POST', '/api/auth/signup', { body: { email: 'cap9@example.com', password: PW, lang: 'en' }, ip: '10.50.0.9' });
+  assert.equal(r.status, 503); assert.equal(r.data.error, 'email_busy');
+  assert.equal(mailCount('cap9@example.com'), 0);
+  const alerts = alertMails(start).map((o) => o.body.subject);
+  assert.ok(alerts.some((x) => /80 %/.test(x)) && alerts.some((x) => /daily limit reached/.test(x)), alerts);
+  // the same alert at most once an hour
+  await call(env, 'POST', '/api/auth/signup', { body: { email: 'cap8@example.com', password: PW, lang: 'en' }, ip: '10.50.0.8' });
+  assert.equal(alertMails(start).filter((o) => /daily limit reached/.test(o.body.subject)).length, 1);
+});
+
+test('Turnstile: off without keys; with keys, sign-up and forgot password need a valid token', async () => {
+  let env = makeEnv();
+  let r = await call(env, 'GET', '/api/config');
+  assert.equal(r.data.auth.turnstile, null);
+  env = makeEnv({ TURNSTILE_SITE_KEY: '0x4AAAAAAAtestsitekey', TURNSTILE_SECRET: 'ts-secret' });
+  r = await call(env, 'GET', '/api/config');
+  assert.equal(r.data.auth.turnstile, '0x4AAAAAAAtestsitekey');
+  assert.ok(!JSON.stringify(r.data).includes('ts-secret'));
+  const seen = [];
+  extraFetch = async (url, init) => {
+    if (url !== 'https://challenges.cloudflare.com/turnstile/v0/siteverify') return null;
+    const b = JSON.parse(init.body); seen.push(b);
+    if (b.response === 'down') return new Response('x', { status: 503 });
+    return Response.json(b.response === 'good-' + (b.response.split('-')[1]) && b.secret === 'ts-secret'
+      ? { success: true, action: b.response.split('-')[1] } : { success: false, 'error-codes': ['invalid-input-response'] });
+  };
+  try {
+    r = await call(env, 'POST', '/api/auth/signup', { body: { email: 'bot@example.com', password: PW, lang: 'en' } });
+    assert.equal(r.status, 400); assert.equal(r.data.error, 'captcha_failed');
+    r = await call(env, 'POST', '/api/auth/signup', { body: { email: 'bot@example.com', password: PW, lang: 'en', turnstile: 'bad' } });
+    assert.equal(r.data.error, 'captcha_failed');
+    r = await call(env, 'POST', '/api/auth/signup', { body: { email: 'bot@example.com', password: PW, lang: 'en', turnstile: 'good-forgot' } });
+    assert.equal(r.data.error, 'captcha_failed', 'a token made for another form is refused');
+    assert.equal(mailCount('bot@example.com'), 0);
+    r = await call(env, 'POST', '/api/auth/signup', { body: { email: 'human@example.com', password: PW, lang: 'en', turnstile: 'good-signup' } });
+    assert.equal(r.status, 200, JSON.stringify(r.data));
+    r = await call(env, 'POST', '/api/auth/forgot', { body: { email: 'human@example.com', lang: 'en' } });
+    assert.equal(r.data.error, 'captcha_failed');
+    r = await call(env, 'POST', '/api/auth/forgot', { body: { email: 'human@example.com', lang: 'en', turnstile: 'good-forgot' } });
+    assert.equal(r.status, 200);
+    // Turnstile out of reach: not locked out (the other limits still hold)
+    r = await call(env, 'POST', '/api/auth/signup', { body: { email: 'outage@example.com', password: PW, lang: 'en', turnstile: 'down' } });
+    assert.equal(r.status, 200);
+    assert.ok(seen.every((b) => b.secret === 'ts-secret' && b.remoteip));
+  } finally { extraFetch = null; }
+});
+
+test('funnel: /api/event takes only known names (no cookie needed), counted per day; the dashboard shows the funnel', async () => {
+  const env = makeEnv(ADMIN_ENV), token = await accessToken();
+  for (const [name, extra] of [['export_start', {}], ['export_ok', { ios: true }], ['export_ok', {}], ['export_fail', { cat: 'memory', ios: true }],
+    ['export_fail', { cat: '<script>' }], ['ad_offer', {}], ['ad_ok', {}], ['plans_open', { why: 'clip' }], ['plans_open', { why: 'x' }], ['checkout_open', {}]]) {
+    const r = await call(env, 'POST', '/api/event', { body: { name, ...extra }, ip: '10.60.0.1' });
+    assert.equal(r.status, 200, name + JSON.stringify(r.data));
+  }
+  let r = await call(env, 'POST', '/api/event', { body: { name: 'drop table' } });
+  assert.equal(r.status, 400); assert.equal(r.data.error, 'invalid_event');
+  r = await call(env, 'POST', '/api/event', { body: { name: 'export_ok' }, origin: 'https://evil.example' });
+  assert.equal(r.status, 403, 'same Origin only');
+  const names = env.DB.raw.prepare('SELECT DISTINCT name FROM daily_counts').all().map((x) => x.name);
+  assert.ok(names.every((n) => /^[a-z0-9_]+$/.test(n)), names);
+  // a first payment counts as the last step (not a renewal)
+  const u = await login(env, 'funnel@example.com');
+  const tx = (id, origin) => webhook(env, subEvent('transaction.completed', { id, customer_id: 'ctm_f', custom_data: { user_id: u.user.id },
+    origin, billed_at: new Date().toISOString(), items: [{ price: { id: 'pri_pro_m' } }], details: { totals: { grand_total: '799', tax: '0', currency_code: 'USD' } } }));
+  await tx('txn_f1', 'web'); await tx('txn_f1', 'web'); await tx('txn_f2', 'subscription_recurring');
+  r = await adminCall(env, 'GET', '/api/admin/stats?days=7', { token });
+  const f = r.data.usage.funnel;
+  assert.equal(f.exportStart, 1); assert.equal(f.exportOk, 2); assert.equal(f.exportFail, 2); assert.equal(f.adOk, 1);
+  assert.equal(f.plansOpen, 2); assert.equal(f.checkoutOpen, 1); assert.equal(f.paid, 1, 'one first payment');
+  assert.deepEqual(f.exportFailWhy, { memory: 1, other: 1 }); assert.deepEqual(f.plansWhy, { clip: 1, other: 1 });
+  assert.deepEqual(f.ios, { exportOk: 1, exportFail: 1 });
+  assert.equal(typeof r.data.usage.health.errors30, 'number');
+  // per connection: 120 an hour
+  for (let i = 0; i < 125; i++) r = await call(env, 'POST', '/api/event', { body: { name: 'ad_offer' }, ip: '10.60.0.2' });
+  assert.equal(r.status, 429);
+});
+
+test('test and real payments: rows keep their Paddle environment; real payments ignore the test subscriptions', async () => {
+  const env = makeEnv(ADMIN_ENV), token = await accessToken();
+  const u = await proUser(env, 'sandboxer@example.com', 'creator');
+  assert.equal(env.DB.raw.prepare('SELECT env FROM subscriptions WHERE user_id = ?').get(u.user.id).env, 'sandbox');
+  let r = await call(env, 'GET', '/api/me', { cookie: u.cookie });
+  assert.equal(r.data.entitlements.plan, 'creator');
+  // the owner switches to real payments: the test subscription gives nothing any more, and leaves the dashboard
+  const prod = { ...env, PADDLE_ENV: 'production' };
+  r = await call(prod, 'GET', '/api/me', { cookie: u.cookie });
+  assert.equal(r.data.entitlements.plan, 'free');
+  r = await adminCall(prod, 'GET', '/api/admin/stats?days=7', { token });
+  assert.equal(r.data.totals.pro.total, 0); assert.equal(r.data.env, 'production');
+  // a real subscription is written as production
+  await webhook(prod, subEvent('subscription.created', sub(u.user.id, { id: 'sub_live', customer_id: 'ctm_live',
+    items: [{ status: 'active', quantity: 1, price: { id: 'pri_pro_m', product_id: 'pro_pro' } }] })));
+  assert.equal(env.DB.raw.prepare("SELECT env FROM subscriptions WHERE id = 'sub_live'").get().env, 'production');
+  r = await call(prod, 'GET', '/api/me', { cookie: u.cookie });
+  assert.equal(r.data.entitlements.plan, 'pro');
+});
+
+test('account delete: Paddle saying « unknown / already stopped » does not block it (owner told); Paddle down does', async () => {
+  const env = makeEnv(), start = outbound.length;
+  const a = await proUser(env, 'gone4xx@example.com');
+  extraFetch = async (url) => (/\/subscriptions\/sub_\w+\/cancel$/.test(url)
+    ? Response.json({ error: { code: extraFetch.code } }, { status: extraFetch.status }) : null);
+  extraFetch.status = 404; extraFetch.code = 'entity_not_found';
+  try {
+    let r = await call(env, 'DELETE', '/api/account', { cookie: a.cookie, body: { confirm: true } });
+    assert.equal(r.status, 200, JSON.stringify(r.data));
+    assert.equal(env.DB.raw.prepare("SELECT COUNT(*) AS n FROM users WHERE email = 'gone4xx@example.com'").get().n, 0);
+    assert.ok(alertMails(start).some((o) => /check a subscription/.test(o.body.subject)));
+    const b = await proUser(env, 'gone5xx@example.com');
+    extraFetch.status = 500; extraFetch.code = 'internal_error';
+    r = await call(env, 'DELETE', '/api/account', { cookie: b.cookie, body: { confirm: true } });
+    assert.equal(r.status, 502);
+    assert.equal(env.DB.raw.prepare("SELECT COUNT(*) AS n FROM users WHERE email = 'gone5xx@example.com'").get().n, 1, 'nothing deleted, try again');
+    extraFetch.status = 401; extraFetch.code = 'authentication_malformed';
+    r = await call(env, 'DELETE', '/api/account', { cookie: b.cookie, body: { confirm: true } });
+    assert.equal(r.status, 502, 'a refused key does not count as « already stopped »');
+    extraFetch.status = 400; extraFetch.code = 'subscription_is_canceled_action_invalid';
+    r = await call(env, 'DELETE', '/api/account', { cookie: b.cookie, body: { confirm: true } });
+    assert.equal(r.status, 200, 'already canceled in Paddle: deleted');
+  } finally { extraFetch = null; }
+});
+
+test('yearly reminder: monthly subscribers get one e-mail a year (English unless French); yearly plans and canceled ones none', async () => {
+  const env = makeEnv(), year = 365 * 864e5, now = Date.now();
+  const m = await proUser(env, 'monthly@example.com', 'pro');
+  env.DB.raw.prepare("UPDATE users SET lang = 'en' WHERE id = ?").run(m.user.id);
+  const f = await login(env, 'mensuel@example.com', 'fr');
+  await webhook(env, subEvent('subscription.created', sub(f.user.id, { id: 'sub_fr', customer_id: 'ctm_fr', started_at: new Date(now - year - 864e5).toISOString(),
+    items: [{ status: 'active', quantity: 1, price: { id: 'pri_creator_m', product_id: 'pro_creator' } }] })));
+  const y = await proUser(env, 'yearly@example.com', 'pro');
+  env.DB.raw.prepare("UPDATE subscriptions SET price_id = 'pri_pro_y' WHERE user_id = ?").run(y.user.id);
+  env.DB.raw.prepare('UPDATE subscriptions SET started_at = ? WHERE user_id IN (?, ?)').run(now - year - 864e5, m.user.id, y.user.id);
+  const fresh = await proUser(env, 'fresh@example.com', 'pro');   // started now (no started_at in the event: set below)
+  env.DB.raw.prepare('UPDATE subscriptions SET started_at = ? WHERE user_id = ?').run(now - 30 * 864e5, fresh.user.id);
+  const r = await call({ ...env, CRON_SECRET: 'cron-secret-0123456789' }, 'POST', '/api/cron/cloud-cleanup', { headers: { Authorization: 'Bearer cron-secret-0123456789' }, origin: null, ct: null });
+  assert.equal(r.status, 200, JSON.stringify(r.data)); assert.equal(r.data.reminded, 2);
+  const en = lastMail('monthly@example.com').body, fr = lastMail('mensuel@example.com').body;
+  assert.match(en.subject, /Reminder: your Stalak Pro subscription/); assert.match(en.text, /\$7\.99 a month/); assert.match(en.text, /Manage my subscription/);
+  assert.match(fr.subject, /Rappel : ton abonnement Stalak Creator Plus/); assert.match(fr.text, /14,99 \$ par mois/);
+  assert.ok(!lastMail('yearly@example.com') || !/Reminder/.test(lastMail('yearly@example.com').body.subject));
+  assert.ok(!lastMail('fresh@example.com') || !/Reminder/.test(lastMail('fresh@example.com').body.subject));
+  const again = await call({ ...env, CRON_SECRET: 'cron-secret-0123456789' }, 'POST', '/api/cron/cloud-cleanup', { headers: { Authorization: 'Bearer cron-secret-0123456789' }, origin: null, ct: null });
+  assert.equal(again.data.reminded, 0, 'once a year');
+});
+
+test('preview deployments share the real database: payments, jobs and account deletion refused there', async () => {
+  const env = makeEnv({ CRON_SECRET: 'cron-secret-0123456789' });
+  const at = (host, method, path, body, headers = {}) => onRequest({ request: new Request(`https://${host}${path}`, { method,
+    headers: { 'Content-Type': 'application/json', Origin: `https://${host}`, ...headers }, body: body ? JSON.stringify(body) : undefined }), env: { ...env, EXTRA_ORIGINS: `https://${host}` }, params: {}, waitUntil() {} });
+  let res = await at('abc123.stalak-site.pages.dev', 'POST', '/api/paddle/webhook', { event_type: 'subscription.created' });
+  assert.equal(res.status, 403); assert.equal((await res.json()).error, 'preview_readonly');
+  res = await at('compte-x.stalak-site.pages.dev', 'POST', '/api/cron/cloud-cleanup', {}, { Authorization: 'Bearer cron-secret-0123456789' });
+  assert.equal(res.status, 403);
+  res = await at('abc123.stalak-site.pages.dev', 'GET', '/api/config');
+  assert.equal(res.status, 200, 'the rest still works for checking a branch');
+  res = await at('stalak-site.pages.dev', 'POST', '/api/cron/cloud-cleanup', {}, { Authorization: 'Bearer cron-secret-0123456789' });
+  assert.equal(res.status, 200, 'production on pages.dev is not a preview');
+  const iso = { ...env, PREVIEW_ISOLATED: '1', EXTRA_ORIGINS: 'https://abc123.stalak-site.pages.dev' };
+  res = await onRequest({ request: new Request('https://abc123.stalak-site.pages.dev/api/cron/cloud-cleanup', { method: 'POST', headers: { Authorization: 'Bearer cron-secret-0123456789' } }), env: iso, params: {}, waitUntil() {} });
+  assert.equal(res.status, 200, 'with its own database (PREVIEW_ISOLATED) a preview works fully');
 });
 
 // ---- runner --------------------------------------------------------------------------

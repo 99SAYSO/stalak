@@ -36,6 +36,9 @@
      cloud.download(projectId, {id, name, type, size, lastModified}, {onProgress(bytes), onRetry, signal}) -> Promise<File>
      onChange(cb)         -> unsubscribe function; cb(state) on every state change
      checkoutOpen         -> true while Paddle's checkout window is open
+     event(name[, extra]) -> counts one anonymous step of the funnel (POST /api/event; never fails, nothing about the person):
+                             'export_start' | 'export_ok' | 'export_fail' ({cat: 'memory'|'decoder'|'hidden'|'cancel'|'other'}) |
+                             'ad_offer' | 'ad_ok' | 'plans_open' ({why}) | 'checkout_open'; {ios: true} is added on iPhone / iPad
      state                -> last known state
    Errors are thrown as Error objects with .code (server "error" field) and .status. */
 (function () {
@@ -134,6 +137,60 @@
   }
 
   var PLANS = ['pro', 'creator'];
+
+  /* ---- anonymous counters of the funnel (dashboard): visit → export → ad → plans page → payment window → payment ---- */
+  var IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  function event(name, extra) {
+    try {
+      var b = { name: String(name) }; if (IOS) b.ios = true;
+      if (extra && typeof extra === 'object') { if (extra.cat) b.cat = String(extra.cat); if (extra.why) b.why = String(extra.why); }
+      fetch('/api/event', { method: 'POST', credentials: 'omit', keepalive: true, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b) })
+        .catch(function () {});
+    } catch (e) {}
+  }
+
+  /* ---- Cloudflare Turnstile (anti-robot) on « Créer un compte » and « Mot de passe oublié », only when the server has the
+     keys (config.auth.turnstile = the public site key). Mostly invisible: a box appears only when Cloudflare needs a tap. ---- */
+  var tsPromise = null, tsBox = null, tsId = null;
+  function loadTurnstile() {
+    if (tsPromise) return tsPromise;
+    tsPromise = new Promise(function (resolve, reject) {
+      if (window.turnstile) { resolve(window.turnstile); return; }
+      var s = document.createElement('script');
+      s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+      s.async = true;
+      s.onload = function () { resolve(window.turnstile); };
+      s.onerror = function () { tsPromise = null; reject(Object.assign(new Error('Could not load the robot check.'), { code: 'captcha_load_failed' })); };
+      document.head.appendChild(s);
+    });
+    return tsPromise;
+  }
+  // a fresh token for `action` ('signup' | 'forgot'), or null when Turnstile is off
+  function turnstileToken(action) {
+    return config().then(function (cfg) {
+      var key = cfg.auth && cfg.auth.turnstile;
+      if (!key) return null;
+      return loadTurnstile().then(function (T) {
+        return new Promise(function (resolve, reject) {
+          if (!tsBox) {
+            tsBox = document.createElement('div');
+            tsBox.className = 'st-ts';
+            tsBox.setAttribute('style', 'position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:2147483000;max-width:calc(100vw - 32px)');
+            document.body.appendChild(tsBox);
+          }
+          if (tsId != null) { try { T.remove(tsId); } catch (e) {} tsId = null; }
+          var done = false, timer = setTimeout(function () { if (!done) { done = true; reject(Object.assign(new Error('Robot check timed out.'), { code: 'captcha_failed' })); } }, 60000);
+          var end = function (fn, v) { if (done) return; done = true; clearTimeout(timer); try { T.remove(tsId); } catch (e) {} tsId = null; fn(v); };
+          tsId = T.render(tsBox, {
+            sitekey: key, action: action, appearance: 'interaction-only', language: lang(),
+            callback: function (t) { end(resolve, t); },
+            'error-callback': function () { end(reject, Object.assign(new Error('Robot check failed.'), { code: 'captcha_failed' })); },
+            'expired-callback': function () {}
+          });
+        });
+      });
+    });
+  }
   function checkout(plan, interval) {
     if (plan === 'month' || plan === 'year') { interval = plan; plan = 'pro'; }   // the older call
     if (plan === 'basic') plan = 'pro'; else if (plan === 'max') plan = 'creator';   // names of the earlier offer
@@ -148,6 +205,7 @@
       if (!priceId) throw Object.assign(new Error('Payments are not configured yet.'), { code: 'not_configured' });
       return loadPaddle(cfg).then(function (P) {
         checkoutOpen = true;
+        event('checkout_open');
         P.Checkout.open({
           items: [{ priceId: priceId, quantity: 1 }],
           customer: { email: st.user.email },
@@ -272,14 +330,19 @@
     has: has,
     providers: function () { return config().then(function (c) { return (c.auth && c.auth.providers) || []; }); },
     signup: function (email, password, displayName) {
-      return api('POST', 'auth/signup', { email: email, password: password, displayName: displayName || null, lang: lang() });
+      return turnstileToken('signup').then(function (t) {
+        var b = { email: email, password: password, displayName: displayName || null, lang: lang() }; if (t) b.turnstile = t;
+        return api('POST', 'auth/signup', b);
+      });
     },
     signupVerify: function (email, code) { return api('POST', 'auth/signup/verify', { email: email, code: code, lang: lang() }).then(setState); },
     login: function (email, password) {
       return api('POST', 'auth/login', { email: email, password: password, lang: lang() }).then(function (d) { return d.needCode ? d : setState(d); });
     },
     loginVerify: function (email, code) { return api('POST', 'auth/login/verify', { email: email, code: code }).then(setState); },
-    forgot: function (email) { return api('POST', 'auth/forgot', { email: email, lang: lang() }); },
+    forgot: function (email) {
+      return turnstileToken('forgot').then(function (t) { var b = { email: email, lang: lang() }; if (t) b.turnstile = t; return api('POST', 'auth/forgot', b); });
+    },
     resetCheck: function (email, code) { return api('POST', 'auth/reset', { email: email, code: code }); },
     reset: function (email, code, password) { return api('POST', 'auth/reset', { email: email, code: code, password: password }).then(setState); },
     oauthUrl: function (provider, to, popup) {
@@ -296,6 +359,7 @@
     removeAvatar: function () { return api('DELETE', 'me/avatar').then(me); },
     logout: function () { return api('POST', 'auth/logout').then(function () { return setState({}); }); },
     checkout: checkout,
+    event: event,
     portal: function () { return api('POST', 'paddle/portal'); },
     // a subscriber moves to another plan (same subscription, the difference billed now): then wait for the webhook
     changePlan: function (plan, interval, preview) {

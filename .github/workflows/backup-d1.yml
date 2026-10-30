@@ -1,0 +1,58 @@
+# Stalak: a copy of the D1 database every week, kept outside Cloudflare (audit of 30/10).
+# The repository is public: the copy is ENCRYPTED (AES-256, passphrase BACKUP_PASSPHRASE) before it is stored as a
+# GitHub artifact (kept 90 days, only people with access to the Actions tab can download it, and only the passphrase opens it).
+# Secrets to add once (GitHub → Settings → Secrets and variables → Actions), BACKEND.md step 15:
+#   CLOUDFLARE_API_TOKEN  a token with « D1: Edit » on the account (wrangler d1 export needs it)
+#   CLOUDFLARE_ACCOUNT_ID the account id (Cloudflare dashboard, right column)
+#   BACKUP_PASSPHRASE     a long passphrase, also kept somewhere safe outside GitHub (without it the copy cannot be opened)
+# To open a copy:  openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -in stalak-AAAA-MM-JJ.sql.enc -out stalak.sql
+# Run it by hand too: Actions → « Copie de la base » → Run workflow (e.g. before pasting a migration).
+name: Copie de la base
+on:
+  schedule:
+    - cron: '23 9 * * 1'   # Mondays 09:23 UTC (night in the United States)
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check the secrets
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          for v in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID BACKUP_PASSPHRASE; do
+            if [ -z "${!v}" ]; then echo "::error::Secret $v is missing (BACKEND.md, step 15)"; exit 1; fi
+          done
+          if [ ${#BACKUP_PASSPHRASE} -lt 20 ]; then echo "::error::BACKUP_PASSPHRASE: 20 characters or more"; exit 1; fi
+      - name: Export (wrangler d1 export)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          mkdir -p work && cd work
+          npx --yes wrangler@4.149.0 d1 export stalak --remote --output stalak.sql
+          test -s stalak.sql
+          echo "Lines: $(wc -l < stalak.sql)"
+      - name: Encrypt
+        env:
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          cd work
+          name="stalak-$(date -u +%Y-%m-%d).sql.enc"
+          openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt -in stalak.sql -out "$name" -pass env:BACKUP_PASSPHRASE
+          shred -u stalak.sql || rm -f stalak.sql
+          echo "NAME=$name" >> "$GITHUB_ENV"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.NAME }}
+          path: work/${{ env.NAME }}
+          retention-days: 90
+          if-no-files-found: error

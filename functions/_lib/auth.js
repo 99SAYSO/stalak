@@ -6,6 +6,9 @@ import { randomCode, randomToken, randomId, randomBytes, toHex, sha256Hex, hmacS
 import { limit, cleanup } from './ratelimit.js';
 import { sendCodeEmail } from './email.js';
 import { normalizeDisplayName } from './profile.js';
+import { checkTurnstile } from './turnstile.js';
+import { alertOwner } from './alerts.js';
+import { bump, today } from './metrics.js';
 
 export const CODE_TTL_MS = 10 * 60e3;
 export const MAX_ATTEMPTS = 5;
@@ -13,6 +16,14 @@ export const SESSION_TTL_MS = 60 * 24 * 3600e3;
 export const DEVICE_TTL_MS = 90 * 24 * 3600e3;   // a browser where a code was typed is trusted for 90 days
 export const RESEND_AFTER_MS = 30e3;             // a code asked again within 30 s is not sent again
 const HOUR = 3600e3;
+// All the code e-mails of a day together (audit of 30/10): a robot with many connections cannot use up the Resend quota.
+// EMAIL_DAILY_MAX (wrangler.toml / dashboard) = the plan's daily allowance; the owner gets an e-mail at 80 % and at 100 %.
+export const EMAIL_DAILY_MAX_DEFAULT = 1000;
+const emailDailyMax = (env) => { const n = parseInt(env.EMAIL_DAILY_MAX, 10); return n > 0 ? n : EMAIL_DAILY_MAX_DEFAULT; };
+async function mailsToday(env) {
+  const r = await env.DB.prepare("SELECT n FROM daily_counts WHERE day = ?1 AND name = 'code_mail'").bind(today()).first();
+  return (r && r.n) || 0;
+}
 
 export function normalizeEmail(v) {
   const e = String(v || '').trim().toLowerCase();
@@ -53,12 +64,35 @@ async function issueCode(request, env, email, purpose, lang, data) {
   }
   await limit(env, `send:ip:${ip}`, 20, HOUR, 'Too many codes requested from this connection, try again later.');
   await limit(env, `send:email:${ek}`, 5, HOUR, 'Too many codes requested for this email, try again later.');
+  // the day's ceiling for every code e-mail together
+  const max = emailDailyMax(env), sent = await mailsToday(env);
+  if (sent >= max) {
+    await alertOwner(env, 'email_cap', 'Code e-mails stopped: daily limit reached',
+      `${sent} code e-mails were sent today (limit EMAIL_DAILY_MAX = ${max}). New sign-ups, new devices and "forgot password" are refused until midnight UTC.\n` +
+      'If these are real people: raise EMAIL_DAILY_MAX (and the Resend plan). If not: check the dashboard and turn on Turnstile (BACKEND.md).');
+    throw new HttpError(503, 'email_busy', 'We cannot send more codes today, please try again tomorrow or contact us.');
+  }
   const code = randomCode();
   await env.DB.prepare(
     `INSERT INTO auth_codes (email, purpose, code_hash, expires_at, attempts, data, lang, created_at) VALUES (?1, ?2, ?3, ?4, 0, ?5, ?6, ?7)
      ON CONFLICT(email, purpose) DO UPDATE SET code_hash = ?3, expires_at = ?4, attempts = 0, data = ?5, lang = ?6, created_at = ?7`
   ).bind(email, purpose, await hashCode(env, email, purpose, code), now + CODE_TTL_MS, data ? JSON.stringify(data) : null, lang, now).run();
-  const r = await sendCodeEmail(env, email, code, lang, purpose);
+  let r;
+  try {
+    r = await sendCodeEmail(env, email, code, lang, purpose);
+  } catch (e) {
+    // not sent: the code is forgotten, so a new try within 30 s really sends one (instead of answering « code sent »)
+    await env.DB.prepare('DELETE FROM auth_codes WHERE email = ?1 AND purpose = ?2 AND created_at = ?3').bind(email, purpose, now).run().catch(() => {});
+    if (e && e.code === 'email_failed') await alertOwner(env, 'email_failed', 'Code e-mails are failing (Resend)',
+      'Resend refused or did not answer a code e-mail. People cannot sign up or sign in on a new device until it works again.\n' +
+      'Check resend.com (status, quota, domain) and the logs: lines "[stalak] Resend error".');
+    throw e;
+  }
+  if (r && r.sent) {
+    await bump(env, 'code_mail');
+    if (sent + 1 === Math.ceil(max * 0.8)) await alertOwner(env, 'email_cap80', 'Code e-mails: 80 % of the daily limit',
+      `${sent + 1} code e-mails sent today, limit ${max} (EMAIL_DAILY_MAX). Above it, sign-ups wait until tomorrow.`);
+  }
   if (Math.random() < 0.05) await cleanup(env).catch(() => {});
   const out = { ok: true, needCode: true, expiresIn: CODE_TTL_MS / 1000, resent: true };
   if (r.devCode && isDev(env)) out.devCode = r.devCode;
@@ -226,6 +260,7 @@ export async function signup(request, env, body) {
   const lang = normalizeLang(body.lang);
   await limit(env, `signup:ip:${await ipKey(request)}`, 20, HOUR, 'Too many sign-ups from this connection, try again later.');
   checkPasswordPolicy(body.password, email);
+  await checkTurnstile(request, env, body.turnstile, 'signup');   // anti-robot, when the owner turned it on
   const name = normalizeDisplayName(body.displayName === undefined ? null : body.displayName);
   if (await userByEmail(env, email)) throw new HttpError(409, 'email_taken', 'An account already exists with this email.');
   const h = await hashPassword(body.password);
@@ -304,6 +339,7 @@ export async function forgot(request, env, body) {
   const email = normalizeEmail(body.email);
   const lang = normalizeLang(body.lang);
   await limit(env, `forgot:ip:${await ipKey(request)}`, 20, HOUR, 'Too many requests from this connection, try again later.');
+  await checkTurnstile(request, env, body.turnstile, 'forgot');
   const user = await userByEmail(env, email);
   if (user) {
     const r = await issueCode(request, env, email, 'reset', lang, { u: user.id });

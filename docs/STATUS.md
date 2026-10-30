@@ -68,6 +68,13 @@
 - Pages : tarifs, conditions, remboursement, confidentialité, mentions légales (FR/EN), avec des animations glacées.
 
 ## En cours
+- **Audit du 30/10, côté Comptes** (branche `compte/audit`, compte rendu `docs/handoff/compte-audit.md`, Statut : PRÊT, **migration 0009**) :
+  - signe de vie des visites toutes les 5 min (au lieu de 1) ;
+  - e-mails de code : plafond du jour `EMAIL_DAILY_MAX` avec alertes, Turnstile prêt (inscription, mot de passe oublié ; clés à saisir), le « code envoyé » jamais parti corrigé ;
+  - compteurs anonymes `/api/event` et ligne « Entonnoir » au tableau de bord (visite → export → pub → formules → paiement), appels posés dans l'export et la pub ;
+  - avant les vrais paiements : tests GitHub + commande de build Cloudflare, garde des aperçus (`preview_readonly`) et bloc `[env.preview]` prêt, abonnements de test séparés (`env`), suppression de compte non bloquée par Paddle, copie chiffrée de la base chaque lundi, alertes e-mail (erreurs 5xx, Resend, plafond) ;
+  - écran des formules aligné sur la page Tarifs (Annuel par défaut, Pro en premier, −47 %, « 2 takes », « 100 GB », raison visible sur la carte) ;
+  - rappel annuel par e-mail aux abonnés mensuels.
 - Rien. La précision des paroles auto est en ligne : voix mise en avant, contexte entre les morceaux, import de la voix seule. Seuils à vérifier sur de vraies chansons via les infos techniques (« centre / mix »).
 - Rien.
 - **Assistant d'aide, réponses vides** (branche `compte/assistant-reponses-vides`, compte rendu `docs/handoff/compte-assistant-reponses-vides.md`, Statut : PRÊT) : réflexion de Gemma 4 coupée, place de réponse 450 → 700 jetons, un deuxième essai si la réponse est vide (compté dans le budget du jour), erreur en 503 au lieu de 502, raison des réponses vides dans les journaux. Aucune migration.
@@ -123,6 +130,10 @@
 - Prêt (branche `app/formules`) : offre hybride du 30/10 au soir dans l'app. Pro / Creator Plus (`can(feat)`), filigrane qui bouge sur les vidéos gratuites (« Clipped with stalak.app »), pub récompensée Google (unité de test) qui l'enlève pour une vidéo. Plus d'écran du jour ni de fin Stalak ; le gratuit exporte sans compte. Détail et suites pour Comptes et Juridique dans `docs/handoff/app-formules.md`.
 
 ### Comptes, paiements & serveur
+- Audit du 30/10 : fait sur `compte/audit` (voir « En cours »). Reste au propriétaire (BACKEND.md 3.1, 7.1, 15) : Workers Paid + alertes Cloudflare, forfait Resend et `EMAIL_DAILY_MAX`, clés Turnstile, commande de build `node tests/backend/run.mjs` (+ `NODE_VERSION` = 22), 3 secrets GitHub pour la copie, base `stalak-preview`, redéployer le Worker `cloud-cleanup`.
+  - Pour App : `acctEvent('export_start' | 'export_ok' | 'export_fail', {cat})`, `acctEvent('ad_offer' | 'ad_ok')` sont posés (une ligne chacun dans `beginExport`, `exportOne`, `exportPackRun`, `adWatch`, `adReward`) : à garder en modifiant ces fonctions. Le texte `pack.need3` (« au moins 3 playbacks ») reste à App avec le passage à 2.
+  - Pour Juridique : la politique de confidentialité doit citer les compteurs anonymes de l'entonnoir et Cloudflare Turnstile.
+  - Reste de l'audit pour Comptes (non demandé ici) : corps sans taille lus en entier (n° 12), CSP / HSTS (n° 11), plafond global des paroles auto (n° 14).
 - Sauvegarde automatique, anglais d'abord, guide sans concurrent : fait sur `compte/sauvegarde-auto` (voir « En cours »).
   - Pour App : les lignes du guide d'aide sur les packs (« au moins 3 playbacks ») et le filigrane sont à changer quand les packs dès 2 playbacks et le filigrane logo seul seront livrés (`functions/_lib/help-guide.js`, FR et EN).
 - Offre du 30/10 au soir (`compte/formules`) : fait (voir « En cours »). Au Chef de projet : migration 0008 ; plus besoin de redéployer le Worker (aucun horaire ajouté).

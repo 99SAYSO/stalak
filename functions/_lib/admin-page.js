@@ -69,6 +69,11 @@ table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:ta
 th,td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
 th:first-child,td:first-child{text-align:left}
 th{color:var(--text2);font-weight:600}
+.funnel{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch}
+.funnel .f{flex:1 1 120px;border:1px solid var(--line);border-radius:14px;padding:10px 12px;min-width:0}
+.funnel .f b{display:block;font-size:13px;color:var(--text2);font-weight:600}
+.funnel .f span{display:block;font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+.funnel .f i{display:block;font-style:normal;font-size:12.5px;color:var(--text2)}
 .usage{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
 .usage .u{border:1px solid var(--line);border-radius:14px;padding:12px}
 .usage .u b{display:block;margin-bottom:4px}
@@ -151,6 +156,12 @@ th{color:var(--text2);font-weight:600}
     <div class="charts" id="charts"></div>
     <div class="table-wrap" id="tableWrap"></div>
     <p class="note">Visites = pages ouvertes (sans cookie : recharger compte une nouvelle visite). Revenu en euros, TTC, remboursements à part. Jours en heure UTC.</p>
+  </section>
+
+  <section class="card" aria-labelledby="hFun">
+    <h2 id="hFun">Entonnoir (30 derniers jours)</h2>
+    <div class="funnel" id="funnel"></div>
+    <p class="note" id="funnelNote">Chaque étape : combien de fois, et la part de l’étape d’avant. Compteurs anonymes (aucun cookie, rien sur la personne). « Pub » = pub demandée puis récompensée.</p>
   </section>
 
   <section class="card" aria-labelledby="hUse">
@@ -322,6 +333,23 @@ th{color:var(--text2);font-weight:600}
       block('Glaçon d’aide (IA)', [['Questions sur 30 j :', nf.format(u.help.questions30)], ['Sans réponse sur 30 j :', nf.format(u.help.failed30)]],
         [u.help.dailyMax ? u.help.today / u.help.dailyMax * 100 : 0, 'Aujourd’hui : ' + u.help.today + ' sur ' + u.help.dailyMax + ' (limite du jour)']);
       block('Parler à un humain', [['Conversations sur 30 j :', nf.format(u.tickets.created30)]]);
+      if (u.health) block('Santé du serveur', [['Erreurs serveur sur 30 j :', nf.format(u.health.errors30)], ['Alertes envoyées sur 30 j :', nf.format(u.health.alerts30)],
+        ['E-mails de code aujourd’hui :', nf.format(u.health.codeMailsToday)], ['E-mails de code sur 30 j :', nf.format(u.health.codeMails30)]]);
+      var fu = u.funnel, fb = $('#funnel'); fb.textContent = '';
+      if (fu) {
+        var steps = [['Visites', fu.visits], ['Exports réussis', fu.exportOk], ['Pubs regardées', fu.adOk], ['Page des formules', fu.plansOpen], ['Fenêtre de paiement', fu.checkoutOpen], ['Premiers paiements', fu.paid]];
+        steps.forEach(function (st, i) {
+          var f = el('div', { class: 'f' }); f.append(el('b', null, st[0]), el('span', null, nf.format(st[1] || 0)));
+          var prev = i ? steps[i - 1][1] : 0;
+          f.append(el('i', null, i && prev ? Math.round((st[1] || 0) / prev * 100) + ' % de l’étape d’avant' : i ? '–' : (d.env === 'production' ? 'paiements réels' : 'paiements de test (sandbox)')));
+          fb.append(f);
+        });
+        var why = function (o) { return Object.keys(o || {}).map(function (k) { return k + ' ' + o[k]; }).join(', ') || '–'; };
+        var nb = $('#funnelNote');
+        nb.textContent = 'Exports commencés : ' + nf.format(fu.exportStart) + ' ; ratés : ' + nf.format(fu.exportFail) + ' (' + why(fu.exportFailWhy) + ') ; sur iPhone/iPad : ' +
+          nf.format(fu.ios.exportOk) + ' réussis, ' + nf.format(fu.ios.exportFail) + ' ratés. Pubs demandées : ' + nf.format(fu.adOffer) + '. Page des formules ouverte par : ' + why(fu.plansWhy) +
+          '. Compteurs anonymes (aucun cookie, rien sur la personne).';
+      }
       var tb = $('#users tbody'); tb.textContent = '';
       d.recentUsers.forEach(function (r) {
         var tr = el('tr'); tr.append(el('td', null, r.email), el('td', null, r.name || '–'), el('td', null, dateFr(r.createdAt, true)), el('td', null, r.verified ? 'oui' : 'non'), el('td', null, r.plan ? PLAN_NAME[r.plan] || r.plan : '–')); tb.append(tr);
