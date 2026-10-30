@@ -9,6 +9,8 @@ import { createR2 } from './fake-r2.mjs';
 import { onRequest } from '../../functions/api/[[path]].js';
 import { hmacSha256Hex, sha256Hex, base64url } from '../../functions/_lib/crypto.js';
 import { verifySignature } from '../../functions/_lib/paddle.js';
+import { FEATURES, LIMITS, planHas, entitlementsOf } from '../../functions/_lib/entitlements.js';
+import { parisDay, nextParisMidnight, sendReminders } from '../../functions/_lib/videos.js';
 import { verifyJwtSignature, decodeJwt } from '../../functions/_lib/jwt.js';
 import { resetJwksCache } from '../../functions/_lib/oauth.js';
 import { cleanPrompt, songPrompt, PROMPT_MAX } from '../../functions/_lib/lyrics.js';
@@ -75,6 +77,11 @@ globalThis.fetch = async (url, init = {}) => {
       update_subscription_payment_method: 'https://portal.example/pay/' + id, view_subscription: 'https://portal.example/view/' + id })) } } }, { status: 201 });
   m = url.match(/paddle\.com\/subscriptions\/(sub_\w+)\/cancel$/);
   if (m) return Response.json({ data: { id: m[1], status: 'canceled' } });
+  m = url.match(/paddle\.com\/subscriptions\/(sub_\w+)$/);
+  if (m && init.method === 'PATCH') return Response.json({ data: { id: m[1], status: 'active', items: body.items } });
+  m = url.match(/paddle\.com\/subscriptions\/(sub_\w+)\/preview$/);
+  if (m && init.method === 'PATCH') return Response.json({ data: { id: m[1], currency_code: 'EUR', immediate_transaction: body.proration_billing_mode === 'prorated_immediately'
+    ? { details: { totals: { grand_total: '2310', currency_code: 'EUR' } } } : null, update_summary: null } });
   return new Response('not mocked: ' + url, { status: 599 });
 };
 const origLog = console.log, origWarn = console.warn;
@@ -92,6 +99,8 @@ function makeEnv(extra = {}) {
     DB: createD1(join(root, 'migrations')),
     APP_ORIGIN: ORIGIN, PADDLE_ENV: 'sandbox', PADDLE_WEBHOOK_SECRET: WEBHOOK_SECRET, PADDLE_API_KEY: 'pdl_sdbx_apikey_test',
     PADDLE_CLIENT_TOKEN: 'test_clienttoken', PADDLE_PRICE_MONTH: 'pri_month', PADDLE_PRICE_YEAR: 'pri_year',
+    PADDLE_PRICE_BASIC_MONTH: 'pri_basic_m', PADDLE_PRICE_BASIC_YEAR: 'pri_basic_y', PADDLE_PRICE_PRO_MONTH: 'pri_pro_m',
+    PADDLE_PRICE_PRO_YEAR: 'pri_pro_y', PADDLE_PRICE_MAX_MONTH: 'pri_max_m', PADDLE_PRICE_MAX_YEAR: 'pri_max_y',
     RESEND_API_KEY: 're_test', ...extra,
   };
 }
@@ -170,13 +179,24 @@ function sub(userId, over = {}) {
 // ---- tests ------------------------------------------------------------------------------
 const tests = [];
 const test = (name, fn) => tests.push({ name, fn });
-const FREE_ENT = { plan: 'free', outro: true, cloudSave: false, clipMode: false, autoLyrics: false, packs: false };
-const PRO_ENT = { plan: 'pro', outro: false, cloudSave: true, clipMode: true, autoLyrics: true, packs: true };
+const FREE_ENT = { plan: 'free', features: [], limits: { videosPerDay: 1, lyricsPerDay: 0, lyricsMinutesPerDay: 0, cloudBytes: 0 },
+  outro: true, cloudSave: false, clipMode: false, autoLyrics: false, packs: false };
+const PRO_ENT = { plan: 'pro', features: ['unlimited', 'nologo', 'text', 'filters', 'clip', 'packs', 'pack5', 'pack10', 'lyrics', 'cloud'],
+  limits: { videosPerDay: null, lyricsPerDay: 20, lyricsMinutesPerDay: 90, cloudBytes: 20 * 1024 ** 3 },
+  outro: false, cloudSave: true, clipMode: true, autoLyrics: true, packs: true };
 
 test('config exposes only public settings; sign-in providers only when configured', async () => {
   let r = await call(makeEnv(), 'GET', '/api/config');
   assert.equal(r.status, 200);
-  assert.deepEqual(r.data.paddle, { environment: 'sandbox', clientToken: 'test_clienttoken', prices: { month: 'pri_month', year: 'pri_year' } });
+  assert.deepEqual(r.data.paddle, { environment: 'sandbox', clientToken: 'test_clienttoken', prices: {
+    basic: { month: 'pri_basic_m', year: 'pri_basic_y' }, pro: { month: 'pri_pro_m', year: 'pri_pro_y' }, max: { month: 'pri_max_m', year: 'pri_max_y' },
+    month: 'pri_pro_m', year: 'pri_pro_y' } });
+  assert.deepEqual(Object.keys(r.data.plans), ['basic', 'pro', 'max']);
+  assert.equal(r.data.plans.max.month.amount, '13.99');
+  assert.equal(r.data.planFeatures.human, 'max'); assert.equal(r.data.planFeatures.unlimited, 'basic');
+  // a plan whose prices are not set yet: null (the page says « bientôt »)
+  const cfg2 = await call(makeEnv({ PADDLE_PRICE_MAX_MONTH: '', PADDLE_PRICE_MAX_YEAR: undefined }), 'GET', '/api/config');
+  assert.deepEqual(cfg2.data.paddle.prices.max, { month: null, year: null });
   assert.deepEqual(r.data.auth.providers, []);
   assert.ok(!JSON.stringify(r.data).includes('pdl_sdbx_apikey_test'));
   assert.ok(!JSON.stringify(r.data).includes(WEBHOOK_SECRET));
@@ -1086,10 +1106,14 @@ test('oauth Apple: form_post callback, ES256 and RS256 keys, client secret = ES2
 // ---- online saving with media (R2, migration 0004) ------------------------------------------------
 const MiB = 1024 * 1024;
 let proN = 0;
-async function proUser(env, email) {
+// a subscriber: Pro by default (price of the first offer), or plan = 'basic' / 'pro' / 'max' (prices of the 30/10 offer)
+const PLAN_PRICE = { basic: 'pri_basic_m', pro: 'pri_pro_m', max: 'pri_max_m' };
+async function proUser(env, email, plan) {
   const u = await login(env, email);
   proN++;
-  await webhook(env, subEvent('subscription.created', sub(u.user.id, { id: 'sub_c' + proN, customer_id: 'ctm_c' + proN })));
+  const over = { id: 'sub_c' + proN, customer_id: 'ctm_c' + proN };
+  if (plan) over.items = [{ status: 'active', quantity: 1, price: { id: PLAN_PRICE[plan], product_id: 'pro_' + plan } }];
+  await webhook(env, subEvent('subscription.created', sub(u.user.id, over)));
   return u;
 }
 function bytes(n, seed = 1) { const b = new Uint8Array(n); let x = seed; for (let i = 0; i < n; i++) { x = (x * 1103515245 + 12345) >>> 0; b[i] = x >>> 24; } return b; }
@@ -1583,7 +1607,7 @@ test('help chat: open to everyone; guide kept on the server; turns checked; answ
   assert.equal(input.max_completion_tokens, 700);
   assert.deepEqual(input.chat_template_kwargs, { enable_thinking: false }, 'Gemma 4 thinking off');
   assert.equal(input.messages[0].role, 'system');
-  assert.ok(input.messages[0].content.includes('RÈGLES DE RÉPONSE') && input.messages[0].content.includes('9,99 €'), 'French guide');
+  assert.ok(input.messages[0].content.includes('RÈGLES DE RÉPONSE') && input.messages[0].content.includes('10,99 €'), 'French guide');
   assert.ok(input.messages[0].content.includes('Compte : pas connecté'));
   assert.ok(input.messages[0].content.includes('<page>\nÉtape ouverte : 4\n</page>'));
   assert.deepEqual(input.messages.slice(1), [{ role: 'user', content: 'Comment exporter ?' }]);
@@ -2103,7 +2127,7 @@ test('support (Pro): sign-in and Pro needed to start; account e-mail; owner told
   assert.deepEqual(r.data, { available: false });
 
   // a Pro member, nobody on the dashboard: the answer will go to the account's address
-  const pro = await proUser(env, 'fan@example.com');
+  const pro = await proUser(env, 'fan@example.com', 'max');
   for (const email of ['pas-un-mail', 'a@b', 'x@y.z<script>', 'a b@c.fr']) {
     r = await supportCall(env, 'POST', '/tickets', { cookie: pro.cookie, body: { lang: 'fr', message: 'Salut', email } });
     assert.equal(r.status, 400, email); assert.equal(r.data.error, 'invalid_email');
@@ -2121,7 +2145,7 @@ test('support (Pro): sign-in and Pro needed to start; account e-mail; owner told
   const toOwner = outbound.slice(n0).filter((o) => o.url.includes('resend'));
   assert.equal(toOwner.length, 1);
   assert.deepEqual(toOwner[0].body.to, ['contact@stalak.app']); assert.equal(toOwner[0].body.reply_to, 'fan@example.com');
-  assert.ok(toOwner[0].body.subject.startsWith('Stalak Pro : nouveau message'));
+  assert.ok(toOwner[0].body.subject.startsWith('Stalak Max : nouveau message'));
   assert.ok(toOwner[0].body.html.includes('&lt;script&gt;') && !toOwner[0].body.html.includes('<script>'));
   assert.ok(toOwner[0].body.text.includes('https://admin.stalak.app/admin/#t=' + id));
   // another address the member gives
@@ -2142,7 +2166,7 @@ test('support (Pro): sign-in and Pro needed to start; account e-mail; owner told
   // writing needs the Pro account that owns it, even with the token
   r = await supportCall(env, 'POST', `/tickets/${id}/messages`, { token: tk, body: { text: 'sans session' } });
   assert.equal(r.status, 401);
-  const otherPro = await proUser(env, 'other-pro@example.com');
+  const otherPro = await proUser(env, 'other-pro@example.com', 'max');
   r = await supportCall(env, 'POST', `/tickets/${id}/messages`, { cookie: otherPro.cookie, token: tk, body: { text: 'pas à moi' } });
   assert.equal(r.status, 404);
 
@@ -2244,7 +2268,7 @@ test('support (Pro): older conversations without an account stay readable, not w
   env.DB.raw.prepare("INSERT INTO ticket_messages (ticket_id, sender, body, created_at) VALUES (?, 'admin', 'Réponse d’avant', ?)").run(oldId, now);
   let r = await supportCall(env, 'GET', `/tickets/${oldId}`, { token: oldTok });
   assert.equal(r.status, 200); assert.equal(r.data.messages[0].text, 'Réponse d’avant');
-  const pro = await proUser(env, 'member@example.com');
+  const pro = await proUser(env, 'member@example.com', 'max');
   r = await supportCall(env, 'POST', `/tickets/${oldId}/messages`, { cookie: pro.cookie, token: oldTok, body: { text: 'Je continue' } });
   assert.equal(r.status, 404, 'a Pro member starts a new conversation instead');
   r = await adminCall(env, 'GET', '/api/admin/tickets', { token });
@@ -2258,7 +2282,7 @@ test('support (Pro): older conversations without an account stay readable, not w
   assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM tickets WHERE user_id IS NOT NULL').get().n, 0);
 
   // 5 new conversations per hour from one connection; messages cut at 2,000 characters; empty refused
-  const p2 = await proUser(env, 'busy@example.com');
+  const p2 = await proUser(env, 'busy@example.com', 'max');
   for (let i = 0; i < 5; i++) assert.equal((await supportCall(env, 'POST', '/tickets', { cookie: p2.cookie, ip: '10.30.0.1', body: { message: 'm' + i } })).status, 200);
   r = await supportCall(env, 'POST', '/tickets', { cookie: p2.cookie, ip: '10.30.0.1', body: { message: 'again' } });
   assert.equal(r.status, 429);
@@ -2422,6 +2446,286 @@ test('galerie: covers saved next to the project (Pro, owner only), listed with t
   r = await call(env, 'DELETE', '/api/account', { cookie: pro.cookie, body: { confirm: true } });
   assert.equal(r.status, 200);
   assert.equal(await media.get(`u/${pro.user.id}/p/proj_one/cover`), null);
+});
+
+
+// ---- offer of 30/10/2026: plans (entitlements.js), free video of the day and reminders (videos.js) — domaine Comptes ----
+test('plans: one table feature → plan; each plan has the features of the plans before it; limits by plan', () => {
+  assert.deepEqual(Object.keys(FEATURES).sort(), ['clip', 'cloud', 'filters', 'human', 'lyrics', 'nologo', 'pack10', 'pack30', 'pack5', 'packs', 'text', 'unlimited']);
+  for (const f of ['unlimited', 'nologo', 'text']) assert.ok(!planHas('free', f) && planHas('basic', f) && planHas('pro', f) && planHas('max', f), f);
+  for (const f of ['filters', 'clip', 'packs', 'pack5', 'pack10', 'lyrics', 'cloud']) assert.ok(!planHas('basic', f) && planHas('pro', f) && planHas('max', f), f);
+  for (const f of ['pack30', 'human']) assert.ok(!planHas('pro', f) && planHas('max', f), f);
+  assert.equal(LIMITS.pro.lyricsPerDay, 20); assert.equal(LIMITS.max.lyricsPerDay, 60);
+  assert.equal(LIMITS.pro.cloudBytes, 20 * 1024 ** 3); assert.equal(LIMITS.max.cloudBytes, 100 * 1024 ** 3);
+  assert.equal(LIMITS.free.videosPerDay, 1); assert.equal(LIMITS.basic.videosPerDay, null);
+  assert.equal(entitlementsOf('nope').plan, 'free', 'an unknown plan unlocks nothing');
+});
+
+test('plans: the webhook finds the plan from the price (or the price custom_data); old Pro prices stay Pro; each route asks its plan', async () => {
+  const AI = fakeAI(), env = makeEnv({ AI, MEDIA: createR2() });
+  const basic = await proUser(env, 'basic@example.com', 'basic'), pro = await proUser(env, 'pro@example.com', 'pro');
+  const max = await proUser(env, 'max@example.com', 'max'), old = await proUser(env, 'old@example.com');
+  const plan = async (u) => (await call(env, 'GET', '/api/me', { cookie: u.cookie })).data;
+  assert.equal((await plan(basic)).entitlements.plan, 'basic');
+  assert.equal((await plan(pro)).entitlements.plan, 'pro');
+  assert.equal((await plan(max)).entitlements.plan, 'max');
+  assert.equal((await plan(old)).entitlements.plan, 'pro', 'the first offer (9.99 € / 79 €) stays Pro: a subscriber keeps his price');
+  assert.equal((await plan(max)).subscription.plan, 'max'); assert.equal((await plan(max)).subscription.interval, 'month');
+  assert.equal(env.DB.raw.prepare("SELECT plan FROM subscriptions WHERE user_id = ?").get(max.user.id).plan, 'max');
+  // a price not in wrangler.toml but with {"plan": "basic"} in its custom_data (set in Paddle)
+  const cd = await login(env, 'cd@example.com');
+  await webhook(env, subEvent('subscription.created', sub(cd.user.id, { id: 'sub_cd', customer_id: 'ctm_cd',
+    items: [{ status: 'active', quantity: 1, price: { id: 'pri_other', product_id: 'pro_x', custom_data: { plan: 'basic' } } }] })));
+  assert.equal((await plan(cd)).entitlements.plan, 'basic');
+  // Basic: no online saving, no lyrics, no « humain »; but unlimited videos and no logo
+  let r = await call(env, 'GET', '/api/projects', { cookie: basic.cookie });
+  assert.equal(r.status, 403); assert.equal(r.data.error, 'pro_required'); assert.equal(r.data.need, 'pro');
+  r = await transcribe(env, basic.cookie);
+  assert.equal(r.status, 403); assert.equal(r.data.need, 'pro');
+  r = await call(env, 'POST', '/api/support/tickets', { cookie: pro.cookie, body: { lang: 'fr', message: 'Salut' } });
+  assert.equal(r.status, 403); assert.equal(r.data.error, 'pro_required'); assert.equal(r.data.need, 'max', '« Parler à un humain »: Max only');
+  r = await call(env, 'POST', '/api/support/tickets', { cookie: max.cookie, body: { lang: 'fr', message: 'Salut' } });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  // online space: 20 GB in Pro, 100 GB in Max
+  r = await call(env, 'GET', '/api/projects', { cookie: pro.cookie });
+  assert.equal(r.data.storage.quota, 20 * 1024 ** 3);
+  r = await call(env, 'GET', '/api/projects', { cookie: max.cookie });
+  assert.equal(r.data.storage.quota, 100 * 1024 ** 3);
+  // Max → Pro with more than 20 GB online: nothing erased, but no new save until it fits again
+  r = await call(env, 'PUT', '/api/projects/big_one', { cookie: pro.cookie, body: { name: 'Gros', state: { app: 'stalak' } } });
+  assert.equal(r.status, 200);
+  env.DB.raw.prepare('UPDATE projects SET size = ? WHERE user_id = ?').run(21 * 1024 ** 3, pro.user.id);
+  r = await call(env, 'PUT', '/api/projects/big_one', { cookie: pro.cookie, body: { name: 'Gros 2', state: { app: 'stalak' } } });
+  assert.equal(r.status, 413); assert.equal(r.data.error, 'quota_exceeded');
+  r = await call(env, 'GET', '/api/projects', { cookie: pro.cookie });
+  assert.equal(r.data.projects.length, 1, 'kept');
+  // automatic lyrics: 20 a day in Pro, 60 in Max
+  const day = new Date().toISOString().slice(0, 10);
+  for (const u of [pro, max]) env.DB.raw.prepare('INSERT INTO lyrics_usage (user_id, day, jobs, pieces, seconds, updated_at) VALUES (?, ?, 20, 20, 60, ?)').run(u.user.id, day, Date.now());
+  r = await transcribe(env, pro.cookie, { job: 'job_pro00021' });
+  assert.equal(r.status, 429); assert.equal(r.data.limit, 20);
+  r = await transcribe(env, max.cookie, { job: 'job_max00021' });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  env.DB.raw.prepare('UPDATE lyrics_usage SET jobs = 60 WHERE user_id = ?').run(max.user.id);
+  r = await transcribe(env, max.cookie, { job: 'job_max00061' });
+  assert.equal(r.status, 429); assert.equal(r.data.limit, 60);
+});
+
+test('plans: change of plan on the same subscription: up now prorated (amount shown first), down at the renewal; checks', async () => {
+  const env = makeEnv();
+  const pro = await proUser(env, 'up@example.com', 'pro');
+  const sid = env.DB.raw.prepare('SELECT id, customer_id FROM subscriptions WHERE user_id = ?').get(pro.user.id);
+  const patches = (n0) => outbound.slice(n0).filter((x) => /paddle\.com\/subscriptions\/sub_c\d+(\/preview)?$/.test(x.url));
+  const paddleSays = (price) => webhook(env, subEvent('subscription.updated', sub(pro.user.id, { id: sid.id, customer_id: sid.customer_id,
+    items: [{ status: 'active', quantity: 1, price: { id: price, product_id: 'pro_x' } }] })));
+  const planNow = async () => (await call(env, 'GET', '/api/me', { cookie: pro.cookie })).data.entitlements.plan;
+  // up (Pro monthly → Max yearly): the amount first (preview: nothing changes), then the change, prorated now
+  let n0 = outbound.length;
+  let r = await call(env, 'POST', '/api/paddle/change', { cookie: pro.cookie, body: { plan: 'max', interval: 'year', preview: true } });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.deepEqual([r.data.kind, r.data.amount, r.data.currency], ['up', 2310, 'EUR']);
+  let p = patches(n0); assert.equal(p.length, 1); assert.ok(p[0].url.endsWith('/preview'));
+  n0 = outbound.length;
+  r = await call(env, 'POST', '/api/paddle/change', { cookie: pro.cookie, body: { plan: 'max', interval: 'year' } });
+  assert.equal(r.status, 200, JSON.stringify(r.data)); assert.equal(r.data.from, 'pro'); assert.equal(r.data.to, 'max');
+  p = patches(n0); assert.equal(p.length, 1); assert.equal(p[0].method, 'PATCH');
+  assert.deepEqual(p[0].body, { items: [{ price_id: 'pri_max_y', quantity: 1 }], proration_billing_mode: 'prorated_immediately', on_payment_failure: 'prevent_change' });
+  assert.equal(await planNow(), 'pro', 'the plan changes when Paddle says so (webhook)');
+  await paddleSays('pri_max_y');
+  assert.equal(await planNow(), 'max');
+  r = await call(env, 'POST', '/api/paddle/change', { cookie: pro.cookie, body: { plan: 'max', interval: 'year' } });
+  assert.equal(r.status, 409); assert.equal(r.data.error, 'same_plan');
+  // down (Max yearly → Pro yearly): at the renewal, nothing refunded; Max kept until the end of the period paid
+  n0 = outbound.length;
+  r = await call(env, 'POST', '/api/paddle/change', { cookie: pro.cookie, body: { plan: 'pro', interval: 'year', preview: true } });
+  assert.deepEqual([r.data.kind, r.data.amount], ['down', 0]); assert.ok(r.data.effectiveAt);
+  r = await call(env, 'POST', '/api/paddle/change', { cookie: pro.cookie, body: { plan: 'pro', interval: 'year' } });
+  assert.equal(r.status, 200); assert.equal(r.data.kind, 'down');
+  p = patches(n0).filter((x) => !x.url.endsWith('/preview'));
+  assert.equal(p[0].body.proration_billing_mode, 'full_next_billing_period');
+  await paddleSays('pri_pro_y');
+  assert.equal(await planNow(), 'max', 'Max stays until the renewal');
+  // back up to Max in the same period: already paid, no new charge
+  n0 = outbound.length;
+  r = await call(env, 'POST', '/api/paddle/change', { cookie: pro.cookie, body: { plan: 'max', interval: 'year', preview: true } });
+  assert.equal(r.data.amount, 0);
+  r = await call(env, 'POST', '/api/paddle/change', { cookie: pro.cookie, body: { plan: 'max', interval: 'year' } });
+  assert.equal(patches(n0).filter((x) => !x.url.endsWith('/preview'))[0].body.proration_billing_mode, 'do_not_bill');
+  await paddleSays('pri_max_y');
+  assert.equal(await planNow(), 'max');
+  // down again, then the period ends: Pro
+  await call(env, 'POST', '/api/paddle/change', { cookie: pro.cookie, body: { plan: 'pro', interval: 'year' } });
+  await paddleSays('pri_pro_y');
+  env.DB.raw.prepare('UPDATE subscriptions SET keep_until = ? WHERE id = ?').run(Date.now() - 1000, sid.id);
+  assert.equal(await planNow(), 'pro');
+  // a smaller plan with another billing interval: refused (Paddle cannot schedule it)
+  r = await call(env, 'POST', '/api/paddle/change', { cookie: pro.cookie, body: { plan: 'basic', interval: 'month' } });
+  assert.equal(r.status, 409); assert.equal(r.data.error, 'change_at_renewal');
+  // checks
+  r = await call(env, 'POST', '/api/paddle/change', { cookie: pro.cookie, body: { plan: 'gold', interval: 'year' } });
+  assert.equal(r.status, 400);
+  r = await call(env, 'POST', '/api/paddle/change', { cookie: pro.cookie, body: { plan: 'basic', interval: 'year' }, origin: 'https://evil.example' });
+  assert.equal(r.status, 403, 'CSRF: Origin checked');
+  const free = await login(env, 'nosub@example.com');
+  r = await call(env, 'POST', '/api/paddle/change', { cookie: free.cookie, body: { plan: 'pro', interval: 'month' } });
+  assert.equal(r.status, 404); assert.equal(r.data.error, 'no_subscription');
+  r = await call(env, 'POST', '/api/paddle/change', { body: { plan: 'pro', interval: 'month' } });
+  assert.equal(r.status, 401);
+  const env2 = makeEnv({ PADDLE_PRICE_MAX_MONTH: '' });
+  const p2 = await proUser(env2, 'p2@example.com', 'pro');
+  r = await call(env2, 'POST', '/api/paddle/change', { cookie: p2.cookie, body: { plan: 'max', interval: 'month' } });
+  assert.equal(r.status, 409); assert.equal(r.data.error, 'not_configured');
+});
+
+test('free video of the day: account needed, 1 per Paris day, same video again allowed, paid plans unlimited; next day ok', async () => {
+  const env = makeEnv();
+  let r = await call(env, 'POST', '/api/videos/claim', { body: { video: 'vid_aaaa1111' } });
+  assert.equal(r.status, 401); assert.equal(r.data.error, 'not_logged_in');
+  const free = await login(env, 'daily@example.com');
+  r = await call(env, 'POST', '/api/videos/claim', { cookie: free.cookie, body: { video: 'x' } });
+  assert.equal(r.status, 400);
+  r = await call(env, 'POST', '/api/videos/claim', { cookie: free.cookie, body: { video: 'vid_aaaa1111' } });
+  assert.equal(r.status, 200, JSON.stringify(r.data)); assert.equal(r.data.unlimited, false); assert.equal(r.data.day, parisDay());
+  assert.match(r.data.token, /^[A-Za-z0-9_-]{20,}$/); const token = r.data.token;
+  assert.equal(Date.parse(r.data.nextAt), nextParisMidnight());
+  // the same video again (export failed or cancelled): same token, not counted twice
+  r = await call(env, 'POST', '/api/videos/claim', { cookie: free.cookie, body: { video: 'vid_aaaa1111' } });
+  assert.equal(r.status, 200); assert.equal(r.data.token, token);
+  // another video the same day: refused, with the time of the next one
+  r = await call(env, 'POST', '/api/videos/claim', { cookie: free.cookie, body: { video: 'vid_bbbb2222' } });
+  assert.equal(r.status, 429); assert.equal(r.data.error, 'daily_video_used'); assert.equal(Date.parse(r.data.nextAt), nextParisMidnight());
+  r = await call(env, 'GET', '/api/me', { cookie: free.cookie });
+  assert.equal(r.data.freeVideo.usedToday, true);
+  assert.equal(env.DB.raw.prepare("SELECT n FROM daily_counts WHERE name = 'free_video'").get().n, 1);
+  // the next Paris day: a new one
+  env.DB.raw.prepare('UPDATE free_videos SET day = ? WHERE user_id = ?').run('2000-01-01', free.user.id);
+  r = await call(env, 'POST', '/api/videos/claim', { cookie: free.cookie, body: { video: 'vid_bbbb2222' } });
+  assert.equal(r.status, 200);
+  // paid plans: unlimited, nothing counted
+  const basic = await proUser(env, 'unl@example.com', 'basic');
+  for (const v of ['vid_c1111111', 'vid_c2222222', 'vid_c3333333']) {
+    r = await call(env, 'POST', '/api/videos/claim', { cookie: basic.cookie, body: { video: v } });
+    assert.equal(r.status, 200); assert.equal(r.data.unlimited, true);
+  }
+  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM free_videos WHERE user_id = ?').get(basic.user.id).n, 0);
+  r = await call(env, 'GET', '/api/me', { cookie: basic.cookie });
+  assert.equal(r.data.freeVideo, null);
+  // the account goes: its rows too
+  r = await call(env, 'DELETE', '/api/account', { cookie: free.cookie, body: { confirm: true } });
+  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM free_videos WHERE user_id = ?').get(free.user.id).n, 0);
+});
+
+test('Paris time: the day starts at midnight in Paris, summer (UTC+2) and winter (UTC+1)', () => {
+  assert.equal(parisDay(Date.parse('2026-07-01T21:59:00Z')), '2026-07-01');
+  assert.equal(parisDay(Date.parse('2026-07-01T22:00:00Z')), '2026-07-02');
+  assert.equal(parisDay(Date.parse('2026-12-01T22:59:00Z')), '2026-12-01');
+  assert.equal(parisDay(Date.parse('2026-12-01T23:00:00Z')), '2026-12-02');
+  assert.equal(new Date(nextParisMidnight(Date.parse('2026-07-01T10:00:00Z'))).toISOString(), '2026-07-01T22:00:00.000Z');
+  assert.equal(new Date(nextParisMidnight(Date.parse('2026-12-01T10:00:00Z'))).toISOString(), '2026-12-01T23:00:00.000Z');
+  // the night of the change of hour (25/10/2026)
+  assert.equal(new Date(nextParisMidnight(Date.parse('2026-10-24T23:30:00Z'))).toISOString(), '2026-10-25T23:00:00.000Z');
+});
+
+test('reminders: box at sign-up or in the account; 1 a day, only the day after a free video, stop after 7 days away; unsubscribe link', async () => {
+  const env = makeEnv();
+  // the box at sign-up
+  let r = await call(env, 'POST', '/api/auth/signup', { body: { email: 'remind@example.com', password: PW, lang: 'en', reminders: true } });
+  r = await call(env, 'POST', '/api/auth/signup/verify', { body: { email: 'remind@example.com', code: lastCode('remind@example.com') } });
+  const a = { cookie: r.jar('stalak_s'), user: r.data.user };
+  assert.equal(r.data.user.reminders, true);
+  // the proof of the consent: date, exact words of the box, language
+  let proof = JSON.parse(env.DB.raw.prepare('SELECT reminders_proof FROM users WHERE id = ?').get(a.user.id).reminders_proof);
+  assert.deepEqual([proof.text, proof.lang, proof.from], ['Email me when my video of the day is ready', 'en', 'signup']); assert.ok(proof.at > 0);
+  const b = await login(env, 'noremind@example.com');
+  assert.equal(b.user.reminders, false, 'not ticked: no reminder');
+  // in the account
+  r = await call(env, 'PATCH', '/api/me', { cookie: b.cookie, body: { reminders: 'yes' } });
+  assert.equal(r.status, 400);
+  r = await call(env, 'PATCH', '/api/me', { cookie: b.cookie, body: { reminders: true, lang: 'fr' } });
+  assert.equal(r.status, 200); assert.equal(r.data.user.reminders, true);
+  proof = JSON.parse(env.DB.raw.prepare('SELECT reminders_proof FROM users WHERE id = ?').get(b.user.id).reminders_proof);
+  assert.deepEqual([proof.text, proof.lang, proof.from], ['Me prévenir par e-mail quand ma vidéo du jour est disponible', 'fr', 'account']);
+  const c = await login(env, 'away@example.com');
+  await call(env, 'PATCH', '/api/me', { cookie: c.cookie, body: { reminders: true } });
+  const d = await proUser(env, 'paid@example.com', 'basic');
+  await call(env, 'PATCH', '/api/me', { cookie: d.cookie, body: { reminders: true } });
+
+  // yesterday (Paris), all four made a free video; c has not visited for 8 days; d is now a subscriber
+  const now = Date.parse('2026-11-10T10:30:00Z');   // 11:30 in Paris
+  const today = parisDay(now), yesterday = '2026-11-09';
+  for (const u of [a, b, c, d]) env.DB.raw.prepare("INSERT INTO free_videos (user_id, day, video, token, created_at) VALUES (?, ?, 'vid_x0000000', 'tok', ?)").run(u.user.id, yesterday, now - 864e5);
+  env.DB.raw.prepare('UPDATE users SET last_seen_at = ? WHERE id IN (?, ?, ?)').run(now - 3600e3, a.user.id, b.user.id, d.user.id);
+  env.DB.raw.prepare('UPDATE users SET last_seen_at = ?, last_login_at = ?, created_at = ? WHERE id = ?').run(now - 8 * 864e5, now - 8 * 864e5, now - 9 * 864e5, c.user.id);
+  // b already made today's video: no reminder needed
+  env.DB.raw.prepare("INSERT INTO free_videos (user_id, day, video, token, created_at) VALUES (?, ?, 'vid_y0000000', 'tok', ?)").run(b.user.id, today, now - 600e3);
+
+  // old counter rows are erased (100 days)
+  env.DB.raw.prepare("INSERT INTO free_videos (user_id, day, video, token, created_at) VALUES (?, '2026-07-01', 'vid_old00000', 'tok', 0)").run(c.user.id);
+  // at night: nothing sent
+  let n0 = outbound.length;
+  let out = await sendReminders(env, Date.parse('2026-11-10T04:00:00Z'));
+  assert.equal(out.idle, true); assert.equal(outbound.length, n0);
+  n0 = outbound.length;
+  out = await sendReminders(env, now);
+  assert.equal(env.DB.raw.prepare("SELECT COUNT(*) AS n FROM free_videos WHERE day = '2026-07-01'").get().n, 0, 'rows older than 100 days erased');
+  const sent = outbound.slice(n0).filter((x) => x.url === 'https://api.resend.com/emails');
+  assert.deepEqual(sent.map((x) => x.body.to[0]), ['remind@example.com'], JSON.stringify(out));
+  const mail = sent[0].body;
+  assert.equal(mail.subject, 'Your free video of the day is ready');
+  const stop = mail.headers['List-Unsubscribe'].slice(1, -1);
+  assert.match(stop, /^https:\/\/stalak\.app\/api\/reminders\/stop\?u=u_[0-9a-f]+&t=[A-Za-z0-9_-]{32}$/);
+  assert.equal(mail.headers['List-Unsubscribe-Post'], 'List-Unsubscribe=One-Click');
+  assert.ok(mail.html.includes(stop) && mail.text.includes(stop) && mail.html.includes('Stop this reminder'));
+  assert.ok(!/Basic|Pro|€/.test(mail.text), 'nothing else in it: no offer');
+  // at most 1 a day: a second run sends nothing
+  n0 = outbound.length;
+  await sendReminders(env, now + 3600e3);
+  assert.equal(outbound.slice(n0).filter((x) => x.url === 'https://api.resend.com/emails').length, 0);
+
+  // unsubscribe: wrong key → nothing; the link stops it at once, without signing in
+  const path = stop.replace('https://stalak.app', '');
+  r = await call(env, 'GET', path.replace(/t=[^&]+$/, 't=' + 'A'.repeat(32)));
+  assert.equal(r.status, 404, 'wrong key');
+  r = await call(env, 'POST', path.replace(/t=[^&]+$/, 't=' + 'A'.repeat(32)), { raw: 'List-Unsubscribe=One-Click', ct: 'application/x-www-form-urlencoded', origin: null });
+  assert.equal(r.status, 404);
+  assert.equal(env.DB.raw.prepare('SELECT reminders FROM users WHERE id = ?').get(a.user.id).reminders, 1);
+  r = await call(env, 'GET', path);
+  assert.equal(r.status, 200); assert.ok(String(r.data).includes('won’t get the'));
+  assert.equal(env.DB.raw.prepare('SELECT reminders FROM users WHERE id = ?').get(a.user.id).reminders, 0);
+  // one click from the mail app: a form POST without Origin (b's link)
+  env.DB.raw.prepare('UPDATE users SET reminder_key = ? WHERE id = ?').run('B'.repeat(32), b.user.id);
+  r = await call(env, 'POST', `/api/reminders/stop?u=${b.user.id}&t=${'B'.repeat(32)}`, { raw: 'List-Unsubscribe=One-Click', ct: 'application/x-www-form-urlencoded', origin: null });
+  assert.equal(r.status, 200);
+  assert.equal(env.DB.raw.prepare('SELECT reminders FROM users WHERE id = ?').get(b.user.id).reminders, 0);
+  r = await call(env, 'GET', '/api/me', { cookie: a.cookie });
+  assert.equal(r.data.user.reminders, false);
+  // the cron route needs its secret
+  r = await call(env, 'POST', '/api/cron/reminders', { body: {} });
+  assert.equal(r.status, 404);
+});
+
+test('dashboard: subscribers and revenue per plan, free videos of the day', async () => {
+  const env = makeEnv(ADMIN_ENV), token = await accessToken();
+  const users = { basic: await proUser(env, 'db-b@example.com', 'basic'), pro: await proUser(env, 'db-p@example.com', 'pro'),
+    max: await proUser(env, 'db-m@example.com', 'max'), old: await proUser(env, 'db-o@example.com') };
+  const tx = (id, uid, price, total) => webhook(env, subEvent('transaction.completed', { id, customer_id: 'ctm_x', custom_data: { user_id: uid },
+    origin: 'web', billed_at: new Date().toISOString(), items: [{ price: { id: price } }], details: { totals: { grand_total: String(total), tax: '0', currency_code: 'EUR' } } }));
+  await tx('txn_b', users.basic.user.id, 'pri_basic_m', 499);
+  await tx('txn_m', users.max.user.id, 'pri_max_m', 1399);
+  await tx('txn_o', users.old.user.id, 'pri_month', 999);
+  const f = await login(env, 'db-f@example.com');
+  await call(env, 'POST', '/api/videos/claim', { cookie: f.cookie, body: { video: 'vid_dash0001' } });
+  const r = await adminCall(env, 'GET', '/api/admin/stats?days=7', { token });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  const t = r.data.totals;
+  assert.equal(t.pro.total, 4, 'every paying subscriber');
+  assert.equal(t.plans.basic.total, 1); assert.equal(t.plans.pro.total, 2); assert.equal(t.plans.max.total, 1);
+  assert.equal(t.plans.basic.mrrCents, 499); assert.equal(t.plans.max.mrrCents, 1399);
+  assert.equal(t.plans.pro.mrrCents, 1099 + 999, 'the first offer counts at its own price');
+  assert.equal(t.mrrCents, 499 + 1099 + 999 + 1399);
+  assert.equal(t.plans.basic.revenue.EUR.total, 499); assert.equal(t.plans.max.revenue30.EUR.total, 1399); assert.equal(t.plans.pro.revenue.EUR.total, 999);
+  assert.equal(r.data.usage.freeVideos.today, 1);
+  assert.ok(r.data.recentUsers.find((u) => u.email === 'db-m@example.com').plan === 'max');
 });
 
 // ---- runner --------------------------------------------------------------------------

@@ -3,8 +3,9 @@ Python Playwright (chromium).
 
     python3 /abs/path/tests/ui/formules_ui.py <path of a built public/ folder> [folder for screenshots]
 
-The account side (Comptes) is played by the test: window.acctHas(feat), window.acctQuota(), window.acctUseVideo() are set
-for each plan, and acctOpen is watched to check that each padlock opens the plans page on the right plan."""
+The account side (Comptes) is played by the test: acctHas(feat), acctQuota(), acctUseVideo() (the account block of app.js)
+are replaced inside the app for each plan, and acctOpen is watched to check that each padlock opens the plans page on the
+right plan. At the end, Comptes' own functions are put back and a visitor signed out is checked."""
 import functools, http.server, os, shutil, sys, tempfile, threading
 os.environ.setdefault('PLAYWRIGHT_BROWSERS_PATH', '/opt/pw-browsers')
 from playwright.sync_api import sync_playwright
@@ -36,10 +37,11 @@ def ev(pg, code):
 def setup(pg, plan, left=1, signed=True):
     feats = PLANS[plan]
     pg.evaluate("""([feats, left, signed]) => {
-      window.acctHas = f => feats.includes(f);
+      window.__feats = feats;
       window.__q = { left, resetAt: Date.now() + (5 * 60 + 12) * 60000 };
-      window.acctQuota = () => window.__q;
-      window.__used = 0; window.acctUseVideo = async () => { window.__used++; window.__q.left = Math.max(0, window.__q.left - 1); };
+      window.__used = 0;
+      if (!window.__real) window.__real = __ev("({ acctHas, acctQuota, acctUseVideo })");
+      __ev("acctHas = f => window.__feats.includes(f); acctQuota = () => window.__q; acctUseVideo = async () => { window.__used++; window.__q.left = Math.max(0, window.__q.left - 1); }");
       window.__open = null;
       __ev("acctOpen = (why, o) => { window.__open = [why, o && o.plan || null]; }");
       __ev("beginExport = () => { window.__began = true; throw new Error('test : export arrêté ici'); }");
@@ -138,10 +140,10 @@ def run(b, base, lang, phone):
     ev(pg, "$('#packSel').value = '30'"); pg.dispatch_event('#packSel', 'change')
     check(tag + ' max : pack de 30 sans cadenas', not pg.evaluate("() => document.querySelector('#packBtn').classList.contains('protag')") and ev(pg, "can('pack30')"))
 
-    # ---- before Comptes delivers acctHas: the rule of before (everything with Stalak Pro) ----
-    pg.evaluate("() => { delete window.acctHas; delete window.acctQuota; delete window.acctUseVideo; }")
-    ev(pg, "textGate(); planTags(); filtUI()")
-    check(tag + ' sans acctHas : comme avant (logo, Clip Pro, pas de limite du jour)', ev(pg, "outroOn() && !can('clip') && dayGate()"))
+    # ---- Comptes' own functions, signed out: the free plan, and an export asks for a free account ----
+    pg.evaluate('() => __ev("acctHas = window.__real.acctHas; acctQuota = window.__real.acctQuota; acctUseVideo = window.__real.acctUseVideo; ACCT.state.user = null; textGate(); planTags(); filtUI()")')
+    o = lock(pg, "setFilter('nb', true), exportOne()")
+    check(tag + ' fonctions de Comptes, sans compte : logo, Clip fermé, export → compte gratuit', ev(pg, "outroOn() && !can('clip') && !can('filters')") and o == [['daily', None], False], o)
     check(tag + ' aucune erreur dans la page', not errs, errs)
     ctx.close()
 

@@ -1,11 +1,12 @@
-# Scheduled Worker "stalak-cloud-cleanup": the 6-month rule of online saving (see index.js and BACKEND.md, step 11).
+# Scheduled Worker "stalak-cloud-cleanup": the 6-month rule of online saving (see index.js and BACKEND.md, step 11),
+# and the reminder e-mails « Ta vidéo gratuite du jour est disponible » (BACKEND.md, step 14).
 # Separate from the Pages project; deploy it with:  npx wrangler deploy -c workers/cloud-cleanup/wrangler.toml
 name = "stalak-cloud-cleanup"
 main = "index.js"
 compatibility_date = "2026-06-01"
 
 [triggers]
-crons = ["17 3 * * *"]   # every day at 03:17 UTC
+crons = ["17 3 * * *", "41 9 * * *", "41 15 * * *"]   # 03:17 UTC: the 6-month rule; 09:41 and 15:41 UTC: the reminder e-mails (videos.js)
 
 [vars]
 APP_ORIGIN = "https://stalak.app"

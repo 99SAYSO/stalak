@@ -12,13 +12,13 @@
 // The binding is env.MEDIA (wrangler.toml [[r2_buckets]]). Without it, everything here answers 503 cloud_unavailable and
 // the app hides the feature: the rest of the site keeps working.
 import { HttpError, json, readJson, isDev } from './http.js';
-import { requirePro } from './entitlements.js';
+import { requirePlan, LIMITS } from './entitlements.js';
 import { limit, hit } from './ratelimit.js';
 import { sniffImage } from './profile.js';
 
 export const PART_SIZE = 8 * 1024 * 1024;                 // 8 MiB: above R2's 5 MiB minimum, far below the 100 MB body limit
 export const MAX_FILE_BYTES = 4 * 1024 * 1024 * 1024;     // 4 GiB per file (512 parts)
-export const DEFAULT_QUOTA = 20 * 1024 * 1024 * 1024;     // 20 GiB per Pro user (CLOUD_QUOTA_BYTES can change it)
+export const DEFAULT_QUOTA = LIMITS.pro.cloudBytes;       // 20 GiB in Pro, 100 GiB in Max (entitlements.js LIMITS)
 export const MAX_FILES_PER_PROJECT = 64;
 export const FILE_ID = /^[A-Za-z0-9_-]{8,64}$/;
 const MEDIA_TYPE = /^(audio|video)\/[a-z0-9][a-z0-9.+-]{0,60}$/;
@@ -30,9 +30,13 @@ export const ORPHAN_MS = 2 * DAY;          // files whose project was never save
 export const CLEANUP_EVERY_MS = 6 * 3600e3;
 
 export const cloudAvailable = (env) => !!(env.MEDIA && typeof env.MEDIA.get === 'function');
-export const quotaOf = (env) => {
+// The space of a plan (entitlements.js). CLOUD_QUOTA_BYTES (tests, or an emergency) replaces the Pro space; Max keeps
+// the same ratio (5 times Pro).
+export const quotaOf = (env, plan = 'pro') => {
   const q = Number(env.CLOUD_QUOTA_BYTES);
-  return Number.isFinite(q) && q > 0 ? q : DEFAULT_QUOTA;
+  const base = (LIMITS[plan] && LIMITS[plan].cloudBytes) || 0;
+  if (Number.isFinite(q) && q > 0 && base) return Math.round(q * base / LIMITS.pro.cloudBytes);
+  return base;
 };
 const keyOf = (userId, projectId, fileId) => `u/${userId}/p/${projectId}/${fileId}`;
 const partsCount = (size) => Math.max(1, Math.ceil(size / PART_SIZE));
@@ -50,8 +54,8 @@ export async function usedBytes(env, userId) {
   return Number(r.n) || 0;
 }
 
-export async function storageInfo(env, userId) {
-  return { available: cloudAvailable(env), used: await usedBytes(env, userId), quota: quotaOf(env), partSize: PART_SIZE, maxFile: MAX_FILE_BYTES };
+export async function storageInfo(env, userId, plan = 'pro') {
+  return { available: cloudAvailable(env), used: await usedBytes(env, userId), quota: quotaOf(env, plan), partSize: PART_SIZE, maxFile: MAX_FILE_BYTES };
 }
 
 function cleanName(v) {
@@ -231,7 +235,7 @@ async function uploadState(env, row) {
 // POST {fileId, name, type, size}: reserves the size in the quota and starts the upload (or says the file is already there).
 async function createUpload(request, env, user, projectId) {
   needCloud(env);
-  await requirePro(env, user, HttpError);
+  const plan = await requirePlan(env, user, 'cloud');
   const b = await readJson(request);
   const fileId = String(b.fileId || '');
   if (!FILE_ID.test(fileId)) throw new HttpError(400, 'invalid_file_id', 'File id: 8-64 letters, digits, - or _.');
@@ -253,7 +257,7 @@ async function createUpload(request, env, user, projectId) {
   const c = await env.DB.prepare('SELECT COUNT(*) AS n FROM project_files WHERE user_id = ?1 AND project_id = ?2').bind(user.id, projectId).first();
   if (c.n >= MAX_FILES_PER_PROJECT) throw new HttpError(409, 'too_many_files', `At most ${MAX_FILES_PER_PROJECT} files per project.`);
 
-  const quota = quotaOf(env), now = Date.now();
+  const quota = quotaOf(env, plan), now = Date.now();
   // one statement: the quota check and the reservation cannot be split by another upload running at the same time
   const ins = await env.DB.prepare(
     `INSERT INTO project_files (user_id, project_id, id, name, type, size, status, upload_id, created_at, updated_at)
@@ -286,7 +290,7 @@ function bodyLength(request) {
 }
 async function uploadingRow(env, user, projectId, fileId) {
   needCloud(env);
-  await requirePro(env, user, HttpError);
+  await requirePlan(env, user, 'cloud');
   const row = await fileRow(env, user.id, projectId, fileId);
   if (!row) throw new HttpError(404, 'not_found', 'Upload not found: start it again.');
   if (row.status !== 'uploading') throw new HttpError(409, 'already_uploaded', 'This file is already saved.');
@@ -370,7 +374,7 @@ export function parseRange(h, size) {
 
 // GET: the file, streamed from R2, only for its owner. Range requests get 206 (a <video> can seek).
 async function download(request, env, user, projectId, fileId) {
-  await requirePro(env, user, HttpError);
+  await requirePlan(env, user, 'cloud');
   needCloud(env);
   const row = await fileRow(env, user.id, projectId, fileId);
   if (!row || row.status !== 'ready') throw new HttpError(404, 'not_found', 'File not found.');

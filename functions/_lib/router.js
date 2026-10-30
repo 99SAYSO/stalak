@@ -3,13 +3,15 @@ import { HttpError, json, errorResponse, checkCsrf, readJson, readText, clearSes
 import { currentUser, requireUser, logout, loginPassword, setPassword, recentCodeSession, signup, signupVerify, loginVerify, forgot, reset, failKey } from './auth.js';
 import { oauthStart, oauthCallback, enabledProviders, PROVIDERS } from './oauth.js';
 import { updateProfile, avatar, avatarUrl, AVATAR_TYPES } from './profile.js';
-import { entitlementsFor, requirePro } from './entitlements.js';
-import { handleWebhook, portalLinks, cancelSubscriptionNow } from './paddle.js';
+import { entitlementsFor, requirePlan, FEATURES, LIMITS } from './entitlements.js';
+import { handleWebhook, portalLinks, cancelSubscriptionNow, changePlan } from './paddle.js';
 import { social, socialWebhook, isSocialWebhook, socialProviders, deleteSocialAccounts } from './social.js';
 import { projectCover, coverUrl, COVER_TYPES, projectFiles, storageInfo, checkProjectFiles, dropUnusedFiles, readyFiles, deleteProjectMedia, deleteUserMedia, maybeCleanup, cleanupCloud, cloudAvailable } from './cloud.js';
 import { timingSafeEqual } from './crypto.js';
+import { limit } from './ratelimit.js';
 import { transcribe } from './lyrics.js';
 import { helpChat } from './help.js';
+import { claimVideo, freeVideoState, remindersStop, sendReminders, maybeReminders, seen } from './videos.js';
 import { admin } from './admin.js';
 import { support } from './support.js';
 import { presence, bump } from './metrics.js';
@@ -28,6 +30,7 @@ function publicUser(u) {
     passwordSetAt: u.password_set_at ? new Date(u.password_set_at).toISOString() : null,
     emailVerified: !!u.email_verified_at,
     providers: u.providers || [],
+    reminders: !!u.reminders,   // the reminder e-mail of the free video of the day (videos.js)
   } : null;
 }
 
@@ -42,7 +45,9 @@ async function meResponse(env, user, headers) {
     const { results } = await env.DB.prepare('SELECT provider FROM identities WHERE user_id = ?1 ORDER BY created_at').bind(user.id).all();
     user.providers = results.map((r) => r.provider);
   }
-  return json({ user: publicUser(user), session: publicSession(user), entitlements, subscription }, 200, headers);
+  // free plan: is today's free video used, and when the next one comes (midnight, Paris time)
+  const freeVideo = user && !entitlements.features.includes('unlimited') ? await freeVideoState(env, user) : null;
+  return json({ user: publicUser(user), session: publicSession(user), entitlements, subscription, freeVideo }, 200, headers);
 }
 
 function config(env) {
@@ -50,11 +55,23 @@ function config(env) {
     paddle: {
       environment: env.PADDLE_ENV === 'production' ? 'production' : 'sandbox',
       clientToken: env.PADDLE_CLIENT_TOKEN || null,
-      prices: { month: env.PADDLE_PRICE_MONTH || null, year: env.PADDLE_PRICE_YEAR || null },
+      // the 3 plans of the 30/10 offer, by billing interval (null = not on sale yet); month / year = Pro, for pages opened
+      // before this version
+      prices: {
+        basic: { month: env.PADDLE_PRICE_BASIC_MONTH || null, year: env.PADDLE_PRICE_BASIC_YEAR || null },
+        pro: { month: env.PADDLE_PRICE_PRO_MONTH || null, year: env.PADDLE_PRICE_PRO_YEAR || null },
+        max: { month: env.PADDLE_PRICE_MAX_MONTH || null, year: env.PADDLE_PRICE_MAX_YEAR || null },
+        month: env.PADDLE_PRICE_PRO_MONTH || env.PADDLE_PRICE_MONTH || null, year: env.PADDLE_PRICE_PRO_YEAR || env.PADDLE_PRICE_YEAR || null,
+      },
     },
+    // prices shown (TTC, Europe), and what each plan unlocks (entitlements.js: the same table as the server)
     plans: {
-      pro: { month: { amount: '9.99', currency: 'EUR' }, year: { amount: '79.00', currency: 'EUR' } },
+      basic: { month: { amount: '4.99', currency: 'EUR' }, year: { amount: '39.00', currency: 'EUR' } },
+      pro: { month: { amount: '10.99', currency: 'EUR' }, year: { amount: '109.00', currency: 'EUR' } },
+      max: { month: { amount: '13.99', currency: 'EUR' }, year: { amount: '139.00', currency: 'EUR' } },
     },
+    planFeatures: FEATURES,
+    planLimits: LIMITS,
     // social: the networks a person can link (TikTok / Instagram), only those whose keys are set (social.js)
     features: { socialConnect: env.SOCIAL_CONNECT_ENABLED === '1', social: socialProviders(env), cloudSave: cloudAvailable(env) },
     // sign-in with Google / Apple / Microsoft: only the providers whose keys are set (the buttons show only those)
@@ -66,14 +83,14 @@ function config(env) {
 async function projects(request, env, method, rest, ctx) {
   const user = await requireUser(request, env);
   // saved projects are part of Stalak Pro: without it, no access at all (they come back if the user subscribes again)
-  await requirePro(env, user, HttpError);
+  const plan = await requirePlan(env, user, 'cloud');
   const id = rest[0];
   if (!id) {
     if (method !== 'GET') throw new HttpError(405, 'method_not_allowed', 'Method not allowed.');
     const { results } = await env.DB.prepare(
       'SELECT id, name, size, media_bytes, created_at, updated_at, opened_at, cover_at FROM projects WHERE user_id = ?1 ORDER BY updated_at DESC'
     ).bind(user.id).all();
-    const storage = await storageInfo(env, user.id);
+    const storage = await storageInfo(env, user.id, plan);
     await maybeCleanup(env, ctx);   // the 6-month rule, at most every 6 hours (cloud.js)
     return json({ projects: results.map((p) => ({ id: p.id, name: p.name, size: p.size, mediaBytes: p.media_bytes || 0,
       createdAt: new Date(p.created_at).toISOString(), updatedAt: new Date(p.updated_at).toISOString(),
@@ -94,13 +111,15 @@ async function projects(request, env, method, rest, ctx) {
       mediaBytes: p.media_bytes || 0, files: await readyFiles(env, user.id, id) });
   }
   if (method === 'PUT') {
-    await requirePro(env, user, HttpError);
     const raw = await readText(request, PROJECT_MAX_BYTES);
     let body;
     try { body = JSON.parse(raw); } catch { throw new HttpError(400, 'invalid_json', 'Body must be JSON.'); }
     if (!body || typeof body !== 'object' || body.state === undefined) throw new HttpError(400, 'invalid_project', 'Body must be {name, state}.');
     const name = String(body.name || '').slice(0, 120);
     const data = JSON.stringify(body.state);
+    // more than the plan's space (e.g. Max 100 GB → Pro 20 GB): nothing is erased, new saves wait until it fits again
+    const space = await storageInfo(env, user.id, plan);
+    if (space.used > space.quota) throw new HttpError(413, 'quota_exceeded', 'Your online space is full for your plan: delete projects first.', { used: space.used, quota: space.quota, needed: 0 });
     // with media: body.files = the ids of the uploaded files this version uses (all must be there); the others are erased
     const withFiles = body.files !== undefined;
     const mediaBytes = withFiles ? await checkProjectFiles(env, user.id, id, body.files) : null;
@@ -117,7 +136,7 @@ async function projects(request, env, method, rest, ctx) {
     ).bind(user.id, id, name, data, data.length, now, mediaBytes).run();
     if (withFiles) await dropUnusedFiles(env, user.id, id, body.files);
     await bump(env, 'cloud_save');
-    return json({ ok: true, id, updatedAt: new Date(now).toISOString(), mediaBytes: mediaBytes || 0, storage: await storageInfo(env, user.id) });
+    return json({ ok: true, id, updatedAt: new Date(now).toISOString(), mediaBytes: mediaBytes || 0, storage: await storageInfo(env, user.id, plan) });
   }
   if (method === 'PATCH') {
     // rename only (Pro not needed: it is the user's own data)
@@ -131,16 +150,19 @@ async function projects(request, env, method, rest, ctx) {
   if (method === 'DELETE') {
     await deleteProjectMedia(env, user.id, id);
     await env.DB.prepare('DELETE FROM projects WHERE user_id = ?1 AND id = ?2').bind(user.id, id).run();
-    return json({ ok: true, storage: await storageInfo(env, user.id) });
+    return json({ ok: true, storage: await storageInfo(env, user.id, plan) });
   }
   throw new HttpError(405, 'method_not_allowed', 'Method not allowed.');
 }
 
 // An outside cron (or a person) runs the 6-month rule: POST with "Authorization: Bearer <CRON_SECRET>".
-async function cronCleanup(request, env) {
+function cronAuth(request, env) {
   const want = env.CRON_SECRET || '';
   const got = (request.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '');
   if (want.length < 16 || !timingSafeEqual(got, want)) throw new HttpError(404, 'not_found', 'Unknown API route.');
+}
+async function cronCleanup(request, env) {
+  cronAuth(request, env);
   return json({ ok: true, ...(await cleanupCloud(env)) });
 }
 
@@ -176,6 +198,7 @@ async function deleteAccount(request, env) {
     // « Parler à un humain »: the conversations of this account go too; payments stay (accounting) without the link
     env.DB.prepare('DELETE FROM ticket_messages WHERE ticket_id IN (SELECT id FROM tickets WHERE user_id = ?1)').bind(user.id),
     env.DB.prepare('DELETE FROM tickets WHERE user_id = ?1').bind(user.id),
+    env.DB.prepare('DELETE FROM free_videos WHERE user_id = ?1').bind(user.id),
     env.DB.prepare('UPDATE payments SET user_id = NULL WHERE user_id = ?1').bind(user.id),
     // the users row holds the display name, the photo and the password hash: all gone with it
     env.DB.prepare('DELETE FROM users WHERE id = ?1').bind(user.id),
@@ -220,6 +243,14 @@ async function dispatch(request, env, ctx) {
       if (method !== 'POST') throw new HttpError(405, 'method_not_allowed', 'Method not allowed.');
       return cronCleanup(request, env);
     }
+    if (route === 'cron/reminders') {
+      if (method !== 'POST') throw new HttpError(405, 'method_not_allowed', 'Method not allowed.');
+      cronAuth(request, env);
+      return json({ ok: true, ...(await sendReminders(env)) });
+    }
+    // unsubscribe link of the reminder e-mails: authenticated by the random key of the link, not by a session; the POST
+    // comes from the page's own form or from the mail app (one click, RFC 8058), so no Origin / JSON check here
+    if (route === 'reminders/stop') return remindersStop(request, env, method);
     // raw media bytes (project files): application/octet-stream, which a plain cross-site form cannot send either
     const rawUpload = method === 'PUT' && parts[0] === 'projects' && parts[2] === 'files' && parts.length >= 4;
     const coverUpload = method === 'PUT' && parts[0] === 'projects' && parts[2] === 'cover' && parts.length === 3;
@@ -227,9 +258,15 @@ async function dispatch(request, env, ctx) {
 
     switch (route) {
       case 'config':
+        if (method !== 'GET') break;
+        await maybeReminders(env, ctx);   // the reminder e-mails due now, in the background (videos.js)
         return json(config(env), 200, { 'Cache-Control': 'no-store' });
       case 'me':
-        if (method === 'GET') return meResponse(env, await currentUser(request, env));
+        if (method === 'GET') {
+          const u = await currentUser(request, env);
+          await seen(env, u);   // a visit (the reminders stop after 7 days without one)
+          return meResponse(env, u);
+        }
         if (method !== 'PATCH') break;
         return meResponse(env, await updateProfile(env, await requireUser(request, env), await readJson(request)));
       case 'me/avatar':
@@ -272,9 +309,20 @@ async function dispatch(request, env, ctx) {
       case 'paddle/portal':
         if (method !== 'POST') break;
         return json(await portalLinks(env, await requireUser(request, env)));
+      case 'paddle/change': {
+        // another plan on the same subscription (paddle.js changePlan): at most 10 changes an hour per account
+        if (method !== 'POST') break;
+        const u = await requireUser(request, env);
+        await limit(env, `plan:${u.id}`, 10, 3600e3, 'Too many plan changes, try again later.');
+        return json(await changePlan(env, u, await readJson(request, 1024)));
+      }
       case 'account':
         if (method !== 'DELETE') break;
         return deleteAccount(request, env);
+      case 'videos/claim':
+        // the free video of the day: the « jeton du jour » asked before a free export (videos.js)
+        if (method !== 'POST') break;
+        return claimVideo(request, env);
       case 'lyrics/transcribe':
         // « Paroles automatiques » (Stalak Pro): one piece of the song's voice → timed words (functions/_lib/lyrics.js)
         if (method !== 'POST') break;

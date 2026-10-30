@@ -10,7 +10,7 @@
 //                         words: [{ word, start, end }] }], vtt }
 import { HttpError, json, readJson, clientIp } from './http.js';
 import { requireUser } from './auth.js';
-import { requirePro } from './entitlements.js';
+import { requirePlan, LIMITS } from './entitlements.js';
 import { limit } from './ratelimit.js';
 import { sha256Hex } from './crypto.js';
 
@@ -18,8 +18,10 @@ export const MODEL = '@cf/openai/whisper-large-v3-turbo';
 export const SAMPLE_RATE = 16000;
 export const PIECE_MAX_S = 31;            // one request: at most ~30 s of audio (≈ 0.96 MB of WAV, ≈ 1.3 MB of base64)
 export const PIECES_MAX = 16;             // one transcription: at most 16 pieces ≈ 8 minutes
-export const JOBS_PER_DAY = 20;           // transcriptions per account per day (UTC)
-export const SECONDS_PER_DAY = 90 * 60;   // audio minutes per account per day (cost guard: ~47 neurons per audio minute)
+// per account and per day (UTC), by plan (entitlements.js LIMITS): 20 transcriptions and 90 audio minutes in Pro,
+// 60 and 270 in Max (the minutes are a cost guard: ~47 neurons per audio minute)
+export const JOBS_PER_DAY = LIMITS.pro.lyricsPerDay;
+export const SECONDS_PER_DAY = LIMITS.pro.lyricsMinutesPerDay * 60;
 const WAV_HEADER = 44;
 const BODY_MAX = Math.ceil((WAV_HEADER + PIECE_MAX_S * SAMPLE_RATE * 2) / 3) * 4 + 4096 + 12288;   // + the optional prompt (≤ 2000 chars, JSON-escaped)
 const B64 = /^[A-Za-z0-9+/]+={0,2}$/;
@@ -123,19 +125,20 @@ export function cleanSegments(out, duration) {
   return res.filter((s, i) => !(i >= 2 && s.text === res[i - 1].text && s.text === res[i - 2].text));
 }
 
-async function useQuota(env, userId, day, seconds, newJob) {
+async function useQuota(env, userId, day, seconds, newJob, jobsMax, secondsMax) {
   // one statement: counts the piece only if the account stays under its daily limits (no row back = over the limit)
   return env.DB.prepare(
     `INSERT INTO lyrics_usage (user_id, day, jobs, pieces, seconds, updated_at) VALUES (?1, ?2, ?3, 1, ?4, ?5)
      ON CONFLICT(user_id, day) DO UPDATE SET jobs = jobs + ?3, pieces = pieces + 1, seconds = seconds + ?4, updated_at = ?5
        WHERE jobs + ?3 <= ?6 AND seconds + ?4 <= ?7
      RETURNING jobs, seconds`
-  ).bind(userId, day, newJob ? 1 : 0, seconds, Date.now(), JOBS_PER_DAY, SECONDS_PER_DAY).first();
+  ).bind(userId, day, newJob ? 1 : 0, seconds, Date.now(), jobsMax, secondsMax).first();
 }
 
 export async function transcribe(request, env) {
   const user = await requireUser(request, env);
-  await requirePro(env, user, HttpError);
+  const plan = await requirePlan(env, user, 'lyrics');
+  const jobsMax = LIMITS[plan].lyricsPerDay, secondsMax = LIMITS[plan].lyricsMinutesPerDay * 60;
   const ipKey = (await sha256Hex('ip:' + clientIp(request))).slice(0, 32);
   await limit(env, `lyr:ip:${ipKey}`, 300, 3600e3, 'Too many transcription requests from this connection, try again later.');
   await limit(env, `lyr:u:${user.id}`, 200, 3600e3, 'Too many transcription requests, try again later.');
@@ -159,8 +162,8 @@ export async function transcribe(request, env) {
 
   const day = new Date().toISOString().slice(0, 10);
   const seconds = Math.ceil(duration * 10) / 10;
-  const q = await useQuota(env, user.id, day, seconds, part === 0);
-  if (!q) throw new HttpError(429, 'quota_exceeded', `Daily limit reached (${JOBS_PER_DAY} transcriptions or ${SECONDS_PER_DAY / 60} minutes of audio per day).`);
+  const q = await useQuota(env, user.id, day, seconds, part === 0, jobsMax, secondsMax);
+  if (!q) throw new HttpError(429, 'quota_exceeded', `Daily limit reached (${jobsMax} transcriptions or ${secondsMax / 60} minutes of audio per day).`, { limit: jobsMax, plan });
 
   // sung lyrics over music: no voice-activity filter (it takes singing for music and throws it away) and no silence
   // skipping; a short prompt tells the model it is a song, followed by the end of the previous piece's words (context sent by

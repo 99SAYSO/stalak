@@ -119,10 +119,11 @@ th{color:var(--text2);font-weight:600}
   <section class="kpis" aria-label="Chiffres clés">
     <div class="kpi"><div class="k">Visiteurs en direct</div><div class="v" id="kLive">–</div><div class="s" id="kLiveS">&nbsp;</div></div>
     <div class="kpi"><div class="k">Inscrits</div><div class="v" id="kUsers">–</div><div class="s" id="kUsersS">&nbsp;</div></div>
-    <div class="kpi"><div class="k">Abonnés Pro</div><div class="v" id="kPro">–</div><div class="s" id="kProS">&nbsp;</div></div>
+    <div class="kpi"><div class="k">Abonnés (toutes formules)</div><div class="v" id="kPro">–</div><div class="s" id="kProS">&nbsp;</div></div>
     <div class="kpi"><div class="k">Revenu mensuel (estimé)</div><div class="v" id="kMrr">–</div><div class="s" id="kMrrS">&nbsp;</div></div>
     <div class="kpi"><div class="k">Encaissé sur 30 jours</div><div class="v" id="kRev">–</div><div class="s" id="kRevS">&nbsp;</div></div>
     <div class="kpi"><div class="k">Messages à traiter</div><div class="v" id="kTix">–</div><div class="s" id="kTixS">&nbsp;</div></div>
+    <div class="kpi"><div class="k">Vidéos gratuites aujourd’hui</div><div class="v" id="kFree">–</div><div class="s" id="kFreeS">&nbsp;</div></div>
   </section>
 
   <section class="card" aria-labelledby="hSup">
@@ -135,6 +136,12 @@ th{color:var(--text2);font-weight:600}
       <div class="tlist" id="tlist" aria-label="Conversations"><div class="empty">Chargement…</div></div>
       <div class="conv" id="conv"><div class="empty">Choisis une conversation.</div></div>
     </div>
+  </section>
+
+  <section class="card" aria-labelledby="hPlans">
+    <h2 id="hPlans">Par formule</h2>
+    <div class="scroll-x"><table id="plans"><thead><tr><th scope="col">Formule</th><th scope="col">Abonnés</th><th scope="col">Mensuels</th><th scope="col">Annuels</th><th scope="col">Résiliés en cours</th><th scope="col">Revenu mensuel (estimé)</th><th scope="col">Encaissé 30 j</th><th scope="col">Depuis le début</th></tr></thead><tbody></tbody></table></div>
+    <p class="note">Chaque abonné compte à son prix (un abonné garde son prix : les Pro à 9,99 € / 79 € de la première offre restent comptés ainsi). Encaissé : TTC, remboursements à part.</p>
   </section>
 
   <section class="card" aria-labelledby="hEvo">
@@ -154,7 +161,7 @@ th{color:var(--text2);font-weight:600}
 
   <section class="card" aria-labelledby="hUsers">
     <h2 id="hUsers">Derniers inscrits</h2>
-    <div class="scroll-x"><table id="users"><thead><tr><th>E-mail</th><th>Pseudo</th><th>Inscrit le</th><th>Vérifié</th><th>Pro</th></tr></thead><tbody></tbody></table></div>
+    <div class="scroll-x"><table id="users"><thead><tr><th>E-mail</th><th>Pseudo</th><th>Inscrit le</th><th>Vérifié</th><th>Formule</th></tr></thead><tbody></tbody></table></div>
   </section>
   <p class="note">Audience détaillée (pays, pages, appareils) : Cloudflare → stalak.app → Web Analytics.</p>
 </div>
@@ -226,7 +233,9 @@ th{color:var(--text2);font-weight:600}
     { k: 'lyricsJobs', t: 'Paroles auto', f: nf.format },
     { k: 'cloudSaves', t: 'Sauvegardes en ligne', f: nf.format },
     { k: 'tickets', t: 'Nouveaux messages', f: nf.format },
+    { k: 'freeVideos', t: 'Vidéos gratuites', f: nf.format },
   ];
+  var PLAN_NAME = { basic: 'Basic', pro: 'Pro', max: 'Max' };
   function niceMax(v) { if (v <= 4) return 4; var p = Math.pow(10, Math.floor(Math.log10(v))), m = v / p; return (m <= 1 ? 1 : m <= 2 ? 2 : m <= 5 ? 5 : 10) * p; }
   function chart(box, days, c) {
     var W = 300, H = 110, L = 30, B = 16, T = 6, n = days.length;
@@ -288,7 +297,18 @@ th{color:var(--text2);font-weight:600}
       $('#kPro').textContent = nf.format(t.pro.total);
       $('#kProS').textContent = t.pro.month + ' mensuels · ' + t.pro.year + ' annuels' + (t.pro.ending ? ' · ' + t.pro.ending + ' résiliés' : '');
       $('#kMrr').textContent = money(t.mrrCents, 'EUR');
-      $('#kMrrS').textContent = 'TTC, annuels comptés 79 € / 12';
+      $('#kMrrS').textContent = 'TTC, annuels comptés au douzième';
+      var fv = d.usage.freeVideos || { today: 0, last30: 0 };
+      $('#kFree').textContent = nf.format(fv.today);
+      $('#kFreeS').textContent = nf.format(fv.last30) + ' sur 30 j · jour de Paris';
+      var pb = $('#plans tbody'); pb.textContent = '';
+      ['basic', 'pro', 'max'].forEach(function (k) {
+        var p = (t.plans || {})[k] || { total: 0, month: 0, year: 0, ending: 0, mrrCents: 0, revenue: {}, revenue30: {} };
+        var tr = el('tr'); tr.append(el('th', { scope: 'row' }, PLAN_NAME[k]), el('td', null, nf.format(p.total)), el('td', null, nf.format(p.month)),
+          el('td', null, nf.format(p.year)), el('td', null, nf.format(p.ending)), el('td', null, money(p.mrrCents, 'EUR')),
+          el('td', null, totalsByCur(p.revenue30)), el('td', null, totalsByCur(p.revenue)));
+        pb.append(tr);
+      });
       $('#kRev').textContent = totalsByCur(t.revenue.last30);
       $('#kRevS').textContent = 'Depuis le début : ' + totalsByCur(t.revenue.all) + (Object.keys(t.revenue.refunds).length ? ' · remboursé ' + totalsByCur(t.revenue.refunds) : '');
       var box = $('#charts'); box.textContent = '';
@@ -308,7 +328,7 @@ th{color:var(--text2);font-weight:600}
       block('Parler à un humain', [['Conversations sur 30 j :', nf.format(u.tickets.created30)]]);
       var tb = $('#users tbody'); tb.textContent = '';
       d.recentUsers.forEach(function (r) {
-        var tr = el('tr'); tr.append(el('td', null, r.email), el('td', null, r.name || '–'), el('td', null, dateFr(r.createdAt, true)), el('td', null, r.verified ? 'oui' : 'non'), el('td', null, r.pro ? 'Pro' : '–')); tb.append(tr);
+        var tr = el('tr'); tr.append(el('td', null, r.email), el('td', null, r.name || '–'), el('td', null, dateFr(r.createdAt, true)), el('td', null, r.verified ? 'oui' : 'non'), el('td', null, r.plan ? PLAN_NAME[r.plan] || r.plan : '–')); tb.append(tr);
       });
       if (!d.recentUsers.length) { var tr = el('tr'), td = el('td', { colspan: '5' }, 'Personne pour l’instant.'); tr.append(td); tb.append(tr); }
     }).catch(function (e) { if (e.code !== 'access') banner('Les chiffres n’ont pas pu être chargés (' + e.message + ').'); });
@@ -332,7 +352,7 @@ th{color:var(--text2);font-weight:600}
         var b = el('button', { type: 'button', 'data-id': t.id, 'aria-current': S.open === t.id ? 'true' : 'false' });
         var l1 = el('div', { class: 'l1' });
         l1.append(el('b', null, t.email || 'Visiteur sans e-mail'));
-        l1.append(t.pro ? el('span', { class: 'pro', title: 'Abonné Stalak Pro' }, 'Pro') : el('span', { class: 'pro off', title: t.account ? 'Plus abonné Pro' : 'Sans compte' }, t.account ? 'ex-Pro' : 'invité'));
+        l1.append(t.pro ? el('span', { class: 'pro', title: 'Abonné Stalak ' + (PLAN_NAME[t.plan] || 'Pro') }, PLAN_NAME[t.plan] || 'Pro') : el('span', { class: 'pro off', title: t.account ? 'Compte sans abonnement' : 'Sans compte' }, t.account ? 'gratuit' : 'invité'));
         if (t.unread) l1.append(el('span', { class: 'badge' }, 'nouveau'));
         if (t.visitorLive) l1.append(el('span', { class: 'pill on' }, 'en ligne'));
         b.append(l1, el('div', { class: 'l2' }, (t.lastFrom === 'admin' ? 'Toi : ' : '') + t.lastText), el('div', { class: 'l2' }, ago(t.updatedAt) + ' · ' + t.lang.toUpperCase() + (t.account ? ' · compte' : '') + (t.status === 'closed' ? ' · fermé' : '')));
@@ -362,7 +382,7 @@ th{color:var(--text2);font-weight:600}
       var conv = $('#conv'), draft = keepDraft && $('#replyText') ? $('#replyText').value : '';
       conv.textContent = '';
       var head = el('div', { class: 'head' });
-      head.append(el('b', null, t.email || 'Visiteur sans e-mail'), t.account && t.account.pro ? el('span', { class: 'pro' }, 'Pro') : el('span', { class: 'pro off' }, t.account ? 'ex-Pro' : 'invité'), el('span', { class: 'pill' + (t.visitorLive ? ' on' : '') }, t.visitorLive ? 'en ligne, il voit ta réponse' : (t.visitorSeenAt ? 'vu ' + ago(t.visitorSeenAt) : 'absent')));
+      head.append(el('b', null, t.email || 'Visiteur sans e-mail'), t.account && t.account.pro ? el('span', { class: 'pro' }, PLAN_NAME[t.account.plan] || 'Pro') : el('span', { class: 'pro off' }, t.account ? 'gratuit' : 'invité'), el('span', { class: 'pill' + (t.visitorLive ? ' on' : '') }, t.visitorLive ? 'en ligne, il voit ta réponse' : (t.visitorSeenAt ? 'vu ' + ago(t.visitorSeenAt) : 'absent')));
       head.append(el('span', { class: 'sp' }));
       var close = el('button', { type: 'button', class: 'btn small' }, t.status === 'open' ? 'Fermer' : 'Rouvrir');
       close.addEventListener('click', function () { api('POST', 'tickets/' + encodeURIComponent(id) + '/status', { status: t.status === 'open' ? 'closed' : 'open' }).then(function () { tickets(); openTicket(id); }); });
@@ -373,7 +393,7 @@ th{color:var(--text2);font-weight:600}
       });
       head.append(close, del);
       var info = el('div', { class: 'info' });
-      info.append(el('span', null, 'Ouvert ' + dateFr(t.createdAt, true) + ' · ' + t.lang.toUpperCase() + (t.account ? ' · compte ' + t.account.email + (t.account.pro ? ' (Pro ' + (t.account.interval === 'year' ? 'annuel' : 'mensuel') + ')' : ' (gratuit)') : ' · sans compte')));
+      info.append(el('span', null, 'Ouvert ' + dateFr(t.createdAt, true) + ' · ' + t.lang.toUpperCase() + (t.account ? ' · compte ' + t.account.email + (t.account.pro ? ' (' + (PLAN_NAME[t.account.plan] || 'Pro') + ' ' + (t.account.interval === 'year' ? 'annuel' : 'mensuel') + ')' : ' (gratuit)') : ' · sans compte')));
       if (t.context) { var det = el('details'), sum = el('summary', null, 'Ce que montrait la page'); det.append(sum, el('pre', null, t.context)); info.append(det); }
       var msgs = el('div', { class: 'msgs', 'aria-live': 'polite' });
       renderMsgs(msgs, t.messages);

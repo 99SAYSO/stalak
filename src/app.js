@@ -642,7 +642,7 @@ const I18N_EN = /*@EN*/{
   "acct.otherMail": "Use another email",
   "acct.verify": "Confirm",
   "acct.codeHint": "Check your spam folder too. The code works for 10 minutes.",
-  "acct.proT": "Stalak Pro",
+  "acct.proT": "Stalak plans",
   "acct.perk1": "No Stalak logo at the end of your videos",
   "acct.perk2": "Music video mode: the whole song in 16:9",
   "acct.perk3": "Your projects saved online",
@@ -659,17 +659,17 @@ const I18N_EN = /*@EN*/{
   "acct.btn.pro": "Pro",
   "acct.t": "Your Stalak account",
   "acct.tIn": "Your account",
-  "acct.tPro": "You’re Pro",
+  "acct.tPro": "You’re on Stalak {plan}",
   "acct.who": "Signed in as {mail}",
-  "acct.proRenew": "Stalak Pro renews on {d}.",
-  "acct.proEnds": "Stalak Pro stays on until {d}, then stops.",
-  "acct.proOn": "Stalak Pro is on.",
+  "acct.proRenew": "Stalak {plan} renews on {d}.",
+  "acct.proEnds": "Stalak {plan} stays on until {d}, then stops.",
+  "acct.proOn": "Stalak {plan} is on.",
   "acct.why.clip": "Music video mode comes with Pro.",
   "acct.why.outro": "Videos without the Stalak logo start with Basic.",
   "acct.sending": "Sending…",
   "acct.checking": "Checking…",
   "acct.welcome": "You’re signed in.",
-  "acct.welcomePro": "Welcome to Stalak Pro!",
+  "acct.welcomePro": "Welcome to Stalak {plan}!",
   "acct.paying": "Opening the payment window…",
   "acct.waitPro": "Payment received: your account switches to Pro in a few seconds.",
   "acct.delAskT": "Delete your account?",
@@ -737,10 +737,10 @@ const I18N_EN = /*@EN*/{
   "ap.pwSet": "Set a password",
   "ap.pwChange": "Change",
   "ap.subFree": "Free ·",
-  "ap.discover": "Discover Stalak Pro →",
-  "ap.subRenew": "Stalak Pro · renews on {d} ·",
-  "ap.subEnds": "Stalak Pro · until {d} ·",
-  "ap.subPro": "Stalak Pro ·",
+  "ap.discover": "See the plans →",
+  "ap.subRenew": "Stalak {plan} · renews on {d} ·",
+  "ap.subEnds": "Stalak {plan} · until {d} ·",
+  "ap.subPro": "Stalak {plan} ·",
   "ap.manage": "Manage",
   "ap.nameSaved": "Name saved.",
   "ap.nameCleared": "Name removed.",
@@ -835,8 +835,8 @@ const I18N_EN = /*@EN*/{
   "ap.whyIn.pack": "Packs of 5 and 10 videos come with Pro. Sign in or create an account to get it.",
   "acct.perk6": "Every text size and style: word by word, karaoke",
   "acct.why.text": "All text sizes and styles start with Basic.",
-  "pr.promo": "Stalak Pro for <b>€6.58/mo</b> with the yearly plan",
-  "pr.sub": "Stalak edits your videos for you. With Pro, you post more, faster, and every video looks studio-made.",
+  "pr.promo": "Unlimited videos, no logo, from <b>€3.25/mo</b> with Basic yearly",
+  "pr.sub": "Stalak edits your videos for you. With a plan, you post more, faster, and every video looks studio-made.",
   "pr.popular": "Best value",
   "pr.year.n": "Pro yearly",
   "pr.year.amt": "€6.58",
@@ -893,7 +893,7 @@ const I18N_EN = /*@EN*/{
   "pr.v.from": "from €6.58/mo",
   "pr.faq.t": "Questions",
   "pr.q.diff": "Monthly or yearly, what’s the difference?",
-  "pr.a.diff": "None in the app: you get all of Stalak Pro either way. Yearly costs €79 a year, so €6.58 a month: 34% less than 12 months at €9.99.",
+  "pr.a.diff": "None in the app: you get your whole plan either way. Yearly costs less: €39 instead of €59.88 for Basic, €109 instead of €131.88 for Pro, €139 instead of €167.88 for Max.",
   "pr.q.stop": "Can I stop anytime?",
   "pr.a.stop": "Yes. Cancel in two clicks from your account: you keep Pro until the end of the paid period, then go back to Free. Your projects saved online are no longer accessible, but we keep them for 6 months: they come back if you go Pro again.",
   "pr.q.refund": "What if I don’t like it?",
@@ -1000,12 +1000,12 @@ const I18N_EN = /*@EN*/{
   "help.h.back": "← Back to the assistant",
   "help.h.away24": "Nobody from the team is online right now. Write your message: the answer will come by email to {mail}, within 24 hours.",
   "help.h.waitMail24": "Sent! The answer will come within 24 hours to {mail}, and show up here if you come back.",
-  "help.h.proOnly": "“Talk to a human” is part of Stalak Pro: you write to the team and get an answer live, or by email within 24 hours.",
-  "help.h.proAgain": "To write to the team here again, you need Stalak Pro. The answers you already got stay right above.",
-  "help.h.proGo": "Discover Stalak Pro",
+  "help.h.proOnly": "“Talk to a human” is part of Stalak Max: you write to the team and get an answer live, or by email within 24 hours.",
+  "help.h.proAgain": "To write to the team here again, you need Stalak Max. The answers you already got stay right above.",
+  "help.h.proGo": "Discover Stalak Max",
   "help.h.proMail": "You can still write to {mail} anytime.",
-  "acct.why.support": "“Talk to a human” is part of Stalak Pro.",
-  "ap.whyIn.support": "“Talk to a human” is part of Stalak Pro. Sign in or create an account to get it.",
+  "acct.why.support": "“Talk to a human” is part of Stalak Max.",
+  "ap.whyIn.support": "“Talk to a human” is part of Stalak Max. Sign in or create an account to get it.",
   "help.h.fail": "Your message didn’t go through. Try again in a moment.",
   "help.h.failMail": "Your message didn’t go through. Try again in a moment, or write to {mail}.",
   "_bloc.app.son": "App & montage : étape Son (glisser-déposer, poignées du passage)",
@@ -1029,7 +1029,86 @@ const I18N_EN = /*@EN*/{
   "gal.lockEx": "Your projects saved online are kept for 6 months after Stalak Pro ends, and come back as soon as you take it again.",
   "gal.pro": "Discover Stalak Pro",
   "gal.empty": "No project yet. At the Edit step, tap “Save online”: it will show up here with its cover.",
-  "gal.moreA": "More for “{name}”: rename, delete"
+  "gal.moreA": "More for “{name}”: rename, delete",
+  "_bloc.compte.formules": "Comptes, paiements & serveur : formules Gratuit / Basic / Pro / Max, vidéo gratuite du jour, rappel",
+  "pl.n.free": "Free",
+  "pl.n.basic": "Basic",
+  "pl.n.pro": "Pro",
+  "pl.n.max": "Max",
+  "pl.int.aria": "Billing",
+  "pl.int.month": "Monthly",
+  "pl.int.year": "Yearly",
+  "pl.int.save": "up to −35%",
+  "pl.billY": "{y} billed once a year",
+  "pl.save": "Save {n}%",
+  "pl.rib.month": "Only {d} more than Pro",
+  "pl.rib.year": "Only {d} more a month than Pro",
+  "pl.cta.basic": "Choose Basic",
+  "pl.cta.pro": "Choose Pro",
+  "pl.cta.max": "Choose Max",
+  "pl.mine": "Your plan",
+  "pl.soon": "Coming soon",
+  "pl.switch": "Switch to {plan}",
+  "pl.confirm": "Confirm: switch to {plan}",
+  "pl.prorata": "You only pay the difference today, prorated, with your saved payment method. Tap again to confirm.",
+  "pl.changing": "Changing your plan…",
+  "pl.changed": "Done: your account switches to Stalak {plan} in a few seconds.",
+  "pl.change": "Change plan: pick another one below. You only pay the difference, prorated.",
+  "pl.free.bill": "With a free account",
+  "pl.f.plusPro": "Everything in Pro, plus:",
+  "pl.f.plusBasic": "Everything in Basic, plus:",
+  "pl.f.pack30": "<strong>Packs of 30 videos</strong>: a month of content in one tap",
+  "pl.f.lyr60": "<strong>Lyrics written for you</strong>, 60 times a day",
+  "pl.f.cloud100": "<strong>100 GB</strong> of projects online",
+  "pl.f.human": "<strong>Talk to a human</strong>: live, or an answer by email within 24 hours",
+  "pl.f.filters": "<strong>Every video filter</strong>",
+  "pl.f.clip": "<strong>Music video mode</strong>: your 16:9 YouTube video, edited for you",
+  "pl.f.packs": "<strong>Packs of 5 and 10 videos</strong>, all different",
+  "pl.f.lyr20": "<strong>Lyrics written for you</strong>, 20 times a day",
+  "pl.f.cloud20": "<strong>Online saving</strong>: 20 GB, on all your devices",
+  "pl.f.unlimited": "<strong>Unlimited videos</strong>",
+  "pl.f.nologo": "<strong>No Stalak logo</strong> at the end",
+  "pl.f.text": "<strong>Every text size and reveal</strong>: word by word, karaoke",
+  "pl.f.filters3": "3 filters",
+  "pl.f.daily": "<strong>1 video a day</strong>",
+  "pl.cmp.t": "Which plan?",
+  "pl.r.videos": "Videos",
+  "pl.v.1day": "1 a day",
+  "pl.v.unl": "Unlimited",
+  "pl.r.filters": "Video filters",
+  "pl.v.all": "All",
+  "pl.r.pack": "Packs of different videos in one tap",
+  "pl.r.autoly": "Lyrics written and synced for you",
+  "pl.v.20d": "20 a day",
+  "pl.v.60d": "60 a day",
+  "pl.r.cloud": "Online saving",
+  "pl.r.human": "Talk to a human",
+  "pl.r.price": "Price per month",
+  "pl.p.unlimited": "Unlimited videos",
+  "pl.p.nologo": "No Stalak logo at the end of your videos",
+  "pl.p.text": "Every text size and reveal: word by word, karaoke",
+  "pl.p.filters": "Every video filter",
+  "pl.p.clip": "Music video mode: the whole song in 16:9",
+  "pl.p.packs": "Packs of 5 and 10 different videos",
+  "pl.p.pack30": "Packs of 30 videos",
+  "pl.p.lyrics": "Your lyrics written and synced for you, {n} times a day",
+  "pl.p.cloud": "Your projects saved online, {n} GB",
+  "pl.p.human": "Talk to a human, right from the help bubble",
+  "acct.e.same_plan": "That’s already your plan.",
+  "acct.e.no_subscription": "No running subscription to change: pick a plan to subscribe.",
+  "acct.e.subscription_ending": "Your subscription is ending: you can take a new plan once it has stopped.",
+  "acct.e.daily_video_used": "Your free video of the day is done: the next one comes at midnight (Paris time).",
+  "fv.remindUp": "Email me when my video of the day is ready",
+  "fv.remind": "Email me when my video of the day is ready",
+  "fv.remindOn": "Done: we’ll email you when your free video of the day is ready.",
+  "fv.remindOff": "Done: no more reminders.",
+  "fv.ready": "Your free video of the day is ready.",
+  "fv.used": "Your free video of the day is done. The next one comes at midnight, Paris time ({t} for you).",
+  "pl.upNow": "You pay {a} today (prorated, for the rest of the period), with your saved payment method. Tap again to confirm.",
+  "pl.downAt": "Your plan changes at the renewal, on {d}: nothing is refunded and {plan} stays on until then. Tap again to confirm.",
+  "pl.checking": "Checking the price…",
+  "pl.changedDown": "Done: Stalak {plan} starts on {d}; your current plan stays on until then.",
+  "acct.e.change_at_renewal": "A smaller plan billed differently (e.g. yearly to monthly) starts at the end of your current period: turn off the renewal in “Manage my subscription”, then pick the new plan when it ends."
 }/*EN@*/;
 const I18N_FR = /*@FR*/{
   "kind.hint.reel": "Une vidéo verticale 9:16, de tout le son ou de quelques mesures.",
@@ -1408,17 +1487,17 @@ const I18N_FR = /*@FR*/{
   "acct.btn.pro": "Pro",
   "acct.t": "Ton compte Stalak",
   "acct.tIn": "Ton compte",
-  "acct.tPro": "Tu es Pro",
+  "acct.tPro": "Tu es en Stalak {plan}",
   "acct.who": "Connecté avec {mail}",
-  "acct.proRenew": "Stalak Pro se renouvelle le {d}.",
-  "acct.proEnds": "Stalak Pro reste actif jusqu’au {d}, puis s’arrête.",
-  "acct.proOn": "Stalak Pro est actif.",
+  "acct.proRenew": "Stalak {plan} se renouvelle le {d}.",
+  "acct.proEnds": "Stalak {plan} reste actif jusqu’au {d}, puis s’arrête.",
+  "acct.proOn": "Stalak {plan} est actif.",
   "acct.why.clip": "Le mode Clip, c’est avec Pro.",
   "acct.why.outro": "Les vidéos sans le logo Stalak, c’est dès Basic.",
   "acct.sending": "Envoi…",
   "acct.checking": "Vérification…",
   "acct.welcome": "Tu es connecté.",
-  "acct.welcomePro": "Bienvenue dans Stalak Pro !",
+  "acct.welcomePro": "Bienvenue dans Stalak {plan} !",
   "acct.paying": "Ouverture du paiement…",
   "acct.waitPro": "Paiement reçu : ton compte passe en Pro dans quelques secondes.",
   "acct.delAskT": "Supprimer ton compte ?",
@@ -1445,10 +1524,10 @@ const I18N_FR = /*@FR*/{
   "ap.pwSet": "Choisir un mot de passe",
   "ap.pwChange": "Changer",
   "ap.subFree": "Gratuit ·",
-  "ap.discover": "Découvrir Stalak Pro →",
-  "ap.subRenew": "Stalak Pro · renouvellement le {d} ·",
-  "ap.subEnds": "Stalak Pro · jusqu’au {d} ·",
-  "ap.subPro": "Stalak Pro ·",
+  "ap.discover": "Voir les formules →",
+  "ap.subRenew": "Stalak {plan} · renouvellement le {d} ·",
+  "ap.subEnds": "Stalak {plan} · jusqu’au {d} ·",
+  "ap.subPro": "Stalak {plan} ·",
   "ap.manage": "Gérer",
   "ap.nameSaved": "Pseudo enregistré.",
   "ap.nameCleared": "Pseudo retiré.",
@@ -1595,12 +1674,12 @@ const I18N_FR = /*@FR*/{
   "help.h.back": "← Revenir à l’assistant",
   "help.h.away24": "Personne de l’équipe n’est en ligne pour l’instant. Écris ton message : la réponse t’arrivera par e-mail à {mail}, sous 24 h.",
   "help.h.waitMail24": "C’est envoyé ! La réponse arrivera sous 24 h à {mail}, et ici si tu reviens.",
-  "help.h.proOnly": "« Parler à un humain » est réservé à Stalak Pro : tu écris à l’équipe et on te répond en direct, ou par e-mail sous 24 h.",
-  "help.h.proAgain": "Pour écrire de nouveau à l’équipe ici, il faut Stalak Pro. Les réponses déjà reçues restent juste au-dessus.",
-  "help.h.proGo": "Découvrir Stalak Pro",
+  "help.h.proOnly": "« Parler à un humain » est réservé à Stalak Max : tu écris à l’équipe et on te répond en direct, ou par e-mail sous 24 h.",
+  "help.h.proAgain": "Pour écrire de nouveau à l’équipe ici, il faut Stalak Max. Les réponses déjà reçues restent juste au-dessus.",
+  "help.h.proGo": "Découvrir Stalak Max",
   "help.h.proMail": "Tu peux aussi toujours écrire à {mail}.",
-  "acct.why.support": "« Parler à un humain » fait partie de Stalak Pro.",
-  "ap.whyIn.support": "« Parler à un humain » fait partie de Stalak Pro. Connecte-toi ou crée un compte pour en profiter.",
+  "acct.why.support": "« Parler à un humain » fait partie de Stalak Max.",
+  "ap.whyIn.support": "« Parler à un humain » fait partie de Stalak Max. Connecte-toi ou crée un compte pour en profiter.",
   "help.h.fail": "Ton message n’est pas parti. Réessaie dans un instant.",
   "help.h.failMail": "Ton message n’est pas parti. Réessaie dans un instant, ou écris à {mail}.",
   "_bloc.app.son": "App & montage : étape Son (glisser-déposer, poignées du passage)",
@@ -1616,7 +1695,50 @@ const I18N_FR = /*@FR*/{
   "gal.lockFree": "Avec Stalak Pro, chaque projet (son, prises, paroles, montage) est gardé ici, avec sa couverture, et se rouvre sur n’importe quel appareil.",
   "gal.lockEx": "Tes projets sauvegardés en ligne sont gardés 6 mois après la fin de Stalak Pro, et reviennent dès que tu le reprends.",
   "gal.empty": "Aucun projet pour l’instant. À l’étape Montage, touche « Sauvegarder en ligne » : il apparaîtra ici avec sa couverture.",
-  "gal.moreA": "Plus pour « {name} » : renommer, supprimer"
+  "gal.moreA": "Plus pour « {name} » : renommer, supprimer",
+  "_bloc.compte.formules": "Comptes, paiements & serveur : formules Gratuit / Basic / Pro / Max, vidéo gratuite du jour, rappel",
+  "pl.n.free": "Gratuit",
+  "pl.n.basic": "Basic",
+  "pl.n.pro": "Pro",
+  "pl.n.max": "Max",
+  "acct.proT": "Les formules Stalak",
+  "pl.billY": "{y} facturés une fois par an",
+  "pl.save": "Économise {n} %",
+  "pl.rib.month": "Seulement {d} de plus que Pro",
+  "pl.rib.year": "Seulement {d} de plus par mois que Pro",
+  "pl.mine": "Ta formule",
+  "pl.soon": "Bientôt",
+  "pl.switch": "Passer à {plan}",
+  "pl.confirm": "Confirmer : passer à {plan}",
+  "pl.prorata": "Tu paies seulement la différence aujourd’hui, au prorata, avec ton moyen de paiement enregistré. Touche encore pour confirmer.",
+  "pl.changing": "Changement de formule…",
+  "pl.changed": "C’est fait : ton compte passe en Stalak {plan} dans quelques secondes.",
+  "pl.cta.basic": "Choisir Basic",
+  "pl.cta.pro": "Choisir Pro",
+  "pl.cta.max": "Choisir Max",
+  "pl.p.unlimited": "Vidéos illimitées",
+  "pl.p.nologo": "Pas de logo Stalak à la fin de tes vidéos",
+  "pl.p.text": "Toutes les tailles et apparitions du texte : mot par mot, karaoké",
+  "pl.p.filters": "Tous les filtres vidéo",
+  "pl.p.clip": "Le mode Clip : le morceau entier en 16:9",
+  "pl.p.packs": "Les packs de 5 et 10 vidéos toutes différentes",
+  "pl.p.pack30": "Les packs de 30 vidéos",
+  "pl.p.lyrics": "Tes paroles écrites et calées pour toi, {n} fois par jour",
+  "pl.p.cloud": "Tes projets sauvegardés en ligne, {n} Go",
+  "pl.p.human": "Parler à un humain, depuis la bulle d’aide",
+  "acct.e.same_plan": "C’est déjà ta formule.",
+  "acct.e.no_subscription": "Aucun abonnement en cours à changer : choisis une formule pour t’abonner.",
+  "acct.e.subscription_ending": "Ton abonnement s’arrête bientôt : tu pourras prendre une nouvelle formule une fois qu’il sera fini.",
+  "acct.e.daily_video_used": "Ta vidéo gratuite du jour est faite : la prochaine arrive à minuit (heure de Paris).",
+  "fv.remindOn": "C’est noté : on te prévient par e-mail quand ta vidéo gratuite du jour est disponible.",
+  "fv.remindOff": "C’est noté : plus de rappel.",
+  "fv.ready": "Ta vidéo gratuite du jour est disponible.",
+  "fv.used": "Ta vidéo gratuite du jour est faite. La prochaine arrive à minuit, heure de Paris ({t} chez toi).",
+  "pl.upNow": "Tu paies {a} aujourd’hui (au prorata, pour le reste de la période), avec ton moyen de paiement enregistré. Touche encore pour confirmer.",
+  "pl.downAt": "Ta formule change au renouvellement, le {d} : rien n’est remboursé et {plan} reste actif jusque-là. Touche encore pour confirmer.",
+  "pl.checking": "Calcul du prix…",
+  "pl.changedDown": "C’est noté : Stalak {plan} commence le {d} ; ta formule actuelle reste active jusque-là.",
+  "acct.e.change_at_renewal": "Une formule plus petite facturée autrement (par exemple de l’annuel au mensuel) commence à la fin de ta période : arrête le renouvellement dans « Gérer mon abonnement », puis choisis la nouvelle formule à la fin."
 }/*FR@*/;
 let STATIC_FR = /*@STATIC_FR*/null/*STATIC_FR@*/;
 const LANGS = ['fr', 'en'];
@@ -1624,6 +1746,9 @@ let LANG = (() => {
   try { const q = new URLSearchParams(location.search).get('lang'); if (LANGS.includes(q)) return q; } catch(e){}
   const saved = store.get('stalak:lang'); if (LANGS.includes(saved)) return saved;
   try { if (/^\/en(\/|$)/.test(location.pathname) || document.documentElement.getAttribute('lang') === 'en') return 'en'; } catch(e){}
+  // Marketing & croissance (SEO) : sur stalak.app, la page française reste en français (Google la lisait en anglais) ;
+  // le visiteur choisit l'anglais avec le bouton FR / EN ou la page /en/. La version claude.ai (sans balise canonical) suit la langue du navigateur.
+  try { if (document.documentElement.getAttribute('lang') === 'fr' && document.querySelector('link[rel="canonical"]')) return 'fr'; } catch(e){}
   const nl = (navigator.languages && navigator.languages[0]) || navigator.language || '';
   return /^fr/i.test(nl) ? 'fr' : 'en';
 })();
@@ -4403,7 +4528,7 @@ async function trPost(body){
 async function transcribeLyrics(){
   if (!S.song || trBusy || autoBusy || S.exporting) return;
   if (!trAvail()) return;
-  if (!acctPro()){ acctOpen('lyrics'); return; }
+  if (!acctHas('lyrics')){ acctOpen('lyrics'); return; }
   const a = Math.max(0, S.segStart - 1), b = Math.min(S.song.duration, S.segEnd + 1);
   if (b - a > TR_MAX + 2){ say('lyr.e.long'); return; }
   if (typeof navigator !== 'undefined' && navigator.onLine === false){ say('lyr.e.network'); return; }
@@ -4476,7 +4601,7 @@ async function transcribeLyrics(){
 }
 /* the « Transcription auto » panel: Pro tag, the button's words, busy state; on the claude.ai page, the « stalak.app only » note */
 function trUi(){
-  const avail = trAvail(), pro = acctPro(), ab = $('#lyrMode button[data-mode="auto"]');
+  const avail = trAvail(), pro = acctHas('lyrics'), ab = $('#lyrMode button[data-mode="auto"]');
   if (ab) ab.classList.toggle('protag', avail && !pro);
   $('#lyTr').hidden = !avail; $('#lyTrNA').hidden = avail;
   const has = S.lyrics.lines.some(l => l.t != null);
@@ -8042,7 +8167,7 @@ bindSeg('#lyTrLang', v => { trLang = v; });
 $('#lyVoxFile').onchange = e => { const f = e.target.files[0]; e.target.value = ''; trVoxFile(f); };
 $('#lyVoxDel').onclick = () => { if (S.song) S.song.vox = null; trUi(); say('lyr.vox.off'); };
 /* « Transcription auto » is Stalak Pro on stalak.app: a PRO tag, and the Pro page (« why ») instead of the panel for the others */
-$('#lyrMode').addEventListener('click', e => { const b = e.target.closest('button[data-mode="auto"]'); if (b && trAvail() && !acctPro()){ e.stopPropagation(); acctOpen('lyrics'); } }, true);
+$('#lyrMode').addEventListener('click', e => { const b = e.target.closest('button[data-mode="auto"]'); if (b && trAvail() && !acctHas('lyrics')){ e.stopPropagation(); acctOpen('lyrics'); } }, true);
 if (ACCT) ACCT.onChange(() => trUi());
 trUi();
 $('#tapAgain').onclick = () => { $('#lyText').value = S.lyrics.lines.map(l => l.text).join('\n'); startTap(); };
@@ -8477,9 +8602,9 @@ const human = { t: null, last: 0, timer: 0, available: false, sending: false };
 function humanSaved(){ const s = store.get(HUMAN_KEY); return s && s.id && s.token && Date.now() - (s.at || 0) < HUMAN_DAYS * 864e5 ? s : null; }
 const humanUser = () => (ACCT && ACCT.state && ACCT.state.user) || null;
 async function humanIsPro(){
-  if (acctPro()) return true;
+  if (acctHas('human')) return true;   // « Parler à un humain »: Stalak Max (offer of 30/10)
   if (ACCT && !humanUser()){ try { await ACCT.me(); } catch(e){} }   // the account may not be loaded yet
-  return acctPro();
+  return acctHas('human');
 }
 async function humanApi(method, path, body){
   const h = { Accept: 'application/json' }; if (body) h['Content-Type'] = 'application/json';
@@ -8558,7 +8683,7 @@ async function humanStart(){
 async function humanSend(text, retried){
   text = String(text || '').trim(); if (!text || human.sending) return;
   const back = () => { $('#helpIn').value = text; };
-  if (!acctPro()){ back(); humanStop(); humanGate(!!human.t); return; }
+  if (!acctHas('human')){ back(); humanStop(); humanGate(!!human.t); return; }
   human.sending = true; $('#helpSend').disabled = true;
   try {
     let r;
@@ -8757,7 +8882,7 @@ function apAuthDone(f){
     ACCT.me().then(() => {
       if (!ACCT.state.user) return;
       store.set('stalak:hadAcct', 1); apAfter = 'account'; apStep = 'form'; apClearPw();
-      apGo(to, { replace: open, keepMsg: true }); apSay(acctPro() ? 'acct.welcomePro' : 'acct.welcome');
+      apGo(to, { replace: open, keepMsg: true }); apSay(acctPaid() ? 'acct.welcomePro' : 'acct.welcome', acctPlanVars());
       diag('compte : connecté (' + (ACCT.state.session && ACCT.state.session.method) + ')');
     }, () => {});
   } else {
@@ -8767,7 +8892,17 @@ function apAuthDone(f){
     diag('compte : connexion externe refusée (' + c + ')');
   }
 }
-function acctPro(){ return !!(ACCT && ACCT.state.entitlements && ACCT.state.entitlements.plan === 'pro'); }
+/* what the account's plan unlocks: the table is on the server (functions/_lib/entitlements.js, sent with /api/me) */
+function acctHas(feature){ return !!(ACCT && ACCT.has(feature)); }
+function acctPlan(){ return (ACCT && ACCT.state.entitlements && ACCT.state.entitlements.plan) || 'free'; }
+function acctPaid(){ return acctPlan() !== 'free'; }
+function acctPlanVars(){ return { plan: _t('pl.n.' + acctPlan()) }; }
+// older name, kept for the branches written before the 30/10 offer (app/filtres): Pro or Max
+function acctPro(){ return acctHas('filters'); }
+// the reasons that open the plans page (acctOpen('…')) and the feature each one asks for
+function apWhyHas(k){ const f = WHY_FEATURE[String(k || '').replace('acct.why.', '')]; return !!f && acctHas(f); }
+const WHY_FEATURE = { lyrics: 'lyrics', pack: 'packs', pack5: 'pack5', pack10: 'pack10', pack30: 'pack30', clip: 'clip', outro: 'nologo',
+  nologo: 'nologo', text: 'text', cloud: 'cloud', support: 'human', human: 'human', daily: 'unlimited', unlimited: 'unlimited', filters: 'filters' };
 /* an account page or the Pro thank-you is on screen (modalOn keeps the app out of reach under them) */
 function acctLayerOpen(){ return isShown($('#acctPage')) || isShown($('#proThx')); }
 function acctDate(iso){ try { return new Date(iso).toLocaleDateString(LANG === 'en' ? 'en-GB' : 'fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }); } catch(e){ return iso; } }
@@ -8808,15 +8943,15 @@ async function apRun(fn, ctx){
   try { await fn(); } catch(e){ apErr(e, ctx); } finally { apBusy = false; $('#acctPage').removeAttribute('aria-busy'); }
 }
 function apSubLine(){
-  const st = ACCT.state, sub = st.subscription, pro = acctPro();
+  const st = ACCT.state, sub = st.subscription, pro = acctPaid();
   if (pro){
-    setT('#apSubT', sub && sub.cancelAt ? 'ap.subEnds' : sub && sub.currentPeriodEnd ? 'ap.subRenew' : 'ap.subPro', { d: acctDate(sub && (sub.cancelAt || sub.currentPeriodEnd)) });
+    setT('#apSubT', sub && sub.cancelAt ? 'ap.subEnds' : sub && sub.currentPeriodEnd ? 'ap.subRenew' : 'ap.subPro', { d: acctDate(sub && (sub.cancelAt || sub.currentPeriodEnd)), ...acctPlanVars() });
     setT('#apSubGo', 'ap.manage');
   } else { setT('#apSubT', 'ap.subFree'); setT('#apSubGo', 'ap.discover'); }
 }
 function apRender(){
   if (!ACCT || !apView) return;
-  const st = ACCT.state, u = st.user, pro = acctPro(), v = apView;
+  const st = ACCT.state, u = st.user, pro = acctPaid(), v = apView;
   $('#apLogin').hidden = v !== 'login'; $('#apAccount').hidden = v !== 'account'; $('#apPro').hidden = v !== 'pro'; $('#apGallery').hidden = v !== 'gallery'; $('#acctPage').classList.toggle('ap-wide', v === 'gallery');
   $('#acctPage').setAttribute('aria-labelledby', v === 'login' ? 'apLoginT' : v === 'account' ? 'apAccT' : v === 'gallery' ? 'apGalT' : 'apProT');
   if (v === 'login'){
@@ -8850,34 +8985,177 @@ function apRender(){
     setT('#apPwEdit', u.hasPassword ? 'ap.pwChange' : 'ap.pwSet'); $('#apPwEdit').hidden = open; $('#apPwEdit').setAttribute('aria-expanded', String(open));
     const needCur = !!u.hasPassword && !(st.session && st.session.recentCode);
     $('#apCurBox').hidden = !needCur; $('#apCurHint').hidden = !needCur;
-    apSubLine();
+    apSubLine(); fvAccount();
   }
   if (v === 'pro'){
-    $('#apBuy').hidden = pro; $('#apIsPro').hidden = !pro; $('#apPromo').hidden = pro; $('#apProSub').hidden = pro;
-    setT('#apProT', pro ? 'acct.tPro' : 'acct.proT');
+    $('#apBuy').hidden = false; $('#apIsPro').hidden = !pro; $('#apPromo').hidden = pro; $('#apProSub').hidden = pro;
+    setT('#apProT', pro ? 'acct.tPro' : 'acct.proT', acctPlanVars());
     const sub = st.subscription;
-    if (pro) setT('#apProTxt', sub && sub.cancelAt ? 'acct.proEnds' : sub && sub.currentPeriodEnd ? 'acct.proRenew' : 'acct.proOn', { d: acctDate(sub && (sub.cancelAt || sub.currentPeriodEnd)) });
-    const w = $('#apProWhy'); w.hidden = !apWhyK || pro; if (apWhyK && !pro) setT(w, apWhyK); else setT(w, null);
+    if (pro) setT('#apProTxt', sub && sub.cancelAt ? 'acct.proEnds' : sub && sub.currentPeriodEnd ? 'acct.proRenew' : 'acct.proOn', { d: acctDate(sub && (sub.cancelAt || sub.currentPeriodEnd)), ...acctPlanVars() });
+    plRender();
+    const w = $('#apProWhy'); w.hidden = !apWhyK; if (apWhyK) setT(w, apWhyK); else setT(w, null);
   }
 }
+/* ---- the plans page (offer of 30/10/2026): Gratuit + Basic / Pro / Max, monthly or yearly — domaine Comptes ----
+   The prices come from /api/config (the same as Paddle's); a plan whose price is not set yet says « bientôt ». A subscriber
+   sees his plan and can move to another one on the same subscription (the difference billed now, prorated): the button
+   asks once more before (« Confirmer »). */
+const PL_DEFAULT = { basic: { month: { amount: '4.99' }, year: { amount: '39.00' } }, pro: { month: { amount: '10.99' }, year: { amount: '109.00' } },
+  max: { month: { amount: '13.99' }, year: { amount: '139.00' } } };
+let plInt = 'month', plCfg = null, plConfirm = null, plPreview = null;
+function plMoney(n){
+  const v = Math.round(n * 100) / 100;
+  try { return new Intl.NumberFormat(LANG === 'en' ? 'en-IE' : 'fr-FR', { style: 'currency', currency: 'EUR', minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 }).format(v); }
+  catch(e){ return v + ' €'; }
+}
+function plMoneyC(cents, cur){
+  try { return new Intl.NumberFormat(LANG === 'en' ? 'en-IE' : 'fr-FR', { style: 'currency', currency: cur || 'EUR' }).format(cents / 100); } catch(e){ return (cents / 100).toFixed(2) + ' ' + (cur || 'EUR'); }
+}
+function plAmounts(p){ const P = (plCfg && plCfg.plans && plCfg.plans[p]) || PL_DEFAULT[p]; return { m: +P.month.amount, y: +P.year.amount }; }
+function plRender(){
+  if (!ACCT) return;
+  const cur = acctPlan(), paid = cur !== 'free', sub = ACCT.state.subscription, curInt = sub && sub.interval;
+  const prices = plCfg && plCfg.paddle && plCfg.paddle.prices;
+  $$('#plInt button').forEach(b => { const on = b.dataset.int === plInt; b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; });
+  $$('#apBuy .pl-card').forEach(c => {
+    const p = c.dataset.plan;
+    c.classList.toggle('pl-mine', p === cur);
+    if (p === 'free'){ const n = c.querySelector('[data-pl="now"]'); if (n) n.hidden = paid; $('#apStayFree').hidden = paid; return; }
+    const a = plAmounts(p), year = plInt === 'year';
+    c.querySelector('[data-pl="amt"]').textContent = plMoney(year ? Math.floor(a.y / 12 * 100) / 100 : a.m);
+    setT(c.querySelector('[data-pl="bill"]'), year ? 'pl.billY' : 'pr.month.bill', { y: plMoney(a.y) });
+    const pill = c.querySelector('[data-pl="pill"]'), save = Math.round((1 - a.y / (12 * a.m)) * 100);
+    pill.hidden = !year || !(save > 0); if (!pill.hidden){ pill.classList.add('pr-save'); setT(pill, 'pl.save', { n: save }); }
+    const b = c.querySelector('[data-buy]'), note = c.querySelector('[data-pl="note"]');
+    const onSale = !!(prices && prices[p] && typeof prices[p] === 'object' && prices[p][plInt]);
+    const mine = p === cur && (!curInt || curInt === plInt);
+    b.disabled = mine || !onSale; b.classList.toggle('primary', p === 'max' && !mine);
+    setT(b, mine ? 'pl.mine' : !onSale ? 'pl.soon' : paid ? (plConfirm === p ? 'pl.confirm' : 'pl.switch') : 'pl.cta.' + p, { plan: _t('pl.n.' + p) });
+    note.hidden = !(paid && plConfirm === p && onSale && !mine);
+    if (note.hidden) setT(note, null);
+    else if (plPreview && plPreview.to === p && plPreview.interval === plInt){
+      const pv = plPreview, amt = pv.amount == null ? null : plMoneyC(pv.amount, pv.currency);
+      setT(note, pv.kind === 'down' ? 'pl.downAt' : amt ? 'pl.upNow' : 'pl.prorata', { a: amt, d: pv.effectiveAt ? acctDate(pv.effectiveAt) : '', plan: _t('pl.n.' + pv.from) });
+    } else setT(note, 'pl.checking');
+  });
+  const mx = plAmounts('max'), pr = plAmounts('pro');
+  setT('#plMaxRib', plInt === 'year' ? 'pl.rib.year' : 'pl.rib.month', { d: plMoney(plInt === 'year' ? (mx.y - pr.y) / 12 : mx.m - pr.m) });
+  $$('#apBuy [data-pl-cmp]').forEach(td => { td.textContent = plMoney(plAmounts(td.dataset.plCmp).m); });
+  // the subscriber's card: what the plan gives (the server's list)
+  const ul = $('#apPerks');
+  if (ul && paid){
+    const fs = (ACCT.state.entitlements && ACCT.state.entitlements.features) || [];
+    const key = cur + ':' + LANG + ':' + fs.join(',');
+    if (ul.dataset.k !== key){
+      ul.dataset.k = key; ul.textContent = '';
+      fs.forEach(f => { if (!hasT('pl.p.' + f)) return; const li = document.createElement('li'); li.textContent = _t('pl.p.' + f, { n: f === 'lyrics' ? ACCT.state.entitlements.limits.lyricsPerDay : f === 'cloud' ? Math.round(ACCT.state.entitlements.limits.cloudBytes / 1073741824) : '' }); ul.append(li); });
+    }
+  }
+  const ch = $('#plChange'); if (ch) ch.hidden = !paid;
+}
+// the plans page opened on one plan (acctOpen(why, {plan})): that card in view, its button focused
+function plFocus(plan){
+  if (!['basic', 'pro', 'max'].includes(plan)) return;
+  plConfirm = null; plRender();
+  setTimeout(() => {
+    const c = $('#apBuy .pl-card[data-plan="' + plan + '"]'); if (!c || !isShown($('#apPro'))) return;
+    $$('#apBuy .pl-card').forEach(x => x.classList.toggle('pl-focus', x === c));
+    try { c.scrollIntoView({ behavior: calmMotion() ? 'auto' : 'smooth', block: 'center' }); } catch(e){}
+    const b = c.querySelector('[data-buy]'); if (b) try { b.focus({ preventScroll: true }); } catch(e){}
+  }, 350);
+}
+function plBuy(plan, btn){
+  if (!ACCT.state.user){ apAfter = 'pro'; apGo('login', { mode: store.get('stalak:hadAcct') ? 'in' : 'up' }); return; }
+  if (acctPaid()){
+    // a subscriber: another plan on the same subscription. First tap: what it costs today (Paddle's preview) or when it
+    // starts (a smaller plan: at the renewal); second tap: the change.
+    if (plConfirm !== plan){
+      plConfirm = plan; plPreview = null; plRender();
+      const want = { plan, int: plInt };
+      ACCT.changePlan(plan, plInt, true).then(d => { if (plConfirm === want.plan && plInt === want.int){ plPreview = d; plRender(); } },
+        e => { if (plConfirm === want.plan){ plConfirm = null; plRender(); apErr(e); } });
+      return;
+    }
+    const pv = plPreview; plConfirm = null; plPreview = null; plRender();
+    apRun(async () => {
+      apSay('pl.changing'); diag('compte : changement de formule → ' + plan + ' ' + plInt);
+      const d = await ACCT.changePlan(plan, plInt);
+      apSay(d.kind === 'down' ? 'pl.changedDown' : 'pl.changed', { plan: _t('pl.n.' + plan), d: d.effectiveAt ? acctDate(d.effectiveAt) : '' });
+    });
+    return;
+  }
+  flurry(btn);
+  apRun(async () => { apSay('acct.paying'); diag('compte : paiement ' + plan + ' ' + plInt); await ACCT.checkout(plan, plInt); apSay(null); });
+}
+function plInit(){
+  plInt = store.get('stalak:plInt') === 'year' ? 'year' : 'month';
+  const pick = v => { plInt = v; plConfirm = null; plPreview = null; store.set('stalak:plInt', v); plRender(); };
+  $$('#plInt button').forEach(b => {
+    b.onclick = () => pick(b.dataset.int);
+    b.onkeydown = e => {
+      if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return;
+      e.preventDefault(); const v = plInt === 'month' ? 'year' : 'month'; pick(v);
+      const o = $('#plInt button[data-int="' + v + '"]'); if (o) o.focus();
+    };
+  });
+  $$('#apBuy [data-buy]').forEach(b => { b.onclick = () => plBuy(b.dataset.buy, b); });
+  ACCT.config().then(c => { plCfg = c; plRender(); }).catch(() => {});
+  plRender();
+}
+
+/* ---- the free video of the day (offer of 30/10): on the free plan, 1 export a day with an account; the server counts it
+   and gives the « jeton du jour » (the day starts again at midnight, Paris time). — domaine Comptes.
+   Contract with App (docs/STATUS.md, 30/10): App asks acctQuota() before an export (its « vidéo du jour » screen) and calls
+   acctUseVideo() once the video is made. acctQuota() = {left, resetAt (ms)} for a free account signed in, null otherwise. ---- */
+function acctFreeVideo(){ return ACCT && ACCT.state.user && !acctHas('unlimited') ? ACCT.state.freeVideo || null : null; }
+function acctQuota(){
+  const fv = acctFreeVideo(); if (!fv) return null;
+  const resetAt = Date.parse(fv.nextAt) || 0;
+  return { left: fv.usedToday && Date.now() < resetAt ? 0 : 1, resetAt };
+}
+// counts the video of the day on the server (POST /api/videos/claim); the promise gives {token, day, nextAt} or {unlimited}.
+// Refused (daily_video_used): the account state says it is used, and the promise fails with that code.
+function acctUseVideo(){
+  if (!ACCT || !ACCT.state.user || acctHas('unlimited')) return Promise.resolve({ unlimited: true });
+  const id = 'v' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+  return ACCT.videos.claim(id).then(d => { if (!d.unlimited) diag('vidéo gratuite du jour : comptée (' + d.day + ')'); return d; }, e => {
+    if (e && e.code === 'daily_video_used') ACCT.me().catch(() => {});
+    throw e;
+  });
+}
+// the account page: today's free video, and the reminder box (for the free plan, or to turn it off)
+function fvAccount(){
+  const u = ACCT.state.user, fv = acctFreeVideo(), el = $('#apFv'), rl = $('#apRemindL');
+  if (!u) return;
+  el.hidden = !fv;
+  if (fv){
+    let t = ''; try { t = new Date(fv.nextAt).toLocaleTimeString(LANG === 'en' ? 'en-GB' : 'fr-FR', { hour: '2-digit', minute: '2-digit' }); } catch(e){}
+    setT(el, fv.usedToday ? 'fv.used' : 'fv.ready', { t });
+  }
+  rl.hidden = acctPaid() && !u.reminders;
+  $('#apRemind').checked = !!u.reminders;
+}
+
 /* the header button: the photo or the initials, the pseudo (on a computer), PRO */
 function acctSync(){
   if (!ACCT) return;
   const st = ACCT.state, u = st.user, pro = acctPro(), b = $('#acctBtn');
-  S.pro = pro;
-  b.hidden = false; b.classList.toggle('pro', pro); $('#acctProTag').hidden = !pro; $('#priceBtn').hidden = pro;
+  const paid = acctPaid();   // offer of 30/10: any plan (Basic, Pro, Max) for the header button
+  S.pro = acctHas('nologo');   // no Stalak logo at the end (Basic and up)
+  b.hidden = false; b.classList.toggle('pro', paid); $('#acctProTag').hidden = !paid; $('#priceBtn').hidden = paid;
   if (u && u.displayName){ setT('#acctLbl', null); $('#acctLbl').textContent = u.displayName; } else setT('#acctLbl', u ? 'acct.btn.in' : 'acct.btn');
   acctAvatar($('#acctAv'), u);
-  const lbl = u ? _t('ap.btnAria', { name: acctName(u) }) + (pro ? ' · Stalak Pro' : '') : _t('acct.btn');
+  const lbl = u ? _t('ap.btnAria', { name: acctName(u) }) + (paid ? ' · Stalak ' + _t('pl.n.' + acctPlan()) : '') : _t('acct.btn');
   b.setAttribute('aria-label', lbl); b.title = lbl;
   // signed in: the button opens the account menu; signed out: « Se connecter »
   b.setAttribute('aria-haspopup', u ? 'menu' : 'dialog'); b.setAttribute('aria-controls', u ? 'acctMenu' : 'acctPage');
-  if (!u) acctMenu(false); else setT('#amProT', pro ? 'am.manage' : 'am.pro');
+  if (!u) acctMenu(false); else setT('#amProT', paid ? 'am.manage' : 'am.pro');
   planTags();   // the padlocks of the plans (App & montage)
   textGate();
   if (!pro && isClip() && !S.exporting) setKind('reel', true);
   if (pro && !acctWasPro && store.get('stalak:kind') === 'clip' && !isClip() && !S.song && !S.exporting) setKind('clip', true);
   if (pro) apWhyK = null;
+  if (apWhyK && apWhyHas(apWhyK)) apWhyK = null;
   acctWasPro = pro;
   apRender(); updateNav();
   proThanksMaybe();
@@ -8901,7 +9179,7 @@ function apHist(v, replace){
 /* opens a page: o.why (clip | outro: why Pro is shown), o.replace (instead of a new history entry), o.noHist (from Back) */
 function apGo(view, o = {}){
   if (!ACCT) return;
-  if ('why' in o) apWhyK = o.why && !acctPro() ? 'acct.why.' + o.why : null;
+  if ('why' in o) apWhyK = o.why && !apWhyHas('acct.why.' + o.why) ? 'acct.why.' + o.why : null;
   if (view === 'signup'){ view = 'login'; o.mode = o.mode || 'up'; }   // #inscription
   const v = apResolve(view), page = $('#acctPage'), first = !isShown(page);
   // Stalak Pro asked while signed out: « Créer un compte » first for someone never signed in on this browser
@@ -8936,11 +9214,15 @@ function apHide(){
   try { (apBack && apBack.isConnected && !apBack.closest('#acctPage') ? apBack : $('#acctBtn')).focus(); } catch(e){}
 }
 /* the header button, the PRO-tagged Clip button (why = 'clip'), the outro link (why = 'outro') */
-function acctOpen(why){
+function acctOpen(why, o){
   if (!ACCT || S.exporting || askDone) return;
   // signed out: the header button opens « Se connecter »; a Pro feature opens « Créer un compte » for someone never signed in here
-  const mode = ACCT.state.user ? null : why && !store.get('stalak:hadAcct') ? 'up' : 'in';
-  apGo(why ? 'pro' : ACCT.state.user ? 'account' : 'login', { why: why || null, mode });
+  const daily = why === 'daily' && !ACCT.state.user;
+  const mode = ACCT.state.user ? null : daily || (why && !store.get('stalak:hadAcct')) ? 'up' : 'in';
+  // offer of 30/10: the free video of the day only needs a free account (« daily » signed out: « Créer un compte »);
+  // o.plan ('basic' | 'pro' | 'max'): the plans page opens on that plan
+  apGo(why && !daily ? 'pro' : ACCT.state.user ? 'account' : 'login', { why: why || null, mode });
+  if (o && o.plan && !daily) plFocus(o.plan);
 }
 
 /* ---- the account menu (domaine Comptes, paiements & serveur): Galerie, Mon compte, Stalak Pro / Gérer mon abonnement, Aide,
@@ -8952,7 +9234,7 @@ function acctMenu(on, focusFirst){
   on = !!on; if (on === amOpen) return;
   amOpen = on; m.hidden = !on; b.setAttribute('aria-expanded', on ? 'true' : 'false');
   if (on){
-    setT('#amProT', acctPro() ? 'am.manage' : 'am.pro');
+    setT('#amProT', acctPaid() ? 'am.manage' : 'am.pro');
     const it = amItems()[0]; if (it) try { it.focus({ preventScroll: true }); } catch(e){}
     if (!focusFirst) m.classList.add('am-touch'); else m.classList.remove('am-touch');
   }
@@ -8982,7 +9264,7 @@ function amInit(){
     if (S.exporting || askDone) return;
     if (k === 'gallery') apGo('gallery');
     else if (k === 'account') apGo('account');
-    else if (k === 'pro'){ if (acctPro() && apPortal) apPortal(); else apGo('pro'); }
+    else if (k === 'pro'){ if (acctPaid() && apPortal) apPortal(); else apGo('pro'); }
     else if (k === 'help') helpOpen(true);
     else if (k === 'out') acctLogout();
   });
@@ -9018,7 +9300,7 @@ let ptI = 0, ptTimer = 0, ptWait = 0, ptBackEl = null, ptPhase = 0, ptScrollT = 
 const ptSeen = new Set();
 const ptCalm = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){ return false; } };
 function proThanksMaybe(){
-  if (!ACCT || !acctPro() || !ACCT.state.user || isShown($('#proThx'))) return;
+  if (!ACCT || !acctPaid() || !ACCT.state.user || isShown($('#proThx'))) return;
   const id = ACCT.state.user.id, k = 'stalak:proThanks:' + id;
   if (ptSeen.has(id)) return;
   let seen = null; try { seen = localStorage.getItem(k); } catch(e){}
@@ -9108,7 +9390,7 @@ if (ACCT){
     apAfter = 'account'; apStep = 'form'; apResetCode = ''; apClearPw(); $('#apUpName').value = '';
     acctSync();
     apGo(to, { replace: true, keepMsg: true });
-    apSay(msgK || (acctPro() ? 'acct.welcomePro' : 'acct.welcome'));
+    apSay(msgK || (acctPaid() ? 'acct.welcomePro' : 'acct.welcome'), acctPlanVars());
   };
   const toCode = (what, mail) => {
     apCodeFor = what; apMailV = mail; apStep = 'code'; $('#apCode').value = ''; apFErr('apCode', null);
@@ -9179,7 +9461,7 @@ if (ACCT){
     const name = $('#apUpName').value.replace(/\s+/g, ' ').trim(), len = [...name].length;
     if (name && (len < 2 || len > 30)){ apFErr('apUpName', 'acct.e.invalid_name'); $('#apUpName').focus(); return; }
     apSay('acct.sending');
-    try { await ACCT.signup(m, pw, name || null); }
+    try { await ACCT.signup(m, pw, name || null, $('#apUpRemind').checked); }
     catch(err){
       apSay(null);
       if (err.code === 'email_taken'){
@@ -9209,7 +9491,7 @@ if (ACCT){
   const resend = () => apRun(async () => {
     if (Date.now() < apResendAt) return;
     apSay('acct.sending');
-    if (apCodeFor === 'signup') await ACCT.signup(apMailV, $('#apUpPw').value, $('#apUpName').value.trim() || null);
+    if (apCodeFor === 'signup') await ACCT.signup(apMailV, $('#apUpPw').value, $('#apUpName').value.trim() || null, $('#apUpRemind').checked);
     else if (apCodeFor === 'login'){ const r = await ACCT.login(apMailV, $('#apInPw').value); if (!r.needCode){ signedIn(); return; } }
     else await ACCT.forgot(apMailV);
     apResendAt = Date.now() + 30e3; $('#apCode').value = ''; apFErr('apCode', null); apRender();
@@ -9304,7 +9586,7 @@ if (ACCT){
     if (w){ try { w.opener = null; } catch(e){} w.location.href = u; } else location.href = u;
   }).then(() => { if (!u && w) w.close(); }); };
   $('#priceBtn').onclick = () => { if (!S.exporting && !askDone) apGo('pro'); };
-  $('#apSubGo').onclick = () => { if (acctPro()) portal(); else apGo('pro'); };
+  $('#apSubGo').onclick = () => { if (acctPaid()) portal(); else apGo('pro'); };
   $('#apManage').onclick = portal; apPortal = portal;
   $('#apGalGo').onclick = () => apGo('gallery');
   $('#galPro').onclick = () => apGo('pro', { why: 'cloud' });
@@ -9315,10 +9597,10 @@ if (ACCT){
     apRun(async () => { await ACCT.deleteAccount(); diag('compte : supprimé'); apGo('login', { replace: true }); apSay('acct.deleted'); });
   };
 
-  // Stalak Pro: the two prices (Paddle's window)
-  const buy = plan => !ACCT.state.user ? (apAfter = 'pro', apGo('login', { mode: store.get('stalak:hadAcct') ? 'in' : 'up' })) : apRun(async () => { apSay('acct.paying'); diag('compte : paiement ' + plan); await ACCT.checkout(plan); apSay(null); });
-  $('#apMonth').onclick = () => { flurry($('#apMonth')); buy('month'); };
-  $('#apYear').onclick = () => { flurry($('#apYear')); buy('year'); };
+  // the plans (offer of 30/10): Basic / Pro / Max, monthly or yearly; Paddle's window, or a change of plan for a subscriber
+  plInit();
+  // the reminder e-mail of the free video of the day (account page)
+  $('#apRemind').onchange = () => { const on = $('#apRemind').checked; apRun(async () => { await ACCT.updateProfile({ reminders: on, lang: LANG }); apSay(on ? 'fv.remindOn' : 'fv.remindOff'); }); };
   // the free card's way out: back to the app, nothing else asked
   $('#apStayFree').onclick = apBackBtn;
   // the sign-in forms' main buttons get their snowflakes too
@@ -9346,7 +9628,7 @@ if (ACCT){
 
   ACCT.onChange(() => acctSync());
   // back from the payment window: Paddle reports it, account.js asks the server until the account is Pro
-  window.addEventListener('focus', () => { if (ACCT.state.user && !acctPro()) ACCT.me().catch(() => {}); });
+  window.addEventListener('focus', () => { if (ACCT.state.user && acctPlan() !== 'max') ACCT.me().catch(() => {}); });
   // opened at #compte, #pro or #connexion (links from the pricing pages): the page opens once we know who is there;
   // the address is first set back without it, so that Back closes the page instead of leaving the site
   window.addEventListener('message', e => { if (e.origin === location.origin && e.data && typeof e.data.stalakAuth === 'string') apAuthDone(e.data.stalakAuth); });
@@ -9382,7 +9664,7 @@ function clCheck(){
 /* the button of the Montage step, the account card (not the list itself: see clRenderList) */
 function clSync(){
   if (!CL) return;
-  const pro = acctPro(), st = ACCT.state, u = st.user, soon = CL.avail === false;
+  const pro = acctHas('cloud'), st = ACCT.state, u = st.user, soon = CL.avail === false;
   // another person signed in (or signed out): their own list, nothing of the previous one
   const uid = u ? u.id : null;
   if (uid !== CL.uid){ CL.uid = uid; CL.list = null; CL.storage = null; CL.cur = null; CL.renaming = null; CL.lang = null; }
@@ -9413,7 +9695,7 @@ async function clLoadList(){
   if (!CL || !ACCT.state.user) return;
   CL.listErr = false;
   // saved projects are part of Stalak Pro: without it, no access (they come back with a new subscription)
-  if (!acctPro()){ CL.locked = true; CL.list = null; CL.storage = null; clSync(); clRenderList(); return; }
+  if (!acctHas('cloud')){ CL.locked = true; CL.list = null; CL.storage = null; clSync(); clRenderList(); return; }
   CL.locked = false;
   try {
     const d = await ACCT.projects.listAll();
@@ -9603,7 +9885,7 @@ function clMediaFiles(){
 }
 function clSaveAsk(){
   if (!CL || CL.busy || S.exporting || askDone) return;
-  if (!acctPro()){ if (isShown($('#acctPage'))) apGo('pro', { why: 'cloud' }); else acctOpen('cloud'); return; }
+  if (!acctHas('cloud')){ if (isShown($('#acctPage'))) apGo('pro', { why: 'cloud' }); else acctOpen('cloud'); return; }
   if (!CL.avail){ clSay('cl.soonSt'); return; }
   if (!S.song){ clSay('cl.nothing'); return; }
   if (S.takes.some(t => t.status === 'pending')){ clSay('cl.wait'); return; }
