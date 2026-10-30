@@ -26,6 +26,12 @@
     | Pro | `pro_01m5ygd6ra9bhd5vzy2v1rrk70` | 10,99 € `pri_01m66r4d7mtzps3wmycfmv8pk9` | 109 € `pri_01m66r5nakxvg6cxjcgc1vv7j7` |
     | Max | `pro_01m66r71dy61a2qaqsrrxgq12n` | 13,99 € `pri_01m66r9m12ckfttnrr5h3vhfgc` | 139 € `pri_01m66r9tmrfg7fxfrb5dpnk5s3` |
     - Anciens prix Pro, toujours actifs pour les abonnés existants : 9,99 € `pri_01m5ygermd2pjw66mgdsh4f4rw` et 79 € `pri_01m5ygfwqdq8h2ax297c6qagjs`. Le webhook doit les compter comme « pro ».
+  - **Contrat entre App et Comptes (30/10, à respecter tel quel par Comptes)** : App a déjà écrit son côté sur la branche `app/formules`, encore à l'état EN COURS. Comptes doit fournir dans le bloc compte de `app.js`, sous ces noms exacts :
+    1. `acctHas(feat)` → `true` ou `false` pour `nologo`, `text`, `unlimited` (Basic) ; `filters`, `clip`, `pack5`, `pack10` (Pro) ; `pack30` (Max). Ajouter aussi `cloud`, `lyrics` et `human` côté serveur.
+    2. `acctQuota()` → `{ left, resetAt }` pour un gratuit connecté (vidéos restantes aujourd'hui, heure en ms de la prochaine), `null` pour une formule payante.
+    3. `acctUseVideo()` → compte la vidéo du jour côté serveur (peut renvoyer une promesse).
+    4. `acctOpen(why, { plan })` → ouvre la page des formules sur `plan` (`basic`, `pro` ou `max`). Nouvelles raisons : `daily`, `pack30` et `filters`. `daily` pour une personne non connectée ouvre la création de compte.
+    - Juridique a déjà écrit les règles côté serveur (remise à zéro, prorata, changement programmé, prix gardé) dans la section Juridique de ce fichier : à appliquer.
   - Travail : Comptes (formules, compteur, e-mail de rappel, Paddle), App (ce que débloque chaque formule, écran « vidéo du jour utilisée »), Marketing (page Tarifs à 4 colonnes), Juridique (conditions de vente). Prix Paddle sandbox créés par le Chef de projet.
 
 ## En ligne (stalak.app)
