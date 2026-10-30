@@ -98,13 +98,9 @@
 - Confirmé sur iPhone par le journal du 27/10 à 23 h : prises filmées lisibles, copie légère 360×640 faite en 3 s, son des prises lu (calage automatique), lecture sans image lente, export de 25 s en 7,7 s par WebCodecs (aucun repli sur le lecteur vidéo).
 - En cours : « un peu de lag » dans la vidéo exportée, signalé par le propriétaire. La cause n'est pas visible dans le journal. Vidéo exportée et précisions demandées au propriétaire : saccade continue, à chaque coupe, ou lèvres en retard.
 
-- En cours (branche `app/filtres`) : 26 filtres vidéo à l'étape Montage, plus « Aucun » : les 13 choisis le 30/10, et un thème « Couleurs » de 13 retouches façon filtres des stories Instagram, sous des noms Stalak.
-  - Un seul code de filtre (shader WebGL, bloc `/*@FILTERS*/` de `src/app.js`), utilisé par l'aperçu, l'export (2D et WebGL) et la page de comparaison.
-  - Rangée de vignettes par thème, limite Pro (`acctOpen('filters')` à l'export), filtre sauvegardé dans le projet.
-  - Page de comparaison publiée pour validation (artifact « Filtres Stalak »), générée par `tests/ui/filtres_comparaison.py`.
-  - À décider : retouches du propriétaire filtre par filtre, puis passage en PRÊT.
+- Prêt (dans `app/formules`) : 26 filtres vidéo validés par le propriétaire le 30/10, plus « Aucun » : 4 thèmes, dont « Couleurs », avec 13 retouches façon stories Instagram sous des noms Stalak. Gratuits : Givre, Film 35 mm, Noir & blanc.
 
-- En cours (branche `app/formules`, après `app/filtres`) : ce que débloque chaque formule dans l'app (table `FEAT_PLAN`, `can(feat)`), cadenas BASIC/PRO/MAX qui ouvrent la bonne formule, écran « Ta vidéo du jour est faite ✓ » avec le temps restant. Attend de Comptes : `acctHas`, `acctQuota`, `acctUseVideo`, `acctOpen(why, { plan })` (détail dans `docs/handoff/app-formules.md`). D'ici là, la règle d'avant s'applique.
+- Prêt (branche `app/formules`, avec `app/filtres` et `compte/formules`) : ce que débloque chaque formule dans l'app, cadenas BASIC/PRO/MAX qui ouvrent la bonne formule, écran « Ta vidéo du jour est faite ✓ » avec le temps restant. Tous les tests passent sauf `support_ui.py`, qui échoue aussi sans cette fusion (à voir par Comptes).
 
 ### Comptes, paiements & serveur
 - Nouvelle offre (`compte/formules`) : les 6 prix sandbox sont dans `wrangler.toml`. Au Chef de projet : migration 0008, puis redéployer le Worker `workers/cloud-cleanup` (horaires des rappels).

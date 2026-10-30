@@ -1,4 +1,4 @@
-Statut : EN COURS (attend la validation du rendu par le propriétaire)
+Statut : INCLUSE dans app/formules (validée par le propriétaire le 30/10 ; fusionner app/formules)
 Branche : app/filtres
 
 Résumé :

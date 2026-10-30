@@ -1,5 +1,5 @@
-Statut : EN COURS (prêt côté App ; attend `acctHas`, `acctQuota`, `acctUseVideo` et le paramètre `plan` d'`acctOpen`, côté Comptes)
-Branche : app/formules (part de app/filtres : à fusionner après elle)
+Statut : PRÊT
+Branche : app/formules. Contient `app/filtres` (validée par le propriétaire le 30/10) et `compte/formules` : une seule fusion suffit.
 
 Résumé :
 - Ce que débloque chaque formule, dans l'app, décrit dans une seule table `FEAT_PLAN` (src/app.js, bloc « formules », juste avant les filtres) :
@@ -21,27 +21,25 @@ Résumé :
   - quand la vidéo est prête, `dayUsed()` appelle `acctUseVideo()` pour la compter.
 - Textes : les raisons des cadenas nomment désormais la bonne formule (texte et logo : dès Basic ; Clip, filtres, packs 5/10 : Pro ; packs 30 : Max). Nouvelles clés dans un bloc « App & montage : formules » (`day.*`, `acct.why.daily`, `acct.why.pack30`, `acct.outroBasic`…).
 
-Ce que Comptes doit livrer (noms utilisés ici, à garder tels quels) :
-1. `acctHas(feat)` → `true` ou `false`, pour : `nologo`, `text`, `unlimited`, `filters`, `clip`, `pack5`, `pack10`, `pack30`.
-2. `acctQuota()` → `{ left, resetAt }` pour un compte gratuit connecté : vidéos gratuites restantes aujourd'hui, et heure (ms) de la prochaine vidéo gratuite. `null` pour une formule payante.
-3. `acctUseVideo()` → compte la vidéo du jour côté serveur. Elle peut renvoyer une promesse.
-4. `acctOpen(why, { plan })` : ouvrir la page des formules sur `plan`. Raisons nouvelles : `daily`, `pack30`, `filters`.
-   - Les textes `acct.why.*` et `ap.whyIn.*` correspondants sont déjà écrits ici.
-   - La raison `daily` d'une personne non connectée doit ouvrir la création de compte.
-   - Les fonctions 1 à 3 peuvent être globales ou dans le bloc compte de `app.js` : l'app les cherche par leur nom.
+Fusions (30/10, demandées par le propriétaire) :
+- `app/filtres` est fusionnée : les 26 filtres validés. Les 13 « Couleurs » restent Pro, comme les 10 autres filtres Pro.
+- `origin/compte/formules` est fusionnée. Comptes a livré le contrat : `acctHas`, `acctQuota`, `acctUseVideo`, `acctOpen(why, { plan })`. Les noms correspondent (`pack5`, `pack10`, `pack30` existent côté serveur).
+- Conflits réglés :
+  - `src/app.js` : textes `acct.why.*` (raisons des cadenas) côté App ; `acct.proRenew`, `acct.proEnds`, `acct.proOn` (`{plan}`), `pr.promo`, `pr.sub` côté Comptes ; dans `acctSync`, la ligne de Comptes (`paid`) plus `planTags()` à la place des anciennes bascules « PRO » ;
+  - `src/theme.css` : les deux blocs gardés, ils ne se chevauchent pas ;
+  - `public/` : reconstruit.
+- Vérifié après la fusion : aucune clé de texte en double ; un seul contrôle par cadenas ; la vidéo du jour est demandée avant l'export et comptée une seule fois après.
 
 Fichiers touchés : src/app.js (bloc formules, filtres, export, texte, Clip, fin Stalak ; 4 lignes du bloc compte : `acctSync` appelle `planTags()`, `#outroPro`, la restauration d'un projet Clip), src/markup.html (écran #dayDone, lien de la fin), src/theme.css (étiquettes BASIC/PRO/MAX, écran), public/ (reconstruit), tests/ui/formules_ui.py (nouveau), docs/STATUS.md, ce compte rendu.
 Migration SQL : aucune côté App (le compteur journalier est côté Comptes).
-Tests :
-- Nouveau `tests/ui/formules_ui.py` : 128/128, en FR et EN, sur téléphone 390 px et ordinateur 1280 px. Comptes y est simulé formule par formule (Gratuit, Basic, Pro, Max). Il vérifie :
-  - logo ;
-  - tailles de texte, Clip, packs 5/10/30 ;
-  - 3 filtres pour Gratuit et Basic, tous pour Pro ;
-  - chaque cadenas ouvre la bonne formule ;
-  - écran « vidéo du jour » : texte, temps restant, focus, Échap, « Passer à Basic » ;
-  - vidéo comptée une fois faite ;
-  - création de compte si non connecté ;
-  - comportement d'avant sans `acctHas`.
-- `node tests/backend/run.mjs` 63/63 ; `tests/ui/paroles_suppr.py` 44/44 ; syntaxe et builds OK ; version claude.ai chargée sans erreur à 390 px et 1280 px.
-Reste au propriétaire : rien tant que Comptes n'a pas livré ; ensuite, tester un compte gratuit sur iPhone (2e export du jour).
+Tests (après les fusions) :
+- `node tests/backend/run.mjs` : 70/70.
+- `plans_ui.py` (Comptes) : 38/38. `gallery_ui.py` : 40/40. `help_ui.py` : 42/42.
+- `formules_ui.py` : 128/128. Il tourne maintenant sur les vraies fonctions de Comptes, remplacées formule par formule, puis remises.
+- `filtres_ui.py` : 106/106. Adapté à l'offre : sans compte, un export ouvre la création du compte gratuit ; l'export y est mesuré avec un compte sans limite.
+- `filtres_comparaison.py` : 242/242. `son_passage.py` : 62/62. `paroles_suppr.py` : 44/44. `remux_frag.py` : 10/10.
+- Syntaxe de `src/app.js` OK ; `build.py` et `build_site.py` OK.
+- `support_ui.py` (Comptes) : s'arrête sur un délai d'attente dépassé, dans le tableau de bord, à l'étape « réponse envoyée par e-mail ». Le blocage est identique sur `origin/compte/formules` seule, sans cette fusion : il ne vient pas de cette branche. À voir par Comptes.
+
+Reste au propriétaire : après la mise en ligne, sur iPhone, avec un compte gratuit : faire un 1er export, puis vérifier que le 2e ouvre l'écran « vidéo du jour ». Toucher chaque cadenas pour vérifier qu'il ouvre la bonne formule.
 Skills utilisés : webapp-testing.
