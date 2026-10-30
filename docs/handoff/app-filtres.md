@@ -18,6 +18,15 @@ Résumé :
 
 Fichiers touchés : src/app.js, src/markup.html, src/theme.css (bloc en fin de fichier), public/index.html, public/en/index.html, tests/ui/filtres_comparaison.py (nouveau), tests/ui/filtres_ui.py (nouveau), docs/STATUS.md, ce compte rendu.
 Migration SQL : aucune.
-Tests : `tests/ui/filtres_comparaison.py` 125/125 (chaque filtre compile, change l'image, même rendu à demi et pleine taille, sur 3 images en 9:16 et 16:9). `tests/ui/filtres_ui.py` en cours.
+Tests :
+- `tests/ui/filtres_comparaison.py` : 125/125. Chaque filtre compile, change l'image, garde un rendu lisible et donne le même aspect à demi-taille et à pleine taille, sur 3 images, en 9:16 et en 16:9.
+- `tests/ui/filtres_ui.py` (FR/EN, téléphone 390 px au doigt, ordinateur 1280 px) :
+  - 14 vignettes en 3 thèmes, toutes dessinées et différentes ; 10 marquées PRO ; choix au doigt, à la souris et aux flèches ;
+  - limite Pro : export ou pack avec un filtre Pro → `acctOpen('filters')`, rien pour un filtre gratuit ;
+  - rendu identique : aperçu = export 2D (écart moyen ≤ 3,8/255, dû au grain), et export WebGL = export 2D (écart 0,0), image à l'endroit, pour les 14 réglages ;
+  - filtre sauvegardé dans le projet (`clCollect`).
+  - Dernier passage : 75/80, puis 32/32 pour la partie moteur. Les 4 échecs « aperçu en gris » venaient du test, qui mesurait sous l'étiquette colorée de la prise ; corrigé après ce passage. Le 5e venait d'un filtre Pro utilisé pour mesurer la vitesse, remplacé par des filtres gratuits ; la partie moteur repasse ensuite à 32/32.
+- Vitesse d'export : pas mesurable ici. Le navigateur de test n'a ni carte graphique ni encodeur AAC, donc l'export passe par l'enregistrement en temps réel. Images exportées vérifiées à l'œil : filtre appliqué, paroles intactes. À mesurer sur iPhone, ligne « rendu par prise … i/s » du journal, sans filtre puis avec Noir & blanc.
+- `node tests/backend/run.mjs` 63/63 ; `paroles_suppr.py` 44/44 ; `remux_frag.py` 10/10 ; syntaxe et builds OK.
 Reste au propriétaire : valider le rendu sur la page « Filtres Stalak », puis tester sur iPhone après la mise en ligne.
 Skills utilisés : webapp-testing, artifact-design (page de comparaison).
