@@ -1,4 +1,4 @@
-Statut : EN COURS (tests en cours)
+Statut : PRÊT
 Branche : app/formules. Contient `app/filtres` (filtres validés le 30/10), `compte/formules` et `main` du 30/10 au soir. Une seule fusion suffit.
 La copie de `docs/handoff/compte-formules.md` dans cette branche est marquée « INCLUSE » ; `compte/formules` garde son propre compte rendu.
 
@@ -32,7 +32,18 @@ Pour les autres conversations :
 
 Fichiers touchés : src/app.js, src/markup.html, src/theme.css, public/ (reconstruit), tests/ui/formules_ui.py (réécrit), tests/ui/filtres_ui.py, docs/STATUS.md, docs/handoff/compte-formules.md (copie marquée « INCLUSE »), ce compte rendu.
 Migration SQL : aucune côté App.
-Tests : en cours.
+Tests (simulation d'iPhone 15 Pro dans Chromium + ordinateur, FR/EN) :
+- `formules_ui.py` (réécrit pour l'offre hybride) : 133/133. Il vérifie :
+  - le gratuit sans compte, sans écran du jour ni fin Stalak ;
+  - le filigrane : présent, qui bouge, discret (moins de 6 % de l'image), identique dans l'aperçu, l'export 2D et l'export WebGL ;
+  - les cadenas Pro / Creator Plus et les étiquettes ;
+  - la pub, avec l'interface de Google imitée car son script est injoignable d'ici : récompense, pub fermée trop tôt, pas de pub, appareil non compatible, vidéo refaite sans filigrane ;
+  - un vrai export après une pub : sans filigrane, puis le filigrane revient ;
+  - Pro, Creator Plus (pack à partir de 3 playbacks), et les vraies fonctions de Comptes.
+- `node tests/backend/run.mjs` 70/70 ; `plans_ui.py` (Comptes) 38/38 ; `gallery_ui.py` 40/40 ; `help_ui.py` 42/42.
+- `filtres_ui.py` 106/106 ; `filtres_comparaison.py` 242/242 ; `son_passage.py` 62/62 ; `paroles_suppr.py` 44/44 ; `remux_frag.py` 10/10 ; syntaxe et builds OK.
+- `support_ui.py` (Comptes) : délai dépassé à l'étape « réponse envoyée par e-mail » du tableau de bord ; le même blocage existe sur `compte/formules` seule, il ne vient pas de cette branche.
+- Pas testé ici : un vrai iPhone et une vraie pub Google (réseau de pub injoignable depuis la machine de test). C'est au propriétaire de le faire (ci-dessous).
 Reste au propriétaire : après la mise en ligne, sur iPhone, sans compte :
 1. exporter une vidéo et vérifier que le filigrane bouge ;
 2. toucher « Regarder une pub », regarder la pub de test de Google jusqu'au bout, puis vérifier que la vidéo refaite n'a pas de filigrane ;
