@@ -183,6 +183,24 @@ Ces montants sont avant TVA et frais. Réaliste : 10 000 € par mois en avril 2
 ### Juridique & business
 - **Fait (branche `legal/etat-des-lieux`)** : état des lieux du statut, de Paddle en réel et des pages légales (infos pour décider, pas un avis juridique).
 - **À décider (propriétaire)** : statut. La LLC prévue est remise en question : pour un résident français, elle ne supprime ni l'impôt ni les cotisations en France et ajoute des obligations (formulaire américain 5472, 25 000 $ d'amende si oublié ; compte étranger à déclarer). La micro-entreprise paraît plus simple. Rendez-vous avec un expert-comptable avant de créer quoi que ce soit (BIC ou BNC, ACRE).
+- **Fait (branche `legal/nouvelle-offre`)** : conditions, remboursement et confidentialité (FR/EN) mis à jour pour Gratuit 1 vidéo par jour + Basic / Pro / Max : formules et prix, « tu gardes ton prix », changement de formule, remboursement d'un changement de formule, rappel quotidien.
+- **À suivre par Comptes (règles écrites dans les conditions)** :
+  - compteur Gratuit remis à zéro à **minuit, heure de Paris** (ou me dire l'heure choisie) ;
+  - montée en gamme (Basic → Pro/Max, Pro → Max, mensuel → annuel) **immédiate, au prorata**, montant affiché avant confirmation (Paddle `prorated_immediately` + aperçu) ;
+  - descente en gamme (et annuel → mensuel) **au prochain renouvellement**, sans remboursement (changement programmé) ;
+  - prix gardé tant que l'abonnement continue, même formule et même période : ne jamais modifier le prix d'un abonnement en cours ; un changement de formule prend le prix du moment ;
+  - remboursement d'un paiement de changement de formule = retour à la formule d'avant jusqu'à la fin de la période ;
+  - passage de Max (100 Go) à Pro (20 Go) : rien n'est supprimé, nouvelles sauvegardes bloquées tant que le compte dépasse 20 Go ;
+  - un seul compte gratuit par personne (clause anti-abus, aucune vérification technique demandée pour l'instant).
+- **À suivre par Comptes : e-mail de rappel quotidien** (le rappel sert à faire revenir l'utilisateur, il est traité comme un message soumis au consentement) :
+  - case **non cochée** par défaut, séparée de l'acceptation des conditions, texte « Me prévenir par e-mail quand ma vidéo du jour est disponible » ;
+  - garder la preuve : date, texte exact de la case, langue ;
+  - dans chaque e-mail : lien « Ne plus recevoir ce rappel » qui marche **sans connexion** et arrête tout de suite, plus les en-têtes `List-Unsubscribe` et `List-Unsubscribe-Post: List-Unsubscribe=One-Click` (désabonnement en un clic dans Gmail et Yahoo) ;
+  - réglage pour l'arrêter ou le remettre depuis la page Compte ;
+  - au plus 1 par jour, arrêt après 7 jours sans visite, rien d'autre dedans (pas de promo Basic/Pro, sinon la case doit le dire) ;
+  - nom et adresse de l'expéditeur clairs (Stalak), dans la langue du compte.
+- **À décider (propriétaire)** : mineurs. Pour un accord donné par consentement (le rappel quotidien), la loi française demande aussi l'accord d'un parent avant 15 ans. Le plus simple : demander l'âge à l'inscription, ou ne proposer la case qu'à partir de 15 ans.
+- **À faire (Marketing)** : la page Tarifs affiche encore l'ancienne offre (Pro 9,99 €/79 €) ; elle doit reprendre les mêmes prix et contenus que les conditions.
 - **À faire (Comptes)** : bouton de rétractation « Renoncer au contrat ici », obligatoire depuis le 19/06/2026 (ordonnance n° 2026-2) : visible pendant 14 jours après l'achat, gratuit, avec accusé de réception par e-mail. Cahier des charges à écrire par Juridique.
 - **À faire (Juridique, sans attendre le statut)** : confidentialité complétée (Google pour la connexion et la boîte contact@, statistiques Cloudflare) ; règle pour les mineurs qui paient.
 - **À faire une fois la structure créée** : nom, adresse (ou domiciliation) et SIRET dans les mentions légales ; nom légal dans les conditions (`--seller`) ; médiateur de la consommation désigné et nommé ; responsable du traitement nommé ; validation du site par Paddle (même nom sur le site, le compte Paddle et la banque).
