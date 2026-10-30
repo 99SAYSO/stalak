@@ -61,7 +61,7 @@ def run(b, base, lang, iphone, real):
     pg.wait_for_function('() => window.__during', timeout=10000)
     d = pg.evaluate('window.__during')
     check(tag + ' : nouvel export → la vidéo précédente est coupée (pause) et lâche son fichier', d[2] >= 1 and d[0] is None and d[1] is True, d)
-    pg.locator('#expCancel').click()
+    pg.locator('#expCancel').wait_for(state='visible'); pg.evaluate("document.querySelector('#expCancel').click()")
     pg.evaluate('() => window.__p'); pg.wait_for_timeout(200)
     after = pg.evaluate("""() => [document.querySelector('#resultVideo').getAttribute('src') === window.__oldUrl, document.querySelector('#result').hidden,
       __ev('lastBlob') === window.__old, window.__revoked.includes(window.__oldUrl), __ev('S.exporting')]""")
