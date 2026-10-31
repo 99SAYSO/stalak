@@ -18,8 +18,8 @@ URL = 'https://' + DOMAIN
 # Marketing & croissance : comptes officiels de Stalak, déclarés à Google (schema.org « sameAs ») et en liens dans le pied de page.
 # Mettre l'adresse complète du profil (ex. 'https://www.instagram.com/<compte>/') ; une case vide n'apparaît nulle part.
 SOCIAL = {
-    'Instagram': '',
-    'TikTok': '',
+    'Instagram': 'https://www.instagram.com/stalak_app/',
+    'TikTok': 'https://www.tiktok.com/@stalak_app',
     'YouTube': '',
 }
 SOCIAL = {k: v for k, v in SOCIAL.items() if v}
