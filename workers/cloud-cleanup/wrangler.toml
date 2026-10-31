@@ -9,6 +9,16 @@ crons = ["17 3 * * *"]   # every day at 03:17 UTC
 
 [vars]
 APP_ORIGIN = "https://stalak.app"
+# The Paddle environment and prices, the same as the site's wrangler.toml (the yearly reminder of monthly subscribers needs
+# them to tell monthly from yearly). Change them in both files together.
+PADDLE_ENV = "sandbox"
+PADDLE_PRICE_MONTH = "pri_01m5ygermd2pjw66mgdsh4f4rw"
+PADDLE_PRICE_YEAR = "pri_01m5ygfwqdq8h2ax297c6qagjs"
+PADDLE_PRICE_PRO_MONTH = "pri_01m671bncd9qm3dqxjyqf127gn"
+PADDLE_PRICE_PRO_YEAR = "pri_01m671cexysycbr7wz1av55cvy"
+PADDLE_PRICE_CREATOR_MONTH = "pri_01m671dtkv0d5m0r2a4ek02a3e"
+PADDLE_PRICE_CREATOR_YEAR = "pri_01m671eex11hq295vhmsj723wm"
+PADDLE_PRICES_OLD = "pri_01m66r80jxszc4yxggqvwak5p5:pro:month,pri_01m66r8g1bhvhnk6x1z9m0x894:pro:year,pri_01m66r4d7mtzps3wmycfmv8pk9:pro:month,pri_01m66r5nakxvg6cxjcgc1vv7j7:pro:year,pri_01m66r9m12ckfttnrr5h3vhfgc:creator:month,pri_01m66r9tmrfg7fxfrb5dpnk5s3:creator:year"
 
 # The same database and bucket as the site (wrangler.toml at the root).
 [[d1_databases]]

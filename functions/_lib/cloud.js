@@ -510,11 +510,14 @@ export async function cleanupCloud(env, now = Date.now(), { max = 100 } = {}) {
 }
 
 // At most once every 6 hours, whoever triggers it (the counter lives in rate_limits).
+import { yearlyReminders } from './reminders.js';
 export async function maybeCleanup(env, ctx, now = Date.now()) {
   try {
     const r = await hit(env, 'cron:cloud-cleanup', CLEANUP_EVERY_MS, now);
     if (r.count !== 1) return false;
-    const p = cleanupCloud(env, now, { max: 8 }).catch((e) => console.error('[stalak] cloud cleanup', e && e.stack ? e.stack : e));
+    // the daily tasks: the 6-month rule, then the yearly reminder of monthly subscribers (reminders.js)
+    const p = cleanupCloud(env, now, { max: 8 }).catch((e) => console.error('[stalak] cloud cleanup', e && e.stack ? e.stack : e))
+      .then(() => yearlyReminders(env, now, { max: 5 })).catch((e) => console.error('[stalak] yearly reminders', e && e.stack ? e.stack : e));
     if (ctx && typeof ctx.waitUntil === 'function') ctx.waitUntil(p); else await p;
     return true;
   } catch (e) {

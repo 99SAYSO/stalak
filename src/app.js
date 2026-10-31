@@ -58,7 +58,7 @@ function sayNear(sel, key, vars){
 function nearClear(sel){ const box = typeof sel === 'string' ? $(sel) : sel; const m = box && box.querySelector(':scope > .nearmsg'); if (m) m.remove(); }
 /* anonymous counters (audit 30/10, with Comptes): only a name from a closed list and a category, plus the kind of device;
    no cookie, no account, nothing about the person. Only on stalak.app (the account block is there). */
-const EVT_NAMES = ['export_ok', 'export_fail', 'pack_ok', 'pack_fail', 'ad_shown', 'ad_reward', 'plans_open', 'pro_offer'];
+const EVT_NAMES = [];   // the funnel goes through acctEvent (Comptes, POST /api/event): evt() is kept as a no-op so the calls stay harmless
 function evt(name, detail){
   try {
     if (typeof ACCT === 'undefined' || !ACCT || !EVT_NAMES.includes(name)) return;
@@ -858,7 +858,7 @@ const I18N_EN = /*@EN*/{
   "ap.oauth.oauth_no_email": "That account didn’t give us an email. Create an account with your email instead.",
   "ap.oauth.not_enabled": "This sign-in option isn’t available yet.",
   "ap.oauth.oauth_failed": "Sign-in didn’t work. Try again, or use your email.",
-  "acct.why.pack": "Packs of 5 to 30 videos come with Creator Plus (from 2 playbacks).",
+  "acct.why.pack": "Packs of 5 to 30 videos come with Creator Plus (from just 2 takes).",
   "ap.whyIn.pack": "Packs of 5 to 30 videos come with Creator Plus. Sign in or create an account to get it.",
   "acct.perk6": "Every text size and style: word by word, karaoke",
   "acct.why.text": "Word by word, karaoke and all text sizes come with Pro.",
@@ -1063,6 +1063,12 @@ const I18N_EN = /*@EN*/{
   "cl.auto.offline": "Offline",
   "cl.auto.error": "Not saved",
   "cl.auto.full": "Space full",
+  "_bloc.compte.audit": "Comptes, paiements & serveur : audit du 30/10 (anti-robot, e-mails de code, écran des formules)",
+  "acct.e.email_busy": "We can’t send more codes today. Please try again tomorrow, or write to contact@stalak.app.",
+  "acct.e.captcha_failed": "Please confirm you’re not a robot, then try again.",
+  "acct.e.captcha_load_failed": "The robot check didn’t load. Check your connection and try again.",
+  "pl.rib.pro": "No ads, no watermark",
+  "pl.v.100": "100 GB",
   "_bloc.compte.formules": "Comptes, paiements & serveur : formules Gratuit / Pro / Creator Plus (offre du 30/10 au soir)",
   "pl.n.free": "Free",
   "pl.n.pro": "Pro",
@@ -1090,7 +1096,7 @@ const I18N_EN = /*@EN*/{
   "pl.change": "Change plan: pick another one below. Up: the difference, prorated, today. Down: at the renewal.",
   "pl.free.bill": "No account needed",
   "pl.f.plusPro": "Everything in Pro, plus:",
-  "pl.f.packs": "<strong>The pack generator</strong>: 5 to 30 videos with different cuts, from 2 playbacks",
+  "pl.f.packs": "<strong>The pack generator</strong>: 5 to 30 videos, each cut differently, from just 2 takes",
   "pl.f.lyr60": "<strong>Lyrics written for you</strong>, 60 times a day",
   "pl.f.cloud": "<strong>Online saving</strong>: 100 GB, on all your devices",
   "pl.f.human": "<strong>Talk to a human</strong>: live, or an answer by email within 24 hours",
@@ -1651,7 +1657,7 @@ const I18N_FR = /*@FR*/{
   "ap.oauth.oauth_no_email": "Ce compte ne nous a pas donné d’e-mail. Crée plutôt un compte avec ton e-mail.",
   "ap.oauth.not_enabled": "Ce mode de connexion n’est pas encore disponible.",
   "ap.oauth.oauth_failed": "La connexion n’a pas marché. Réessaie, ou utilise ton e-mail.",
-  "acct.why.pack": "Les packs de 5 à 30 vidéos, c’est avec Creator Plus (à partir de 2 playbacks).",
+  "acct.why.pack": "Les packs de 5 à 30 vidéos, c’est avec Creator Plus (dès 2 playbacks).",
   "ap.whyIn.pack": "Les packs de 5 à 30 vidéos, c’est avec Creator Plus. Connecte-toi ou crée un compte pour en profiter.",
   "acct.perk6": "Toutes les tailles et apparitions du texte : mot par mot, karaoké",
   "acct.why.text": "Le mot par mot, le karaoké et toutes les tailles du texte, c’est avec Pro.",
@@ -1763,6 +1769,12 @@ const I18N_FR = /*@FR*/{
   "cl.auto.offline": "Hors ligne",
   "cl.auto.error": "Pas enregistré",
   "cl.auto.full": "Espace plein",
+  "_bloc.compte.audit": "Comptes, paiements & serveur : audit du 30/10 (anti-robot, e-mails de code, écran des formules)",
+  "acct.e.email_busy": "On ne peut plus envoyer de code aujourd’hui. Réessaie demain, ou écris à contact@stalak.app.",
+  "acct.e.captcha_failed": "Confirme que tu n’es pas un robot, puis réessaie.",
+  "acct.e.captcha_load_failed": "La vérification anti-robot n’a pas pu se charger. Vérifie ta connexion et réessaie.",
+  "pl.rib.pro": "Ni pub ni filigrane",
+  "pl.v.100": "100 Go",
   "_bloc.compte.formules": "Comptes, paiements & serveur : formules Gratuit / Pro / Creator Plus (offre du 30/10 au soir)",
   "pl.n.free": "Gratuit",
   "pl.n.pro": "Pro",
@@ -5174,7 +5186,7 @@ function gptLoad(){
 }
 async function adWatch(){
   if (adBusy || S.exporting || !adAvail()) return;
-  adBusy = true; adUI(); adSay('ad.load');
+  adBusy = true; adUI(); adSay('ad.load'); acctEvent('ad_offer');   // a rewarded ad asked (funnel of the dashboard)
   try { await gptLoad(); } catch(e){ diag('pub : script de Google indisponible (' + (e && e.message || e) + ')'); adBusy = false; adUI(); adSay('ad.none'); return; }
   googletag.cmd.push(() => {
     const pa = googletag.pubads();
@@ -5201,8 +5213,7 @@ async function adWatch(){
 }
 /* the reward: no watermark for this video, and its export starts at once, without another touch */
 function adReward(){
-  evt('ad_reward');
-  wmPass = true; diag('pub : récompense accordée, export sans filigrane lancé');
+  wmPass = true; diag('pub : récompense accordée, export sans filigrane lancé'); acctEvent('ad_ok');
   adUI(); adSay('ad.okRe');
   if (!S.playing) showFrame(S.cursor);
   exportOne();
@@ -7538,7 +7549,16 @@ async function renderRealtime(){
   await sleep(150); rec.stop(); await done; stream.getVideoTracks().forEach(t => t.stop()); setRes(PREV);
   return { blob: new Blob(chunks, { type: mime || 'video/webm' }), ext: mime.includes('mp4') ? 'mp4' : 'webm' };
 }
-function beginExport(){ expOpen(); stop(true); S.exporting = true; S.leftDuring = false; wakeOn(); liveTidy(); nearClear('#expNear'); nearClear('#packBox');   /* the preview's decoders let go: the export gets the graphics chip to itself */
+/* why an export failed, as a category only, for the funnel of the dashboard (acctEvent) */
+function expFailCat(e){
+  const m = String(e && (e.name + ' ' + e.message) || e);
+  if (m.includes('annulé')) return 'cancel';
+  if (document.hidden) return 'hidden';
+  if (/memory|mémoire|allocat|QuotaExceeded|RangeError/i.test(m)) return 'memory';
+  if (/decod|encod|codec|reclaim|VideoFrame/i.test(m)) return 'decoder';
+  return 'other';
+}
+function beginExport(){ acctEvent('export_start'); expOpen(); stop(true); S.exporting = true; S.leftDuring = false; wakeOn(); liveTidy(); nearClear('#expNear'); nearClear('#packBox');   /* the preview's decoders let go: the export gets the graphics chip to itself */
   resultPark();
   S.takes.forEach(t => { if (t.orig && !t.orig.parentNode) $('#vpool').append(t.orig); }); S.cancel = false; setBusy(true); progress(0); $('#cancelBtn').hidden = false; $('#result').hidden = true; }
 /* the video already made, during a new export: stopped and let go of (a video playing behind kept its sound going, and on
@@ -7704,13 +7724,12 @@ async function exportOne(){
     lastName = 'stalak-' + (isClip() ? 'clip-' : '') + 'v' + S.version + '-' + S.fmt + '.' + ext;
     const rv = $('#resultVideo'); rv.src = URL.createObjectURL(lastBlob); rv.hidden = false;
     $('#result').hidden = false; postShow(); setT('#saveNote', ext === 'mp4' ? (isClip() ? 'save.mp4clip' : 'save.mp4reel') : 'save.webm');
-    say('exp.ready', { mb: (lastBlob.size/1048576).toFixed(1) });
+    say('exp.ready', { mb: (lastBlob.size/1048576).toFixed(1) }); acctEvent('export_ok');
     // the reward of an ad was for this video: used now
     lastWm = !!S.wm; if (!S.wm && wmPass){ wmPass = false; diag('pub : vidéo faite sans filigrane, récompense utilisée'); }
     adUI(); if (!lastWm) adSay(null);
     S.okCount = (S.okCount || 0) + 1; if (S.okCount === 1) S.okFirst = lastBlob; proOfferUi();
-    evt('export_ok', S.wm ? 'wm' : 'nowm');
-  } catch(e){ diag('export : ' + (e && e.message || e)); resultBack(); evt('export_fail', expFailSay(e, 'exp.cancelled', 'exp.fail')); }
+  } catch(e){ diag('export : ' + (e && e.message || e)); resultBack(); acctEvent('export_fail', { cat: expFailCat(e) }); expFailSay(e, 'exp.cancelled', 'exp.fail'); }
   endExport();
 }
 /* pack: a b-roll shot is drawn and encoded once per moment of the clip it shows. When several videos put a b-roll shot at the
@@ -7743,7 +7762,7 @@ async function exportPackRun(){
   if (!(vcfg && acfg)){ say('pack.nosupport'); return; }
   { const mp = memPlan(N, vcfg.bitrate), secs = Math.round(S.segEnd - S.segStart);
     diag('mémoire du pack : ' + Math.round(mp.need) + ' Mo pour ' + mp.budget + ' Mo sur cet appareil' + (mp.ok ? (mp.bitrate < vcfg.bitrate ? ', débit ' + (mp.bitrate / 1e6).toFixed(1) + ' Mbit/s' : '') : ', pack refusé'));
-    if (!mp.ok){ sayNear('#packBox', mp.nMax ? 'pack.mem' : 'pack.mem1', { n: N, s: secs, nmax: mp.nMax, smax: mp.sMax }); evt('export_fail', 'memory'); return; }
+    if (!mp.ok){ sayNear('#packBox', mp.nMax ? 'pack.mem' : 'pack.mem1', { n: N, s: secs, nmax: mp.nMax, smax: mp.sMax }); acctEvent('export_fail', { cat: 'memory' }); return; }
     if (mp.bitrate < vcfg.bitrate) vcfg = Object.assign({}, vcfg, { bitrate: mp.bitrate }); }
   S.wm = wmOn(); beginExport(); await fontsReady();
   const sigs = [], files = [], list = []; let seed = S.seed * 1000 + 1;
@@ -7768,9 +7787,8 @@ async function exportPackRun(){
     diag('pack : ' + N + ' vidéos en ' + ((performance.now() - T0) / 1000).toFixed(1) + ' s');
     lastBlob = makeZip(files); lastName = 'pack-' + N + '-videos.zip'; resultDone();
     { const rv = $('#resultVideo'); rv.removeAttribute('src'); rv.hidden = true; } $('#result').hidden = false; postShow(); setT('#saveNote', 'pack.zip', { n: N, mb: (lastBlob.size/1048576).toFixed(0) });
-    say('pack.ready', { n: N });
-    evt('pack_ok', String(N));
-  } catch(e){ diag('pack : ' + (e && e.message || e)); resultBack(); evt('pack_fail', expFailSay(e, 'pack.cancelled', 'pack.fail')); }
+    say('pack.ready', { n: N }); acctEvent('export_ok');
+  } catch(e){ diag('pack : ' + (e && e.message || e)); resultBack(); acctEvent('export_fail', { cat: expFailCat(e) }); expFailSay(e, 'pack.cancelled', 'pack.fail'); }
   renderTimeline(); endExport();
 }
 /* zip checksum, 8 bytes at a time (a pack holds hundreds of MB: byte by byte it took seconds) */
@@ -9092,14 +9110,18 @@ async function humanSend(text, retried){
     helpMsg('bot err', msg);
   } finally { human.sending = false; $('#helpSend').disabled = false; }
 }
-/* visits for the dashboard: a random number made now (no cookie, nothing stored), sent once a minute while the page is shown */
+/* visits for the dashboard: a random number made now (no cookie, nothing stored), sent every 5 minutes while the page is shown
+   (the server says how often: `every`), and when the page comes back after a minute or more */
 if (HELP_SITE){
   const vid = Array.from(crypto.getRandomValues(new Uint8Array(12)), b => b.toString(16).padStart(2, '0')).join('');
-  const ping = () => { if (document.hidden) return;
+  let every = 300e3, last = 0, timer = 0;
+  const ping = () => { if (document.hidden) return; last = Date.now();
     fetch('/api/presence', { method: 'POST', credentials: 'same-origin', keepalive: true, headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ vid, lang: LANG === 'en' ? 'en' : 'fr' }) }).catch(() => {}); };
-  ping(); setInterval(ping, 60000);
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) ping(); });
+      body: JSON.stringify({ vid, lang: LANG === 'fr' ? 'fr' : 'en' }) })
+      .then(r => r.json()).then(d => { const e = +(d && d.every) * 1e3; if (e >= 60e3 && e <= 3600e3 && e !== every){ every = e; clearInterval(timer); timer = setInterval(ping, every); } })
+      .catch(() => {}); };
+  ping(); timer = setInterval(ping, every);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && Date.now() - last > 60e3) ping(); });
 }
 async function helpAsk(q){
   q = String(q || '').trim(); if (!q || help.busy) return;
@@ -9283,6 +9305,17 @@ function acctPro(){ return acctHas('filters'); }
 function apWhyHas(k){ const f = WHY_FEATURE[String(k || '').replace('acct.why.', '')]; return !!f && acctHas(f); }
 const WHY_FEATURE = { lyrics: 'lyrics', pack: 'pack5', pack5: 'pack5', pack10: 'pack10', pack30: 'pack30', clip: 'clip', fx: 'fx',
   outro: 'nowm', nologo: 'nowm', nowm: 'nowm', wm: 'nowm', text: 'text', cloud: 'cloud', support: 'human', human: 'human', filters: 'filters' };
+/* anonymous counters of the funnel (dashboard): visit → export → ad → plans page → payment window → payment.
+   acctEvent('export_ok'), acctEvent('export_fail', {cat: 'memory'|'decoder'|'hidden'|'cancel'|'other'}), acctEvent('ad_ok')…
+   Nothing about the person or the video; never fails, works signed out (account.js event()). */
+function acctEvent(name, extra){ try { if (ACCT && ACCT.event) ACCT.event(name, extra); } catch(e){} }
+function acctWhyCat(k){
+  const w = String(k || '').replace('acct.why.', '');
+  if (/^pack/.test(w)) return 'pack';
+  if (['outro', 'nologo', 'nowm', 'wm'].includes(w)) return 'wm';
+  if (w === 'support') return 'human';
+  return ['filters', 'clip', 'fx', 'text', 'lyrics', 'cloud', 'human'].includes(w) ? w : 'other';
+}
 /* an account page or the Pro thank-you is on screen (modalOn keeps the app out of reach under them) */
 function acctLayerOpen(){ return isShown($('#acctPage')) || isShown($('#proThx')); }
 function acctDate(iso){ try { return new Date(iso).toLocaleDateString(LANG === 'en' ? 'en-GB' : 'fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }); } catch(e){ return iso; } }
@@ -9406,14 +9439,14 @@ function plRender(){
     c.classList.toggle('pl-mine', p === cur);
     if (p === 'free'){ const n = c.querySelector('[data-pl="now"]'); if (n) n.hidden = paid; $('#apStayFree').hidden = paid; return; }
     const a = plAmounts(p), year = plInt === 'year';
-    c.querySelector('[data-pl="amt"]').textContent = plMoney(year ? Math.floor(a.y / 12 * 100) / 100 : a.m, a.cur);
+    c.querySelector('[data-pl="amt"]').textContent = plMoney(year ? Math.round(a.y / 12 * 100) / 100 : a.m, a.cur);   // 4.17 $, as on the Tarifs page
     setT(c.querySelector('[data-pl="bill"]'), year ? 'pl.billY' : 'pr.month.bill', { y: plMoney(a.y, a.cur) });
-    const pill = c.querySelector('[data-pl="pill"]'), save = Math.round((1 - a.y / (12 * a.m)) * 100);
+    const pill = c.querySelector('[data-pl="pill"]'), save = Math.floor((1 - a.y / (12 * a.m)) * 100);   // −47 % / −44 %, as on the Tarifs page
     pill.hidden = !year || !(save > 0); if (!pill.hidden){ pill.classList.add('pr-save'); setT(pill, 'pl.save', { n: save }); }
     const b = c.querySelector('[data-buy]'), note = c.querySelector('[data-pl="note"]');
     const onSale = !!(prices && prices[p] && typeof prices[p] === 'object' && prices[p][plInt]);
     const mine = p === cur && (!curInt || curInt === plInt);
-    b.disabled = mine || !onSale; b.classList.toggle('primary', p === 'creator' && !mine);
+    b.disabled = mine || !onSale; b.classList.toggle('primary', p === 'pro' && !mine);
     setT(b, mine ? 'pl.mine' : !onSale ? 'pl.soon' : paid ? (plConfirm === p ? 'pl.confirm' : 'pl.switch') : 'pl.cta.' + p, { plan: _t('pl.n.' + p) });
     note.hidden = !(paid && plConfirm === p && onSale && !mine);
     if (note.hidden) setT(note, null);
@@ -9423,7 +9456,7 @@ function plRender(){
     } else setT(note, 'pl.checking');
   });
   // the yearly switch: the biggest saving of the plans
-  const save = Math.max(...PL_PLANS.map(p => { const a = plAmounts(p); return Math.round((1 - a.y / (12 * a.m)) * 100); }));
+  const save = Math.max(...PL_PLANS.map(p => { const a = plAmounts(p); return Math.floor((1 - a.y / (12 * a.m)) * 100); }));
   setT('#plIntSave', 'pl.int.save', { n: save });
   $$('#apBuy [data-pl-cmp]').forEach(td => { const a = plAmounts(td.dataset.plCmp); td.textContent = plMoney(a.m, a.cur); });
   // the subscriber's card: what the plan gives (the server's list)
@@ -9445,6 +9478,9 @@ function plFocus(plan){
   setTimeout(() => {
     const c = $('#apBuy .pl-card[data-plan="' + plan + '"]'); if (!c || !isShown($('#apPro'))) return;
     $$('#apBuy .pl-card').forEach(x => x.classList.toggle('pl-focus', x === c));
+    // the reason (« Le mode Clip, c’est avec Pro ») stays in sight: repeated at the top of that card
+    $$('#apBuy .pl-why').forEach(x => x.remove());
+    if (apWhyK && hasT(apWhyK)){ const w = document.createElement('p'); w.className = 'pl-why'; setT(w, apWhyK); c.prepend(w); }
     try { c.scrollIntoView({ behavior: calmMotion() ? 'auto' : 'smooth', block: 'center' }); } catch(e){}
     const b = c.querySelector('[data-buy]'); if (b) try { b.focus({ preventScroll: true }); } catch(e){}
   }, 350);
@@ -9474,7 +9510,8 @@ function plBuy(plan, btn){
   apRun(async () => { apSay('acct.paying'); diag('compte : paiement ' + plan + ' ' + plInt); await ACCT.checkout(plan, plInt); apSay(null); });
 }
 function plInit(){
-  plInt = store.get('stalak:plInt') === 'year' ? 'year' : 'month';
+  // yearly by default, as on the Tarifs page (a choice made here is remembered)
+  plInt = store.get('stalak:plInt') === 'month' ? 'month' : 'year';
   const pick = v => { plInt = v; plConfirm = null; plPreview = null; store.set('stalak:plInt', v); plRender(); };
   $$('#plInt button').forEach(b => {
     b.onclick = () => pick(b.dataset.int);
@@ -9555,6 +9592,12 @@ function apGo(view, o = {}){
   apRender();
   if (changed || first) page.scrollTop = 0;
   if (v === 'gallery' && (changed || first)) clLoadList();
+  if (v === 'pro' && (changed || first)){
+    acctEvent('plans_open', { why: acctWhyCat(apWhyK) });   // funnel (dashboard)
+    $$('#apBuy .pl-why').forEach(x => x.remove());
+    // a subscriber sees his own billing first (yearly by default for the others, as on the Tarifs page)
+    const sub = ACCT.state.subscription; if (acctPaid() && sub && (sub.interval === 'month' || sub.interval === 'year') && plInt !== sub.interval){ plInt = sub.interval; plConfirm = null; plPreview = null; plRender(); }
+  }
   if (o.noFocus) return;
   const f = v === 'login' ? $('#apLoginT') : v === 'account' ? $('#apAccT') : v === 'gallery' ? $('#apGalT') : $('#apProT');
   setTimeout(() => { try { f.focus({ preventScroll: true }); } catch(e){} }, 40);

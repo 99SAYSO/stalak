@@ -6,9 +6,12 @@
 // Secret for the warning e-mails:           npx wrangler secret put RESEND_API_KEY -c workers/cloud-cleanup/wrangler.toml
 // Without this Worker, the same cleanup still runs lazily from the site (at most every 6 hours, see BACKEND.md).
 import { cleanupCloud } from '../../functions/_lib/cloud.js';
+import { yearlyReminders } from '../../functions/_lib/reminders.js';
 
 export default {
   async scheduled(controller, env, ctx) {
-    ctx.waitUntil(cleanupCloud(env, Date.now(), { max: 200 }).then((r) => console.log('[stalak] cloud cleanup', JSON.stringify(r))));
+    ctx.waitUntil(cleanupCloud(env, Date.now(), { max: 200 }).then((r) => console.log('[stalak] cloud cleanup', JSON.stringify(r)))
+      // the yearly reminder of monthly subscribers (US terms), same day
+      .then(() => yearlyReminders(env, Date.now(), { max: 100 })).then((r) => console.log('[stalak] yearly reminders', JSON.stringify(r))));
   },
 };

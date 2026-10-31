@@ -113,10 +113,14 @@ export function planOfSub(env, sub, now = Date.now()) {
 }
 export const planRank = rank;
 
+// The Paddle environment in use: 'production' (real payments) or 'sandbox' (tests). Rows of the other one are ignored
+// (migration 0009): test subscriptions give nothing once real payments start.
+export const payEnv = (env) => (env.PADDLE_ENV === 'production' ? 'production' : 'sandbox');
+
 export async function userSubscription(env, userId) {
   const { results } = await env.DB.prepare(
-    'SELECT * FROM subscriptions WHERE user_id = ?1 ORDER BY updated_at DESC'
-  ).bind(userId).all();
+    'SELECT * FROM subscriptions WHERE user_id = ?1 AND env = ?2 ORDER BY updated_at DESC'
+  ).bind(userId, payEnv(env)).all();
   // several running subscriptions (rare: a second purchase): the biggest plan counts
   const active = results.filter((s) => subscriptionActive(s));
   active.sort((a, b) => rank(planOfSub(env, b)) - rank(planOfSub(env, a)));

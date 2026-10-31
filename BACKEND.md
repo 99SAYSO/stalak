@@ -82,6 +82,20 @@ Fichiers ajoutés :
 
 Les e-mails partent de **Stalak &lt;login@stalak.app&gt;**. Il n'est pas nécessaire de créer une vraie boîte mail à cette adresse.
 
+### 3.1 Protection des e-mails de code (audit du 30/10)
+- **Plafond du jour** : tous les e-mails de code ensemble (inscription, nouvel appareil, mot de passe oublié) s'arrêtent à
+  `EMAIL_DAILY_MAX` par jour (`wrangler.toml`, 1 000 par défaut), jusqu'à minuit UTC. Tu reçois un e-mail à 80 % et à 100 %.
+  **Mets la limite de ton forfait Resend** : l'offre gratuite de Resend envoie environ 100 e-mails par jour, à vérifier dans
+  Resend → *Settings → Billing*. Avant le lancement aux États-Unis, prends un forfait payant et ajuste `EMAIL_DAILY_MAX`.
+- **Si Resend échoue**, le code n'est plus gardé : un nouvel essai renvoie vraiment un e-mail. Tu reçois une alerte (si Resend
+  marche encore pour toi…) et le tableau de bord compte l'erreur.
+- **Cloudflare Turnstile** (anti-robot gratuit) sur « Créer un compte » et « Mot de passe oublié ». Presque toujours invisible ;
+  une petite case n'apparaît que si Cloudflare a un doute. Pour l'activer :
+  1. Cloudflare → **Turnstile** → *Add widget* : nom `stalak`, domaines `stalak.app` (et `localhost` pour les tests), mode **Managed**.
+  2. Copie la **Site Key** (publique) dans `wrangler.toml` : `TURNSTILE_SITE_KEY = "0x4…"` (ou donne-la au Chef de projet).
+  3. Copie la **Secret Key** dans Cloudflare Pages → *Settings → Variables and Secrets*, type **Secret**, nom `TURNSTILE_SECRET`.
+  4. Publie. Les deux sont nécessaires : avec une seule, rien ne change.
+
 ---
 
 ## 4. Paddle (d'abord en mode test : « sandbox »)
@@ -172,6 +186,39 @@ PADDLE_PRICE_YEAR = "pri_…"         # prix 79 €
 3. Dans `wrangler.toml`, mets `PADDLE_ENV = "production"` ainsi que le nouveau `PADDLE_CLIENT_TOKEN` et les nouveaux `pri_…`.
 4. Dans Cloudflare (étape 5), remplace `PADDLE_API_KEY` et `PADDLE_WEBHOOK_SECRET` par leurs versions live.
 5. Fais un vrai achat avec ta carte, puis rembourse-le depuis Paddle.
+
+### 7.1 Les abonnements de test (audit du 30/10, migration 0009)
+Chaque abonnement, paiement et remboursement garde son environnement Paddle (`env` = `sandbox` ou `production`). Le site ne
+compte que ceux de l'environnement de `PADDLE_ENV` : **dès que tu passes en production, les abonnements de test ne donnent
+plus rien et quittent le tableau de bord**. Rien à faire de plus. Pour les effacer vraiment (facultatif), colle dans la console
+D1, après avoir fait une copie (étape 15.3) :
+
+    DELETE FROM subscriptions WHERE env = 'sandbox';
+    DELETE FROM payments WHERE env = 'sandbox';
+    DELETE FROM refunds WHERE env = 'sandbox';
+    UPDATE users SET paddle_customer_id = NULL;
+
+(La dernière ligne oublie les clients Paddle de test ; les vrais clients sont enregistrés à nouveau au premier achat réel.)
+
+Liste de contrôle du passage en production, dans cet ordre, le même jour :
+1. migration 0009 appliquée (déjà fait si cette version est en ligne) ;
+2. dans `wrangler.toml` (et dans `workers/cloud-cleanup/wrangler.toml`) : `PADDLE_ENV = "production"`, le jeton `live_…`, les
+   4 prix réels ; vider `PADDLE_PRICES_OLD` et les 2 anciens prix en euros (ils sont de test) ;
+3. dans Cloudflare : `PADDLE_API_KEY` et `PADDLE_WEBHOOK_SECRET` live (les deux en même temps que la publication) ;
+4. publier, puis faire un vrai achat de 7,99 $ et le rembourser ; vérifier le tableau de bord (« paiements réels ») ;
+5. dans Paddle (*Developer tools → Notifications*), activer l'e-mail en cas d'échec de livraison du webhook.
+
+La suppression d'un compte n'est plus bloquée si Paddle répond qu'un abonnement est inconnu ou déjà arrêté : le compte est
+supprimé et tu reçois une alerte pour vérifier l'abonnement dans Paddle. Si Paddle ne répond pas, rien n'est supprimé et la
+personne réessaie (personne ne continue de payer sans le savoir).
+
+### 7.2 Rappel annuel aux abonnés mensuels
+Les conditions américaines (`/en/terms`, « Reminders ») annoncent un e-mail de rappel une fois par an aux abonnés **mensuels**.
+Le site l'envoie seul : chaque jour, un abonnement mensuel actif depuis un an (ou rappelé il y a un an) reçoit un e-mail
+(formule, prix par mois, comment l'arrêter), en anglais ou en français selon la langue du compte. Les annuels reçoivent
+l'e-mail de renouvellement de Paddle. Le rappel part avec la tâche du jour (Worker `workers/cloud-cleanup`, ou à défaut
+depuis le site, au plus toutes les 6 heures). Pour le Worker, redéploie-le une fois avec cette version (il a reçu les prix
+Paddle dans son `wrangler.toml`).
 
 ---
 
@@ -535,6 +582,57 @@ Un remboursement de changement de formule (14 jours) se fait à la main : rembou
 
 ---
 
+## 15. Avant les vrais paiements : tests, aperçus, copies, alertes (audit du 30/10)
+
+### 15.1 Les tests avant chaque mise en ligne
+- **GitHub** lance les tests serveur à chaque envoi de branche (`.github/workflows/tests.yml`, onglet *Actions*).
+- **Pour bloquer une publication qui casse un test** : Cloudflare → Workers & Pages → `stalak-site` → *Settings → Build* →
+  **Build command** : `node tests/backend/run.mjs`, et dans *Variables and Secrets* (build) : `NODE_VERSION` = `22`.
+  Cloudflare lance alors les tests (8 s) avant chaque publication ; si un test échoue, rien n'est publié et la version d'avant reste.
+
+### 15.2 Une base séparée pour les aperçus
+Les versions d'essai des branches (`<branche>.stalak-site.pages.dev`) utilisent **la vraie base**. En attendant une base à
+part, le serveur y refuse ce qui touche à l'argent ou aux tâches automatiques : webhook Paddle, tâches du jour, changement de
+formule, suppression de compte (erreur `preview_readonly`). Le reste marche pour vérifier une branche.
+Pour une base à part (conseillé avant le lancement) :
+1. Cloudflare → D1 → *Create* : `stalak-preview` ; dans sa console, colle tous les fichiers de `migrations/`, dans l'ordre.
+2. Cloudflare → R2 → *Create bucket* : `stalak-media-preview` (privé).
+3. Donne l'identifiant de `stalak-preview` au Chef de projet : il retire les `#` du bloc `[env.preview]` de `wrangler.toml`,
+   y met l'identifiant et publie (`PREVIEW_ISOLATED = "1"` lève alors les refus).
+4. Les secrets des aperçus sont à part dans Cloudflare (*Variables and Secrets*, onglet *Preview*) : n'y mets que des clés de test.
+Autre solution : couper les aperçus (*Settings → Builds → Branch control* : *None*).
+
+### 15.3 Une copie de la base chaque semaine
+`.github/workflows/backup-d1.yml` exporte la base chaque lundi (et à la demande : *Actions → Copie de la base → Run workflow*),
+la **chiffre** (le dépôt est public) et la garde 90 jours dans GitHub. À faire une fois, dans GitHub → *Settings → Secrets and
+variables → Actions → New repository secret* :
+- `CLOUDFLARE_API_TOKEN` : Cloudflare → *My Profile → API Tokens → Create Token* → *Custom* : permission **Account → D1 → Edit** ;
+- `CLOUDFLARE_ACCOUNT_ID` : l'identifiant du compte (colonne de droite de la page d'accueil Cloudflare) ;
+- `BACKUP_PASSPHRASE` : une longue phrase secrète (20 caractères ou plus), **notée aussi ailleurs** : sans elle, la copie ne s'ouvre pas.
+Ouvrir une copie : `openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -in stalak-AAAA-MM-JJ.sql.enc -out stalak.sql`.
+**Avant de coller une migration** dans la console D1, lance une copie à la main.
+**Revenir en arrière** sans copie : D1 garde l'historique (*Time Travel* : 7 jours en gratuit, 30 en payant). Cloudflare → D1 →
+`stalak` → *Time Travel* : choisis l'heure d'avant l'erreur et restaure (tout ce qui a changé depuis est perdu).
+Les fichiers R2 (sauvegarde en ligne) n'ont pas de copie : c'est une sauvegarde de confort, risque accepté.
+
+### 15.4 Les alertes
+- Le site t'envoie un e-mail (adresse `ALERT_EMAIL`, sinon `SUPPORT_EMAIL`) quand : le serveur répond une erreur 5xx, Resend
+  échoue, la limite des e-mails de code approche ou est atteinte, Paddle refuse d'arrêter l'abonnement d'un compte supprimé.
+  Une alerte du même type au plus par heure, 20 par jour ; aucune donnée personnelle dedans. Le tableau de bord compte les
+  erreurs (« Santé du serveur »).
+- Dans Cloudflare : **Notifications → Add** : alertes d'usage et de facturation (Workers, D1, Workers AI). Avant le lancement
+  aux États-Unis, passe à **Workers Paid (5 $/mois)** : l'offre gratuite (100 000 requêtes par jour) peut être épuisée par un pic.
+- Le « signe de vie » des visites passe d'une fois par minute à une fois toutes les 5 minutes (5 fois moins de requêtes).
+  « En direct » = vu dans les 6 min 30 dernières.
+
+### 15.5 L'entonnoir (tableau de bord)
+Compteurs anonymes (`POST /api/event`, sans cookie ni compte) : visite → export réussi → pub regardée → page des formules →
+fenêtre de paiement → premier paiement (webhook). Aussi : exports ratés par catégorie (mémoire, décodeur, onglet caché,
+annulé), sur iPhone/iPad, et la raison qui a ouvert la page des formules. À ajouter à la politique de confidentialité
+(Juridique) : de simples compteurs, rien sur la personne.
+
+---
+
 ## Pour le développeur
 
 ### Routes (`/api/…`)
@@ -564,6 +662,7 @@ Toutes les réponses sont en JSON. Les erreurs ont la forme `{"error":"code","me
 | `POST /api/paddle/change` | `{plan: 'pro'|'creator', interval: 'month'|'year', preview?}` : un abonné change de formule sur le **même** abonnement. Plus grande : tout de suite au prorata ; plus petite : au renouvellement (formule payée gardée). `preview: true` : `{kind, amount (centimes), currency, effectiveAt}` sans rien changer. `404 no_subscription`, `409 same_plan` / `subscription_ending` / `not_configured` / `change_at_renewal`. 30 par heure (aperçus compris). La formule change au webhook. |
 | `GET /api/projects` | `{projects: [{id, name, size, mediaBytes, createdAt, updatedAt, openedAt, coverUrl}], storage: {available, used, quota, partSize, maxFile}}` (sans le contenu). `available` = le bucket R2 est relié. |
 | `GET /api/projects/:id` | `{id, name, state, updatedAt, mediaBytes, files: [{id, name, type, size}]}`. Compte comme une ouverture (règle des 6 mois). |
+| `POST /api/event` | `{name, cat?, ios?, why?}` : une étape de l'entonnoir (liste fermée, `400 invalid_event` sinon), sans cookie, 120 par heure et par connexion. |
 | `PUT /api/projects/:id` | `{name, state, files?}` (`name` absent ou `null` : le nom déjà en ligne est gardé ; sauvegarde automatique), 900 par heure, 256 Ko maximum, 200 projets maximum. **Creator Plus** : sinon `403 pro_required` (avec `need`). `files` = les ids des fichiers de cette version : tous doivent être envoyés (`409 files_missing`, avec `missing`) ; les autres fichiers du projet sont effacés. Sans `files`, les fichiers ne changent pas. |
 | `PATCH /api/projects/:id` | `{name}` : renomme. |
 | `PUT /api/projects/:id/cover` | Couverture de la Galerie : corps brut `image/jpeg` ou `image/webp`, 64 Ko au plus (`413 too_large`), vérifiée par ses premiers octets (`415 invalid_image`), 120 par heure. Répond `{coverAt, coverUrl}`. |

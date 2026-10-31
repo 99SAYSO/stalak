@@ -10,7 +10,7 @@
 import { HttpError, json, readJson } from './http.js';
 import { verifyJwtSignature } from './jwt.js';
 import { jwksFor } from './oauth.js';
-import { subscriptionGivesPro, intervalOf, planOfSub, planOfPrice, salePrices } from './entitlements.js';
+import { subscriptionGivesPro, intervalOf, planOfSub, planOfPrice, salePrices, payEnv } from './entitlements.js';
 import { getState, setState, isAvailable, messagesOf, deliverReply, catchUpReplies, MESSAGE_MAX, cleanupTickets } from './support.js';
 import { LIVE_MS, today } from './metrics.js';
 
@@ -88,17 +88,19 @@ export async function stats(env, days = 30, now = Date.now()) {
   const list = dayList(days, now), from = list[0], fromMs = Date.parse(from + 'T00:00:00Z');
   const since30 = now - 30 * 864e5;
   const q = (sql, ...b) => env.DB.prepare(sql).bind(...b);
+  const pe = payEnv(env);
   const [users, signups, subs, payDays, payAll, pay30, refDays, refAll, visitDays, lyrDays, counts, cloud, ticketDays, recent, payPlans] = await env.DB.batch([
     q('SELECT COUNT(*) AS n, SUM(email_verified_at IS NOT NULL) AS verified FROM users'),
     q("SELECT date(created_at / 1000, 'unixepoch') AS d, COUNT(*) AS n FROM users WHERE created_at >= ?1 GROUP BY d", fromMs),
-    q('SELECT id, user_id, status, price_id, plan, current_period_end, cancel_at FROM subscriptions'),
+    // payments: only those of the Paddle environment in use (migration 0009): test rows leave the figures with real payments
+    q('SELECT id, user_id, status, price_id, plan, current_period_end, cancel_at, keep_plan, keep_until FROM subscriptions WHERE env = ?1', pe),
     q(`SELECT date(billed_at / 1000, 'unixepoch') AS d, currency, SUM(total) AS total, COUNT(*) AS n,
-         SUM(origin <> 'subscription_recurring') AS first FROM payments WHERE billed_at >= ?1 GROUP BY d, currency`, fromMs),
-    q('SELECT currency, SUM(total) AS total, SUM(tax) AS tax, SUM(COALESCE(earnings, 0)) AS earnings, COUNT(*) AS n FROM payments GROUP BY currency'),
-    q('SELECT currency, SUM(total) AS total, COUNT(*) AS n FROM payments WHERE billed_at >= ?1 GROUP BY currency', since30),
+         SUM(origin <> 'subscription_recurring') AS first FROM payments WHERE billed_at >= ?1 AND env = ?2 GROUP BY d, currency`, fromMs, pe),
+    q('SELECT currency, SUM(total) AS total, SUM(tax) AS tax, SUM(COALESCE(earnings, 0)) AS earnings, COUNT(*) AS n FROM payments WHERE env = ?1 GROUP BY currency', pe),
+    q('SELECT currency, SUM(total) AS total, COUNT(*) AS n FROM payments WHERE billed_at >= ?1 AND env = ?2 GROUP BY currency', since30, pe),
     q(`SELECT date(created_at / 1000, 'unixepoch') AS d, currency, SUM(total) AS total FROM refunds
-         WHERE status = 'approved' AND action IN ('refund', 'chargeback') AND created_at >= ?1 GROUP BY d, currency`, fromMs),
-    q(`SELECT currency, SUM(total) AS total, COUNT(*) AS n FROM refunds WHERE status = 'approved' AND action IN ('refund', 'chargeback') GROUP BY currency`),
+         WHERE status = 'approved' AND action IN ('refund', 'chargeback') AND created_at >= ?1 AND env = ?2 GROUP BY d, currency`, fromMs, pe),
+    q(`SELECT currency, SUM(total) AS total, COUNT(*) AS n FROM refunds WHERE status = 'approved' AND action IN ('refund', 'chargeback') AND env = ?1 GROUP BY currency`, pe),
     q('SELECT day AS d, COUNT(*) AS n FROM visits WHERE day >= ?1 GROUP BY day', from),
     q('SELECT day AS d, SUM(jobs) AS jobs, SUM(seconds) AS seconds, COUNT(DISTINCT user_id) AS users FROM lyrics_usage WHERE day >= ?1 GROUP BY day', from),
     q('SELECT day AS d, name, n FROM daily_counts WHERE day >= ?1', from),
@@ -106,7 +108,7 @@ export async function stats(env, days = 30, now = Date.now()) {
     q("SELECT date(created_at / 1000, 'unixepoch') AS d, COUNT(*) AS n FROM tickets WHERE created_at >= ?1 GROUP BY d", fromMs),
     q('SELECT id, email, display_name, created_at, email_verified_at FROM users ORDER BY created_at DESC LIMIT 20'),
     // revenue per plan: payments by price (the plan comes from the price, entitlements.js)
-    q('SELECT price_id, currency, SUM(total) AS total, SUM(billed_at >= ?1) AS n30, SUM(CASE WHEN billed_at >= ?1 THEN total ELSE 0 END) AS total30, COUNT(*) AS n FROM payments GROUP BY price_id, currency', since30),
+    q('SELECT price_id, currency, SUM(total) AS total, SUM(billed_at >= ?1) AS n30, SUM(CASE WHEN billed_at >= ?1 THEN total ELSE 0 END) AS total30, COUNT(*) AS n FROM payments WHERE env = ?2 GROUP BY price_id, currency', since30, pe),
   ]);
   const R = (r) => r.results || [];
 
@@ -122,6 +124,11 @@ export async function stats(env, days = 30, now = Date.now()) {
   for (const r of R(lyrDays)) if (at(r.d)) { at(r.d).lyricsJobs = r.jobs || 0; at(r.d).lyricsMinutes = Math.round((r.seconds || 0) / 6) / 10; at(r.d).lyricsUsers = r.users || 0; }
   const KEY = { help_q: 'helpQuestions', help_fail: 'helpFailed', cloud_save: 'cloudSaves', ticket: 'tickets', ticket_msg: 'ticketMessages' };
   for (const r of R(counts)) if (at(r.d) && KEY[r.name] && r.name !== 'ticket') at(r.d)[KEY[r.name]] = r.n;
+  // the funnel (audit of 30/10): visit → export → ad → plans page → payment window → first payment, over the last 30 days;
+  // plus the server errors and the code e-mails (anonymous counters, metrics.js)
+  const last30 = new Set(list.slice(-30)), ev = {};
+  for (const r of R(counts)) if (last30.has(r.d)) ev[r.name] = (ev[r.name] || 0) + (r.n || 0);
+  const pick = (prefix) => { const o = {}; for (const k in ev) if (k.startsWith(prefix)) o[k.slice(prefix.length)] = ev[k]; return o; };
   for (const r of R(ticketDays)) if (at(r.d)) at(r.d).tickets = r.n;
 
   // Stalak Pro now: the same rule as the site (entitlements.js)
@@ -174,7 +181,16 @@ export async function stats(env, days = 30, now = Date.now()) {
       help: { questions30: s30('helpQuestions'), failed30: s30('helpFailed'), today: series[list[list.length - 1]].helpQuestions,
         dailyMax: Number.isFinite(Number.parseInt(env.HELP_DAILY_MAX, 10)) ? Number.parseInt(env.HELP_DAILY_MAX, 10) : 60 },
       tickets: { created30: s30('tickets') },
+      funnel: {
+        visits: s30('visits'), exportStart: ev.ev_export_start || 0, exportOk: ev.ev_export_ok || 0, exportFail: ev.ev_export_fail || 0,
+        adOffer: ev.ev_ad_offer || 0, adOk: ev.ev_ad_ok || 0, plansOpen: ev.ev_plans_open || 0, checkoutOpen: ev.ev_checkout_open || 0,
+        paid: ev.paid_first || 0, exportFailWhy: pick('ev_export_fail_'), plansWhy: pick('ev_plans_why_'),
+        ios: { exportOk: ev.ios_export_ok || 0, exportFail: ev.ios_export_fail || 0 },
+      },
+      health: { errors30: ev.err_5xx || 0, alerts30: ev.alert || 0, codeMails30: ev.code_mail || 0,
+        codeMailsToday: R(counts).filter((r) => r.d === list[list.length - 1] && r.name === 'code_mail').reduce((n, r) => n + r.n, 0) },
     },
+    env: pe,
     recentUsers: R(recent).map((r) => ({ email: r.email, name: r.display_name || null, createdAt: new Date(r.created_at).toISOString(),
       verified: !!r.email_verified_at, pro: proUsers.has(r.id), plan: proUsers.get(r.id) || null })),
   };
@@ -195,8 +211,8 @@ async function ticketList(env, status) {
   const proIds = new Map();
   if (ids.length) {
     const { results: subs } = await env.DB.prepare(
-      `SELECT user_id, status, current_period_end, price_id, plan FROM subscriptions WHERE user_id IN (SELECT DISTINCT user_id FROM tickets WHERE user_id IS NOT NULL)`
-    ).all();
+      `SELECT user_id, status, current_period_end, price_id, plan, keep_plan, keep_until FROM subscriptions WHERE env = ?1 AND user_id IN (SELECT DISTINCT user_id FROM tickets WHERE user_id IS NOT NULL)`
+    ).bind(payEnv(env)).all();
     for (const sb of subs) if (subscriptionGivesPro(sb, now)) proIds.set(sb.user_id, planOfSub(env, sb));
   }
   return results.map((t) => ({ id: t.id, email: t.email, lang: t.lang, status: t.status, account: !!t.user_id, pro: proIds.has(t.user_id),
@@ -213,7 +229,7 @@ async function ticketDetail(env, id) {
   if (t.user_id) {
     const u = await env.DB.prepare('SELECT email, display_name, created_at FROM users WHERE id = ?1').bind(t.user_id).first();
     if (u) {
-      const { results } = await env.DB.prepare('SELECT status, current_period_end, price_id, plan FROM subscriptions WHERE user_id = ?1').bind(t.user_id).all();
+      const { results } = await env.DB.prepare('SELECT status, current_period_end, price_id, plan, keep_plan, keep_until FROM subscriptions WHERE user_id = ?1 AND env = ?2').bind(t.user_id, payEnv(env)).all();
       const s = results.find((x) => subscriptionGivesPro(x));
       account = { email: u.email, name: u.display_name || null, createdAt: new Date(u.created_at).toISOString(), pro: !!s,
         plan: s ? planOfSub(env, s) : null, interval: s ? intervalOf(env, s.price_id) : null };

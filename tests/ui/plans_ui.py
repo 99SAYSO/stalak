@@ -6,8 +6,9 @@ the plans page (Gratuit + Stalak Pro + Stalak Creator Plus, monthly / yearly, in
 Build the site first (python3 build_site.py …), then run node tests/ui/cloud-server.mjs <repo>/public <port> (a fresh one per
 run): the real Functions on node:sqlite, Paddle imitated. Accounts come from /__test/login?email=…&pro=1[&plan=pro] (or pro=0).
 In that server, Creator Plus yearly has no Paddle price: its button must say « Bientôt ».
-Checks: signed out, FR, 390 px: 3 cards (Creator Plus first on a phone), dollar prices, the yearly switch (Pro 4,16 $/mois,
-49,99 $ a year, « Économise 48 % »), a plan asks to sign in; free, EN, 1280 px: 3 cards side by side (Free → Creator Plus), no
+Checks (aligned on the Tarifs page, audit of 30/10): signed out, FR, 390 px: 3 cards (Pro first on a phone, « Ni pub ni
+filigrane »), YEARLY by default (Pro 4,17 $/mois, 49,99 $ a year, « Économise 47 % »), monthly 7,99 $ / 14,99 $, « dès 2
+playbacks », « 100 GB » in English, a plan asks to sign in; free, EN, 1280 px: 3 cards side by side (Free → Creator Plus), no
 reminder box any more; Pro at 1280 px: « Ta formule », « Passer à Creator Plus » shows today's price before confirming; Creator
 Plus at 390 px EN: its perks (60 a day, 100 GB, Talk to a human), Pro starts at the renewal; sign-up without the reminder box;
 no horizontal scroll; no page error. Run this file by absolute path from a clean directory."""
@@ -108,23 +109,27 @@ async def main():
         ctx, pg, err = await open_page(browser, 'fr', 390, 844)
         await plans_page(pg)
         c = await cards(pg)
-        check('fr-390: 3 cards, Creator Plus first on a phone', [x['plan'] for x in c] == ['creator', 'pro', 'free'], c)
+        check('fr-390: 3 cards, Pro first on a phone (as on the Tarifs page)', [x['plan'] for x in c] == ['pro', 'creator', 'free'], c)
         check('fr-390: one column', max(x['x'] for x in c) - min(x['x'] for x in c) <= 2, c)
         by = {x['plan']: x for x in c}
-        check('fr-390: monthly prices in dollars', by['pro']['amt'] == '7,99 $' and by['creator']['amt'] == '14,99 $', [x['amt'] for x in c])
-        rib = await pg.inner_text('#apBuy .pl-creator .pl-ribbon')
-        check('fr-390: Creator Plus put forward', rib == 'Tout Stalak', rib)
-        save = await pg.inner_text('#plIntSave')
-        check('fr-390: the yearly switch says the biggest saving', '48' in save, save)
-        await shot(pg, 'plans-fr-390')
-        await pg.tap('#plInt [data-int=year]')
-        await pg.wait_for_timeout(200)
-        c = await cards(pg); by = {x['plan']: x for x in c}
-        check('fr-390 yearly: Pro 4,16 $/mois, 49,99 $ once a year, saves 48 %', by['pro']['amt'] == '4,16 $' and '49,99 $' in by['pro']['bill'] and '48' in by['pro']['pill'], by['pro'])
+        yr = await pg.get_attribute('#plInt [data-int=year]', 'aria-checked')
+        check('fr-390: yearly by default', yr == 'true', yr)
+        check('fr-390 yearly: Pro 4,17 $/mois, 49,99 $ once a year, saves 47 %', by['pro']['amt'] == '4,17 $' and '49,99 $' in by['pro']['bill'] and '47' in by['pro']['pill'], by['pro'])
+        check('fr-390 yearly: Creator Plus saves 44 %', '44' in by['creator']['pill'], by['creator'])
         check('fr-390 yearly: a plan without a price says « Bientôt »', by['creator']['btn'] == 'Bientôt' and by['creator']['off'], by['creator'])
+        rib = await pg.inner_text('#apBuy .pl-pro .pl-ribbon')
+        check('fr-390: Pro put forward « Ni pub ni filigrane »', rib == 'Ni pub ni filigrane' and await pg.eval_on_selector('#apBuy .pl-pro', 'e => e.classList.contains("is-best")'), rib)
+        save = await pg.inner_text('#plIntSave')
+        check('fr-390: the yearly switch says « jusqu’à −47 % »', '47' in save, save)
+        packs = await pg.inner_text('#apBuy .pl-creator [data-i18n="pl.f.packs"]')
+        check('fr-390: packs « dès 2 playbacks »', 'dès 2 playbacks' in packs, packs)
         check('fr-390: no horizontal scroll (the comparison scrolls inside its card)', await no_scroll(pg))
         await shot(pg, 'plans-year-fr-390')
         await pg.tap('#plInt [data-int=month]')
+        await pg.wait_for_timeout(200)
+        c = await cards(pg); by = {x['plan']: x for x in c}
+        check('fr-390: monthly prices in dollars', by['pro']['amt'] == '7,99 $' and by['creator']['amt'] == '14,99 $', [x['amt'] for x in c])
+        await shot(pg, 'plans-fr-390')
         await pg.tap('#apBuy [data-buy=pro]')
         await pg.wait_for_selector('#apLogin:not([hidden])', timeout=5000)
         check('fr-390 signed out: a plan asks to sign in first', True)
@@ -138,7 +143,17 @@ async def main():
         row = sorted(c, key=lambda x: x['x'])
         check('en-1280: 3 cards side by side, Free → Creator Plus', [x['plan'] for x in row] == ['free', 'pro', 'creator'] and len({x['x'] for x in c}) == 3, row)
         by = {x['plan']: x for x in c}
-        check('en-1280: dollar prices', by['pro']['amt'] == '$7.99' and by['creator']['amt'] == '$14.99', [x['amt'] for x in c])
+        check('en-1280: dollar prices, yearly by default', by['pro']['amt'] == '$4.17' and by['creator']['amt'] == '$8.33' and '47' in by['pro']['pill'], [x['amt'] for x in c])
+        gb = await pg.inner_text('#apBuy [data-i18n="pl.v.100"]')
+        packs = await pg.inner_text('#apBuy .pl-creator [data-i18n="pl.f.packs"]')
+        check('en-1280: « 100 GB » and « from just 2 takes »', gb == '100 GB' and 'from just 2 takes' in packs, [gb, packs])
+        # opened by a lock: the reason stays in sight at the top of the card the page scrolls to
+        await pg.evaluate('__ev("acctOpen(\'clip\', { plan: \'pro\' })")')
+        await pg.wait_for_selector('#apBuy .pl-pro .pl-why', timeout=5000)
+        await pg.wait_for_timeout(900)
+        why = await pg.eval_on_selector('#apBuy .pl-pro .pl-why', 'e => { const r = e.getBoundingClientRect(); return [e.textContent, r.top >= 0 && r.bottom <= innerHeight]; }')
+        check('en-1280 lock: the reason is shown on the Pro card, in sight', 'Music video mode' in why[0] and why[1], why)
+        await shot(pg, 'plans-why-en-1280')
         check('en-1280: « Your current plan » on Free', 'current plan' in by['free']['pill'], c)
         check('en-1280: no horizontal scroll', await no_scroll(pg))
         await shot(pg, 'plans-en-1280')

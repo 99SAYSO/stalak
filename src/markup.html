@@ -697,7 +697,7 @@
     </section>
 
     <section class="ap-view ap-proview" id="apPro" hidden>
-      <p class="pr-promo" id="apPromo"><svg class="pr-flake" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.5v19M3.8 7.25l16.4 9.5M3.8 16.75l16.4-9.5M9.6 3.9 12 6.3l2.4-2.4M9.6 20.1 12 17.7l2.4 2.4"/></svg><span data-i18n="pr.promo">Ni pub ni filigrane dès <b>4,16 $/mois</b> avec Pro annuel</span></p>
+      <p class="pr-promo" id="apPromo"><svg class="pr-flake" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.5v19M3.8 7.25l16.4 9.5M3.8 16.75l16.4-9.5M9.6 3.9 12 6.3l2.4-2.4M9.6 20.1 12 17.7l2.4 2.4"/></svg><span data-i18n="pr.promo">Ni pub ni filigrane dès <b>4,17 $/mois</b> avec Pro annuel</span></p>
       <h2 id="apProT" tabindex="-1" data-i18n="acct.proT">Les formules Stalak</h2>
       <p class="pr-sub" id="apProSub" data-i18n="pr.sub">Stalak monte tes vidéos à ta place. Avec une formule, tu postes plus, plus vite, et chaque vidéo a l’air sortie d’un studio.</p>
       <p class="ap-why" id="apProWhy" hidden></p>
@@ -712,35 +712,19 @@
       <div class="pr" id="apBuy">
         <!-- offer of 30/10/2026: Gratuit + Basic / Pro / Max, billed monthly or yearly (domaine Comptes) -->
         <div class="pl-int" role="radiogroup" aria-label="Facturation" data-i18n-attr="aria-label:pl.int.aria" id="plInt">
-          <button type="button" role="radio" aria-checked="true" data-int="month" data-i18n="pl.int.month">Mensuel</button>
-          <button type="button" role="radio" aria-checked="false" data-int="year"><span data-i18n="pl.int.year">Annuel</span> <b class="pl-int-save" id="plIntSave" data-i18n="pl.int.save">jusqu’à −48 %</b></button>
+          <button type="button" role="radio" aria-checked="false" data-int="month" data-i18n="pl.int.month">Mensuel</button>
+          <button type="button" role="radio" aria-checked="true" data-int="year"><span data-i18n="pl.int.year">Annuel</span> <b class="pl-int-save" id="plIntSave" data-i18n="pl.int.save">jusqu’à −47 %</b></button>
         </div>
         <div class="pr-plans pl-plans">
-          <article class="pr-plan pl-card pl-creator is-best" data-plan="creator" aria-labelledby="plCreatorN">
+          <article class="pr-plan pl-card pl-pro is-best" data-plan="pro" aria-labelledby="plProN">
             <span class="pr-glint" aria-hidden="true"></span>
-            <p class="pr-ribbon pl-ribbon" data-i18n="pl.rib">Tout Stalak</p>
-            <div class="pr-art"><img data-emo="gg" alt="" width="112" height="112"></div>
-            <h3 class="pr-name" id="plCreatorN" data-i18n="pl.n.creator">Creator Plus</h3>
-            <p class="pr-price"><span class="pr-amt" data-pl="amt">14,99 $</span><span class="pr-per" data-i18n="pr.per">/mois</span></p>
-            <p class="pr-bill" data-pl="bill" data-i18n="pr.month.bill">Facturé chaque mois</p>
-            <p class="pr-pill pl-pill" data-pl="pill" hidden></p>
-            <button class="btn pr-cta primary" type="button" data-buy="creator" data-i18n="pl.cta.creator">Choisir Creator Plus</button>
-            <p class="pl-note" data-pl="note" hidden></p>
-            <ul class="pr-feats">
-              <li class="pr-plus" data-i18n="pl.f.plusPro">Tout Pro, plus :</li>
-              <li data-i18n="pl.f.packs"><strong>Le générateur de packs</strong> : 5 à 30 vidéos aux coupes différentes, dès 2 playbacks</li>
-              <li data-i18n="pl.f.lyr60"><strong>Paroles écrites pour toi</strong>, 60 fois par jour</li>
-              <li data-i18n="pl.f.cloud"><strong>Sauvegarde en ligne</strong> : 100 Go, sur tous tes appareils</li>
-              <li data-i18n="pl.f.human"><strong>Parler à un humain</strong> : en direct, ou réponse par e-mail sous 24 h</li>
-            </ul>
-          </article>
-          <article class="pr-plan pl-card pl-pro" data-plan="pro" aria-labelledby="plProN">
+            <p class="pr-ribbon pl-ribbon" data-i18n="pl.rib.pro">Ni pub ni filigrane</p>
             <div class="pr-art"><img data-emo="money" alt="" width="112" height="112"></div>
             <h3 class="pr-name" id="plProN" data-i18n="pl.n.pro">Pro</h3>
             <p class="pr-price"><span class="pr-amt" data-pl="amt">7,99 $</span><span class="pr-per" data-i18n="pr.per">/mois</span></p>
             <p class="pr-bill" data-pl="bill" data-i18n="pr.month.bill">Facturé chaque mois</p>
             <p class="pr-pill pl-pill" data-pl="pill" hidden></p>
-            <button class="btn pr-cta" type="button" data-buy="pro" data-i18n="pl.cta.pro">Choisir Pro</button>
+            <button class="btn pr-cta primary" type="button" data-buy="pro" data-i18n="pl.cta.pro">Choisir Pro</button>
             <p class="pl-note" data-pl="note" hidden></p>
             <ul class="pr-feats">
               <li data-i18n="pl.f.nowm"><strong>Ni pub ni filigrane</strong></li>
@@ -749,6 +733,23 @@
               <li data-i18n="pl.f.text"><strong>Paroles mot par mot et karaoké</strong>, toutes les tailles</li>
               <li data-i18n="pl.f.filters"><strong>Tous les filtres</strong> vidéo</li>
               <li data-i18n="pl.f.lyr20"><strong>Paroles écrites pour toi</strong>, 20 fois par jour</li>
+            </ul>
+          </article>
+          <article class="pr-plan pl-card pl-creator" data-plan="creator" aria-labelledby="plCreatorN">
+                        <p class="pr-ribbon pl-ribbon" data-i18n="pl.rib">Tout Stalak</p>
+            <div class="pr-art"><img data-emo="gg" alt="" width="112" height="112"></div>
+            <h3 class="pr-name" id="plCreatorN" data-i18n="pl.n.creator">Creator Plus</h3>
+            <p class="pr-price"><span class="pr-amt" data-pl="amt">14,99 $</span><span class="pr-per" data-i18n="pr.per">/mois</span></p>
+            <p class="pr-bill" data-pl="bill" data-i18n="pr.month.bill">Facturé chaque mois</p>
+            <p class="pr-pill pl-pill" data-pl="pill" hidden></p>
+            <button class="btn pr-cta" type="button" data-buy="creator" data-i18n="pl.cta.creator">Choisir Creator Plus</button>
+            <p class="pl-note" data-pl="note" hidden></p>
+            <ul class="pr-feats">
+              <li class="pr-plus" data-i18n="pl.f.plusPro">Tout Pro, plus :</li>
+              <li data-i18n="pl.f.packs"><strong>Le générateur de packs</strong> : 5 à 30 vidéos aux coupes différentes, dès 2 playbacks</li>
+              <li data-i18n="pl.f.lyr60"><strong>Paroles écrites pour toi</strong>, 60 fois par jour</li>
+              <li data-i18n="pl.f.cloud"><strong>Sauvegarde en ligne</strong> : 100 Go, sur tous tes appareils</li>
+              <li data-i18n="pl.f.human"><strong>Parler à un humain</strong> : en direct, ou réponse par e-mail sous 24 h</li>
             </ul>
           </article>
           <article class="pr-plan pr-free pl-card pl-free" data-plan="free" aria-labelledby="apFreeN">
@@ -792,7 +793,7 @@
               <tr><th scope="row" data-i18n="pl.r.clip">Clip YouTube 16:9 et effets premium</th><td><i class="pr-no" role="img" aria-label="Non" data-i18n-attr="aria-label:pr.no"></i></td><td><i class="pr-yes" role="img" aria-label="Oui" data-i18n-attr="aria-label:pr.yes"></i></td><td class="pr-colpro"><i class="pr-yes" role="img" aria-label="Oui" data-i18n-attr="aria-label:pr.yes"></i></td></tr>
               <tr><th scope="row" data-i18n="pl.r.autoly">Paroles écrites et calées automatiquement</th><td><i class="pr-no" role="img" aria-label="Non" data-i18n-attr="aria-label:pr.no"></i></td><td class="pr-v"><span data-i18n="pl.v.20d">20 par jour</span></td><td class="pr-colpro pr-v"><span data-i18n="pl.v.60d">60 par jour</span></td></tr>
               <tr><th scope="row" data-i18n="pl.r.pack">Packs de vidéos aux coupes différentes</th><td><i class="pr-no" role="img" aria-label="Non" data-i18n-attr="aria-label:pr.no"></i></td><td><i class="pr-no" role="img" aria-label="Non" data-i18n-attr="aria-label:pr.no"></i></td><td class="pr-colpro pr-v"><span data-i18n="pl.v.5to30">5 à 30</span></td></tr>
-              <tr><th scope="row" data-i18n="pl.r.cloud">Sauvegarde en ligne</th><td><i class="pr-no" role="img" aria-label="Non" data-i18n-attr="aria-label:pr.no"></i></td><td><i class="pr-no" role="img" aria-label="Non" data-i18n-attr="aria-label:pr.no"></i></td><td class="pr-colpro pr-v">100 Go</td></tr>
+              <tr><th scope="row" data-i18n="pl.r.cloud">Sauvegarde en ligne</th><td><i class="pr-no" role="img" aria-label="Non" data-i18n-attr="aria-label:pr.no"></i></td><td><i class="pr-no" role="img" aria-label="Non" data-i18n-attr="aria-label:pr.no"></i></td><td class="pr-colpro pr-v"><span data-i18n="pl.v.100">100 Go</span></td></tr>
               <tr><th scope="row" data-i18n="pl.r.human">Parler à un humain</th><td><i class="pr-no" role="img" aria-label="Non" data-i18n-attr="aria-label:pr.no"></i></td><td><i class="pr-no" role="img" aria-label="Non" data-i18n-attr="aria-label:pr.no"></i></td><td class="pr-colpro"><i class="pr-yes" role="img" aria-label="Oui" data-i18n-attr="aria-label:pr.yes"></i></td></tr>
             </tbody>
             <tfoot><tr><th scope="row" data-i18n="pl.r.price">Prix par mois</th><td class="pr-v" data-i18n="pr.free.amt">0 $</td><td class="pr-v" data-pl-cmp="pro">7,99 $</td><td class="pr-colpro pr-v" data-pl-cmp="creator">14,99 $</td></tr></tfoot>

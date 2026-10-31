@@ -3,7 +3,10 @@ import { HttpError, json, errorResponse, checkCsrf, readJson, readText, clearSes
 import { currentUser, requireUser, logout, loginPassword, setPassword, recentCodeSession, signup, signupVerify, loginVerify, forgot, reset, failKey } from './auth.js';
 import { oauthStart, oauthCallback, enabledProviders, PROVIDERS } from './oauth.js';
 import { updateProfile, avatar, avatarUrl, AVATAR_TYPES } from './profile.js';
-import { entitlementsFor, requirePlan, FEATURES, LIMITS } from './entitlements.js';
+import { entitlementsFor, requirePlan, FEATURES, LIMITS, payEnv } from './entitlements.js';
+import { alertOwner } from './alerts.js';
+import { turnstileSiteKey } from './turnstile.js';
+import { yearlyReminders } from './reminders.js';
 import { handleWebhook, portalLinks, cancelSubscriptionNow, changePlan } from './paddle.js';
 import { social, socialWebhook, isSocialWebhook, socialProviders, deleteSocialAccounts } from './social.js';
 import { projectCover, coverUrl, COVER_TYPES, projectFiles, storageInfo, checkProjectFiles, dropUnusedFiles, readyFiles, deleteProjectMedia, deleteUserMedia, maybeCleanup, cleanupCloud, cloudAvailable } from './cloud.js';
@@ -13,7 +16,7 @@ import { transcribe } from './lyrics.js';
 import { helpChat } from './help.js';
 import { admin } from './admin.js';
 import { support } from './support.js';
-import { presence, bump } from './metrics.js';
+import { presence, bump, event } from './metrics.js';
 
 const PROJECT_MAX_BYTES = 256 * 1024; // ~200 KB of project JSON + envelope
 const PROJECT_MAX_COUNT = 200;
@@ -70,7 +73,7 @@ function config(env) {
     // social: the networks a person can link (TikTok / Instagram), only those whose keys are set (social.js)
     features: { socialConnect: env.SOCIAL_CONNECT_ENABLED === '1', social: socialProviders(env), cloudSave: cloudAvailable(env) },
     // sign-in with Google / Apple / Microsoft: only the providers whose keys are set (the buttons show only those)
-    auth: { providers: enabledProviders(env), passwordMin: 8 },
+    auth: { providers: enabledProviders(env), passwordMin: 8, turnstile: turnstileSiteKey(env) },
   };
 }
 
@@ -161,7 +164,7 @@ function cronAuth(request, env) {
 }
 async function cronCleanup(request, env) {
   cronAuth(request, env);
-  return json({ ok: true, ...(await cleanupCloud(env)) });
+  return json({ ok: true, ...(await cleanupCloud(env)), ...(await yearlyReminders(env)) });
 }
 
 // Signed in: the session cookie (and the trusted-device cookie), then the same answer as GET /api/me.
@@ -173,11 +176,26 @@ async function deleteAccount(request, env) {
   const user = await requireUser(request, env);
   const body = await readJson(request);
   if (body.confirm !== true) throw new HttpError(400, 'confirm_required', 'Send {"confirm": true} to delete the account.');
-  // Stop any running Paddle subscription first, so nobody keeps paying for a deleted account.
+  // Stop any running Paddle subscription first, so nobody keeps paying for a deleted account. Only those of the Paddle
+  // environment in use (a test subscription cannot be reached with the real keys). Paddle saying the subscription is
+  // unknown or already stopped (4xx) does not block the deletion (a legal right): it is noted, the owner is told.
+  // Paddle out of reach (5xx, network): 502, nothing is deleted, the person tries again (nobody keeps paying unseen).
   const { results } = await env.DB.prepare(
-    "SELECT id FROM subscriptions WHERE user_id = ?1 AND status IN ('active','trialing','past_due','paused')"
-  ).bind(user.id).all();
-  for (const s of results) await cancelSubscriptionNow(env, s.id);
+    "SELECT id FROM subscriptions WHERE user_id = ?1 AND env = ?2 AND status IN ('active','trialing','past_due','paused')"
+  ).bind(user.id, payEnv(env)).all();
+  for (const s of results) {
+    try { await cancelSubscriptionNow(env, s.id); }
+    catch (e) {
+      // only « unknown » (404) or « already stopped / cannot be changed any more » (400, 409, 422 with such a code);
+      // a key refused (401, 403) or Paddle out of reach is not a reason to delete while the billing may go on
+      const gone = e && (e.paddleStatus === 404 || ([400, 409, 422].includes(e.paddleStatus) && /cancel|not_found|locked|inactive/i.test(String(e.paddleCode || ''))));
+      if (!gone) throw e;
+      console.warn('[stalak] account delete: Paddle refused the cancel', s.id, e.paddleStatus, e.paddleCode || '');
+      await alertOwner(env, 'delete_cancel', 'Account deleted: check a subscription in Paddle',
+        `An account was deleted, but Paddle refused to stop its subscription ${s.id} (HTTP ${e.paddleStatus}${e.paddleCode ? ', ' + e.paddleCode : ''}).\n` +
+        'Open it in Paddle (Customers → Subscriptions) and cancel it by hand if it is still active.');
+    }
+  }
   // linked TikTok / Instagram accounts: tokens revoked, rows erased (social.js)
   await deleteSocialAccounts(env, user.id);
   // the media files saved online (R2), then their rows with the rest
@@ -204,11 +222,25 @@ async function deleteAccount(request, env) {
   return json({ ok: true, deleted: true }, 200, { 'Set-Cookie': clearSessionCookie() });
 }
 
+// <branch or id>.<project>.pages.dev = a preview deployment of Cloudflare Pages (the bare <project>.pages.dev is production)
+export const isPreviewHost = (h) => /^[^.]+\.[^.]+\.pages\.dev$/i.test(String(h || ''));
+const PREVIEW_BLOCKED = (route, parts, method) => route === 'paddle/webhook' || route.startsWith('cron/') || route === 'paddle/change' ||
+  (route === 'account' && method === 'DELETE') || isSocialWebhook(parts);
+
 export async function handle(request, env, ctx) {
   try {
     return await dispatch(request, env, ctx);
   } catch (e) {
-    return errorResponse(e);
+    const res = errorResponse(e);
+    // a server error (5xx, not a refusal): counted for the dashboard, and the owner gets an e-mail (at most one an hour)
+    if (res.status >= 500 && env.DB) {
+      const path = new URL(request.url).pathname.replace(/\/(?:p|u|sub|txn|ctm|t)?_?[A-Za-z0-9_-]{12,}/g, '/:id').slice(0, 80);
+      const code = (e && e.code) || 'internal_error';
+      const p = bump(env, 'err_5xx').then(() => alertOwner(env, 'server_error', `Server error ${res.status} (${code})`,
+        `${request.method} ${path} answered ${res.status} ${code}.\nOther errors of the same hour are counted on the dashboard (« Erreurs serveur »), without a new e-mail.`));
+      if (ctx && typeof ctx.waitUntil === 'function') ctx.waitUntil(p.catch(() => {})); else await p.catch(() => {});
+    }
+    return res;
   }
 }
 
@@ -218,6 +250,13 @@ async function dispatch(request, env, ctx) {
     const method = request.method.toUpperCase();
     const parts = url.pathname.replace(/^\/api\/?/, '').split('/').filter(Boolean);
     const route = parts.join('/');
+
+    // A preview of a branch (<id>.stalak-site.pages.dev) uses the real database until a separate one is set up
+    // (wrangler.toml [env.preview], then PREVIEW_ISOLATED = "1"): until then, nothing there may touch payments or run
+    // the server-to-server jobs (audit of 30/10). Sign-in and the rest stay usable to check a branch.
+    if (isPreviewHost(url.hostname) && env.PREVIEW_ISOLATED !== '1' && PREVIEW_BLOCKED(route, parts, method)) {
+      throw new HttpError(403, 'preview_readonly', 'Not available on a preview deployment (it shares the real database).');
+    }
 
     // The webhook is server-to-server: authenticated by its signature, not by Origin.
     if (route === 'paddle/webhook') {
@@ -307,10 +346,18 @@ async function dispatch(request, env, ctx) {
         // « Paroles automatiques » (Stalak Pro): one piece of the song's voice → timed words (functions/_lib/lyrics.js)
         if (method !== 'POST') break;
         return transcribe(request, env);
-      case 'presence':
+      case 'presence': {
         // the page is open (a random number per page load, no cookie): visits and live visitors on the dashboard
         if (method !== 'POST') break;
-        return presence(request, env);
+        const r = await presence(request, env);
+        // now and then a visit also runs the daily tasks (at most every 6 hours): in case the daily Worker is not deployed
+        if (Math.random() < 0.02) await maybeCleanup(env, ctx);
+        return r;
+      }
+      case 'event':
+        // a step of the funnel (export, ad, plans page, payment window): anonymous counters for the dashboard
+        if (method !== 'POST') break;
+        return event(request, env);
       case 'help/chat':
         // the help assistant of the ice cube (functions/_lib/help.js): open to everyone, signed in or not
         if (method !== 'POST') break;

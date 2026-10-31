@@ -1,0 +1,20 @@
+# Stalak: the server tests on every push and pull request (audit of 30/10). No package to install: Node only.
+# Cloudflare Pages also runs them before each deployment once its build command is "node tests/backend/run.mjs"
+# (BACKEND.md, step 15): a failing test then stops the publication.
+name: Tests serveur
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Tests serveur (faux D1, faux R2, Paddle et Resend imités)
+        run: node tests/backend/run.mjs

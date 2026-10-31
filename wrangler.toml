@@ -25,6 +25,14 @@ PADDLE_PRICE_CREATOR_YEAR = "pri_01m671eex11hq295vhmsj723wm"      # Stalak Creat
 # Basic and Pro in euros → pro, Max → creator. Format: id:plan:interval, comma between them.
 PADDLE_PRICES_OLD = "pri_01m66r80jxszc4yxggqvwak5p5:pro:month,pri_01m66r8g1bhvhnk6x1z9m0x894:pro:year,pri_01m66r4d7mtzps3wmycfmv8pk9:pro:month,pri_01m66r5nakxvg6cxjcgc1vv7j7:pro:year,pri_01m66r9m12ckfttnrr5h3vhfgc:creator:month,pri_01m66r9tmrfg7fxfrb5dpnk5s3:creator:year"
 SOCIAL_CONNECT_ENABLED = "0"
+# Audit of 30/10. All the code e-mails of a day together (sign-up, new device, forgotten password): above it they wait until
+# midnight UTC and the owner gets an e-mail (at 80 % too). Set it to the Resend plan's daily allowance (BACKEND.md, step 3).
+EMAIL_DAILY_MAX = "1000"
+# Cloudflare Turnstile (anti-robot) on « Créer un compte » and « Mot de passe oublié »: the public site key here, the secret
+# TURNSTILE_SECRET in the dashboard (BACKEND.md, step 3). Empty = off.
+TURNSTILE_SITE_KEY = ""
+# Alerts to the owner (server errors, code e-mails stopped, Resend failing…): this address (SUPPORT_EMAIL if empty).
+ALERT_EMAIL = ""
 ADMIN_HOST = "admin.stalak.app"   # the owner's dashboard (BACKEND.md, step 13); off until the secrets ACCESS_AUD and ADMIN_EMAILS are set
 ACCESS_TEAM_DOMAIN = "https://small-band-a6ef.cloudflareaccess.com"   # Cloudflare Zero Trust team (public); its keys sign the Access tokens
 GOOGLE_CLIENT_ID = "912353079416-aq4ljmd2n7ijcfl92025egde3r5nhnc9.apps.googleusercontent.com"   # public; the secret GOOGLE_CLIENT_SECRET is set in Cloudflare       # TikTok / Instagram posting: not implemented, keep "0"
@@ -50,5 +58,30 @@ binding = "MEDIA"
 bucket_name = "stalak-media"
 # Optional: CLOUD_QUOTA_BYTES (default 21474836480 = 20 GB per user) and the secret CRON_SECRET (see BACKEND.md, step 11).
 
-# Preview deployments (branches other than main) use the same values and the same database.
-# To isolate them later, add [env.preview.vars] and [[env.preview.d1_databases]] sections.
+# Preview deployments (branches other than main) use the same values and the SAME database for now. Until they have their
+# own (below), the server refuses there what touches payments or real accounts' money: the Paddle webhook, the daily jobs,
+# a change of plan and account deletion (functions/_lib/router.js, « preview_readonly »).
+# To give them their own database and bucket (BACKEND.md, step 15): create the D1 database "stalak-preview" (then paste in
+# its console every file of migrations/, in order) and the R2 bucket "stalak-media-preview", put the new database id below,
+# remove the « # » of the block, and publish. A wrong id makes the deployment fail.
+# [env.preview.vars]
+# APP_ORIGIN = "https://stalak.app"
+# PREVIEW_ISOLATED = "1"
+# PADDLE_ENV = "sandbox"
+# PADDLE_CLIENT_TOKEN = "test_6ba61e76a40fdce6b9d25c3eb9a"
+# PADDLE_PRICE_PRO_MONTH = "pri_01m671bncd9qm3dqxjyqf127gn"
+# PADDLE_PRICE_PRO_YEAR = "pri_01m671cexysycbr7wz1av55cvy"
+# PADDLE_PRICE_CREATOR_MONTH = "pri_01m671dtkv0d5m0r2a4ek02a3e"
+# PADDLE_PRICE_CREATOR_YEAR = "pri_01m671eex11hq295vhmsj723wm"
+# SOCIAL_CONNECT_ENABLED = "0"
+# EMAIL_DAILY_MAX = "100"
+# [env.preview.ai]
+# binding = "AI"
+# [[env.preview.d1_databases]]
+# binding = "DB"
+# database_name = "stalak-preview"
+# database_id = "<id of stalak-preview>"
+# migrations_dir = "migrations"
+# [[env.preview.r2_buckets]]
+# binding = "MEDIA"
+# bucket_name = "stalak-media-preview"
