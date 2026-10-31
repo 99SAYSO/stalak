@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><title>s01 — the hook: 40 min of editing; inside the crack, cut, cut, cut</title></head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="s01" data-width="1080" data-height="1920">
+        <style>
+          #root { position: absolute; inset: 0; overflow: hidden; }
+          /* the hook, already on screen at frame 0 (it is the thumbnail) */
+          #h-l1 { top: 206px; font-size: 72px; }
+          #h-l2 { top: 278px; font-size: 168px; }
+          #h-l2 .k { color: #ffe14d; }
+          #h-l3 { top: 456px; font-size: 62px; }
+          #h-shine { position: absolute; left: 0; top: 278px; width: 1080px; height: 180px; overflow: hidden; pointer-events: none; }
+          #h-shine i { position: absolute; left: -260px; top: 0; width: 180px; height: 180px; background: linear-gradient(100deg, rgba(255,255,255,0) 20%, rgba(255,255,255,0.75) 50%, rgba(255,255,255,0) 80%); mix-blend-mode: soft-light; }
+          /* inside the crack: walls of ice, three clips being cut by hand */
+          #h-cave { position: absolute; inset: 0; opacity: 0; background: radial-gradient(70% 55% at 50% 50%, #4a98f2 0%, #1b5fc8 52%, #0b2f73 100%); }
+          #h-cave svg.wall { position: absolute; top: -40px; height: 2000px; width: 560px; overflow: visible; }
+          #h-wl { left: -60px; } #h-wr { right: -60px; }
+          .h-clip { position: absolute; width: 260px; height: 462px; }
+          .h-half { position: absolute; inset: 0; border-radius: 24px; overflow: hidden; border: 8px solid #f6faff; box-shadow: 0 24px 50px rgba(3, 18, 60, 0.45); background: #0a0d14; }
+          .h-half img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; }
+          .h-half.a { clip-path: polygon(0 0, 100% 0, 100% 38%, 0 62%); }
+          .h-half.b { clip-path: polygon(0 62%, 100% 38%, 100% 100%, 0 100%); }
+          .h-slash { position: absolute; left: -30px; top: 0; width: 320px; height: 462px; overflow: visible; }
+          .h-slash line { stroke: #ffffff; stroke-width: 10; stroke-linecap: round; }
+          #h-c1 { left: 150px; top: 760px; } #h-c2 { left: 410px; top: 700px; } #h-c3 { left: 670px; top: 780px; }
+          #h-cut { top: 430px; font-size: 170px; }
+          #h-light { position: absolute; left: 540px; top: 0; width: 0; height: 1920px; background: #ffffff; box-shadow: 0 0 120px 60px #ffffff; opacity: 0; }
+        </style>
+        <div id="h-cave" data-layout-allow-overflow>
+          <svg class="wall" id="h-wl" viewBox="0 0 560 2000" aria-hidden="true"><path d="M0 0 L330 0 L250 180 L380 330 L260 520 L410 700 L300 880 L430 1060 L290 1250 L400 1430 L270 1610 L360 1800 L300 2000 L0 2000 Z" fill="#cfe6ff" /><path d="M0 0 L250 0 L180 200 L300 360 L190 540 L320 720 L220 900 L340 1080 L210 1270 L310 1450 L200 1630 L280 1820 L220 2000 L0 2000 Z" fill="#9fcaf6" /></svg>
+          <svg class="wall" id="h-wr" viewBox="0 0 560 2000" aria-hidden="true"><path d="M560 0 L230 0 L310 160 L170 340 L300 510 L150 690 L270 870 L140 1050 L280 1240 L160 1420 L290 1600 L190 1790 L260 2000 L560 2000 Z" fill="#cfe6ff" /><path d="M560 0 L310 0 L380 190 L260 350 L370 530 L240 710 L340 890 L220 1070 L350 1260 L250 1440 L360 1620 L280 1810 L340 2000 L560 2000 Z" fill="#9fcaf6" /></svg>
+          <div class="h-clip" id="h-c1"><div class="h-half a"><img src="assets/thumbs/p05.jpg?half=top" alt="" /></div><div class="h-half b"><img src="assets/thumbs/p05.jpg?half=bottom" alt="" /></div><svg class="h-slash" viewBox="-30 0 320 462"><line x1="-20" y1="300" x2="280" y2="160" /></svg></div>
+          <div class="h-clip" id="h-c2"><div class="h-half a"><img src="assets/thumbs/p12.jpg?half=top" alt="" /></div><div class="h-half b"><img src="assets/thumbs/p12.jpg?half=bottom" alt="" /></div><svg class="h-slash" viewBox="-30 0 320 462"><line x1="-20" y1="300" x2="280" y2="160" /></svg></div>
+          <div class="h-clip" id="h-c3"><div class="h-half a"><img src="assets/thumbs/p19.jpg?half=top" alt="" /></div><div class="h-half b"><img src="assets/thumbs/p19.jpg?half=bottom" alt="" /></div><svg class="h-slash" viewBox="-30 0 320 462"><line x1="-20" y1="300" x2="280" y2="160" /></svg></div>
+          <div class="kt" id="h-cut"><span class="w k" id="h-cutw">CUT.</span></div>
+          <div id="h-light"></div>
+        </div>
+        <div id="h-txt">
+          <div class="kt" id="h-l1"><span class="w">me spending</span></div>
+          <div class="kt" id="h-l2"><span class="w k">40 MIN</span></div>
+          <div id="h-shine"><i></i></div>
+          <div class="kt" id="h-l3"><span class="w">editing a 15 sec snippet</span></div>
+        </div>
+        <script>
+          (function () {
+            var S0 = 0, D = 3.62, BT = window.BEAT;
+            function at(ft) { return ft - S0; }
+            var tl = gsap.timeline({ paused: true });
+            // the hook holds still (frame 0 is the thumbnail); a frost shine runs over "40 MIN"
+            tl.fromTo("#h-shine i", { x: 0 }, { x: 1500, duration: 0.7, ease: "power2.inOut", immediateRender: false }, 0.45);
+            tl.to("#h-l1, #h-l2, #h-l3", { opacity: 0, filter: "blur(12px)", scale: 1.08, duration: 0.16, ease: "power2.in", stagger: 0.03 }, at(BT.crack) - 0.05);
+            // the dive lands inside the crack
+            tl.fromTo("#h-cave", { opacity: 0, scale: 0.3 }, { opacity: 1, scale: 1, duration: 0.2, ease: "power3.out" }, 1.95);
+            tl.fromTo("#h-wl", { x: -120 }, { x: 0, duration: 0.5, ease: "expo.out", immediateRender: false }, 1.95);
+            tl.fromTo("#h-wr", { x: 120 }, { x: 0, duration: 0.5, ease: "expo.out", immediateRender: false }, 1.95);
+            [["#h-c1", -60, 0], ["#h-c2", 0, 0.05], ["#h-c3", 60, 0.1]].forEach(function (c) {
+              tl.fromTo(c[0], { opacity: 0, y: -500, rotation: c[1] > 0 ? 30 : -30 }, { opacity: 1, y: 0, rotation: c[1] / 8, duration: 0.42, ease: "back.out(1.4)" }, 2.0 + c[2]);
+            });
+            // cut, cut, cut: on the three beats before the drop, a slash, then the two halves fall apart
+            var words = ["CUT.", "CUT.", "CUT…"];
+            ["#h-c1", "#h-c2", "#h-c3"].forEach(function (c, i) {
+              var t = at(BT.cuts[i]);
+              tl.fromTo(c + " .h-slash line", { strokeDasharray: 340, strokeDashoffset: 340 }, { strokeDashoffset: 0, duration: 0.06, ease: "none", immediateRender: false }, t - 0.05);
+              tl.to(c + " .h-slash", { opacity: 0, duration: 0.12 }, t + 0.06);
+              tl.to(c + " .h-half.a", { x: -50, y: -40, rotation: -14, duration: 0.5, ease: "power2.out" }, t + 0.02);
+              tl.to(c + " .h-half.b", { x: 60, y: 300, rotation: 22, opacity: 0.2, duration: 0.55, ease: "power2.in" }, t + 0.02);
+              tl.set("#h-cutw", { textContent: words[i] }, t - 0.01);
+              tl.fromTo("#h-cut", { opacity: 0, scale: 1.9, rotation: [-6, 5, -3][i], filter: "blur(10px)" }, { opacity: 1, scale: 1, rotation: [-3, 3, -2][i], filter: "blur(0px)", duration: 0.16, ease: "expo.out", immediateRender: false }, t - 0.02);
+            });
+            // the crack opens: the walls part on the downbeat and the light pours in
+            tl.to("#h-wl", { x: -520, duration: 0.22, ease: "power3.in" }, at(BT.boom) - 0.2);
+            tl.to("#h-wr", { x: 520, duration: 0.22, ease: "power3.in" }, at(BT.boom) - 0.2);
+            tl.fromTo("#h-light", { opacity: 0, width: 0, x: 0 }, { opacity: 1, width: 1080, x: -540, duration: 0.2, ease: "power3.in", immediateRender: false }, at(BT.boom) - 0.18);
+            tl.to("#h-cut, .h-clip", { opacity: 0, duration: 0.12 }, at(BT.boom) - 0.16);
+            tl.to("#h-cave", { opacity: 0, duration: 0.05 }, at(BT.boom) + 0.01);   // the next scene's flash covers the swap to the explosion
+            window.__timelines["s01"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

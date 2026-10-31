@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><title>s06 — 3. it cuts on the beat (Stalak's real cuts, one per beat)</title></head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="s06" data-width="1080" data-height="1920">
+        <style>
+          #root { position: absolute; inset: 0; overflow: hidden; }
+          .kt .n { display: inline-flex; align-items: center; justify-content: center; width: 90px; height: 90px; border-radius: 50%; background: #ffe14d; color: #0a0d14;
+            border: 6px solid #0a0d14; box-sizing: border-box; font: 400 58px/1 "Lilita One", sans-serif; vertical-align: middle; margin-right: 18px; position: relative; top: -6px; }
+          #b-t1 { top: 214px; font-size: 72px; }
+          #b-t2 { top: 300px; font-size: 156px; } #b-t2 .k { color: #ffe14d; }
+          /* the timeline, laid down in perspective like a table; the camera slides along it */
+          #b-plane { position: absolute; left: 0; top: 690px; width: 1080px; height: 520px; }
+          #b-cam { position: absolute; left: 0; top: 120px; width: 2600px; height: 300px; }
+          #b-bar { position: absolute; left: 140px; top: 60px; width: 2300px; height: 170px; border-radius: 26px; background: #0a0d14; border: 6px solid #0a0d14; box-sizing: border-box; overflow: hidden;
+            box-shadow: 0 14px 0 rgba(10, 13, 20, 0.9), 0 50px 80px rgba(3, 18, 60, 0.5); }
+          #b-raw { position: absolute; inset: 0; background: repeating-linear-gradient(90deg, #5e7fae 0 6px, #6f8fbc 6px 40px); }
+          .b-sg { position: absolute; top: 0; bottom: 0; opacity: 0; }
+          .b-sg b { position: absolute; left: 14px; top: 46px; font: 400 64px/1 "Lilita One", sans-serif; color: #ffffff; text-shadow: 0 4px 0 rgba(10,13,20,0.5); }
+          .b-blade { position: absolute; top: -160px; width: 16px; height: 330px; margin-left: -8px; border-radius: 8px; background: #ffffff; box-shadow: 0 0 30px 10px rgba(207, 230, 255, 0.95); opacity: 0; }
+          .b-sh { position: absolute; width: 0; height: 0; overflow: visible; }
+          .b-sh i { position: absolute; left: -9px; top: -9px; width: 18px; height: 26px; background: #f6faff; clip-path: polygon(50% 0, 100% 100%, 0 70%); opacity: 0; }
+          #b-ph { position: absolute; left: 140px; top: 30px; width: 8px; height: 230px; margin-left: -4px; background: #ff6b9a; border-radius: 4px; box-shadow: 0 0 0 3px #0a0d14; }
+          #b-ph::before { content: ""; position: absolute; left: -16px; top: -24px; width: 40px; height: 40px; border-radius: 50%; background: #ff6b9a; border: 5px solid #0a0d14; box-sizing: border-box; }
+        </style>
+        <div class="kt" id="b-t1"><span class="w n">3</span><span class="w">it</span> <span class="w">cuts</span> <span class="w">on</span> <span class="w">the</span></div>
+        <div class="kt" id="b-t2"><span class="w k">BEAT.</span></div>
+        <div id="b-plane" data-layout-allow-overflow>
+          <div id="b-cam">
+            <div id="b-bar"><div id="b-raw"></div>
+              <div class="b-sg" id="b-s0" style="left:0px; width:153px; background:#3a6fe0"><b>2</b></div>
+              <div class="b-sg" id="b-s1" style="left:157px; width:176px; background:#d6336c"><b>1</b></div>
+              <div class="b-sg" id="b-s2" style="left:337px; width:176px; background:#e0952c"><b>3</b></div>
+              <div class="b-sg" id="b-s3" style="left:517px; width:355px; background:#3a6fe0"><b>2</b></div>
+              <div class="b-sg" id="b-s4" style="left:876px; width:175px; background:#d6336c"><b>1</b></div>
+              <div class="b-sg" id="b-s5" style="left:1055px; width:176px; background:#e0952c"><b>3</b></div>
+              <div class="b-sg" id="b-s6" style="left:1235px; width:715px; background:#d6336c"><b>1</b></div>
+            </div>
+            <div class="b-blade" id="b-k1" style="left:297px"></div><div class="b-blade" id="b-k2" style="left:477px"></div><div class="b-blade" id="b-k3" style="left:657px"></div>
+            <div class="b-blade" id="b-k4" style="left:1016px"></div><div class="b-blade" id="b-k5" style="left:1195px"></div><div class="b-blade" id="b-k6" style="left:1375px"></div>
+            <div class="b-sh" id="b-x1" style="left:297px; top:145px"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="b-sh" id="b-x2" style="left:477px; top:145px"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="b-sh" id="b-x3" style="left:657px; top:145px"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="b-sh" id="b-x4" style="left:1016px; top:145px"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="b-sh" id="b-x5" style="left:1195px; top:145px"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="b-sh" id="b-x6" style="left:1375px; top:145px"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div id="b-ph"></div>
+          </div>
+        </div>
+        <script>
+          (function () {
+            var S0 = 10.95, BT = window.BEAT;
+            function at(ft) { return ft - S0; }
+            var tl = gsap.timeline({ paused: true });
+            // the cards' row becomes the timeline: it lands flat, in perspective
+            tl.fromTo("#b-plane", { opacity: 0, rotationX: 74, y: -120, scale: 0.8, transformPerspective: 1500, transformOrigin: "50% 40%" },
+              { opacity: 1, rotationX: 46, y: 0, scale: 1, transformPerspective: 1500, duration: 0.45, ease: "expo.out" }, at(BT.timeline) - 0.12);
+            KIT.words(tl, "#b-t1", at(BT.timeline) + 0.02, 0.07);
+            // the bass comes back: one cut per beat, an ice blade, the shot takes its take's colour, shards fly
+            var CUTS = [297, 477, 657, 1016, 1195, 1375];
+            KIT.slam(tl, "#b-t2 .w", at(BT.bassIn) - 0.02);
+            tl.set("#b-s0", { opacity: 1 }, at(BT.bassIn) - 0.04);
+            CUTS.forEach(function (x, i) {
+              var t = at(BT.beat(22 + i)), k = "#b-k" + (i + 1), sh = "#b-x" + (i + 1);
+              tl.fromTo(k, { opacity: 1, y: -260, scaleY: 1.3 }, { y: 0, scaleY: 1, duration: 0.07, ease: "power3.in", immediateRender: false }, t - 0.07);
+              tl.to(k, { opacity: 0, scaleX: 3, duration: 0.18, ease: "power2.out" }, t + 0.02);
+              tl.set("#b-s" + (i + 1), { opacity: 1 }, t);
+              tl.fromTo("#b-s" + (i + 1), { filter: "brightness(2.2)" }, { filter: "brightness(1)", duration: 0.22, ease: "power2.out", immediateRender: false }, t);
+              document.querySelectorAll(sh + " i").forEach(function (p, j) {
+                var a = (j / 6) * Math.PI * 2 + i, d = 90 + (j % 3) * 40;
+                tl.fromTo(p, { opacity: 1, x: 0, y: 0, rotation: 0, scale: 1 }, { opacity: 0, x: Math.cos(a) * d, y: Math.sin(a) * d - 40, rotation: 200 + j * 40, scale: 0.4, duration: 0.42, ease: "power2.out", immediateRender: false }, t);
+              });
+              // the camera follows the cuts along the timeline; the playhead rides with them
+              tl.to("#b-cam", { x: -Math.max(0, x - 560), duration: 0.3, ease: "power2.out" }, t);
+              tl.to("#b-ph", { x: x - 140, duration: 0.3, ease: "power2.out" }, t);
+            });
+            // into the video: the camera glides down to the playhead, which opens into the finished snippet
+            KIT.out(tl, "#b-t1, #b-t2", at(BT.done) - 0.3, 0.18);
+            tl.to("#b-plane", { rotationX: 0, scale: 2.6, y: 260, opacity: 0, filter: "blur(6px)", duration: 0.36, ease: "power3.in" }, at(BT.done) - 0.34);
+            window.__timelines["s06"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

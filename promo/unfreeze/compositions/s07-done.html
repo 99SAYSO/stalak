@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><title>s07 — your snippet. DONE. (Stalak's real edit, on the beat, with the lyrics)</title></head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="s07" data-width="1080" data-height="1920">
+        <style>
+          #root { position: absolute; inset: 0; overflow: hidden; }
+          #d-t1 { top: 206px; font-size: 72px; } #d-t1 .k { font-size: 104px; color: #ffe14d; }
+          #d-vid { position: absolute; left: 260px; top: 330px; width: 560px; height: 996px; box-sizing: border-box; border-radius: 46px; overflow: hidden; border: 8px solid #f6faff; background: #0a0d14;
+            box-shadow: 0 60px 120px rgba(3, 18, 60, 0.55); }
+          #d-vid video { position: absolute; left: 0; top: 0; width: 544px; height: 980px; object-fit: cover; }
+          /* the lyric as Stalak draws it on the video (Classic, middle) */
+          #d-ly { position: absolute; left: 268px; top: 768px; width: 544px; text-align: center; font: 800 44px/1.1 "TikTok Sans", "Rubik", sans-serif; color: #ffffff;
+            -webkit-text-stroke: 3px #111111; paint-order: stroke fill; text-shadow: 0 4px 12px rgba(0, 0, 0, 0.35); opacity: 0; white-space: nowrap; }
+        </style>
+        <div id="d-vid"><!--MONTAGE--><video id="d-m5" class="clip" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="0.000" data-duration="0.302" data-media-start="4.954" muted playsinline></video><video id="d-m6" class="clip" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="0.302" data-duration="3.057" data-media-start="5.256" muted playsinline></video><video id="d-m7" class="clip" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="3.359" data-duration="0.291" data-media-start="8.313" muted playsinline></video><!--/MONTAGE--></div>
+        <div id="d-ly">After all this time, baby</div>
+        <div class="kt" id="d-t1"><span class="w">your</span> <span class="w">snippet.</span> <span class="w k">DONE.</span></div>
+        <script>
+          (function () {
+            var S0 = 13.9, BT = window.BEAT;
+            function at(ft) { return ft - S0; }
+            var tl = gsap.timeline({ paused: true });
+            // the playhead opens into the finished video: it grows from a point to the whole frame
+            tl.fromTo("#d-vid", { opacity: 0, scale: 0.06, y: 120, borderRadius: 200 }, { opacity: 1, scale: 1, y: 0, borderRadius: 46, duration: 0.42, ease: "expo.out" }, at(BT.done) - 0.2);
+            KIT.words(tl, "#d-t1", at(BT.done) + 0.1, 0.09);
+            // the lyric shows when he sings it (0:05.83 into the part)
+            tl.set("#d-ly", { opacity: 1 }, at(5.83 - BT.OFF));
+            // shuffle: the video shrinks into the middle phone of the next scene
+            tl.to("#d-t1", { opacity: 0, filter: "blur(10px)", duration: 0.16 }, at(BT.shuffle) - 0.2);
+            tl.to("#d-vid, #d-ly", { scale: 0.385, y: 64, duration: 0.3, ease: "power3.inOut" }, at(BT.shuffle) - 0.16);
+            window.__timelines["s07"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

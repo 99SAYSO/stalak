@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><title>s02 — the drop: flash, STALAK</title></head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="s02" data-width="1080" data-height="1920">
+        <style>
+          #root { position: absolute; inset: 0; overflow: hidden; }
+          #l-flash { position: absolute; inset: 0; background: #ffffff; opacity: 0; }
+          #l-word { position: absolute; left: 210px; top: 228px; width: 660px; height: 291px; filter: drop-shadow(0 26px 40px rgba(3, 20, 70, 0.4)); }
+          #l-sheen { position: absolute; left: 210px; top: 228px; width: 660px; height: 291px; overflow: hidden;
+            -webkit-mask: url("assets/brand/wordmark.svg") center / 100% 100% no-repeat; mask: url("assets/brand/wordmark.svg") center / 100% 100% no-repeat; }
+          #l-sheen i { position: absolute; left: -240px; top: 0; width: 200px; height: 291px; background: linear-gradient(100deg, rgba(255,255,255,0) 15%, rgba(255,255,255,0.95) 50%, rgba(255,255,255,0) 85%); }
+        </style>
+        <div id="l-flash"></div>
+        <img id="l-word" src="assets/brand/wordmark.svg" alt="Stalak" />
+        <div id="l-sheen"><i></i></div>
+        <script>
+          (function () {
+            var S0 = 3.40, BT = window.BEAT;
+            function at(ft) { return ft - S0; }
+            var tl = gsap.timeline({ paused: true });
+            // the white of the opening crack, gone in a few frames to show the explosion
+            tl.fromTo("#l-flash", { opacity: 0 }, { opacity: 1, duration: 0.06, ease: "none" }, at(BT.boom) - 0.05);
+            tl.to("#l-flash", { opacity: 0, duration: 0.2, ease: "power2.out" }, at(BT.boom) + 0.03);
+            // STALAK slams in over the mascot as she spins out of the ice
+            tl.fromTo("#l-word, #l-sheen", { opacity: 0, scale: 1.65, filter: "blur(14px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.3, ease: "expo.out" }, at(BT.boom) + 0.08);
+            tl.fromTo("#l-sheen i", { x: 0 }, { x: 1150, duration: 0.55, ease: "power2.inOut", immediateRender: false }, at(BT.boom) + 0.42);
+            // it leaves as the shards draw the phone
+            tl.to("#l-word, #l-sheen", { opacity: 0, scale: 0.82, y: -40, filter: "blur(12px)", duration: 0.22, ease: "power2.in" }, at(BT.open) - 0.3);
+            window.__timelines["s02"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

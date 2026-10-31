@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><title>s04 — 1. drop your song (the file lands as the bass drops out)</title></head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="s04" data-width="1080" data-height="1920">
+        <style>
+          #root { position: absolute; inset: 0; overflow: hidden; }
+          .kt .n { display: inline-flex; align-items: center; justify-content: center; width: 96px; height: 96px; border-radius: 50%; background: #ffe14d; color: #0a0d14;
+            border: 6px solid #0a0d14; box-sizing: border-box; font: 400 62px/1 "Lilita One", sans-serif; vertical-align: middle; margin-right: 18px; position: relative; top: -6px; }
+          #g-t1 { top: 214px; font-size: 76px; }
+          #g-zone { left: 80px; top: 640px; width: 828px; height: 408px; }
+          #g-zone .dz { position: absolute; left: 26px; top: 26px; right: 26px; bottom: 26px; border-radius: 24px; border: 5px dashed #2f6fd6; background: #eef5ff; }
+          #g-zone .ti { position: absolute; left: 0; right: 0; top: 190px; text-align: center; font: 400 50px/1 "Lilita One", sans-serif; color: #0a0d14; }
+          #g-zone .su { position: absolute; left: 0; right: 0; top: 256px; text-align: center; font: 500 28px/1.2 "Rubik", sans-serif; color: #3a4a66; }
+          #g-zone .ic { position: absolute; left: 372px; top: 74px; width: 84px; height: 84px; }
+          #g-file { position: absolute; left: 270px; top: 470px; width: 540px; height: 150px; box-sizing: border-box; border-radius: 30px; background: #f6faff; border: 6px solid #0a0d14;
+            box-shadow: 0 12px 0 #0a0d14, 0 40px 70px rgba(3, 18, 60, 0.4); display: flex; align-items: center; gap: 22px; padding: 0 28px; }
+          #g-file .nt { width: 92px; height: 92px; border-radius: 22px; background: #1f6fd6; display: flex; align-items: center; justify-content: center; flex: none; }
+          #g-file .nm { font: 400 50px/1.05 "Lilita One", sans-serif; color: #0a0d14; }
+          #g-file .nm small { display: block; font: 600 26px/1 "Rubik", sans-serif; color: #3a5f9a; margin-top: 6px; }
+          /* the loaded song: its waveform unrolls like a ribbon of ice */
+          #g-rib { position: absolute; left: 80px; top: 690px; width: 840px; height: 300px; }
+          #g-rib .hd { position: absolute; left: 30px; top: 0; font: 400 46px/1 "Lilita One", sans-serif; color: #f6faff; text-shadow: 0 5px 0 #0a0d14; }
+          #g-rib .bpm { position: absolute; right: 30px; top: 8px; font: 700 32px/1 "Rubik", sans-serif; color: #f6faff; text-shadow: 0 4px 0 #0a0d14; }
+          #g-wv { position: absolute; left: 0; top: 70px; width: 840px; height: 210px; border-radius: 30px; background: linear-gradient(180deg, #f6faff, #d9e9ff); border: 6px solid #0a0d14; box-sizing: border-box; overflow: hidden;
+            box-shadow: 0 12px 0 #0a0d14, 0 40px 70px rgba(3, 18, 60, 0.35); }
+          #g-wv svg { position: absolute; left: 24px; top: 24px; width: 780px; height: 150px; }
+          #g-wv rect { fill: #2f6fd6; }
+          #g-cover { position: absolute; left: 24px; top: 0; bottom: 0; right: 0; background: linear-gradient(180deg, #f6faff, #d9e9ff); transform-origin: 100% 50%; }
+        </style>
+        <div class="kt" id="g-t1"><span class="w n">1</span><span class="w">drop</span> <span class="w">your</span> <span class="w">song</span></div>
+        <div class="appcard" id="g-zone"><div class="dz"></div>
+          <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 20h14" fill="none" stroke="#2f6fd6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          <div class="ti">Import your music</div><div class="su">MP3, WAV, M4A, or a video: we use its sound</div></div>
+        <div id="g-rib"><div class="hd">neva die</div><div class="bpm">157.0 BPM</div>
+          <div id="g-wv"><svg viewBox="0 0 780 150" preserveAspectRatio="none" aria-hidden="true" id="g-bars"></svg><div id="g-cover"></div></div></div>
+        <div id="g-file"><div class="nt"><svg viewBox="0 0 24 24" width="54" height="54" aria-hidden="true"><path d="M9 18V5l11-2v13" fill="none" stroke="#f6faff" stroke-width="2.4" stroke-linejoin="round" /><circle cx="6.5" cy="18" r="3" fill="#f6faff" /><circle cx="17.5" cy="16" r="3" fill="#f6faff" /></svg></div>
+          <div class="nm">neva die<small>your song · MP3</small></div></div>
+        <script>
+          (function () {
+            var S0 = 8.0, BT = window.BEAT;
+            function at(ft) { return ft - S0; }
+            // the waveform's bars (a fixed shape, drawn once)
+            var svg = document.getElementById("g-bars"), h = "", seed = 31;
+            for (var i = 0; i < 60; i++) { seed = (seed * 16807) % 2147483647; var r = seed / 2147483647, amp = 0.35 + 0.65 * Math.abs(Math.sin(i * 0.47) * 0.7 + r * 0.5); var bh = Math.min(146, 30 + amp * 116);
+              h += '<rect x="' + (i * 13 + 1) + '" y="' + ((150 - bh) / 2).toFixed(1) + '" width="8" height="' + bh.toFixed(1) + '" rx="4" />'; }
+            svg.innerHTML = h;
+            var tl = gsap.timeline({ paused: true });
+            KIT.words(tl, "#g-t1", at(BT.song) + 0.04, 0.07);
+            KIT.pop(tl, "#g-zone", at(BT.song) + 0.0, { y: 300, rotationX: 40 });
+            // the file falls in and lands on the bar where the bass drops out
+            tl.fromTo("#g-file", { opacity: 0, y: -700, rotation: -14, rotationX: 50, transformPerspective: 1400 }, { opacity: 1, y: 290, rotation: 3, rotationX: 0, transformPerspective: 1400, duration: at(BT.bassOut) - at(BT.song) - 0.12, ease: "power3.in" }, at(BT.song) + 0.12);
+            tl.to("#g-file", { scaleY: 0.82, scaleX: 1.08, duration: 0.06, ease: "power1.out" }, at(BT.bassOut));
+            tl.to("#g-file", { scaleY: 1, scaleX: 1, opacity: 0, y: 330, duration: 0.18, ease: "power2.in" }, at(BT.bassOut) + 0.06);
+            // the zone turns into the loaded song, the ribbon unrolls left to right
+            tl.to("#g-zone", { opacity: 0, scale: 0.94, duration: 0.14 }, at(BT.bassOut) + 0.04);
+            tl.fromTo("#g-rib", { opacity: 0, rotationX: 55, y: 40, transformPerspective: 1200, transformOrigin: "50% 100%" }, { opacity: 1, rotationX: 14, y: 0, transformPerspective: 1200, duration: 0.4, ease: "expo.out" }, at(BT.bassOut) + 0.06);
+            tl.fromTo("#g-cover", { scaleX: 1 }, { scaleX: 0, duration: 0.5, ease: "power2.inOut", immediateRender: false }, at(BT.bassOut) + 0.12);
+            tl.to("#g-rib", { rotationX: 0, duration: 0.6, ease: "sine.inOut" }, at(BT.bassOut) + 0.46);
+            // the ribbon curls away into the next step's cards
+            KIT.out(tl, "#g-t1", at(BT.takes) - 0.24, 0.18);
+            tl.to("#g-rib", { scale: 0.32, y: 120, rotation: -8, opacity: 0, filter: "blur(6px)", duration: 0.26, ease: "power3.in" }, at(BT.takes) - 0.24);
+            window.__timelines["s04"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

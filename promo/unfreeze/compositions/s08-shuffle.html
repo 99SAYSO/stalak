@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><title>s08 — hit Shuffle: a brand-new edit (three versions at once)</title></head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="s08" data-width="1080" data-height="1920">
+        <style>
+          #root { position: absolute; inset: 0; overflow: hidden; }
+          #u-t1 { top: 206px; font-size: 72px; } #u-t1 .k { font-size: 104px; color: #ffe14d; }
+          #u-t2 { top: 330px; font-size: 60px; } #u-t2 .l { font-weight: 400; }
+          .u-ph { top: 254px; }
+          .u-ph .scr video { position: absolute; left: 0; top: 0; width: 560px; height: 1212px; object-fit: cover; }
+          .u-ph .ly { position: absolute; left: 0; width: 560px; top: 560px; text-align: center; font: 800 54px/1.1 "TikTok Sans", "Rubik", sans-serif; color: #ffffff;
+            -webkit-text-stroke: 4px #111111; paint-order: stroke fill; opacity: 0; white-space: nowrap; }
+          #u-p1 { left: -28px; } #u-p2 { left: 240px; } #u-p3 { left: 508px; }
+          #u-btn { position: absolute; left: 390px; top: 1196px; width: 300px; height: 96px; box-sizing: border-box; border-radius: 30px; background: linear-gradient(#2a2f3a, #0a0d14 60%); border: 5px solid #0a0d14;
+            box-shadow: 0 12px 0 #000; display: flex; align-items: center; justify-content: center; gap: 14px; font: 400 46px/1 "Lilita One", sans-serif; color: #f6faff; }
+          #u-btn svg { width: 40px; height: 40px; }
+          #u-ring { position: absolute; left: 470px; top: 1174px; width: 140px; height: 140px; border-radius: 50%; border: 9px solid #f6faff; box-sizing: border-box; opacity: 0; }
+        </style>
+        <div class="kt" id="u-t1"><span class="w">hit</span> <span class="w k">SHUFFLE</span></div>
+        <div class="kt" id="u-t2"><span class="w l">→</span> <span class="w l">a</span> <span class="w l">brand-new</span> <span class="w l">edit</span></div>
+        <div class="phone u-ph" id="u-p1"><div class="body"></div><div class="bez"></div><div class="scr"><!--V1--><video id="u-v1" class="clip" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="0.000" data-duration="1.950" data-media-start="8.154" muted playsinline></video><!--/V1--><div class="ly">I gotta bounce</div></div><div class="isl"></div></div>
+        <div class="phone u-ph" id="u-p3"><div class="body"></div><div class="bez"></div><div class="scr"><!--V3--><video id="u-v3" class="clip" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="0.000" data-duration="1.950" data-media-start="8.154" muted playsinline></video><!--/V3--><div class="ly">I gotta bounce</div></div><div class="isl"></div></div>
+        <div class="phone u-ph" id="u-p2"><div class="body"></div><div class="bez"></div><div class="scr"><!--V2--><video id="u-v2" class="clip" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="0.000" data-duration="1.950" data-media-start="8.154" muted playsinline></video><!--/V2--><div class="ly">I gotta bounce</div></div><div class="isl"></div></div>
+        <div id="u-btn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5" fill="none" stroke="#f6faff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg>Shuffle</div>
+        <div id="u-ring"></div>
+        <script>
+          (function () {
+            var S0 = 17.1, BT = window.BEAT;
+            function at(ft) { return ft - S0; }
+            var tl = gsap.timeline({ paused: true });
+            // the finished video becomes the middle phone; two other versions slide out from behind it
+            tl.fromTo("#u-p2", { opacity: 0, scale: 0.4, transformPerspective: 1600 }, { opacity: 1, scale: 0.4, transformPerspective: 1600, duration: 0.08 }, at(BT.shuffle) + 0.12);
+            tl.fromTo("#u-p1", { opacity: 0, scale: 0.36, x: 268, rotationY: 0, transformPerspective: 1600 }, { opacity: 1, scale: 0.4, x: 0, rotationY: 24, transformPerspective: 1600, duration: 0.42, ease: "expo.out" }, at(BT.shuffle) + 0.16);
+            tl.fromTo("#u-p3", { opacity: 0, scale: 0.36, x: -268, rotationY: 0, transformPerspective: 1600 }, { opacity: 1, scale: 0.4, x: 0, rotationY: -24, transformPerspective: 1600, duration: 0.42, ease: "expo.out" }, at(BT.shuffle) + 0.2);
+            KIT.pop(tl, "#u-btn", at(BT.shuffle) - 0.05, { y: 160 });
+            KIT.tap(tl, "#u-ring", at(BT.shuffle) + 0.08);
+            tl.fromTo("#u-btn", { scale: 1 }, { scale: 0.92, duration: 0.07, yoyo: true, repeat: 1, immediateRender: false }, at(BT.shuffle) + 0.08);
+            KIT.words(tl, "#u-t1", at(BT.shuffle) + 0.02, 0.08);
+            KIT.words(tl, "#u-t2", at(BT.shuffle) + 0.3, 0.07);
+            // the same lyric on every version, when he sings it (0:09.50 into the part)
+            tl.set(".u-ph .ly", { opacity: 1 }, at(9.5 - BT.OFF));
+            // the phones spread apart and the messages come up between them
+            KIT.out(tl, "#u-t1, #u-t2", at(BT.reviews) - 0.24, 0.16);
+            tl.to("#u-p1", { x: -420, rotationY: 50, opacity: 0, duration: 0.3, ease: "power3.in" }, at(BT.reviews) - 0.26);
+            tl.to("#u-p3", { x: 420, rotationY: -50, opacity: 0, duration: 0.3, ease: "power3.in" }, at(BT.reviews) - 0.26);
+            tl.to("#u-p2, #u-btn", { y: 420, scale: 0.3, opacity: 0, duration: 0.3, ease: "power3.in" }, at(BT.reviews) - 0.24);
+            window.__timelines["s08"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

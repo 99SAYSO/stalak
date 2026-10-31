@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>stage — the 3D ice world, the ice block and the 3D mascot</title>
+  </head>
+  <body>
+    <style>
+      #st-root { position: absolute; inset: 0; overflow: hidden; background: radial-gradient(120% 80% at 50% 34%, #3b8ff2 0%, #1f6fd6 48%, #0e3f8f 100%); }
+      #st-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; display: block; }
+    </style>
+    <div id="st-root" data-composition-id="stage" data-start="0" data-duration="28" data-width="1080" data-height="1920">
+      <canvas id="st-canvas" class="clip" data-start="0" data-duration="28" data-track-index="1" width="1080" height="1920"></canvas>
+    </div>
+    <script>
+      // One linear clock drives the whole 3D world: every frame is render(t), t in film seconds.
+      (function () {
+        var clock = { t: 0 }, host = { clock: clock, render: null };
+        window.__stage = host;
+        window.__hf = window.__hf || {};
+        window.__hf.buildReady = window.__hf.buildReady || {};
+        window.__hf.buildReady["stage"] = new Promise(function (resolve) { host.ready = resolve; });
+        var D = 28;
+        var tl = gsap.timeline({ paused: true });
+        tl.to(clock, { t: D, duration: D, ease: "none", onUpdate: function () { if (host.render) host.render(clock.t); } });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["stage"] = tl;
+      })();
+    </script>
+    <script type="module">
+      import * as THREE from "./assets/vendor/three/three.module.min.js";
+      import { GLTFLoader } from "./assets/vendor/three/GLTFLoader.js";
+      import { RoomEnvironment } from "./assets/vendor/three/RoomEnvironment.js";
+      import { RoundedBoxGeometry } from "./assets/vendor/three/RoundedBoxGeometry.js";
+
+      const host = window.__stage, BT = window.BEAT;
+      const W = 1080, H = 1920;
+      const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+      const lerp = (a, b, k) => a + (b - a) * k;
+      const seg = (t, a, b) => clamp((t - a) / (b - a), 0, 1);
+      const eIn3 = (k) => k * k * k, eOut3 = (k) => 1 - Math.pow(1 - k, 3), eIO2 = (k) => (k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2);
+      const eIO3 = (k) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
+      const eOutExpo = (k) => (k >= 1 ? 1 : 1 - Math.pow(2, -10 * k));
+      const eBack = (k) => { const c1 = 1.6, c3 = c1 + 1; return 1 + c3 * Math.pow(k - 1, 3) + c1 * Math.pow(k - 1, 2); };
+      function rng(seed) { return function () { seed |= 0; seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+
+      // ---------- renderer, light, ice materials ----------
+      const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("st-canvas"), antialias: true, alpha: true, preserveDrawingBuffer: true });
+      renderer.setPixelRatio(1);
+      renderer.setSize(W, H, false);
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.05;
+      renderer.setClearColor(0x000000, 0);
+      const scene = new THREE.Scene();
+      const pmrem = new THREE.PMREMGenerator(renderer);
+      scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+      scene.environmentIntensity = 0.55;
+      scene.fog = new THREE.Fog(0x2a78e0, 7, 24);
+      scene.add(new THREE.HemisphereLight(0xe6f3ff, 0x123f8a, 1.05));
+      const key = new THREE.DirectionalLight(0xfff1dc, 2.3); key.position.set(-3, 5, 4); scene.add(key);
+      const rim = new THREE.DirectionalLight(0xa8d8ff, 2.0); rim.position.set(3.5, 2.5, -4); scene.add(rim);
+      const camera = new THREE.PerspectiveCamera(40, W / H, 0.05, 80);
+
+      const iceMat = new THREE.MeshPhysicalMaterial({ color: 0xcfe8ff, roughness: 0.12, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.06,
+        transparent: true, opacity: 0.86, envMapIntensity: 1.3, flatShading: true });
+      const blockMat = new THREE.MeshPhysicalMaterial({ color: 0xb4dcff, roughness: 0.16, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.08,
+        transparent: true, opacity: 0.48, depthWrite: false, envMapIntensity: 1.5 });
+      const blockRimMat = new THREE.MeshBasicMaterial({ color: 0xf2f9ff, transparent: true, opacity: 0.22, side: THREE.BackSide, depthWrite: false });
+      const snowMat = new THREE.MeshStandardMaterial({ color: 0xf4f9ff, roughness: 0.65, metalness: 0, envMapIntensity: 0.7 });
+
+      // ---------- the ice world: crystals, cubes and snowballs along the camera's path ----------
+      const world = new THREE.Group(); scene.add(world);
+      const R = rng(1709), props = [];
+      const gemGeo = new THREE.IcosahedronGeometry(1, 0), cubeGeo = new RoundedBoxGeometry(1, 1, 1, 3, 0.18), ballGeo = new THREE.SphereGeometry(1, 28, 20);
+      for (let i = 0; i < 46; i++) {
+        const kind = i % 5 === 0 ? "ball" : i % 3 === 0 ? "cube" : "gem";
+        const m = new THREE.Mesh(kind === "gem" ? gemGeo : kind === "cube" ? cubeGeo : ballGeo, kind === "ball" ? snowMat : iceMat);
+        const front = i < 4, z = front ? 3.4 - i * 0.45 : -1.2 - (i - 4) * 0.55 - R() * 0.4;
+        let x = (R() * 2 - 1) * 3.0, y = 0.8 + (R() * 2 - 1) * 2.8;
+        const minX = front ? 1.75 : 0.9;
+        if (Math.abs(x) < minX) x = (x < 0 ? -1 : 1) * (minX + R() * 0.7);      // keep the middle of the picture clear for the UI
+        const s = kind === "ball" ? 0.1 + R() * 0.16 : kind === "cube" ? 0.2 + R() * 0.25 : 0.14 + R() * 0.3;
+        m.scale.set(s * (kind === "gem" ? 0.8 + R() * 0.4 : 1), s * (kind === "gem" ? 1.1 + R() * 0.9 : 1), s);
+        m.position.set(x, y, z);
+        props.push({ m, x, y, z, ax: R() * 6.28, ay: R() * 6.28, sx: (R() - 0.5) * 0.9, sy: (R() - 0.5) * 1.1, bob: R() * 6.28 });
+        world.add(m);
+      }
+
+      // ---------- the ice block, the frozen clips, the crack ----------
+      const block = new THREE.Group(); scene.add(block);
+      const BW = 1.45, BH = 1.8, BD = 1.1, BCY = 0.82;
+      const blockMesh = new THREE.Mesh(new RoundedBoxGeometry(BW, BH, BD, 4, 0.14), blockMat); blockMesh.position.y = BCY; blockMesh.renderOrder = 2;
+      const blockRim = new THREE.Mesh(new RoundedBoxGeometry(BW * 1.015, BH * 1.012, BD * 1.02, 4, 0.15), blockRimMat); blockRim.position.y = BCY; blockRim.renderOrder = 3;
+      block.add(blockMesh, blockRim);
+      // clips frozen in the ice around the mascot: real frames of the takes, white paper borders
+      const loader = new THREE.TextureLoader();
+      function clipTexture(src) {
+        const cv = document.createElement("canvas"); cv.width = 216; cv.height = 384;
+        const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace;
+        const img = new Image();
+        const done = new Promise((res) => { img.onload = () => { const c = cv.getContext("2d"); c.fillStyle = "#f6faff"; c.fillRect(0, 0, 216, 384); c.drawImage(img, 9, 9, 198, 366); tex.needsUpdate = true; res(); }; img.onerror = res; });
+        img.src = src; return { tex, done };
+      }
+      const CLIPS = [["p03", -0.55, 1.26, 0.25, -0.5, 0.35], ["p08", 0.58, 1.16, 0.2, 0.42, -0.3], ["p14", -0.6, 0.45, 0.32, 0.3, 0.6], ["p21", 0.6, 0.6, 0.3, -0.35, -0.5],
+        ["p26", 0.2, 1.38, -0.28, 0.9, 0.2], ["p11", -0.2, 0.2, -0.3, -0.7, -0.2]];
+      const clipWaits = [];
+      CLIPS.forEach((c) => {
+        const t = clipTexture("assets/thumbs/" + c[0] + ".jpg"); clipWaits.push(t.done);
+        const p = new THREE.Mesh(new THREE.PlaneGeometry(0.36, 0.64), new THREE.MeshStandardMaterial({ map: t.tex, roughness: 0.6, side: THREE.DoubleSide }));
+        p.position.set(c[1], c[2], c[3]); p.rotation.set(c[4] * 0.6, c[4], c[5]); p.renderOrder = 1; block.add(p);
+      });
+      // the crack: drawn on a canvas, grown from one point of the front face
+      const crackCv = document.createElement("canvas"); crackCv.width = 512; crackCv.height = 640;
+      const crackTex = new THREE.CanvasTexture(crackCv);
+      const crack = new THREE.Mesh(new THREE.PlaneGeometry(BW * 0.92, BH * 0.92), new THREE.MeshBasicMaterial({ map: crackTex, transparent: true, depthWrite: false }));
+      crack.position.set(0, BCY, BD / 2 + 0.004); crack.renderOrder = 4; block.add(crack);
+      const CR = rng(77), cracks = [];
+      (function grow(x, y, ang, len, depth) {
+        const pts = [[x, y]]; let cx = x, cy = y, a = ang;
+        for (let i = 0; i < 9; i++) { a += (CR() - 0.5) * 0.9; cx += Math.cos(a) * len / 9; cy += Math.sin(a) * len / 9; pts.push([cx, cy]); }
+        cracks.push({ pts, depth });
+        if (depth < 2) for (let k = 0; k < 2; k++) { const j = 3 + Math.floor(CR() * 5); grow(pts[j][0], pts[j][1], a + (CR() - 0.5) * 2.2, len * 0.55, depth + 1); }
+      })(330, 230, -2.4, 260, 0);
+      [[330, 230, -0.6, 240], [330, 230, 1.2, 300], [330, 230, 2.4, 220]].forEach((c) => (function g2(x, y, a0, len) {
+        const pts = [[x, y]]; let cx = x, cy = y, a = a0;
+        for (let i = 0; i < 9; i++) { a += (CR() - 0.5) * 0.8; cx += Math.cos(a) * len / 9; cy += Math.sin(a) * len / 9; pts.push([cx, cy]); }
+        cracks.push({ pts, depth: 0 });
+      })(c[0], c[1], c[2], c[3]));
+      let crackDrawn = -1;
+      function drawCracks(k) {
+        const q = Math.round(k * 60); if (q === crackDrawn) return; crackDrawn = q;
+        const c = crackCv.getContext("2d"); c.clearRect(0, 0, 512, 640);
+        c.lineCap = "round"; c.lineJoin = "round";
+        cracks.forEach((cr) => {
+          const kk = clamp(k * 1.25 - cr.depth * 0.18, 0, 1); if (kk <= 0) return;
+          const n = Math.max(1, Math.floor(kk * (cr.pts.length - 1)));
+          for (const [w, col] of [[9 - cr.depth * 2, "rgba(255,255,255,0.35)"], [3.5 - cr.depth, "rgba(255,255,255,0.95)"]]) {
+            c.strokeStyle = col; c.lineWidth = w; c.beginPath(); c.moveTo(cr.pts[0][0], cr.pts[0][1]);
+            for (let i = 1; i <= n; i++) c.lineTo(cr.pts[i][0], cr.pts[i][1]);
+            c.stroke();
+          }
+        });
+        crackTex.needsUpdate = true;
+      }
+      const CRACK_PT = new THREE.Vector3((330 / 512 - 0.5) * BW * 0.92, BCY + (0.5 - 230 / 640) * BH * 0.92, BD / 2);
+
+      // ---------- the explosion: ice shards that fly, fall and draw the outline of the phone ----------
+      const NS = 150, SR = rng(4242);
+      const shardGeo = new THREE.IcosahedronGeometry(1, 0);
+      const shards = new THREE.InstancedMesh(shardGeo, iceMat.clone(), NS); shards.material.opacity = 0.92; shards.renderOrder = 5;
+      shards.frustumCulled = false; scene.add(shards);
+      const S = [], PHONE = { cx: 0, cy: BCY, hw: 0.43, hh: 0.9, r: 0.13 };
+      function outline(u) { // a point on the rounded rectangle of the phone, u in [0,1)
+        const { cx, cy, hw, hh, r } = PHONE, sw = 2 * (hw - r), sh = 2 * (hh - r), arc = Math.PI * r / 2, L = 2 * sw + 2 * sh + 4 * arc;
+        let d = u * L;
+        const segs = [[sw, (s) => [cx - hw + r + s, cy + hh]], [arc, (s) => { const a = Math.PI / 2 - s / r; return [cx + hw - r + r * Math.cos(a), cy + hh - r + r * Math.sin(a)]; }],
+          [sh, (s) => [cx + hw, cy + hh - r - s]], [arc, (s) => { const a = -s / r; return [cx + hw - r + r * Math.cos(a), cy - hh + r + r * Math.sin(a)]; }],
+          [sw, (s) => [cx + hw - r - s, cy - hh]], [arc, (s) => { const a = -Math.PI / 2 - s / r; return [cx - hw + r + r * Math.cos(a), cy - hh + r + r * Math.sin(a)]; }],
+          [sh, (s) => [cx - hw, cy - hh + r + s]], [arc, (s) => { const a = Math.PI - s / r; return [cx - hw + r + r * Math.cos(a), cy + hh - r + r * Math.sin(a)]; }]];
+        for (const [l, f] of segs) { if (d <= l) return f(d); d -= l; }
+        return segs[0][1](0);
+      }
+      for (let i = 0; i < NS; i++) {
+        const p = new THREE.Vector3((SR() - 0.5) * BW, BCY + (SR() - 0.5) * BH, (SR() - 0.5) * BD);
+        const dir = p.clone().sub(new THREE.Vector3(0, BCY, 0)).normalize();
+        const v = dir.multiplyScalar(2.2 + SR() * 4.2); v.z += 1.5 + SR() * 3.2; v.y += 1.2 + SR() * 1.4;
+        const tgt = outline(i / NS);
+        S.push({ p, v, s: 0.035 + SR() * 0.11, k: [0.5 + SR() * 0.9, 0.35 + SR() * 1.3, 0.4 + SR() * 0.7], w: [(SR() - 0.5) * 14, (SR() - 0.5) * 14, (SR() - 0.5) * 14],
+          tgt: new THREE.Vector3(tgt[0], tgt[1], 0.02), conv: 4.3 + SR() * 0.2 });
+      }
+      const dummy = new THREE.Object3D();
+
+      // ---------- the mascot (Meshy 7, rigged, with its dance) ----------
+      const mascot = new THREE.Group(); scene.add(mascot);
+      let mixer = null, clipDur = 7.7;
+      const gltf = await new GLTFLoader().loadAsync("assets/mascot3d/mascot.glb");
+      gltf.scene.traverse((o) => { if (o.isMesh) { o.frustumCulled = false; if (o.material) { o.material.envMapIntensity = 0.5; } o.renderOrder = 1; } });
+      mascot.add(gltf.scene);
+      if (gltf.animations.length) { mixer = new THREE.AnimationMixer(gltf.scene); mixer.clipAction(gltf.animations[0]).play(); clipDur = gltf.animations[0].duration; }
+      const FROZEN = 3.0;    // the pose she is frozen in: the moment of her dance with one arm up (the end freezes on it too)
+      await Promise.all(clipWaits);
+
+      // ---------- the camera's journey ----------
+      const PUSHES = [BT.song, BT.takes, BT.timeline, BT.done, BT.shuffle, BT.reviews, BT.end];
+      function travel(t) {   // how far the camera has flown into the world after the explosion
+        let z = 0.25 * Math.max(0, Math.min(t, BT.end + 0.6) - BT.open);
+        PUSHES.forEach((p) => { z += 1.35 * eIO3(seg(t, p - 0.2, p + 0.32)); });
+        return z;
+      }
+      const END_TRAVEL = travel(BT.end + 0.6), END_S = 0.75, END_Z = 0.8 - END_TRAVEL, END_Y = BCY - 0.03;
+
+      host.render = function (t) {
+        // the world turns slowly; every prop has its own spin and bob
+        props.forEach((o) => { o.m.rotation.set(o.ax + o.sx * t, o.ay + o.sy * t, 0); o.m.position.y = o.y + Math.sin(o.bob + t * 0.6) * 0.06; });
+        let camPos = new THREE.Vector3(), look = new THREE.Vector3(), fov = 40;
+        const hook = t < BT.boom, tr = travel(t);
+        if (t < BT.crack) {                       // 1. the camera turns slowly round the frozen mascot and closes in
+          const a = -0.24 + 0.14 * t, r = 5.85 - 0.2 * t;
+          camPos.set(Math.sin(a) * r, BCY + 0.08 + 0.04 * Math.sin(t), Math.cos(a) * r); look.set(0, BCY + 0.12, 0);
+        } else if (t < 2.0) {                     // 2. it dives into the crack
+          const k = eIn3(seg(t, BT.crack, 2.0)), a = -0.24 + 0.14 * BT.crack, r = 5.85 - 0.2 * BT.crack;
+          const from = new THREE.Vector3(Math.sin(a) * r, BCY + 0.08 + 0.04 * Math.sin(BT.crack), Math.cos(a) * r), to = CRACK_PT.clone().add(new THREE.Vector3(0, 0, 0.12));
+          camPos.copy(from).lerp(to, k); look.set(0, BCY + 0.12, 0).lerp(CRACK_PT, k); fov = 40 + 25 * k;
+        } else {                                  // 3. front view for the explosion, then the flight through the ice world
+          const shake = t >= BT.boom && t < BT.boom + 0.12 ? (Math.sin(t * 190) * 0.06) : 0;
+          const ramp = seg(t, BT.open + 0.3, BT.open + 1.5), sway = Math.sin(t * 0.35) * 0.14 * ramp;
+          camPos.set(sway + shake, BCY + Math.sin(t * 0.27) * 0.08 * ramp, 5.6 - tr); look.set(sway * 0.5, BCY, -0.4 - tr);
+          if (t > BT.freeze) {                     // the loop: back to the framing of the first frame, around the new block
+            const k = eIO2(seg(t, BT.freeze, BT.total)), sg = END_S / 1.32, pb = new THREE.Vector3(0, END_Y - 0.06 * sg, END_Z);
+            const a0 = -0.24, c0 = new THREE.Vector3(Math.sin(a0) * 5.85, BCY + 0.08, Math.cos(a0) * 5.85).multiplyScalar(sg).add(pb);
+            const l0 = new THREE.Vector3(0, BCY + 0.12, 0).multiplyScalar(sg).add(pb);
+            camPos.lerp(c0, k); look.lerp(l0, k);
+          }
+        }
+        camera.position.copy(camPos); camera.fov = fov; camera.updateProjectionMatrix(); camera.lookAt(look);
+
+        // the ice block, its crack and the frozen clips: only until the explosion
+        block.visible = hook;
+        if (hook) drawCracks(seg(t, 0.35, BT.crack));
+
+        // the shards: burst at the explosion, fly, then gather into the phone's outline and melt into it
+        const ts = t - BT.boom;
+        shards.visible = ts >= 0 && t < BT.open + 0.2;
+        if (shards.visible) {
+          for (let i = 0; i < NS; i++) {
+            const o = S[i], fly = new THREE.Vector3(o.p.x + o.v.x * ts, o.p.y + o.v.y * ts - 3.6 * ts * ts, o.p.z + o.v.z * ts);
+            const kc = eIO3(seg(t, o.conv, BT.open - 0.02));
+            dummy.position.copy(fly).lerp(o.tgt, kc);
+            dummy.rotation.set(o.w[0] * ts * (1 - kc), o.w[1] * ts * (1 - kc), o.w[2] * ts * (1 - kc));
+            const sc = o.s * (1 - 0.55 * kc) * (1 - seg(t, BT.open, BT.open + 0.18));
+            dummy.scale.set(sc * o.k[0], sc * o.k[1], sc * o.k[2]); dummy.updateMatrix(); shards.setMatrixAt(i, dummy.matrix);
+          }
+          shards.instanceMatrix.needsUpdate = true;
+        }
+
+        // the mascot: frozen in the block, bursts out spinning and dancing, leaves, comes back for the end, freezes again
+        let mv = true, mt = FROZEN, pos = new THREE.Vector3(0, 0.06, 0), ry = 0, sc = 1.32;
+        if (hook) { mt = FROZEN; }
+        else if (t < BT.open) {
+          const k = eOutExpo(seg(t, BT.boom, BT.boom + 0.7)), out = eIn3(seg(t, BT.boom + 0.95, BT.open - 0.05));
+          mt = FROZEN + (t - BT.boom) * 1.0; ry = Math.PI * 2 * k; sc = 1.32 + 0.22 * k;
+          pos.set(0 + 2.6 * out, 0.06 + 0.45 * k + 3.2 * out, 0.5 * k);
+        } else if (t < BT.end + 0.2) { mv = false; }
+        else {
+          const drop = eBack(seg(t, BT.end + 0.25, BT.end + 0.75));
+          mt = t < BT.dance ? 0.0 : Math.min(t, BT.freeze) - BT.dance;
+          pos.set(0, END_Y + (1 - drop) * 3.2, END_Z); sc = END_S; ry = 0;
+          // the ice grows back around her at the very end
+          block.visible = t >= BT.freeze;
+          if (block.visible) { const sg = END_S / 1.32, kb = eBack(seg(t, BT.freeze, BT.freeze + 0.42)); block.position.set(0, END_Y - 0.06 * sg, END_Z); block.scale.setScalar(Math.max(0.001, sg * kb)); drawCracks(0); }
+        }
+        if (!(t >= BT.end)) { block.position.set(0, 0, 0); block.scale.setScalar(1); }
+        mascot.visible = mv;
+        if (mv) { mascot.position.copy(pos); mascot.rotation.set(0, ry, 0); mascot.scale.setScalar(sc); if (mixer) mixer.setTime(((mt % clipDur) + clipDur) % clipDur); }
+
+        renderer.render(scene, camera);
+      };
+      host.render(host.clock.t);
+      host.ready();
+    </script>
+  </body>
+</html>

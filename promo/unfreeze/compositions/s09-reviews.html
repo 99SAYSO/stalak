@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><title>s09 — what beta testers say (their real messages, translated)</title></head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="s09" data-width="1080" data-height="1920">
+        <style>
+          #root { position: absolute; inset: 0; overflow: hidden; }
+          #r-t1 { top: 204px; font-size: 64px; }
+          .r-b { position: absolute; left: 80px; width: 840px; box-sizing: border-box; padding: 24px 30px 26px 140px; border-radius: 40px;
+            background: linear-gradient(170deg, #ffffff 0%, #e4f0ff 100%); border: 5px solid #0a0d14; box-shadow: 0 10px 0 #0a0d14, 0 34px 60px rgba(3, 18, 60, 0.35); }
+          .r-b::after { content: ""; position: absolute; left: 54px; bottom: -26px; width: 40px; height: 40px; background: #e4f0ff; border-right: 5px solid #0a0d14; border-bottom: 5px solid #0a0d14;
+            transform: rotate(45deg) skew(10deg, 10deg); border-bottom-right-radius: 8px; }
+          .r-av { position: absolute; left: 26px; top: 24px; width: 92px; height: 92px; box-sizing: border-box; border-radius: 50%; border: 4px solid #0a0d14;
+            background: radial-gradient(circle at 35% 30%, #ffffff 0%, #cfe6ff 45%, #7fb6f0 100%); display: flex; align-items: center; justify-content: center;
+            font: 400 52px/1 "Lilita One", sans-serif; color: #1f6fd6; }
+          .r-hd { display: flex; align-items: center; gap: 14px; height: 46px; }
+          .r-nm { font: 400 40px/1 "Lilita One", sans-serif; color: #0a0d14; letter-spacing: 0.01em; }
+          .r-tag { height: 32px; padding: 0 12px; border-radius: 10px; background: #1f6fd6; color: #f6faff; display: inline-flex; align-items: center;
+            font: 800 19px/1 "Rubik", sans-serif; letter-spacing: 0.08em; }
+          .r-q { margin-top: 10px; font: 500 34px/1.27 "Rubik", "Noto Color Emoji", sans-serif; color: #0a0d14; }
+          #r-b1 { top: 330px; } #r-b2 { top: 574px; } #r-b3 { top: 818px; }
+          .r-dots { position: absolute; width: 120px; height: 60px; border-radius: 30px; background: #f6faff; border: 4px solid #0a0d14; opacity: 0; }
+          .r-dots i { position: absolute; top: 22px; width: 14px; height: 14px; border-radius: 50%; background: #7d8daa; }
+        </style>
+        <div class="kt" id="r-t1"><span class="w">what</span> <span class="w">beta</span> <span class="w">testers</span> <span class="w">say</span></div>
+        <div class="r-dots" id="r-d1" style="left:80px; top:350px"><i style="left:24px"></i><i style="left:50px"></i><i style="left:76px"></i></div>
+        <div class="r-dots" id="r-d2" style="left:80px; top:594px"><i style="left:24px"></i><i style="left:50px"></i><i style="left:76px"></i></div>
+        <div class="r-dots" id="r-d3" style="left:80px; top:838px"><i style="left:24px"></i><i style="left:50px"></i><i style="left:76px"></i></div>
+        <div class="r-b" id="r-b1"><div class="r-av">B</div><div class="r-hd"><span class="r-nm">Bloody</span><span class="r-tag">BETA TESTER</span></div>
+          <div class="r-q">I was so done editing everything myself. This is a lifesaver, you're a boss ❤️❤️</div></div>
+        <div class="r-b" id="r-b2"><div class="r-av">H</div><div class="r-hd"><span class="r-nm">haeine</span><span class="r-tag">BETA TESTER</span></div>
+          <div class="r-q">stalak is crazy, it saved me so much time on my edits 🙏</div></div>
+        <div class="r-b" id="r-b3"><div class="r-av">K</div><div class="r-hd"><span class="r-nm">Kazzy</span><span class="r-tag">BETA TESTER</span></div>
+          <div class="r-q">got my next 30 tiktoks ready already lmao, took me 5 min, it's insane</div></div>
+        <script>
+          (function () {
+            var S0 = 18.6, BT = window.BEAT;
+            function at(ft) { return ft - S0; }
+            var tl = gsap.timeline({ paused: true });
+            KIT.words(tl, "#r-t1", at(BT.reviews) + 0.02, 0.07);
+            // each message: someone is typing, then the bubble rises out of the ice and settles; it stays to be read
+            [["#r-d1", "#r-b1", 18.95], ["#r-d2", "#r-b2", 19.95], ["#r-d3", "#r-b3", 20.95]].forEach(function (m) {
+              var t = at(m[2]);
+              tl.fromTo(m[0], { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.14, ease: "back.out(2)", immediateRender: false }, t - 0.42);
+              tl.fromTo(m[0] + " i", { y: 0 }, { y: -8, duration: 0.1, yoyo: true, repeat: 1, stagger: 0.06, ease: "sine.inOut", immediateRender: false }, t - 0.36);
+              tl.to(m[0], { opacity: 0, duration: 0.06 }, t - 0.04);
+              tl.fromTo(m[1], { opacity: 0, y: 150, scale: 0.9, rotationX: 38, transformPerspective: 1400, transformOrigin: "50% 100%" },
+                { opacity: 1, y: 0, scale: 1, rotationX: 0, transformPerspective: 1400, duration: 0.5, ease: "back.out(1.4)" }, t);
+            });
+            // they burst into the snowflakes that build the logo
+            tl.to("#r-t1", { opacity: 0, filter: "blur(10px)", duration: 0.18 }, at(BT.end) - 0.32);
+            tl.to(".r-b", { scale: 1.06, duration: 0.08, ease: "power1.out", stagger: 0.04 }, at(BT.end) - 0.3);
+            tl.to(".r-b", { scale: 0.3, opacity: 0, filter: "blur(8px)", duration: 0.16, ease: "power3.in", stagger: 0.04 }, at(BT.end) - 0.22);
+            window.__timelines["s09"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

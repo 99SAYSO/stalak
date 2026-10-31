@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><title>s05 — 2. add your takes</title></head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="s05" data-width="1080" data-height="1920">
+        <style>
+          #root { position: absolute; inset: 0; overflow: hidden; }
+          .kt .n { display: inline-flex; align-items: center; justify-content: center; width: 96px; height: 96px; border-radius: 50%; background: #ffe14d; color: #0a0d14;
+            border: 6px solid #0a0d14; box-sizing: border-box; font: 400 62px/1 "Lilita One", sans-serif; vertical-align: middle; margin-right: 18px; position: relative; top: -6px; }
+          #k-t1 { top: 214px; font-size: 76px; }
+          .k-c { position: absolute; top: 600px; width: 250px; height: 444px; box-sizing: border-box; border-radius: 28px; overflow: hidden; border: 8px solid #f6faff; background: #0a0d14;
+            box-shadow: 0 14px 0 rgba(10, 13, 20, 0.85), 0 40px 70px rgba(3, 18, 60, 0.45); }
+          .k-c img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; }
+          .k-c b { position: absolute; left: 12px; top: 12px; width: 64px; height: 64px; box-sizing: border-box; border-radius: 50%; border: 5px solid #0a0d14; font: 400 38px/54px "Lilita One"; color: #fff; text-align: center; }
+          .k-c .lb { position: absolute; left: 0; right: 0; bottom: 0; height: 64px; background: linear-gradient(rgba(10,13,20,0), rgba(10,13,20,0.75)); }
+          .k-c .lb span { position: absolute; left: 18px; bottom: 14px; font: 400 32px/1 "Lilita One", sans-serif; color: #f6faff; }
+          #k-c1 { left: 95px; } #k-c2 { left: 415px; } #k-c3 { left: 735px; }
+        </style>
+        <div class="kt" id="k-t1"><span class="w n">2</span><span class="w">add</span> <span class="w">your</span> <span class="w">takes</span></div>
+        <div class="k-c" id="k-c1"><img src="assets/stills/t1_000.jpg" alt="Take 1" /><b style="background:#d6336c">1</b><div class="lb"><span>Take 1</span></div></div>
+        <div class="k-c" id="k-c2"><img src="assets/stills/t2_000.jpg" alt="Take 2" /><b style="background:#3a6fe0">2</b><div class="lb"><span>Take 2</span></div></div>
+        <div class="k-c" id="k-c3"><img src="assets/stills/t3_000.jpg" alt="Take 3" /><b style="background:#e0952c">3</b><div class="lb"><span>Take 3</span></div></div>
+        <script>
+          (function () {
+            var S0 = 9.45, BT = window.BEAT;
+            function at(ft) { return ft - S0; }
+            var tl = gsap.timeline({ paused: true });
+            KIT.words(tl, "#k-t1", at(BT.takes) + 0.02, 0.07);
+            // three takes arrive from three sides, turning in 3D, and land in a row
+            [["#k-c1", { x: -760, rotationY: 75, rotation: -20 }, -6, 0], ["#k-c2", { y: -1000, rotationX: -70, rotation: 10 }, 0, 0.08], ["#k-c3", { x: 760, rotationY: -75, rotation: 20 }, 6, 0.16]].forEach(function (c) {
+              var from = Object.assign({ opacity: 1, transformPerspective: 1400 }, c[1]);
+              tl.fromTo(c[0], from, { opacity: 1, x: 0, y: 0, rotationX: 0, rotationY: 0, rotation: c[2], transformPerspective: 1400, duration: 0.5, ease: "back.out(1.3)" }, at(BT.takes) + 0.02 + c[3]);
+            });
+            // they tip over flat and slide into the timeline of the next step
+            KIT.out(tl, "#k-t1", at(BT.timeline) - 0.2, 0.16);
+            tl.to(".k-c", { rotationX: 74, rotation: 0, y: 260, scale: 0.7, opacity: 0, duration: 0.3, ease: "power3.in", stagger: 0.03, transformOrigin: "50% 100%" }, at(BT.timeline) - 0.28);
+            window.__timelines["s05"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

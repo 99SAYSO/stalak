@@ -14,3 +14,5 @@ renders/
 node_modules/
 snapshots/
 assets/thumbs/
+assets/mascot3d/
+*.glb
