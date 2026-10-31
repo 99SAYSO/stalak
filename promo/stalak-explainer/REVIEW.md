@@ -18,6 +18,7 @@
 6. **Bouton Export** qui chevauchait l'écran d'export : il disparaît dès que l'écran le couvre.
 7. **Musique** : le format de l'automatisation du volume faisait échouer le mix audio au rendu. Il suit maintenant le format `{"version":1,"lanes":[…]}`. La durée de la voix off est réglée sur sa vraie longueur.
 8. **Démonstration des polices** : elle commence quand la deuxième ligne de paroles apparaît, pour que les paroles restent calées sur la voix du rappeur.
+9. **Bouton « Make the pack CREATOR+ »** sur deux lignes (vu sur le premier rendu) : police à 34 px, sans retour à la ligne, puis nouveau rendu.
 
 ## Choix
 
