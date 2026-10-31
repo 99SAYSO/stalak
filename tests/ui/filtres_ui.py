@@ -55,8 +55,12 @@ def ui(b, base, lang, phone):
     pro = pg.locator('#filtRow .filtpro').count()
     check(tag + ' : 23 filtres Pro derrière une tuile, une étiquette PRO par thème (compte gratuit)', pro == 5 and pg.locator('#filtMore b').inner_text() == '+23', pro)
     # the thumbnails show the picture, each through its own filter
-    sig = pg.evaluate("""() => [...document.querySelectorAll('#filtRow canvas')].map(cv => { const d = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data; let r = 0, g = 0, b = 0; for (let i = 0; i < d.length; i += 4){ r += d[i]; g += d[i+1]; b += d[i+2]; } const n = d.length / 4; return [r / n, g / n, b / n].map(Math.round); })""")
-    distinct = len({tuple(x) for x in sig})
+    # (animations of 31/10: the thumbnails are drawn after the step has slid in, a few per frame: waited for, 10 s at most)
+    for _ in range(40):
+        sig = pg.evaluate("""() => [...document.querySelectorAll('#filtRow canvas')].map(cv => { const d = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data; let r = 0, g = 0, b = 0; for (let i = 0; i < d.length; i += 4){ r += d[i]; g += d[i+1]; b += d[i+2]; } const n = d.length / 4; return [r / n, g / n, b / n].map(Math.round); })""")
+        distinct = len({tuple(x) for x in sig})
+        if distinct >= 26 and all(sum(x) > 30 for x in sig): break
+        pg.wait_for_timeout(250)
     check(tag + ' : vignettes dessinées et toutes différentes', distinct >= 26 and all(sum(x) > 30 for x in sig), sig)
     sw = pg.evaluate('document.documentElement.scrollWidth')
     check(tag + ' : pas de défilement horizontal de la page (la rangée défile seule)', sw <= (390 if phone else 1280), sw)

@@ -6,7 +6,20 @@
   --sky:#1f6fd6;--sky-deep:#1a64c8;--night:#0e3f8f;--ink:#0a0d14;--ice:#d6ecff;--ice-2:#a9d3ff;--frost:#eef7ff;--snow:#fff;--fur:#fff3dc;--tongue:#ff6fae;--muted:#3f5170;
   --display:'Lilita One','Arial Rounded MT Bold','Arial Black',system-ui,sans-serif;
   --body:'Rubik','Arial Rounded MT Bold','Helvetica Neue',Arial,system-ui,sans-serif;
-  --slide:cubic-bezier(.22,1.2,.36,1);--soft:cubic-bezier(.2,.7,.2,1);
+  /* ---- motion (skill motion-design, 31/10): every animation of the site and the app takes its speed and curve here ----
+     ease-out = things that appear or answer a touch; ease-move = something already on screen that moves; ease-press = a
+     press; ease-in = something that leaves for good; linear = time and progress. Only transform and opacity move. */
+  --dur-1:120ms;   /* a press, a quick fade */
+  --dur-2:180ms;   /* menus, small windows, a step badge, closing */
+  --dur-3:240ms;   /* dialogs, panels, cards */
+  --dur-4:300ms;   /* a whole step or page (large surface) */
+  --dur-5:500ms;   /* rare and illustrative (a celebration, a ripple) */
+  --ease-out:cubic-bezier(.165,.84,.44,1);        /* ease-out-quart */
+  --ease-out-soft:cubic-bezier(.215,.61,.355,1);  /* ease-out-cubic */
+  --ease-press:cubic-bezier(.25,.46,.45,.94);     /* ease-out-quad */
+  --ease-move:cubic-bezier(.645,.045,.355,1);     /* ease-in-out-cubic */
+  --ease-in:cubic-bezier(.55,.055,.675,.19);      /* ease-in-cubic */
+  --slide:var(--ease-out);--soft:var(--ease-out-soft);
   --icicles:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='26' viewBox='0 0 64 26'%3E%3Cg fill='%23d6ecff' stroke='%230a0d14' stroke-width='2.4' stroke-linejoin='round'%3E%3Cpath d='M3 0Q6 9 8.5 17Q11 9 14 0Z'/%3E%3Cpath d='M18 0Q20.5 5 22 9.5Q23.5 5 26 0Z'/%3E%3Cpath d='M31 0Q34.5 12 37 24Q39.5 12 43 0Z'/%3E%3Cpath d='M48 0Q50.5 6 52.5 12Q54.5 6 57 0Z'/%3E%3C/g%3E%3Cg stroke='%23ffffff' stroke-width='1.6' stroke-linecap='round' fill='none'%3E%3Cpath d='M6.5 3L8 9'/%3E%3Cpath d='M35 3L36.5 12'/%3E%3C/g%3E%3C/svg%3E");
   --flakes:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cg fill='%23ffffff'%3E%3Ccircle cx='18' cy='22' r='3' opacity='.9'/%3E%3Ccircle cx='96' cy='12' r='2' opacity='.6'/%3E%3Ccircle cx='170' cy='40' r='3.5' opacity='.85'/%3E%3Ccircle cx='222' cy='96' r='2' opacity='.6'/%3E%3Ccircle cx='60' cy='88' r='2.5' opacity='.7'/%3E%3Ccircle cx='132' cy='120' r='3' opacity='.85'/%3E%3Ccircle cx='28' cy='160' r='2' opacity='.6'/%3E%3Ccircle cx='196' cy='176' r='3' opacity='.8'/%3E%3Ccircle cx='100' cy='204' r='2.5' opacity='.7'/%3E%3Ccircle cx='150' cy='226' r='1.6' opacity='.5'/%3E%3C/g%3E%3C/svg%3E");
 }
@@ -29,40 +42,38 @@ main a:focus-visible{outline-color:var(--sky-deep)}
 
 /* buttons, the « soon » tag, hidden-but-read text (same look as in the app) */
 .btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;box-sizing:border-box;font:700 16px/1.2 var(--body);color:var(--ink);background:#fff;border:3px solid var(--ink);border-radius:16px;padding:10px 18px;min-height:50px;text-decoration:none;cursor:pointer;
-  box-shadow:inset 0 -4px 0 rgba(31,111,214,.14),0 4px 0 var(--ink);transition:transform .1s var(--soft),box-shadow .1s var(--soft),background-color .15s}
+  box-shadow:inset 0 -4px 0 rgba(31,111,214,.14),0 4px 0 var(--ink);transition:transform var(--dur-1) var(--ease-press)}
 .btn:hover{background-color:var(--frost)}
 .btn:active{transform:translateY(4px);box-shadow:inset 0 -2px 0 rgba(31,111,214,.14),0 0 0 var(--ink)}
 .btn.primary{color:#fff;background:var(--ink) radial-gradient(60% 50% at 30% 18%,rgba(255,255,255,.28),transparent 70%);box-shadow:inset 0 3px 0 rgba(255,255,255,.16),inset 0 -5px 0 rgba(0,0,0,.5),0 5px 0 var(--ink)}
 .btn.primary:hover{background-color:#1b2233}
 .btn.primary:active{box-shadow:inset 0 3px 0 rgba(255,255,255,.12),inset 0 -2px 0 rgba(0,0,0,.5),0 0 0 var(--ink)}
 .btn.primary::before{content:"";position:absolute;left:16px;right:16px;top:calc(100% + 5px);height:12px;background:var(--icicles) left top/38px 15px repeat-x;pointer-events:none;transform-origin:top center}
-.btn.primary:hover::before{animation:si-shiver .45s var(--soft) 1}
 .btn.primary:active::before{opacity:0}
 main .btn:focus-visible{outline-color:var(--sky-deep)}
 .soon{font:600 11px var(--body);color:var(--ink);background:var(--fur);border:1.5px solid var(--ink);border-radius:99px;padding:0 7px;margin-left:6px;white-space:nowrap}
 .vh{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
-@keyframes si-shiver{0%,100%{transform:none}20%{transform:translateX(-1.5px) scaleY(1.08)}40%{transform:translateX(1.5px)}60%{transform:translateX(-1px) scaleY(1.04)}80%{transform:translateX(1px)}}
+
 
 /* ---- motion between the pages ---- */
 @view-transition{navigation:auto}
 /* the page left behind frosts over and lifts away, above the new one (which plays its own entrance underneath) */
-::view-transition-group(root){animation-duration:.26s}
-::view-transition-old(root){z-index:1;mix-blend-mode:normal;animation:si-frost .26s ease-in both}
+::view-transition-group(root){animation-duration:var(--dur-2)}
+::view-transition-old(root){z-index:1;mix-blend-mode:normal;animation:si-frost var(--dur-2) var(--ease-out) both}
 ::view-transition-new(root){mix-blend-mode:normal;animation:none}
-@keyframes si-frost{0%{opacity:1;filter:blur(0)}100%{opacity:0;filter:blur(10px);transform:translateY(-10px) scale(1.01)}}
+@keyframes si-frost{from{opacity:1}to{opacity:0;transform:translateY(-6px)}}
 /* the entrance: the card slides up on the ice and settles, its icicles grow, then the footer */
-.back{animation:si-fade .3s var(--soft) both}
-main{animation:si-in .5s var(--slide) .03s both}
-main:not(.pr-page)::before{animation:si-icicles .5s var(--slide) .28s both}
-footer{animation:si-fade .4s var(--soft) .22s both}
-@keyframes si-in{0%{opacity:0;transform:translateY(34px) scale(.985);filter:blur(6px)}55%{opacity:1;filter:blur(0)}100%{opacity:1;transform:none;filter:none}}
-@keyframes si-icicles{0%{transform:scaleY(0)}70%{transform:scaleY(1.12)}100%{transform:none}}
+.back{animation:si-fade var(--dur-3) var(--ease-out) both}
+main{animation:si-in var(--dur-4) var(--ease-out) both}
+footer{animation:si-fade var(--dur-3) var(--ease-out) .12s both}
+@keyframes si-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
 @keyframes si-fade{from{opacity:0}to{opacity:1}}
 /* the pricing page has no white card around it: its parts arrive one after the other instead */
 main.pr-page{animation:none}
-.pr-head > *{animation:si-in .5s var(--slide) both}
-.pr-head > :nth-child(2){animation-delay:.05s}
-.pr-head > :nth-child(3){animation-delay:.1s}
+.pr-head > *{animation:si-in var(--dur-4) var(--ease-out) both}
+.pr-head > :nth-child(2){animation-delay:40ms}
+.pr-head > :nth-child(3){animation-delay:80ms}
 
 @media (prefers-reduced-motion:reduce){
   @view-transition{navigation:none}

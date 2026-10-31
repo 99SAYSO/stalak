@@ -99,7 +99,7 @@ canvas#view{--ar:.5625;width:min(100%,340px,calc(68vh*var(--ar)));aspect-ratio:9
 .lystate{font-size:13.5px;padding:9px 12px;border-radius:10px;background:var(--sunk);color:var(--ink)}
 .lystate.warn{background:color-mix(in srgb, var(--warn) 16%, var(--surface));}
 .progress{height:6px;border-radius:99px;background:var(--sunk);overflow:hidden;width:100%;max-width:340px}
-.progress i{display:block;height:100%;width:0;background:var(--accent);transition:width .2s}
+.progress i{display:block;height:100%;width:0;background:var(--accent)}
 .panel{display:flex;flex-direction:column;gap:14px;min-width:0}
 textarea{width:100%;min-height:170px;resize:vertical;font:15px/1.6 var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px}
 textarea:focus,input.ly:focus{outline:2px solid var(--accent);outline-offset:1px}
