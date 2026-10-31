@@ -1,0 +1,15 @@
+# Media stay out of the repo (owner's request): footage, audio, frames taken from the footage, renders.
+assets/takes/
+assets/audio/
+assets/sfx/
+assets/stills/
+renders/
+*.mp4
+*.mov
+*.webm
+*.wav
+*.mp3
+*.m4a
+.hyperframes/
+node_modules/
+snapshots/

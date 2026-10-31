@@ -1,0 +1,44 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/hyperframes.json",
+  "registry": "https://raw.githubusercontent.com/heygen-com/hyperframes/main/registry",
+  "paths": {
+    "blocks": "compositions",
+    "components": "compositions/components",
+    "assets": "assets"
+  },
+  "media": {
+    "autoProxy": true
+  },
+  "registryItems": [
+    {
+      "name": "snow",
+      "type": "hyperframes:block",
+      "target": "compositions/snow.html"
+    },
+    {
+      "name": "headline-slam",
+      "type": "hyperframes:component",
+      "target": "compositions/components/headline-slam.html"
+    },
+    {
+      "name": "beat-accent",
+      "type": "hyperframes:component",
+      "target": "compositions/components/beat-accent.html"
+    },
+    {
+      "name": "whip-pan-cut",
+      "type": "hyperframes:component",
+      "target": "compositions/components/whip-pan-cut.html"
+    },
+    {
+      "name": "logo-sting",
+      "type": "hyperframes:component",
+      "target": "compositions/components/logo-sting.html"
+    },
+    {
+      "name": "vfx-shatter",
+      "type": "hyperframes:block",
+      "target": "compositions/vfx-shatter.html"
+    }
+  ]
+}

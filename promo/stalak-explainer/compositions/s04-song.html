@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><title>s04 — drop in your song, pick the part</title></head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="s04" data-width="1080" data-height="1920">
+        <style>
+          #root { position: absolute; inset: 0; overflow: hidden; }
+          #g-ph { left: 200px; top: 327px; }
+          #g-ph .sh2 { opacity: 0; }
+          #g-t1, #g-t3 { top: 230px; font-size: 84px; }
+          #g-t2, #g-t4 { top: 320px; font-size: 180px; }
+          /* illustration: the song file, flying in */
+          #g-file { position: absolute; left: 470px; top: 600px; width: 420px; height: 150px; display: flex; align-items: center; gap: 22px; padding: 0 26px; }
+          #g-file .note { width: 90px; height: 90px; flex: none; }
+          #g-file .nm { font: 800 40px/1.05 "Rubik", sans-serif; color: #0a0d14; letter-spacing: -0.01em; }
+          #g-file .nm small { display: block; font-weight: 500; font-size: 28px; color: #3a5f9a; margin-top: 6px; }
+          #g-file svg.mini { position: absolute; right: 26px; bottom: 18px; width: 242px; height: 56px; }
+          #g-file svg.mini rect { fill: #3a7be0; }
+          #g-ring { position: absolute; left: 360px; top: 810px; width: 280px; height: 280px; border-radius: 50%; border: 12px solid #f6faff; opacity: 0; }
+          /* rebuilt from the app: the part picker (Start / End handles on the song's waveform, the red playhead) */
+          #g-pick { left: 80px; top: 1060px; width: 828px; height: 304px; }
+          #g-pick .hd { position: absolute; left: 40px; top: 16px; font: 400 44px/1 "Lilita One", sans-serif; color: #0a0d14; }
+          #g-pick .bpm { position: absolute; right: 40px; top: 22px; font: 600 32px/1 "Rubik", sans-serif; color: #3a5f9a; }
+          #g-wave { position: absolute; left: 40px; top: 96px; width: 740px; height: 140px; border-radius: 22px; background: #d9e7fb; border: 5px solid #0a0d14; overflow: hidden; }
+          #g-wave svg { position: absolute; left: 0; top: 0; width: 740px; height: 140px; }
+          #g-wave svg rect { fill: #3a7be0; }
+          #g-wave .dim { position: absolute; top: 0; bottom: 0; background: rgba(10, 13, 20, 0.45); }
+          .g-hdl { position: absolute; top: 86px; width: 34px; height: 160px; border-radius: 17px; background: #f6faff; border: 5px solid #0a0d14; }
+          .g-hdl i { position: absolute; left: 10px; top: 50px; width: 4px; height: 60px; border-radius: 2px; background: #0a0d14; }
+          #g-play { position: absolute; left: 44px; top: 76px; width: 6px; height: 172px; background: #0a0d14; }
+          #g-play b { position: absolute; left: -14px; top: -10px; width: 34px; height: 34px; border-radius: 50%; background: #ff6b9a; border: 5px solid #0a0d14; }
+          #g-pick .tm { position: absolute; left: 40px; top: 262px; font: 700 34px/1 "Rubik", sans-serif; color: #0a0d14; }
+          #g-pick .tm span { color: #1f6fd6; }
+        </style>
+        <div class="phone" id="g-ph">
+          <div class="body"></div><div class="bez"></div>
+          <div class="scr"><div class="sh sh1"><img src="assets/ui/m_sound_empty.jpg" alt="Stalak: Pick your song, Import your music" /></div>
+            <div class="sh sh2"><img src="assets/ui/m_sound_loaded.jpg" alt="Stalak: the song is in, neva-die, 157.0 BPM" /></div></div>
+          <div class="isl"></div>
+          <div class="sb" style="left:-8px; top:290px; height:120px"></div><div class="sb" style="left:-8px; top:440px; height:120px"></div><div class="sb" style="left:600px; top:360px; height:180px"></div>
+          <div class="glare"><div class="band"><i></i></div></div>
+        </div>
+        <div id="g-ring"></div>
+        <div class="glass" id="g-file">
+          <svg class="note" viewBox="0 0 64 64" aria-hidden="true"><path d="M24 46a9 9 0 1 1-6-8.5V10l30-6v34a9 9 0 1 1-6-8.5V14l-18 3.6z" fill="#1f6fd6" stroke="#0a0d14" stroke-width="4" stroke-linejoin="round" /></svg>
+          <div class="nm">neva die<small>your song · MP3</small></div>
+          <svg class="mini" viewBox="0 0 242 56" aria-hidden="true"><rect x="1" y="7.9" width="7" height="40.1" rx="3" /><rect x="12" y="7.5" width="7" height="40.9" rx="3" /><rect x="23" y="7.9" width="7" height="40.3" rx="3" /><rect x="34" y="7.5" width="7" height="41.1" rx="3" /><rect x="45" y="6.8" width="7" height="42.4" rx="3" /><rect x="56" y="8.2" width="7" height="39.7" rx="3" /><rect x="67" y="8.1" width="7" height="39.8" rx="3" /><rect x="78" y="11.1" width="7" height="33.8" rx="3" /><rect x="89" y="6.4" width="7" height="43.2" rx="3" /><rect x="100" y="8.5" width="7" height="38.9" rx="3" /><rect x="111" y="15.2" width="7" height="25.6" rx="3" /><rect x="122" y="18.0" width="7" height="20.0" rx="3" /><rect x="133" y="19.7" width="7" height="16.5" rx="3" /><rect x="144" y="7.3" width="7" height="41.3" rx="3" /><rect x="155" y="6.2" width="7" height="43.6" rx="3" /><rect x="166" y="10.7" width="7" height="34.6" rx="3" /><rect x="177" y="8.3" width="7" height="39.4" rx="3" /><rect x="188" y="9.2" width="7" height="37.5" rx="3" /><rect x="199" y="11.3" width="7" height="33.3" rx="3" /><rect x="210" y="8.9" width="7" height="38.2" rx="3" /><rect x="221" y="9.8" width="7" height="36.3" rx="3" /><rect x="232" y="4.0" width="7" height="48.0" rx="3" /></svg>
+        </div>
+        <div class="appcard" id="g-pick">
+          <div class="hd">neva-die</div><div class="bpm">157.0 BPM</div>
+          <div id="g-wave"><svg viewBox="0 0 820 150" preserveAspectRatio="none" aria-hidden="true"><rect x="2.0" y="25.7" width="8.8" height="98.6" rx="3" /><rect x="14.8" y="18.9" width="8.8" height="112.2" rx="3" /><rect x="27.6" y="21.5" width="8.8" height="106.9" rx="3" /><rect x="40.4" y="24.0" width="8.8" height="102.0" rx="3" /><rect x="53.2" y="16.0" width="8.8" height="118.1" rx="3" /><rect x="66.1" y="23.3" width="8.8" height="103.3" rx="3" /><rect x="78.9" y="24.5" width="8.8" height="101.0" rx="3" /><rect x="91.7" y="19.4" width="8.8" height="111.2" rx="3" /><rect x="104.5" y="21.6" width="8.8" height="106.8" rx="3" /><rect x="117.3" y="20.7" width="8.8" height="108.7" rx="3" /><rect x="130.1" y="20.3" width="8.8" height="109.3" rx="3" /><rect x="142.9" y="24.0" width="8.8" height="102.0" rx="3" /><rect x="155.8" y="17.8" width="8.8" height="114.3" rx="3" /><rect x="168.6" y="18.3" width="8.8" height="113.5" rx="3" /><rect x="181.4" y="30.5" width="8.8" height="89.0" rx="3" /><rect x="194.2" y="16.2" width="8.8" height="117.7" rx="3" /><rect x="207.0" y="20.3" width="8.8" height="109.5" rx="3" /><rect x="219.8" y="22.7" width="8.8" height="104.7" rx="3" /><rect x="232.6" y="23.1" width="8.8" height="103.9" rx="3" /><rect x="245.4" y="23.6" width="8.8" height="102.8" rx="3" /><rect x="258.2" y="22.3" width="8.8" height="105.5" rx="3" /><rect x="271.1" y="41.2" width="8.8" height="67.5" rx="3" /><rect x="283.9" y="32.6" width="8.8" height="84.8" rx="3" /><rect x="296.7" y="16.1" width="8.8" height="117.8" rx="3" /><rect x="309.5" y="16.2" width="8.8" height="117.7" rx="3" /><rect x="322.3" y="19.3" width="8.8" height="111.4" rx="3" /><rect x="335.1" y="22.3" width="8.8" height="105.3" rx="3" /><rect x="347.9" y="25.6" width="8.8" height="98.9" rx="3" /><rect x="360.8" y="24.4" width="8.8" height="101.2" rx="3" /><rect x="373.6" y="25.9" width="8.8" height="98.2" rx="3" /><rect x="386.4" y="52.6" width="8.8" height="44.9" rx="3" /><rect x="399.2" y="47.9" width="8.8" height="54.1" rx="3" /><rect x="412.0" y="47.9" width="8.8" height="54.3" rx="3" /><rect x="424.8" y="46.9" width="8.8" height="56.3" rx="3" /><rect x="437.6" y="52.4" width="8.8" height="45.3" rx="3" /><rect x="450.4" y="53.2" width="8.8" height="43.6" rx="3" /><rect x="463.2" y="49.3" width="8.8" height="51.5" rx="3" /><rect x="476.1" y="58.7" width="8.8" height="32.6" rx="3" /><rect x="488.9" y="18.9" width="8.8" height="112.3" rx="3" /><rect x="501.7" y="19.2" width="8.8" height="111.6" rx="3" /><rect x="514.5" y="19.7" width="8.8" height="110.7" rx="3" /><rect x="527.3" y="19.5" width="8.8" height="111.0" rx="3" /><rect x="540.1" y="14.5" width="8.8" height="121.0" rx="3" /><rect x="552.9" y="18.6" width="8.8" height="112.8" rx="3" /><rect x="565.8" y="27.9" width="8.8" height="94.2" rx="3" /><rect x="578.6" y="39.4" width="8.8" height="71.3" rx="3" /><rect x="591.4" y="23.4" width="8.8" height="103.2" rx="3" /><rect x="604.2" y="21.7" width="8.8" height="106.7" rx="3" /><rect x="617.0" y="22.0" width="8.8" height="106.0" rx="3" /><rect x="629.8" y="29.3" width="8.8" height="91.4" rx="3" /><rect x="642.6" y="25.2" width="8.8" height="99.7" rx="3" /><rect x="655.4" y="24.4" width="8.8" height="101.2" rx="3" /><rect x="668.2" y="36.5" width="8.8" height="77.0" rx="3" /><rect x="681.1" y="33.3" width="8.8" height="83.5" rx="3" /><rect x="693.9" y="23.3" width="8.8" height="103.3" rx="3" /><rect x="706.7" y="23.5" width="8.8" height="103.0" rx="3" /><rect x="719.5" y="22.9" width="8.8" height="104.1" rx="3" /><rect x="732.3" y="27.4" width="8.8" height="95.3" rx="3" /><rect x="745.1" y="26.6" width="8.8" height="96.9" rx="3" /><rect x="757.9" y="22.5" width="8.8" height="104.9" rx="3" /><rect x="770.8" y="34.5" width="8.8" height="80.9" rx="3" /><rect x="783.6" y="15.6" width="8.8" height="118.9" rx="3" /><rect x="796.4" y="8.0" width="8.8" height="134.0" rx="3" /><rect x="809.2" y="12.2" width="8.8" height="125.6" rx="3" /></svg><div class="dim" id="g-dl" style="left:0; width:0"></div><div class="dim" id="g-dr" style="right:0; width:0"></div></div>
+          <div class="g-hdl" id="g-h1" style="left:23px"><i></i></div><div class="g-hdl" id="g-h2" style="left:763px"><i></i></div>
+          <div id="g-play"><b></b></div>
+          <div class="tm">Start <span id="g-st">0:00.00</span> &nbsp;·&nbsp; End <span id="g-en">0:25.57</span></div>
+        </div>
+        <div class="kt" id="g-t1"><span class="w l">Drop</span> <span class="w l">in</span> <span class="w l">your</span></div>
+        <div class="kt" id="g-t2"><span class="w k">SONG</span></div>
+        <div class="kt" id="g-t3"><span class="w l">pick</span> <span class="w l">the</span></div>
+        <div class="kt" id="g-t4"><span class="w k ice">PART.</span></div>
+        <script>
+          (function () {
+            var D = 2.461;
+            var tl = gsap.timeline({ paused: true });
+            // from inside the laptop's screen, back to the phone
+            tl.fromTo("#g-ph", { opacity: 0, scale: 1.5, rotationY: 30, transformPerspective: 1600 }, { opacity: 1, scale: 0.66, rotationY: -10, transformPerspective: 1600, duration: 0.5, ease: "expo.out" }, 0);
+            tl.fromTo("#g-ph", { rotationY: -10 }, { rotationY: 8, duration: D - 0.85, ease: "sine.inOut", immediateRender: false }, 0.5);
+            KIT.words(tl, "#g-t1", 0.06, 0.07); KIT.slam(tl, "#g-t2 .w", 0.3);
+            // the song file flies in from deep space and drops into the app
+            tl.fromTo("#g-file", { opacity: 0, x: 420, y: -620, z: -900, rotationY: -50, rotationX: 30, rotation: 20, transformPerspective: 1300 },
+              { opacity: 1, x: 0, y: 0, z: 0, rotationY: 0, rotationX: 0, rotation: -5, transformPerspective: 1300, duration: 0.42, ease: "expo.out" }, 0.18);
+            tl.to("#g-file", { x: -180, y: 320, scale: 0.3, opacity: 0, duration: 0.18, ease: "power3.in" }, 0.62);
+            KIT.tap(tl, "#g-ring", 0.78);
+            KIT.swap(tl, "#g-ph .sh1", "#g-ph .sh2", 0.8);
+            tl.fromTo("#g-ph", { scale: 0.69 }, { scale: 0.66, duration: 0.3, ease: "power2.out", immediateRender: false }, 0.8);
+            KIT.glare(tl, "#g-ph", 0.85);
+            // pick the part: the picker comes out of the phone, the handles close in on the part, the playhead runs
+            KIT.out(tl, "#g-t1, #g-t2", 1.12, 0.18);
+            KIT.words(tl, "#g-t3", 1.2, 0.08); KIT.slam(tl, "#g-t4 .w", 1.45);
+            KIT.pop(tl, "#g-pick", 1.18, { y: -300, scale: 0.4, rotationX: -40 });
+            tl.fromTo("#g-h1", { x: 0 }, { x: 135, duration: 0.45, ease: "power3.inOut" }, 1.42);
+            tl.fromTo("#g-h2", { x: 0 }, { x: -200, duration: 0.45, ease: "power3.inOut" }, 1.48);
+            tl.fromTo("#g-dl", { width: 0 }, { width: 135, duration: 0.45, ease: "power3.inOut" }, 1.42);
+            tl.fromTo("#g-dr", { width: 0 }, { width: 200, duration: 0.45, ease: "power3.inOut" }, 1.48);
+            tl.fromTo("#g-play", { x: 135 }, { x: 540, duration: Math.max(0.2, D - 2.25), ease: "none" }, 1.95);
+            [[1.55, "0:02.40", "0:25.57"], [1.72, "0:04.70", "0:22.10"], [1.9, "0:04.70", "0:18.70"]].forEach(function (k) {
+              tl.set("#g-st", { textContent: k[1] }, k[0]); tl.set("#g-en", { textContent: k[2] }, k[0]);
+            });
+            tl.to("#g-pick", { y: 260, opacity: 0, duration: 0.26, ease: "power3.in" }, D - 0.3);
+            tl.to("#g-ph", { x: -1100, rotationY: -40, duration: 0.3, ease: "power3.in" }, D - 0.3);
+            KIT.out(tl, "#g-t3, #g-t4", D - 0.3, 0.2);
+            window.__timelines["s04"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

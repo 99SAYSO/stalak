@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><title>s10 — a month of content: packs of up to 30 videos (Creator Plus)</title></head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="s10" data-width="1080" data-height="1920">
+        <style>
+          #root { position: absolute; inset: 0; overflow: hidden; }
+          #p-t1, #p-t3 { top: 222px; font-size: 80px; } #p-t2 { top: 306px; font-size: 128px; } #p-t4 { top: 300px; font-size: 150px; }
+          #p-badge { position: absolute; left: 0; width: 1080px; top: 470px; text-align: center; opacity: 0; }
+          #p-badge .cplus { position: relative; height: 70px; font-size: 42px; padding: 0 30px; border-radius: 35px; }
+          /* illustration: a month, 30 days */
+          #p-cal { left: 100px; top: 582px; width: 788px; height: 780px; }
+          #p-cal .hd { position: absolute; left: 24px; top: 18px; font: 400 38px/1 "Lilita One", sans-serif; color: #0a0d14; }
+          #p-cal .hd b { font-weight: 400; color: #1f6fd6; }
+          #p-grid { position: absolute; left: 20px; top: 66px; width: 748px; height: 704px; }
+          .cc { position: absolute; width: 118px; height: 136px; border-radius: 14px; background: #eef5ff; border: 3px solid #bcd3f3; overflow: hidden; }
+          .cc span { position: absolute; left: 8px; top: 6px; font: 700 22px/1 "Rubik", sans-serif; color: #7d93b8; }
+          .cc .th { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
+          /* rebuilt from the app's Export panel: the pack */
+          #p-sel { left: 80px; top: 1086px; width: 828px; height: 258px; }
+          #p-sel .tx { position: absolute; left: 30px; right: 30px; top: 22px; font: 500 30px/1.25 "Rubik", sans-serif; color: #3a4a66; }
+          #p-sel .num { position: absolute; left: 30px; top: 116px; width: 260px; height: 96px; border-radius: 26px; border: 6px solid #0a0d14; background: #f6faff;
+            display: flex; align-items: center; justify-content: center; gap: 14px; font: 700 40px/1 "Rubik", sans-serif; color: #0a0d14; }
+          #p-sel .go { position: absolute; left: 310px; top: 116px; width: 488px; height: 96px; border-radius: 26px; border: 6px solid #0a0d14; background: #f6faff;
+            display: flex; align-items: center; justify-content: center; gap: 14px; font: 700 34px/1 "Rubik", sans-serif; color: #0a0d14; box-shadow: 0 10px 0 #0a0d14; white-space: nowrap; }
+          #p-ring { position: absolute; left: 556px; top: 1178px; width: 180px; height: 180px; border-radius: 50%; border: 12px solid #1f6fd6; opacity: 0; }
+        </style>
+        <div class="appcard" id="p-cal"><div class="hd">30 days · <b>a video a day</b></div><div id="p-grid" data-layout-allow-overlap><div class="cc" style="left:0px;top:0px"><span data-layout-ignore>1</span><img class="th" src="assets/thumbs/p01.jpg" alt="" /></div><div class="cc" style="left:126px;top:0px"><span data-layout-ignore>2</span><img class="th" src="assets/thumbs/p02.jpg" alt="" /></div><div class="cc" style="left:252px;top:0px"><span data-layout-ignore>3</span><img class="th" src="assets/thumbs/p03.jpg" alt="" /></div><div class="cc" style="left:378px;top:0px"><span data-layout-ignore>4</span><img class="th" src="assets/thumbs/p04.jpg" alt="" /></div><div class="cc" style="left:504px;top:0px"><span data-layout-ignore>5</span><img class="th" src="assets/thumbs/p05.jpg" alt="" /></div><div class="cc" style="left:630px;top:0px"><span data-layout-ignore>6</span><img class="th" src="assets/thumbs/p06.jpg" alt="" /></div><div class="cc" style="left:0px;top:142px"><span data-layout-ignore>7</span><img class="th" src="assets/thumbs/p07.jpg" alt="" /></div><div class="cc" style="left:126px;top:142px"><span data-layout-ignore>8</span><img class="th" src="assets/thumbs/p08.jpg" alt="" /></div><div class="cc" style="left:252px;top:142px"><span data-layout-ignore>9</span><img class="th" src="assets/thumbs/p09.jpg" alt="" /></div><div class="cc" style="left:378px;top:142px"><span data-layout-ignore>10</span><img class="th" src="assets/thumbs/p10.jpg" alt="" /></div><div class="cc" style="left:504px;top:142px"><span data-layout-ignore>11</span><img class="th" src="assets/thumbs/p11.jpg" alt="" /></div><div class="cc" style="left:630px;top:142px"><span data-layout-ignore>12</span><img class="th" src="assets/thumbs/p12.jpg" alt="" /></div><div class="cc" style="left:0px;top:284px"><span data-layout-ignore>13</span><img class="th" src="assets/thumbs/p13.jpg" alt="" /></div><div class="cc" style="left:126px;top:284px"><span data-layout-ignore>14</span><img class="th" src="assets/thumbs/p14.jpg" alt="" /></div><div class="cc" style="left:252px;top:284px"><span data-layout-ignore>15</span><img class="th" src="assets/thumbs/p15.jpg" alt="" /></div><div class="cc" style="left:378px;top:284px"><span data-layout-ignore>16</span><img class="th" src="assets/thumbs/p16.jpg" alt="" /></div><div class="cc" style="left:504px;top:284px"><span data-layout-ignore>17</span><img class="th" src="assets/thumbs/p17.jpg" alt="" /></div><div class="cc" style="left:630px;top:284px"><span data-layout-ignore>18</span><img class="th" src="assets/thumbs/p18.jpg" alt="" /></div><div class="cc" style="left:0px;top:426px"><span data-layout-ignore>19</span><img class="th" src="assets/thumbs/p19.jpg" alt="" /></div><div class="cc" style="left:126px;top:426px"><span data-layout-ignore>20</span><img class="th" src="assets/thumbs/p20.jpg" alt="" /></div><div class="cc" style="left:252px;top:426px"><span data-layout-ignore>21</span><img class="th" src="assets/thumbs/p21.jpg" alt="" /></div><div class="cc" style="left:378px;top:426px"><span data-layout-ignore>22</span><img class="th" src="assets/thumbs/p22.jpg" alt="" /></div><div class="cc" style="left:504px;top:426px"><span data-layout-ignore>23</span><img class="th" src="assets/thumbs/p23.jpg" alt="" /></div><div class="cc" style="left:630px;top:426px"><span data-layout-ignore>24</span><img class="th" src="assets/thumbs/p24.jpg" alt="" /></div><div class="cc" style="left:0px;top:568px"><span data-layout-ignore>25</span><img class="th" src="assets/thumbs/p25.jpg" alt="" /></div><div class="cc" style="left:126px;top:568px"><span data-layout-ignore>26</span><img class="th" src="assets/thumbs/p26.jpg" alt="" /></div><div class="cc" style="left:252px;top:568px"><span data-layout-ignore>27</span><img class="th" src="assets/thumbs/p27.jpg" alt="" /></div><div class="cc" style="left:378px;top:568px"><span data-layout-ignore>28</span><img class="th" src="assets/thumbs/p28.jpg" alt="" /></div><div class="cc" style="left:504px;top:568px"><span data-layout-ignore>29</span><img class="th" src="assets/thumbs/p29.jpg" alt="" /></div><div class="cc" style="left:630px;top:568px"><span data-layout-ignore>30</span><img class="th" src="assets/thumbs/p30.jpg" alt="" /></div></div></div>
+        <div class="appcard" id="p-sel"><div class="tx">Or a pack of all-different videos, to post over the next few days:</div>
+          <div class="num"><span id="p-n">10</span> videos</div><div class="go">Make the pack <span class="cplus">CREATOR+</span></div></div>
+        <div id="p-ring"></div>
+        <div class="kt" id="p-t1"><span class="w l">Need</span> <span class="w l">a</span> <span class="w l">month</span></div>
+        <div class="kt" id="p-t2"><span class="w k">OF CONTENT?</span></div>
+        <div class="kt" id="p-t3"><span class="w l">up</span> <span class="w l">to</span></div>
+        <div class="kt" id="p-t4"><span class="w k ice">30 VIDEOS</span></div>
+        <div id="p-badge"><span class="cplus">CREATOR PLUS</span></div>
+        <script>
+          (function () {
+            var D = 4.609, B = 1.2, C = 2.95;   // B: the pack panel, C: the videos fill the month
+            var tl = gsap.timeline({ paused: true });
+            KIT.words(tl, "#p-t1", 0.05, 0.08); KIT.slam(tl, "#p-t2 .w", 0.35);
+            tl.fromTo("#p-cal", { opacity: 0, y: 500, rotationX: 55, scale: 0.8, transformPerspective: 1800, transformOrigin: "50% 100%" },
+              { opacity: 1, y: 0, rotationX: 12, scale: 0.94, transformPerspective: 1800, duration: 0.6, ease: "expo.out" }, 0.1);
+            tl.fromTo(".cc", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(1.8)", stagger: { each: 0.012, from: "start" } }, 0.3);
+            // the pack, as in the app: 10 videos, 20, 30, then Make the pack (Creator Plus)
+            KIT.pop(tl, "#p-sel", B, { y: 400 });
+            [["20", B + 0.45], ["30", B + 0.7]].forEach(function (k) { tl.set("#p-n", { textContent: k[0] }, k[1]); tl.fromTo("#p-sel .num", { scale: 1.08 }, { scale: 1, duration: 0.16, immediateRender: false }, k[1]); });
+            KIT.tap(tl, "#p-ring", B + 0.95);
+            tl.fromTo("#p-sel .go", { y: 0 }, { y: 8, duration: 0.07, yoyo: true, repeat: 1, immediateRender: false }, B + 0.95);
+            tl.to("#p-sel", { y: 500, opacity: 0, duration: 0.3, ease: "power3.in" }, C - 0.2);
+            // thirty different videos land on the thirty days, in a wave
+            tl.to("#p-cal", { rotationX: 0, scale: 1, duration: 0.6, ease: "expo.out" }, C - 0.2);
+            tl.fromTo(".cc .th", { opacity: 0, scale: 1.6, rotation: -8 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.3, ease: "expo.out", stagger: { each: 0.03, grid: [5, 6], from: "start" } }, C);
+            KIT.out(tl, "#p-t1, #p-t2", C - 0.1, 0.18);
+            KIT.words(tl, "#p-t3", C, 0.08); KIT.slam(tl, "#p-t4 .w", C + 0.2);
+            KIT.pop(tl, "#p-badge", C + 0.45, { y: -60 });
+            tl.to("#p-cal", { y: -20, duration: D - C - 0.8, ease: "sine.inOut" }, C + 0.4);
+            tl.to("#p-cal", { y: 1300, rotationX: -40, opacity: 0, duration: 0.34, ease: "power3.in" }, D - 0.36);
+            KIT.out(tl, "#p-t3, #p-t4, #p-badge", D - 0.34, 0.2);
+            window.__timelines["s10"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><title>montage — Stalak's own cuts, full screen</title></head>
+  <body>
+    <template>
+      <!--
+        The finished snippet, full screen. These are the cuts Stalak made itself on the three takes
+        (its timeline, Version 1, 21 shots; see SPEC.md). Film time = take time + 1.452 s.
+        shot 7  take 1  9.040 - 9.765   (media 7.588)
+        shot 8  take 3  9.765 - 11.294  (media 8.313)
+        shot 9  take 1  11.294 - 12.058 (media 9.842)
+        shot 10 take 3  12.058 - 12.823 (media 10.606)
+        shot 11 take 1  12.823 - 13.450 (media 11.371)
+      -->
+      <div id="root" data-composition-id="mont" data-width="1080" data-height="1920">
+        <style>
+          #root { position: absolute; inset: 0; overflow: hidden; background: #0a0d14; }
+          #m-cam { position: absolute; inset: 0; transform-origin: 50% 42%; }
+          #m-cam video { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; object-fit: cover; }
+          #m-flash { position: absolute; inset: 0; background: #fff; opacity: 0; }
+        </style>
+        <div id="m-cam" data-layout-allow-overflow>
+          <video id="m-v1" class="clip" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="0" data-duration="0.725" data-media-start="7.588" muted playsinline></video>
+          <video id="m-v2" class="clip" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="0.725" data-duration="1.529" data-media-start="8.313" muted playsinline></video>
+          <video id="m-v3" class="clip" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="2.254" data-duration="0.764" data-media-start="9.842" muted playsinline></video>
+          <video id="m-v4" class="clip" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="3.018" data-duration="0.765" data-media-start="10.606" muted playsinline></video>
+          <video id="m-v5" class="clip" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="3.783" data-duration="0.627" data-media-start="11.371" muted playsinline></video>
+        </div>
+        <div id="m-flash"></div>
+        <script>
+          (function () {
+            var tl = gsap.timeline({ paused: true });
+            // arrives slightly large out of the zoom-through, settles
+            tl.fromTo("#m-cam", { scale: 1.09 }, { scale: 1, duration: 0.32, ease: "expo.out" }, 0);
+            // a short white flash on each of Stalak's cuts
+            [0.725, 2.254, 3.018, 3.783].forEach(function (t) {
+              tl.fromTo("#m-flash", { opacity: 0.32 }, { opacity: 0, duration: 0.12, ease: "power2.out", immediateRender: false }, t);
+            });
+            // "effects": a punch-in on the word, then on "vibe"
+            tl.set("#m-cam", { scale: 1.1 }, 2.61);
+            tl.to("#m-cam", { scale: 1, duration: 0.42, ease: "power2.out" }, 2.61 + 1 / 30);
+            tl.set("#m-cam", { scale: 1.06 }, 3.66);
+            tl.to("#m-cam", { scale: 1, duration: 0.36, ease: "power2.out" }, 3.66 + 1 / 30);
+            window.__timelines["mont"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>
