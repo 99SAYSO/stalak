@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><title>s2 — the promise</title></head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="s2" data-width="1080" data-height="1920">
+        <style>
+          @font-face { font-family: "Lilita One"; src: url("assets/fonts/lilitaone.ttf"); }
+          #root { position: absolute; inset: 0; overflow: hidden; background: #1f6fd6; }
+          #s2-stage { position: absolute; inset: 0; }
+          .s2-card { position: absolute; width: 300px; height: 533px; left: 0; top: 0; }
+          .s2-card .scr { position: absolute; inset: 0; border: 8px solid #0a0d14; border-radius: 32px; overflow: hidden; background: #0a0d14; box-shadow: 0 18px 0 #0a0d14; }
+          .s2-card .scr img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+          .s2-card .badge { position: absolute; left: -22px; top: -22px; width: 84px; height: 84px; border-radius: 50%; border: 7px solid #0a0d14; display: flex; align-items: center; justify-content: center;
+            font: 400 50px/1 "Lilita One", sans-serif; color: #fff; text-shadow: 0 4px 0 #0a0d14; box-shadow: 0 7px 0 #0a0d14; }
+          .hl { position: absolute; left: 0; width: 1080px; text-align: center; font-family: "Lilita One", sans-serif; color: #fff; line-height: 0.95; letter-spacing: 0.01em;
+            text-shadow: 7px 0 0 #0a0d14, -7px 0 0 #0a0d14, 0 7px 0 #0a0d14, 0 -7px 0 #0a0d14, 5px 5px 0 #0a0d14, -5px 5px 0 #0a0d14, 5px -5px 0 #0a0d14, -5px -5px 0 #0a0d14, 0 18px 0 #0a0d14; }
+          #s2-t1 { top: 300px; font-size: 156px; }
+          #s2-t2 { top: 200px; font-size: 150px; }
+          #s2-frags .fr { opacity: 0; }
+          #s2-t2 span { display: inline-block; }
+          #s2-t2 .acc { color: #d6ecff; }
+          #s2-shard { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+          #s2-logo { position: absolute; left: 760px; top: 560px; width: 190px; height: 190px; opacity: 0; filter: drop-shadow(0 10px 0 #0a0d14); }
+          #s2-flash { position: absolute; inset: 0; background: #fff; opacity: 0; }
+        </style>
+        <div id="s2-stage">
+          <div class="s2-card" id="s2-c1"><div class="scr"><img src="assets/stills/t1_freeze.jpg" alt="" /></div><div class="badge" style="background:#d6336c">1</div></div>
+          <div class="s2-card" id="s2-c3"><div class="scr"><img src="assets/stills/t3_freeze.jpg" alt="" /></div><div class="badge" style="background:#e0952c">3</div></div>
+          <div class="s2-card" id="s2-c2"><div class="scr"><img src="assets/stills/t2_freeze.jpg" alt="" /></div><div class="badge" style="background:#3a6fe0">2</div></div>
+          <img id="s2-logo" src="assets/brand/icon.svg" alt="Stalak" />
+          <div class="hl" id="s2-t1">ONE TRACK.</div>
+          <div class="hl" id="s2-t2"><span class="acc">NO</span> <span>EDITING</span><br /><span>SKILLS.</span></div>
+          <!-- the ice shard that bursts through: translucent blue ice, ink outline, a glossy edge -->
+          <svg id="s2-shard" viewBox="0 0 1080 1920" aria-hidden="true">
+            <g id="s2-shard-g">
+              <polygon points="430,560 700,500 820,880 760,1420 520,1560 330,1180" fill="#d6ecff" fill-opacity="0.62" stroke="#0a0d14" stroke-width="8" stroke-linejoin="round" />
+              <polygon points="470,610 690,560 700,700 520,760" fill="#ffffff" fill-opacity="0.7" />
+              <polyline points="700,500 820,880 760,1420" fill="none" stroke="#ffffff" stroke-width="6" stroke-linejoin="round" />
+            </g>
+            <g id="s2-frags">
+              <polygon class="fr" points="0,-30 22,6 -4,28 -24,0" fill="#d6ecff" stroke="#0a0d14" stroke-width="5" />
+              <polygon class="fr" points="0,-22 18,10 -12,18" fill="#ffffff" stroke="#0a0d14" stroke-width="5" />
+              <polygon class="fr" points="0,-34 16,0 0,30 -16,0" fill="#d6ecff" stroke="#0a0d14" stroke-width="5" />
+              <polygon class="fr" points="-20,-16 20,-10 6,22" fill="#ffffff" stroke="#0a0d14" stroke-width="5" />
+              <polygon class="fr" points="0,-26 24,-4 8,24 -18,12" fill="#d6ecff" stroke="#0a0d14" stroke-width="5" />
+              <polygon class="fr" points="-12,-24 14,-20 18,14 -16,20" fill="#ffffff" stroke="#0a0d14" stroke-width="5" />
+            </g>
+          </svg>
+        </div>
+        <div id="s2-flash"></div>
+        <script>
+          (function () {
+            var F = 1 / 30;
+            var tl = gsap.timeline({ paused: true });
+            // the three cards start exactly where scene 1 left them, frozen on the frame at the cut
+            var A = { c1: [55, 744, -6], c2: [390, 724, 2], c3: [725, 749, 6] };
+            tl.set("#s2-c1", { x: A.c1[0], y: A.c1[1], rotation: A.c1[2] }, 0);
+            tl.set("#s2-c2", { x: A.c2[0], y: A.c2[1], rotation: A.c2[2] }, 0);
+            tl.set("#s2-c3", { x: A.c3[0], y: A.c3[1], rotation: A.c3[2] }, 0);
+            // the freeze: one white frame and a snap
+            tl.fromTo("#s2-flash", { opacity: 0.85 }, { opacity: 0, duration: 0.14, ease: "power2.out" }, 0);
+            tl.fromTo("#s2-stage", { scale: 1.035 }, { scale: 1, duration: 0.12, ease: "power3.out" }, 0);
+            // ONE TRACK.
+            tl.fromTo("#s2-t1", { scale: 1.7, opacity: 0, filter: "blur(12px)" }, { scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "expo.out" }, 0.05);
+            tl.to("#s2-t1", { opacity: 0, filter: "blur(10px)", duration: 0.14, ease: "power2.in" }, 0.86);
+            // the shard bursts through from bottom-left to top-right; fragments fly from the centre
+            tl.fromTo("#s2-shard-g", { x: -900, y: 1100, rotation: -18, transformOrigin: "540px 1000px" }, { x: 0, y: 0, rotation: 0, duration: 0.2, ease: "power3.out" }, 0.12);
+            tl.to("#s2-shard-g", { x: 980, y: -1250, rotation: 14, duration: 0.24, ease: "power3.in" }, 0.36);
+            var fr = [[-260, -340, 120], [300, -260, -90], [-330, 260, 200], [340, 300, -160], [-60, -470, 80], [120, 470, -220]];
+            document.querySelectorAll("#s2-frags .fr").forEach(function (el, i) {
+              tl.fromTo(el, { x: 540, y: 1000, rotation: 0, opacity: 1, scale: 0.6 },
+                { x: 540 + fr[i][0], y: 1000 + fr[i][1], rotation: fr[i][2], opacity: 0, scale: 1.3, duration: 0.6, ease: "power2.out", immediateRender: false }, 0.3);
+            });
+            // the takes snap together into one stack: the centre take forward, the others tucked behind
+            tl.to("#s2-c1", { x: 330, y: 760, rotation: -10, scale: 0.92, duration: 0.34, ease: "expo.out" }, 0.3);
+            tl.to("#s2-c3", { x: 450, y: 760, rotation: 10, scale: 0.92, duration: 0.34, ease: "expo.out" }, 0.3);
+            tl.to("#s2-c2", { x: 390, y: 800, rotation: 0, scale: 1.24, duration: 0.34, ease: "expo.out" }, 0.33);
+            // NO EDITING SKILLS. word by word on the voice
+            tl.set("#s2-t2", { opacity: 1 }, 0);
+            var w = document.querySelectorAll("#s2-t2 span");
+            tl.set(w, { opacity: 0 }, 0);
+            [0.95, 1.13, 1.42].forEach(function (t, i) {
+              tl.fromTo(w[i], { opacity: 0, filter: "blur(8px)", y: 0 }, { opacity: 1, filter: "blur(0px)", duration: 0.13, ease: "power3.out" }, t);
+            });
+            // the logo, briefly, stamped on the corner of the stack
+            tl.fromTo("#s2-logo", { opacity: 0, scale: 0.2, rotation: -25 }, { opacity: 1, scale: 1, rotation: 8, duration: 0.32, ease: "back.out(2)" }, 1.72);
+            // whip out to the left into the product
+            tl.to("#s2-stage", { x: -1150, duration: 0.18, ease: "power3.in" }, 2.22);
+            window.__timelines["s2"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

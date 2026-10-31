@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><title>s4 — the magic (auto-sync, cut on beat)</title></head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="s4" data-width="1080" data-height="1920">
+        <style>
+          @font-face { font-family: "Lilita One"; src: url("assets/fonts/lilitaone.ttf"); }
+          #root { position: absolute; inset: 0; overflow: hidden; }
+          #s4-bg { position: absolute; inset: 0; background: #1f6fd6; }
+          .hl { position: absolute; left: 0; width: 1080px; text-align: center; font-family: "Lilita One", sans-serif; color: #fff; line-height: 0.95; letter-spacing: 0.01em;
+            text-shadow: 7px 0 0 #0a0d14, -7px 0 0 #0a0d14, 0 7px 0 #0a0d14, 0 -7px 0 #0a0d14, 5px 5px 0 #0a0d14, -5px 5px 0 #0a0d14, 5px -5px 0 #0a0d14, -5px -5px 0 #0a0d14, 0 18px 0 #0a0d14; }
+          #s4-h1 { top: 300px; font-size: 146px; }
+          #s4-h2 { top: 214px; font-size: 140px; }
+          #s4-h2 span { display: inline-block; }
+          #s4-panel { position: absolute; left: 60px; top: 560px; width: 960px; height: 770px; border: 8px solid #0a0d14; border-radius: 44px; overflow: hidden; background: #1f6fd6; box-shadow: 0 18px 0 #0a0d14; }
+          #s4-list { position: absolute; left: 92px; top: 26px; width: 760px; }
+          #s4-list img { display: block; width: 760px; }
+          .s4-row { position: absolute; left: 86px; width: 772px; height: 214px; border-radius: 26px; background: #ffffff; opacity: 0; }
+          #s4-scan { position: absolute; left: 0; top: 0; width: 960px; height: 18px; }
+          #s4-scan .bar { position: absolute; left: 0; right: 0; top: 0; height: 18px; background: #1f6fd6; border-top: 4px solid #0a0d14; border-bottom: 4px solid #0a0d14; }
+          #s4-scan .core { position: absolute; left: 0; right: 0; top: 7px; height: 4px; background: #ffffff; }
+          #s4-tl { position: absolute; left: 111px; top: 986px; width: 858px; padding: 16px 18px 18px; background: #ffffff; border: 8px solid #0a0d14; border-radius: 34px; box-shadow: 0 16px 0 #0a0d14; opacity: 0; }
+          #s4-tl img { display: block; width: 806px; }
+        </style>
+        <div id="s4-bg"></div>
+        <div class="hl" id="s4-h1">AUTO-SYNC.</div>
+        <div id="s4-panel">
+          <div id="s4-list"><img src="assets/ui/s2_list.png" alt="Stalak: Take 1, Take 2 and Take 3, each synced to the song" /></div>
+          <div class="s4-row" id="s4-r1" style="top: 22px"></div>
+          <div class="s4-row" id="s4-r2" style="top: 262px"></div>
+          <div class="s4-row" id="s4-r3" style="top: 500px"></div>
+          <div id="s4-scan"><div class="bar"></div><div class="core"></div></div>
+        </div>
+        <div class="hl" id="s4-h2"><span>CUT</span> <span>ON</span> <span>BEAT.</span></div>
+        <div id="s4-tl"><img src="assets/ui/s4_timeline.png" alt="Stalak: Your edit, Version 1, 21 shots, 25.6 s; the playhead on shot 8, take 3" /></div>
+        <script>
+          (function () {
+            var F = 1 / 30;
+            var tl = gsap.timeline({ paused: true });
+            // A. AUTO-SYNC: the same window as scene 3; a blue sync line runs down the takes, each row answers
+            tl.fromTo("#s4-h1", { scale: 1.75, opacity: 0, filter: "blur(12px)" }, { scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "expo.out" }, 0.02);
+            tl.fromTo("#s4-scan", { y: 0, opacity: 1 }, { y: 740, duration: 0.86, ease: "power2.inOut" }, 0.08);
+            [["#s4-r1", 0.3], ["#s4-r2", 0.55], ["#s4-r3", 0.8]].forEach(function (r) {
+              tl.fromTo(r[0], { opacity: 0.55 }, { opacity: 0, duration: 0.26, ease: "power2.out", immediateRender: false }, r[1]);
+            });
+            // zoom through the window into the footage (the montage plays underneath from 1.14)
+            tl.to("#s4-panel", { scale: 2.6, duration: 0.2, ease: "power3.in" }, 0.94);
+            tl.to("#s4-h1", { opacity: 0, filter: "blur(10px)", duration: 0.14, ease: "power2.in" }, 0.94);
+            tl.set("#s4-panel, #s4-bg, #s4-h1", { opacity: 0 }, 1.14);
+            // B. CUT ON BEAT over the real cuts, word by word on the beats
+            var w = document.querySelectorAll("#s4-h2 span");
+            tl.set(w, { opacity: 0 }, 0);
+            [1.52, 1.71, 1.9].forEach(function (t, i) {
+              tl.fromTo(w[i], { opacity: 0, scale: 1.6, filter: "blur(8px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.16, ease: "expo.out" }, t);
+            });
+            // the real timeline of the edit slides up on the cut to take 3
+            tl.fromTo("#s4-tl", { y: 320, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, ease: "expo.out" }, 1.86);
+            // leave for the result
+            tl.to("#s4-h2", { opacity: 0, filter: "blur(10px)", duration: 0.15, ease: "power2.in" }, 2.48);
+            tl.to("#s4-tl", { y: 360, opacity: 0, duration: 0.18, ease: "power3.in" }, 2.46);
+            window.__timelines["s4"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><title>s5 — the result (karaoke words over the snippet)</title></head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="s5" data-width="1080" data-height="1920">
+        <style>
+          @font-face { font-family: "Lilita One"; src: url("assets/fonts/lilitaone.ttf"); }
+          #root { position: absolute; inset: 0; overflow: hidden; }
+          #s5-lines { position: absolute; left: 0; top: 960px; width: 1080px; text-align: center; font-family: "Lilita One", sans-serif; font-size: 124px; line-height: 1; letter-spacing: 0.01em; }
+          .ln { display: block; height: 118px; }
+          .w { position: relative; display: inline-block; margin: 0 14px; }
+          .w .b, .w .f { display: block; text-shadow: 7px 0 0 #0a0d14, -7px 0 0 #0a0d14, 0 7px 0 #0a0d14, 0 -7px 0 #0a0d14, 5px 5px 0 #0a0d14, -5px 5px 0 #0a0d14, 5px -5px 0 #0a0d14, -5px -5px 0 #0a0d14, 0 16px 0 #0a0d14; }
+          .w .b { color: #8fb6e6; }
+          .w .f { position: absolute; left: 0; top: 0; color: #ffffff; clip-path: inset(-20px 100% -30px -20px); }
+        </style>
+        <div id="s5-lines" data-layout-allow-overlap>
+          <span class="ln"><span class="w" id="s5-w1"><span class="b">LYRICS.</span><span class="f">LYRICS.</span></span></span>
+          <span class="ln"><span class="w" id="s5-w2"><span class="b">EFFECTS.</span><span class="f">EFFECTS.</span></span></span>
+          <span class="ln"><span class="w" id="s5-w3"><span class="b">YOUR</span><span class="f">YOUR</span></span><span class="w" id="s5-w4"><span class="b">VIBE.</span><span class="f">VIBE.</span></span></span>
+        </div>
+        <script>
+          (function () {
+            var tl = gsap.timeline({ paused: true });
+            // the three lines arrive together, unlit, just before the voice
+            tl.fromTo("#s5-lines .ln", { opacity: 0, y: 40, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.2, ease: "expo.out", stagger: 0.07 }, 0.18);
+            // karaoke: each word fills left to right as the voice says it (word times from the voice-over)
+            [["#s5-w1", 0.48, 0.42], ["#s5-w2", 1.08, 0.5], ["#s5-w3", 1.83, 0.16], ["#s5-w4", 2.13, 0.45]].forEach(function (k) {
+              tl.fromTo(k[0] + " .f", { clipPath: "inset(-20px 100% -30px -20px)" }, { clipPath: "inset(-20px -20px -30px -20px)", duration: k[2], ease: "none" }, k[1]);
+              tl.fromTo(k[0], { scale: 1 }, { scale: 1.08, duration: 0.08, ease: "power2.out", yoyo: true, repeat: 1 }, k[1]);
+            });
+            tl.to("#s5-lines", { opacity: 0, filter: "blur(10px)", duration: 0.14, ease: "power2.in" }, 2.72);
+            window.__timelines["s5"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

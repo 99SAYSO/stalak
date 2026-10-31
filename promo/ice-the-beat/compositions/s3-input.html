@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><title>s3 — the input (real Stalak screens)</title></head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="s3" data-width="1080" data-height="1920">
+        <style>
+          @font-face { font-family: "Lilita One"; src: url("assets/fonts/lilitaone.ttf"); }
+          #root { position: absolute; inset: 0; overflow: hidden; background: #1f6fd6; }
+          .hl { position: absolute; left: 0; width: 1080px; text-align: center; font-family: "Lilita One", sans-serif; color: #fff; line-height: 0.95; letter-spacing: 0.01em;
+            text-shadow: 7px 0 0 #0a0d14, -7px 0 0 #0a0d14, 0 7px 0 #0a0d14, 0 -7px 0 #0a0d14, 5px 5px 0 #0a0d14, -5px 5px 0 #0a0d14, 5px -5px 0 #0a0d14, -5px -5px 0 #0a0d14, 0 18px 0 #0a0d14; }
+          .hl .l1 { display: block; font-size: 120px; }
+          .hl .l2 { display: block; font-size: 172px; margin-top: 6px; }
+          #s3-ha, #s3-hb { top: 196px; }
+          /* the phone-sized window onto the real app */
+          #s3-panel { position: absolute; left: 60px; top: 560px; width: 960px; height: 770px; border: 8px solid #0a0d14; border-radius: 44px; overflow: hidden; background: #1f6fd6; box-shadow: 0 18px 0 #0a0d14; }
+          #s3-cam { position: absolute; inset: 0; transform-origin: 50% 58%; }
+          .ui { position: absolute; left: -8px; top: 0; width: 960px; }
+          .ui img { display: block; width: 960px; }
+          #s3-u1 img { transform: translateY(-623px); }   /* Pick your song · Import your music */
+          #s3-u2 img { transform: translateY(-890px); }   /* Change song · neva-die 157.0 BPM · Listen */
+          #s3-u3 img { transform: translateY(-886px); }   /* Take 1 synced · Take 2 analyzing */
+          #s3-u4 { left: 92px; top: 26px; width: 760px; }
+          #s3-u4 img { width: 760px; }
+        </style>
+        <div class="hl" id="s3-ha"><span class="l1">ADD YOUR</span><span class="l2">SOUND.</span></div>
+        <div class="hl" id="s3-hb"><span class="l1">ADD YOUR</span><span class="l2">TAKES.</span></div>
+        <div id="s3-panel">
+          <div id="s3-cam">
+            <div class="ui" id="s3-u1"><img src="assets/ui/s1_empty.jpg" alt="Stalak, step 1: Pick your song, Import your music" /></div>
+            <div class="ui" id="s3-u2"><img src="assets/ui/s1_loaded.jpg" alt="Stalak, step 1 after import: neva-die, 157.0 BPM" /></div>
+            <div class="ui" id="s3-u3"><img src="assets/ui/s2_load01.jpg" alt="Stalak, step 2: Take 1 synced to the song, Take 2 analyzing" /></div>
+            <div class="ui" id="s3-u4"><img src="assets/ui/s2_list.png" alt="Stalak, step 2: the three takes synced to the song" /></div>
+          </div>
+        </div>
+        <script>
+          (function () {
+            var tl = gsap.timeline({ paused: true });
+            // arrive from the right, mid-whip from scene 2
+            tl.fromTo("#s3-panel", { x: 1100, filter: "blur(14px)" }, { x: 0, filter: "blur(0px)", duration: 0.34, ease: "expo.out" }, 0);
+            tl.fromTo("#s3-ha", { x: 900, opacity: 0, filter: "blur(12px)" }, { x: 0, opacity: 1, filter: "blur(0px)", duration: 0.3, ease: "expo.out" }, 0.04);
+            // the screens: one state after another, as the app goes through them
+            tl.set("#s3-u2, #s3-u3, #s3-u4", { opacity: 0 }, 0);
+            // the song is in (on "track"): blur swap to the loaded state, then push in on the song line
+            tl.to("#s3-u1", { opacity: 0, filter: "blur(8px)", duration: 0.12, ease: "power2.in" }, 0.6);
+            tl.fromTo("#s3-u2", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.13, ease: "power3.out" }, 0.66);
+            tl.fromTo("#s3-cam", { scale: 1 }, { scale: 1.16, duration: 0.6, ease: "power2.inOut" }, 0.8);
+            // ADD YOUR TAKES: the title and the window slide on together
+            tl.to("#s3-ha", { x: -900, opacity: 0, filter: "blur(10px)", duration: 0.18, ease: "power3.in" }, 1.36);
+            tl.fromTo("#s3-hb", { x: 900, opacity: 0, filter: "blur(12px)" }, { x: 0, opacity: 1, filter: "blur(0px)", duration: 0.28, ease: "expo.out" }, 1.5);
+            tl.to("#s3-cam", { x: -1000, duration: 0.16, ease: "power3.in" }, 1.36);
+            tl.set("#s3-u2", { opacity: 0 }, 1.52);
+            tl.set("#s3-u3", { opacity: 1 }, 1.52);
+            tl.fromTo("#s3-cam", { x: 1000, scale: 1 }, { x: 0, scale: 1, duration: 0.26, ease: "expo.out", immediateRender: false }, 1.52);
+            // all three takes synced
+            tl.to("#s3-u3", { opacity: 0, filter: "blur(8px)", duration: 0.12, ease: "power2.in" }, 2.08);
+            tl.fromTo("#s3-u4", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.13, ease: "power3.out" }, 2.14);
+            window.__timelines["s3"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

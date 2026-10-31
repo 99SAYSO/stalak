@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><title>s1 — the hook</title></head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="s1" data-width="1080" data-height="1920">
+        <style>
+          @font-face { font-family: "Lilita One"; src: url("assets/fonts/lilitaone.ttf"); }
+          @font-face { font-family: "Rubik"; src: url("assets/fonts/rubik.ttf"); font-weight: 300 900; }
+          #root { position: absolute; inset: 0; overflow: hidden; background: #0a0d14; }
+          #s1-flood { position: absolute; inset: 0; background: #1f6fd6; opacity: 0; }
+          #s1-stage { position: absolute; inset: 0; }
+          #s1-crack { position: absolute; inset: 0; width: 1080px; height: 1920px; }
+          #s1-crack path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+          #s1-crack .o { stroke: #1f6fd6; stroke-width: 12; }
+          #s1-crack .i { stroke: #eaf4ff; stroke-width: 3.5; }
+          .s1-card { position: absolute; width: 300px; height: 533px; left: 0; top: 0; opacity: 0; }
+          .s1-card .scr { position: absolute; inset: 0; border: 8px solid #0a0d14; border-radius: 32px; overflow: hidden; background: #0a0d14; box-shadow: 0 18px 0 #0a0d14; }
+          .s1-card .scr img, .s1-card .scr video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+          .s1-card .badge { position: absolute; left: -22px; top: -22px; width: 84px; height: 84px; border-radius: 50%; border: 7px solid #0a0d14; display: flex; align-items: center; justify-content: center;
+            font: 400 50px/1 "Lilita One", sans-serif; color: #fff; text-shadow: 0 4px 0 #0a0d14; box-shadow: 0 7px 0 #0a0d14; }
+          .hl { position: absolute; left: 0; width: 1080px; text-align: center; font-family: "Lilita One", sans-serif; color: #fff; line-height: 0.95; letter-spacing: 0.01em;
+            text-shadow: 7px 0 0 #0a0d14, -7px 0 0 #0a0d14, 0 7px 0 #0a0d14, 0 -7px 0 #0a0d14, 5px 5px 0 #0a0d14, -5px 5px 0 #0a0d14, 5px -5px 0 #0a0d14, -5px -5px 0 #0a0d14, 0 18px 0 #0a0d14; }
+          #s1-w1 { top: 236px; font-size: 210px; }
+          #s1-w2 { top: 446px; font-size: 210px; }
+          #s1-flash { position: absolute; inset: 0; background: #fff; opacity: 0; }
+        </style>
+
+        <div id="s1-flood"></div>
+        <div id="s1-stage">
+          <!-- the crack: drawn path by path (pathLength 1, dash offset 1 to 0) -->
+          <svg id="s1-crack" viewBox="0 0 1080 1920" aria-hidden="true">
+            <g id="s1-crack-g">
+              <path class="o c-a" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" d="M540 960 L585 880 L572 820 L640 735 L628 660 L705 560 L700 470 L790 360 L812 250 L900 160" />
+              <path class="o c-b" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" d="M540 960 L498 1050 L515 1120 L440 1215 L455 1300 L370 1420 L385 1520 L290 1650 L270 1760 L180 1880" />
+              <path class="o c-c" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" d="M640 735 L720 760 L790 720 L880 760 L990 730 L1080 760" />
+              <path class="o c-d" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" d="M705 560 L640 520 L600 430 L520 400 L470 330" />
+              <path class="o c-e" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" d="M440 1215 L360 1190 L280 1230 L160 1200 L60 1240" />
+              <path class="o c-f" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" d="M455 1300 L560 1360 L620 1450 L720 1480 L800 1580" />
+              <path class="o c-g" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" d="M540 960 L470 930 L400 950 L330 900 L230 915" />
+              <path class="o c-h" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" d="M540 960 L610 1000 L700 990 L760 1050 L860 1040" />
+              <path class="i c-a" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" d="M540 960 L585 880 L572 820 L640 735 L628 660 L705 560 L700 470 L790 360 L812 250 L900 160" />
+              <path class="i c-b" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" d="M540 960 L498 1050 L515 1120 L440 1215 L455 1300 L370 1420 L385 1520 L290 1650 L270 1760 L180 1880" />
+              <path class="i c-c" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" d="M640 735 L720 760 L790 720 L880 760 L990 730 L1080 760" />
+              <path class="i c-d" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" d="M705 560 L640 520 L600 430 L520 400 L470 330" />
+              <path class="i c-e" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" d="M440 1215 L360 1190 L280 1230 L160 1200 L60 1240" />
+              <path class="i c-f" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" d="M455 1300 L560 1360 L620 1450 L720 1480 L800 1580" />
+              <path class="i c-g" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" d="M540 960 L470 930 L400 950 L330 900 L230 915" />
+              <path class="i c-h" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" d="M540 960 L610 1000 L700 990 L760 1050 L860 1040" />
+            </g>
+          </svg>
+
+          <!-- the three takes (Stalak's own take colours: 1 pink, 2 blue, 3 orange) -->
+          <div class="s1-card" id="s1-c1">
+            <div class="scr"><img src="assets/stills/t1_000.jpg" alt="" />
+              <video id="s1-v1" class="clip" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="1.452" data-duration="1.448" data-media-start="0" muted playsinline></video></div>
+            <div class="badge" style="background:#d6336c">1</div>
+          </div>
+          <div class="s1-card" id="s1-c2">
+            <div class="scr"><img src="assets/stills/t2_000.jpg" alt="" />
+              <video id="s1-v2" class="clip" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="1.452" data-duration="1.448" data-media-start="0" muted playsinline></video></div>
+            <div class="badge" style="background:#3a6fe0">2</div>
+          </div>
+          <div class="s1-card" id="s1-c3">
+            <div class="scr"><img src="assets/stills/t3_000.jpg" alt="" />
+              <video id="s1-v3" class="clip" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="1.452" data-duration="1.448" data-media-start="0" muted playsinline></video></div>
+            <div class="badge" style="background:#e0952c">3</div>
+          </div>
+
+          <div class="hl" id="s1-w1">THREE</div>
+          <div class="hl" id="s1-w2">TAKES.</div>
+        </div>
+        <div id="s1-flash"></div>
+
+        <script>
+          (function () {
+            var HIT = 1.382;                       // the song's first big hit (kick after the gap)
+            var F = 1 / 30;
+            var tl = gsap.timeline({ paused: true });
+            // 1. the crack: already a sliver at frame 0 (the thumbnail), grows faster and faster until the hit
+            tl.fromTo("#s1-crack .c-a, #s1-crack .c-b", { strokeDashoffset: 0.82 }, { strokeDashoffset: 0, duration: HIT - 0.05, ease: "power2.in" }, 0);
+            tl.fromTo("#s1-crack .c-g, #s1-crack .c-h", { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.55, ease: "power2.in" }, 0.25);
+            tl.fromTo("#s1-crack .c-c, #s1-crack .c-d", { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.45, ease: "power3.in" }, 0.72);
+            tl.fromTo("#s1-crack .c-e, #s1-crack .c-f", { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.42, ease: "power3.in" }, 0.9);
+            // a nervous tremor in the near-silence just before the hit (seek-safe: fixed steps)
+            [0, 1, 2, 3, 4, 5].forEach(function (k) { tl.set("#s1-crack-g", { x: [3, -3, 2, -2, 1, 0][k], y: [-2, 2, -1, 1, 0, 0][k] }, 1.05 + k * 2 * F); });
+            // 2. the hit: the crack turns white, the ice floods blue, one white frame
+            tl.set("#s1-crack .o", { stroke: "#ffffff" }, HIT);
+            tl.set("#s1-flood", { opacity: 1 }, HIT);
+            tl.fromTo("#s1-flash", { opacity: 0.9 }, { opacity: 0, duration: 0.2, ease: "power2.out", immediateRender: false }, HIT);
+            tl.to("#s1-crack", { opacity: 0, duration: 0.22, ease: "power2.out" }, HIT + 0.04);
+            // 3. the three takes land on the hit, one frame apart each pair
+            var cards = [["#s1-c1", 205, 1010, -6], ["#s1-c2", 540, 990, 2], ["#s1-c3", 875, 1015, 6]];
+            cards.forEach(function (c, i) {
+              tl.fromTo(c[0], { x: c[1] - 150, y: c[2] - 266 - 70, rotation: c[3] * 2.2, scale: 1.4, opacity: 0, filter: "blur(10px)" },
+                { x: c[1] - 150, y: c[2] - 266, rotation: c[3], scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.36, ease: "expo.out" }, HIT + i * 2 * F);
+            });
+            // landing shake of the whole stage: three frames
+            tl.set("#s1-stage", { x: 12, y: -6 }, HIT + F); tl.set("#s1-stage", { x: -9, y: 5 }, HIT + 2 * F); tl.set("#s1-stage", { x: 0, y: 0 }, HIT + 3 * F);
+            // 4. THREE / TAKES. slam on the words of the voice
+            [["#s1-w1", 1.47], ["#s1-w2", 1.83]].forEach(function (w) {
+              tl.fromTo(w[0], { scale: 1.8, opacity: 0, filter: "blur(12px)" }, { scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.22, ease: "expo.out" }, w[1]);
+              tl.set("#s1-stage", { y: 8 }, w[1] + 0.22); tl.set("#s1-stage", { y: -4 }, w[1] + 0.22 + F); tl.set("#s1-stage", { y: 0 }, w[1] + 0.22 + 2 * F);
+            });
+            window.__timelines["s1"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>
