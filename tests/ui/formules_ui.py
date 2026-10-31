@@ -143,7 +143,7 @@ def run(b, base, lang, iphone):
       return [b.classList.contains('protag'), z.content, a.content, a.backgroundImage, parseFloat(a.fontSize), a.display]; }""")
     check(tag + ' gratuit : « Générer le pack » avec cadenas et CREATOR+ bien visibles', pk[0] and '🔒' in pk[1] and 'CREATOR+' in pk[2] and 'gradient' in pk[3] and pk[4] >= 11 and pk[5] != 'none', pk)
     tip = pg.locator('.packtip').inner_text()
-    check(tag + ' gratuit : conseil du pack (dès 2 playbacks, plus de prises = plus varié)', ('2 playbacks' in tip and 'more varied' in tip) if lang == 'en' else ('2 playbacks' in tip and 'plus les vidéos sont variées' in tip), tip)
+    check(tag + ' gratuit : conseil du pack (dès 2 prises, plus de prises = plus varié)', ('2 takes' in tip and 'more varied' in tip) if lang == 'en' else ('2 playbacks' in tip and 'plus les vidéos sont variées' in tip), tip)
     if SHOTS:
         pg.locator('#outroNote').scroll_into_view_if_needed()
         pg.locator('#expRow').screenshot(path=os.path.join(SHOTS, 'boutons-' + ('iphone' if iphone else 'ordi') + '-' + lang + '.png'))

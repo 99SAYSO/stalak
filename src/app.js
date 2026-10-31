@@ -1169,16 +1169,20 @@ const I18N_EN = /*@EN*/{
   "cap.sel": "Select the text and copy it.",
   "cap.tags": "#lipsync #rap #newmusic #madewithstalak",
   "cap.made": "Made with stalak.app",
-  "po.t": "No watermark and no ads, on every video?",
-  "po.p": "With Pro: every filter, karaoke lyrics, and the 16:9 music video of this song. From $4.17/mo, billed yearly.",
-  "po.go": "See Pro",
   "fa.t": "“{name}” is a Pro filter",
   "fa.p": "You can try it in the preview. To export it, go Pro, or export your video without this filter.",
   "fa.pro": "Go Pro, from $4.17/mo",
   "fa.without": "Export without this filter",
   "filt.th.free": "Free",
   "filt.more": "more filters",
-  "filt.less": "fewer filters"
+  "filt.less": "fewer filters",
+  "pp.t": "Nice video! Next one without the watermark?",
+  "pp.l1": "No ads, no watermark",
+  "pp.l2": "Music video mode (16:9, the whole song)",
+  "pp.l3": "Every filter",
+  "pp.price": "<strong>$4.17</strong>/mo, billed yearly",
+  "pp.go": "Go Pro",
+  "pp.later": "Maybe later"
 }/*EN@*/;
 const I18N_FR = /*@FR*/{
   "kind.hint.reel": "Une vidéo verticale 9:16, de tout le son ou de quelques mesures.",
@@ -1844,16 +1848,20 @@ const I18N_FR = /*@FR*/{
   "cap.sel": "Sélectionne le texte et copie-le.",
   "cap.tags": "#playback #rap #lipsync #madewithstalak",
   "cap.made": "Fait avec stalak.app",
-  "po.t": "Sans filigrane et sans pub, à chaque vidéo ?",
-  "po.p": "Avec Pro : tous les filtres, le karaoké, et la version Clip 16:9 de ce son. Dès 4,17 $/mois, facturé à l’année.",
-  "po.go": "Voir Pro",
   "fa.t": "« {name} » est un filtre Pro",
   "fa.p": "Tu peux l’essayer dans l’aperçu. Pour l’exporter, passe à Pro, ou exporte ta vidéo sans ce filtre.",
   "fa.pro": "Passer à Pro, dès 4,17 $/mois",
   "fa.without": "Exporter sans ce filtre",
   "filt.th.free": "Gratuits",
   "filt.more": "filtres en plus",
-  "filt.less": "moins de filtres"
+  "filt.less": "moins de filtres",
+  "pp.t": "Belle vidéo ! La prochaine, sans filigrane ?",
+  "pp.l1": "Ni pub ni filigrane",
+  "pp.l2": "Le mode Clip 16:9, sur tout le son",
+  "pp.l3": "Tous les filtres",
+  "pp.price": "<strong>4,17 $</strong>/mois, facturé à l’année",
+  "pp.go": "Passer à Pro",
+  "pp.later": "Plus tard"
 }/*FR@*/;
 let STATIC_FR = /*@STATIC_FR*/null/*STATIC_FR@*/;
 const LANGS = ['fr', 'en'];
@@ -2963,26 +2971,61 @@ function musicRefresh(){ const sg = S.song; if (sg && sg.buffer) musicStart(sg, 
 /* ---------- MUSIC ANALYSIS END ---------- */
 
 /* ---------- demo material ---------- */
-async function makeDemoSong(){
-  const sr = 44100, bpm = 96, dur = 42, spb = 60/bpm, t0 = 0.35;
-  const oc = new OfflineAudioContext(1, sr*dur, sr);
+/* the example's song, synthesised. Kept for the visit (the example and a « Démo glace » project opened from the Galerie
+   share it) and in this device (IndexedDB, next visits: at once); otherwise made in 4 parts side by side (each part starts
+   2.5 s early so that the notes already ringing at its start are there, then that lead-in is cut). It used to take 5 s in
+   one go on a slow machine (and much more on a busy one): the Galerie gave up waiting. */
+const DEMO_SR = 44100, DEMO_DUR = 42, DEMO_KEY = 'demo:1';
+let demoSongP = null;
+function makeDemoSong(){
+  if (!demoSongP) demoSongP = demoSongGet().catch(e => { demoSongP = null; throw e; });
+  return demoSongP;
+}
+async function demoSongGet(){
+  try {
+    const c = typeof LP !== 'undefined' && LP.ok ? await lpGet('kv', DEMO_KEY) : null;
+    if (c && c.data instanceof Float32Array && c.data.length === DEMO_SR * DEMO_DUR){
+      const b = new AudioBuffer({ length: c.data.length, sampleRate: DEMO_SR, numberOfChannels: 1 }); b.copyToChannel(c.data, 0); return b;
+    }
+  } catch(e){}
+  const T0 = performance.now(), b = await demoSongRender();
+  diag('exemple : son fabriqué en ' + ((performance.now() - T0) / 1000).toFixed(1) + ' s');
+  try { if (typeof LP !== 'undefined' && LP.ok) lpPut('kv', DEMO_KEY, { data: b.getChannelData(0).slice() }).catch(() => {}); } catch(e){}
+  return b;
+}
+async function demoSongRender(){
+  const sr = DEMO_SR, dur = DEMO_DUR, PARTS = 4, LEAD = 2.5, step = dur / PARTS;
+  const parts = await Promise.all(Array.from({ length: PARTS }, (_, k) => {
+    const from = k * step, start = Math.max(0, from - LEAD), end = Math.min(dur, (k + 1) * step);
+    return demoSongPart(start, end).then(buf => ({ buf, skip: Math.round((from - start) * sr), from: Math.round(from * sr), n: Math.round(end * sr) - Math.round(from * sr) }));
+  }));
+  const out = new AudioBuffer({ length: sr * dur, sampleRate: sr, numberOfChannels: 1 }), od = out.getChannelData(0);
+  for (const p of parts){ const d = p.buf.getChannelData(0); od.set(d.subarray(p.skip, p.skip + Math.min(p.n, d.length - p.skip)), p.from); }
+  return out;
+}
+// the notes heard from `start` to `end` (seconds of the song), in their own context; the same notes for every part (same random draws)
+function demoSongPart(start, end){
+  const sr = DEMO_SR, dur = DEMO_DUR, bpm = 96, spb = 60/bpm, t0 = 0.35, LEAD = 2.5;
+  const oc = new OfflineAudioContext(1, Math.ceil(sr * (end - start)), sr);
   const nb = oc.createBuffer(1, sr, sr), nd = nb.getChannelData(0); for (let i=0;i<sr;i++) nd[i] = Math.random()*2-1;
   const master = oc.createGain(); master.gain.value = 0.8; master.connect(oc.destination);
   const env = (node, t, peak, dec) => { const gn = oc.createGain(); gn.gain.setValueAtTime(0.0001,t); gn.gain.exponentialRampToValueAtTime(peak,t+0.005); gn.gain.exponentialRampToValueAtTime(0.0001,t+dec); node.connect(gn); gn.connect(master); };
-  const noise = (t, hp, peak, dec) => { const s=oc.createBufferSource(); s.buffer=nb; const f=oc.createBiquadFilter(); f.type='highpass'; f.frequency.value=hp; s.connect(f); env(f,t,peak,dec); s.start(t); s.stop(t+dec+0.02); };
-  const kick = (t,v=1) => { const o=oc.createOscillator(); o.frequency.setValueAtTime(130,t); o.frequency.exponentialRampToValueAtTime(42,t+0.13); env(o,t,v,0.32); o.start(t); o.stop(t+0.35); };
-  const snare = t => { noise(t,1400,0.55,0.17); const o=oc.createOscillator(); o.frequency.value=190; env(o,t,0.25,0.08); o.start(t); o.stop(t+0.1); };
+  // a note at song time T: made only when it rings inside this part (all notes are shorter than LEAD), at T - start
+  const inPart = T => T >= start && T < end;
+  const noise = (T, hp, peak, dec) => { if (!inPart(T)) return; const t = T - start; const s=oc.createBufferSource(); s.buffer=nb; const f=oc.createBiquadFilter(); f.type='highpass'; f.frequency.value=hp; s.connect(f); env(f,t,peak,dec); s.start(t); s.stop(t+dec+0.02); };
+  const kick = (T,v=1) => { if (!inPart(T)) return; const t = T - start; const o=oc.createOscillator(); o.frequency.setValueAtTime(130,t); o.frequency.exponentialRampToValueAtTime(42,t+0.13); env(o,t,v,0.32); o.start(t); o.stop(t+0.35); };
+  const snare = T => { if (!inPart(T)) return; const t = T - start; noise(T,1400,0.55,0.17); const o=oc.createOscillator(); o.frequency.value=190; env(o,t,0.25,0.08); o.start(t); o.stop(t+0.1); };
   const r = rng(7); const bass = [55, 43.65, 65.41, 49];
   const scale = [220, 246.9, 261.6, 293.7, 329.6];
   for (let b=0; t0 + b*spb < dur - 0.6; b++){
-    const t = t0 + b*spb, ib = b%4, bar = Math.floor(b/4), loud = bar >= 8;
-    if (ib===0 || ib===2) kick(t, loud ? 1 : 0.6);
-    if (ib===1 && bar%2) kick(t + spb*0.5, 0.6);
-    if (ib===1 || ib===3) snare(t);
-    noise(t, 7000, 0.12, 0.04); noise(t+spb/2, 7000, 0.07, 0.03);
-    if (loud){ noise(t+spb/4, 7000, 0.05, 0.02); noise(t+3*spb/4, 7000, 0.05, 0.02); }
-    if (ib===0){ const o=oc.createOscillator(); o.type='triangle'; o.frequency.value=bass[bar%4]; env(o,t,loud?0.5:0.3,spb*3.6); o.start(t); o.stop(t+spb*3.7); }
-    for (let h=0; h<2; h++){ if (r() < 0.62){ const tt=t+h*spb/2; const o=oc.createOscillator(); o.type='sawtooth'; o.frequency.value=scale[Math.floor(r()*scale.length)]; const f=oc.createBiquadFilter(); f.type='bandpass'; f.frequency.value=900; f.Q.value=1.4; o.connect(f); env(f,tt,0.32,spb*0.42); o.start(tt); o.stop(tt+spb*0.45); } }
+    const T = t0 + b*spb, ib = b%4, bar = Math.floor(b/4), loud = bar >= 8;
+    if (ib===0 || ib===2) kick(T, loud ? 1 : 0.6);
+    if (ib===1 && bar%2) kick(T + spb*0.5, 0.6);
+    if (ib===1 || ib===3) snare(T);
+    noise(T, 7000, 0.12, 0.04); noise(T+spb/2, 7000, 0.07, 0.03);
+    if (loud){ noise(T+spb/4, 7000, 0.05, 0.02); noise(T+3*spb/4, 7000, 0.05, 0.02); }
+    if (ib===0 && inPart(T)){ const t = T - start; const o=oc.createOscillator(); o.type='triangle'; o.frequency.value=bass[bar%4]; env(o,t,loud?0.5:0.3,spb*3.6); o.start(t); o.stop(t+spb*3.7); }
+    for (let h=0; h<2; h++){ if (r() < 0.62){ const TT=T+h*spb/2, f0 = scale[Math.floor(r()*scale.length)]; if (!inPart(TT)) continue; const tt = TT - start; const o=oc.createOscillator(); o.type='sawtooth'; o.frequency.value=f0; const f=oc.createBiquadFilter(); f.type='bandpass'; f.frequency.value=900; f.Q.value=1.4; o.connect(f); env(f,tt,0.32,spb*0.42); o.start(tt); o.stop(tt+spb*0.45); } }
   }
   return oc.startRendering();
 }
@@ -7559,13 +7602,14 @@ async function renderRealtime(){
 /* why an export failed, as a category only, for the funnel of the dashboard (acctEvent) */
 function expFailCat(e){
   const m = String(e && (e.name + ' ' + e.message) || e);
+  // left Stalak during the export (another app, the screen locked): said first, even when that stopped it like a cancel
+  if (S.leftDuring || document.hidden) return 'hidden';
   if (m.includes('annulé')) return 'cancel';
-  if (document.hidden) return 'hidden';
   if (/memory|mémoire|allocat|QuotaExceeded|RangeError/i.test(m)) return 'memory';
   if (/decod|encod|codec|reclaim|VideoFrame/i.test(m)) return 'decoder';
   return 'other';
 }
-function beginExport(){ acctEvent('export_start'); expOpen(); stop(true); S.exporting = true; S.leftDuring = false; wakeOn(); liveTidy(); nearClear('#expNear'); nearClear('#packBox');   /* the preview's decoders let go: the export gets the graphics chip to itself */
+function beginExport(){ clearTimeout(ppTimer); ppTimer = 0; ppClose(); acctEvent('export_start'); expOpen(); stop(true); S.exporting = true; S.leftDuring = false; wakeOn(); liveTidy(); nearClear('#expNear'); nearClear('#packBox');   /* the preview's decoders let go: the export gets the graphics chip to itself */
   resultPark();
   S.takes.forEach(t => { if (t.orig && !t.orig.parentNode) $('#vpool').append(t.orig); }); S.cancel = false; setBusy(true); progress(0); $('#cancelBtn').hidden = false; $('#result').hidden = true; }
 /* the video already made, during a new export: stopped and let go of (a video playing behind kept its sound going, and on
@@ -7847,7 +7891,16 @@ $('#expFab').onclick = () => {
   // once the page has moved (the layout above can change while it scrolls)
   const aim = smooth => { const r = $('#expRow').getBoundingClientRect(), top = window.scrollY + r.bottom - window.innerHeight + Math.min(130, window.innerHeight * 0.18);
     if (Math.abs(top - window.scrollY) < 4) return; try { window.scrollTo({ top, behavior: smooth ? 'smooth' : 'auto' }); } catch(e){ window.scrollTo(0, top); } };
-  aim(true); setTimeout(() => { aim(true); expLookNow(); }, 700); setTimeout(() => { aim(false); expLookNow(); }, 1400); setTimeout(expLookNow, 1700);
+  aim(true); setTimeout(() => aim(true), 700);
+  // for 3 s (unless the person scrolls herself): aimed again whenever « Exporter » is hidden (under the preview kept at the
+  // top, or off the screen: the page above can still change), and its visibility looked at again (a scroll made by the page
+  // does not always say so)
+  let mine = true; const off = () => { mine = false; };
+  ['wheel', 'touchstart', 'keydown'].forEach(n => window.addEventListener(n, off, { once: true, passive: true }));
+  const seen = () => { const b = $('#exportBtn'), r = b.getBoundingClientRect(); if (!r.width) return true;
+    const x = r.left + r.width / 2, y = r.top + r.height / 2; return y > 0 && y < window.innerHeight && b.contains(document.elementFromPoint(x, y)); };
+  for (let k = 1; k <= 15; k++) setTimeout(() => { if (mine && k >= 7 && !seen()) aim(false); expLookNow(); }, k * 200);
+  setTimeout(() => ['wheel', 'touchstart', 'keydown'].forEach(n => window.removeEventListener(n, off)), 3200);
   setTimeout(() => { try { $('#exportBtn').focus({ preventScroll: true }); } catch(e){} }, 450);
 };
 function setBusy(b){ expFabUi();  ['#playBtn','#shuffleBtn','#exportBtn','#packBtn','#packSel','#cutFx','#fxDel','#fxSee'].forEach(s => $(s).disabled = b); $$('#paceSeg button, #modeSeg button, #brollSeg button, #fxSeg button, #fmtSeg button, #stepper button').forEach(x => x.disabled = b); if (!b){ updateNav(); renderFxBar(); } }
@@ -7919,19 +7972,48 @@ $('#capCopy').onclick = async () => {
   if (!ok){ try { t.focus(); t.select(); ok = document.execCommand('copy'); } catch(e){} }
   setT('#capNote', ok ? 'cap.ok' : 'cap.sel');
 };
-/* a gentle Pro offer under the first video made (audit 30/10): free plan on stalak.app, after the first successful video of
-   the visit, never during an export; « × » hides it for 7 days */
-let poShown = false;
-const PO_KEY = 'stalak:proOfferX';
-function proOfferUi(){
-  const box = $('#proOffer'); if (!box) return;
-  const x = store.get(PO_KEY), quiet = x && Date.now() - x < 7 * 864e5;
-  const on = !!ACCT && !can('nowm') && !!lastBlob && !/\.zip$/i.test(lastName) && (S.okCount || 0) >= 1 && S.okFirst === lastBlob && !quiet && !S.exporting;
-  box.hidden = !on;
-  if (on && !poShown){ poShown = true; evt('pro_offer'); }
+/* the Pro offer after the first video made (owner, 31/10): a window in the middle of the screen, the page darkened behind,
+   opened about 1 s after the video is ready, with a frosted entrance. Free plan on stalak.app only, once per device (never
+   again, never for a subscriber), never during an export. It closes with one touch (×, « Plus tard », a touch beside it,
+   Escape) and never stands in the way of saving or sharing the video: the page under it is left as it is (no inert). */
+const PP_KEY = 'stalak:proPopSeen';
+let ppTimer = 0, ppBack = null;
+function ppEligible(){
+  return !!ACCT && !can('nowm') && !!lastBlob && !/\.zip$/i.test(lastName) && (S.okCount || 0) === 1 && S.okFirst === lastBlob && !S.exporting && !store.get(PP_KEY);
 }
-$('#proOfferX').onclick = () => { store.set(PO_KEY, Date.now()); $('#proOffer').hidden = true; };
-$('#proOfferGo').onclick = () => { evt('plans_open', 'offer'); acctOpen('nowm', { plan: 'pro' }); };
+// asked when the first video is ready: the window comes 1 s later, if all is still as it was
+function proOfferUi(){
+  if (ppTimer || !ppEligible()) return;
+  // (the export screen waves goodbye first: the window waits for it to be gone, then 1 s more)
+  let tries = 0;
+  // the 1 s counts from the moment the video is there to see
+  const go = () => { ppTimer = setTimeout(() => { ppTimer = 0; if (!ppEligible()) return; if (!$('#expScreen').hidden || document.visibilityState === 'hidden'){ if (++tries < 40) go(); return; } ppTimer = setTimeout(() => { ppTimer = 0; if (ppEligible() && !$('#result').hidden && $('#expScreen').hidden && document.visibilityState !== 'hidden') ppOpen(); }, 1000); }, tries ? 300 : 0); };
+  go();
+}
+function ppOpen(){
+  store.set(PP_KEY, Date.now());
+  ppBack = document.activeElement;
+  const box = $('#proPop'); box.hidden = false; box.classList.remove('pp-in'); void box.offsetWidth; box.classList.add('pp-in');
+  try { $('#proPopGo').focus({ preventScroll: true }); } catch(e){}
+  acctEvent('pro_offer'); evt('pro_offer');
+  diag('offre Pro affichée après la 1re vidéo');
+}
+function ppClose(){
+  const box = $('#proPop'); if (box.hidden) return;
+  box.hidden = true; box.classList.remove('pp-in');
+  try { if (ppBack && ppBack.isConnected) ppBack.focus({ preventScroll: true }); } catch(e){}
+  ppBack = null;
+}
+$('#proPopX').onclick = ppClose;
+$('#proPopLater').onclick = ppClose;
+$('#proPop').addEventListener('click', e => { if (e.target === e.currentTarget) ppClose(); });
+$('#proPop').addEventListener('keydown', e => {
+  if (e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); ppClose(); return; }
+  // the focus stays in the window while it is open
+  if (e.key === 'Tab'){ const f = [...$('#proPop').querySelectorAll('button')].filter(b => !b.hidden); const i = f.indexOf(document.activeElement);
+    if (e.shiftKey && i <= 0){ e.preventDefault(); f[f.length - 1].focus(); } else if (!e.shiftKey && i === f.length - 1){ e.preventDefault(); f[0].focus(); } }
+});
+$('#proPopGo').onclick = () => { ppClose(); acctOpen('nowm', { plan: 'pro' }); };
 $('#homeBtn').onclick = async () => { if (S.exporting || askDone) return; if (!S.song && !S.takes.length){ homeGo(); return; }
   if (await askSure(_t('home.askT'), _t('home.askP'), _t('home.title'))) homeGo(); };
 $('#homeNo').onclick = () => { if (askDone) askDone(false); };
