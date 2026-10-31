@@ -99,7 +99,7 @@
 .pr-faq summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0;padding:10px 12px 10px 16px;min-height:50px;box-sizing:border-box;color:var(--ink);font:700 15.5px/1.35 var(--body)}
 .pr-faq details[open] summary{margin:0}
 .pr-faq summary::-webkit-details-marker{display:none}
-.pr-faq summary::after{content:"";flex:none;width:28px;height:28px;box-sizing:border-box;border-radius:50%;border:2px solid var(--ink);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 9.5l6 6 6-6' fill='none' stroke='%230a0d14' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px no-repeat;transition:transform .3s var(--slide)}
+.pr-faq summary::after{content:"";flex:none;width:28px;height:28px;box-sizing:border-box;border-radius:50%;border:2px solid var(--ink);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 9.5l6 6 6-6' fill='none' stroke='%230a0d14' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px no-repeat;transition:transform var(--dur-2) var(--ease-move)}
 .pr-faq details[open] summary::after{transform:rotate(180deg);background-color:var(--ice)}
 .pr-faq summary:focus-visible{outline:3px solid var(--sky-deep);outline-offset:2px;border-radius:14px}
 .pr-faq details p{margin:0;padding:0 16px 14px;color:#26344d;line-height:1.5}
@@ -109,25 +109,24 @@
 
 /* ---- motion: the cards slide in on the ice and settle, the mascots drop in, icicles grow, a frost glint on the
    recommended plan; FAQ answers melt in. Transform / opacity / filter only; prefers-reduced-motion stops all of it. ---- */
-.pr-plan{animation:pr-in .56s var(--soft) both}
-.pr-plans > :nth-child(1){animation-delay:.03s}
-.pr-plans > :nth-child(2){animation-delay:.09s}
-.pr-plans > :nth-child(3){animation-delay:.15s}
-.pr-art{animation:pr-drop .6s var(--slide) .16s both}
-.pr-plan::before,.pr-compare::before,.pr-faq::before{animation:pr-icicles .5s var(--slide) .3s both}
-.pr-ribbon{animation:pr-ribbon .5s var(--slide) .42s both}
-.pr-glint::before{animation:pr-glint 1.1s var(--soft) .75s 1 both}
-.pr-trust,.pr-pay,.pr-compare,.pr-faq{animation:pr-up .5s var(--soft) .22s both}
-.pr-faq details[open] p{animation:pr-melt .34s var(--soft) both}
-@keyframes pr-in{0%{opacity:0;transform:translateY(30px) scale(.97);filter:blur(5px)}55%{opacity:1;filter:blur(0)}80%{transform:translateY(-3px) scale(1.004)}100%{opacity:1;transform:none;filter:none}}
-@keyframes pr-drop{0%{opacity:0;transform:translateY(-26px) rotate(-9deg) scale(.82)}60%{opacity:1;transform:translateY(4px) rotate(2deg) scale(1.02)}100%{opacity:1;transform:none}}
+.pr-plan{animation:pr-in var(--dur-4) var(--ease-out) both}
+.pr-plans > :nth-child(1){animation-delay:0ms}
+.pr-plans > :nth-child(2){animation-delay:40ms}
+.pr-plans > :nth-child(3){animation-delay:80ms}
+.pr-art{animation:pr-drop var(--dur-5) var(--ease-out) .1s both}
+.pr-ribbon{animation:pr-ribbon var(--dur-3) var(--ease-out) .2s both}
+.pr-glint::before{animation:pr-glint 700ms var(--ease-out) .5s 1 both}
+.pr-trust,.pr-pay,.pr-compare,.pr-faq{animation:pr-up var(--dur-4) var(--ease-out) .12s both}
+.pr-faq details[open] p{animation:pr-melt var(--dur-2) var(--ease-out) both}
+@keyframes pr-in{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes pr-drop{from{opacity:0;transform:translateY(-14px) rotate(-6deg) scale(.9)}to{opacity:1;transform:none}}
 @keyframes pr-icicles{0%{transform:scaleY(0)}70%{transform:scaleY(1.12)}100%{transform:none}}
-@keyframes pr-ribbon{0%{opacity:0;transform:rotate(18deg) scale(.5)}100%{opacity:1;transform:rotate(6deg)}}
+@keyframes pr-ribbon{from{opacity:0;transform:rotate(6deg) scale(.85)}to{opacity:1;transform:rotate(6deg)}}
 @keyframes pr-glint{0%{opacity:0;transform:translateX(-170%) skewX(-14deg)}12%{opacity:1}100%{opacity:0;transform:translateX(330%) skewX(-14deg)}}
-@keyframes pr-up{0%{opacity:0;transform:translateY(18px)}100%{opacity:1;transform:none}}
-@keyframes pr-melt{0%{opacity:0;transform:translateY(-6px);filter:blur(3px)}100%{opacity:1;transform:none;filter:none}}
+@keyframes pr-up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes pr-melt{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){
-  .pr-plan,.pr-art,.pr-plan::before,.pr-compare::before,.pr-faq::before,.pr-ribbon,.pr-glint::before,.pr-trust,.pr-pay,.pr-compare,.pr-faq,.pr-faq details[open] p{animation:none!important}
+  .pr-plan,.pr-art,.pr-ribbon,.pr-glint::before,.pr-trust,.pr-pay,.pr-compare,.pr-faq,.pr-faq details[open] p{animation:none!important}
   .pr-faq summary::after{transition:none}
 }
 

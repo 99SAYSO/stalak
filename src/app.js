@@ -53,7 +53,7 @@ function sayNear(sel, key, vars){
   if (!m){ m = document.createElement('p'); m.className = 'nearmsg'; m.setAttribute('role', 'alert'); m.append(document.createElement('span')); box.append(m); }
   m._f = typeof key === 'function' ? key : () => _t(key, vars); m.firstChild.textContent = m._f(); m.hidden = false;
   if (box.closest('label')) m.onclick = e => e.preventDefault();
-  try { m.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch(e){}
+  try { m.scrollIntoView({ block: 'nearest', behavior: scrollB() }); } catch(e){}
 }
 function nearClear(sel){ const box = typeof sel === 'string' ? $(sel) : sel; const m = box && box.querySelector(':scope > .nearmsg'); if (m) m.remove(); }
 /* anonymous counters (audit 30/10, with Comptes): only a name from a closed list and a category, plus the kind of device;
@@ -5325,7 +5325,7 @@ function filtUI(){
         mb.style.height = th + 'px'; mb.style.marginTop = '18px';
         const n = document.createElement('b'); n.textContent = '+' + locked; const t = document.createElement('span'); t.className = 'fm-t';
         const tg = document.createElement('span'); tg.className = 'filtpro'; tg.textContent = PLAN_TAG[FEAT_PLAN.filters];
-        mb.append(n, t, tg); mb.onclick = () => { filtMore = !filtMore; filtUI(); if (filtMore) try { row.querySelector('.lockgrp').scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' }); } catch(e){} };
+        mb.append(n, t, tg); mb.onclick = () => { filtMore = !filtMore; filtUI(); if (filtMore) try { row.querySelector('.lockgrp').scrollIntoView({ behavior: scrollB(), block: 'nearest', inline: 'start' }); } catch(e){} };
         row.append(mb); continue;
       }
       if (!list.length) continue;
@@ -6837,7 +6837,7 @@ function recSaved(tk){
   setT($('#recGo'), 'rec.goN', { n: n + 1 });
   const b = $('#recGo'); b.classList.remove('again'); void b.offsetWidth; b.classList.add('again');
   // on a phone the button can sit below the screen: brought into view, the least scrolling possible
-  try { b.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch(e){}
+  try { b.scrollIntoView({ block: 'nearest', behavior: scrollB() }); } catch(e){}
   say('rec.done', { n, m: n + 1 });
 }
 /* a take filmed here, put into a plain MP4 without encoding it again. The recorders (Safari, Chrome) write a "fragmented" MP4:
@@ -7680,8 +7680,10 @@ function expBuild(){
 /* ---------- motion: full-screen layers (account pages, Pro thank-you) fade in and melt away instead of popping.
    Everything else (state, history, focus, inert) changes at once as before: a layer on its way out is only a picture,
    inert and see-through to the pointer, and counts as closed. Reduced motion: no exit animation at all. ---------- */
+// a scroll made by the page: smooth, unless the device asks for less motion (iPhone « Réduire les animations »)
+function scrollB(){ return calmMotion() ? 'auto' : 'smooth'; }
 const calmMotion = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){ return false; } };
-const LAYER_OUT_MS = 230;
+const LAYER_OUT_MS = 180;   // = --dur-2, the closing of the account page and the Pro thank-you (theme.css)
 function isShown(el){ return !!el && !el.hidden && !el.classList.contains('is-leaving'); }
 function layerIn(el){
   if (el._leaveT){ clearTimeout(el._leaveT); el._leaveT = 0; el.classList.remove('is-leaving'); el.removeAttribute('inert'); }
@@ -7744,7 +7746,7 @@ function expClose(ok){
   if (!ok){ sc.hidden = true; modalOn(false); try { $('#exportBtn').focus(); } catch(e){} return; }
   expUpdate(1); expBlocks.forEach(b => b.classList.add('on')); $('#expDoor').classList.add('on'); $('#expFlag').classList.add('on');
   sc.classList.add('done'); $('#expPct').textContent = pctT(100); $('#expMsg').textContent = _t('exps.done'); $('#expCancel').disabled = true;
-  setTimeout(() => { sc.hidden = true; modalOn(false); try { $('#saveBtn').focus({ preventScroll: true }); } catch(e){} const r = $('#result'); if (r && !r.hidden) r.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 1600);
+  setTimeout(() => { sc.hidden = true; modalOn(false); try { $('#saveBtn').focus({ preventScroll: true }); } catch(e){} const r = $('#result'); if (r && !r.hidden) r.scrollIntoView({ behavior: scrollB(), block: 'center' }); }, 1600);
 }
 $('#expCancel').onclick = () => { $('#cancelBtn').click(); $('#expMsg').textContent = _t('exps.stop'); $('#expCancel').disabled = true; };
 $('#expScreen').addEventListener('keydown', e => { if (e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); } });
@@ -7890,7 +7892,7 @@ $('#expFab').onclick = () => {
   // brought to the bottom of the screen (on a phone the preview stays at the top), with its note under it; looked at again
   // once the page has moved (the layout above can change while it scrolls)
   const aim = smooth => { const r = $('#expRow').getBoundingClientRect(), top = window.scrollY + r.bottom - window.innerHeight + Math.min(130, window.innerHeight * 0.18);
-    if (Math.abs(top - window.scrollY) < 4) return; try { window.scrollTo({ top, behavior: smooth ? 'smooth' : 'auto' }); } catch(e){ window.scrollTo(0, top); } };
+    if (Math.abs(top - window.scrollY) < 4) return; try { window.scrollTo({ top, behavior: smooth ? scrollB() : 'auto' }); } catch(e){ window.scrollTo(0, top); } };
   aim(true); setTimeout(() => aim(true), 700);
   // for 3 s (unless the person scrolls herself): aimed again whenever « Exporter » is hidden (under the preview kept at the
   // top, or off the screen: the page above can still change), and its visibility looked at again (a scroll made by the page
@@ -8468,7 +8470,8 @@ function styleChanged(){
 $$('#stepper button').forEach(b => b.onclick = () => go(+b.dataset.go));
 $$('[data-back]').forEach(b => b.onclick = () => go(+b.dataset.back));
 $('#next1').onclick = () => go(2); $('#next2').onclick = () => go(3); $('#next3').onclick = () => go(4);
-['#next1', '#next2', '#next3', '#shuffleBtn'].forEach(s => $(s).addEventListener('pointerdown', e => { if (e.button === 0) flurry(e.currentTarget); }));
+// (skill motion-design: « Régénérer » is pressed again and again, its flakes were removed; « Continuer » keeps them, a few times per video)
+['#next1', '#next2', '#next3'].forEach(s => $(s).addEventListener('pointerdown', e => { if (e.button === 0) flurry(e.currentTarget); }));
 function togglePlay(){ if (S.exporting) return; if (S.playing) stop(); else play(S.step === 4 ? startPoint() : null); }
 $('#playBtn').onclick = togglePlay;
 $('#songPlay').onclick = listenToggle;
@@ -8915,7 +8918,7 @@ function devShow(on){ $('#diagBox').hidden = !on; store.set('stalak:dev', !!on);
 if (store.get('stalak:dev') === true || /debug/i.test(location.hash + location.search)) devShow(true);
 { let n = 0, t0 = 0;
   $('#byAlaska').addEventListener('click', () => { const now = performance.now(); if (now - t0 > 2500) n = 0; t0 = now;
-    if (++n >= 5){ n = 0; const on = $('#diagBox').hidden; devShow(on); say(on ? 'dev.on' : 'dev.off'); if (on) $('#diagBox').scrollIntoView({ behavior: 'smooth', block: 'center' }); } }); }
+    if (++n >= 5){ n = 0; const on = $('#diagBox').hidden; devShow(on); say(on ? 'dev.on' : 'dev.off'); if (on) $('#diagBox').scrollIntoView({ behavior: scrollB(), block: 'center' }); } }); }
 /* from the help bubble: the same journal, copied for the team (shown to select by hand when copying is not allowed) */
 $('#helpDiag').onclick = () => {
   const txt = DIAG.join('\n'), b = $('#helpDiag');
@@ -9593,7 +9596,7 @@ function plFocus(plan){
     // the reason (« Le mode Clip, c’est avec Pro ») stays in sight: repeated at the top of that card
     $$('#apBuy .pl-why').forEach(x => x.remove());
     if (apWhyK && hasT(apWhyK)){ const w = document.createElement('p'); w.className = 'pl-why'; setT(w, apWhyK); c.prepend(w); }
-    try { c.scrollIntoView({ behavior: calmMotion() ? 'auto' : 'smooth', block: 'center' }); } catch(e){}
+    try { c.scrollIntoView({ behavior: scrollB(), block: 'center' }); } catch(e){}
     const b = c.querySelector('[data-buy]'); if (b) try { b.focus({ preventScroll: true }); } catch(e){}
   }, 350);
 }
