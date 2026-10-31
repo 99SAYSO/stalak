@@ -6347,14 +6347,24 @@ function thumbGrab(c){
   thumbCx.drawImage(cv, 0, 0, w, h); thumbT = S.cursor; thumbOk = true;
   clearTimeout(thumbTimer); thumbTimer = setTimeout(filtThumbs, 120);
 }
+/* the thumbnails: only the ones on screen (not the Pro ones folded behind « +23 »), after the step has slid in (the step's
+   movement stays smooth), a few per frame (8 ms of work at most each time) */
+var thumbJob = 0, stepAt = 0;   // var: go() can run before this line at start-up
 function filtThumbs(){
   if (!thumbOk || S.playing || S.exporting) return;
   if (!thumbR){ thumbR = filtRunner(); if (!thumbR) return; }
-  $$('#filtRow canvas').forEach(cv => {
+  const list = $$('#filtRow canvas').filter(cv => cv.offsetParent !== null), id = ++thumbJob; let k = 0;
+  const one = cv => {
     const i = +cv.dataset.i, w = cv.width, h = cv.height, x = cv.getContext('2d');
     try { x.drawImage(i ? thumbR.run(thumbSrc, i, thumbT, w, h, W, H) : thumbSrc, 0, 0, w, h); } catch(e){ return; }
     if (i){ x.save(); x.scale(w / W, h / H); filtOverlay(x, i, thumbT, W, H); x.restore(); }
-  });
+  };
+  const step = () => { if (id !== thumbJob || S.playing || S.exporting) return; const t0 = performance.now();
+    do one(list[k++]); while (k < list.length && performance.now() - t0 < 8);
+    if (k < list.length) requestAnimationFrame(step); };
+  if (!list.length) return;
+  const wait = Math.max(0, 320 - (performance.now() - stepAt));
+  if (wait) setTimeout(() => requestAnimationFrame(step), wait); else requestAnimationFrame(step);
 }
 let filtMore = false;
 function filtUI(){
@@ -9264,6 +9274,7 @@ function go(n){
   if (n !== 2 && recStream) closeCamera();
   // which way the steps glide: forward from the right, back from the left (CSS only)
   if (n !== S.step) $('.wrap').dataset.dir = n < S.step ? 'back' : 'fwd';
+  if (n !== S.step) stepAt = performance.now();
   S.step = n; setTimeout(() => expLookNow(), 0); $('#p1').hidden = n !== 1; $('#p2').hidden = n !== 2; $('#work').hidden = n < 3; $('#p3').hidden = n !== 3; $('#p4').hidden = n !== 4;
   $('#shuffleBtn').hidden = n !== 4;
   if (n === 3) lyricsView();

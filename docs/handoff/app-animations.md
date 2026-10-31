@@ -19,6 +19,7 @@ Résumé : tour complet des animations du site et de l'app avec le skill `motion
 | Animation | Rôle | Avant | Maintenant |
 |---|---|---|---|
 | Changement d'étape (Son → Prises → Paroles → Montage, et retour) | continuité : on avance ou on recule | 500-550 ms, glisse de 36-42 px avec rotation et rebond | 300 ms, glisse de 24 px dans le sens du trajet, ease-out, sans rotation ni rebond |
+| Entrée dans l'étape Montage : vignettes des filtres | (pas une animation, mais elle faisait saccader le glissement de l'étape) | les 27 vignettes dessinées d'un coup, même celles cachées derrière « +23 » : images de 1 à 5 s avec le processeur ralenti 4 fois | seulement les vignettes visibles, après le glissement (320 ms), quelques-unes par image (8 ms de travail au plus) : 50 à 80 ms au pire, ralenti 4 fois |
 | Aperçu qui apparaît (étape 3) | continuité | 400 ms | 240 ms, ease-out |
 | Stalactites des cartes qui « poussent » à chaque étape | aucun (rejoué à chaque étape) | 500 ms avec rebond | retiré (stalactites fixes) |
 | Pastille de l'étape en cours | dire quelle étape est active | 450 ms, tourne et rebondit | 180 ms, grandit de 85 % à 100 %, ease-out |
