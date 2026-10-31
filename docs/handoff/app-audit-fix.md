@@ -22,6 +22,6 @@ Résumé :
 
 Pour le Chef de projet :
 - **Comptes : ajouter `pro_offer` à la liste `EVENTS` de `functions/_lib/metrics.js`** (fichier de Comptes, pas touché ici) : sans ça, le serveur refuse ce compteur et il n'apparaît pas au tableau de bord.
- `evt()` d'App ne fait plus rien, donc « offre Pro affichée » (`pro_offer`) et « pub affichée » (`ad_shown`) ne sont plus comptés. Si le propriétaire les veut dans l'entonnoir, il suffit que Comptes accepte ces deux noms et qu'App appelle `acctEvent` à ces deux endroits.
+- « pub affichée » (`ad_shown`) n'est plus compté (la demande de pub l'est : `ad_offer`).
 
 Tests : voir la fin de ce fichier.
