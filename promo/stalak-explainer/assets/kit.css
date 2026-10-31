@@ -1,0 +1,61 @@
+/* Stalak explainer: shared look (fonts, devices, glass, type). Loaded once by index.html. */
+@font-face { font-family: "Lilita One"; src: url("fonts/lilitaone.ttf"); }
+@font-face { font-family: "Rubik"; src: url("fonts/rubik.ttf"); font-weight: 300 900; }
+@font-face { font-family: "TikTok Sans"; src: url("fonts/tiktoksans.ttf"); font-weight: 300 900; }
+@font-face { font-family: "Courier Prime"; src: url("fonts/courierprime-bold.ttf"); font-weight: 700; }
+@font-face { font-family: "Pacifico"; src: url("fonts/pacifico.ttf"); }
+@font-face { font-family: "Playfair Display"; src: url("fonts/playfairdisplay.ttf"); font-weight: 400 900; }
+@font-face { font-family: "Anton"; src: url("fonts/anton.ttf"); }
+
+/* ---------- kinetic type: light words in Rubik, the key word in Stalak's Lilita with its ink outline ---------- */
+.kt { position: absolute; left: 0; width: 1080px; text-align: center; color: #f6faff; font-family: "Rubik", sans-serif; font-weight: 700;
+  letter-spacing: -0.02em; line-height: 1.02; text-shadow: 0 14px 40px rgba(3, 20, 70, 0.35); }
+.kt .l { font-weight: 400; }
+.kt .k { font-family: "Lilita One", sans-serif; font-weight: 400; letter-spacing: 0.005em; color: #f6faff;
+  text-shadow: 6px 0 0 #0a0d14, -6px 0 0 #0a0d14, 0 6px 0 #0a0d14, 0 -6px 0 #0a0d14, 4px 4px 0 #0a0d14, -4px 4px 0 #0a0d14, 4px -4px 0 #0a0d14, -4px -4px 0 #0a0d14, 0 14px 0 #0a0d14; }
+.kt .ice { color: #cfe6ff; }
+.w { display: inline-block; }
+
+/* ---------- glass: frosted ice cards ---------- */
+.glass { position: absolute; background: rgba(246, 250, 255, 0.9); border: 2px solid rgba(255, 255, 255, 0.95); border-radius: 34px;
+  box-shadow: 0 30px 70px rgba(6, 26, 80, 0.3), inset 0 -5px 0 rgba(31, 111, 214, 0.12); }
+.pill { position: absolute; display: flex; align-items: center; justify-content: center; gap: 14px; height: 92px; padding: 0 40px; border-radius: 46px;
+  background: rgba(246, 250, 255, 0.92); border: 2px solid #ffffff; box-shadow: 0 24px 50px rgba(6, 26, 80, 0.3);
+  font: 700 44px/1 "Rubik", sans-serif; color: #0a0d14; letter-spacing: -0.01em; white-space: nowrap; }
+.pro { display: inline-flex; align-items: center; height: 44px; padding: 0 16px; border-radius: 12px; background: #0a0d14; color: #f6faff;
+  font: 800 26px/1 "Rubik", sans-serif; letter-spacing: 0.04em; }
+.cplus { display: inline-flex; align-items: center; height: 50px; padding: 0 20px; border-radius: 25px; background: #6a3df0; color: #f6faff;
+  border: 3px solid #0a0d14; font: 400 30px/1 "Lilita One", sans-serif; letter-spacing: 0.03em; }
+
+/* ---------- the app's own card style (white card, ink border, hard shadow) for rebuilt UI pieces ---------- */
+.appcard { position: absolute; background: #f6faff; border: 6px solid #0a0d14; border-radius: 34px; box-shadow: 0 12px 0 #0a0d14; }
+
+/* ---------- phone: 600 x 1252, screen 560 x 1212 (the iPhone ratio of the captures, 1170 x 2532) ---------- */
+.phone { position: absolute; width: 600px; height: 1252px; }
+.phone .body { position: absolute; inset: 0; border-radius: 100px; background: linear-gradient(150deg, #5b6170 0%, #1b1e25 32%, #2c3039 68%, #646a7a 100%);
+  box-shadow: 0 70px 140px rgba(4, 18, 56, 0.45), 0 20px 40px rgba(4, 18, 56, 0.25); }
+.phone .bez { position: absolute; inset: 7px; border-radius: 93px; background: #07080c; }
+.phone .scr { position: absolute; left: 20px; top: 20px; width: 560px; height: 1212px; border-radius: 82px; overflow: hidden; background: #2f6fd6; }
+.phone .scr .sh { position: absolute; left: 0; top: 0; width: 560px; height: 1212px; }
+.phone .scr .sh img, .phone .scr .sh video { position: absolute; left: 0; top: 0; width: 560px; height: 1212px; object-fit: cover; object-position: 50% 0; }
+.phone .isl { position: absolute; left: 220px; top: 44px; width: 160px; height: 46px; border-radius: 23px; background: #05060a; }
+.phone .sb { position: absolute; width: 8px; border-radius: 4px; background: #474c59; }
+.phone .glare { position: absolute; left: 20px; top: 20px; width: 560px; height: 1212px; border-radius: 82px; overflow: hidden; pointer-events: none; }
+.phone .glare .band { position: absolute; left: -420px; top: -260px; width: 300px; height: 1740px; }
+.phone .glare .band i { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0)); transform: rotate(18deg); }
+
+/* ---------- laptop: lid 1040 x 672 with a 1000 x 625 screen (16:10, the desktop captures 2880 x 1800), base 1120 wide ---------- */
+.mac { position: absolute; width: 1120px; height: 712px; }
+.mac .lid { position: absolute; left: 40px; top: 0; width: 1040px; height: 672px; border-radius: 34px 34px 12px 12px; background: #0b0d12;
+  box-shadow: inset 0 0 0 3px #737b8c, 0 50px 110px rgba(4, 18, 56, 0.42); }
+.mac .scr { position: absolute; left: 60px; top: 22px; width: 1000px; height: 625px; border-radius: 10px; overflow: hidden; background: #2f6fd6; }
+.mac .scr .sh { position: absolute; inset: 0; }
+.mac .scr .sh img { display: block; width: 1000px; height: 625px; object-fit: cover; object-position: 0 0; }
+.mac .notch { position: absolute; left: 520px; top: 22px; width: 80px; height: 16px; border-radius: 0 0 8px 8px; background: #0b0d12; }
+.mac .base { position: absolute; left: 0; top: 670px; width: 1120px; height: 34px; border-radius: 4px 4px 30px 30px;
+  background: linear-gradient(#e6e9ef, #a7aebb); box-shadow: 0 30px 60px rgba(4, 18, 56, 0.35); }
+.mac .base i { position: absolute; left: 480px; top: 0; width: 160px; height: 12px; border-radius: 0 0 12px 12px; background: #b5bcc8; }
+
+/* ---------- lyrics as the app draws them on the video (Classic = TikTok Sans 800, white, outline) ---------- */
+.lyr { position: absolute; left: 0; width: 100%; text-align: center; font: 800 64px/1.1 "TikTok Sans", "Rubik", sans-serif; color: #ffffff;
+  -webkit-text-stroke: 3px #111111; paint-order: stroke fill; text-shadow: 0 4px 12px rgba(0, 0, 0, 0.35); }

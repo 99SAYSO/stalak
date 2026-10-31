@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><title>world — the icy backdrop that never stops moving</title></head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="world" data-width="1080" data-height="1920">
+        <style>
+          #root { position: absolute; inset: 0; overflow: hidden; background: radial-gradient(120% 80% at 50% 36%, #3b8ff2 0%, #1f6fd6 46%, #0e45a3 100%); }
+          #wd-glows, #wd-far, #wd-mid, #wd-near { position: absolute; inset: 0; }
+          .gl { position: absolute; border-radius: 50%; filter: blur(90px); }
+          .pr { position: absolute; overflow: visible; }
+          #wd-far .pr { filter: blur(5px); opacity: 0.55; }
+          #wd-near .pr { filter: blur(9px); opacity: 0.9; }
+          .cube { fill: url(#wd-g-cube); stroke: #ffffff; stroke-width: 3; stroke-opacity: 0.8; }
+          .cubehi { fill: #ffffff; opacity: 0.55; }
+          .ball { fill: url(#wd-g-ball); }
+          .gem { fill: #d6ecff; stroke: #ffffff; stroke-width: 3; }
+          .gemhi { fill: #ffffff; opacity: 0.8; }
+          .flk path { fill: none; stroke: #f6faff; stroke-width: 7; stroke-linecap: round; }
+        </style>
+        <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+          <defs>
+            <linearGradient id="wd-g-cube" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f2f9ff" stop-opacity="0.95" /><stop offset="1" stop-color="#8fc0f2" stop-opacity="0.75" /></linearGradient>
+            <radialGradient id="wd-g-ball" cx="0.36" cy="0.32" r="0.75"><stop offset="0" stop-color="#ffffff" /><stop offset="0.6" stop-color="#e3efff" /><stop offset="1" stop-color="#a9c9ef" /></radialGradient>
+            <symbol id="wd-cube" viewBox="-60 -60 120 120"><rect x="-48" y="-48" width="96" height="96" rx="22" fill="url(#wd-g-cube)" stroke="#ffffff" stroke-width="3" stroke-opacity="0.8" /><path d="M-36 -30 Q-34 -40 -22 -40 L14 -40 Q2 -26 -36 -14 Z" fill="#ffffff" fill-opacity="0.55" /></symbol>
+            <symbol id="wd-ball" viewBox="-60 -60 120 120"><circle r="50" fill="url(#wd-g-ball)" /></symbol>
+            <symbol id="wd-gem" viewBox="-60 -60 120 120"><polygon points="0,-52 36,-14 22,46 -22,46 -36,-14" fill="#d6ecff" stroke="#ffffff" stroke-width="3" /><polygon points="0,-44 28,-14 2,0" fill="#ffffff" fill-opacity="0.8" /></symbol>
+            <symbol id="wd-flake" viewBox="-60 -60 120 120"><g fill="none" stroke="#f6faff" stroke-width="7" stroke-linecap="round"><path d="M0 -50 V50 M-43 -25 L43 25 M-43 25 L43 -25" /><path d="M0 -34 L-10 -44 M0 -34 L10 -44 M0 34 L-10 44 M0 34 L10 44 M-29 -17 L-30 -31 M-29 -17 L-42 -11 M29 17 L30 31 M29 17 L42 11 M-29 17 L-42 11 M-29 17 L-30 31 M29 -17 L42 -11 M29 -17 L30 -31" /></g></symbol>
+          </defs>
+        </svg>
+        <div id="wd-glows">
+          <div class="gl" id="wd-gl1" style="left:-220px; top:120px; width:760px; height:760px; background:rgba(138,205,255,0.45)"></div>
+          <div class="gl" id="wd-gl2" style="left:560px; top:980px; width:820px; height:820px; background:rgba(255,255,255,0.22)"></div>
+          <div class="gl" id="wd-gl3" style="left:240px; top:-320px; width:640px; height:640px; background:rgba(120,170,255,0.4)"></div>
+        </div>
+        <div id="wd-far">
+          <svg class="pr" style="left:120px; top:300px; width:90px; height:90px"><use href="#wd-flake" /></svg>
+          <svg class="pr" style="left:860px; top:520px; width:80px; height:80px"><use href="#wd-gem" /></svg>
+          <svg class="pr" style="left:80px; top:1500px; width:100px; height:100px"><use href="#wd-ball" /></svg>
+          <svg class="pr" style="left:780px; top:1640px; width:90px; height:90px"><use href="#wd-cube" /></svg>
+          <svg class="pr" style="left:520px; top:150px; width:70px; height:70px"><use href="#wd-ball" /></svg>
+        </div>
+        <div id="wd-mid">
+          <svg class="pr" style="left:840px; top:220px; width:150px; height:150px"><use href="#wd-cube" /></svg>
+          <svg class="pr" style="left:40px; top:820px; width:140px; height:140px"><use href="#wd-flake" /></svg>
+          <svg class="pr" style="left:900px; top:1180px; width:130px; height:130px"><use href="#wd-flake" /></svg>
+          <svg class="pr" style="left:170px; top:1720px; width:120px; height:120px"><use href="#wd-gem" /></svg>
+        </div>
+        <div id="wd-near">
+          <svg class="pr" style="left:-90px; top:40px; width:300px; height:300px"><use href="#wd-ball" /></svg>
+          <svg class="pr" style="left:880px; top:1560px; width:320px; height:320px"><use href="#wd-cube" /></svg>
+          <svg class="pr" style="left:-120px; top:1240px; width:240px; height:240px"><use href="#wd-flake" /></svg>
+        </div>
+        <script>
+          (function () {
+            var D = 45.000;                        // film length (set by gen_index.py)
+            var CUTS = [2.40, 5.50, 8.10, 10.90, 15.00, 19.00, 23.00, 27.20, 30.20, 35.00, 36.80, 39.30];   // scene starts (set by gen_index.py)
+            var tl = gsap.timeline({ paused: true });
+            // glows breathe and drift for the whole film
+            tl.fromTo("#wd-gl1", { x: 0, y: 0 }, { x: 260, y: 180, duration: D, ease: "sine.inOut" }, 0);
+            tl.fromTo("#wd-gl2", { x: 0, y: 0 }, { x: -300, y: -240, duration: D, ease: "sine.inOut" }, 0);
+            tl.fromTo("#wd-gl3", { x: 0, y: 0, scale: 1 }, { x: -120, y: 260, scale: 1.25, duration: D, ease: "sine.inOut" }, 0);
+            // every prop floats and turns on its own, slowly (a seeded path per prop)
+            function h(i, k) { var v = Math.sin(i * 91.7 + k * 47.3) * 43758.5453; return v - Math.floor(v); }
+            document.querySelectorAll("#root .pr").forEach(function (el, i) {
+              var amp = el.parentNode.id === "wd-near" ? 90 : el.parentNode.id === "wd-mid" ? 60 : 30;
+              tl.fromTo(el, { x: 0, y: 0, rotation: (h(i, 1) - 0.5) * 40, rotationY: 0, transformPerspective: 600 },
+                { x: (h(i, 2) - 0.5) * 2 * amp, y: -amp - h(i, 3) * amp, rotation: (h(i, 4) - 0.5) * 160, rotationY: el.querySelector("use").getAttribute("href") === "#wd-flake" ? 540 : 0,
+                  transformPerspective: 600, duration: D, ease: "sine.inOut" }, 0);
+            });
+            // the camera: on every scene change the field slides, near layers more than far ones (parallax)
+            var layers = [["#wd-near", 1], ["#wd-mid", 0.55], ["#wd-far", 0.25], ["#wd-glows", 0.15]];
+            var px = 0, py = 0;
+            CUTS.forEach(function (c, k) {
+              px = [-140, 120, -90, 150, -120, 90, -150, 110, -100, 130, -80, 140][k % 12]; py = [-80, 60, -50, 90, -70, 40, -90, 70, -40, 80, -60, 50][k % 12];
+              layers.forEach(function (L) {
+                tl.to(L[0], { x: px * L[1], y: py * L[1], scale: 1 + 0.06 * L[1] * (k % 2 ? 1 : -1), duration: 0.9, ease: "expo.out" }, c);
+              });
+            });
+            window.__timelines["world"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><title>s01 — tired of editing?</title></head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="s01" data-width="1080" data-height="1920">
+        <style>
+          #root { position: absolute; inset: 0; overflow: hidden; }
+          /* the pain: a generic editing timeline, overloaded (an illustration, no real editor) */
+          #h-ed { position: absolute; left: 70px; top: 760px; width: 940px; height: 560px; border-radius: 40px; background: rgba(9, 16, 32, 0.92);
+            border: 2px solid rgba(160, 200, 255, 0.35); box-shadow: 0 60px 120px rgba(2, 10, 40, 0.55); overflow: hidden; }
+          #h-ed .tr { position: absolute; left: 34px; right: 34px; height: 64px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); }
+          #h-ed .cl { position: absolute; top: 6px; height: 52px; border-radius: 9px; }
+          #h-ed .ph { position: absolute; top: 18px; bottom: 18px; width: 5px; border-radius: 3px; background: #ff4d6a; box-shadow: 0 0 18px #ff4d6a; }
+          #h-ed .ruler { position: absolute; left: 34px; right: 34px; top: 22px; height: 26px; background: repeating-linear-gradient(90deg, rgba(255,255,255,0.35) 0 2px, transparent 2px 28px); opacity: 0.6; }
+          #h-mas { position: absolute; left: 760px; top: 560px; width: 260px; height: 260px; }
+          #h-mas img { width: 100%; height: 100%; object-fit: contain; }
+          #h-t1 { top: 300px; font-size: 92px; }
+          #h-t2 { top: 410px; font-size: 180px; }
+          .shd { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: visible; }
+          .shd polygon { fill: #0b1428; stroke: #8fd0ff; stroke-width: 4; }
+          #h-frost { position: absolute; left: 70px; top: 760px; width: 940px; height: 560px; border-radius: 40px; opacity: 0;
+            background: linear-gradient(120deg, rgba(214, 236, 255, 0.0) 0%, rgba(214, 236, 255, 0.85) 45%, rgba(255, 255, 255, 0.95) 55%, rgba(214, 236, 255, 0.0) 100%); }
+        </style>
+        <div id="h-ed">
+          <div class="ruler"></div>
+          <div class="tr" style="top:70px"></div><div class="tr" style="top:150px"></div><div class="tr" style="top:230px"></div><div class="tr" style="top:310px"></div><div class="tr" style="top:390px"></div><div class="tr" style="top:470px"></div>
+          <div class="ph" id="h-ph" style="left:300px"></div>
+        </div>
+        <div id="h-frost"></div>
+        <div id="h-mas"><img src="assets/mascot/facepalm.webp" alt="" /></div>
+        <div class="kt" id="h-t1"><span class="w l">Tired</span> <span class="w l">of</span></div>
+        <div class="kt" id="h-t2"><span class="k">EDITING?</span></div>
+        <svg class="shd" id="h-shards" viewBox="0 0 1080 1920" aria-hidden="true"></svg>
+        <script>
+          (function () {
+            var D = 2.750;   // scene length (gen_index.py)
+            var tl = gsap.timeline({ paused: true });
+            function h(i, k) { var v = Math.sin(i * 127.1 + k * 311.7) * 43758.5453; return v - Math.floor(v); }
+            // fill the tracks with far too many clips (seeded), in blues, pinks and ambers
+            var ed = document.getElementById("h-ed"), cols = ["#3a6fe0", "#d6336c", "#e0952c", "#5b8cff", "#9b5de5", "#2ec4b6"];
+            ed.querySelectorAll(".tr").forEach(function (tr, r) {
+              var x = 0;
+              while (x < 872) { var w = 30 + h(r * 31 + x, 1) * 120; var c = document.createElement("div"); c.className = "cl";
+                c.style.cssText = "left:" + x + "px;width:" + Math.min(w, 872 - x) + "px;background:" + cols[Math.floor(h(r + x, 2) * 6)] + ";opacity:" + (0.55 + h(x, 3) * 0.45);
+                tr.appendChild(c); x += w + 4 + h(x, 4) * 10; }
+            });
+            // the editor arrives tilted, then the clips keep jumping around (manual editing never ends)
+            tl.fromTo("#h-ed", { opacity: 0, y: 300, rotationX: 38, rotationY: -18, scale: 0.86, transformPerspective: 1400 },
+              { opacity: 1, y: 0, rotationX: 14, rotationY: -8, scale: 1, transformPerspective: 1400, duration: 0.5, ease: "expo.out" }, 0);
+            tl.fromTo("#h-ed", { rotationY: -8 }, { rotationY: 6, duration: D - 0.5, ease: "sine.inOut", immediateRender: false }, 0.5);
+            ed.querySelectorAll(".cl").forEach(function (c, i) {
+              if (i % 3) return;
+              for (var k = 0; k < 5; k++) tl.set(c, { x: (h(i, k + 5) - 0.5) * 70 }, 0.35 + k * 0.28 + (i % 5) * 0.03);
+            });
+            for (var k = 0; k < 9; k++) tl.set("#h-ph", { x: [0, 380, 120, 520, 60, 440, 220, 600, 300][k] }, 0.3 + k * 0.17);
+            // the words, on the voice; the mascot facepalms
+            KIT.words(tl, "#h-t1", 0.12, 0.12);
+            KIT.slam(tl, "#h-t2 .k", 0.5);
+            tl.set("#h-t2", { y: 10 }, 0.76); tl.set("#h-t2", { y: -5 }, 0.79); tl.set("#h-t2", { y: 0 }, 0.82);
+            KIT.pop(tl, "#h-mas", 0.7, { rotation: 20, y: 120 });
+            // the timeline freezes over, then shatters toward the camera
+            tl.fromTo("#h-frost", { opacity: 0, x: -900 }, { opacity: 1, x: 0, duration: 0.3, ease: "power2.out", immediateRender: false }, D - 0.78);
+            var sh = document.getElementById("h-shards"), NS = "http://www.w3.org/2000/svg", cx = 540, cy = 1040;
+            for (var i = 0; i < 14; i++) {
+              var a0 = (i / 14) * Math.PI * 2, a1 = ((i + 1) / 14) * Math.PI * 2, r0 = 40 + h(i, 8) * 60, r1 = 520 + h(i, 9) * 200;
+              var pts = [[cx + Math.cos(a0) * r0, cy + Math.sin(a0) * r0 * 0.62], [cx + Math.cos(a0) * r1, cy + Math.sin(a0) * r1 * 0.62],
+                         [cx + Math.cos(a1) * r1, cy + Math.sin(a1) * r1 * 0.62], [cx + Math.cos(a1) * r0, cy + Math.sin(a1) * r0 * 0.62]];
+              var p = document.createElementNS(NS, "polygon"); p.setAttribute("points", pts.map(function (q) { return q[0].toFixed(0) + "," + q[1].toFixed(0); }).join(" "));
+              p.style.opacity = 0; sh.appendChild(p);
+              var mx = (pts[1][0] + pts[2][0]) / 2 - cx, my = (pts[1][1] + pts[2][1]) / 2 - cy;
+              tl.set(p, { opacity: 1, transformOrigin: ((pts[0][0] + pts[2][0]) / 2).toFixed(0) + "px " + ((pts[0][1] + pts[2][1]) / 2).toFixed(0) + "px" }, D - 0.42);
+              tl.to(p, { x: mx * 0.9, y: my * 0.9, rotation: (h(i, 10) - 0.5) * 120, scale: 1.6, opacity: 0, duration: 0.42, ease: "power2.out" }, D - 0.42);
+            }
+            tl.set("#h-ed, #h-frost", { opacity: 0 }, D - 0.42);
+            KIT.out(tl, "#h-t1, #h-t2, #h-mas", D - 0.4, 0.2);
+            window.__timelines["s01"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

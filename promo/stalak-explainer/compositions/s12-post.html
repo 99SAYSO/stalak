@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><title>s12 — post it, everywhere</title></head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="s12" data-width="1080" data-height="1920">
+        <style>
+          #root { position: absolute; inset: 0; overflow: hidden; }
+          #o-ph { left: 240px; top: 560px; }
+          #o-ph .scr video { position: absolute; left: 0; top: 0; width: 560px; height: 1212px; object-fit: cover; }
+          #o-t1 { top: 170px; font-size: 84px; } #o-t2 { top: 272px; font-size: 128px; }
+          /* where it goes: the platforms (official glyphs; YouTube named, not drawn) */
+          .o-tile { position: absolute; width: 190px; height: 190px; border-radius: 52px; background: #f6faff; border: 6px solid #0a0d14; box-shadow: 0 14px 0 #0a0d14, 0 40px 80px rgba(3,18,60,0.4);
+            display: flex; align-items: center; justify-content: center; }
+          .o-tile img { width: 96px; height: 96px; }
+          .o-tile span { font: 400 40px/1.05 "Lilita One", sans-serif; color: #0a0d14; text-align: center; }
+          #o-a { left: 50px; top: 760px; } #o-b { left: 840px; top: 860px; } #o-c { left: 60px; top: 1250px; }
+          .o-fly { position: absolute; left: 470px; top: 1000px; width: 140px; height: 249px; border-radius: 22px; overflow: hidden; border: 5px solid #f6faff; opacity: 0; }
+          .o-fly img { width: 100%; height: 100%; object-fit: cover; }
+          #o-mas { position: absolute; left: 790px; top: 1220px; width: 240px; height: 240px; }
+          #o-mas img { width: 100%; height: 100%; object-fit: contain; }
+        </style>
+        <div class="phone" id="o-ph">
+          <div class="body"></div><div class="bez"></div>
+          <div class="scr"><!--MONTAGE s12 0--><video id="s12-m17" class="clip" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="0.000" data-duration="0.213" data-media-start="21.859" muted playsinline></video><video id="s12-m18" class="clip" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="0.213" data-duration="0.765" data-media-start="22.072" muted playsinline></video><video id="s12-m19" class="clip" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="0.978" data-duration="0.764" data-media-start="22.837" muted playsinline></video><video id="s12-m20" class="clip" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="1.742" data-duration="1.108" data-media-start="23.601" muted playsinline></video><!--/MONTAGE--></div>
+          <div class="isl"></div>
+          <div class="sb" style="left:-8px; top:290px; height:120px"></div><div class="sb" style="left:-8px; top:440px; height:120px"></div><div class="sb" style="left:600px; top:360px; height:180px"></div>
+          <div class="glare"><div class="band"><i></i></div></div>
+        </div>
+        <div class="o-fly" id="o-f1"><img src="assets/thumbs/p05.jpg" alt="" /></div>
+        <div class="o-fly" id="o-f2"><img src="assets/thumbs/p11.jpg" alt="" /></div>
+        <div class="o-fly" id="o-f3"><img src="assets/thumbs/p17.jpg" alt="" /></div>
+        <div class="o-tile" id="o-a"><img src="assets/brand/tiktok.svg" alt="TikTok" /></div>
+        <div class="o-tile" id="o-b"><img src="assets/brand/instagram.svg" alt="Instagram" /></div>
+        <div class="o-tile" id="o-c"><span>YouTube<br />Shorts</span></div>
+        <div id="o-mas"><img src="assets/mascot/cool.webp" alt="" /></div>
+        <div class="kt" id="o-t1"><span class="w l">Now</span> <span class="w l">just</span> <span class="w l">post</span> <span class="w l">it</span></div>
+        <div class="kt" id="o-t2"><span class="w k ice">EVERYWHERE.</span></div>
+        <script>
+          (function () {
+            var D = 2.850;
+            var tl = gsap.timeline({ paused: true });
+            tl.fromTo("#o-ph", { opacity: 0, x: 300, scale: 0.9, rotationY: -30, transformPerspective: 1600 }, { opacity: 1, x: 0, scale: 0.8, rotationY: 0, transformPerspective: 1600, duration: 0.4, ease: "expo.out" }, 0);
+            KIT.words(tl, "#o-t1", 0.05, 0.07); KIT.slam(tl, "#o-t2 .w", 0.5);
+            // the platforms pop around the phone, the video flies out to each one
+            [["#o-a", 0.35, -20], ["#o-b", 0.48, 20], ["#o-c", 0.61, -14]].forEach(function (k) { KIT.pop(tl, k[0], k[1], { rotation: k[2] * 2, scale: 0.2 }); });
+            [["#o-f1", -400, -200, 0.8], ["#o-f2", 400, -100, 0.95], ["#o-f3", -380, 300, 1.1]].forEach(function (f) {
+              tl.fromTo(f[0], { opacity: 1, x: 0, y: 0, scale: 1, rotation: 0 }, { x: f[1], y: f[2], scale: 0.4, rotation: f[1] > 0 ? 25 : -25, duration: 0.45, ease: "power2.inOut", immediateRender: false }, f[3]);
+              tl.to(f[0], { opacity: 0, duration: 0.1 }, f[3] + 0.42);
+            });
+            ["#o-a", "#o-c", "#o-b"].forEach(function (s, i) { tl.fromTo(s, { scale: 1 }, { scale: 1.15, duration: 0.1, yoyo: true, repeat: 1, immediateRender: false }, 1.25 + i * 0.15); });
+            KIT.pop(tl, "#o-mas", 1.2, { rotation: 20, y: 100 });
+            tl.fromTo("#o-a, #o-b, #o-c", { y: 0 }, { y: -40, duration: D - 1.4, ease: "sine.inOut", immediateRender: false, stagger: 0.08 }, 1.4);
+            tl.to("#o-ph, #o-a, #o-b, #o-c, #o-mas", { scale: 0.3, opacity: 0, duration: 0.32, ease: "power3.in" }, D - 0.34);
+            KIT.out(tl, "#o-t1, #o-t2", D - 0.32, 0.2);
+            window.__timelines["s12"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

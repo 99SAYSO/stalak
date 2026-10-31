@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><title>s03 — on your phone, and your computer</title></head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="s03" data-width="1080" data-height="1920">
+        <style>
+          #root { position: absolute; inset: 0; overflow: hidden; }
+          #d-ph { left: 240px; top: 520px; }
+          #d-mac { left: -20px; top: 760px; }
+          #d-mac .mtop { position: absolute; left: 0; top: 0; width: 1120px; height: 672px; transform-origin: 50% 100%; }
+          #d-t1, #d-t3 { top: 190px; font-size: 84px; }
+          #d-t2 { top: 290px; font-size: 190px; } #d-t4 { top: 296px; font-size: 150px; }
+        </style>
+        <div class="phone" id="d-ph">
+          <div class="body"></div><div class="bez"></div>
+          <div class="scr"><div class="sh"><img src="assets/ui/m_sound_empty.jpg" alt="Stalak on a phone: Pick your song" /></div></div>
+          <div class="isl"></div>
+          <div class="sb" style="left:-8px; top:290px; height:120px"></div><div class="sb" style="left:-8px; top:440px; height:120px"></div><div class="sb" style="left:600px; top:360px; height:180px"></div>
+          <div class="glare"><div class="band"><i></i></div></div>
+        </div>
+        <div class="mac" id="d-mac">
+          <div class="mtop">
+            <div class="lid"></div>
+            <div class="scr"><div class="sh"><img src="assets/ui/d_sound_loaded.jpg" alt="Stalak on a computer: the song loaded, its waveform" /></div></div>
+            <div class="notch"></div>
+          </div>
+          <div class="base"><i></i></div>
+        </div>
+        <div class="kt" id="d-t1"><span class="w l">On</span> <span class="w l">your</span></div>
+        <div class="kt" id="d-t2"><span class="w k">PHONE</span></div>
+        <div class="kt" id="d-t3"><span class="w l">and</span> <span class="w l">your</span></div>
+        <div class="kt" id="d-t4"><span class="w k ice">COMPUTER.</span></div>
+        <script>
+          (function () {
+            var D = 2.950;
+            var tl = gsap.timeline({ paused: true });
+            // the phone flies up out of depth and turns toward us
+            tl.fromTo("#d-ph", { opacity: 0, y: 900, z: -700, rotationX: 48, rotationY: -32, scale: 0.85, transformPerspective: 1600 },
+              { opacity: 1, y: 0, z: 0, rotationX: 8, rotationY: -12, scale: 0.85, transformPerspective: 1600, duration: 0.6, ease: "expo.out" }, 0);
+            tl.fromTo("#d-ph", { rotationY: -12 }, { rotationY: 6, duration: 0.55, ease: "sine.inOut", immediateRender: false }, 0.6);
+            KIT.glare(tl, "#d-ph", 0.4);
+            KIT.words(tl, "#d-t1", 0.1, 0.08); KIT.slam(tl, "#d-t2 .w", 0.32);
+            // it turns on its side and becomes the laptop: the lid opens out of it
+            tl.to("#d-ph", { rotation: -90, rotationY: 0, rotationX: 0, scale: 0.42, y: 120, opacity: 0, duration: 0.5, ease: "power3.inOut" }, 1.15);
+            tl.fromTo("#d-mac", { opacity: 0, scale: 0.55, y: 160 }, { opacity: 1, scale: 0.86, y: 0, duration: 0.55, ease: "expo.out" }, 1.3);
+            tl.fromTo("#d-mac .mtop", { rotationX: -100, transformPerspective: 2200 }, { rotationX: 0, transformPerspective: 2200, duration: 0.7, ease: "expo.out" }, 1.32);
+            KIT.out(tl, "#d-t1, #d-t2", 1.2, 0.18);
+            KIT.words(tl, "#d-t3", 1.36, 0.08); KIT.slam(tl, "#d-t4 .w", 1.6);
+            tl.fromTo("#d-mac", { scale: 0.86 }, { scale: 0.92, duration: D - 2.3, ease: "sine.inOut", immediateRender: false }, 1.85);
+            // dive into its screen
+            tl.to("#d-mac", { scale: 3.4, y: 420, opacity: 0, duration: 0.36, ease: "power3.in" }, D - 0.38);
+            KIT.out(tl, "#d-t3, #d-t4", D - 0.36, 0.2);
+            window.__timelines["s03"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>
