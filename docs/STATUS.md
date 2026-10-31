@@ -4,6 +4,7 @@
 > Dernière mise à jour : 30/10/2026 à 21 h (offre hybride fusionnée et en ligne : App, Comptes, Juridique, Marketing ; migration 0008 appliquée).
 
 ## Décisions récentes du propriétaire
+- **31/10, 3 h : audit fusionné et en ligne** (`app/audit` avec `app/export-pub`, `compte/audit`, `marketing/audit-us`), migration 0009 appliquée. Compteurs de l'entonnoir : un seul chemin, `acctEvent` (Comptes) ; `evt()` d'App ne fait plus rien (son test `audit_ui.py` attend encore ses anciens noms : 12 échecs attendus, à adapter par App). **Bug à corriger par App** : ouvrir un projet depuis la Galerie reste bloqué sur « Je remets ton montage en place… » (`gallery_ui.py`, étape « en-1280 Pro: the project opens » ; passe sur `compte/audit` seule, échoue sur `app/audit` seule).
 - **30/10 au soir : audit complet** par le Chef de projet, en 3 parties : `docs/audit/2026-10-30-ux.md`, `docs/audit/2026-10-30-technique.md`, `docs/audit/2026-10-30-croissance.md`. Chaque point indique la conversation responsable. Les tâches sont données par le propriétaire.
 - **30/10, 21 h : nouvelles demandes du propriétaire.** Marché visé : **États-Unis d'abord** (anglais langue principale). **Aucun concurrent cité sur le site.** Packs dès 2 playbacks. Filigrane : logo seul, plus discret, style ancien Triller, change de place sans glisser. Sauvegarde en ligne automatique pour Creator Plus (plus de bouton). Bouton pub bleu « givré » à côté d'Exporter. Cadenas visible sur « Générer le pack ». Choix du passage du son libre (sans aimant) et curseur de lecture déplaçable au doigt. Ensuite : audit complet par le Chef de projet.
 - **30/10, 21 h : offre hybride en ligne.** Fusionnées : `app/formules` (filtres, filigrane, pub récompensée de test, cadenas Pro / Creator Plus), `compte/formules`, `legal/nouvelle-offre`, `marketing/tarifs-formules` (contient `marketing/seo`). Écran des formules dans l'app : version de Comptes (branchée sur Paddle et le changement de formule) ; celle de Marketing n'est pas reprise, la page Tarifs du site l'est. `marketing/chat-pro` abandonnée. Reste au propriétaire : compte Google Ad Manager (unité « rewarded » web, puis remplacer `AD_UNIT`), outil de consentement, test sur iPhone (filigrane, pub de test).
@@ -100,7 +101,7 @@
   - migration 0008 (`migrations/0008_plans.sql`, 3 colonnes) appliquée le 30/10 au soir.
 
 ## Base de données D1
-- Migrations appliquées : 0001, 0002, 0003, 0004_lyrics_usage, 0004_cloud_save, 0005_social_accounts (27/10), 0006_admin_support (27/10), 0007_project_covers (28/10), 0008_plans (30/10).
+- Migrations appliquées : 0001, 0002, 0003, 0004_lyrics_usage, 0004_cloud_save, 0005_social_accounts (27/10), 0006_admin_support (27/10), 0007_project_covers (28/10), 0008_plans (30/10), 0009_audit (31/10).
 - En attente : aucune.
 
 ## À faire, par rôle
