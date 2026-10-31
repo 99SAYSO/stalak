@@ -1,7 +1,9 @@
-Statut : PRÊT
+Statut : ABANDONNÉ (ne pas intégrer)
 Branche : marketing/promo-trailer
 
-Résumé : bande-annonce v4 « Before midnight », repartie de zéro à la demande du propriétaire (il n'a pas gardé la v3 « Unfreeze your snippet », branche `marketing/promo-unfreeze`, marquée abandonnée).
+Note du 1/11 : le propriétaire a refusé cette version (« 0/10 »). Ce qui n'allait pas : la voix et les images n'étaient pas synchronisées (les débuts de phrase avaient été devinés d'après les silences de la voix, et le calage était décalé d'une phrase à partir de « Rewind »), et le motion design ne lui plaisait pas. Il repart de zéro avec une nouvelle idée (une seule forme qui se transforme). Le Chef de projet n'a rien à intégrer depuis cette branche.
+
+Résumé (pour mémoire) : bande-annonce v4 « Before midnight », repartie de zéro à la demande du propriétaire (il n'a pas gardé la v3 « Unfreeze your snippet », branche `marketing/promo-unfreeze`, marquée abandonnée).
 - **Format** : vertical 1080 × 1920, 30 i/s, 37,5 s, anglais américain, pour TikTok, Reels et Shorts. Faite avec HyperFrames et three.js (iPhone 3D).
 - **Ce qu'il voulait** : pas de mascotte, une voix off, du motion design et de la 3D dans le style de son exemple (la pub « Spenda 2.0 » de WizzEdits). Il a choisi, parmi 3 idées, le thème de l'horloge (le temps qu'on perd, puis qu'on gagne) avec les effets de l'idée 1 (mots un par un, écho sur « 40 MIN », carré qui devient le logo, anneau lumineux, iPhone 3D, prises en orbite).
 - **L'histoire** : ton son sort à minuit, ton snippet n'est pas monté, 40 min à la main (l'horloge passe 12:22 AM, tu rates la sortie). On rembobine : Stalak. Ton son, tes prises, les coupes sur le beat, les paroles et le style, c'est fait à 11:45 PM. 40 min à la main, 3 min avec Stalak. Rien à télécharger, pas d'inscription, stalak.app, Try it free.
