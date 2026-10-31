@@ -47,8 +47,8 @@
               el.setAttribute("class", "z-fl"); el.setAttribute("viewBox", "-60 -60 120 120"); el.style.left = (x - 32) + "px"; el.style.top = (y - 32) + "px";
               el.innerHTML = '<path d="M0 -50 V50 M-43 -25 L43 25 M-43 25 L43 -25 M0 -34 L-10 -44 M0 -34 L10 -44 M0 34 L-10 44 M0 34 L10 44" />';
               box.appendChild(el);
-              tl.fromTo(el, { opacity: 0, scale: 0.2 * s, rotation: 0 }, { opacity: 1, scale: s, rotation: 90, duration: 0.12, ease: "power2.out", immediateRender: false }, at(BT.end) - 0.27 + rnd() * 0.06);
-              tl.to(el, { x: LX - x + (rnd() - 0.5) * 60, y: LY - y + (rnd() - 0.5) * 40, scale: 0.15, rotation: 300, duration: 0.24, ease: "power3.in" }, at(BT.end) - 0.22);
+              tl.fromTo(el, { opacity: 0, scale: 0.2 * s, rotation: 0 }, { opacity: 1, scale: s, rotation: 90, duration: 0.07, ease: "power2.out", immediateRender: false }, at(BT.end) - 0.27 + rnd() * 0.04);
+              tl.to(el, { x: LX - x + (rnd() - 0.5) * 60, y: LY - y + (rnd() - 0.5) * 40, scale: 0.15, rotation: 300, duration: 0.18, ease: "power3.in" }, at(BT.end) - 0.16);
               tl.to(el, { opacity: 0, duration: 0.04 }, at(BT.end) + 0.01);
             }
             // the logo lands on the bar, with a burst of light where the flakes met

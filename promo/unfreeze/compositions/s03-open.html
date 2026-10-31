@@ -73,6 +73,7 @@
             tl.to("#o-url", { x: 120, duration: 0.25, ease: "expo.out" }, GO + 0.16);
             tl.to("#o-lock", { opacity: 1, duration: 0.15 }, GO + 0.16);
             tl.fromTo("#o-app", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.3, ease: "expo.out", immediateRender: false }, GO + 0.18);
+            tl.set(".o-fav, .o-tile", { opacity: 0 }, GO + 0.5);   // the app now covers Safari's start page
             // dive into the screen: the app's blue flies past us into the ice world
             KIT.out(tl, "#o-t1, #o-t2", at(BT.song) - 0.32, 0.18);
             tl.to("#o-ph", { scale: 3.3, opacity: 0, duration: 0.32, ease: "power3.in" }, at(BT.song) - 0.26);

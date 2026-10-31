@@ -580,7 +580,6 @@
       cave.visible = world.visible = block.visible = powder.visible = true; shardMeshes.forEach((m) => { m.visible = true; }); caveLight.intensity = 1;
       renderer.transmissionResolutionScale = 0.6;
       renderer.compile(scene, camera);
-      host.debug = { THREE, renderer, scene, camera, lens, blockMat, iceClear, iceFrosted, shardMat, mascot, wallMat };
       host.render(host.clock.t);
       host.ready();
     </script>

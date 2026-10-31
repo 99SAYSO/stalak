@@ -175,6 +175,19 @@
 - À décider : la publication directe est-elle réservée à Stalak Pro ou ouverte à tous ? Meta risque de demander une vérification d'entreprise (lien avec la LLC).
 
 ### Marketing & croissance
+- **Fait (branche `marketing/promo-unfreeze`, 31/10)** : vidéo promo « Unfreeze your snippet » (28 s, 9:16, anglais américain, sans voix off), faite avec HyperFrames et three.js. C'est la version 3 de la promo, que le propriétaire voulait totalement différente des deux premières. Détail dans `docs/handoff/marketing-promo-unfreeze.md`.
+  - Hook : « me spending 40 MIN editing a 15 sec snippet », avec la mascotte gelée dans un bloc de glace.
+  - Puis :
+    - la plongée dans une fissure : « cut. cut. cut… » ;
+    - l'explosion et le logo ;
+    - « just open stalak.app » ;
+    - les 3 étapes et la vraie vidéo finie ;
+    - Shuffle ;
+    - les avis de 3 vrais bêta-testeurs (Bloody, haeine, Kazzy, avec leur accord, sans note en étoiles) ;
+    - la carte de fin, puis la boucle.
+  - 3D réaliste, refaite après son retour « trop carton, trop cubique ». La mascotte 3D est faite avec Meshy 7 dans Flora (environ 2,10 $).
+  - La vidéo et la musique ont été envoyées au propriétaire et ne sont pas dans le dépôt. Rien à mettre en ligne sur le site.
+  - Cette branche contient aussi `marketing/promo-explainer` (la version 2).
 - **Fait (branche `marketing/promo-explainer`, 31/10)** : vidéo explicative « Stalak, comment ça marche » (40,75 s, 9:16, anglais américain), faite avec HyperFrames et le kit saas-motion-video. C'est la version 2 de la promo, refaite à la demande du propriétaire. Détail dans `docs/handoff/marketing-promo-explainer.md`.
   - Version finale après ses retours : tout est dans la zone sûre de TikTok, Reels et Shorts, « Synced to the song » est lisible, les paroles sont en anglais américain et le moment polices / couleurs / filtres est plus clair (voix off d'origine).
   - Contenu : à qui sert l'app, iPhone puis Mac, son, prises (filmer ou importer), synchro, coupes sur le rythme, paroles (à la main ou automatiques avec Pro), polices, couleurs, filtres, Shuffle, export avec l'igloo, packs de 30 vidéos (Creator Plus), sans téléchargement ni inscription, publication partout.

@@ -21,9 +21,9 @@
           .h-half.a { clip-path: polygon(0 0, 100% 0, 100% 38%, 0 62%); }
           .h-half.b { clip-path: polygon(0 62%, 100% 38%, 100% 100%, 0 100%); }
           .h-slash { position: absolute; left: -30px; top: 0; width: 320px; height: 462px; overflow: visible; }
-          .h-slash line { stroke: #ffffff; stroke-width: 10; stroke-linecap: round; }
+          .h-slash line { stroke: #ffffff; stroke-width: 10; stroke-linecap: round; stroke-dasharray: 340; stroke-dashoffset: 340; }   /* drawn at each cut */
           #h-c1 { left: 150px; top: 760px; } #h-c2 { left: 410px; top: 700px; } #h-c3 { left: 670px; top: 780px; }
-          #h-cut { top: 430px; font-size: 170px; }
+          #h-cut { top: 430px; font-size: 170px; opacity: 0; }   /* hidden until the first cut */
           #h-light { position: absolute; left: 540px; top: 0; width: 0; height: 1920px; background: #ffffff; box-shadow: 0 0 120px 60px #ffffff; opacity: 0; }
         </style>
         <div id="h-cave" data-layout-allow-overflow>
