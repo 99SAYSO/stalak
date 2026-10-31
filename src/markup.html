@@ -425,12 +425,6 @@
                 </div>
               </div>
             </div>
-            <div class="prooffer" id="proOffer" hidden>
-              <button class="po-x" id="proOfferX" type="button" aria-label="Fermer" data-i18n-attr="aria-label:close">×</button>
-              <p class="po-t" data-i18n="po.t">Sans filigrane et sans pub, à chaque vidéo ?</p>
-              <p class="po-p" id="proOfferP" data-i18n="po.p">Avec Pro : tous les filtres, le karaoké, et la version Clip 16:9 de ce son. Dès 4,17 $/mois, facturé à l’année.</p>
-              <button class="btn primary sm" id="proOfferGo" type="button" data-i18n="po.go">Voir Pro</button>
-            </div>
           </div>
         </div>
 
@@ -481,6 +475,23 @@
 </div>
 
 <!-- start over: asked before everything is cleared -->
+<!-- the Pro offer after the first video made (free plan, once per device): a frosted window in the middle of the screen -->
+<div class="propop" id="proPop" role="dialog" aria-modal="true" aria-labelledby="proPopT" hidden>
+  <div class="card pp-card" id="proPopCard" tabindex="-1">
+    <button class="pp-x" id="proPopX" type="button" aria-label="Fermer" data-i18n-attr="aria-label:close">×</button>
+    <div class="pp-mascot" aria-hidden="true"></div>
+    <h2 id="proPopT" data-i18n="pp.t">Belle vidéo ! La prochaine, sans filigrane ?</h2>
+    <ul class="pp-list">
+      <li data-i18n="pp.l1">Ni pub ni filigrane</li>
+      <li data-i18n="pp.l2">Le mode Clip 16:9, sur tout le son</li>
+      <li data-i18n="pp.l3">Tous les filtres</li>
+    </ul>
+    <p class="pp-price" data-i18n="pp.price"><strong>4,17 $</strong>/mois, facturé à l’année</p>
+    <button class="btn primary big pp-go" id="proPopGo" type="button" data-i18n="pp.go">Passer à Pro</button>
+    <button class="pp-later" id="proPopLater" type="button" data-i18n="pp.later">Plus tard</button>
+  </div>
+</div>
+
 <div class="askbox" id="filtAsk" role="alertdialog" aria-modal="true" aria-labelledby="filtAskT" hidden>
   <div class="card">
     <h2 id="filtAskT"></h2>

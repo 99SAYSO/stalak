@@ -1169,16 +1169,20 @@ const I18N_EN = /*@EN*/{
   "cap.sel": "Select the text and copy it.",
   "cap.tags": "#lipsync #rap #newmusic #madewithstalak",
   "cap.made": "Made with stalak.app",
-  "po.t": "No watermark and no ads, on every video?",
-  "po.p": "With Pro: every filter, karaoke lyrics, and the 16:9 music video of this song. From $4.17/mo, billed yearly.",
-  "po.go": "See Pro",
   "fa.t": "“{name}” is a Pro filter",
   "fa.p": "You can try it in the preview. To export it, go Pro, or export your video without this filter.",
   "fa.pro": "Go Pro, from $4.17/mo",
   "fa.without": "Export without this filter",
   "filt.th.free": "Free",
   "filt.more": "more filters",
-  "filt.less": "fewer filters"
+  "filt.less": "fewer filters",
+  "pp.t": "Nice video! Next one without the watermark?",
+  "pp.l1": "No ads, no watermark",
+  "pp.l2": "Music video mode (16:9, the whole song)",
+  "pp.l3": "Every filter",
+  "pp.price": "<strong>$4.17</strong>/mo, billed yearly",
+  "pp.go": "Go Pro",
+  "pp.later": "Maybe later"
 }/*EN@*/;
 const I18N_FR = /*@FR*/{
   "kind.hint.reel": "Une vidéo verticale 9:16, de tout le son ou de quelques mesures.",
@@ -1844,16 +1848,20 @@ const I18N_FR = /*@FR*/{
   "cap.sel": "Sélectionne le texte et copie-le.",
   "cap.tags": "#playback #rap #lipsync #madewithstalak",
   "cap.made": "Fait avec stalak.app",
-  "po.t": "Sans filigrane et sans pub, à chaque vidéo ?",
-  "po.p": "Avec Pro : tous les filtres, le karaoké, et la version Clip 16:9 de ce son. Dès 4,17 $/mois, facturé à l’année.",
-  "po.go": "Voir Pro",
   "fa.t": "« {name} » est un filtre Pro",
   "fa.p": "Tu peux l’essayer dans l’aperçu. Pour l’exporter, passe à Pro, ou exporte ta vidéo sans ce filtre.",
   "fa.pro": "Passer à Pro, dès 4,17 $/mois",
   "fa.without": "Exporter sans ce filtre",
   "filt.th.free": "Gratuits",
   "filt.more": "filtres en plus",
-  "filt.less": "moins de filtres"
+  "filt.less": "moins de filtres",
+  "pp.t": "Belle vidéo ! La prochaine, sans filigrane ?",
+  "pp.l1": "Ni pub ni filigrane",
+  "pp.l2": "Le mode Clip 16:9, sur tout le son",
+  "pp.l3": "Tous les filtres",
+  "pp.price": "<strong>4,17 $</strong>/mois, facturé à l’année",
+  "pp.go": "Passer à Pro",
+  "pp.later": "Plus tard"
 }/*FR@*/;
 let STATIC_FR = /*@STATIC_FR*/null/*STATIC_FR@*/;
 const LANGS = ['fr', 'en'];
@@ -7601,7 +7609,7 @@ function expFailCat(e){
   if (/decod|encod|codec|reclaim|VideoFrame/i.test(m)) return 'decoder';
   return 'other';
 }
-function beginExport(){ acctEvent('export_start'); expOpen(); stop(true); S.exporting = true; S.leftDuring = false; wakeOn(); liveTidy(); nearClear('#expNear'); nearClear('#packBox');   /* the preview's decoders let go: the export gets the graphics chip to itself */
+function beginExport(){ clearTimeout(ppTimer); ppTimer = 0; ppClose(); acctEvent('export_start'); expOpen(); stop(true); S.exporting = true; S.leftDuring = false; wakeOn(); liveTidy(); nearClear('#expNear'); nearClear('#packBox');   /* the preview's decoders let go: the export gets the graphics chip to itself */
   resultPark();
   S.takes.forEach(t => { if (t.orig && !t.orig.parentNode) $('#vpool').append(t.orig); }); S.cancel = false; setBusy(true); progress(0); $('#cancelBtn').hidden = false; $('#result').hidden = true; }
 /* the video already made, during a new export: stopped and let go of (a video playing behind kept its sound going, and on
@@ -7955,19 +7963,48 @@ $('#capCopy').onclick = async () => {
   if (!ok){ try { t.focus(); t.select(); ok = document.execCommand('copy'); } catch(e){} }
   setT('#capNote', ok ? 'cap.ok' : 'cap.sel');
 };
-/* a gentle Pro offer under the first video made (audit 30/10): free plan on stalak.app, after the first successful video of
-   the visit, never during an export; « × » hides it for 7 days */
-let poShown = false;
-const PO_KEY = 'stalak:proOfferX';
-function proOfferUi(){
-  const box = $('#proOffer'); if (!box) return;
-  const x = store.get(PO_KEY), quiet = x && Date.now() - x < 7 * 864e5;
-  const on = !!ACCT && !can('nowm') && !!lastBlob && !/\.zip$/i.test(lastName) && (S.okCount || 0) >= 1 && S.okFirst === lastBlob && !quiet && !S.exporting;
-  box.hidden = !on;
-  if (on && !poShown){ poShown = true; evt('pro_offer'); }
+/* the Pro offer after the first video made (owner, 31/10): a window in the middle of the screen, the page darkened behind,
+   opened about 1 s after the video is ready, with a frosted entrance. Free plan on stalak.app only, once per device (never
+   again, never for a subscriber), never during an export. It closes with one touch (×, « Plus tard », a touch beside it,
+   Escape) and never stands in the way of saving or sharing the video: the page under it is left as it is (no inert). */
+const PP_KEY = 'stalak:proPopSeen';
+let ppTimer = 0, ppBack = null;
+function ppEligible(){
+  return !!ACCT && !can('nowm') && !!lastBlob && !/\.zip$/i.test(lastName) && (S.okCount || 0) === 1 && S.okFirst === lastBlob && !S.exporting && !store.get(PP_KEY);
 }
-$('#proOfferX').onclick = () => { store.set(PO_KEY, Date.now()); $('#proOffer').hidden = true; };
-$('#proOfferGo').onclick = () => { evt('plans_open', 'offer'); acctOpen('nowm', { plan: 'pro' }); };
+// asked when the first video is ready: the window comes 1 s later, if all is still as it was
+function proOfferUi(){
+  if (ppTimer || !ppEligible()) return;
+  // (the export screen waves goodbye first: the window waits for it to be gone, then 1 s more)
+  let tries = 0;
+  // the 1 s counts from the moment the video is there to see
+  const go = () => { ppTimer = setTimeout(() => { ppTimer = 0; if (!ppEligible()) return; if (!$('#expScreen').hidden || document.visibilityState === 'hidden'){ if (++tries < 40) go(); return; } ppTimer = setTimeout(() => { ppTimer = 0; if (ppEligible() && !$('#result').hidden && $('#expScreen').hidden && document.visibilityState !== 'hidden') ppOpen(); }, 1000); }, tries ? 300 : 0); };
+  go();
+}
+function ppOpen(){
+  store.set(PP_KEY, Date.now());
+  ppBack = document.activeElement;
+  const box = $('#proPop'); box.hidden = false; box.classList.remove('pp-in'); void box.offsetWidth; box.classList.add('pp-in');
+  try { $('#proPopGo').focus({ preventScroll: true }); } catch(e){}
+  acctEvent('pro_offer'); evt('pro_offer');
+  diag('offre Pro affichée après la 1re vidéo');
+}
+function ppClose(){
+  const box = $('#proPop'); if (box.hidden) return;
+  box.hidden = true; box.classList.remove('pp-in');
+  try { if (ppBack && ppBack.isConnected) ppBack.focus({ preventScroll: true }); } catch(e){}
+  ppBack = null;
+}
+$('#proPopX').onclick = ppClose;
+$('#proPopLater').onclick = ppClose;
+$('#proPop').addEventListener('click', e => { if (e.target === e.currentTarget) ppClose(); });
+$('#proPop').addEventListener('keydown', e => {
+  if (e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); ppClose(); return; }
+  // the focus stays in the window while it is open
+  if (e.key === 'Tab'){ const f = [...$('#proPop').querySelectorAll('button')].filter(b => !b.hidden); const i = f.indexOf(document.activeElement);
+    if (e.shiftKey && i <= 0){ e.preventDefault(); f[f.length - 1].focus(); } else if (!e.shiftKey && i === f.length - 1){ e.preventDefault(); f[0].focus(); } }
+});
+$('#proPopGo').onclick = () => { ppClose(); acctOpen('nowm', { plan: 'pro' }); };
 $('#homeBtn').onclick = async () => { if (S.exporting || askDone) return; if (!S.song && !S.takes.length){ homeGo(); return; }
   if (await askSure(_t('home.askT'), _t('home.askP'), _t('home.title'))) homeGo(); };
 $('#homeNo').onclick = () => { if (askDone) askDone(false); };

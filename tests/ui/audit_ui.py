@@ -36,6 +36,12 @@ FAST_EXPORT = """pickVideoConfig = async () => null;
   renderRealtime = async () => { await new Promise(r => setTimeout(r, 120)); return { blob: new Blob([new Uint8Array(4096)], { type: 'video/mp4' }), ext: 'mp4' }; }"""
 
 
+def shot(fn):
+    """a screenshot for the report: never makes the test fail"""
+    try: fn()
+    except Exception as e: print('(capture non prise : %s)' % str(e).splitlines()[0][:80])
+
+
 def run(b, base, lang, iphone):
     tag = ('iPhone' if iphone else 'ordinateur') + ' ' + lang
     opts = dict(PW.devices['iPhone 15 Pro']) if iphone else {'viewport': {'width': 1280, 'height': 860}}
@@ -109,8 +115,50 @@ def run(b, base, lang, iphone):
       navigator.canShare = () => true; navigator.share = async () => { window.__shared = true; }; }""")
     pg.evaluate('() => { window.__p = __ev("exportOne()"); }'); pg.wait_for_selector('#filtAsk:not([hidden])', timeout=5000)
     pg.locator('#faWithout').click()
-    pg.wait_for_function('() => __ev("!S.exporting && !!lastBlob")', timeout=20000); pg.wait_for_timeout(300)
+    pg.wait_for_function('() => __ev("!S.exporting && !!lastBlob")', timeout=20000)
     check(tag + ' : « Exporter sans ce filtre » → la vidéo sort, sans filtre', ev(pg, "S.filter === 'none'") and pg.locator('#result').is_visible())
+    # ---- the Pro offer (owner, 31/10): a window in the middle, about 1 s after the first video is ready ----
+    pp = pg.locator('#proPop')
+    early = pp.is_visible()
+    pg.wait_for_selector('#proPop:not([hidden])', timeout=5000)
+    check(tag + ' : fenêtre Pro pas tout de suite, puis environ 1 s après la vidéo', not early)
+    look = pg.evaluate('''() => { const b = document.querySelector('#proPop'), c = document.querySelector('#proPopCard').getBoundingClientRect(), cs = getComputedStyle(b);
+      return { bg: cs.backgroundColor, cx: Math.round(c.left + c.width / 2 - innerWidth / 2), cy: Math.round(c.top + c.height / 2 - innerHeight / 2), inside: c.left >= 0 && c.right <= innerWidth && c.top >= -60 && c.bottom <= innerHeight,
+        anim: getComputedStyle(document.querySelector('#proPopCard')).animationName, frost: getComputedStyle(document.querySelector('#proPopCard'), '::after').animationName,
+        mascot: getComputedStyle(document.querySelector('.pp-mascot')).backgroundImage.slice(0, 20), items: [...document.querySelectorAll('#proPop .pp-list li')].map(l => l.textContent.trim()),
+        price: document.querySelector('#proPop .pp-price').textContent, focus: document.activeElement && document.activeElement.id }; }''')
+    want_items = ['No ads, no watermark', 'Music video mode (16:9, the whole song)', 'Every filter'] if lang == 'en' else ['Ni pub ni filigrane', 'Le mode Clip 16:9, sur tout le son', 'Tous les filtres']
+    check(tag + ' : au milieu de l’écran, fond assombri', abs(look['cx']) <= 2 and abs(look['cy']) <= 40 and look['inside'] and look['bg'].startswith('rgba(8, 14, 30'), look)
+    check(tag + ' : apparition animée et reflet givré', look['anim'] == 'pp-rise' and look['frost'] == 'pp-frost', look)
+    check(tag + ' : mascotte, titre, 3 avantages, prix au mois', look['mascot'].startswith('url(') and look['items'] == want_items and ('$4.17/mo' in look['price'] if lang == 'en' else '4,17 $/mois' in look['price'])
+          and pg.locator('#proPopT').inner_text().strip() != '', look)
+    check(tag + ' : gros bouton « Passer à Pro » (focus dessus) et lien « Plus tard »', look['focus'] == 'proPopGo' and pg.locator('#proPopGo').inner_text() == ('Go Pro' if lang == 'en' else 'Passer à Pro')
+          and pg.locator('#proPopLater').inner_text() == ('Maybe later' if lang == 'en' else 'Plus tard'))
+    if SHOTS:
+        pg.wait_for_timeout(1300); pg.screenshot(path=os.path.join(SHOTS, 'offre-pro-' + ('iphone' if iphone else 'ordi') + '-' + lang + '.png'))
+    pg.keyboard.press('Escape'); pg.wait_for_timeout(150)
+    closed = [not pp.is_visible()]
+    for how in ('later', 'x', 'beside'):
+        ev(pg, 'ppOpen()'); pg.wait_for_timeout(150)
+        if how == 'later': pg.locator('#proPopLater').click()
+        elif how == 'x': pg.locator('#proPopX').click()
+        else:
+            vw = pg.viewport_size
+            if iphone: pg.touchscreen.tap(8, vw['height'] - 8)
+            else: pg.mouse.click(8, vw['height'] - 8)
+        pg.wait_for_timeout(150); closed.append(not pp.is_visible())
+    check(tag + ' : se ferme d’un toucher (Échap, « Plus tard », ×, à côté)', closed == [True] * 4, closed)
+    # never in the way: while it is open, the video's buttons are not blocked (one touch beside it closes it, then they work)
+    ev(pg, 'ppOpen()'); pg.wait_for_timeout(150)
+    inert = pg.evaluate("() => !!document.querySelector('.wrap').closest('[inert]') || document.querySelector('#saveBtn').disabled")
+    sbb = pg.locator('#saveBtn').bounding_box()
+    pg.mouse.click(4, 4) if not iphone else pg.touchscreen.tap(4, pg.viewport_size['height'] - 4)
+    pg.wait_for_timeout(150)
+    check(tag + ' : ne bloque pas l’enregistrement ni le partage', not inert and not pp.is_visible() and pg.locator('#saveBtn').is_enabled() and not ev(pg, 'S.exporting'), (inert, sbb))
+    ev(pg, 'ppOpen()'); pg.wait_for_timeout(150)
+    pg.locator('#proPopGo').click(); pg.wait_for_timeout(200)
+    check(tag + ' : « Passer à Pro » → formules sur Pro, fenêtre fermée', pg.evaluate('window.__open') == ['nowm', 'pro'] and not pp.is_visible())
+    pg.wait_for_timeout(300)
     check(tag + ' : écran gardé allumé pendant l’export, puis libéré', pg.evaluate('window.__wake') == ['request:screen', 'release'], pg.evaluate('window.__wake'))
     cap = pg.locator('#capText').input_value()
     check(tag + ' : légende prête à copier avec #madewithstalak', '#madewithstalak' in cap and ('stalak.app' in cap), cap)
@@ -118,8 +166,6 @@ def run(b, base, lang, iphone):
     note = pg.locator('#capNote').inner_text()
     clip = pg.evaluate('() => navigator.clipboard.readText().catch(() => null)')
     check(tag + ' : « Copier la légende » copie le texte', ('copied' in note if lang == 'en' else 'copiée' in note) and (clip is None or clip == cap), (note, clip))
-    po = pg.locator('#proOffer')
-    check(tag + ' : offre Pro douce sous la 1re vidéo', po.is_visible() and ('$4.17' in po.inner_text() if lang == 'en' else '4,17 $' in po.inner_text()), po.inner_text() if po.count() else None)
     sb, sv = pg.locator('#shareBtn'), pg.locator('#saveBtn')
     if iphone:
         first = pg.evaluate("() => document.querySelector('#saveBtn').previousElementSibling === document.querySelector('#shareBtn')")
@@ -130,14 +176,20 @@ def run(b, base, lang, iphone):
     else:
         check(tag + ' : ordinateur : « Enregistrer sur l’appareil » reste le bouton principal', 'primary' in sv.get_attribute('class') and 'sharemain' not in (sb.get_attribute('class') or ''))
     if SHOTS:
-        pg.locator('#result').scroll_into_view_if_needed(); pg.wait_for_timeout(300)
-        pg.locator('#result').screenshot(path=os.path.join(SHOTS, 'resultat-' + ('iphone' if iphone else 'ordi') + '-' + lang + '.png'))
-    pg.locator('#proOfferGo').click(); pg.wait_for_timeout(200)
-    check(tag + ' : « Voir Pro » → formules sur Pro', pg.evaluate('window.__open') == ['nowm', 'pro'])
-    pg.locator('#proOfferX').click()
-    check(tag + ' : « × » cache l’offre', not po.is_visible())
-    pg.evaluate('() => __ev("exportOne()")'); pg.wait_for_function('() => __ev("!S.exporting")', timeout=20000); pg.wait_for_timeout(200)
-    check(tag + ' : pas d’offre après la 2e vidéo', not po.is_visible())
+        shot(lambda: pg.locator('#result').scroll_into_view_if_needed(timeout=5000)); pg.wait_for_timeout(300)
+        shot(lambda: pg.locator('#result').screenshot(path=os.path.join(SHOTS, 'resultat-' + ('iphone' if iphone else 'ordi') + '-' + lang + '.png')))
+    pg.evaluate('() => __ev("exportOne()")'); pg.wait_for_function('() => __ev("!S.exporting")', timeout=20000); pg.wait_for_timeout(1600)
+    check(tag + ' : une seule fois : pas de fenêtre Pro après la 2e vidéo', not pp.is_visible())
+    pg.reload(wait_until='load'); pg.wait_for_function('typeof window.__ev === "function"', timeout=20000)
+    seen = ev(pg, '!!store.get(PP_KEY)')
+    pg.locator('#demoBtn').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000)
+    ev(pg, "ACCT.state.user = null, acctOpen = () => {}, setFilter('none', true), " + FAST_EXPORT.replace('\n', ' '))
+    pg.evaluate('() => __ev("exportOne()")'); pg.wait_for_function('() => __ev("!S.exporting && !!lastBlob")', timeout=20000); pg.wait_for_timeout(1600)
+    check(tag + ' : une seule fois, même après rechargement', seen and not pp.is_visible())
+    # a subscriber never sees it
+    ev(pg, "store.set(PP_KEY, null), acctHas = f => true, S.okCount = 1, S.okFirst = lastBlob, proOfferUi()"); pg.wait_for_timeout(1600)
+    check(tag + ' : jamais pour un abonné', not pp.is_visible())
+    ev(pg, "acctHas = window.__realHas || acctHas")
 
     # ---- n° 3: leaving Stalak during an export made in real time ----
     ev(pg, """renderRealtime = () => new Promise(res => { S.__rt = true; const iv = setInterval(() => { if (S.cancel){ clearInterval(iv); res({ blob: new Blob(['y']), ext: 'mp4' }); } }, 40); })""")
@@ -184,7 +236,7 @@ def run(b, base, lang, iphone):
     # by Comptes' plans page, played by the test here, so it is checked in Comptes' own tests)
     names = [e['body'].get('name') for e in events]
     keys = set(k for e in events for k in e['body'])
-    check(tag + ' : compteurs envoyés (export commencé, réussi, raté)', all(n in names for n in ('export_start', 'export_ok', 'export_fail')), names)
+    check(tag + ' : compteurs envoyés (export commencé, réussi, raté, offre Pro une fois)', all(n in names for n in ('export_start', 'export_ok', 'export_fail')) and names.count('pro_offer') >= 1, names)
     fail = [e['body'] for e in events if e['body'].get('name') == 'export_fail']
     check(tag + ' : export raté avec sa catégorie (app quittée, mémoire)', any(f.get('cat') == 'hidden' for f in fail) and any(f.get('cat') == 'memory' for f in fail), fail)
     check(tag + ' : compteurs anonymes (nom, catégorie, iPhone ou non ; aucun cookie)', keys <= {'name', 'cat', 'why', 'ios'} and all(e['cookie'] is None for e in events)

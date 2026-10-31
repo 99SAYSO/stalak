@@ -1012,13 +1012,9 @@ header .stepper{margin-left:auto}
 .help-cube{animation-iteration-count:6}
 @media (max-width:480px){.help-cube{width:46px;height:46px}}
 .wrap{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 84px)}
-/* caption to copy, gentle Pro offer, Pro filter question (audit 30/10) */
+/* caption to copy, Pro filter question (audit 30/10) */
 .capbox{margin-top:14px;display:flex;flex-direction:column;gap:6px}
 .capbox textarea{width:100%;box-sizing:border-box;font:500 14px/1.45 var(--body);padding:10px 12px;border:2px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink);resize:vertical}
-.prooffer{position:relative;margin-top:16px;padding:14px 44px 14px 16px;border-radius:16px;border:2px solid var(--ink);background:linear-gradient(180deg,#eef6ff,#dcebff)}
-.prooffer .po-t{margin:0 0 4px;font:400 18px/1.2 var(--display)}
-.prooffer .po-p{margin:0 0 10px;font:500 14px/1.45 var(--body)}
-.prooffer .po-x{position:absolute;top:6px;right:6px;width:36px;height:36px;border:0;background:none;font:600 22px/1 var(--body);color:var(--ink);cursor:pointer}
 .result .sharemain{width:100%;justify-content:center}
 .result .savefile{font-size:14px}
 .fa-row{flex-wrap:wrap;gap:10px}
@@ -1037,3 +1033,26 @@ header .stepper{margin-left:auto}
 /* the reason of a lock (« Le mode Clip, c’est avec Pro »), repeated at the top of the card the page scrolls to (audit of 30/10) */
 #apBuy .pl-why{margin:0 0 10px;padding:8px 12px;border-radius:12px;background:#fff6d6;border:2px solid var(--ink);font:600 14.5px/1.35 var(--body);color:var(--ink);text-align:center}
 #apBuy .pl-why[hidden]{display:none}
+/* the Pro offer after the first video (owner, 31/10): a frosted window in the middle, the page darkened behind */
+.propop{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:20px 16px;background:rgba(8,14,30,.62)}
+.propop[hidden]{display:none}
+.propop .pp-card{position:relative;width:min(380px,100%);max-height:calc(100vh - 40px);overflow:auto;margin:0;padding:64px 22px 18px;text-align:center;box-shadow:0 6px 0 var(--ink),0 24px 60px rgba(0,0,0,.45)}
+.propop .pp-mascot{position:absolute;left:50%;top:-58px;width:96px;height:116px;margin-left:-48px;background:var(--mascot) center bottom/contain no-repeat;pointer-events:none}
+.propop .pp-card{overflow:visible}
+.propop h2{margin:0 0 12px;font:400 25px/1.15 var(--display)}
+.propop .pp-list{list-style:none;margin:0 auto 14px;padding:0;display:inline-flex;flex-direction:column;gap:8px;text-align:left;font:600 16px/1.3 var(--body)}
+.propop .pp-list li{display:flex;gap:10px;align-items:center}
+.propop .pp-list li::before{content:"";flex:0 0 22px;height:22px;border-radius:50%;border:2px solid var(--ink);background:#8fd0ff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 10.5l3.2 3.2L15 7' fill='none' stroke='%230a0d14' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/16px no-repeat}
+.propop .pp-price{margin:0 0 14px;font:500 15px/1.4 var(--body)}
+.propop .pp-price strong{font:400 30px/1 var(--display);margin-right:2px}
+.propop .pp-go{width:100%;justify-content:center}
+.propop .pp-later{display:block;margin:10px auto 0;min-height:44px;padding:0 10px;background:none;border:0;font:600 15px var(--body);color:var(--muted);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.propop .pp-x{position:absolute;top:8px;right:8px;width:44px;height:44px;border:0;background:none;font:600 26px/1 var(--body);color:var(--ink);cursor:pointer;z-index:2}
+/* entrance: the dark fades in, the window rises and a frost sheen crosses it */
+.propop.pp-in{animation:pp-fade .28s ease-out both}
+.propop.pp-in .pp-card{animation:pp-rise .5s cubic-bezier(.2,1.3,.4,1) both}
+.propop.pp-in .pp-card::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.75) 46%,rgba(200,235,255,.5) 52%,transparent 66%) no-repeat;background-size:250% 100%;animation:pp-frost 1.1s .25s ease-out both}
+@keyframes pp-fade{from{opacity:0}to{opacity:1}}
+@keyframes pp-rise{from{opacity:0;transform:translateY(26px) scale(.9)}to{opacity:1;transform:none}}
+@keyframes pp-frost{from{background-position:120% 0}to{background-position:-60% 0}}
+@media (prefers-reduced-motion:reduce){.propop.pp-in,.propop.pp-in .pp-card,.propop.pp-in .pp-card::after{animation:none}}
