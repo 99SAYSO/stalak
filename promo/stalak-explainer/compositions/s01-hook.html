@@ -34,7 +34,7 @@
         <svg class="shd" id="h-shards" viewBox="0 0 1080 1920" aria-hidden="true"></svg>
         <script>
           (function () {
-            var D = 2.750;   // scene length (gen_index.py)
+            var D = 2.675;   // scene length (gen_index.py)
             var tl = gsap.timeline({ paused: true });
             function h(i, k) { var v = Math.sin(i * 127.1 + k * 311.7) * 43758.5453; return v - Math.floor(v); }
             // fill the tracks with far too many clips (seeded), in blues, pinks and ambers
@@ -55,10 +55,10 @@
             });
             for (var k = 0; k < 9; k++) tl.set("#h-ph", { x: [0, 380, 120, 520, 60, 440, 220, 600, 300][k] }, 0.3 + k * 0.17);
             // the words, on the voice; the mascot facepalms
-            KIT.words(tl, "#h-t1", 0.12, 0.12);
-            KIT.slam(tl, "#h-t2 .k", 0.5);
-            tl.set("#h-t2", { y: 10 }, 0.76); tl.set("#h-t2", { y: -5 }, 0.79); tl.set("#h-t2", { y: 0 }, 0.82);
-            KIT.pop(tl, "#h-mas", 0.7, { rotation: 20, y: 120 });
+            KIT.words(tl, "#h-t1", 0.3, 0.12);
+            KIT.slam(tl, "#h-t2 .k", 0.72);
+            tl.set("#h-t2", { y: 10 }, 0.98); tl.set("#h-t2", { y: -5 }, 1.01); tl.set("#h-t2", { y: 0 }, 1.04);
+            KIT.pop(tl, "#h-mas", 0.95, { rotation: 20, y: 120 });
             // the timeline freezes over, then shatters toward the camera
             tl.fromTo("#h-frost", { opacity: 0, x: -900 }, { opacity: 1, x: 0, duration: 0.3, ease: "power2.out", immediateRender: false }, D - 0.78);
             var sh = document.getElementById("h-shards"), NS = "http://www.w3.org/2000/svg", cx = 540, cy = 1040;

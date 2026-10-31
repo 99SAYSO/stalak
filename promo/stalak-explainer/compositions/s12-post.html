@@ -22,7 +22,7 @@
         </style>
         <div class="phone" id="o-ph">
           <div class="body"></div><div class="bez"></div>
-          <div class="scr"><!--MONTAGE s12 0--><video id="s12-m17" class="clip" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="0.000" data-duration="0.213" data-media-start="21.859" muted playsinline></video><video id="s12-m18" class="clip" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="0.213" data-duration="0.765" data-media-start="22.072" muted playsinline></video><video id="s12-m19" class="clip" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="0.978" data-duration="0.764" data-media-start="22.837" muted playsinline></video><video id="s12-m20" class="clip" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="1.742" data-duration="1.108" data-media-start="23.601" muted playsinline></video><!--/MONTAGE--></div>
+          <div class="scr"><!--MONTAGE s12 0--><video id="s12-m17" class="clip" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="0.000" data-duration="0.295" data-media-start="21.777" muted playsinline></video><video id="s12-m18" class="clip" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="0.295" data-duration="0.765" data-media-start="22.072" muted playsinline></video><video id="s12-m19" class="clip" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="1.060" data-duration="0.764" data-media-start="22.837" muted playsinline></video><video id="s12-m20" class="clip" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="1.824" data-duration="0.158" data-media-start="23.601" muted playsinline></video><!--/MONTAGE--></div>
           <div class="isl"></div>
           <div class="sb" style="left:-8px; top:290px; height:120px"></div><div class="sb" style="left:-8px; top:440px; height:120px"></div><div class="sb" style="left:600px; top:360px; height:180px"></div>
           <div class="glare"><div class="band"><i></i></div></div>
@@ -38,19 +38,19 @@
         <div class="kt" id="o-t2"><span class="w k ice">EVERYWHERE.</span></div>
         <script>
           (function () {
-            var D = 2.850;
+            var D = 1.982;
             var tl = gsap.timeline({ paused: true });
             tl.fromTo("#o-ph", { opacity: 0, x: 300, scale: 0.9, rotationY: -30, transformPerspective: 1600 }, { opacity: 1, x: 0, scale: 0.8, rotationY: 0, transformPerspective: 1600, duration: 0.4, ease: "expo.out" }, 0);
-            KIT.words(tl, "#o-t1", 0.05, 0.07); KIT.slam(tl, "#o-t2 .w", 0.5);
+            KIT.words(tl, "#o-t1", 0.05, 0.07); KIT.slam(tl, "#o-t2 .w", 1.05);
             // the platforms pop around the phone, the video flies out to each one
-            [["#o-a", 0.35, -20], ["#o-b", 0.48, 20], ["#o-c", 0.61, -14]].forEach(function (k) { KIT.pop(tl, k[0], k[1], { rotation: k[2] * 2, scale: 0.2 }); });
-            [["#o-f1", -400, -200, 0.8], ["#o-f2", 400, -100, 0.95], ["#o-f3", -380, 300, 1.1]].forEach(function (f) {
-              tl.fromTo(f[0], { opacity: 1, x: 0, y: 0, scale: 1, rotation: 0 }, { x: f[1], y: f[2], scale: 0.4, rotation: f[1] > 0 ? 25 : -25, duration: 0.45, ease: "power2.inOut", immediateRender: false }, f[3]);
-              tl.to(f[0], { opacity: 0, duration: 0.1 }, f[3] + 0.42);
+            [["#o-a", 0.22, -20], ["#o-b", 0.3, 20], ["#o-c", 0.38, -14]].forEach(function (k) { KIT.pop(tl, k[0], k[1], { rotation: k[2] * 2, scale: 0.2 }); });
+            [["#o-f1", -400, -200, 0.55], ["#o-f2", 400, -100, 0.65], ["#o-f3", -380, 300, 0.75]].forEach(function (f) {
+              tl.fromTo(f[0], { opacity: 1, x: 0, y: 0, scale: 1, rotation: 0 }, { x: f[1], y: f[2], scale: 0.4, rotation: f[1] > 0 ? 25 : -25, duration: 0.4, ease: "power2.inOut", immediateRender: false }, f[3]);
+              tl.to(f[0], { opacity: 0, duration: 0.1 }, f[3] + 0.37);
             });
-            ["#o-a", "#o-c", "#o-b"].forEach(function (s, i) { tl.fromTo(s, { scale: 1 }, { scale: 1.15, duration: 0.1, yoyo: true, repeat: 1, immediateRender: false }, 1.25 + i * 0.15); });
-            KIT.pop(tl, "#o-mas", 1.2, { rotation: 20, y: 100 });
-            tl.fromTo("#o-a, #o-b, #o-c", { y: 0 }, { y: -40, duration: D - 1.4, ease: "sine.inOut", immediateRender: false, stagger: 0.08 }, 1.4);
+            ["#o-a", "#o-c", "#o-b"].forEach(function (s, i) { tl.fromTo(s, { scale: 1 }, { scale: 1.15, duration: 0.1, yoyo: true, repeat: 1, immediateRender: false }, 0.95 + i * 0.1); });
+            KIT.pop(tl, "#o-mas", 0.9, { rotation: 20, y: 100 });
+            tl.fromTo("#o-a, #o-b, #o-c", { y: 0 }, { y: -40, duration: Math.max(0.2, D - 1.62), ease: "sine.inOut", immediateRender: false, stagger: 0.04 }, 1.2);
             tl.to("#o-ph, #o-a, #o-b, #o-c, #o-mas", { scale: 0.3, opacity: 0, duration: 0.32, ease: "power3.in" }, D - 0.34);
             KIT.out(tl, "#o-t1, #o-t2", D - 0.32, 0.2);
             window.__timelines["s12"] = tl;

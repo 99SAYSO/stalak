@@ -22,7 +22,7 @@
           #k-tc { position: absolute; right: 10px; top: 10px; padding: 4px 10px; border-radius: 10px; background: rgba(10,13,20,0.75); font: 700 22px/1 "Rubik", sans-serif; color: #f6faff; }
           .k-th { position: absolute; top: 150px; width: 110px; height: 160px; border-radius: 16px; overflow: hidden; border: 5px solid #0a0d14; box-shadow: 0 8px 0 #0a0d14; }
           .k-th img { width: 100%; height: 100%; object-fit: cover; }
-          .k-th b { position: absolute; left: 6px; top: 6px; width: 34px; height: 34px; border-radius: 50%; border: 4px solid #0a0d14; font: 400 22px/26px "Lilita One"; color: #fff; text-align: center; }
+          .k-th b { position: absolute; left: 6px; top: 6px; width: 44px; height: 44px; border-radius: 50%; border: 4px solid #0a0d14; font: 400 28px/36px "Lilita One"; color: #fff; text-align: center; }
           #k-m1 { left: 60px; } #k-m2 { left: 180px; } #k-m3 { left: 300px; }
         </style>
         <div class="phone" id="k-ph">
@@ -45,7 +45,7 @@
         <div class="kt" id="k-t4"><span class="w k ice">THEM.</span></div>
         <script>
           (function () {
-            var D = 4.450;
+            var D = 3.851;
             var tl = gsap.timeline({ paused: true });
             tl.fromTo("#k-ph", { opacity: 0, x: 1100, rotationY: 40, scale: 0.82, transformPerspective: 1600 }, { opacity: 1, x: 0, rotationY: -6, scale: 0.82, transformPerspective: 1600, duration: 0.45, ease: "expo.out" }, 0);
             tl.fromTo("#k-ph", { rotationY: -6 }, { rotationY: 6, duration: D - 0.45, ease: "sine.inOut", immediateRender: false }, 0.45);
@@ -55,14 +55,14 @@
             tl.fromTo("#k-rec", { opacity: 1 }, { opacity: 0.25, duration: 0.25, ease: "sine.inOut", yoyo: true, repeat: 5, immediateRender: false }, 0.9);
             [[1.1, "00:04"], [1.6, "00:05"], [2.1, "00:06"]].forEach(function (k) { tl.set("#k-tc", { textContent: k[1] }, k[0]); });
             // "or import the ones you already shot": the Import box, the three takes land in it
-            KIT.out(tl, "#k-t1, #k-t2", 1.75, 0.18);
-            KIT.words(tl, "#k-t3", 1.82, 0.08); KIT.slam(tl, "#k-t4 .w", 2.05);
-            KIT.pop(tl, "#k-o2", 1.9, { x: -200, y: -500, scale: 0.3, rotationY: -40 });
-            [["#k-m1", -14, 2.15], ["#k-m2", 2, 2.25], ["#k-m3", 14, 2.35]].forEach(function (m) {
+            KIT.out(tl, "#k-t1, #k-t2", 1.95, 0.18);
+            KIT.words(tl, "#k-t3", 2.0, 0.08); KIT.slam(tl, "#k-t4 .w", 2.2);
+            KIT.pop(tl, "#k-o2", 2.05, { x: -200, y: -500, scale: 0.3, rotationY: -40 });
+            [["#k-m1", -14, 2.28], ["#k-m2", 2, 2.36], ["#k-m3", 14, 2.44]].forEach(function (m) {
               tl.fromTo(m[0], { opacity: 0, y: -420, z: -500, rotation: m[1] * 2, transformPerspective: 1000 }, { opacity: 1, y: 0, z: 0, rotation: m[1] * 0.4, transformPerspective: 1000, duration: 0.36, ease: "back.out(1.6)" }, m[2]);
             });
             // they all go into the app: the takes list, synced to the song
-            var t = D - 1.05;
+            var t = D - 0.95;
             tl.to("#k-m1, #k-m2, #k-m3", { x: function (i) { return [180, 60, -60][i]; }, y: -620, scale: 0.4, opacity: 0, duration: 0.3, ease: "power3.in", stagger: 0.04 }, t);
             tl.to("#k-o1, #k-o2", { y: 420, opacity: 0, duration: 0.3, ease: "power3.in" }, t + 0.05);
             KIT.swap(tl, "#k-ph .sh1", "#k-ph .sh2", t + 0.32);

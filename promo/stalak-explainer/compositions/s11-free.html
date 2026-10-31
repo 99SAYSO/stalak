@@ -30,7 +30,7 @@
         <div class="n-st" id="n-s2"><div class="pill"><b>NO</b>&nbsp;SIGN-UP.</div></div>
         <script>
           (function () {
-            var D = 2.150;
+            var D = 2.095;
             var tl = gsap.timeline({ paused: true });
             tl.fromTo("#n-mac", { opacity: 0, x: -700, rotationY: 40, scale: 0.7, transformPerspective: 2000 }, { opacity: 1, x: 0, rotationY: 12, scale: 0.78, transformPerspective: 2000, duration: 0.5, ease: "expo.out" }, 0);
             tl.fromTo("#n-ph", { opacity: 0, x: 600, rotationY: -40, scale: 0.5, transformPerspective: 1600 }, { opacity: 1, x: 0, rotationY: -14, scale: 0.56, transformPerspective: 1600, duration: 0.5, ease: "expo.out" }, 0.06);
@@ -38,7 +38,7 @@
             tl.fromTo("#n-ph", { y: 0 }, { y: 30, duration: D - 0.5, ease: "sine.inOut", immediateRender: false }, 0.5);
             KIT.glare(tl, "#n-ph", 0.6);
             // two stamps, on the two words of the voice
-            [["#n-s1 .pill", 0.18], ["#n-s2 .pill", 0.86]].forEach(function (s) {
+            [["#n-s1 .pill", 0.16], ["#n-s2 .pill", 0.9]].forEach(function (s) {
               tl.fromTo(s[0], { opacity: 0, scale: 2.2, rotation: -6, filter: "blur(12px)" }, { opacity: 1, scale: 1, rotation: 0, filter: "blur(0px)", duration: 0.24, ease: "expo.out" }, s[1]);
               tl.set(s[0], { y: 10 }, s[1] + 0.24); tl.set(s[0], { y: -6 }, s[1] + 0.27); tl.set(s[0], { y: 0 }, s[1] + 0.3);
             });

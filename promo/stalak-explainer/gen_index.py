@@ -55,20 +55,23 @@ for i, (a, b) in enumerate(L):
     nxt = L[i + 1][0] if i + 1 < len(L) else TOTAL
     if nxt - b > 0.45: pts += ["%.2f:0.13" % (b + 0.05), "%.2f:0.32" % (b + 0.2), "%.2f:0.32" % (nxt - 0.25)]
 pts.append("%.2f:0.13" % (L[-1][1] + 0.05)); pts.append("%.2f:0.42" % (L[-1][1] + 0.3)); pts.append("%.2f:0" % TOTAL)
+for sw in T.get("swell", []):   # a short lift of the beat in a breath of the voice (the drop)
+    pts += ["%.2f:0.13" % (sw - 0.12), "%.2f:0.34" % sw, "%.2f:0.13" % (sw + 0.16)]
+pts = sorted(pts, key=lambda q: float(q.split(":")[0]))
 music = ('<audio id="music" class="clip" src="assets/audio/inst.mp3" data-start="0" data-duration="%.3f" data-media-start="%.3f" data-track-index="10" '
-         'data-timeline-role="music" data-volume="1" data-fade-out="1.4" data-automation=\'{"volume":"%s"}\'></audio>' % (TOTAL, C, ",".join(pts)))
-vo = '<audio id="vo" class="clip" src="assets/audio/%s" data-start="0" data-duration="%.3f" data-track-index="11" data-volume="1"></audio>' % (T["vo"], TOTAL)
+         'data-timeline-role="music" data-volume="1" data-fade-out="1.4" data-automation=\'%s\'></audio>' % (TOTAL, C, json.dumps({"version": 1, "lanes": [{"target": "volume", "points": [{"t": float(q.split(":")[0]), "v": float(q.split(":")[1])} for q in pts]}]}, separators=(",", ":"))))
+vo = '<audio id="vo" class="clip" src="assets/audio/%s" data-start="%.3f" data-duration="%.3f" data-track-index="11" data-volume="1"></audio>' % (T["vo"], T.get("vo_start", 0), T.get("vo_len", TOTAL - T.get("vo_start", 0)))
 # sound on the visible actions: (id, file, scene, local time of the action, length, volume); each peak lands on its frame
 PEAK = {"impact-bass-1": 0.073, "impact-bass-2": 1.986, "pop": 0.12, "sparkle": 0.027, "whoosh": 0.162, "whoosh-short": 0.08, "riser": 0.0}
-SFX = [("x-crack", "sparkle", 0, -1, 1.8, 0.2), ("x-hook", "impact-bass-1", 0, 0.5, 2.1, 0.32), ("x-shatter", "whoosh-short", 1, 0.0, 0.57, 0.3),
-       ("x-logo", "impact-bass-2", 1, 0.3, 2.59, 0.3), ("x-mas", "pop", 1, 0.6, 0.72, 0.18), ("x-ph", "whoosh", 2, 0.2, 1.2, 0.22),
+SFX = [("x-crack", "sparkle", 0, -1, 1.8, 0.2), ("x-hook", "impact-bass-1", 0, 0.72, 2.1, 0.32), ("x-shatter", "whoosh-short", 1, 0.0, 0.57, 0.3),
+       ("x-logo", "impact-bass-2", 1, 0.3, 2.59, 0.3), ("x-mas", "pop", 1, 0.5, 0.72, 0.18), ("x-ph", "whoosh", 2, 0.2, 0.57, 0.22),
        ("x-mac", "whoosh-short", 2, 1.3, 0.57, 0.26), ("x-dive", "whoosh-short", 3, 0.0, 0.57, 0.24), ("x-drop", "pop", 3, 0.78, 0.72, 0.22),
-       ("x-pick", "pop", 3, 1.25, 0.72, 0.14), ("x-film", "pop", 4, 0.6, 0.72, 0.16), ("x-imp", "pop", 4, 1.95, 0.72, 0.16),
-       ("x-in", "whoosh-short", 4, -0.8, 0.57, 0.22), ("x-sync", "sparkle", 5, 0.9, 1.8, 0.16), ("x-cut", "impact-bass-1", 5, 1.85, 2.1, 0.26),
+       ("x-pick", "pop", 3, 1.25, 0.72, 0.14), ("x-film", "pop", 4, 0.6, 0.72, 0.16), ("x-imp", "pop", 4, 2.05, 0.72, 0.16),
+       ("x-in", "whoosh-short", 4, -0.8, 0.57, 0.22), ("x-sync", "sparkle", 5, 0.9, 1.8, 0.16), ("x-cut", "impact-bass-1", 5, 2.1, 2.1, 0.26),
        ("x-lyr", "pop", 6, 0.42, 0.72, 0.14), ("x-auto", "sparkle", 6, 2.35, 1.8, 0.18), ("x-dive2", "whoosh-short", 6, -0.38, 0.57, 0.22),
-       ("x-shuf", "pop", 7, 3.3, 0.72, 0.2), ("x-exp", "pop", 8, 0.36, 0.72, 0.22), ("x-open", "whoosh", 8, 0.4, 1.2, 0.2),
-       ("x-done", "sparkle", 8, -0.85, 1.8, 0.24), ("x-pack", "pop", 9, 2.3, 0.72, 0.18), ("x-fill", "sparkle", 9, 2.55, 1.8, 0.16),
-       ("x-nod", "impact-bass-1", 10, 0.18, 2.1, 0.22), ("x-nos", "impact-bass-1", 10, 0.86, 2.1, 0.22), ("x-post", "whoosh-short", 11, 0.8, 0.57, 0.2),
+       ("x-shuf", "pop", 7, 1.95, 0.72, 0.2), ("x-exp", "pop", 8, 0.36, 0.72, 0.22), ("x-open", "whoosh", 8, 0.4, 0.57, 0.2),
+       ("x-done", "sparkle", 8, -0.85, 1.8, 0.24), ("x-pack", "pop", 9, 2.15, 0.72, 0.18), ("x-fill", "sparkle", 9, 2.95, 1.8, 0.16),
+       ("x-nod", "impact-bass-1", 10, 0.18, 2.1, 0.22), ("x-nos", "impact-bass-1", 10, 0.98, 2.1, 0.22), ("x-post", "whoosh-short", 11, 0.55, 0.57, 0.2),
        ("x-end", "impact-bass-2", 12, 0.02, 2.59, 0.34), ("x-ice", "sparkle", 12, 0.9, 1.8, 0.18)]
 rows = []
 for sid, fn, sc, lt, ln, vol in SFX:

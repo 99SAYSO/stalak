@@ -62,7 +62,7 @@
         </div>
         <script>
           (function () {
-            var D = 3.350, P0 = 0.55, P1 = D - 0.85;   // the progress runs from P0 to P1
+            var D = 3.133, P0 = 0.55, P1 = D - 0.85;   // the progress runs from P0 to P1
             var tl = gsap.timeline({ paused: true });
             KIT.words(tl, "#e-t1", 0.02, 0.08); KIT.slam(tl, "#e-t2 .w", 0.12);
             KIT.pop(tl, "#e-btn", 0.05, { y: 300 });
@@ -70,6 +70,7 @@
             tl.fromTo("#e-btn", { scale: 1 }, { scale: 0.92, duration: 0.07, yoyo: true, repeat: 1, immediateRender: false }, 0.36);
             // the export screen opens out of the button (as in the app, a screen of its own)
             tl.fromTo("#e-scr", { clipPath: "circle(0% at 540px 1170px)" }, { clipPath: "circle(150% at 540px 1170px)", duration: 0.4, ease: "power2.inOut" }, 0.4);
+            tl.set("#e-btn, #e-t1, #e-t2", { opacity: 0 }, 0.62);
             // progress: the counter, the bar, one more block of the igloo, the app's messages at the same thresholds
             var blocks = document.querySelectorAll("#e-igloo .eb"), N = blocks.length, STEPS = 40;
             var MSG = [[0, "Cutting the ice…"], [0.12, "Laying the first blocks…"], [0.35, "Your edit is taking shape…"], [0.6, "A few more blocks…"], [0.85, "Polishing the igloo…"], [0.97, "Almost done…"]];

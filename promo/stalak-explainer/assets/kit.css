@@ -22,8 +22,8 @@
 .pill { position: absolute; display: flex; align-items: center; justify-content: center; gap: 14px; height: 92px; padding: 0 40px; border-radius: 46px;
   background: rgba(246, 250, 255, 0.92); border: 2px solid #ffffff; box-shadow: 0 24px 50px rgba(6, 26, 80, 0.3);
   font: 700 44px/1 "Rubik", sans-serif; color: #0a0d14; letter-spacing: -0.01em; white-space: nowrap; }
-.pro { display: inline-flex; align-items: center; height: 44px; padding: 0 16px; border-radius: 12px; background: #0a0d14; color: #f6faff;
-  font: 800 26px/1 "Rubik", sans-serif; letter-spacing: 0.04em; }
+.pro { display: inline-flex; align-items: center; height: 46px; padding: 0 14px; border-radius: 12px; background: #0a0d14; color: #f6faff;
+  font: 800 28px/1 "Rubik", sans-serif; letter-spacing: 0.03em; }
 .cplus { display: inline-flex; align-items: center; height: 50px; padding: 0 20px; border-radius: 25px; background: #6a3df0; color: #f6faff;
   border: 3px solid #0a0d14; font: 400 30px/1 "Lilita One", sans-serif; letter-spacing: 0.03em; }
 

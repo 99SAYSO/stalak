@@ -41,7 +41,7 @@
           <div id="y-line"></div>
         </div>
         <div id="y-cut">
-          <div id="y-vid"><!--MONTAGE s06 1.85--><video id="s06-m2" class="clip" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="1.850" data-duration="0.289" data-media-start="1.909" muted playsinline></video><video id="s06-m3" class="clip" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="2.139" data-duration="1.529" data-media-start="2.198" muted playsinline></video><video id="s06-m4" class="clip" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="3.668" data-duration="0.682" data-media-start="3.727" muted playsinline></video><!--/MONTAGE--><div class="fl" id="y-fl"></div></div>
+          <div id="y-vid"><!--MONTAGE s06 2.10--><video id="s06-m4" class="clip" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="2.100" data-duration="0.718" data-media-start="3.773" muted playsinline></video><video id="s06-m5" class="clip" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="2.818" data-duration="0.765" data-media-start="4.491" muted playsinline></video><video id="s06-m6" class="clip" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="3.583" data-duration="0.568" data-media-start="5.256" muted playsinline></video><!--/MONTAGE--><div class="fl" id="y-fl"></div></div>
           <div class="appcard" id="y-tlc"><div class="hd">Version 1</div><div class="mt">21 shots · 25.6 s</div><div id="y-bar"><div class="sg" style="left:0.0px;width:20.0px;background:#3a6fe0"><b>2</b></div><div class="sg" style="left:23.0px;width:23.3px;background:#d6336c"><b>1</b></div><div class="sg" style="left:49.4px;width:23.3px;background:#e0952c"><b>3</b></div><div class="sg" style="left:75.7px;width:49.6px;background:#3a6fe0"><b>2</b></div><div class="sg" style="left:128.3px;width:23.3px;background:#d6336c"><b>1</b></div><div class="sg" style="left:154.6px;width:23.3px;background:#e0952c"><b>3</b></div><div class="sg" style="left:180.9px;width:102.2px;background:#d6336c"><b>1</b></div><div class="sg" style="left:286.2px;width:49.6px;background:#e0952c"><b>3</b></div><div class="sg" style="left:338.8px;width:23.3px;background:#d6336c"><b>1</b></div><div class="sg" style="left:365.1px;width:23.3px;background:#e0952c"><b>3</b></div><div class="sg" style="left:391.4px;width:49.6px;background:#d6336c"><b>1</b></div><div class="sg" style="left:444.0px;width:49.6px;background:#e0952c"><b>3</b></div><div class="sg" style="left:496.6px;width:49.6px;background:#3a6fe0"><b>2</b></div><div class="sg" style="left:549.3px;width:23.3px;background:#e0952c"><b>3</b></div><div class="sg" style="left:575.6px;width:23.3px;background:#3a6fe0"><b>2</b></div><div class="sg" style="left:601.9px;width:49.6px;background:#e0952c"><b>3</b></div><div class="sg" style="left:654.5px;width:49.6px;background:#3a6fe0"><b>2</b></div><div class="sg" style="left:707.1px;width:49.6px;background:#e0952c"><b>3</b></div><div class="sg" style="left:759.8px;width:23.3px;background:#3a6fe0"><b>2</b></div><div class="sg" style="left:786.1px;width:23.3px;background:#e0952c"><b>3</b></div><div class="sg" style="left:812.4px;width:64.6px;background:#3a6fe0"><b>2</b></div></div><div id="y-ph"><b></b></div></div>
         </div>
         <div class="kt" id="y-t1"><span class="w l">Every</span> <span class="w l">take,</span></div>
@@ -50,7 +50,7 @@
         <div class="kt" id="y-t4"><span class="w k ice">BEAT.</span></div>
         <script>
           (function () {
-            var D = 4.350, B = 1.85;   // B: when the edit starts playing (the montage clips start there too)
+            var D = 4.151, B = 2.10;   // B: when the edit starts playing (the montage clips start there too)
             var tl = gsap.timeline({ paused: true });
             KIT.words(tl, "#y-t1", 0.05, 0.08); KIT.slam(tl, "#y-t2 .w", 0.3);
             // the three takes come in out of step, the sync line passes, each snaps into step and turns green
@@ -71,7 +71,7 @@
             KIT.pop(tl, "#y-tlc", B, { y: 300 });
             KIT.words(tl, "#y-t3", B + 0.05, 0.07); KIT.slam(tl, "#y-t4 .w", B + 0.32);
             // the playhead follows the footage (take time TAU0 at B, see gen_index.py), a flash on each of Stalak's cuts
-            var TAU0 = 1.909, CUTS = [0, 0.669, 1.434, 2.198, 3.727, 4.491, 5.256, 8.313], W = 880, TOT = 25.565;
+            var TAU0 = 3.773, CUTS = [0, 0.669, 1.434, 2.198, 3.727, 4.491, 5.256, 8.313], W = 880, TOT = 25.565;
             tl.fromTo("#y-ph", { x: TAU0 / TOT * W }, { x: (TAU0 + D - B) / TOT * W, duration: D - B, ease: "none" }, B);
             CUTS.forEach(function (c) { var t = B + (c - TAU0); if (t > B + 0.05 && t < D - 0.1) tl.fromTo("#y-fl", { opacity: 0.5 }, { opacity: 0, duration: 0.14, ease: "power2.out", immediateRender: false }, t); });
             tl.to("#y-vid", { scale: 1.06, duration: 0.3, ease: "power2.out" }, D - 0.35);

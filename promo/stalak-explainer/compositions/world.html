@@ -28,7 +28,7 @@
             <symbol id="wd-flake" viewBox="-60 -60 120 120"><g fill="none" stroke="#f6faff" stroke-width="7" stroke-linecap="round"><path d="M0 -50 V50 M-43 -25 L43 25 M-43 25 L43 -25" /><path d="M0 -34 L-10 -44 M0 -34 L10 -44 M0 34 L-10 44 M0 34 L10 44 M-29 -17 L-30 -31 M-29 -17 L-42 -11 M29 17 L30 31 M29 17 L42 11 M-29 17 L-42 11 M-29 17 L-30 31 M29 -17 L42 -11 M29 -17 L30 -31" /></g></symbol>
           </defs>
         </svg>
-        <div id="wd-glows">
+        <div id="wd-glows" data-layout-allow-overflow>
           <div class="gl" id="wd-gl1" style="left:-220px; top:120px; width:760px; height:760px; background:rgba(138,205,255,0.45)"></div>
           <div class="gl" id="wd-gl2" style="left:560px; top:980px; width:820px; height:820px; background:rgba(255,255,255,0.22)"></div>
           <div class="gl" id="wd-gl3" style="left:240px; top:-320px; width:640px; height:640px; background:rgba(120,170,255,0.4)"></div>
@@ -53,8 +53,8 @@
         </div>
         <script>
           (function () {
-            var D = 45.000;                        // film length (set by gen_index.py)
-            var CUTS = [2.40, 5.50, 8.10, 10.90, 15.00, 19.00, 23.00, 27.20, 30.20, 35.00, 36.80, 39.30];   // scene starts (set by gen_index.py)
+            var D = 40.750;                        // film length (set by gen_index.py)
+            var CUTS = [2.33, 5.80, 7.81, 9.92, 13.43, 17.23, 20.87, 24.74, 27.52, 31.78, 33.53, 35.16];   // scene starts (set by gen_index.py)
             var tl = gsap.timeline({ paused: true });
             // glows breathe and drift for the whole film
             tl.fromTo("#wd-gl1", { x: 0, y: 0 }, { x: 260, y: 180, duration: D, ease: "sine.inOut" }, 0);

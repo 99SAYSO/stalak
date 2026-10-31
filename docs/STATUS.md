@@ -175,6 +175,11 @@
 - À décider : la publication directe est-elle réservée à Stalak Pro ou ouverte à tous ? Meta risque de demander une vérification d'entreprise (lien avec la LLC).
 
 ### Marketing & croissance
+- **Fait (branche `marketing/promo-explainer`, 31/10)** : vidéo explicative « Stalak, comment ça marche » (40,75 s, 9:16, anglais américain), faite avec HyperFrames et le kit saas-motion-video. C'est la version 2 de la promo, refaite à la demande du propriétaire. Détail dans `docs/handoff/marketing-promo-explainer.md`.
+  - Contenu : à qui sert l'app, iPhone puis Mac, son, prises (filmer ou importer), synchro, coupes sur le rythme, paroles (à la main ou automatiques avec Pro), polices, couleurs, filtres, Shuffle, export avec l'igloo, packs de 30 vidéos (Creator Plus), sans téléchargement ni inscription, publication partout.
+  - Images : vraies captures et interface reconstruite d'après l'app, 3D, fond de glace animé. Voix off : Flora, voix Achird. Musique : l'instru de « neva die ».
+  - La vidéo et la voix off ont été envoyées au propriétaire et ne sont pas dans le dépôt. Rien à mettre en ligne sur le site.
+  - Cette branche contient aussi `marketing/promo-ice-the-beat` (la version 1).
 - **Fait (branche `marketing/promo-ice-the-beat`, 31/10)** : vidéo promo « Ice the Beat » (25 s, 9:16, anglais américain), faite avec HyperFrames. Détail dans `docs/handoff/marketing-promo-ice-the-beat.md`.
   - Contenu : vraies prises de 99Sayso, vraies captures de l'app et vrai montage de Stalak ; 3D, zooms et illustrations de glace.
   - Voix off : Flora (Google Gemini TTS). Textes : « No editing skills » à la place de « Zero editing » ; @stalak_app sur la carte de fin.

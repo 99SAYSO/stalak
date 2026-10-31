@@ -14,7 +14,7 @@
           #g-file { position: absolute; left: 560px; top: 640px; width: 420px; height: 150px; display: flex; align-items: center; gap: 22px; padding: 0 26px; }
           #g-file .note { width: 90px; height: 90px; flex: none; }
           #g-file .nm { font: 800 40px/1.05 "Rubik", sans-serif; color: #0a0d14; letter-spacing: -0.01em; }
-          #g-file .nm small { display: block; font-weight: 500; font-size: 26px; color: #3a5f9a; margin-top: 6px; }
+          #g-file .nm small { display: block; font-weight: 500; font-size: 28px; color: #3a5f9a; margin-top: 6px; }
           #g-file svg.mini { position: absolute; right: 26px; bottom: 18px; width: 242px; height: 56px; }
           #g-file svg.mini rect { fill: #3a7be0; }
           #g-ring { position: absolute; left: 400px; top: 860px; width: 280px; height: 280px; border-radius: 50%; border: 12px solid #f6faff; opacity: 0; }
@@ -60,7 +60,7 @@
         <div class="kt" id="g-t4"><span class="w k ice">PART.</span></div>
         <script>
           (function () {
-            var D = 3.150;
+            var D = 2.461;
             var tl = gsap.timeline({ paused: true });
             // from inside the laptop's screen, back to the phone
             tl.fromTo("#g-ph", { opacity: 0, scale: 1.5, rotationY: 30, transformPerspective: 1600 }, { opacity: 1, scale: 0.82, rotationY: -10, transformPerspective: 1600, duration: 0.5, ease: "expo.out" }, 0);
@@ -78,12 +78,12 @@
             KIT.out(tl, "#g-t1, #g-t2", 1.12, 0.18);
             KIT.words(tl, "#g-t3", 1.2, 0.08); KIT.slam(tl, "#g-t4 .w", 1.45);
             KIT.pop(tl, "#g-pick", 1.18, { y: -300, scale: 0.4, rotationX: -40 });
-            tl.fromTo("#g-h1", { x: 0 }, { x: 150, duration: 0.6, ease: "power3.inOut" }, 1.55);
-            tl.fromTo("#g-h2", { x: 0 }, { x: -220, duration: 0.6, ease: "power3.inOut" }, 1.62);
-            tl.fromTo("#g-dl", { width: 0 }, { width: 150, duration: 0.6, ease: "power3.inOut" }, 1.55);
-            tl.fromTo("#g-dr", { width: 0 }, { width: 220, duration: 0.6, ease: "power3.inOut" }, 1.62);
-            tl.fromTo("#g-play", { x: 150 }, { x: 600, duration: D - 2.25, ease: "none" }, 2.2);
-            [[1.75, "0:02.40", "0:25.57"], [1.95, "0:04.70", "0:22.10"], [2.2, "0:04.70", "0:18.70"]].forEach(function (k) {
+            tl.fromTo("#g-h1", { x: 0 }, { x: 150, duration: 0.45, ease: "power3.inOut" }, 1.42);
+            tl.fromTo("#g-h2", { x: 0 }, { x: -220, duration: 0.45, ease: "power3.inOut" }, 1.48);
+            tl.fromTo("#g-dl", { width: 0 }, { width: 150, duration: 0.45, ease: "power3.inOut" }, 1.42);
+            tl.fromTo("#g-dr", { width: 0 }, { width: 220, duration: 0.45, ease: "power3.inOut" }, 1.48);
+            tl.fromTo("#g-play", { x: 150 }, { x: 600, duration: Math.max(0.2, D - 2.25), ease: "none" }, 1.95);
+            [[1.55, "0:02.40", "0:25.57"], [1.72, "0:04.70", "0:22.10"], [1.9, "0:04.70", "0:18.70"]].forEach(function (k) {
               tl.set("#g-st", { textContent: k[1] }, k[0]); tl.set("#g-en", { textContent: k[2] }, k[0]);
             });
             tl.to("#g-pick", { y: 260, opacity: 0, duration: 0.26, ease: "power3.in" }, D - 0.3);
