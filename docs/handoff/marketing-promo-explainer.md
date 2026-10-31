@@ -1,13 +1,13 @@
 Statut : PRÊT
 Branche : marketing/promo-explainer
 
-Résumé : version 2 de la vidéo promo, demandée par le propriétaire : une vidéo explicative « Stalak, comment ça marche ». Format vertical 1080 × 1920, 30 i/s, 41,63 s, anglais américain, pour TikTok, Reels et Shorts. Elle est faite avec HyperFrames et le kit saas-motion-video. La vidéo et la voix off ont été envoyées directement au propriétaire et ne sont pas dans le dépôt. Rien à mettre en ligne sur le site.
+Résumé : version 2 de la vidéo promo, demandée par le propriétaire : une vidéo explicative « Stalak, comment ça marche ». Format vertical 1080 × 1920, 30 i/s, 40,75 s, anglais américain, pour TikTok, Reels et Shorts. Elle est faite avec HyperFrames et le kit saas-motion-video. La vidéo et la voix off ont été envoyées directement au propriétaire et ne sont pas dans le dépôt. Rien à mettre en ligne sur le site.
 - **Version finale (31/10)**, après les retours du propriétaire :
   - tout est replacé dans la zone sûre de TikTok, Reels et Shorts (rien sous la photo de profil, la description ou les boutons) ;
   - « Synced to the song » n'est plus caché par la forme d'onde ;
   - les paroles sont traduites en anglais américain (« After all this time, baby », « I gotta bounce ») ;
-  - le moment polices / couleurs / filtres est plus lent et plus lisible : les 3 rangées restent à l'écran, et les filtres se voient sur la vidéo ;
-  - 0,88 s de pauses ont été ajoutées dans la voix pour ce moment.
+  - le moment polices / couleurs / filtres est plus lisible : les 3 rangées restent à l'écran, les choix suivent la voix, et les filtres se voient sur la vidéo ;
+  - la voix off est celle d'origine : des pauses ajoutées un temps ont été retirées à la demande du propriétaire.
 - **Ce qu'elle montre**, en 13 scènes calées sur la voix off :
   - le problème du montage à la main, puis Stalak, « the promo video tool built for rappers » ;
   - l'iPhone qui devient un Mac (téléphone et ordinateur) ;
