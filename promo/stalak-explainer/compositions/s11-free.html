@@ -6,8 +6,8 @@
       <div id="root" data-composition-id="s11" data-width="1080" data-height="1920">
         <style>
           #root { position: absolute; inset: 0; overflow: hidden; }
-          #n-mac { left: -20px; top: 760px; }
-          #n-ph { left: 600px; top: 640px; }
+          #n-mac { left: -123px; top: 644px; }
+          #n-ph { left: 478px; top: 422px; }
           .n-st { position: absolute; left: 0; width: 1080px; text-align: center; }
           .n-st .pill { position: relative; display: inline-flex; height: 140px; padding: 0 54px; border-radius: 70px; font: 400 96px/1 "Lilita One", sans-serif; letter-spacing: 0.01em; }
           .n-st .pill b { font-weight: 400; color: #1f6fd6; }
@@ -32,10 +32,10 @@
           (function () {
             var D = 2.095;
             var tl = gsap.timeline({ paused: true });
-            tl.fromTo("#n-mac", { opacity: 0, x: -700, rotationY: 40, scale: 0.7, transformPerspective: 2000 }, { opacity: 1, x: 0, rotationY: 12, scale: 0.78, transformPerspective: 2000, duration: 0.5, ease: "expo.out" }, 0);
-            tl.fromTo("#n-ph", { opacity: 0, x: 600, rotationY: -40, scale: 0.5, transformPerspective: 1600 }, { opacity: 1, x: 0, rotationY: -14, scale: 0.56, transformPerspective: 1600, duration: 0.5, ease: "expo.out" }, 0.06);
+            tl.fromTo("#n-mac", { opacity: 0, x: -700, rotationY: 40, scale: 0.56, transformPerspective: 2000 }, { opacity: 1, x: 0, rotationY: 12, scale: 0.62, transformPerspective: 2000, duration: 0.5, ease: "expo.out" }, 0);
+            tl.fromTo("#n-ph", { opacity: 0, x: 600, rotationY: -40, scale: 0.42, transformPerspective: 1600 }, { opacity: 1, x: 0, rotationY: -14, scale: 0.46, transformPerspective: 1600, duration: 0.5, ease: "expo.out" }, 0.06);
             tl.fromTo("#n-mac", { y: 0 }, { y: -30, duration: D - 0.5, ease: "sine.inOut", immediateRender: false }, 0.5);
-            tl.fromTo("#n-ph", { y: 0 }, { y: 30, duration: D - 0.5, ease: "sine.inOut", immediateRender: false }, 0.5);
+            tl.fromTo("#n-ph", { y: 0 }, { y: 30, duration: D - 0.82, ease: "sine.inOut", immediateRender: false }, 0.5);
             KIT.glare(tl, "#n-ph", 0.6);
             // two stamps, on the two words of the voice
             [["#n-s1 .pill", 0.16], ["#n-s2 .pill", 0.9]].forEach(function (s) {
@@ -43,7 +43,7 @@
               tl.set(s[0], { y: 10 }, s[1] + 0.24); tl.set(s[0], { y: -6 }, s[1] + 0.27); tl.set(s[0], { y: 0 }, s[1] + 0.3);
             });
             tl.to("#n-mac", { x: -900, opacity: 0, duration: 0.3, ease: "power3.in" }, D - 0.32);
-            tl.to("#n-ph", { x: -300, scale: 0.8, duration: 0.32, ease: "power3.inOut" }, D - 0.32);
+            tl.to("#n-ph", { x: -278, y: -148, scale: 0.58, duration: 0.32, ease: "power3.inOut" }, D - 0.32);
             KIT.out(tl, "#n-s1, #n-s2", D - 0.3, 0.2);
             window.__timelines["s11"] = tl;
           })();

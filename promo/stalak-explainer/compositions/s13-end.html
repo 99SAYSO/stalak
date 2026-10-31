@@ -6,20 +6,20 @@
       <div id="root" data-composition-id="s13" data-width="1080" data-height="1920">
         <style>
           #root { position: absolute; inset: 0; overflow: hidden; }
-          #z-icon { position: absolute; left: 415px; top: 170px; width: 250px; height: 250px; filter: drop-shadow(0 18px 0 #0a0d14) drop-shadow(0 40px 60px rgba(3, 20, 70, 0.35)); }
-          #z-shine { position: absolute; left: 415px; top: 170px; width: 250px; height: 250px; overflow: hidden;
+          #z-icon { position: absolute; left: 425px; top: 222px; width: 230px; height: 230px; filter: drop-shadow(0 18px 0 #0a0d14) drop-shadow(0 40px 60px rgba(3, 20, 70, 0.35)); }
+          #z-shine { position: absolute; left: 425px; top: 222px; width: 230px; height: 230px; overflow: hidden;
             -webkit-mask: url("assets/brand/icon.svg") center / 100% 100% no-repeat; mask: url("assets/brand/icon.svg") center / 100% 100% no-repeat; }
-          #z-shine .band { position: absolute; left: -160px; top: 0; width: 140px; height: 250px; background: linear-gradient(105deg, rgba(255,255,255,0) 20%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0) 80%); }
-          #z-word { position: absolute; left: 220px; top: 410px; width: 640px; height: 282px; filter: drop-shadow(0 30px 50px rgba(3, 20, 70, 0.35)); }
-          #z-card { left: 90px; top: 720px; width: 900px; height: 250px; }
-          #z-card .tx { position: absolute; left: 0; right: 0; top: 48px; text-align: center; font: 400 66px/1.12 "Lilita One", sans-serif; color: #0a0d14; }
+          #z-shine .band { position: absolute; left: -150px; top: 0; width: 128px; height: 230px; background: linear-gradient(105deg, rgba(255,255,255,0) 20%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0) 80%); }
+          #z-word { position: absolute; left: 230px; top: 462px; width: 620px; height: 273px; filter: drop-shadow(0 30px 50px rgba(3, 20, 70, 0.35)); }
+          #z-card { left: 160px; top: 752px; width: 748px; height: 206px; }
+          #z-card .tx { position: absolute; left: 0; right: 0; top: 38px; text-align: center; font: 400 58px/1.12 "Lilita One", sans-serif; color: #0a0d14; }
           #z-card .tx b { font-weight: 400; color: #1f6fd6; }
-          #z-ice { position: absolute; left: 90px; top: 978px; width: 900px; height: 96px; overflow: visible; }
+          #z-ice { position: absolute; left: 160px; top: 966px; width: 760px; height: 82px; overflow: visible; }
           #z-ice polygon { fill: #d6ecff; stroke: #0a0d14; stroke-width: 6; stroke-linejoin: round; }
-          #z-url { top: 1072px; font-size: 128px; }
-          #z-cta { position: absolute; left: 290px; top: 1210px; width: 500px; height: 100px; border-radius: 32px; background: linear-gradient(#2a2f3a, #0a0d14 60%); border: 6px solid #0a0d14;
-            box-shadow: 0 12px 0 #000; display: flex; align-items: center; justify-content: center; font: 400 60px/1 "Lilita One", sans-serif; color: #f6faff; }
-          #z-handle { position: absolute; left: 0; width: 1080px; top: 1338px; height: 56px; display: flex; align-items: center; justify-content: center; gap: 16px;
+          #z-url { top: 1058px; font-size: 120px; }
+          #z-cta { position: absolute; left: 294px; top: 1196px; width: 480px; height: 92px; border-radius: 30px; background: linear-gradient(#2a2f3a, #0a0d14 60%); border: 6px solid #0a0d14;
+            box-shadow: 0 12px 0 #000; display: flex; align-items: center; justify-content: center; font: 400 56px/1 "Lilita One", sans-serif; color: #f6faff; }
+          #z-handle { position: absolute; left: 0; width: 1080px; top: 1320px; height: 56px; display: flex; align-items: center; justify-content: center; gap: 16px;
             font: 700 44px/1 "Rubik", sans-serif; color: #f6faff; text-shadow: 0 4px 0 #0a0d14; }
           #z-handle img { width: 44px; height: 44px; filter: invert(1) drop-shadow(0 3px 0 #0a0d14); }
           .z-fl { position: absolute; overflow: visible; }
@@ -33,7 +33,7 @@
         <div id="z-shine"><div class="band"></div></div>
         <img id="z-word" src="assets/brand/wordmark.svg" alt="Stalak" />
         <div class="appcard" id="z-card"><div class="tx">MAKE YOUR NEXT SNIPPET<br /><b>HIT DIFFERENT.</b></div></div>
-        <svg id="z-ice" viewBox="0 0 900 96" aria-hidden="true">
+        <svg id="z-ice" viewBox="0 0 900 96" preserveAspectRatio="none" aria-hidden="true">
           <polygon points="40,0 56,62 72,0" /><polygon points="100,0 112,40 124,0" /><polygon points="152,0 174,90 196,0" /><polygon points="226,0 238,46 250,0" />
           <polygon points="282,0 300,74 318,0" /><polygon points="350,0 362,36 374,0" /><polygon points="404,0 426,94 448,0" /><polygon points="478,0 490,50 502,0" />
           <polygon points="534,0 552,78 570,0" /><polygon points="602,0 614,42 626,0" /><polygon points="658,0 678,86 698,0" /><polygon points="730,0 742,46 754,0" /><polygon points="786,0 804,70 822,0" />
@@ -49,8 +49,8 @@
             tl.fromTo("#z-icon, #z-shine", { opacity: 0, scale: 0.3, rotationY: -90, z: -500, transformPerspective: 900 },
               { opacity: 1, scale: 1, rotationY: 0, z: 0, transformPerspective: 900, duration: 0.55, ease: "back.out(1.6)" }, 0.02);
             tl.fromTo("#z-word", { opacity: 0, y: 80, scale: 0.85, filter: "blur(12px)" }, { opacity: 1, y: 0, scale: 1, filter: "blur(0px)", duration: 0.42, ease: "expo.out" }, 0.22);
-            tl.fromTo("#z-shine .band", { x: 0 }, { x: 560, duration: 0.5, ease: "power2.inOut", immediateRender: false }, 0.6);
-            tl.fromTo("#z-shine .band", { x: 0 }, { x: 560, duration: 0.55, ease: "power2.inOut", immediateRender: false }, 3.6);
+            tl.fromTo("#z-shine .band", { x: 0 }, { x: 520, duration: 0.5, ease: "power2.inOut", immediateRender: false }, 0.6);
+            tl.fromTo("#z-shine .band", { x: 0 }, { x: 520, duration: 0.55, ease: "power2.inOut", immediateRender: false }, 3.6);
             // the line on its card, the stalactites forming under it
             tl.fromTo("#z-card", { opacity: 0, y: -60, rotationX: -80, transformPerspective: 1400, transformOrigin: "50% 0%" }, { opacity: 1, y: 0, rotationX: 0, transformPerspective: 1400, duration: 0.42, ease: "expo.out" }, 0.55);
             tl.fromTo("#z-ice polygon", { scaleY: 0, transformOrigin: "50% 0%" }, { scaleY: 1, duration: 0.36, ease: "back.out(1.7)", stagger: 0.03 }, 0.9);

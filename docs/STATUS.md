@@ -175,7 +175,8 @@
 - À décider : la publication directe est-elle réservée à Stalak Pro ou ouverte à tous ? Meta risque de demander une vérification d'entreprise (lien avec la LLC).
 
 ### Marketing & croissance
-- **Fait (branche `marketing/promo-explainer`, 31/10)** : vidéo explicative « Stalak, comment ça marche » (40,75 s, 9:16, anglais américain), faite avec HyperFrames et le kit saas-motion-video. C'est la version 2 de la promo, refaite à la demande du propriétaire. Détail dans `docs/handoff/marketing-promo-explainer.md`.
+- **Fait (branche `marketing/promo-explainer`, 31/10)** : vidéo explicative « Stalak, comment ça marche » (41,63 s, 9:16, anglais américain), faite avec HyperFrames et le kit saas-motion-video. C'est la version 2 de la promo, refaite à la demande du propriétaire. Détail dans `docs/handoff/marketing-promo-explainer.md`.
+  - Version finale après ses retours : tout est dans la zone sûre de TikTok, Reels et Shorts, « Synced to the song » est lisible, les paroles sont en anglais américain et le moment polices / couleurs / filtres est plus lent et plus clair.
   - Contenu : à qui sert l'app, iPhone puis Mac, son, prises (filmer ou importer), synchro, coupes sur le rythme, paroles (à la main ou automatiques avec Pro), polices, couleurs, filtres, Shuffle, export avec l'igloo, packs de 30 vidéos (Creator Plus), sans téléchargement ni inscription, publication partout.
   - Images : vraies captures et interface reconstruite d'après l'app, 3D, fond de glace animé. Voix off : Flora, voix Achird. Musique : l'instru de « neva die ».
   - La vidéo et la voix off ont été envoyées au propriétaire et ne sont pas dans le dépôt. Rien à mettre en ligne sur le site.

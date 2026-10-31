@@ -7,25 +7,25 @@
         <style>
           #root { position: absolute; inset: 0; overflow: hidden; }
           /* the pain: a generic editing timeline, overloaded (an illustration, no real editor) */
-          #h-ed { position: absolute; left: 70px; top: 760px; width: 940px; height: 560px; border-radius: 40px; background: rgba(9, 16, 32, 0.92);
+          #h-ed { position: absolute; left: 110px; top: 720px; width: 800px; height: 480px; border-radius: 40px; background: rgba(9, 16, 32, 0.92);
             border: 2px solid rgba(160, 200, 255, 0.35); box-shadow: 0 60px 120px rgba(2, 10, 40, 0.55); overflow: hidden; }
-          #h-ed .tr { position: absolute; left: 34px; right: 34px; height: 64px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); }
-          #h-ed .cl { position: absolute; top: 6px; height: 52px; border-radius: 9px; }
+          #h-ed .tr { position: absolute; left: 34px; right: 34px; height: 56px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); }
+          #h-ed .cl { position: absolute; top: 6px; height: 44px; border-radius: 9px; }
           #h-ed .ph { position: absolute; top: 18px; bottom: 18px; width: 5px; border-radius: 3px; background: #ff4d6a; box-shadow: 0 0 18px #ff4d6a; }
           #h-ed .ruler { position: absolute; left: 34px; right: 34px; top: 22px; height: 26px; background: repeating-linear-gradient(90deg, rgba(255,255,255,0.35) 0 2px, transparent 2px 28px); opacity: 0.6; }
-          #h-mas { position: absolute; left: 760px; top: 560px; width: 260px; height: 260px; }
+          #h-mas { position: absolute; left: 690px; top: 500px; width: 240px; height: 240px; }
           #h-mas img { width: 100%; height: 100%; object-fit: contain; }
-          #h-t1 { top: 300px; font-size: 92px; }
-          #h-t2 { top: 410px; font-size: 180px; }
+          #h-t1 { top: 250px; font-size: 92px; }
+          #h-t2 { top: 350px; font-size: 180px; }
           .shd { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: visible; }
           .shd polygon { fill: #0b1428; stroke: #8fd0ff; stroke-width: 4; }
-          #h-frost { position: absolute; left: 70px; top: 760px; width: 940px; height: 560px; border-radius: 40px; opacity: 0;
+          #h-frost { position: absolute; left: 110px; top: 720px; width: 800px; height: 480px; border-radius: 40px; opacity: 0;
             background: linear-gradient(120deg, rgba(214, 236, 255, 0.0) 0%, rgba(214, 236, 255, 0.85) 45%, rgba(255, 255, 255, 0.95) 55%, rgba(214, 236, 255, 0.0) 100%); }
         </style>
         <div id="h-ed">
           <div class="ruler"></div>
-          <div class="tr" style="top:70px"></div><div class="tr" style="top:150px"></div><div class="tr" style="top:230px"></div><div class="tr" style="top:310px"></div><div class="tr" style="top:390px"></div><div class="tr" style="top:470px"></div>
-          <div class="ph" id="h-ph" style="left:300px"></div>
+          <div class="tr" style="top:60px"></div><div class="tr" style="top:128px"></div><div class="tr" style="top:196px"></div><div class="tr" style="top:264px"></div><div class="tr" style="top:332px"></div><div class="tr" style="top:400px"></div>
+          <div class="ph" id="h-ph" style="left:250px"></div>
         </div>
         <div id="h-frost"></div>
         <div id="h-mas"><img src="assets/mascot/facepalm.webp" alt="" /></div>
@@ -41,8 +41,8 @@
             var ed = document.getElementById("h-ed"), cols = ["#3a6fe0", "#d6336c", "#e0952c", "#5b8cff", "#9b5de5", "#2ec4b6"];
             ed.querySelectorAll(".tr").forEach(function (tr, r) {
               var x = 0;
-              while (x < 872) { var w = 30 + h(r * 31 + x, 1) * 120; var c = document.createElement("div"); c.className = "cl";
-                c.style.cssText = "left:" + x + "px;width:" + Math.min(w, 872 - x) + "px;background:" + cols[Math.floor(h(r + x, 2) * 6)] + ";opacity:" + (0.55 + h(x, 3) * 0.45);
+              while (x < 732) { var w = 30 + h(r * 31 + x, 1) * 120; var c = document.createElement("div"); c.className = "cl";
+                c.style.cssText = "left:" + x + "px;width:" + Math.min(w, 732 - x) + "px;background:" + cols[Math.floor(h(r + x, 2) * 6)] + ";opacity:" + (0.55 + h(x, 3) * 0.45);
                 tr.appendChild(c); x += w + 4 + h(x, 4) * 10; }
             });
             // the editor arrives tilted, then the clips keep jumping around (manual editing never ends)
@@ -53,7 +53,7 @@
               if (i % 3) return;
               for (var k = 0; k < 5; k++) tl.set(c, { x: (h(i, k + 5) - 0.5) * 70 }, 0.35 + k * 0.28 + (i % 5) * 0.03);
             });
-            for (var k = 0; k < 9; k++) tl.set("#h-ph", { x: [0, 380, 120, 520, 60, 440, 220, 600, 300][k] }, 0.3 + k * 0.17);
+            for (var k = 0; k < 9; k++) tl.set("#h-ph", { x: [0, 300, 100, 420, 50, 350, 180, 480, 240][k] }, 0.3 + k * 0.17);
             // the words, on the voice; the mascot facepalms
             KIT.words(tl, "#h-t1", 0.3, 0.12);
             KIT.slam(tl, "#h-t2 .k", 0.72);
@@ -61,7 +61,7 @@
             KIT.pop(tl, "#h-mas", 0.95, { rotation: 20, y: 120 });
             // the timeline freezes over, then shatters toward the camera
             tl.fromTo("#h-frost", { opacity: 0, x: -900 }, { opacity: 1, x: 0, duration: 0.3, ease: "power2.out", immediateRender: false }, D - 0.78);
-            var sh = document.getElementById("h-shards"), NS = "http://www.w3.org/2000/svg", cx = 540, cy = 1040;
+            var sh = document.getElementById("h-shards"), NS = "http://www.w3.org/2000/svg", cx = 510, cy = 960;
             for (var i = 0; i < 14; i++) {
               var a0 = (i / 14) * Math.PI * 2, a1 = ((i + 1) / 14) * Math.PI * 2, r0 = 40 + h(i, 8) * 60, r1 = 520 + h(i, 9) * 200;
               var pts = [[cx + Math.cos(a0) * r0, cy + Math.sin(a0) * r0 * 0.62], [cx + Math.cos(a0) * r1, cy + Math.sin(a0) * r1 * 0.62],

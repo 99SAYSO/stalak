@@ -6,24 +6,24 @@
       <div id="root" data-composition-id="s05" data-width="1080" data-height="1920">
         <style>
           #root { position: absolute; inset: 0; overflow: hidden; }
-          #k-ph { left: 240px; top: 470px; }
+          #k-ph { left: 200px; top: 327px; }
           #k-ph .sh2 { opacity: 0; }
-          #k-t1, #k-t3 { top: 180px; font-size: 84px; }
-          #k-t2, #k-t4 { top: 280px; font-size: 170px; }
+          #k-t1, #k-t3 { top: 230px; font-size: 84px; }
+          #k-t2, #k-t4 { top: 320px; font-size: 170px; }
           /* rebuilt from the app: its two ways in (dashed boxes, the app's own labels) */
-          .k-opt { position: absolute; top: 1190px; width: 470px; height: 330px; border-radius: 34px; background: #eef5ff; border: 6px dashed #2f6fd6;
+          .k-opt { position: absolute; top: 1040px; width: 398px; height: 300px; border-radius: 34px; background: #eef5ff; border: 6px dashed #2f6fd6;
             box-shadow: 0 30px 70px rgba(6, 26, 80, 0.35); text-align: center; }
-          .k-opt .ti { position: absolute; left: 0; right: 0; top: 30px; font: 400 54px/1 "Lilita One", sans-serif; color: #0a0d14; }
-          .k-opt .su { position: absolute; left: 20px; right: 20px; top: 96px; font: 500 28px/1.2 "Rubik", sans-serif; color: #3a4a66; }
-          #k-o1 { left: 36px; } #k-o2 { left: 574px; }
-          #k-vf { position: absolute; left: 135px; top: 150px; width: 200px; height: 160px; border-radius: 18px; overflow: hidden; border: 5px solid #0a0d14; background: #0a0d14; }
+          .k-opt .ti { position: absolute; left: 0; right: 0; top: 22px; font: 400 48px/1 "Lilita One", sans-serif; color: #0a0d14; }
+          .k-opt .su { position: absolute; left: 18px; right: 18px; top: 80px; font: 500 28px/1.2 "Rubik", sans-serif; color: #3a4a66; }
+          #k-o1 { left: 80px; } #k-o2 { left: 510px; }
+          #k-vf { position: absolute; left: 94px; top: 160px; width: 200px; height: 124px; border-radius: 18px; overflow: hidden; border: 5px solid #0a0d14; background: #0a0d14; }
           #k-vf img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
           #k-rec { position: absolute; left: 12px; top: 12px; width: 26px; height: 26px; border-radius: 50%; background: #ff3b47; box-shadow: 0 0 0 4px rgba(255,255,255,0.8); }
           #k-tc { position: absolute; right: 10px; top: 10px; padding: 4px 10px; border-radius: 10px; background: rgba(10,13,20,0.75); font: 700 22px/1 "Rubik", sans-serif; color: #f6faff; }
-          .k-th { position: absolute; top: 150px; width: 110px; height: 160px; border-radius: 16px; overflow: hidden; border: 5px solid #0a0d14; box-shadow: 0 8px 0 #0a0d14; }
+          .k-th { position: absolute; top: 160px; width: 90px; height: 124px; border-radius: 16px; overflow: hidden; border: 5px solid #0a0d14; box-shadow: 0 8px 0 #0a0d14; }
           .k-th img { width: 100%; height: 100%; object-fit: cover; }
           .k-th b { position: absolute; left: 6px; top: 6px; width: 44px; height: 44px; border-radius: 50%; border: 4px solid #0a0d14; font: 400 28px/36px "Lilita One"; color: #fff; text-align: center; }
-          #k-m1 { left: 60px; } #k-m2 { left: 180px; } #k-m3 { left: 300px; }
+          #k-m1 { left: 34px; } #k-m2 { left: 154px; } #k-m3 { left: 274px; }
         </style>
         <div class="phone" id="k-ph">
           <div class="body"></div><div class="bez"></div>
@@ -34,7 +34,7 @@
           <div class="glare"><div class="band"><i></i></div></div>
         </div>
         <div class="k-opt" id="k-o1"><div class="ti">Film now</div><div class="su">Your song plays while you film</div>
-          <div id="k-vf"><img src="assets/stills/t2_freeze.jpg" alt="" /><i id="k-rec"></i><span id="k-tc">00:03</span></div></div>
+          <div id="k-vf"><img src="assets/stills/t2_freeze.jpg" alt="" /><i id="k-rec"></i><span id="k-tc" data-layout-ignore>00:03</span></div></div>
         <div class="k-opt" id="k-o2"><div class="ti">Import my videos</div><div class="su">Filmed with the song playing out loud</div>
           <div class="k-th" id="k-m1"><img src="assets/stills/t1_000.jpg" alt="" /><b style="background:#d6336c">1</b></div>
           <div class="k-th" id="k-m2"><img src="assets/stills/t2_000.jpg" alt="" /><b style="background:#3a6fe0">2</b></div>
@@ -47,7 +47,7 @@
           (function () {
             var D = 3.851;
             var tl = gsap.timeline({ paused: true });
-            tl.fromTo("#k-ph", { opacity: 0, x: 1100, rotationY: 40, scale: 0.82, transformPerspective: 1600 }, { opacity: 1, x: 0, rotationY: -6, scale: 0.82, transformPerspective: 1600, duration: 0.45, ease: "expo.out" }, 0);
+            tl.fromTo("#k-ph", { opacity: 0, x: 1100, rotationY: 40, scale: 0.66, transformPerspective: 1600 }, { opacity: 1, x: 0, rotationY: -6, scale: 0.66, transformPerspective: 1600, duration: 0.45, ease: "expo.out" }, 0);
             tl.fromTo("#k-ph", { rotationY: -6 }, { rotationY: 6, duration: D - 0.45, ease: "sine.inOut", immediateRender: false }, 0.45);
             KIT.words(tl, "#k-t1", 0.08, 0.08); KIT.slam(tl, "#k-t2 .w", 0.3);
             // "film your takes right in the app": the Film now box comes out, recording
@@ -63,11 +63,11 @@
             });
             // they all go into the app: the takes list, synced to the song
             var t = D - 0.95;
-            tl.to("#k-m1, #k-m2, #k-m3", { x: function (i) { return [180, 60, -60][i]; }, y: -620, scale: 0.4, opacity: 0, duration: 0.3, ease: "power3.in", stagger: 0.04 }, t);
+            tl.to("#k-m1, #k-m2, #k-m3", { x: function (i) { return [-100, -215, -330][i]; }, y: -300, scale: 0.4, opacity: 0, duration: 0.3, ease: "power3.in", stagger: 0.04 }, t);
             tl.to("#k-o1, #k-o2", { y: 420, opacity: 0, duration: 0.3, ease: "power3.in" }, t + 0.05);
             KIT.swap(tl, "#k-ph .sh1", "#k-ph .sh2", t + 0.32);
             KIT.glare(tl, "#k-ph", t + 0.35);
-            tl.fromTo("#k-ph", { scale: 0.82 }, { scale: 0.9, duration: 0.6, ease: "expo.out", immediateRender: false }, t + 0.32);
+            tl.fromTo("#k-ph", { scale: 0.66 }, { scale: 0.72, duration: 0.6, ease: "expo.out", immediateRender: false }, t + 0.32);
             tl.to("#k-ph", { y: -1400, rotationX: 30, duration: 0.3, ease: "power3.in" }, D - 0.3);
             KIT.out(tl, "#k-t3, #k-t4", D - 0.3, 0.2);
             window.__timelines["s05"] = tl;

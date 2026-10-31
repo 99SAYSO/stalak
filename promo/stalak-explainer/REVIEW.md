@@ -28,6 +28,31 @@
 - **Placement de chaque phrase** : la transcription automatique (whisper) n'a pas pu télécharger son modèle (huggingface.co est bloqué ici). Les phrases ont été placées d'après les silences et le nombre de syllabes de chaque morceau, pas à l'écoute.
 - **Licence de l'instru** : le fichier s'appelle « free … type beat ». Le propriétaire a été prévenu de vérifier la licence avant une diffusion commerciale.
 
+## Version finale : retours du propriétaire (31/10)
+
+1. **Zone sûre** : les 13 scènes sont replacées pour que rien d'important ne passe sous la photo de profil, la description ou les boutons de TikTok, Reels et Shorts (cadre x 80–920, y 220–1400, voir `SPEC.md`).
+   - Titres à partir de y = 222–230 ; téléphones réduits (échelle 0,66) ; cartes de 840 px de large au plus, entre x = 80 et x = 920 ; rien d'important sous y = 1400.
+   - « BUILT FOR RAPPERS. » passe à 90 px (il faisait 1 008 px de large).
+   - Contrôle : les images d'une cinquantaine de moments regardées avec le cadre et les zones des plateformes dessinés par-dessus.
+2. **« Synced to the song » (scène 6)** : chaque ligne de prise a été refaite. Le nom est en haut, le statut sur sa propre ligne et la forme d'onde est une bande en bas. Le texte vert n'est plus caché.
+3. **Paroles en anglais américain** : « After all this time, baby » et « I gotta bounce », tapées lettre par lettre (largeurs mesurées) en scène 7, puis sur la vidéo en scène 8.
+4. **Polices, couleurs, effets (scène 8)** : refaits pour qu'on voie mieux les options.
+   - Un seul panneau avec les 3 rangées de l'app (FONT, COLOR, FILTER) reste à l'écran 3,2 s. Avant, chaque rangée restait seule 0,3 à 0,7 s.
+   - La rangée dont parle la voix s'allume. Chaque choix reste 0,28 à 0,36 s (avant : 0,11 à 0,17 s).
+   - Les choix sont calés sur les mots de la voix : avant, l'image avait de l'avance sur la voix.
+   - Les filtres se voient sur la vidéo (Frost, 35 mm film, Black & white, faits avec `media-treatment`).
+   - La voix a 0,88 s de pauses en plus dans cette phrase, et la vidéo dure 41,63 s.
+   - La ligne « After all this time, baby » ne clignote plus au début du plan.
+
+Contrôles de cette version :
+- `lint` : 0 erreur, 0 avertissement.
+- `check` : aucune erreur. Restent les avertissements de lecture des petits textes vus en passant, et le message WebGL « GPU stall due to ReadPixels » (les filtres de la scène 8 passent par WebGL, sans effet sur l'image).
+- Corrigés en route :
+  - la tête de lecture qui touchait le titre « neva-die » (scène 4) et « Version 1 » (scène 6) ;
+  - les sous-titres des cartes « Film now » et « Import my videos » cachés par les images (scène 5) ;
+  - deux animations qui se chevauchaient sur le téléphone de la scène 11 ;
+  - un doublon vidéo signalé par le lint (scène 8).
+
 ## Rendu final (31/10, `npx hyperframes render --quality delivery --fps 30`)
 
 - Fichier : `renders/stalak-explainer.mp4` (hors dépôt, envoyé au propriétaire).

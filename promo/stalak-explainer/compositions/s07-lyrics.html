@@ -6,25 +6,26 @@
       <div id="root" data-composition-id="s07" data-width="1080" data-height="1920">
         <style>
           #root { position: absolute; inset: 0; overflow: hidden; }
-          #l-ph { left: 240px; top: 470px; }
-          #l-t1, #l-t3 { top: 180px; font-size: 84px; }
-          #l-t2 { top: 280px; font-size: 170px; } #l-t4 { top: 290px; font-size: 102px; }
+          #l-ph { left: 200px; top: 327px; }
+          #l-t1, #l-t3 { top: 230px; font-size: 84px; }
+          #l-t2 { top: 320px; font-size: 170px; } #l-t4 { top: 330px; font-size: 102px; }
           /* rebuilt from the app: Lyrics on screen, its three modes */
-          #l-modes { left: 50px; top: 960px; width: 980px; height: 132px; }
-          #l-modes .m { position: absolute; top: 20px; height: 80px; border-radius: 20px; display: flex; align-items: center; justify-content: center; gap: 12px;
-            font: 700 32px/1 "Rubik", sans-serif; color: #0a0d14; }
+          #l-modes { left: 80px; top: 900px; width: 828px; height: 108px; }
+          #l-modes .m { position: absolute; top: 14px; height: 80px; border-radius: 20px; display: flex; align-items: center; justify-content: center; gap: 10px;
+            font: 700 28px/1 "Rubik", sans-serif; color: #0a0d14; white-space: nowrap; }
+          #l-modes .pro { height: 40px; padding: 0 10px; border-radius: 10px; font-size: 24px; }
           #l-modes .m { background: rgba(47,111,214,0); }
           #l-modes .m.on { background: rgba(47,111,214,1); color: #f6faff; box-shadow: inset 0 -5px 0 rgba(0,0,0,0.2); }
-          #l-m1 { left: 18px; width: 300px; } #l-m2 { left: 330px; width: 400px; } #l-m3 { left: 742px; width: 210px; }
-          #l-sel { position: absolute; left: 18px; top: 20px; width: 300px; height: 80px; border-radius: 20px; border: 6px solid #0a0d14; }
+          #l-m1 { left: 14px; width: 250px; } #l-m2 { left: 274px; width: 372px; } #l-m3 { left: 656px; width: 158px; }
+          #l-sel { position: absolute; left: 8px; top: 8px; width: 250px; height: 80px; border-radius: 20px; border: 6px solid #0a0d14; }
           /* the lyrics, typed in, then each line timed */
-          #l-box { left: 70px; top: 1130px; width: 940px; height: 360px; }
-          #l-box .hd { position: absolute; left: 36px; top: 26px; font: 500 30px/1 "Rubik", sans-serif; color: #3a4a66; }
-          .l-row { position: absolute; left: 30px; width: 880px; height: 100px; border-radius: 22px; background: #eef5ff; border: 4px solid #bcd3f3; }
-          .l-row .tx { position: absolute; left: 30px; top: 28px; font: 600 42px/1 "Rubik", sans-serif; color: #0a0d14; white-space: nowrap; overflow: hidden; }
-          .l-row .tm { position: absolute; right: 28px; top: 28px; font: 800 38px/1 "Rubik", sans-serif; color: #1f6fd6; opacity: 0; }
-          #l-r1 { top: 84px; } #l-r2 { top: 206px; }
-          #l-cur { position: absolute; top: 112px; left: 60px; width: 5px; height: 48px; background: #1f6fd6; }
+          #l-box { left: 80px; top: 1040px; width: 828px; height: 318px; }
+          #l-box .hd { position: absolute; left: 30px; top: 22px; font: 500 28px/1 "Rubik", sans-serif; color: #3a4a66; }
+          .l-row { position: absolute; left: 24px; width: 772px; height: 96px; border-radius: 22px; background: #eef5ff; border: 4px solid #bcd3f3; }
+          .l-row .tx { position: absolute; left: 26px; top: 28px; font: 600 38px/1 "Rubik", sans-serif; color: #0a0d14; white-space: nowrap; overflow: hidden; }
+          .l-row .tm { position: absolute; right: 24px; top: 29px; font: 800 34px/1 "Rubik", sans-serif; color: #1f6fd6; opacity: 0; }
+          #l-r1 { top: 66px; } #l-r2 { top: 180px; }
+          #l-cur { position: absolute; top: 94px; left: 54px; width: 5px; height: 44px; background: #1f6fd6; }
           .spk { position: absolute; width: 70px; height: 70px; opacity: 0; overflow: visible; }
           .spk path { fill: #ffe14d; stroke: #0a0d14; stroke-width: 5; stroke-linejoin: round; }
         </style>
@@ -41,13 +42,13 @@
         </div>
         <div class="appcard" id="l-box">
           <div class="hd">One line per row…</div>
-          <div class="l-row" id="l-r1"><div class="tx" id="l-x1">Depuis tout ce temps baby</div><div class="tm">0:05.83</div></div>
-          <div class="l-row" id="l-r2"><div class="tx" id="l-x2">Faut j’me taille</div><div class="tm">0:09.50</div></div>
+          <div class="l-row" id="l-r1"><div class="tx" id="l-x1">After all this time, baby</div><div class="tm">0:05.83</div></div>
+          <div class="l-row" id="l-r2"><div class="tx" id="l-x2">I gotta bounce</div><div class="tm">0:09.50</div></div>
           <i id="l-cur"></i>
         </div>
-        <svg class="spk" id="l-s1" viewBox="-35 -35 70 70" style="left:640px; top:900px"><path d="M0-30 L8-8 L30 0 L8 8 L0 30 L-8 8 L-30 0 L-8-8Z" /></svg>
-        <svg class="spk" id="l-s2" viewBox="-35 -35 70 70" style="left:720px; top:1080px"><path d="M0-30 L8-8 L30 0 L8 8 L0 30 L-8 8 L-30 0 L-8-8Z" /></svg>
-        <svg class="spk" id="l-s3" viewBox="-35 -35 70 70" style="left:330px; top:1070px"><path d="M0-30 L8-8 L30 0 L8 8 L0 30 L-8 8 L-30 0 L-8-8Z" /></svg>
+        <svg class="spk" id="l-s1" viewBox="-35 -35 70 70" style="left:600px; top:830px"><path d="M0-30 L8-8 L30 0 L8 8 L0 30 L-8 8 L-30 0 L-8-8Z" /></svg>
+        <svg class="spk" id="l-s2" viewBox="-35 -35 70 70" style="left:690px; top:1010px"><path d="M0-30 L8-8 L30 0 L8 8 L0 30 L-8 8 L-30 0 L-8-8Z" /></svg>
+        <svg class="spk" id="l-s3" viewBox="-35 -35 70 70" style="left:300px; top:850px"><path d="M0-30 L8-8 L30 0 L8 8 L0 30 L-8 8 L-30 0 L-8-8Z" /></svg>
         <div class="kt" id="l-t1"><span class="w l">Add</span> <span class="w l">your</span></div>
         <div class="kt" id="l-t2"><span class="w k">LYRICS</span></div>
         <div class="kt" id="l-t3"><span class="w l">or</span> <span class="w l">get</span> <span class="w l">them</span></div>
@@ -56,22 +57,22 @@
           (function () {
             var D = 3.991;
             var tl = gsap.timeline({ paused: true });
-            tl.fromTo("#l-ph", { opacity: 0, y: 1300, rotationX: -30, scale: 0.82, transformPerspective: 1600 }, { opacity: 1, y: 0, rotationX: 6, scale: 0.82, transformPerspective: 1600, duration: 0.45, ease: "expo.out" }, 0);
+            tl.fromTo("#l-ph", { opacity: 0, y: 1300, rotationX: -30, scale: 0.66, transformPerspective: 1600 }, { opacity: 1, y: 0, rotationX: 6, scale: 0.66, transformPerspective: 1600, duration: 0.45, ease: "expo.out" }, 0);
             tl.fromTo("#l-ph", { rotationY: -6 }, { rotationY: 6, duration: D - 0.45, ease: "sine.inOut", immediateRender: false }, 0.45);
             KIT.words(tl, "#l-t1", 0.06, 0.08); KIT.slam(tl, "#l-t2 .w", 0.28);
             KIT.pop(tl, "#l-modes", 0.3, { y: -200 });
             KIT.pop(tl, "#l-box", 0.42, { y: 300 });
             // "type them yourself": the two lines are typed in, letter by letter (the real lyrics of this part)
-            function typeIn(sel, t, n, rate) { for (var i = 0; i <= n; i++) tl.set(sel, { width: Math.round(i * (sel === "#l-x1" ? 560 : 330) / n) }, t + i * rate); }
+            // widths measured after each letter (Rubik 600, 38 px)
+            var W1 = [0, 27, 42, 59, 81, 98, 106, 128, 138, 149, 157, 173, 197, 208, 228, 237, 253, 264, 298, 320, 331, 339, 363, 385, 408, 434], W2 = [0, 12, 20, 44, 67, 84, 101, 123, 131, 155, 178, 202, 226, 248, 274];
+            function typeIn(sel, t, w, rate, dy) { w.forEach(function (x, i) { tl.set(sel, { width: x }, t + i * rate); tl.set("#l-cur", { x: x, y: dy }, t + i * rate); }); }
             tl.set("#l-x1, #l-x2", { width: 0 }, 0);
-            typeIn("#l-x1", 0.75, 22, 0.028); typeIn("#l-x2", 1.42, 13, 0.03);
-            tl.fromTo("#l-cur", { x: 0, y: 0 }, { x: 560, duration: 0.62, ease: "none" }, 0.75);
-            tl.set("#l-cur", { x: 0, y: 122 }, 1.4); tl.to("#l-cur", { x: 330, duration: 0.4, ease: "none" }, 1.42);
+            typeIn("#l-x1", 0.75, W1, 0.025, 0); typeIn("#l-x2", 1.42, W2, 0.03, 114);
             tl.to("#l-cur", { opacity: 0, duration: 0.1 }, 1.9);
             // "or get them automatically with Pro": the selection slides to Auto transcription, the lines get their times
             KIT.out(tl, "#l-t1, #l-t2", 1.95, 0.18);
             KIT.words(tl, "#l-t3", 2.02, 0.07); KIT.slam(tl, "#l-t4 .w", 2.28);
-            tl.to("#l-sel", { x: 312, width: 400, duration: 0.35, ease: "expo.out" }, 2.25);
+            tl.to("#l-sel", { x: 260, width: 372, duration: 0.35, ease: "expo.out" }, 2.25);
             tl.to("#l-m1", { backgroundColor: "rgba(47,111,214,0)", color: "#0a0d14", boxShadow: "inset 0 0px 0 rgba(0,0,0,0)", duration: 0.2 }, 2.3);
             tl.to("#l-m2", { backgroundColor: "rgba(47,111,214,1)", color: "#f6faff", boxShadow: "inset 0 -5px 0 rgba(0,0,0,0.2)", duration: 0.2 }, 2.3);
             ["#l-s1", "#l-s2", "#l-s3"].forEach(function (s, i) {
