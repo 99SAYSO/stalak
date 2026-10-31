@@ -11,6 +11,17 @@ Résumé :
    - `audit_ui.py` : les compteurs passent par `acctEvent` de Comptes (`{ name, ios?, cat?, why? }`) : on vérifie `export_start`, `export_ok`, `export_fail` avec `cat` = `hidden` et `memory`, `ios: true` sur iPhone seulement, aucun cookie. `plans_open` n'est plus vérifié ici : l'écran des formules est joué par le test, c'est Comptes qui l'envoie (à vérifier dans ses tests).
    - `formules_ui.py` : le conseil du pack dit « 2 takes » en anglais.
 
-Pour le Chef de projet : `evt()` d'App ne fait plus rien, donc « offre Pro affichée » (`pro_offer`) et « pub affichée » (`ad_shown`) ne sont plus comptés. Si le propriétaire les veut dans l'entonnoir, il suffit que Comptes accepte ces deux noms et qu'App appelle `acctEvent` à ces deux endroits.
+4. **Offre Pro après la 1re vidéo : une fenêtre au milieu de l'écran** (demande du propriétaire, 31/10, 4 h ; remplace le bloc sous la vidéo) :
+   - elle s'ouvre environ 1 s après que la vidéo est là (une fois l'écran d'export parti), le fond assombri, avec une apparition qui monte et un reflet givré qui la traverse (rien ne bouge si l'appareil demande moins d'animations) ;
+   - contenu : la mascotte, « Belle vidéo ! La prochaine, sans filigrane ? » (EN « Nice video! Next one without the watermark? »), 3 avantages cochés (ni pub ni filigrane, mode Clip 16:9 sur tout le son, tous les filtres), « 4,17 $/mois, facturé à l'année », gros bouton « Passer à Pro » (formules sur Pro), lien discret « Plus tard » ;
+   - se ferme d'un toucher : ×, « Plus tard », à côté, Échap ; le focus va sur « Passer à Pro » et revient où il était ;
+   - ne bloque jamais l'enregistrement ni le partage : la page dessous n'est pas figée, un toucher à côté la ferme ;
+   - une seule fois par appareil (même après rechargement), jamais pour un abonné, jamais pendant un export, Gratuit sur stalak.app seulement ;
+   - compteur : `acctEvent('pro_offer')` à l'ouverture.
+   - Pas de flou derrière la fenêtre (seulement assombri) : le flou plein écran bloquait le navigateur de test et coûte cher sur un téléphone.
+
+Pour le Chef de projet :
+- **Comptes : ajouter `pro_offer` à la liste `EVENTS` de `functions/_lib/metrics.js`** (fichier de Comptes, pas touché ici) : sans ça, le serveur refuse ce compteur et il n'apparaît pas au tableau de bord.
+ `evt()` d'App ne fait plus rien, donc « offre Pro affichée » (`pro_offer`) et « pub affichée » (`ad_shown`) ne sont plus comptés. Si le propriétaire les veut dans l'entonnoir, il suffit que Comptes accepte ces deux noms et qu'App appelle `acctEvent` à ces deux endroits.
 
 Tests : voir la fin de ce fichier.
