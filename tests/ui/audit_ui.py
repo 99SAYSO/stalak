@@ -125,7 +125,7 @@ def run(b, base, lang, iphone):
     check(tag + ' : fenêtre Pro pas tout de suite, puis environ 1 s après la vidéo', not early)
     look = pg.evaluate('''() => { const b = document.querySelector('#proPop'), c = document.querySelector('#proPopCard').getBoundingClientRect(), cs = getComputedStyle(b);
       return { bg: cs.backgroundColor, cx: Math.round(c.left + c.width / 2 - innerWidth / 2), cy: Math.round(c.top + c.height / 2 - innerHeight / 2), inside: c.left >= 0 && c.right <= innerWidth && c.top >= -60 && c.bottom <= innerHeight,
-        anim: getComputedStyle(document.querySelector('#proPopCard')).animationName, frost: getComputedStyle(document.querySelector('#proPopCard'), '::after').animationName,
+        anim: getComputedStyle(document.querySelector('#proPopCard')).animationName, frost: getComputedStyle(document.querySelector('#proPop .pp-shine'), '::before').animationName,
         mascot: getComputedStyle(document.querySelector('.pp-mascot')).backgroundImage.slice(0, 20), items: [...document.querySelectorAll('#proPop .pp-list li')].map(l => l.textContent.trim()),
         price: document.querySelector('#proPop .pp-price').textContent, focus: document.activeElement && document.activeElement.id }; }''')
     want_items = ['No ads, no watermark', 'Music video mode (16:9, the whole song)', 'Every filter'] if lang == 'en' else ['Ni pub ni filigrane', 'Le mode Clip 16:9, sur tout le son', 'Tous les filtres']

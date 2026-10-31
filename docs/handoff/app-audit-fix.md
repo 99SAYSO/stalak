@@ -18,6 +18,7 @@ Résumé :
    - ne bloque jamais l'enregistrement ni le partage : la page dessous n'est pas figée, un toucher à côté la ferme ;
    - une seule fois par appareil (même après rechargement), jamais pour un abonné, jamais pendant un export, Gratuit sur stalak.app seulement ;
    - compteur : `acctEvent('pro_offer')` à l'ouverture.
+   - Animation choisie avec le skill `motion-design` (règle du 31/10) : fond qui s'assombrit en 180 ms, fenêtre qui monte de 12 px en grandissant de 95 % à 100 % en 240 ms (courbe « ease-out-quart », sans rebond), reflet givré une seule fois (700 ms, déplacé par `transform`) ; seulement `transform` et `opacity` ; fermeture immédiate ; rien ne bouge avec « réduire les animations ».
    - Pas de flou derrière la fenêtre (seulement assombri) : le flou plein écran bloquait le navigateur de test et coûte cher sur un téléphone.
 
 Pour le Chef de projet :
