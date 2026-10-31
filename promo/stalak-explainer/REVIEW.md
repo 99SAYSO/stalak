@@ -51,12 +51,17 @@ Contrôles de cette version :
   - la tête de lecture qui touchait le titre « neva-die » (scène 4) et « Version 1 » (scène 6) ;
   - les sous-titres des cartes « Film now » et « Import my videos » cachés par les images (scène 5) ;
   - deux animations qui se chevauchaient sur le téléphone de la scène 11 ;
-  - un doublon vidéo signalé par le lint (scène 8).
+  - un doublon vidéo signalé par le lint (scène 8) ;
+  - le filtre Frost, trop discret au premier rendu, est maintenant plus bleu (roues de couleur), puis nouveau rendu.
 
-## Rendu final (31/10, `npx hyperframes render --quality delivery --fps 30`)
+## Rendu final de la version finale (31/10, `npx hyperframes render --quality delivery --fps 30`)
 
-- Fichier : `renders/stalak-explainer.mp4` (hors dépôt, envoyé au propriétaire).
-- Format : 40,77 s, 1080 × 1920, 30 i/s, 1 223 images, H.264 + AAC 48 kHz stéréo, 43,6 Mo.
+- Fichier : `renders/stalak-explainer.mp4` (hors dépôt, envoyé au propriétaire avec la nouvelle voix off).
+- Format : 41,63 s, 1080 × 1920, 30 i/s, 1 249 images, H.264 + AAC 48 kHz stéréo, 41,1 Mo.
 - Décodage complet par ffmpeg sans erreur.
-- Son : −16,4 LUFS intégrés, crête −1,5 dBTP, LRA 4,1 LU.
-- 24 images du rendu regardées, de 0,6 à 40,5 s : les vidéos jouent, la 3D et les animations sont bien rendues, le bouton du pack tient sur une ligne.
+- Son : −16,5 LUFS intégrés, crête −1,5 dBTP, LRA 4,3 LU. Les 3 pauses ajoutées dans la voix sont propres (pas de clic : moins de −47 dBFS au point de coupe).
+- 28 images du rendu regardées, de 0,6 à 41,4 s, plus 4 gros plans des filtres de la scène 8 : tout est dans la zone sûre. Les vidéos jouent et les filtres Frost, 35 mm film et Black & white se voient. Les paroles sont en anglais.
+
+## Rendu précédent (31/10, avant les retours)
+
+- 40,77 s, 1 223 images, 43,6 Mo ; −16,4 LUFS, crête −1,5 dBTP.
