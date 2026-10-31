@@ -69,6 +69,7 @@
 - Pages : tarifs, conditions, remboursement, confidentialité, mentions légales (FR/EN), avec des animations glacées.
 
 ## En cours
+- **Entonnoir : 2 étapes de plus** (branche `compte/entonnoir-etapes`, compte rendu `docs/handoff/compte-entonnoir-etapes.md`, Statut : PRÊT, aucune migration) : `/api/event` accepte `pro_offer` (offre Pro après la 1re vidéo) et `ad_shown` (pub vraiment à l'écran) ; tableau de bord : « Offre Pro vue » et « Pubs affichées ». **Pour App** : envoyer `acctEvent('pro_offer')` quand l'offre Pro après la 1re vidéo s'affiche, et `acctEvent('ad_shown')` quand la pub est vraiment à l'écran (événement `rewardedSlotReady`, après `makeRewardedVisible()`).
 - **Audit du 30/10, côté Comptes** (branche `compte/audit`, compte rendu `docs/handoff/compte-audit.md`, Statut : PRÊT, **migration 0009**) :
   - signe de vie des visites toutes les 5 min (au lieu de 1) ;
   - e-mails de code : plafond du jour `EMAIL_DAILY_MAX` avec alertes, Turnstile prêt (inscription, mot de passe oublié ; clés à saisir), le « code envoyé » jamais parti corrigé ;

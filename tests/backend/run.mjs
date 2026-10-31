@@ -2751,7 +2751,7 @@ test('Turnstile: off without keys; with keys, sign-up and forgot password need a
 test('funnel: /api/event takes only known names (no cookie needed), counted per day; the dashboard shows the funnel', async () => {
   const env = makeEnv(ADMIN_ENV), token = await accessToken();
   for (const [name, extra] of [['export_start', {}], ['export_ok', { ios: true }], ['export_ok', {}], ['export_fail', { cat: 'memory', ios: true }],
-    ['export_fail', { cat: '<script>' }], ['ad_offer', {}], ['ad_ok', {}], ['plans_open', { why: 'clip' }], ['plans_open', { why: 'x' }], ['checkout_open', {}]]) {
+    ['export_fail', { cat: '<script>' }], ['pro_offer', {}], ['ad_offer', {}], ['ad_shown', { ios: true }], ['ad_ok', {}], ['plans_open', { why: 'clip' }], ['plans_open', { why: 'x' }], ['checkout_open', {}]]) {
     const r = await call(env, 'POST', '/api/event', { body: { name, ...extra }, ip: '10.60.0.1' });
     assert.equal(r.status, 200, name + JSON.stringify(r.data));
   }
@@ -2769,6 +2769,7 @@ test('funnel: /api/event takes only known names (no cookie needed), counted per 
   r = await adminCall(env, 'GET', '/api/admin/stats?days=7', { token });
   const f = r.data.usage.funnel;
   assert.equal(f.exportStart, 1); assert.equal(f.exportOk, 2); assert.equal(f.exportFail, 2); assert.equal(f.adOk, 1);
+  assert.equal(f.proOffer, 1, 'the Pro offer after the 1st video'); assert.equal(f.adShown, 1, 'the ad really on screen');
   assert.equal(f.plansOpen, 2); assert.equal(f.checkoutOpen, 1); assert.equal(f.paid, 1, 'one first payment');
   assert.deepEqual(f.exportFailWhy, { memory: 1, other: 1 }); assert.deepEqual(f.plansWhy, { clip: 1, other: 1 });
   assert.deepEqual(f.ios, { exportOk: 1, exportFail: 1 });

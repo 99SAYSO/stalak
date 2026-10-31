@@ -2439,7 +2439,8 @@ header .stepper{margin-left:auto}
      checkoutOpen         -> true while Paddle's checkout window is open
      event(name[, extra]) -> counts one anonymous step of the funnel (POST /api/event; never fails, nothing about the person):
                              'export_start' | 'export_ok' | 'export_fail' ({cat: 'memory'|'decoder'|'hidden'|'cancel'|'other'}) |
-                             'ad_offer' | 'ad_ok' | 'plans_open' ({why}) | 'checkout_open'; {ios: true} is added on iPhone / iPad
+                             'pro_offer' (the Pro offer after the 1st video) | 'ad_offer' (ad asked) | 'ad_shown' (ad really on
+                             screen) | 'ad_ok' | 'plans_open' ({why}) | 'checkout_open'; {ios: true} is added on iPhone / iPad
      state                -> last known state
    Errors are thrown as Error objects with .code (server "error" field) and .status. */
 (function () {
@@ -10378,7 +10379,8 @@ function apWhyHas(k){ const f = WHY_FEATURE[String(k || '').replace('acct.why.',
 const WHY_FEATURE = { lyrics: 'lyrics', pack: 'pack5', pack5: 'pack5', pack10: 'pack10', pack30: 'pack30', clip: 'clip', fx: 'fx',
   outro: 'nowm', nologo: 'nowm', nowm: 'nowm', wm: 'nowm', text: 'text', cloud: 'cloud', support: 'human', human: 'human', filters: 'filters' };
 /* anonymous counters of the funnel (dashboard): visit → export → ad → plans page → payment window → payment.
-   acctEvent('export_ok'), acctEvent('export_fail', {cat: 'memory'|'decoder'|'hidden'|'cancel'|'other'}), acctEvent('ad_ok')…
+   acctEvent('export_ok'), acctEvent('export_fail', {cat: 'memory'|'decoder'|'hidden'|'cancel'|'other'}), acctEvent('pro_offer') (the Pro
+   offer after the 1st video, App), acctEvent('ad_offer'), acctEvent('ad_shown') (the ad really on screen, App), acctEvent('ad_ok')…
    Nothing about the person or the video; never fails, works signed out (account.js event()). */
 function acctEvent(name, extra){ try { if (ACCT && ACCT.event) ACCT.event(name, extra); } catch(e){} }
 function acctWhyCat(k){

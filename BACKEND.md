@@ -626,8 +626,10 @@ Les fichiers R2 (sauvegarde en ligne) n'ont pas de copie : c'est une sauvegarde 
   « En direct » = vu dans les 6 min 30 dernières.
 
 ### 15.5 L'entonnoir (tableau de bord)
-Compteurs anonymes (`POST /api/event`, sans cookie ni compte) : visite → export réussi → pub regardée → page des formules →
-fenêtre de paiement → premier paiement (webhook). Aussi : exports ratés par catégorie (mémoire, décodeur, onglet caché,
+Compteurs anonymes (`POST /api/event`, sans cookie ni compte) : visite → export réussi → offre Pro vue (`pro_offer`, après la
+1re vidéo) → pub affichée (`ad_shown`, vraiment à l'écran) → pub regardée (`ad_ok`) → page des formules → fenêtre de paiement →
+premier paiement (webhook). Noms acceptés : `export_start`, `export_ok`, `export_fail`, `pro_offer`, `ad_offer`, `ad_shown`,
+`ad_ok`, `plans_open`, `checkout_open`. Aussi : exports ratés par catégorie (mémoire, décodeur, onglet caché,
 annulé), sur iPhone/iPad, et la raison qui a ouvert la page des formules. À ajouter à la politique de confidentialité
 (Juridique) : de simples compteurs, rien sur la personne.
 

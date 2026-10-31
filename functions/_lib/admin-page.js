@@ -161,7 +161,7 @@ th{color:var(--text2);font-weight:600}
   <section class="card" aria-labelledby="hFun">
     <h2 id="hFun">Entonnoir (30 derniers jours)</h2>
     <div class="funnel" id="funnel"></div>
-    <p class="note" id="funnelNote">Chaque étape : combien de fois, et la part de l’étape d’avant. Compteurs anonymes (aucun cookie, rien sur la personne). « Pub » = pub demandée puis récompensée.</p>
+    <p class="note" id="funnelNote">Chaque étape : combien de fois, et la part de l’étape d’avant. Compteurs anonymes (aucun cookie, rien sur la personne). « Offre Pro vue » = l’offre Pro montrée après la 1re vidéo ; « Pubs affichées » = la pub vraiment à l’écran ; « Pubs regardées » = récompense accordée.</p>
   </section>
 
   <section class="card" aria-labelledby="hUse">
@@ -337,7 +337,7 @@ th{color:var(--text2);font-weight:600}
         ['E-mails de code aujourd’hui :', nf.format(u.health.codeMailsToday)], ['E-mails de code sur 30 j :', nf.format(u.health.codeMails30)]]);
       var fu = u.funnel, fb = $('#funnel'); fb.textContent = '';
       if (fu) {
-        var steps = [['Visites', fu.visits], ['Exports réussis', fu.exportOk], ['Pubs regardées', fu.adOk], ['Page des formules', fu.plansOpen], ['Fenêtre de paiement', fu.checkoutOpen], ['Premiers paiements', fu.paid]];
+        var steps = [['Visites', fu.visits], ['Exports réussis', fu.exportOk], ['Offre Pro vue', fu.proOffer || 0], ['Pubs affichées', fu.adShown || 0], ['Pubs regardées', fu.adOk], ['Page des formules', fu.plansOpen], ['Fenêtre de paiement', fu.checkoutOpen], ['Premiers paiements', fu.paid]];
         steps.forEach(function (st, i) {
           var f = el('div', { class: 'f' }); f.append(el('b', null, st[0]), el('span', null, nf.format(st[1] || 0)));
           var prev = i ? steps[i - 1][1] : 0;
@@ -347,7 +347,7 @@ th{color:var(--text2);font-weight:600}
         var why = function (o) { return Object.keys(o || {}).map(function (k) { return k + ' ' + o[k]; }).join(', ') || '–'; };
         var nb = $('#funnelNote');
         nb.textContent = 'Exports commencés : ' + nf.format(fu.exportStart) + ' ; ratés : ' + nf.format(fu.exportFail) + ' (' + why(fu.exportFailWhy) + ') ; sur iPhone/iPad : ' +
-          nf.format(fu.ios.exportOk) + ' réussis, ' + nf.format(fu.ios.exportFail) + ' ratés. Pubs demandées : ' + nf.format(fu.adOffer) + '. Page des formules ouverte par : ' + why(fu.plansWhy) +
+          nf.format(fu.ios.exportOk) + ' réussis, ' + nf.format(fu.ios.exportFail) + ' ratés. Pubs demandées : ' + nf.format(fu.adOffer) + ' (affichées : ' + nf.format(fu.adShown || 0) + '). Page des formules ouverte par : ' + why(fu.plansWhy) +
           '. Compteurs anonymes (aucun cookie, rien sur la personne).';
       }
       var tb = $('#users tbody'); tb.textContent = '';

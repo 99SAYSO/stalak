@@ -9,8 +9,9 @@ export const METRICS = ['help_q', 'help_fail', 'cloud_save', 'ticket', 'ticket_m
 
 // Anonymous steps of the way to a subscription (audit of 30/10, « entonnoir »): the page tells POST /api/event {name}.
 // A closed list; no cookie, no account, no number per visitor: only +1 on the day's counter `ev_<name>`.
-// visit (the visits table) → export_ok → ad_ok → plans_open → checkout_open → paid_first (Paddle webhook).
-export const EVENTS = ['export_start', 'export_ok', 'export_fail', 'ad_offer', 'ad_ok', 'plans_open', 'checkout_open'];
+// visit (the visits table) → export_ok → pro_offer → ad_shown → ad_ok → plans_open → checkout_open → paid_first (Paddle webhook).
+// pro_offer: the Pro offer shown after the first video; ad_offer: a rewarded ad asked; ad_shown: the ad really on screen.
+export const EVENTS = ['export_start', 'export_ok', 'export_fail', 'pro_offer', 'ad_offer', 'ad_shown', 'ad_ok', 'plans_open', 'checkout_open'];
 // why an export failed, as a category only (App sends it): nothing about the person or the video
 export const EXPORT_FAIL = ['memory', 'decoder', 'hidden', 'cancel', 'other'];
 export const EVENTS_PER_IP_HOUR = 120;

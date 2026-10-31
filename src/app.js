@@ -9336,7 +9336,8 @@ function apWhyHas(k){ const f = WHY_FEATURE[String(k || '').replace('acct.why.',
 const WHY_FEATURE = { lyrics: 'lyrics', pack: 'pack5', pack5: 'pack5', pack10: 'pack10', pack30: 'pack30', clip: 'clip', fx: 'fx',
   outro: 'nowm', nologo: 'nowm', nowm: 'nowm', wm: 'nowm', text: 'text', cloud: 'cloud', support: 'human', human: 'human', filters: 'filters' };
 /* anonymous counters of the funnel (dashboard): visit → export → ad → plans page → payment window → payment.
-   acctEvent('export_ok'), acctEvent('export_fail', {cat: 'memory'|'decoder'|'hidden'|'cancel'|'other'}), acctEvent('ad_ok')…
+   acctEvent('export_ok'), acctEvent('export_fail', {cat: 'memory'|'decoder'|'hidden'|'cancel'|'other'}), acctEvent('pro_offer') (the Pro
+   offer after the 1st video, App), acctEvent('ad_offer'), acctEvent('ad_shown') (the ad really on screen, App), acctEvent('ad_ok')…
    Nothing about the person or the video; never fails, works signed out (account.js event()). */
 function acctEvent(name, extra){ try { if (ACCT && ACCT.event) ACCT.event(name, extra); } catch(e){} }
 function acctWhyCat(k){
