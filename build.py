@@ -8,6 +8,8 @@ if theme.exists(): css += '\n/* ---- theme ---- */\n' + theme.read_text(encoding
 pricing = src/'pricing.css'   # the plan cards of the Stalak Pro page (shared with /tarifs on the site)
 if pricing.exists(): css += '\n' + pricing.read_text(encoding='utf-8')
 markup = (src/'markup.html').read_text(encoding='utf-8')
+import re
+markup = re.sub(r'<!--HEROVIDEO-->.*?<!--/HEROVIDEO-->', '', markup, flags=re.S)  # Marketing : pas de vidéo d'exemple dans la version claude.ai
 js = (src/'app.js').read_text(encoding='utf-8')
 out = head + '<style>' + css + '</style>' + markup + '<script>' + js + '</script>\n'
 dest = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else root / 'shuffle-lab.html'

@@ -2,6 +2,7 @@
 
 Skills utilisés : `seo-audit`, `site-architecture`, `ai-seo`, `copywriting`, `social`, `community-marketing`, `content-strategy`.
 Ce document remplace `PLAN_TRILLER.md` : le site ne cite plus aucun concurrent.
+**Mis à jour le 30/10 à 23 h** après l'audit croissance (`docs/audit/2026-10-30-croissance.md`, points 3, 6, 13) : lien TikTok, règle Reddit 90/10, beatmakers « type beats », tutos YouTube, mots « snippet » et « no AI face », mesure des `?ref=`.
 
 ---
 
@@ -85,12 +86,15 @@ Les balises `hreflang` relient déjà les deux langues, et la page par défaut (
 
 | Rang | Réseau | Pourquoi | Rythme |
 |---|---|---|---|
-| 1 | **TikTok** | C'est là que les rappeurs américains postent leurs snippets | 1 vidéo par jour |
+| 1 | **TikTok** | C'est là que les rappeurs américains postent leurs snippets. **Pas de lien cliquable en bio avant 1 000 abonnés** sur un compte personnel : écris « stalak.app » dans la vidéo et dans la légende | 1 vidéo par jour |
 | 2 | **Instagram Reels** | Même vidéo, public rap très présent | La même vidéo, chaque jour |
-| 3 | **YouTube Shorts** | La même vidéo, et les recherches « how to » restent longtemps | La même vidéo, chaque jour |
+| 3 | **YouTube Shorts + tutos longs** | Les Shorts reprennent la même vidéo. Les tutos de 5 à 8 min (« how to make a rap snippet video from 3 takes ») restent trouvables des années | Shorts chaque jour, 1 tuto toutes les 2 semaines |
 | 4 | **X** | La communauté rap et le « build in public » (raconter qu'on construit l'outil) | 3 posts par semaine |
-| 5 | **Reddit** | Des musiciens qui cherchent des outils et des avis | 1 post utile par semaine, plus des réponses |
+| 5 | **Reddit** | Des musiciens qui cherchent des outils et des avis. **Règle 90/10** : 9 messages utiles pour 1 qui parle de Stalak | 2 à 4 semaines de simple participation **avant** le premier post sur Stalak |
 | 6 | **Discord** | Ton #stalak-beta, et des serveurs de producteurs ou de rappeurs | Participer chaque semaine |
+| 7 | **Beatmakers « type beats » (YouTube)** | Leurs clients sont des rappeurs : un producteur qui montre Stalak parle directement à ton public | 5 à 10 producteurs contactés, une fois |
+
+**Avant la grosse promo** (audit, point 1) : tant que Paddle n'est pas en mode réel et que la vraie pub n'est pas branchée, les visiteurs ne peuvent ni payer ni regarder une vraie pub. D'ici là : vidéos « build in public », participation sur Reddit, contacts avec les beatmakers. Le thread X et le post Reddit sur Stalak attendent les vrais paiements.
 
 **Horaires** : le soir sur la côte Est (19 h – 22 h), c'est-à-dire 1 h – 4 h du matin en France. Programme tes posts à l'avance avec les outils de programmation de chaque réseau, sans rester debout la nuit.
 
@@ -102,15 +106,21 @@ Les balises `hreflang` relient déjà les deux langues, et la page par défaut (
 4. **Tutos** : « How to make a lip-sync video for your snippet ». Ces vidéos marchent bien sur YouTube, et elles reviennent dans les recherches.
 5. **Ta musique** : tes propres sons montés avec Stalak. C'est la preuve la plus honnête.
 
+**Le vocabulaire** : les rappeurs américains disent « snippet » (l'extrait posté avant la sortie), « performance video », « multi-angle », « cut on the beat », « rollout ». « Lip-sync » attire aussi les gens qui cherchent une IA qui fait parler une photo : ajoute « your real takes, no AI face » quand c'est utile.
+
 **Accroches** (les 2 premières secondes, en anglais américain) :
 - "I got tired of editing my snippets by hand, so I coded this."
 - "3 takes. 1 click. Cut on the beat."
 - "Rappers: stop editing your snippets frame by frame."
 - "This is what my edit looks like with no editing."
+- "Your real takes. No AI face. Cut on the beat."
 
 ### 4. Les communautés (à vérifier avant de poster)
 
 **Reddit** : lis les règles et le fil épinglé. Beaucoup de groupes n'acceptent l'auto-promo que dans un fil dédié, ou à certains jours.
+- **Règle 90/10** : environ 9 messages sur 10 doivent aider sans parler de Stalak (répondre à des questions de mix, de tournage, de promo).
+- **Commence dès maintenant** avec le compte de 99Sayso, 2 à 4 semaines avant le premier post sur Stalak, pour qu'il ait un historique.
+- **Ne poste jamais le même lien dans plusieurs groupes le même jour** : ça mène au bannissement de tout Reddit. Un groupe à la fois, à quelques jours d'intervalle.
 - r/makinghiphop : rappeurs et producteurs ; passe par les fils de retours ou d'auto-promo s'il y en a.
 - r/WeAreTheMusicMakers : musiciens ; la promo n'y est permise qu'à certains endroits, alors réponds surtout aux questions.
 - r/musicmarketing : artistes qui cherchent comment se faire connaître.
@@ -121,6 +131,16 @@ Les balises `hreflang` relient déjà les deux langues, et la page par défaut (
 **TikTok et Instagram** : commente sincèrement sous les posts de petits rappeurs américains de ta scène (underground, rage, pluggnb), sans lien et sans « check my app ». Les gens viennent voir ton profil.
 
 **Discord** : serveurs de producteurs, de beats et de rap underground. Les salons « tools » ou « resources » existent souvent : partage-y Stalak une fois, puis aide les gens.
+
+**Beatmakers « type beats » sur YouTube** :
+- ce sont les producteurs qui publient des instrus « [artiste] type beat » ; leurs clients sont exactement des rappeurs ;
+- propose à 5 à 10 d'entre eux un Creator Plus offert, contre une démo honnête s'ils en ont envie (« here's what a snippet on my beat looks like, cut with Stalak ») ;
+- s'ils en parlent, ils doivent signaler le cadeau (« gifted » ou « #ad », règles de la FTC) : dis-le-leur par écrit ;
+- choisis des producteurs de ta scène, que tu écoutes vraiment, et écris-leur en ton nom par le contact public de leur chaîne (pas de message de masse).
+
+**Tutos YouTube en format long** :
+- 5 à 8 minutes, ton écran filmé : « How to make a rap snippet video from 3 takes (free, no app) », « How to film takes for a multi-angle performance video », « How to post a different snippet every day of your rollout » ;
+- titre et description reprennent les mots-clés de la partie 5 ; lien dans la description avec `?ref=yt`.
 
 **Collaborations sans budget** :
 - propose un mois de Creator Plus gratuit à de petits rappeurs américains contre des retours honnêtes, sans obligation de poster ;
@@ -147,6 +167,8 @@ Les balises `hreflang` relient déjà les deux langues, et la page par défaut (
 - cut video to the beat automatically
 - music video maker for rappers
 - rap snippet editor
+- rap snippet video
+- multi-angle performance video
 - how to make a lip sync video for TikTok
 
 **Plus tard** (plus gros, plus durs) : music video editor, beat sync video, music video maker.
@@ -155,7 +177,7 @@ Les balises `hreflang` relient déjà les deux langues, et la page par défaut (
 - titres et descriptions YouTube ;
 - légendes TikTok et Instagram (la recherche TikTok lit le texte) ;
 - titre et description de la page anglaise ;
-- 4 pages utiles en anglais, après le passage de l'anglais à la racine : `/lip-sync-video-editor`, `/music-video-maker-for-rappers`, `/how-to-make-a-lip-sync-video`, `/edit-video-to-the-beat`. Elles ne citent aucun concurrent, et chacune a une vraie vidéo d'exemple.
+- 6 pages utiles en anglais, **prêtes en brouillon** dans `site_drafts/` (pas en ligne) : `lip-sync-video-editor`, `music-video-maker-for-rappers`, `rap-snippet-video`, `lip-sync-videos-for-singers`, `how-to-make-a-lip-sync-video`, `edit-video-to-the-beat`. Elles seront publiées après ta décision sur l'anglais à la racine. Aucune ne cite de concurrent, et chacune a une place pour une vraie vidéo d'exemple.
 
 **Hashtags** : #rapper #newmusic #snippet #undergroundrap #lipsync #musicvideo #independentartist #rapsnippet
 
@@ -163,15 +185,17 @@ Les balises `hreflang` relient déjà les deux langues, et la page par défaut (
 
 | Semaine | Vidéos | X | Reddit / Discord |
 |---|---|---|---|
-| 1 | Avant / après, tous les jours | « I'm a rapper, I coded my own editor » (thread) | Présentation dans 1 groupe qui l'accepte, puis réponses pendant 24 h |
-| 2 | « I'm editing your snippet » (appel aux prises) | Les montages faits, avec l'accord des artistes | Réponses dans les fils existants |
-| 3 | Tutos « how to make a lip-sync video » | « What I added this week » | Partage dans 2 serveurs Discord (salons « tools ») |
-| 4 | Ton propre son, monté avec Stalak | Bilan honnête de ce qui a marché | Fil de retours : « what should I build next? » |
+| 1 | Avant / après, tous les jours | « I'm a rapper, I coded my own editor » (thread, une fois les vrais paiements ouverts) | Participation simple, sans parler de Stalak ; contact de 5 beatmakers |
+| 2 | « I'm editing your snippet » (appel aux prises) ; 1er tuto YouTube long | Les montages faits, avec l'accord des artistes | Participation simple, toujours sans lien |
+| 3 | Tutos « how to make a snippet video » | « What I added this week » | 1er post sur Stalak dans 1 seul groupe qui l'accepte ; partage dans 2 serveurs Discord (salons « tools ») |
+| 4 | Ton propre son, monté avec Stalak ; 2e tuto YouTube long | Bilan honnête de ce qui a marché | Fil de retours : « what should I build next? » |
 
 ### 7. Les textes prêts
 
 **TikTok / Reels / Shorts (légende) :**
-I coded this because editing my snippets took forever 🧊 Drop your song + a few takes, Stalak cuts them on the beat. Free, right in your browser. stalak.app #rapper #snippet #lipsync
+I coded this because editing my snippets took forever 🧊 Drop your song + a few takes, Stalak cuts them on the beat. Your real takes, no AI face. Free, right in your browser: stalak.app #rapper #snippet #lipsync
+
+(Sur TikTok, tant que le compte a moins de 1 000 abonnés, « stalak.app » doit aussi être écrit dans la vidéo : la bio n'a pas de lien cliquable.)
 
 **X (thread) :**
 1. I'm a rapper. Editing my snippets by hand was killing me, so I coded my own editor. It's called Stalak 🧊 stalak.app
@@ -198,7 +222,9 @@ I'm a rapper and I built a free browser tool that cuts my takes to the beat. Loo
 
 ### 8. Ce qu'on mesure
 
-- Un lien par réseau : `stalak.app/?ref=tiktok`, `?ref=ig`, `?ref=yt`, `?ref=x`, `?ref=reddit`, `?ref=discord`. À vérifier avec le Chef de projet : le tableau de bord doit compter ces `ref`.
+- Un lien par réseau : `stalak.app/?ref=tiktok`, `?ref=ig`, `?ref=yt`, `?ref=x`, `?ref=reddit`, `?ref=discord`, `?ref=beat` (beatmakers). Les pages de cas d'usage envoient `?ref=seo`.
+- **Fait (30/10, 23 h)** : l'app lit `?ref=…`, le retire de l'adresse, le garde pour l'onglet et l'envoie avec chaque visite au tableau de bord. Sans `ref`, elle note le site d'où vient la visite (TikTok, Instagram, YouTube, X, Reddit, Discord, Google, Bing ou « other »), quand le navigateur le dit.
+- **À faire par Comptes** : enregistrer ce `ref` et l'afficher par jour dans le tableau de bord, puis le relier aux exports et aux achats (voir STATUS).
 - Chaque semaine :
   - visites venues des États-Unis ;
   - exports ;
@@ -208,7 +234,8 @@ I'm a rapper and I built a free browser tool that cuts my takes to the beat. Loo
 
 ### 9. Ce que tu fais toi-même
 
-- Créer ou renommer les comptes TikTok, Instagram et YouTube, puis donner les adresses à Marketing (liste `SOCIAL` de `build_site.py`).
+- Créer ou renommer les comptes TikTok, Instagram et YouTube, puis donner les adresses à Marketing (liste `SOCIAL` de `build_site.py`). Sur TikTok, garder un compte **personnel** : un compte Business a le lien tout de suite, mais moins de musiques disponibles.
+- Filmer une vraie vidéo finie de 5 à 8 s (9:16, sans son, avec un son à toi) et la déposer dans `site_src/demo/hero.mp4` : elle apparaîtra en haut du premier écran. Une version de 20 à 30 s dans `site_src/demo/exemple.mp4` servira aux pages de cas d'usage.
 - Filmer et poster les vidéos, et répondre aux commentaires en ton nom.
 - Demander par écrit l'accord des artistes avant de reposter leurs prises.
 - Décider : cites-tu des concurrents dans tes propres posts ? Et passe-t-on l'anglais à l'adresse principale (partie A) ?

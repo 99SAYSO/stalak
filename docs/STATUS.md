@@ -172,6 +172,34 @@
 - À décider : la publication directe est-elle réservée à Stalak Pro ou ouverte à tous ? Meta risque de demander une vérification d'entreprise (lien avec la LLC).
 
 ### Marketing & croissance
+- **Fait (branche `marketing/audit-us`, 30/10, 23 h)** : les priorités Marketing de l'audit du 30/10. Détail dans `docs/handoff/marketing-audit-us.md`.
+  - Données structurées de l'accueil en USD, avec Free, Pro et Creator Plus. `x-default` ajouté sur Tarifs et dans le plan du site.
+  - Anglais de l'app :
+    - « takes » au lieu de « playbacks » ;
+    - drapeau américain dans le choix de langue ;
+    - plus de messages en « je » sans qu'on sache qui parle (« Stalak stopped it… », « send it to the Stalak team »).
+  - Premier écran (étape Son) :
+    - une phrase qui dit ce que fait Stalak ;
+    - « Pas besoin de compte » et « En gratuit, tes vidéos ne quittent pas ton appareil » ;
+    - une vidéo finie en boucle, qui n'apparaît que si `site_src/demo/hero.mp4` existe ;
+    - « Essayer avec un exemple » devient un vrai bouton ;
+    - sur l'écran de connexion, « You don't need an account to make videos ».
+  - `?ref=` : l'app le lit, le retire de l'adresse, le garde pour l'onglet (`sessionStorage` « stalak:ref ») et l'envoie dans `/api/presence`. Sans `ref`, elle note le site d'où vient la visite.
+  - 6 pages anglaises par cas d'usage, **en brouillon** dans `site_drafts/` (non publiées).
+  - Plan US mis à jour (`docs/marketing/US_FIRST.md` et document claude.ai) : lien TikTok à 1 000 abonnés, Reddit 90/10, beatmakers « type beats », tutos YouTube longs.
+- **Pour Comptes (compteur des `ref`)** :
+  - `/api/presence` reçoit maintenant `ref` (1 à 24 caractères `a-z 0-9 _ -`, en minuscules), ou rien.
+  - À faire :
+    1. l'enregistrer à la première ligne de la visite (migration : colonne `ref` dans `visits`) ;
+    2. afficher les visites par jour et par `ref` dans le tableau de bord ;
+    3. au paiement, passer `sessionStorage.getItem('stalak:ref')` dans le `customData` Paddle, puis compter les achats par `ref` ;
+    4. si possible, compter aussi les exports par `ref`.
+  - Valeurs prévues : tiktok, ig, yt, x, reddit, discord, beat, seo, wm, google, bing, other.
+- **Pour App** :
+  - les packs passent à 2 prises : les textes `pack.need3`, `acct.why.pack` et `pl.f.packs` disent encore « 3 takes », comme le code (`readyTakes().length < 3`), à changer en même temps ;
+  - vérifier la place de la phrase d'accueil (`#heroPitch`) et le bouton « Essayer avec un exemple ».
+- **Pour Juridique** : la politique de confidentialité peut mentionner que la visite garde, pour l'onglet seulement, le réseau d'où elle vient (aucune donnée sur la personne).
+- **À faire par le propriétaire** : filmer une vraie vidéo finie et la déposer dans `site_src/demo/hero.mp4` (5 à 8 s, 9:16, sans son), et une version de 20 à 30 s dans `site_src/demo/exemple.mp4`.
 - **Fait (branche `marketing/audit-site`)** : audit SEO et textes de l'accueil et des Tarifs, FR/EN. Détail dans `docs/marketing/AUDIT_SITE.md`. Descriptions raccourcies, aperçus de partage sur Tarifs, limites Pro affichées, FAQ « données envoyées » corrigée (paroles auto), karaoké marqué Pro, section « comment faire un playback » sur l'accueil.
 - **Fait** : plan de lancement en 4 phases, calcul de l'objectif, idées de vidéos, calendrier réseaux 2 → 29 nov. avec légendes FR/EN, messages testeurs et e-mail Pro (document « Stalak — plan de lancement et réseaux » dans claude.ai).
 - **Fait et en ligne** : logo 120 × 120 sur l'écran de connexion Google. Envoyé dans Google Cloud → Stalak → Branding par le Chef de projet le 27/10 ; marque vérifiée et publiée par Google.

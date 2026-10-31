@@ -447,7 +447,7 @@ const I18N_EN = /*@EN*/{
   "tap.partial": "{done} of {total} lines synced. Sync again in time for the others.",
   "auto.listen": "Listening to the voice in your song…",
   "auto.place": "Placing the lines…",
-  "auto.novoice": "I can’t hear enough voice in this song to sync the lyrics. Use “Sync by tapping”.",
+  "auto.novoice": "There isn’t enough voice in this song to sync the lyrics automatically. Use “Sync by tapping”.",
   "auto.changed": "The song changed while syncing: run “Sync automatically” again.",
   "auto.done": "Lyrics synced automatically to the voice. It’s a suggestion: listen with ▶ and fix with − / + if needed",
   "auto.unsure": " ({n} line to check)",
@@ -471,7 +471,7 @@ const I18N_EN = /*@EN*/{
   "q.good": "Good picture",
   "q.busy": " · analyzing the picture {pct}%",
   "q.title": "Picture: {label} ({n} out of 3)",
-  "play.stuck": "The preview was freezing in this browser: I stopped playback and turned on simple playback. Press Play again.",
+  "play.stuck": "The preview was freezing in this browser, so Stalak stopped it and switched to simple playback. Press Play again.",
   "play.blocked": "The browser blocked the sound. Click Play again.",
   "cam.dead": "The camera stopped responding. Close it and open it again.",
   "cam.na": "This camera isn’t available.",
@@ -502,8 +502,8 @@ const I18N_EN = /*@EN*/{
   "save.cancel": "Save canceled.",
   "save.fail": "Can’t save here ({code}).",
   "pack.nosupport": "The pack needs an up-to-date Chrome, Edge or Safari on a computer.",
-  "pack.need2": "A pack needs at least 2 playbacks (sung takes). The more takes you have, the more varied the videos.",
-  "pack.tip": "From 2 playbacks. The more takes you have, the more varied the videos.",
+  "pack.need2": "A pack needs at least 2 takes. The more takes you have, the more varied the videos.",
+  "pack.tip": "From 2 takes. The more takes you have, the more varied the videos.",
   "pack.asm": "Pack: putting together video {k} of {n} · {pct}%",
   "pack.prog": "Pack: {n} videos in progress · {pct}%",
   "pack.zip": "{n} MP4 videos in a zip file ({mb} MB).",
@@ -597,8 +597,8 @@ const I18N_EN = /*@EN*/{
   "diag.safe": "Simple playback (one take at a time, no effects)",
   "diag.wa": "Sound through Web Audio (not the browser’s audio player)",
   "diag.sel": "Text selected: copy it with Cmd+C.",
-  "crash.t": "The last playback froze the site.",
-  "crash.p": "The site noted what it was doing when it froze. Copy this report and send it to me: that’s what will help me find the cause. Meanwhile, simple playback is on.",
+  "crash.t": "The last preview froze the site.",
+  "crash.p": "Stalak noted what it was doing when it froze. Copy this report and send it to the Stalak team: it helps us find the cause. Meanwhile, simple playback is on.",
   "crash.copy": "Copy the report",
   "crash.sel": "Report selected: copy it with Cmd+C.",
   "probe.need": "Import a take first (step 2), then run the test again.",
@@ -644,7 +644,7 @@ const I18N_EN = /*@EN*/{
   "lyr.listen": "Stalak is listening to your voice…",
   "lyr.done": "{n} line written and synced. Read it over and fix what’s needed",
   "lyr.done_p": "{n} lines written and synced. Read them over and fix what’s needed",
-  "lyr.empty": "I couldn’t hear any lyrics in this part. Check the part chosen in step 1, or paste your lyrics.",
+  "lyr.empty": "No lyrics could be heard in this part. Check the part chosen in step 1, or paste your lyrics.",
   "lyr.e.network": "No connection to Stalak: check your internet, then try again.",
   "lyr.e.long": "This part is too long for automatic lyrics (8 minutes max). Pick a shorter part in step 1.",
   "lyr.e.quota": "You’ve reached today’s limit for automatic lyrics. Try again tomorrow, or paste your lyrics.",
@@ -660,8 +660,8 @@ const I18N_EN = /*@EN*/{
   "lyr.vox.load": "Opening your vocals…",
   "lyr.vox.ok": "Vocals ready: Stalak will listen to them to write your lyrics.",
   "lyr.vox.shift": "Vocals ready, lined up on your song (they start {off} s off). Stalak will listen to them to write your lyrics.",
-  "lyr.vox.unsure": "Vocals imported, but I’m not sure I lined them up right on your song (best guess: {off} s off). If the lyrics land in the wrong place, check it’s the same song, from the start.",
-  "lyr.vox.bad": "I can’t read this file. Try another format (mp3, m4a, wav).",
+  "lyr.vox.unsure": "Vocals imported, but they may not be lined up right on your song (best guess: {off} s off). If the lyrics land in the wrong place, check it’s the same song, from the start.",
+  "lyr.vox.bad": "This file can’t be read. Try another format (mp3, m4a, wav).",
   "lyr.vox.off": "Vocals removed: the transcription will listen to your song.",
   "lang.sw": "Language",
   "acct.close": "Close",
@@ -1035,6 +1035,13 @@ const I18N_EN = /*@EN*/{
   "ap.whyIn.support": "“Talk to a human” is part of Stalak Creator Plus. Sign in or create an account to get it.",
   "help.h.fail": "Your message didn’t go through. Try again in a moment.",
   "help.h.failMail": "Your message didn’t go through. Try again in a moment, or write to {mail}.",
+  "_bloc.marketing.accueil": "Marketing & croissance : promesse du premier écran, compte facultatif",
+  "hero.t": "Your takes, cut on the beat.",
+  "hero.s": "Drop your song and a few takes of you performing it. Stalak cuts between them on the beat, lip sync locked in. Free, right in your browser.",
+  "hero.v": "Example of a video edited with Stalak",
+  "hero.acct": "No account needed",
+  "hero.priv": "On Free, your videos never leave your device",
+  "ap.noacct": "You don’t need an account to make videos. It’s only for subscribing and getting your projects back.",
   "_bloc.app.son": "App & montage : étape Son (glisser-déposer, poignées du passage)",
   "listen.seg": "▶ Play the part",
   "listen.segStop": "❚❚ Stop",
@@ -9110,6 +9117,29 @@ async function humanSend(text, retried){
     helpMsg('bot err', msg);
   } finally { human.sending = false; $('#helpSend').disabled = false; }
 }
+/* Marketing & croissance : where the visit comes from, for the dashboard. ?ref=tiktok (ig, yt, x, reddit, discord, wm…) is read from
+   the address, then removed from it; without one, the site that sent the visitor (TikTok, Instagram…) if the browser tells it.
+   Kept for this tab only (sessionStorage "stalak:ref", nothing about the person) and sent with the visits below; Comptes counts it. */
+const VISIT_REF = (() => {
+  let r = null;
+  try {
+    const u = new URL(location.href), q = (u.searchParams.get('ref') || '').trim().toLowerCase();
+    if (/^[a-z0-9_-]{1,24}$/.test(q)) {
+      r = q; u.searchParams.delete('ref');
+      try { history.replaceState(history.state, '', u.pathname + u.search + u.hash); } catch(e){}
+    } else {
+      try { r = sessionStorage.getItem('stalak:ref'); } catch(e){}
+      if (!r && document.referrer) {
+        const h = new URL(document.referrer).hostname.replace(/^www\./, '');
+        if (h !== location.hostname) r = [[/(^|\.)tiktok\.com$/, 'tiktok'], [/(^|\.)instagram\.com$/, 'ig'], [/(^|\.)(youtube\.com|youtu\.be)$/, 'yt'],
+          [/^(t\.co|x\.com|twitter\.com)$/, 'x'], [/(^|\.)reddit\.com$/, 'reddit'], [/(^|\.)discord(app)?\.com$/, 'discord'],
+          [/(^|\.)google\./, 'google'], [/(^|\.)bing\.com$/, 'bing']].reduce((a, [re, n]) => a || (re.test(h) ? n : null), null) || 'other';
+      }
+    }
+    if (r) try { sessionStorage.setItem('stalak:ref', r); } catch(e){}
+  } catch(e){}
+  return r;
+})();
 /* visits for the dashboard: a random number made now (no cookie, nothing stored), sent every 5 minutes while the page is shown
    (the server says how often: `every`), and when the page comes back after a minute or more */
 if (HELP_SITE){
@@ -9117,7 +9147,7 @@ if (HELP_SITE){
   let every = 300e3, last = 0, timer = 0;
   const ping = () => { if (document.hidden) return; last = Date.now();
     fetch('/api/presence', { method: 'POST', credentials: 'same-origin', keepalive: true, headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ vid, lang: LANG === 'fr' ? 'fr' : 'en' }) })
+      body: JSON.stringify(Object.assign({ vid, lang: LANG === 'fr' ? 'fr' : 'en' }, VISIT_REF ? { ref: VISIT_REF } : {})) })
       .then(r => r.json()).then(d => { const e = +(d && d.every) * 1e3; if (e >= 60e3 && e <= 3600e3 && e !== every){ every = e; clearInterval(timer); timer = setInterval(ping, every); } })
       .catch(() => {}); };
   ping(); timer = setInterval(ping, every);

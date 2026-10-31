@@ -225,3 +225,18 @@ body.lite .tl .cut{box-shadow:none!important;text-shadow:none!important}
 .fxexp{flex:1 1 100%;margin:0}
 
 .work.wide canvas#view{width:min(100%,calc(60vh*var(--ar)))}
+
+/* ---- Marketing & croissance : la promesse du premier écran (étape Son) ---- */
+.hero{text-align:center;color:#fff;margin:2px auto 14px;max-width:680px}
+.hero-t{margin:0 0 6px;font:400 clamp(28px,7.4vw,40px)/1.05 'Lilita One',system-ui,sans-serif;letter-spacing:.01em;text-shadow:0 3px 0 #0a0d14}
+.hero-s{margin:0 auto 10px;font-weight:600;font-size:15.5px;line-height:1.45;max-width:30em}
+.hero-v{display:block;width:min(62vw,230px);aspect-ratio:9/16;object-fit:cover;margin:4px auto 12px;border:3px solid #0a0d14;border-radius:18px;box-shadow:0 5px 0 #0a0d14;background:#0a0d14}
+.hero-trust{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 8px;list-style:none;margin:0;padding:0}
+.hero-trust li{background:#fff;color:#0a0d14;border:2px solid #0a0d14;border-radius:99px;padding:3px 11px;font-size:13px;font-weight:700}
+.hero-trust li::before{content:"✓ ";color:#1a64c8}
+#p1:has(#songBox:not([hidden])) .hero{display:none}
+/* the mascot stands on the card: the hero sits above the room kept for it */
+#p1:has(#songBox[hidden]):has(#heroPitch){padding-top:6px}
+#p1 .hero{margin-bottom:88px}
+@media (max-width:560px){ #p1 .hero{margin-bottom:72px} }
+.ap-noacct{margin:-4px 0 12px;text-align:center;font-size:14px;font-weight:600;color:#fff}
