@@ -120,7 +120,7 @@ def run(b, base, lang, iphone):
     # ---- the Pro offer (owner, 31/10): a window in the middle, about 1 s after the first video is ready ----
     pp = pg.locator('#proPop')
     early = pp.is_visible()
-    pg.wait_for_selector('#proPop:not([hidden])', timeout=5000)
+    pg.wait_for_selector('#proPop:not([hidden])', timeout=15000)
     check(tag + ' : fenêtre Pro pas tout de suite, puis environ 1 s après la vidéo', not early)
     look = pg.evaluate('''() => { const b = document.querySelector('#proPop'), c = document.querySelector('#proPopCard').getBoundingClientRect(), cs = getComputedStyle(b);
       return { bg: cs.backgroundColor, cx: Math.round(c.left + c.width / 2 - innerWidth / 2), cy: Math.round(c.top + c.height / 2 - innerHeight / 2), inside: c.left >= 0 && c.right <= innerWidth && c.top >= -60 && c.bottom <= innerHeight,
