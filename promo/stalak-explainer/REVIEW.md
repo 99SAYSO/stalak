@@ -27,3 +27,11 @@
 - **Blocs 3D du catalogue HyperFrames** (WebGL, WebGPU) écartés pour un rendu sans carte graphique : la 3D est faite en CSS 3D + GSAP, ce qui donne la même image à chaque rendu.
 - **Placement de chaque phrase** : la transcription automatique (whisper) n'a pas pu télécharger son modèle (huggingface.co est bloqué ici). Les phrases ont été placées d'après les silences et le nombre de syllabes de chaque morceau, pas à l'écoute.
 - **Licence de l'instru** : le fichier s'appelle « free … type beat ». Le propriétaire a été prévenu de vérifier la licence avant une diffusion commerciale.
+
+## Rendu final (31/10, `npx hyperframes render --quality delivery --fps 30`)
+
+- Fichier : `renders/stalak-explainer.mp4` (hors dépôt, envoyé au propriétaire).
+- Format : 40,77 s, 1080 × 1920, 30 i/s, 1 223 images, H.264 + AAC 48 kHz stéréo, 43,6 Mo.
+- Décodage complet par ffmpeg sans erreur.
+- Son : −16,4 LUFS intégrés, crête −1,5 dBTP, LRA 4,1 LU.
+- 24 images du rendu regardées, de 0,6 à 40,5 s : les vidéos jouent, la 3D et les animations sont bien rendues, le bouton du pack tient sur une ligne.
