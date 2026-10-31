@@ -1,4 +1,4 @@
-Statut : EN COURS (tests en cours)
+Statut : PRÊT
 Branche : app/animations (créée depuis `main` du 31/10 au matin, 18e93ac). Elle contient `app/audit-fix` (fusionnée dedans, pas encore dans `main`) : fusionner `app/animations` suffit.
 
 Résumé : tour complet des animations du site et de l'app avec le skill `motion-design` (règle du 31/10). Chaque animation a un rôle, sinon elle est retirée. Les durées et les courbes viennent de réglages communs. Seuls `transform` et `opacity` bougent. Rien ne rebondit quand on touche. Tout s'arrête avec « Réduire les animations ». Le style givré reste : stalactites, neige, givre, mascotte.
@@ -75,6 +75,15 @@ Nouveau test `tests/ui/animations_ui.py`, sur iPhone 15 Pro émulé et ordinateu
 - 300 ms au plus, sauf l'ambiance et les moments rares (liste fermée dans le test) ; aucune courbe qui rebondit ; réglages communs présents ;
 - changement d'étape : 300 ms, ease-out-quart, dans le bon sens ;
 - avec « Réduire les animations » : aucune animation en cours (neige, étape, aide), défilements sans glissement ;
-- fluidité, iPhone émulé avec le processeur ralenti 4 fois : neige, changement d'étape, aide et fenêtre Pro à 60 images/s (95 % des images en moins de 20 ms, aucune de plus de 50 ms).
+- fluidité, iPhone émulé avec le processeur ralenti 4 fois, mouvement à 60 images/s :
+  - neige, aide et fenêtre Pro : 95 % des images en moins de 20 ms ;
+  - changement d'étape : une seule image longue, environ 1 image sautée à vitesse normale. C'est le travail de l'étape Paroles qui se prépare, pas l'animation.
+  - Entrée dans Montage : avant, des images de 1 à 5 s, à cause des 27 vignettes de filtres dessinées d'un coup ; maintenant, 50 à 80 ms au pire.
+  - À confirmer sur un vrai iPhone.
 
-Tests : voir la fin de ce fichier.
+Tests (31/10) : `animations_ui.py` 44/44, `filtres_ui.py` 106/106 (adapté : vignettes attendues), `audit_ui.py` 158/158, `formules_ui.py` 169/169, `projet_local_ui.py` 48/48, `export_pub_ui.py` 22/22, `son_passage.py` 86/86, `remux_frag.py` 10/10, `paroles_suppr.py` 44/44, `plans_ui.py` 35/35, `gallery_ui.py` 49/49, `help_ui.py` 42/42, `tests/backend/run.mjs` 78/78. `support_ui.py` et `lyrics_ui.py` : même arrêt que sur `main`, sans lien.
+
+À voir par le propriétaire sur un vrai iPhone :
+- passer d'une étape à l'autre, ouvrir l'aide et la fenêtre Pro : ça doit glisser vite et sans à-coup ;
+- entrer dans Montage : les vignettes de filtres apparaissent juste après le glissement ;
+- activer Réglages > Accessibilité > Mouvement > « Réduire les animations » : plus rien ne bouge, même la neige.
