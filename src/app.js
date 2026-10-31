@@ -5254,7 +5254,7 @@ async function adWatch(){
       adUI(); adSay(k); diag('pub : ' + k);
     };
     const timer = setTimeout(() => end('ad.none'), 15000);
-    pa.addEventListener('rewardedSlotReady', e => { if (e.slot !== slot || done) return; clearTimeout(timer); e.makeRewardedVisible(); adSay(null); evt('ad_shown'); });
+    pa.addEventListener('rewardedSlotReady', e => { if (e.slot !== slot || done) return; clearTimeout(timer); e.makeRewardedVisible(); adSay(null); evt('ad_shown'); acctEvent('ad_shown'); });
     pa.addEventListener('rewardedSlotGranted', e => { if (e.slot === slot) granted = true; });
     pa.addEventListener('rewardedSlotClosed', e => { if (e.slot === slot) end(granted ? 'ok' : 'ad.closed'); });
     pa.addEventListener('slotRenderEnded', e => { if (e.slot === slot && e.isEmpty) end('ad.none'); });
