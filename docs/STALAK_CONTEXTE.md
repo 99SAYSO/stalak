@@ -18,6 +18,7 @@
   - Mascotte en parka bleue à fourrure, avec 16 emojis dans `site_src/emoji/`.
 - Ton des textes : français avec « tu », anglais naturel et décontracté.
 - **Animations et transitions (décision du 31/10)** : toute animation du site ou de l'app est choisie avec le skill `motion-design` (chaque animation doit avoir un rôle ; durées courtes, courbes « ease-out » pour ce qui apparaît, `transform` et `opacity` seulement, respect de « réduire les animations »). Responsable : App & montage.
+- **Vidéos promo / motion design (31/10)** : deux skills sont dans le dépôt (`.claude/skills/`), chargés quand une conversation ouvre le dépôt : `code-motion-video` (films en code : HTML + Playwright + ffmpeg, calés sur la musique) et `saas-motion-video` (méthode en 7 étapes avec validation du propriétaire, kit dans `tools/motion/saas-motion-kit/`). Pour les vidéos TikTok / Reels / pubs de Stalak. Responsable : Marketing & croissance.
 
 ## 2. Offre et décisions déjà prises (ne pas les remettre en cause sans le dire)
 

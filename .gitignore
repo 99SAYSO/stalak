@@ -1,6 +1,7 @@
 __pycache__/
 .DS_Store
 shuffle-lab.html
-.claude/
+.claude/*
+!.claude/skills/
 .dev.vars
 shuffle-lab.probe.html
