@@ -2963,26 +2963,61 @@ function musicRefresh(){ const sg = S.song; if (sg && sg.buffer) musicStart(sg, 
 /* ---------- MUSIC ANALYSIS END ---------- */
 
 /* ---------- demo material ---------- */
-async function makeDemoSong(){
-  const sr = 44100, bpm = 96, dur = 42, spb = 60/bpm, t0 = 0.35;
-  const oc = new OfflineAudioContext(1, sr*dur, sr);
+/* the example's song, synthesised. Kept for the visit (the example and a « Démo glace » project opened from the Galerie
+   share it) and in this device (IndexedDB, next visits: at once); otherwise made in 4 parts side by side (each part starts
+   2.5 s early so that the notes already ringing at its start are there, then that lead-in is cut). It used to take 5 s in
+   one go on a slow machine (and much more on a busy one): the Galerie gave up waiting. */
+const DEMO_SR = 44100, DEMO_DUR = 42, DEMO_KEY = 'demo:1';
+let demoSongP = null;
+function makeDemoSong(){
+  if (!demoSongP) demoSongP = demoSongGet().catch(e => { demoSongP = null; throw e; });
+  return demoSongP;
+}
+async function demoSongGet(){
+  try {
+    const c = typeof LP !== 'undefined' && LP.ok ? await lpGet('kv', DEMO_KEY) : null;
+    if (c && c.data instanceof Float32Array && c.data.length === DEMO_SR * DEMO_DUR){
+      const b = new AudioBuffer({ length: c.data.length, sampleRate: DEMO_SR, numberOfChannels: 1 }); b.copyToChannel(c.data, 0); return b;
+    }
+  } catch(e){}
+  const T0 = performance.now(), b = await demoSongRender();
+  diag('exemple : son fabriqué en ' + ((performance.now() - T0) / 1000).toFixed(1) + ' s');
+  try { if (typeof LP !== 'undefined' && LP.ok) lpPut('kv', DEMO_KEY, { data: b.getChannelData(0).slice() }).catch(() => {}); } catch(e){}
+  return b;
+}
+async function demoSongRender(){
+  const sr = DEMO_SR, dur = DEMO_DUR, PARTS = 4, LEAD = 2.5, step = dur / PARTS;
+  const parts = await Promise.all(Array.from({ length: PARTS }, (_, k) => {
+    const from = k * step, start = Math.max(0, from - LEAD), end = Math.min(dur, (k + 1) * step);
+    return demoSongPart(start, end).then(buf => ({ buf, skip: Math.round((from - start) * sr), from: Math.round(from * sr), n: Math.round(end * sr) - Math.round(from * sr) }));
+  }));
+  const out = new AudioBuffer({ length: sr * dur, sampleRate: sr, numberOfChannels: 1 }), od = out.getChannelData(0);
+  for (const p of parts){ const d = p.buf.getChannelData(0); od.set(d.subarray(p.skip, p.skip + Math.min(p.n, d.length - p.skip)), p.from); }
+  return out;
+}
+// the notes heard from `start` to `end` (seconds of the song), in their own context; the same notes for every part (same random draws)
+function demoSongPart(start, end){
+  const sr = DEMO_SR, dur = DEMO_DUR, bpm = 96, spb = 60/bpm, t0 = 0.35, LEAD = 2.5;
+  const oc = new OfflineAudioContext(1, Math.ceil(sr * (end - start)), sr);
   const nb = oc.createBuffer(1, sr, sr), nd = nb.getChannelData(0); for (let i=0;i<sr;i++) nd[i] = Math.random()*2-1;
   const master = oc.createGain(); master.gain.value = 0.8; master.connect(oc.destination);
   const env = (node, t, peak, dec) => { const gn = oc.createGain(); gn.gain.setValueAtTime(0.0001,t); gn.gain.exponentialRampToValueAtTime(peak,t+0.005); gn.gain.exponentialRampToValueAtTime(0.0001,t+dec); node.connect(gn); gn.connect(master); };
-  const noise = (t, hp, peak, dec) => { const s=oc.createBufferSource(); s.buffer=nb; const f=oc.createBiquadFilter(); f.type='highpass'; f.frequency.value=hp; s.connect(f); env(f,t,peak,dec); s.start(t); s.stop(t+dec+0.02); };
-  const kick = (t,v=1) => { const o=oc.createOscillator(); o.frequency.setValueAtTime(130,t); o.frequency.exponentialRampToValueAtTime(42,t+0.13); env(o,t,v,0.32); o.start(t); o.stop(t+0.35); };
-  const snare = t => { noise(t,1400,0.55,0.17); const o=oc.createOscillator(); o.frequency.value=190; env(o,t,0.25,0.08); o.start(t); o.stop(t+0.1); };
+  // a note at song time T: made only when it rings inside this part (all notes are shorter than LEAD), at T - start
+  const inPart = T => T >= start && T < end;
+  const noise = (T, hp, peak, dec) => { if (!inPart(T)) return; const t = T - start; const s=oc.createBufferSource(); s.buffer=nb; const f=oc.createBiquadFilter(); f.type='highpass'; f.frequency.value=hp; s.connect(f); env(f,t,peak,dec); s.start(t); s.stop(t+dec+0.02); };
+  const kick = (T,v=1) => { if (!inPart(T)) return; const t = T - start; const o=oc.createOscillator(); o.frequency.setValueAtTime(130,t); o.frequency.exponentialRampToValueAtTime(42,t+0.13); env(o,t,v,0.32); o.start(t); o.stop(t+0.35); };
+  const snare = T => { if (!inPart(T)) return; const t = T - start; noise(T,1400,0.55,0.17); const o=oc.createOscillator(); o.frequency.value=190; env(o,t,0.25,0.08); o.start(t); o.stop(t+0.1); };
   const r = rng(7); const bass = [55, 43.65, 65.41, 49];
   const scale = [220, 246.9, 261.6, 293.7, 329.6];
   for (let b=0; t0 + b*spb < dur - 0.6; b++){
-    const t = t0 + b*spb, ib = b%4, bar = Math.floor(b/4), loud = bar >= 8;
-    if (ib===0 || ib===2) kick(t, loud ? 1 : 0.6);
-    if (ib===1 && bar%2) kick(t + spb*0.5, 0.6);
-    if (ib===1 || ib===3) snare(t);
-    noise(t, 7000, 0.12, 0.04); noise(t+spb/2, 7000, 0.07, 0.03);
-    if (loud){ noise(t+spb/4, 7000, 0.05, 0.02); noise(t+3*spb/4, 7000, 0.05, 0.02); }
-    if (ib===0){ const o=oc.createOscillator(); o.type='triangle'; o.frequency.value=bass[bar%4]; env(o,t,loud?0.5:0.3,spb*3.6); o.start(t); o.stop(t+spb*3.7); }
-    for (let h=0; h<2; h++){ if (r() < 0.62){ const tt=t+h*spb/2; const o=oc.createOscillator(); o.type='sawtooth'; o.frequency.value=scale[Math.floor(r()*scale.length)]; const f=oc.createBiquadFilter(); f.type='bandpass'; f.frequency.value=900; f.Q.value=1.4; o.connect(f); env(f,tt,0.32,spb*0.42); o.start(tt); o.stop(tt+spb*0.45); } }
+    const T = t0 + b*spb, ib = b%4, bar = Math.floor(b/4), loud = bar >= 8;
+    if (ib===0 || ib===2) kick(T, loud ? 1 : 0.6);
+    if (ib===1 && bar%2) kick(T + spb*0.5, 0.6);
+    if (ib===1 || ib===3) snare(T);
+    noise(T, 7000, 0.12, 0.04); noise(T+spb/2, 7000, 0.07, 0.03);
+    if (loud){ noise(T+spb/4, 7000, 0.05, 0.02); noise(T+3*spb/4, 7000, 0.05, 0.02); }
+    if (ib===0 && inPart(T)){ const t = T - start; const o=oc.createOscillator(); o.type='triangle'; o.frequency.value=bass[bar%4]; env(o,t,loud?0.5:0.3,spb*3.6); o.start(t); o.stop(t+spb*3.7); }
+    for (let h=0; h<2; h++){ if (r() < 0.62){ const TT=T+h*spb/2, f0 = scale[Math.floor(r()*scale.length)]; if (!inPart(TT)) continue; const tt = TT - start; const o=oc.createOscillator(); o.type='sawtooth'; o.frequency.value=f0; const f=oc.createBiquadFilter(); f.type='bandpass'; f.frequency.value=900; f.Q.value=1.4; o.connect(f); env(f,tt,0.32,spb*0.42); o.start(tt); o.stop(tt+spb*0.45); } }
   }
   return oc.startRendering();
 }
@@ -7559,8 +7594,9 @@ async function renderRealtime(){
 /* why an export failed, as a category only, for the funnel of the dashboard (acctEvent) */
 function expFailCat(e){
   const m = String(e && (e.name + ' ' + e.message) || e);
+  // left Stalak during the export (another app, the screen locked): said first, even when that stopped it like a cancel
+  if (S.leftDuring || document.hidden) return 'hidden';
   if (m.includes('annulé')) return 'cancel';
-  if (document.hidden) return 'hidden';
   if (/memory|mémoire|allocat|QuotaExceeded|RangeError/i.test(m)) return 'memory';
   if (/decod|encod|codec|reclaim|VideoFrame/i.test(m)) return 'decoder';
   return 'other';

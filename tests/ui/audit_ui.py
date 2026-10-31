@@ -179,13 +179,15 @@ def run(b, base, lang, iphone):
     check(tag + ' : la bulle d’aide ne cache plus « Continuer », et s’arrête de bouger', not cov and anim == '6', (cov, anim))
 
     # ---- n° 10: anonymous counters ----
+    # (since the merge of 31/10 the counters go through Comptes' acctEvent: { name, ios?, cat?, why? }; « plans_open » is sent
+    # by Comptes' plans page, played by the test here, so it is checked in Comptes' own tests)
     names = [e['body'].get('name') for e in events]
     keys = set(k for e in events for k in e['body'])
-    check(tag + ' : compteurs envoyés (export réussi, export raté, écran des formules, offre Pro)', all(n in names for n in ('export_ok', 'export_fail', 'plans_open', 'pro_offer')), names)
+    check(tag + ' : compteurs envoyés (export commencé, réussi, raté)', all(n in names for n in ('export_start', 'export_ok', 'export_fail')), names)
     fail = [e['body'] for e in events if e['body'].get('name') == 'export_fail']
-    check(tag + ' : export raté avec sa catégorie (app quittée, mémoire)', any(f.get('detail') == 'hidden' for f in fail) and any(f.get('detail') == 'memory' for f in fail), fail)
-    dev = 'iphone' if iphone else 'computer'
-    check(tag + ' : compteurs anonymes (nom, catégorie, appareil ; aucun cookie)', keys <= {'name', 'detail', 'device'} and all(e['cookie'] is None for e in events) and all(e['body'].get('device') == dev for e in events), (keys, [e['cookie'] for e in events][:3]))
+    check(tag + ' : export raté avec sa catégorie (app quittée, mémoire)', any(f.get('cat') == 'hidden' for f in fail) and any(f.get('cat') == 'memory' for f in fail), fail)
+    check(tag + ' : compteurs anonymes (nom, catégorie, iPhone ou non ; aucun cookie)', keys <= {'name', 'cat', 'why', 'ios'} and all(e['cookie'] is None for e in events)
+          and all(e['body'].get('ios') is (True if iphone else None) for e in events), (keys, [e['cookie'] for e in events][:3]))
     check(tag + ' : aucune erreur dans la page', not errs, errs)
     sw = pg.evaluate('document.documentElement.scrollWidth')
     check(tag + ' : pas de défilement horizontal', sw <= pg.viewport_size['width'], sw)
