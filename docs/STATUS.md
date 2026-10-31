@@ -175,6 +175,11 @@
 - À décider : la publication directe est-elle réservée à Stalak Pro ou ouverte à tous ? Meta risque de demander une vérification d'entreprise (lien avec la LLC).
 
 ### Marketing & croissance
+- **Fait (branche `marketing/promo-ice-the-beat`, 31/10)** : vidéo promo « Ice the Beat » (25 s, 9:16, anglais américain), faite avec HyperFrames. Détail dans `docs/handoff/marketing-promo-ice-the-beat.md`.
+  - Contenu : vraies prises de 99Sayso, vraies captures de l'app et vrai montage de Stalak ; 3D, zooms et illustrations de glace.
+  - Voix off : Flora (Google Gemini TTS). Textes : « No editing skills » à la place de « Zero editing » ; @stalak_app sur la carte de fin.
+  - La vidéo et la voix off ont été envoyées directement au propriétaire et ne sont pas dans le dépôt. Le projet est dans `promo/ice-the-beat/` (médias à remettre : `MEDIA.md`).
+  - Rien à mettre en ligne sur le site.
 - **Fait (branche `marketing/audit-us`, 30/10, 23 h)** : les priorités Marketing de l'audit du 30/10. Détail dans `docs/handoff/marketing-audit-us.md`.
   - Données structurées de l'accueil en USD, avec Free, Pro et Creator Plus. `x-default` ajouté sur Tarifs et dans le plan du site.
   - Anglais de l'app :

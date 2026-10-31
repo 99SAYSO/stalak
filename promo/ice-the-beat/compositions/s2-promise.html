@@ -23,12 +23,18 @@
           #s2-shard { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
           #s2-logo { position: absolute; left: 760px; top: 560px; width: 190px; height: 190px; opacity: 0; filter: drop-shadow(0 10px 0 #0a0d14); }
           #s2-flash { position: absolute; inset: 0; background: #fff; opacity: 0; }
+          /* a glossy highlight that sweeps across the real logo (masked to its exact shape) */
+          #s2-shine { position: absolute; left: 760px; top: 560px; width: 190px; height: 190px; opacity: 0; overflow: hidden;
+            -webkit-mask: url("assets/brand/icon.svg") center / 100% 100% no-repeat; mask: url("assets/brand/icon.svg") center / 100% 100% no-repeat; }
+          #s2-shine .band { position: absolute; left: -110px; top: 0; width: 100px; height: 190px;
+            background: linear-gradient(105deg, rgba(255,255,255,0) 20%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0) 80%); }
         </style>
         <div id="s2-stage">
           <div class="s2-card" id="s2-c1"><div class="scr"><img src="assets/stills/t1_freeze.jpg" alt="" /></div><div class="badge" style="background:#d6336c">1</div></div>
           <div class="s2-card" id="s2-c3"><div class="scr"><img src="assets/stills/t3_freeze.jpg" alt="" /></div><div class="badge" style="background:#e0952c">3</div></div>
           <div class="s2-card" id="s2-c2"><div class="scr"><img src="assets/stills/t2_freeze.jpg" alt="" /></div><div class="badge" style="background:#3a6fe0">2</div></div>
           <img id="s2-logo" src="assets/brand/icon.svg" alt="Stalak" />
+          <div id="s2-shine"><div class="band"></div></div>
           <div class="hl" id="s2-t1">ONE TRACK.</div>
           <div class="hl" id="s2-t2"><span class="acc">NO</span> <span>EDITING</span><br /><span>SKILLS.</span></div>
           <!-- the ice shard that bursts through: translucent blue ice, ink outline, a glossy edge -->
@@ -67,15 +73,20 @@
             // the shard bursts through from bottom-left to top-right; fragments fly from the centre
             tl.fromTo("#s2-shard-g", { x: -900, y: 1100, rotation: -18, transformOrigin: "540px 1000px" }, { x: 0, y: 0, rotation: 0, duration: 0.2, ease: "power3.out" }, 0.12);
             tl.to("#s2-shard-g", { x: 980, y: -1250, rotation: 14, duration: 0.24, ease: "power3.in" }, 0.36);
+            tl.set("#s2-shard", { transformPerspective: 1500 }, 0);
+            tl.fromTo("#s2-shard", { rotationY: 58 }, { rotationY: -30, duration: 0.5, ease: "power1.inOut", immediateRender: false }, 0.12);
             var fr = [[-260, -340, 120], [300, -260, -90], [-330, 260, 200], [340, 300, -160], [-60, -470, 80], [120, 470, -220]];
             document.querySelectorAll("#s2-frags .fr").forEach(function (el, i) {
               tl.fromTo(el, { x: 540, y: 1000, rotation: 0, opacity: 1, scale: 0.6 },
                 { x: 540 + fr[i][0], y: 1000 + fr[i][1], rotation: fr[i][2], opacity: 0, scale: 1.3, duration: 0.6, ease: "power2.out", immediateRender: false }, 0.3);
             });
             // the takes snap together into one stack: the centre take forward, the others tucked behind
-            tl.to("#s2-c1", { x: 330, y: 760, rotation: -10, scale: 0.92, duration: 0.34, ease: "expo.out" }, 0.3);
-            tl.to("#s2-c3", { x: 450, y: 760, rotation: 10, scale: 0.92, duration: 0.34, ease: "expo.out" }, 0.3);
-            tl.to("#s2-c2", { x: 390, y: 800, rotation: 0, scale: 1.24, duration: 0.34, ease: "expo.out" }, 0.33);
+            tl.set("#s2-c1, #s2-c2, #s2-c3", { transformPerspective: 1300 }, 0);
+            tl.to("#s2-c1", { x: 292, y: 760, rotation: -10, scale: 0.92, rotationY: 30, z: -150, duration: 0.34, ease: "expo.out" }, 0.3);
+            tl.to("#s2-c3", { x: 488, y: 760, rotation: 10, scale: 0.92, rotationY: -30, z: -150, duration: 0.34, ease: "expo.out" }, 0.3);
+            tl.to("#s2-c2", { x: 390, y: 800, rotation: 0, scale: 1.24, z: 30, duration: 0.34, ease: "expo.out" }, 0.33);
+            // the stack keeps turning slowly, so its depth reads
+            tl.fromTo("#s2-c2", { rotationY: 0 }, { rotationY: -9, duration: 1.6, ease: "sine.inOut", immediateRender: false }, 0.62);
             // NO EDITING SKILLS. word by word on the voice
             tl.set("#s2-t2", { opacity: 1 }, 0);
             var w = document.querySelectorAll("#s2-t2 span");
@@ -84,7 +95,9 @@
               tl.fromTo(w[i], { opacity: 0, filter: "blur(8px)", y: 0 }, { opacity: 1, filter: "blur(0px)", duration: 0.13, ease: "power3.out" }, t);
             });
             // the logo, briefly, stamped on the corner of the stack
-            tl.fromTo("#s2-logo", { opacity: 0, scale: 0.2, rotation: -25 }, { opacity: 1, scale: 1, rotation: 8, duration: 0.32, ease: "back.out(2)" }, 1.72);
+            tl.fromTo("#s2-logo, #s2-shine", { opacity: 0, scale: 0.2, rotation: -25, rotationY: -90, transformPerspective: 700 },
+              { opacity: 1, scale: 1, rotation: 8, rotationY: 0, transformPerspective: 700, duration: 0.42, ease: "back.out(1.7)" }, 1.72);
+            tl.fromTo("#s2-shine .band", { x: 0 }, { x: 420, duration: 0.34, ease: "power2.inOut", immediateRender: false }, 2.0);
             // whip out to the left into the product
             tl.to("#s2-stage", { x: -1150, duration: 0.18, ease: "power3.in" }, 2.22);
             window.__timelines["s2"] = tl;

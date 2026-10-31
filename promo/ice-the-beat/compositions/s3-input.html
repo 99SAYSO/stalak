@@ -22,6 +22,17 @@
           #s3-u3 img { transform: translateY(-886px); }   /* Take 1 synced · Take 2 analyzing */
           #s3-u4 { left: 92px; top: 26px; width: 760px; }
           #s3-u4 img { width: 760px; }
+          /* illustrations (not the app): the track and the three takes dropping into the real app */
+          #s3-song { position: absolute; left: 360px; top: 590px; width: 360px; height: 150px; background: #d6ecff; border: 8px solid #0a0d14; border-radius: 36px; box-shadow: 0 14px 0 #0a0d14; opacity: 0; }
+          #s3-song .note { position: absolute; left: 24px; top: 27px; width: 84px; height: 84px; }
+          #s3-song .wave { position: absolute; left: 122px; top: 35px; width: 200px; height: 64px; }
+          #s3-ring { position: absolute; left: 440px; top: 700px; width: 200px; height: 200px; border-radius: 50%; border: 10px solid #ffffff; opacity: 0; }
+          .s3-mini { position: absolute; top: 640px; width: 170px; height: 302px; opacity: 0; }
+          .s3-mini .scr { position: absolute; inset: 0; border: 6px solid #0a0d14; border-radius: 24px; overflow: hidden; background: #0a0d14; box-shadow: 0 12px 0 #0a0d14; }
+          .s3-mini .scr img { display: block; width: 100%; height: 100%; object-fit: cover; }
+          .s3-mini .bdg { position: absolute; left: -16px; top: -16px; width: 56px; height: 56px; border-radius: 50%; border: 5px solid #0a0d14; display: flex; align-items: center; justify-content: center;
+            font: 400 32px/1 "Lilita One", sans-serif; color: #fff; text-shadow: 0 3px 0 #0a0d14; }
+          #s3-m1 { left: 175px; } #s3-m2 { left: 455px; } #s3-m3 { left: 735px; }
         </style>
         <div class="hl" id="s3-ha"><span class="l1">ADD YOUR</span><span class="l2">SOUND.</span></div>
         <div class="hl" id="s3-hb"><span class="l1">ADD YOUR</span><span class="l2">TAKES.</span></div>
@@ -33,6 +44,14 @@
             <div class="ui" id="s3-u4"><img src="assets/ui/s2_list.png" alt="Stalak, step 2: the three takes synced to the song" /></div>
           </div>
         </div>
+        <div id="s3-ring"></div>
+        <div id="s3-song" data-layout-allow-overlap>
+          <svg class="note" viewBox="0 0 64 64" aria-hidden="true"><path d="M24 46a9 9 0 1 1-6-8.5V10l30-6v34a9 9 0 1 1-6-8.5V14l-18 3.6z" fill="#1f6fd6" stroke="#0a0d14" stroke-width="4" stroke-linejoin="round" /></svg>
+          <div class="wave"><svg viewBox="0 0 200 64" width="200" height="64"><rect x="8" y="3.0" width="8" height="58.0" rx="3" fill="#0a0d14" /><rect x="22" y="5.1" width="8" height="53.8" rx="3" fill="#0a0d14" /><rect x="36" y="6.4" width="8" height="51.2" rx="3" fill="#0a0d14" /><rect x="50" y="4.1" width="8" height="55.9" rx="3" fill="#0a0d14" /><rect x="64" y="4.4" width="8" height="55.2" rx="3" fill="#0a0d14" /><rect x="78" y="7.4" width="8" height="49.3" rx="3" fill="#0a0d14" /><rect x="92" y="7.7" width="8" height="48.6" rx="3" fill="#0a0d14" /><rect x="106" y="7.9" width="8" height="48.3" rx="3" fill="#0a0d14" /><rect x="120" y="8.7" width="8" height="46.7" rx="3" fill="#0a0d14" /><rect x="134" y="3.1" width="8" height="57.8" rx="3" fill="#0a0d14" /><rect x="148" y="5.5" width="8" height="53.1" rx="3" fill="#0a0d14" /><rect x="162" y="7.0" width="8" height="50.0" rx="3" fill="#0a0d14" /><rect x="176" y="4.2" width="8" height="55.6" rx="3" fill="#0a0d14" /><rect x="190" y="4.3" width="8" height="55.5" rx="3" fill="#0a0d14" /></svg></div>
+        </div>
+        <div class="s3-mini" id="s3-m1"><div class="scr"><img src="assets/stills/t1_000.jpg" alt="" /></div><div class="bdg" style="background:#d6336c">1</div></div>
+        <div class="s3-mini" id="s3-m2"><div class="scr"><img src="assets/stills/t2_000.jpg" alt="" /></div><div class="bdg" style="background:#3a6fe0">2</div></div>
+        <div class="s3-mini" id="s3-m3"><div class="scr"><img src="assets/stills/t3_000.jpg" alt="" /></div><div class="bdg" style="background:#e0952c">3</div></div>
         <script>
           (function () {
             var tl = gsap.timeline({ paused: true });
@@ -55,6 +74,19 @@
             // all three takes synced
             tl.to("#s3-u3", { opacity: 0, filter: "blur(8px)", duration: 0.12, ease: "power2.in" }, 2.08);
             tl.fromTo("#s3-u4", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.13, ease: "power3.out" }, 2.14);
+            // the track flies in from deep space, top right, and drops into the app as it loads the song
+            tl.fromTo("#s3-song", { x: 380, y: -620, z: -700, rotationY: -55, rotationX: 25, rotation: 18, opacity: 0, transformPerspective: 1200 },
+              { x: 0, y: 0, z: 0, rotationY: 0, rotationX: 0, rotation: -4, opacity: 1, transformPerspective: 1200, duration: 0.32, ease: "expo.out" }, 0.2);
+            tl.to("#s3-song", { y: 150, scale: 0.35, opacity: 0, duration: 0.12, ease: "power3.in" }, 0.54);
+            tl.fromTo("#s3-ring", { scale: 0.3, opacity: 1 }, { scale: 1.7, opacity: 0, duration: 0.32, ease: "expo.out", immediateRender: false }, 0.64);
+            tl.fromTo("#s3-panel", { scale: 1.035 }, { scale: 1, duration: 0.26, ease: "power2.out", immediateRender: false }, 0.64);
+            // the three takes fly up out of depth, one after another, and drop into the app
+            [["#s3-m1", 1.58, -40, -14, -7], ["#s3-m2", 1.68, 12, 4, 2], ["#s3-m3", 1.78, 46, 16, 8]].forEach(function (m) {
+              tl.fromTo(m[0], { y: 900, z: -900, rotationX: 65, rotationY: m[2], rotation: m[3], opacity: 0, transformPerspective: 1200 },
+                { y: 0, z: 0, rotationX: 0, rotationY: 0, rotation: m[4], opacity: 1, transformPerspective: 1200, duration: 0.32, ease: "expo.out" }, m[1]);
+            });
+            tl.to("#s3-m1, #s3-m2, #s3-m3", { y: 170, scale: 0.45, opacity: 0, duration: 0.14, ease: "power3.in", stagger: 0.03 }, 2.05);
+            tl.fromTo("#s3-panel", { scale: 1.03 }, { scale: 1, duration: 0.24, ease: "power2.out", immediateRender: false }, 2.16);
             window.__timelines["s3"] = tl;
           })();
         </script>

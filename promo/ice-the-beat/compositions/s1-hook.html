@@ -10,6 +10,10 @@
           #root { position: absolute; inset: 0; overflow: hidden; background: #0a0d14; }
           #s1-flood { position: absolute; inset: 0; background: #1f6fd6; opacity: 0; }
           #s1-stage { position: absolute; inset: 0; }
+          /* the dark ice sheet: 27 shards tiling the frame, they burst toward the camera on the hit */
+          #s1-sheet { position: absolute; inset: 0; perspective: 1100px; perspective-origin: 540px 960px; }
+          #s1-sheet .sh { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: visible; }
+          #s1-sheet .sh polygon { fill: #0a0d14; stroke: #5aa2ff; stroke-width: 5; stroke-opacity: 0; stroke-linejoin: round; }
           #s1-crack { position: absolute; inset: 0; width: 1080px; height: 1920px; }
           #s1-crack path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
           #s1-crack .o { stroke: #1f6fd6; stroke-width: 12; }
@@ -27,6 +31,35 @@
         </style>
 
         <div id="s1-flood"></div>
+        <div id="s1-sheet" data-layout-allow-overflow>
+            <svg class="sh" id="s1-sh0" viewBox="0 0 1080 1920" style="transform-origin: 577px 727px" data-c="577,727"><polygon points="540,960 498,663 592,635 678,649" /></svg>
+            <svg class="sh" id="s1-sh1" viewBox="0 0 1080 1920" style="transform-origin: 617px 463px" data-c="617,463"><polygon points="498,663 443,267 641,301 849,266 678,649 592,635" /></svg>
+            <svg class="sh" id="s1-sh2" viewBox="0 0 1080 1920" style="transform-origin: 663px 151px" data-c="663,151"><polygon points="443,267 399,-40 985,-40 849,266 641,301" /></svg>
+            <svg class="sh" id="s1-sh3" viewBox="0 0 1080 1920" style="transform-origin: 694px 804px" data-c="694,804"><polygon points="540,960 678,649 755,743 803,864" /></svg>
+            <svg class="sh" id="s1-sh4" viewBox="0 0 1080 1920" style="transform-origin: 824px 647px" data-c="824,647"><polygon points="678,649 849,266 891,556 969,804 803,864 755,743" /></svg>
+            <svg class="sh" id="s1-sh5" viewBox="0 0 1080 1920" style="transform-origin: 989px 382px" data-c="989,382"><polygon points="849,266 985,-40 1120,-40 1120,749 969,804 891,556" /></svg>
+            <svg class="sh" id="s1-sh6" viewBox="0 0 1080 1920" style="transform-origin: 764px 954px" data-c="764,954"><polygon points="540,960 803,864 852,951 860,1040" /></svg>
+            <svg class="sh" id="s1-sh7" viewBox="0 0 1080 1920" style="transform-origin: 900px 944px" data-c="900,944"><polygon points="803,864 969,804 948,937 969,1067 860,1040 852,951" /></svg>
+            <svg class="sh" id="s1-sh8" viewBox="0 0 1080 1920" style="transform-origin: 1025px 932px" data-c="1025,932"><polygon points="969,804 1120,749 1120,1105 969,1067 948,937" /></svg>
+            <svg class="sh" id="s1-sh9" viewBox="0 0 1080 1920" style="transform-origin: 732px 1110px" data-c="732,1110"><polygon points="540,960 860,1040 808,1170 720,1272" /></svg>
+            <svg class="sh" id="s1-sh10" viewBox="0 0 1080 1920" style="transform-origin: 874px 1261px" data-c="874,1261"><polygon points="860,1040 969,1067 939,1348 950,1670 720,1272 808,1170" /></svg>
+            <svg class="sh" id="s1-sh11" viewBox="0 0 1080 1920" style="transform-origin: 1036px 1518px" data-c="1036,1518"><polygon points="969,1067 1120,1105 1120,1960 1117,1960 950,1670 939,1348" /></svg>
+            <svg class="sh" id="s1-sh12" viewBox="0 0 1080 1920" style="transform-origin: 568px 1187px" data-c="568,1187"><polygon points="540,960 720,1272 579,1277 432,1240" /></svg>
+            <svg class="sh" id="s1-sh13" viewBox="0 0 1080 1920" style="transform-origin: 592px 1460px" data-c="592,1460"><polygon points="720,1272 950,1670 605,1634 268,1670 432,1240 579,1277" /></svg>
+            <svg class="sh" id="s1-sh14" viewBox="0 0 1080 1920" style="transform-origin: 619px 1779px" data-c="619,1779"><polygon points="950,1670 1117,1960 156,1960 268,1670 605,1634" /></svg>
+            <svg class="sh" id="s1-sh15" viewBox="0 0 1080 1920" style="transform-origin: 382px 1135px" data-c="382,1135"><polygon points="540,960 432,1240 320,1203 237,1135" /></svg>
+            <svg class="sh" id="s1-sh16" viewBox="0 0 1080 1920" style="transform-origin: 262px 1312px" data-c="262,1312"><polygon points="432,1240 268,1670 207,1415 111,1208 237,1135 320,1203" /></svg>
+            <svg class="sh" id="s1-sh17" viewBox="0 0 1080 1920" style="transform-origin: 110px 1584px" data-c="110,1584"><polygon points="268,1670 156,1960 -40,1960 -40,1295 111,1208 207,1415" /></svg>
+            <svg class="sh" id="s1-sh18" viewBox="0 0 1080 1920" style="transform-origin: 313px 1012px" data-c="313,1012"><polygon points="540,960 237,1135 224,1032 253,920" /></svg>
+            <svg class="sh" id="s1-sh19" viewBox="0 0 1080 1920" style="transform-origin: 178px 1041px" data-c="178,1041"><polygon points="237,1135 111,1208 132,1049 111,900 253,920 224,1032" /></svg>
+            <svg class="sh" id="s1-sh20" viewBox="0 0 1080 1920" style="transform-origin: 55px 1066px" data-c="55,1066"><polygon points="111,1208 -40,1295 -40,878 111,900 132,1049" /></svg>
+            <svg class="sh" id="s1-sh21" viewBox="0 0 1080 1920" style="transform-origin: 351px 850px" data-c="351,850"><polygon points="540,960 253,920 276,807 334,715" /></svg>
+            <svg class="sh" id="s1-sh22" viewBox="0 0 1080 1920" style="transform-origin: 203px 746px" data-c="203,746"><polygon points="253,920 111,900 132,688 111,448 334,715 276,807" /></svg>
+            <svg class="sh" id="s1-sh23" viewBox="0 0 1080 1920" style="transform-origin: 55px 637px" data-c="55,637"><polygon points="111,900 -40,878 -40,269 111,448 132,688" /></svg>
+            <svg class="sh" id="s1-sh24" viewBox="0 0 1080 1920" style="transform-origin: 445px 752px" data-c="445,752"><polygon points="540,960 334,715 408,670 498,663" /></svg>
+            <svg class="sh" id="s1-sh25" viewBox="0 0 1080 1920" style="transform-origin: 347px 525px" data-c="347,525"><polygon points="334,715 111,448 290,388 443,267 498,663 408,670" /></svg>
+            <svg class="sh" id="s1-sh26" viewBox="0 0 1080 1920" style="transform-origin: 194px 215px" data-c="194,215"><polygon points="111,448 -40,269 -40,-40 399,-40 443,267 290,388" /></svg>
+        </div>
         <div id="s1-stage">
           <!-- the crack: drawn path by path (pathLength 1, dash offset 1 to 0) -->
           <svg id="s1-crack" viewBox="0 0 1080 1920" aria-hidden="true">
@@ -89,17 +122,32 @@
             tl.set("#s1-flood", { opacity: 1 }, HIT);
             tl.fromTo("#s1-flash", { opacity: 0.9 }, { opacity: 0, duration: 0.2, ease: "power2.out", immediateRender: false }, HIT);
             tl.to("#s1-crack", { opacity: 0, duration: 0.22, ease: "power2.out" }, HIT + 0.04);
+            // the sheet bursts into ice plates that fly at the camera, catching blue light on their edges
+            function h(i, k) { var v = Math.sin(i * 127.1 + k * 311.7) * 43758.5453; return v - Math.floor(v); }
+            var tints = ["#0f1a33", "#13254a", "#0b1426", "#183064", "#10203f"];
+            document.querySelectorAll("#s1-sheet .sh").forEach(function (el, i) {
+              var c = el.getAttribute("data-c").split(","), cx = +c[0] - 540, cy = +c[1] - 960;
+              var d = Math.sqrt(cx * cx + cy * cy) || 1, push = 260 + 0.6 * d;
+              var poly = el.querySelector("polygon");
+              tl.set(poly, { fill: tints[i % tints.length], strokeOpacity: 1 }, HIT);
+              tl.to(el, { x: cx / d * push, y: cy / d * push, z: 360 + 300 * h(i, 1),
+                rotationX: (h(i, 2) > 0.5 ? 1 : -1) * (50 + 80 * h(i, 3)), rotationY: (h(i, 4) > 0.5 ? 1 : -1) * (40 + 90 * h(i, 5)),
+                rotation: (h(i, 6) > 0.5 ? 1 : -1) * (12 + 40 * h(i, 7)), duration: 0.66, ease: "power2.out" }, HIT + (d > 700 ? F : 0));
+              tl.to(el, { opacity: 0, duration: 0.3, ease: "power1.in" }, HIT + 0.3);
+            });
             // 3. the three takes land on the hit, one frame apart each pair
             var cards = [["#s1-c1", 205, 1010, -6], ["#s1-c2", 540, 990, 2], ["#s1-c3", 875, 1015, 6]];
             cards.forEach(function (c, i) {
-              tl.fromTo(c[0], { x: c[1] - 150, y: c[2] - 266 - 70, rotation: c[3] * 2.2, scale: 1.4, opacity: 0, filter: "blur(10px)" },
-                { x: c[1] - 150, y: c[2] - 266, rotation: c[3], scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.36, ease: "expo.out" }, HIT + i * 2 * F);
+              tl.fromTo(c[0], { x: c[1] - 150, y: c[2] - 266 - 40, z: -1200, rotation: c[3] * 3, rotationY: [-62, 34, 66][i], rotationX: 30, opacity: 0, transformPerspective: 1300 },
+                { x: c[1] - 150, y: c[2] - 266, z: 0, rotation: c[3], rotationY: 0, rotationX: 0, opacity: 1, transformPerspective: 1300, duration: 0.46, ease: "expo.out" }, HIT + i * 2 * F);
             });
             // landing shake of the whole stage: three frames
             tl.set("#s1-stage", { x: 12, y: -6 }, HIT + F); tl.set("#s1-stage", { x: -9, y: 5 }, HIT + 2 * F); tl.set("#s1-stage", { x: 0, y: 0 }, HIT + 3 * F);
-            // 4. THREE / TAKES. slam on the words of the voice
+            // a slow camera push while the takes hang there
+            tl.fromTo("#s1-stage", { scale: 1 }, { scale: 1.045, duration: 1.4, ease: "sine.inOut", immediateRender: false }, HIT + 0.12);
+            // 4. THREE / TAKES. slam on the words of the voice, flipping up out of the screen
             [["#s1-w1", 1.47], ["#s1-w2", 1.83]].forEach(function (w) {
-              tl.fromTo(w[0], { scale: 1.8, opacity: 0, filter: "blur(12px)" }, { scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.22, ease: "expo.out" }, w[1]);
+              tl.fromTo(w[0], { scale: 1.8, rotationX: -75, opacity: 0, filter: "blur(12px)", transformPerspective: 900 }, { scale: 1, rotationX: 0, opacity: 1, filter: "blur(0px)", transformPerspective: 900, duration: 0.24, ease: "expo.out" }, w[1]);
               tl.set("#s1-stage", { y: 8 }, w[1] + 0.22); tl.set("#s1-stage", { y: -4 }, w[1] + 0.22 + F); tl.set("#s1-stage", { y: 0 }, w[1] + 0.22 + 2 * F);
             });
             window.__timelines["s1"] = tl;

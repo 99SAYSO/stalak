@@ -13,21 +13,36 @@
           .w .b, .w .f { display: block; text-shadow: 7px 0 0 #0a0d14, -7px 0 0 #0a0d14, 0 7px 0 #0a0d14, 0 -7px 0 #0a0d14, 5px 5px 0 #0a0d14, -5px 5px 0 #0a0d14, 5px -5px 0 #0a0d14, -5px -5px 0 #0a0d14, 0 16px 0 #0a0d14; }
           .w .b { color: #8fb6e6; }
           .w .f { position: absolute; left: 0; top: 0; color: #ffffff; clip-path: inset(-20px 100% -30px -20px); }
+          /* "effects": ice sparkles burst around the word as it lights up */
+          .sp { position: absolute; width: 64px; height: 64px; opacity: 0; }
+          .sp path { fill: #ffffff; stroke: #0a0d14; stroke-width: 5; stroke-linejoin: round; }
         </style>
         <div id="s5-lines" data-layout-allow-overlap>
           <span class="ln"><span class="w" id="s5-w1"><span class="b">LYRICS.</span><span class="f">LYRICS.</span></span></span>
           <span class="ln"><span class="w" id="s5-w2"><span class="b">EFFECTS.</span><span class="f">EFFECTS.</span></span></span>
           <span class="ln"><span class="w" id="s5-w3"><span class="b">YOUR</span><span class="f">YOUR</span></span><span class="w" id="s5-w4"><span class="b">VIBE.</span><span class="f">VIBE.</span></span></span>
         </div>
+        <svg class="sp" id="s5-sp1" viewBox="-32 -32 64 64" style="left:164px; top:1018px" aria-hidden="true"><path d="M0-28 L7-7 L28 0 L7 7 L0 28 L-7 7 L-28 0 L-7-7Z" /></svg>
+        <svg class="sp" id="s5-sp2" viewBox="-32 -32 64 64" style="left:804px; top:1030px" aria-hidden="true"><path d="M0-28 L7-7 L28 0 L7 7 L0 28 L-7 7 L-28 0 L-7-7Z" /></svg>
+        <svg class="sp" id="s5-sp3" viewBox="-32 -32 64 64" style="left:230px; top:1164px" aria-hidden="true"><path d="M0-28 L7-7 L28 0 L7 7 L0 28 L-7 7 L-28 0 L-7-7Z" /></svg>
+        <svg class="sp" id="s5-sp4" viewBox="-32 -32 64 64" style="left:748px; top:1174px" aria-hidden="true"><path d="M0-28 L7-7 L28 0 L7 7 L0 28 L-7 7 L-28 0 L-7-7Z" /></svg>
+        <svg class="sp" id="s5-sp5" viewBox="-32 -32 64 64" style="left:118px; top:1100px" aria-hidden="true"><path d="M0-28 L7-7 L28 0 L7 7 L0 28 L-7 7 L-28 0 L-7-7Z" /></svg>
+        <svg class="sp" id="s5-sp6" viewBox="-32 -32 64 64" style="left:848px; top:1114px" aria-hidden="true"><path d="M0-28 L7-7 L28 0 L7 7 L0 28 L-7 7 L-28 0 L-7-7Z" /></svg>
         <script>
           (function () {
             var tl = gsap.timeline({ paused: true });
             // the three lines arrive together, unlit, just before the voice
-            tl.fromTo("#s5-lines .ln", { opacity: 0, y: 40, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.2, ease: "expo.out", stagger: 0.07 }, 0.18);
+            tl.fromTo("#s5-lines .ln", { opacity: 0, y: 40, rotationX: -85, filter: "blur(8px)", transformPerspective: 1000, transformOrigin: "50% 100%" },
+              { opacity: 1, y: 0, rotationX: 0, filter: "blur(0px)", transformPerspective: 1000, duration: 0.26, ease: "expo.out", stagger: 0.07 }, 0.18);
             // karaoke: each word fills left to right as the voice says it (word times from the voice-over)
             [["#s5-w1", 0.48, 0.42], ["#s5-w2", 1.08, 0.5], ["#s5-w3", 1.83, 0.16], ["#s5-w4", 2.13, 0.45]].forEach(function (k) {
               tl.fromTo(k[0] + " .f", { clipPath: "inset(-20px 100% -30px -20px)" }, { clipPath: "inset(-20px -20px -30px -20px)", duration: k[2], ease: "none" }, k[1]);
               tl.fromTo(k[0], { scale: 1 }, { scale: 1.08, duration: 0.08, ease: "power2.out", yoyo: true, repeat: 1 }, k[1]);
+            });
+            document.querySelectorAll(".sp").forEach(function (el, i) {
+              var t = 1.1 + i * 0.045;
+              tl.fromTo(el, { scale: 0, rotation: -60, opacity: 1 }, { scale: 1.15, rotation: 30, duration: 0.2, ease: "back.out(2.5)", immediateRender: false }, t);
+              tl.to(el, { scale: 0, rotation: 90, opacity: 0, duration: 0.22, ease: "power2.in" }, t + 0.26);
             });
             tl.to("#s5-lines", { opacity: 0, filter: "blur(10px)", duration: 0.14, ease: "power2.in" }, 2.72);
             window.__timelines["s5"] = tl;

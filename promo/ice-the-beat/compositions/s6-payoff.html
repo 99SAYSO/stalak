@@ -22,8 +22,18 @@
           #s6-t1 { top: 210px; font-size: 134px; }
           #s6-t2 { top: 350px; font-size: 86px; }
           #s6-flash { position: absolute; inset: 0; background: #fff; opacity: 0; }
+          /* ice crystals floating at different depths between the frames */
+          .cr { position: absolute; opacity: 0; overflow: visible; }
+          .cr .g { fill: #d6ecff; stroke: #0a0d14; stroke-width: 6; stroke-linejoin: round; }
+          .cr .hi { fill: #ffffff; }
         </style>
         <div id="s6-stage">
+          <svg class="cr" id="s6-cr1" viewBox="-50 -50 100 100" style="left:134px; top:1134px; width:92px; height:92px" aria-hidden="true"><polygon class="g" points="0,-46 30,-12 18,40 -18,40 -30,-12" /><polygon class="hi" points="0,-40 24,-12 2,0" /><polyline points="0,-46 0,40" fill="none" stroke="#0a0d14" stroke-width="4" /></svg>
+          <svg class="cr" id="s6-cr2" viewBox="-50 -50 100 100" style="left:894px; top:614px; width:72px; height:72px" aria-hidden="true"><polygon class="g" points="0,-46 30,-12 18,40 -18,40 -30,-12" /><polygon class="hi" points="0,-40 24,-12 2,0" /><polyline points="0,-46 0,40" fill="none" stroke="#0a0d14" stroke-width="4" /></svg>
+          <svg class="cr" id="s6-cr3" viewBox="-50 -50 100 100" style="left:529px; top:1439px; width:62px; height:62px" aria-hidden="true"><polygon class="g" points="0,-46 30,-12 18,40 -18,40 -30,-12" /><polygon class="hi" points="0,-40 24,-12 2,0" /><polyline points="0,-46 0,40" fill="none" stroke="#0a0d14" stroke-width="4" /></svg>
+          <svg class="cr" id="s6-cr4" viewBox="-50 -50 100 100" style="left:70px; top:444px; width:52px; height:52px" aria-hidden="true"><polygon class="g" points="0,-46 30,-12 18,40 -18,40 -30,-12" /><polygon class="hi" points="0,-40 24,-12 2,0" /><polyline points="0,-46 0,40" fill="none" stroke="#0a0d14" stroke-width="4" /></svg>
+          <svg class="cr" id="s6-cr5" viewBox="-50 -50 100 100" style="left:961px; top:1531px; width:58px; height:58px" aria-hidden="true"><polygon class="g" points="0,-46 30,-12 18,40 -18,40 -30,-12" /><polygon class="hi" points="0,-40 24,-12 2,0" /><polyline points="0,-46 0,40" fill="none" stroke="#0a0d14" stroke-width="4" /></svg>
+          <svg class="cr" id="s6-cr6" viewBox="-50 -50 100 100" style="left:448px; top:478px; width:44px; height:44px" aria-hidden="true"><polygon class="g" points="0,-46 30,-12 18,40 -18,40 -30,-12" /><polygon class="hi" points="0,-40 24,-12 2,0" /><polyline points="0,-46 0,40" fill="none" stroke="#0a0d14" stroke-width="4" /></svg>
           <div class="s6-card" id="s6-a"><img src="assets/stills/s6_a.jpg" alt="" /></div>
           <div class="s6-card" id="s6-b"><img src="assets/stills/s6_b.jpg" alt="" /></div>
           <div class="s6-card" id="s6-c"><img src="assets/stills/s6_c.jpg" alt="" />
@@ -51,19 +61,33 @@
             tl.fromTo("#s6-flash", { opacity: 0.6 }, { opacity: 0, duration: 0.12, ease: "power2.out" }, 0);
             tl.to("#s6-crack path", { strokeDashoffset: 0, duration: 0.18, ease: "power3.in", stagger: 0.015 }, 0);
             tl.to("#s6-crack", { opacity: 0, duration: 0.16, ease: "power2.out" }, 0.26);
-            // it breaks into three floating frames: three different moments of the edit
-            tl.to("#s6-c", { scale: 0.79, x: 30, y: 30, rotation: 3, duration: 0.5, ease: "expo.out" }, 0.22);
-            tl.fromTo("#s6-a", { x: -620, y: 120, rotation: -24, opacity: 1 }, { x: 0, y: 0, rotation: -8, duration: 0.55, ease: "expo.out" }, 0.34);
-            tl.fromTo("#s6-b", { x: 620, y: 200, rotation: 26, opacity: 1 }, { x: 0, y: 0, rotation: 7, duration: 0.55, ease: "expo.out" }, 0.4);
+            // it breaks into three floating frames: three different moments of the edit, at three depths
+            tl.set("#s6-a, #s6-b, #s6-c", { transformPerspective: 1400 }, 0);
+            tl.to("#s6-c", { scale: 0.79, x: 30, y: 30, rotation: 3, rotationY: -6, duration: 0.5, ease: "expo.out" }, 0.22);
+            tl.fromTo("#s6-a", { x: -620, y: 120, z: -650, rotation: -24, rotationY: 55, opacity: 1 }, { x: 0, y: 0, z: -220, rotation: -8, rotationY: 18, duration: 0.55, ease: "expo.out" }, 0.34);
+            tl.fromTo("#s6-b", { x: 620, y: 200, z: -650, rotation: 26, rotationY: -55, opacity: 1 }, { x: 0, y: 0, z: -90, rotation: 7, rotationY: -16, duration: 0.55, ease: "expo.out" }, 0.4);
+            // while they hang there they keep turning, the near one more than the far one (parallax)
+            tl.fromTo("#s6-a", { x: 0, rotationY: 18 }, { x: 22, rotationY: 8, duration: 2.5, ease: "sine.inOut", immediateRender: false }, 0.95);
+            tl.fromTo("#s6-b", { x: 0, rotationY: -16 }, { x: -40, rotationY: -6, duration: 2.5, ease: "sine.inOut", immediateRender: false }, 0.95);
+            tl.fromTo("#s6-c", { rotationY: -6 }, { rotationY: 5, duration: 2.5, ease: "sine.inOut", immediateRender: false }, 0.75);
+            // ice crystals burst out of the crack and float at their own depth
+            document.querySelectorAll("#s6-stage .cr").forEach(function (el, i) {
+              var dx = [-60, 50, 0, -40, 40, -20][i], dy = [-90, -70, -110, -60, -80, -50][i];
+              var o = [[360, -220], [-390, 310], [-20, -510], [444, 490], [-450, -600], [70, 460]][i];   // from the crack centre (540, 960)
+              tl.fromTo(el, { x: o[0], y: o[1], scale: 0, rotation: -90, opacity: 1 },
+                { x: 0, y: 0, scale: 1, rotation: [12, -18, 24, -10, 16, -26][i], duration: 0.5, ease: "expo.out", immediateRender: false }, 0.24 + i * 0.03);
+              tl.to(el, { x: dx, y: dy, rotation: [40, -48, 60, -36, 44, -60][i], duration: 2.7, ease: "sine.inOut" }, 0.76 + i * 0.03);
+              tl.to(el, { scale: 0, opacity: 0, duration: 0.3, ease: "power2.in" }, 3.46);
+            });
             // a slow camera push while they hang there
             tl.fromTo("#s6-stage", { scale: 1 }, { scale: 1.05, duration: 2.8, ease: "power1.inOut" }, 0.62);
             // the words, on the voice
             tl.fromTo("#s6-t1", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.16, ease: "power3.out" }, 1.75);
             tl.fromTo("#s6-t2", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.16, ease: "power3.out" }, 2.12);
             // the frames come together into one finished video, which plays (Stalak's shot 14, take 3)
-            tl.to("#s6-a", { x: 300, y: 80, rotation: 0, scale: 0.82, opacity: 0, duration: 0.45, ease: "power3.inOut" }, 3.5);
-            tl.to("#s6-b", { x: -260, y: -160, rotation: 0, scale: 0.82, opacity: 0, duration: 0.45, ease: "power3.inOut" }, 3.5);
-            tl.to("#s6-c", { scale: 1, x: 0, y: -64, rotation: 0, duration: 0.5, ease: "power3.inOut" }, 3.5);
+            tl.to("#s6-a", { x: 300, y: 80, z: -420, rotation: 0, rotationY: 0, scale: 0.82, opacity: 0, duration: 0.45, ease: "power3.inOut" }, 3.5);
+            tl.to("#s6-b", { x: -260, y: -160, z: -420, rotation: 0, rotationY: 0, scale: 0.82, opacity: 0, duration: 0.45, ease: "power3.inOut" }, 3.5);
+            tl.to("#s6-c", { scale: 1, x: 0, y: -64, rotation: 0, rotationY: 0, duration: 0.5, ease: "power3.inOut" }, 3.5);
             tl.to("#s6-stage", { scale: 1, duration: 0.5, ease: "power3.inOut" }, 3.5);
             tl.fromTo("#s6-flash", { opacity: 0.5 }, { opacity: 0, duration: 0.14, ease: "power2.out", immediateRender: false }, 4.0);
             // whip up into the next scene

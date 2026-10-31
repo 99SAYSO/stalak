@@ -29,9 +29,11 @@
           (function () {
             var F = 1 / 30;
             var tl = gsap.timeline({ paused: true });
-            tl.fromTo("#s7-win", { y: 1000, rotation: -5, scale: 0.92 }, { y: 0, rotation: 0, scale: 1, duration: 0.34, ease: "expo.out" }, 0);
+            tl.fromTo("#s7-win", { y: 1000, rotation: -5, rotationX: 62, scale: 0.92, transformPerspective: 1800 }, { y: 0, rotation: 0, rotationX: 0, scale: 1, transformPerspective: 1800, duration: 0.4, ease: "expo.out" }, 0);
+            // the window keeps turning gently toward us until it faces the camera for the zoom-through
+            tl.fromTo("#s7-win", { rotationY: -7 }, { rotationY: 0, duration: 2.4, ease: "sine.inOut", immediateRender: false }, 0.4);
             [["#s7-l1", 0.08], ["#s7-l2", 1.61]].forEach(function (l) {
-              tl.fromTo(l[0], { scale: 1.6, opacity: 0, filter: "blur(10px)" }, { scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.18, ease: "expo.out" }, l[1]);
+              tl.fromTo(l[0], { scale: 1.6, rotationX: -75, opacity: 0, filter: "blur(10px)", transformPerspective: 900 }, { scale: 1, rotationX: 0, opacity: 1, filter: "blur(0px)", transformPerspective: 900, duration: 0.2, ease: "expo.out" }, l[1]);
               tl.set("#s7-win", { x: 10 }, l[1] + 0.18); tl.set("#s7-win", { x: -8 }, l[1] + 0.18 + F); tl.set("#s7-win", { x: 0 }, l[1] + 0.18 + 2 * F);
             });
             // zoom through the window: its white becomes the next frame
