@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><title>s02 — your snippet isn't edited: the hand spins, 40 MIN in echo</title></head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="s02" data-width="1080" data-height="1920">
+        <style>
+          #root { position: absolute; inset: 0; overflow: hidden; }
+          #f-g { opacity: 0; }
+          #f-ringbox { position: absolute; left: 160px; top: 560px; width: 760px; height: 760px; }
+          #f-ringbox .ring, #f-ringbox .ring-glow { left: 0; top: 0; }
+          #f-time { top: 1340px; }
+          #f-l1 { top: 290px; } #f-l1 .w { font-size: 72px; }
+          #f-echo { top: 866px; }
+          #f-flash { position: absolute; inset: 0; background: #f5f6f8; opacity: 0; }
+        </style>
+        <div class="ground dark" id="f-g"></div>
+        <div id="f-ringbox" data-layout-allow-overflow><div class="ring-glow"></div><div class="ring"></div><div class="hand hr"></div><div class="hand min"></div></div>
+        <div class="time" id="f-time">11:42 <small>PM</small></div>
+        <div class="ln" id="f-l1"><span class="w">Your</span> <span class="w">snippet?</span> <span class="w">Not</span> <span class="w">edited.</span></div>
+        <div class="echo" id="f-echo"><span class="m">40 MIN</span></div>
+        <div id="f-flash"></div>
+        <script>
+          (function () {
+            var T = window.T, S0 = T.S["s02-forty"][0], W = T.W;
+            function at(ft) { return ft - S0; }
+            var tl = gsap.timeline({ paused: true });
+            tl.set("#f-ringbox .min", { rotation: 258 }, 0); tl.set("#f-ringbox .hr", { rotation: 351 }, 0);
+            tl.to("#f-g", { opacity: 1, duration: 0.25 }, 0);
+            KT.words(tl, "#f-l1", at(T.L[1][0]), 0.12);
+            // the minute hand spins fast: 40 minutes go by (240 degrees) while the voice says "forty minutes by hand"
+            tl.to("#f-ringbox .min", { rotation: 258 + 240, duration: 1.3, ease: "power2.inOut" }, at(W.forty) - 0.1);
+            tl.to("#f-ringbox .hr", { rotation: 351 + 20, duration: 1.3, ease: "power2.inOut" }, at(W.forty) - 0.1);
+            KT.ticks(tl, "#f-time", window.MIN.start, window.MIN.start + 40, at(W.forty) - 0.1, 1.3);
+            KT.echo(tl, "#f-echo", at(W.forty) + 0.02);
+            tl.to("#f-ringbox", { scale: 1.04, duration: 0.12, yoyo: true, repeat: 1 }, at(W.forty));
+            // flash to white: the next scene
+            tl.fromTo("#f-flash", { opacity: 0 }, { opacity: 1, duration: 0.08, ease: "power3.in", immediateRender: false }, at(T.L[2][0]) - 0.08);
+            window.__timelines["s02"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

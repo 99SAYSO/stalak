@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><title>s03 — cut. trim. sync. again. the clock runs past midnight</title></head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="s03" data-width="1080" data-height="1920">
+        <style>
+          #root { position: absolute; inset: 0; overflow: hidden; }
+          .a-w { position: absolute; left: 80px; width: 920px; text-align: center; font: 800 150px/1 "TikTok Sans", "Rubik", sans-serif; letter-spacing: -0.03em; color: #0e0f13; opacity: 0; }
+          #a-w1 { top: 600px; } #a-w2 { top: 760px; } #a-w3 { top: 920px; } #a-w4 { top: 1080px; }
+          #a-cut { position: absolute; left: 300px; top: 672px; width: 480px; height: 10px; background: #2f6fd6; transform-origin: 0 50%; opacity: 0; }
+          #a-trim { position: absolute; left: 0; top: 760px; width: 1080px; height: 150px; overflow: hidden; }
+          #a-trim .a-w { top: 0; }
+          #a-trimbar { position: absolute; left: 702px; top: 790px; width: 8px; height: 100px; background: #2f6fd6; opacity: 0; }
+          #a-time { top: 300px; }
+          #a-l2 { top: 1300px; } #a-l2 .w { font-size: 64px; }
+          #a-black { position: absolute; inset: 0; background: #0e0f13; opacity: 0; }
+        </style>
+        <div class="ground light"></div>
+        <div class="time ink" id="a-time">11:42 <small>PM</small></div>
+        <div class="a-w" id="a-w1">cut.</div>
+        <div id="a-cut"></div>
+        <div id="a-trim"><div class="a-w" id="a-w2">trim.</div></div>
+        <div class="a-w" id="a-w3">sync.</div>
+        <div class="a-w" id="a-w4">again.</div>
+        <div class="ln ink" id="a-l2"><span class="w">You</span> <span class="w">missed</span> <span class="w">the</span> <span class="w b">drop.</span></div>
+        <div id="a-black"></div>
+        <script>
+          (function () {
+            var T = window.T, S0 = T.S["s03-again"][0], W = T.W, M = window.MIN;
+            function at(ft) { return ft - S0; }
+            var tl = gsap.timeline({ paused: true });
+            // each word slams in on the voice; each one is done to: cut (a blue slash), trim (the word is cropped), sync (it slides and snaps), again (it shakes)
+            function slam(sel, t) { tl.fromTo(sel, { opacity: 0, scale: 1.35, filter: "blur(8px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.14, ease: "expo.out", immediateRender: false }, t); }
+            slam("#a-w1", at(W.cut));
+            tl.fromTo("#a-cut", { opacity: 1, scaleX: 0 }, { scaleX: 1, duration: 0.1, ease: "power3.in", immediateRender: false }, at(W.cut) + 0.12);
+            slam("#a-w2", at(W.trim));
+            tl.fromTo("#a-trim", { clipPath: "inset(0 0 0 0)" }, { clipPath: "inset(0 36% 0 0)", duration: 0.22, ease: "power2.inOut", immediateRender: false }, at(W.trim) + 0.14);
+            slam("#a-w3", at(W.sync));
+            tl.fromTo("#a-w3", { x: -90 }, { x: 0, duration: 0.3, ease: "back.out(2)", immediateRender: false }, at(W.sync) + 0.12);
+            slam("#a-w4", at(W.again));
+            tl.to("#a-w4", { x: 8, duration: 0.05, yoyo: true, repeat: 5 }, at(W.again) + 0.1);
+            // the clock runs: 11:42 -> 12:22 AM over the four words
+            KT.ticks(tl, "#a-time", M.start, M.missed, at(W.cut), W.again - W.cut + 0.3, "none");
+            KT.words(tl, "#a-l2", at(W.missed), 0.1);
+            tl.to("#a-black", { opacity: 1, duration: 0.14, ease: "power2.in" }, at(T.L[3][0]) - 0.2);
+            window.__timelines["s03"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

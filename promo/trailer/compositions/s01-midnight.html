@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><title>s01 — your song drops at midnight (the real take, the clock ring at 11:42 PM)</title></head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="s01" data-width="1080" data-height="1920">
+        <style>
+          #root { position: absolute; inset: 0; overflow: hidden; background: #0e0f13; }
+          #m-take { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; object-fit: cover; }
+          #m-dim { position: absolute; inset: 0; background: rgba(14, 15, 19, 0.55); }
+          #m-ringbox { position: absolute; left: 160px; top: 560px; width: 760px; height: 760px; }
+          #m-ringbox .ring, #m-ringbox .ring-glow { left: 0; top: 0; }
+          #m-time { top: 1340px; }
+          #m-l1 { top: 312px; }
+          #m-l1 .w { font-size: 82px; }
+          #m-black { position: absolute; inset: 0; background: #0e0f13; opacity: 0; }
+        </style>
+        <video id="m-take" class="clip" src="assets/takes/take1.mp4" data-start="0" data-duration="3.4" data-media-start="2.2" muted playsinline></video>
+        <div id="m-dim"></div>
+        <div id="m-black"></div>
+        <div id="m-ringbox" data-layout-allow-overflow><div class="ring-glow"></div><div class="ring"></div><div class="hand hr"></div><div class="hand min"></div></div>
+        <div class="time" id="m-time">11:42 <small>PM</small></div>
+        <div class="ln" id="m-l1"><span class="w">Your</span> <span class="w">song</span> <span class="w">drops</span> <span class="w">at</span> <span class="w b">midnight.</span></div>
+        <script>
+          (function () {
+            var T = window.T, S0 = T.S["s01-midnight"][0];
+            function at(ft) { return ft - S0; }
+            var tl = gsap.timeline({ paused: true });
+            // frame 0: the take, dim, the clock already at 11:42; the ring breathes once with the tick
+            tl.fromTo("#m-ringbox", { scale: 0.96, rotation: -4 }, { scale: 1, rotation: 0, duration: 1.2, ease: "power2.out" }, 0);
+            tl.set("#m-ringbox .min", { rotation: 252 }, 0); tl.set("#m-ringbox .hr", { rotation: 351 }, 0);   // 11:42
+            tl.to("#m-ringbox .min", { rotation: 258, duration: 1.6, ease: "steps(1)" }, 0.3);   // one tick
+            KT.words(tl, "#m-l1", at(T.L[0][0]) - 0.02, 0.11);
+            // the take fades into the dark; the ring stays for the next scene (same place)
+            tl.to("#m-black", { opacity: 1, duration: 0.3, ease: "power2.in" }, at(T.L[1][0]) - 0.35);
+            KT.out(tl, "#m-l1", at(T.L[1][0]) - 0.3);
+            window.__timelines["s01"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

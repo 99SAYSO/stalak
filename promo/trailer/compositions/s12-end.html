@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><title>s12 — the end: the ring closes into the icon, stalak.app is typed, Try it free</title></head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="s12" data-width="1080" data-height="1920">
+        <style>
+          #root { position: absolute; inset: 0; overflow: hidden; }
+          #e-ringbox { position: absolute; left: 160px; top: 460px; width: 760px; height: 760px; opacity: 0; }
+          #e-ringbox .ring, #e-ringbox .ring-glow { left: 0; top: 0; }
+          #e-icon { position: absolute; left: 400px; top: 700px; width: 280px; height: 280px; opacity: 0; }
+          #e-icon img { width: 280px; height: 280px; display: block; }
+          #e-name { position: absolute; left: 80px; width: 920px; top: 420px; text-align: center; font: 800 150px/1 "TikTok Sans", "Rubik", sans-serif; letter-spacing: -0.03em; color: #f5f6f8; opacity: 0; }
+          #e-bar { position: absolute; left: 150px; top: 1060px; width: 780px; height: 108px; border-radius: 54px; background: #1c1e26; opacity: 0; display: flex; align-items: center; padding: 0 36px; box-sizing: border-box; gap: 18px; }
+          #e-bar i { width: 28px; height: 28px; border-radius: 50%; border: 4px solid #6b7280; box-sizing: border-box; flex: none; }
+          #e-url { font: 700 52px/1 "TikTok Sans", sans-serif; color: #f5f6f8; letter-spacing: 0.01em; white-space: nowrap; }
+          #e-car { width: 4px; height: 56px; background: #2f6fd6; margin-left: 2px; opacity: 0; }
+          #e-btn { top: 1210px; opacity: 0; }
+          #e-handle { position: absolute; left: 80px; width: 920px; top: 1340px; text-align: center; font: 600 34px/1 "TikTok Sans", sans-serif; color: rgba(245,246,248,0.6); letter-spacing: 0.04em; opacity: 0; }
+        </style>
+        <div class="ground dark"></div>
+        <div id="e-ringbox" data-layout-allow-overflow><div class="ring-glow"></div><div class="ring"></div></div>
+        <div id="e-icon"><img src="assets/brand/icon.svg" alt="Stalak" /></div>
+        <div id="e-name">Stalak</div>
+        <div id="e-bar"><i></i><span id="e-url"></span><span id="e-car"></span></div>
+        <div class="btn" id="e-btn">Try it free</div>
+        <div id="e-handle">@stalak_app · Instagram · TikTok</div>
+        <script>
+          (function () {
+            var T = window.T, S0 = T.S["s12-end"][0], W = T.W;
+            function at(ft) { return ft - S0; }
+            var tl = gsap.timeline({ paused: true });
+            // the ring returns, spins once and closes into the icon; the name lands
+            tl.fromTo("#e-ringbox", { opacity: 0, scale: 1.3, rotation: 0 }, { opacity: 1, scale: 1, rotation: 180, duration: 0.5, ease: "power2.out", immediateRender: false }, at(W.stalak_end) - 0.45);
+            tl.to("#e-ringbox", { scale: 0.3, opacity: 0, rotation: 360, duration: 0.3, ease: "power3.in" }, at(W.stalak_end) - 0.1);
+            tl.fromTo("#e-icon", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(1.8)", immediateRender: false }, at(W.stalak_end) + 0.08);
+            tl.fromTo("#e-name", { opacity: 0, y: 30, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.22, ease: "expo.out", immediateRender: false }, at(W.stalak_end) + 0.2);
+            // the address bar: stalak.app typed letter by letter, the caret blinks, then the button
+            tl.fromTo("#e-bar", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.25, ease: "expo.out", immediateRender: false }, at(W.try) - 0.05);
+            tl.set("#e-car", { opacity: 1 }, at(W.try));
+            var URL = "stalak.app", T0 = at(W.url) - 0.1;
+            for (var i = 1; i <= URL.length; i++) tl.set("#e-url", { textContent: URL.slice(0, i) }, T0 + (i - 1) * 0.065);
+            for (var k = 0; k < 6; k++) tl.set("#e-car", { opacity: k % 2 }, T0 + 0.75 + k * 0.4);
+            tl.fromTo("#e-btn", { opacity: 0, scale: 0.7, y: 30 }, { opacity: 1, scale: 1, y: 0, duration: 0.3, ease: "back.out(1.8)", immediateRender: false }, at(W.url) + 0.85);
+            tl.to("#e-btn", { scale: 1.04, duration: 0.5, yoyo: true, repeat: 1, ease: "power1.inOut" }, at(W.url) + 1.5);
+            tl.fromTo("#e-handle", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.25, immediateRender: false }, at(W.url) + 1.1);
+            window.__timelines["s12"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

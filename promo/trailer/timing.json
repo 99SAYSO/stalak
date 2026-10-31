@@ -1,0 +1,80 @@
+{
+ "_": "lines: [start,end] of each voice line in film seconds (12 lines = SPEC shots). words: key moments. c: instrumental time at film 0 (a downbeat lands at beat_drop).",
+ "lines": [
+  [
+   0.27,
+   2.29
+  ],
+  [
+   2.91,
+   6.43
+  ],
+  [
+   6.96,
+   10.61
+  ],
+  [
+   11.45,
+   13.05
+  ],
+  [
+   13.26,
+   13.97
+  ],
+  [
+   14.53,
+   15.24
+  ],
+  [
+   15.75,
+   19.25
+  ],
+  [
+   19.52,
+   23.23
+  ],
+  [
+   23.74,
+   25.81
+  ],
+  [
+   26.55,
+   29.69
+  ],
+  [
+   30.31,
+   31.82
+  ],
+  [
+   32.48,
+   35.55
+  ]
+ ],
+ "words": {
+  "cut": 6.96,
+  "trim": 7.4,
+  "sync": 8.02,
+  "again": 8.83,
+  "missed": 9.68,
+  "rewind": 11.45,
+  "meet": 12.69,
+  "forty": 5.21,
+  "three": 28.91,
+  "done": 23.74,
+  "before": 24.5,
+  "lyrics": 19.52,
+  "style": 21.38,
+  "stalak_end": 32.48,
+  "try": 33.56,
+  "url": 34.31,
+  "nodl": 30.31,
+  "nosu": 31.1,
+  "beat": 16.94,
+  "sync2": 18.33
+ },
+ "total": 37.5,
+ "vo": "vo.wav",
+ "vo_start": 0.0,
+ "beat_drop": 15.75,
+ "c": 36.574
+}

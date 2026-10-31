@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><title>s11 — no download, no sign-up (white, a thin line)</title></head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="s11" data-width="1080" data-height="1920">
+        <style>
+          #root { position: absolute; inset: 0; overflow: hidden; }
+          #n-line { position: absolute; left: 80px; top: 960px; width: 920px; height: 3px; background: #0e0f13; transform-origin: 50% 50%; transform: scaleX(0); }
+          #n-l1 { top: 760px; } #n-l1 .w { font-size: 96px; }
+          #n-l2 { top: 1010px; } #n-l2 .w { font-size: 96px; }
+          #n-black { position: absolute; inset: 0; background: #0e0f13; opacity: 0; }
+        </style>
+        <div class="ground light"></div>
+        <div id="n-line"></div>
+        <div class="ln ink" id="n-l1"><span class="w">No</span> <span class="w">download.</span></div>
+        <div class="ln ink" id="n-l2"><span class="w">No</span> <span class="w">sign-up.</span></div>
+        <div id="n-black"></div>
+        <script>
+          (function () {
+            var T = window.T, S0 = T.S["s11-free"][0], W = T.W;
+            function at(ft) { return ft - S0; }
+            var tl = gsap.timeline({ paused: true });
+            tl.to("#n-line", { scaleX: 1, duration: 0.35, ease: "expo.out" }, at(W.nodl) - 0.1);
+            KT.words(tl, "#n-l1", at(W.nodl), 0.1);
+            KT.words(tl, "#n-l2", at(W.nosu), 0.1);
+            tl.to("#n-black", { opacity: 1, duration: 0.14, ease: "power2.in" }, at(T.L[11][0]) - 0.2);
+            window.__timelines["s11"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

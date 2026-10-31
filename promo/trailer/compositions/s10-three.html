@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><title>s10 — forty minutes by hand, three with Stalak (white, the strike, the echo)</title></head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="s10" data-width="1080" data-height="1920">
+        <style>
+          #root { position: absolute; inset: 0; overflow: hidden; }
+          #t-l1 { top: 560px; } #t-l1 .w { font-size: 108px; }
+          #t-strike { position: absolute; left: 240px; top: 618px; width: 600px; height: 12px; background: #2f6fd6; transform-origin: 0 50%; transform: scaleX(0); }
+          #t-l2 { top: 700px; } #t-l2 .w { font-size: 56px; font-weight: 600; color: #5b6170; }
+          #t-echo { top: 900px; } #t-echo .m { font-size: 190px; }
+          #t-echo .c { font-size: 190px; }
+          #t-l3 { top: 1150px; } #t-l3 .w { font-size: 64px; }
+          #t-black { position: absolute; inset: 0; background: #0e0f13; opacity: 0; }
+        </style>
+        <div class="ground light"></div>
+        <div class="ln ink" id="t-l1"><span class="w">40 min</span></div>
+        <div id="t-strike"></div>
+        <div class="ln ink" id="t-l2"><span class="w">by</span> <span class="w">hand</span></div>
+        <div class="echo" id="t-echo"><span class="m">3 MIN</span></div>
+        <div class="ln ink" id="t-l3"><span class="w">with</span> <span class="w b">Stalak.</span></div>
+        <div id="t-black"></div>
+        <script>
+          (function () {
+            var T = window.T, S0 = T.S["s10-three"][0], W = T.W, L9 = T.L[9][0];
+            function at(ft) { return ft - S0; }
+            var tl = gsap.timeline({ paused: true });
+            KT.words(tl, "#t-l1", at(L9), 0.1);
+            KT.words(tl, "#t-l2", at(L9) + 0.35, 0.1);
+            tl.to("#t-strike", { scaleX: 1, duration: 0.18, ease: "power3.in" }, at(W.three) - 0.35);
+            KT.echo(tl, "#t-echo", at(W.three));
+            KT.words(tl, "#t-l3", at(W.three) + 0.3, 0.1);
+            // white holds into the next white scene (no cut): the words lift away
+            KT.out(tl, "#t-l1, #t-l2, #t-strike, #t-echo, #t-l3", at(T.L[10][0]) - 0.22, 0.18);
+            window.__timelines["s10"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

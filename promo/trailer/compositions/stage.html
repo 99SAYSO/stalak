@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><title>stage — the 3D iPhone (three.js): titanium body, real app screens, studio light</title></head>
+  <body>
+    <style>
+      #st-root { position: absolute; inset: 0; overflow: hidden; }
+      #st-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; display: block; }
+    </style>
+    <div id="st-root" data-composition-id="stage" data-start="0" data-duration="37.5" data-width="1080" data-height="1920">
+      <canvas id="st-canvas" class="clip" data-start="0" data-duration="37.5" data-track-index="1" width="1080" height="1920"></canvas>
+    </div>
+    <script>
+      (function () {
+        var clock = { t: 0 }, host = { clock: clock, render: null };
+        window.__stage = host;
+        window.__hf = window.__hf || {};
+        window.__hf.buildReady = window.__hf.buildReady || {};
+        window.__hf.buildReady["stage"] = new Promise(function (resolve) { host.ready = resolve; });
+        var D = window.T.TOTAL;
+        var tl = gsap.timeline({ paused: true });
+        tl.to(clock, { t: D, duration: D, ease: "none", onUpdate: function () { if (host.render) host.render(clock.t); } });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["stage"] = tl;
+      })();
+    </script>
+    <script type="module">
+      import * as THREE from "./assets/vendor/three/three.module.min.js";
+      const host = window.__stage, T = window.T, W = T.W, L = T.L;
+      const WI = 1080, HE = 1920;
+      const clamp = (v, a, b) => Math.min(b, Math.max(a, v)), seg = (t, a, b) => clamp((t - a) / (b - a), 0, 1);
+      const eIO2 = (k) => (k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2), eOutExpo = (k) => (k >= 1 ? 1 : 1 - Math.pow(2, -10 * k)), eIn3 = (k) => k * k * k;
+      const lerp = (a, b, k) => a + (b - a) * k;
+
+      const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("st-canvas"), antialias: true, alpha: true, preserveDrawingBuffer: true });
+      renderer.setPixelRatio(1); renderer.setSize(WI, HE, false); renderer.setClearColor(0x000000, 0);
+      renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(32, WI / HE, 0.1, 50);
+
+      // studio: softboxes for the reflections of the titanium, a warm key, a cold rim
+      const pmrem = new THREE.PMREMGenerator(renderer), env = new THREE.Scene();
+      env.add(new THREE.Mesh(new THREE.SphereGeometry(10, 24, 12), new THREE.MeshBasicMaterial({ color: 0x1a1c22, side: THREE.BackSide })));
+      function box(w, h, p, k, hex) { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: new THREE.Color(hex).multiplyScalar(k), side: THREE.DoubleSide })); m.position.set(...p); m.lookAt(0, 0, 0); env.add(m); }
+      box(6, 3, [-4, 5, 4], 6, 0xfff3e4); box(1.2, 7, [6, 2, -3], 8, 0xd6ecff); box(8, 1, [0, 7, 0], 3, 0xffffff); box(1, 5, [-6, -1, -2], 2.5, 0xbfd8ff);
+      scene.environment = pmrem.fromScene(env, 0.02).texture;
+      const key = new THREE.DirectionalLight(0xfff0dc, 2.2); key.position.set(-3, 5, 4); scene.add(key);
+      const rim = new THREE.DirectionalLight(0xcfe6ff, 2.6); rim.position.set(4, 2, -4); scene.add(rim);
+      scene.add(new THREE.AmbientLight(0x404650, 0.6));
+
+      // the phone: 1.0 x 2.087 units (1170 x 2532 ratio), 0.09 thick, rounded; screen 0.93 x 2.02
+      const PW = 1.0, PH = 2.087, PD = 0.09, R = 0.14;
+      function roundedRect(w, h, r) { const s = new THREE.Shape(); s.moveTo(-w / 2 + r, -h / 2); s.lineTo(w / 2 - r, -h / 2); s.quadraticCurveTo(w / 2, -h / 2, w / 2, -h / 2 + r); s.lineTo(w / 2, h / 2 - r); s.quadraticCurveTo(w / 2, h / 2, w / 2 - r, h / 2); s.lineTo(-w / 2 + r, h / 2); s.quadraticCurveTo(-w / 2, h / 2, -w / 2, h / 2 - r); s.lineTo(-w / 2, -h / 2 + r); s.quadraticCurveTo(-w / 2, -h / 2, -w / 2 + r, -h / 2); return s; }
+      const phone = new THREE.Group(); scene.add(phone);
+      const bodyGeo = new THREE.ExtrudeGeometry(roundedRect(PW, PH, R), { depth: PD, bevelEnabled: true, bevelThickness: 0.012, bevelSize: 0.012, bevelSegments: 4, curveSegments: 24 }); bodyGeo.translate(0, 0, -PD / 2);
+      const titanium = new THREE.MeshPhysicalMaterial({ color: 0x8d919b, metalness: 0.9, roughness: 0.32, clearcoat: 0.4, clearcoatRoughness: 0.3, envMapIntensity: 1.4 });
+      phone.add(new THREE.Mesh(bodyGeo, titanium));
+      const glassGeo = new THREE.ShapeGeometry(roundedRect(PW - 0.02, PH - 0.02, R - 0.01), 24);
+      const black = new THREE.MeshPhysicalMaterial({ color: 0x050608, metalness: 0, roughness: 0.25, clearcoat: 1, clearcoatRoughness: 0.08, envMapIntensity: 1.2 });
+      const front = new THREE.Mesh(glassGeo, black); front.position.z = PD / 2 + 0.013; phone.add(front);
+      const back = new THREE.Mesh(glassGeo, new THREE.MeshPhysicalMaterial({ color: 0x2a2d35, metalness: 0.2, roughness: 0.5, envMapIntensity: 1 })); back.position.z = -PD / 2 - 0.013; back.rotation.y = Math.PI; phone.add(back);
+      // the screen: a canvas texture that we paint with the current app capture (plus any overlay drawn by the 2D scenes above)
+      const SW = 0.93, SH = 2.02;
+      const scv = document.createElement("canvas"); scv.width = 585; scv.height = 1266; const sctx = scv.getContext("2d");
+      const stex = new THREE.CanvasTexture(scv); stex.colorSpace = THREE.SRGBColorSpace; stex.anisotropy = 8;
+      const screenGeo = new THREE.ShapeGeometry(roundedRect(SW, SH, R - 0.03), 24);
+      { const uv = screenGeo.attributes.uv, pos = screenGeo.attributes.position; for (let i = 0; i < uv.count; i++) uv.setXY(i, pos.getX(i) / SW + 0.5, pos.getY(i) / SH + 0.5); uv.needsUpdate = true; }
+      const screen = new THREE.Mesh(screenGeo, new THREE.MeshBasicMaterial({ map: stex, toneMapped: false }));
+      screen.position.z = PD / 2 + 0.014; phone.add(screen);
+      // the glass over the screen: a faint reflection
+      const gl = new THREE.Mesh(new THREE.ShapeGeometry(roundedRect(SW, SH, R - 0.03), 24), new THREE.MeshPhysicalMaterial({ color: 0xffffff, metalness: 0, roughness: 0.05, transmission: 0, transparent: true, opacity: 0.08, clearcoat: 1, envMapIntensity: 1.5 }));
+      gl.position.z = PD / 2 + 0.015; phone.add(gl);
+      const island = new THREE.Mesh(new THREE.ShapeGeometry(roundedRect(0.27, 0.075, 0.037), 16), new THREE.MeshBasicMaterial({ color: 0x050608 })); island.position.set(0, SH / 2 - 0.085, PD / 2 + 0.016); phone.add(island);
+      // side buttons
+      [[-PW / 2 - 0.006, 0.52, 0.09], [-PW / 2 - 0.006, 0.3, 0.16], [-PW / 2 - 0.006, 0.1, 0.16], [PW / 2 + 0.006, 0.3, 0.26]].forEach(([x, y, h]) => { const b = new THREE.Mesh(new THREE.BoxGeometry(0.014, h, 0.03), titanium); b.position.set(x, y, 0); phone.add(b); });
+      phone.scale.setScalar(1);
+
+      // app captures: file per step; the screen shows one at a time with a slide between them
+      const imgs = {}, waits = [];
+      function load(name) { const im = new Image(); imgs[name] = im; waits.push(new Promise((r) => { im.onload = r; im.onerror = r; })); im.src = "assets/ui/" + name + ".jpg"; }
+      ["m_sound_empty", "m_sound_loaded", "m_takes_empty", "m_takes_synced", "m_edit_top", "m_lyrics_top"].forEach(load);
+      let lastKey = "";
+      function paint(a, b, k) {   // capture a, sliding to b by k
+        const key = a + "|" + b + "|" + Math.round(k * 60); if (key === lastKey) return; lastKey = key;
+        sctx.fillStyle = "#1f6fd6"; sctx.fillRect(0, 0, 585, 1266);
+        const draw = (name, dx) => { const im = imgs[name]; if (im && im.width) { const sh = Math.min(im.height, im.width * 1266 / 585); sctx.drawImage(im, 0, 0, im.width, sh, dx, 0, 585, 1266); } };
+        if (k <= 0 || a === b) draw(a, 0); else if (k >= 1) draw(b, 0); else { draw(a, -585 * k); draw(b, 585 * (1 - k)); }
+        stex.needsUpdate = true;
+      }
+      await Promise.all(waits);
+
+      // what the screen shows when (film times): sound empty -> loaded at the drop, takes empty -> synced, edit (lyrics)
+      const SHOW = [[0, "m_sound_empty"], [L[4][0] + 0.55, "m_sound_loaded"], [L[5][0] - 0.1, "m_takes_empty"], [L[5][0] + 0.9, "m_takes_synced"], [L[6][0] + 0.2, "m_edit_top"], [L[7][0] - 0.05, "m_lyrics_top"]];
+      function screenAt(t) { let a = SHOW[0][1], b = a, k = 0; for (let i = 1; i < SHOW.length; i++) { if (t >= SHOW[i][0]) { a = SHOW[i][1]; b = a; } else if (t >= SHOW[i][0] - 0.25) { b = SHOW[i][1]; k = eIO2(seg(t, SHOW[i][0] - 0.25, SHOW[i][0])); break; } else break; } return [a, b, k]; }
+
+      // the phone's journey. Visible from the logo (L4-0.3) to the finished video (L9+0.3).
+      // 1. arrives from the right turning 35 -> 0 (song); 2. turns to profile (-78) for the takes orbit; 3. back to front, pushes in on the timeline (beat) then holds (lyrics/style); 4. leaves as the video takes the frame (done)
+      const IN = L[4][0] - 0.3, PROF = L[5][0] - 0.1, BACK = L[6][0] - 0.1, OUT = L[8][0] - 0.15;
+      host.render = function (t) {
+        const vis = t >= IN - 0.05 && t < L[8][0] + 0.4;
+        phone.visible = vis;
+        if (vis) {
+          const kin = eOutExpo(seg(t, IN, IN + 0.8));
+          let ry = lerp(0.6, 0, kin), rx = lerp(0.12, 0.02, kin), px = lerp(0.9, 0, kin), py = lerp(-0.1, -0.12, kin), z = 0, sc = 0.72;
+          const kp = eIO2(seg(t, PROF, PROF + 0.5)); ry = lerp(ry, -1.36, kp); px = lerp(px, 0.0, kp);
+          const kb = eIO2(seg(t, BACK, BACK + 0.55)); ry = lerp(ry, 0.0, kb);
+          // on the beat: a push in on the screen (the timeline is drawn by the 2D scene, the phone only frames it)
+          const kz = eIO2(seg(t, BACK + 0.1, BACK + 0.7)); sc = lerp(sc, 0.9, kz); py = lerp(py, -2.3, kz);
+          const kl = eIO2(seg(t, L[7][0] - 0.2, L[7][0] + 0.3)); sc = lerp(sc, 0.9, kl); py = lerp(py, 0.1, kl);
+          const ko = eIn3(seg(t, OUT, OUT + 0.4)); sc = lerp(sc, 2.4, ko); py = lerp(py, 0.0, ko);
+          // a slow idle sway
+          ry += Math.sin(t * 0.8) * 0.03 * (1 - kp) * (1 - ko); rx += Math.sin(t * 0.6) * 0.015;
+          phone.rotation.set(rx, ry, 0); phone.position.set(px, py, z); phone.scale.setScalar(sc);
+          const [a, b, k] = screenAt(t); paint(a, b, k);
+        }
+        camera.position.set(0, 0, 5.2); camera.lookAt(0, 0, 0);
+        renderer.render(scene, camera);
+      };
+      renderer.compile(scene, camera);
+      host.render(host.clock.t);
+      host.ready();
+    </script>
+  </body>
+</html>
