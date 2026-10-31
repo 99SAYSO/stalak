@@ -11,7 +11,7 @@
 - Il exporte pour TikTok, Reels, Shorts, ou un clip YouTube en 16:9.
 - Le montage et l'export se font dans le navigateur, sur l'appareil.
 - Artiste : 99Sayso, collectif Alaska. Priorité : simple, iPhone Safari d'abord.
-- **Marché visé : les États-Unis d'abord (décision du 30/10 au soir).** L'anglais (américain) est la langue principale du site, des textes et du marketing ; le français reste disponible. Prix en dollars.
+- **Marché visé : les États-Unis d'abord (décision du 30/10 au soir).** L'anglais (américain) est la langue principale du site, des textes et du marketing ; le français reste disponible. **Adresses (31/10)** : l'anglais à la racine (`/`, `/pricing`, `/terms`…), le français dans `/fr/` ; anciennes adresses redirigées (301). Prix en dollars.
 - Direction artistique : froid, glace, neige, liquide.
   - Fond bleu ciel avec neige qui tombe, cartes blanches à contour encre (#0a0d14), stalactites.
   - Polices Lilita One (titres) et Rubik.
@@ -33,7 +33,7 @@
 - **Stalak Creator Plus** : 14,99 $/mois ou 99,99 $/an. Tout Pro, plus le générateur de packs (5 à 30 vidéos aux coupes différentes, à partir de 2 playbacks), la sauvegarde en ligne **automatique** (chaque projet s'enregistre tout seul, comme CapCut ; pas de bouton « Sauvegarder en ligne ») et « Parler à un humain » (chat en direct, ou réponse par e-mail sous 24 h ; ne jamais écrire « 24 h/24 »).
 - La limite d'une vidéo gratuite par jour, l'e-mail de rappel et la fin de vidéo de 3 s sont **abandonnés**.
 - Prix en dollars dans Paddle ; Paddle les convertit et ajoute la TVA selon le pays. Un abonné garde son prix.
-- **Aucun concurrent cité sur le site** (ni Triller, ni CapCut, ni camrip, etc.) : pages, FAQ, `llms.txt`, textes de l'app. Décision du 30/10 au soir.
+- **Aucun concurrent cité sur le site** (ni Triller, ni CapCut, ni camrip, etc.) : pages, FAQ, `llms.txt`, textes de l'app. Décision du 30/10 au soir. **Seule exception (31/10)** : une page comparative neutre et vraie avec Triller (`/triller-alternative` en anglais, `/fr/alternative-triller`), pour le référencement ; nulle part ailleurs.
 - Croissance : aucun faux témoignage ni pub déguisée. Le fondateur parle en son nom (« je suis rappeur, j'ai codé Stalak »), dans le respect des règles de chaque réseau.
 
 **Règles commerciales :**
