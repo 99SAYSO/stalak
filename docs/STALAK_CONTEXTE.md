@@ -17,6 +17,7 @@
   - Polices Lilita One (titres) et Rubik.
   - Mascotte en parka bleue à fourrure, avec 16 emojis dans `site_src/emoji/`.
 - Ton des textes : français avec « tu », anglais naturel et décontracté.
+- **Animations et transitions (décision du 31/10)** : toute animation du site ou de l'app est choisie avec le skill `motion-design` (chaque animation doit avoir un rôle ; durées courtes, courbes « ease-out » pour ce qui apparaît, `transform` et `opacity` seulement, respect de « réduire les animations »). Responsable : App & montage.
 
 ## 2. Offre et décisions déjà prises (ne pas les remettre en cause sans le dire)
 
