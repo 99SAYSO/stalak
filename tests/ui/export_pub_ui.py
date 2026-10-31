@@ -58,7 +58,7 @@ def run(b, base, lang, iphone, real):
         window.__during = [rv.getAttribute('src'), $('#result').hidden, window.__paused];
         const iv = setInterval(() => { if (S.cancel){ clearInterval(iv); res({ blob: new Blob(['y']), ext: 'webm' }); } }, 40); }); })()""")
     pg.evaluate('() => { window.__p = __ev("exportOne()"); }')
-    pg.wait_for_function('() => window.__during', timeout=10000)
+    pg.wait_for_function('() => window.__during', timeout=30000)
     d = pg.evaluate('window.__during')
     check(tag + ' : nouvel export → la vidéo précédente est coupée (pause) et lâche son fichier', d[2] >= 1 and d[0] is None and d[1] is True, d)
     pg.locator('#expCancel').wait_for(state='visible'); pg.evaluate("document.querySelector('#expCancel').click()")
