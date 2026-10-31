@@ -1,5 +1,7 @@
-Statut : PRÊT
+Statut : ABANDONNÉ (ne pas intégrer)
 Branche : marketing/promo-unfreeze
+
+> **31/10, 23 h** : le propriétaire ne garde pas cette version (« j'aime pas du tout »). Une nouvelle bande-annonce, sans mascotte, avec voix off, est en préparation sur `marketing/promo-trailer`. Cette branche reste pour mémoire.
 
 Résumé : version 3 de la vidéo promo, « Unfreeze your snippet ». Le propriétaire l'a demandée totalement différente des deux premières.
 - **Format** : vertical 1080 × 1920, 30 i/s, 28 s, anglais américain, pour TikTok, Reels et Shorts. Faite avec HyperFrames et three.js.

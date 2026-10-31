@@ -175,7 +175,7 @@
 - À décider : la publication directe est-elle réservée à Stalak Pro ou ouverte à tous ? Meta risque de demander une vérification d'entreprise (lien avec la LLC).
 
 ### Marketing & croissance
-- **Fait (branche `marketing/promo-unfreeze`, 31/10)** : vidéo promo « Unfreeze your snippet » (28 s, 9:16, anglais américain, sans voix off), faite avec HyperFrames et three.js. C'est la version 3 de la promo, que le propriétaire voulait totalement différente des deux premières. Détail dans `docs/handoff/marketing-promo-unfreeze.md`.
+- **Abandonné (branche `marketing/promo-unfreeze`, 31/10, ne pas intégrer)** : le propriétaire ne garde pas cette version ; nouvelle bande-annonce en préparation sur `marketing/promo-trailer`. Pour mémoire : vidéo promo « Unfreeze your snippet » (28 s, 9:16, anglais américain, sans voix off), faite avec HyperFrames et three.js. C'est la version 3 de la promo, que le propriétaire voulait totalement différente des deux premières. Détail dans `docs/handoff/marketing-promo-unfreeze.md`.
   - Hook : « me spending 40 MIN editing a 15 sec snippet », avec la mascotte gelée dans un bloc de glace.
   - Puis :
     - la plongée dans une fissure : « cut. cut. cut… » ;
