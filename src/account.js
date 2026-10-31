@@ -38,7 +38,8 @@
      checkoutOpen         -> true while Paddle's checkout window is open
      event(name[, extra]) -> counts one anonymous step of the funnel (POST /api/event; never fails, nothing about the person):
                              'export_start' | 'export_ok' | 'export_fail' ({cat: 'memory'|'decoder'|'hidden'|'cancel'|'other'}) |
-                             'ad_offer' | 'ad_ok' | 'plans_open' ({why}) | 'checkout_open'; {ios: true} is added on iPhone / iPad
+                             'pro_offer' (the Pro offer after the 1st video) | 'ad_offer' (ad asked) | 'ad_shown' (ad really on
+                             screen) | 'ad_ok' | 'plans_open' ({why}) | 'checkout_open'; {ios: true} is added on iPhone / iPad
      state                -> last known state
    Errors are thrown as Error objects with .code (server "error" field) and .status. */
 (function () {

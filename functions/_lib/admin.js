@@ -183,7 +183,7 @@ export async function stats(env, days = 30, now = Date.now()) {
       tickets: { created30: s30('tickets') },
       funnel: {
         visits: s30('visits'), exportStart: ev.ev_export_start || 0, exportOk: ev.ev_export_ok || 0, exportFail: ev.ev_export_fail || 0,
-        adOffer: ev.ev_ad_offer || 0, adOk: ev.ev_ad_ok || 0, plansOpen: ev.ev_plans_open || 0, checkoutOpen: ev.ev_checkout_open || 0,
+        proOffer: ev.ev_pro_offer || 0, adOffer: ev.ev_ad_offer || 0, adShown: ev.ev_ad_shown || 0, adOk: ev.ev_ad_ok || 0, plansOpen: ev.ev_plans_open || 0, checkoutOpen: ev.ev_checkout_open || 0,
         paid: ev.paid_first || 0, exportFailWhy: pick('ev_export_fail_'), plansWhy: pick('ev_plans_why_'),
         ios: { exportOk: ev.ios_export_ok || 0, exportFail: ev.ios_export_fail || 0 },
       },
