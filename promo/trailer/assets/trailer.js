@@ -8,7 +8,7 @@ window.KT = {
   echo: function (tl, sel, t) {
     var el = document.querySelector(sel), m = el.querySelector(".m");
     if (!el.querySelector(".c")) {
-      for (var i = 0; i < 6; i++) { var c = document.createElement("span"); c.className = "c"; c.textContent = m.textContent; el.insertBefore(c, m); }
+      for (var i = 0; i < 6; i++) { var c = document.createElement("span"); c.className = "c"; c.setAttribute("aria-hidden", "true"); c.setAttribute("data-layout-allow-overlap", ""); c.textContent = m.textContent; el.insertBefore(c, m); }
     }
     tl.fromTo(m, { opacity: 0, scale: 1.5 }, { opacity: 1, scale: 1, duration: 0.18, ease: "expo.out", immediateRender: false }, t);
     el.querySelectorAll(".c").forEach(function (c, i) {

@@ -17,7 +17,7 @@
           #a-black { position: absolute; inset: 0; background: #0e0f13; opacity: 0; }
         </style>
         <div class="ground light"></div>
-        <div class="time ink" id="a-time">11:42 <small>PM</small></div>
+        <div class="time ink" id="a-time">12:22 <small>AM</small></div>
         <div class="a-w" id="a-w1">cut.</div>
         <div id="a-cut"></div>
         <div id="a-trim"><div class="a-w" id="a-w2">trim.</div></div>
@@ -41,7 +41,7 @@
             slam("#a-w4", at(W.again));
             tl.to("#a-w4", { x: 8, duration: 0.05, yoyo: true, repeat: 5 }, at(W.again) + 0.1);
             // the clock runs: 11:42 -> 12:22 AM over the four words
-            KT.ticks(tl, "#a-time", M.start, M.missed, at(W.cut), W.again - W.cut + 0.3, "none");
+            tl.fromTo("#a-time", { scale: 1 }, { scale: 1.06, duration: 0.08, yoyo: true, repeat: 1, immediateRender: false }, at(W.missed));
             KT.words(tl, "#a-l2", at(W.missed), 0.1);
             tl.to("#a-black", { opacity: 1, duration: 0.14, ease: "power2.in" }, at(T.L[3][0]) - 0.2);
             window.__timelines["s03"] = tl;

@@ -180,6 +180,9 @@
 - À décider : la publication directe est-elle réservée à Stalak Pro ou ouverte à tous ? Meta risque de demander une vérification d'entreprise (lien avec la LLC).
 
 ### Marketing & croissance
+- **Fait (branche `marketing/promo-trailer`, 1/11)** : bande-annonce v4 « Before midnight » (37,5 s, 9:16, anglais américain, voix off), faite avec HyperFrames et three.js. Repartie de zéro à la demande du propriétaire : pas de mascotte, le style de la pub « Spenda 2.0 » (mots un par un, écho, anneau, iPhone 3D, carré → logo), le thème de l'horloge : 40 min à la main, 3 min avec Stalak (ses vrais temps). Détail dans `docs/handoff/marketing-promo-trailer.md`.
+  - La v3 « Unfreeze your snippet » (`marketing/promo-unfreeze`) est abandonnée : ne pas l'intégrer.
+  - La vidéo, la voix et la musique ont été envoyées au propriétaire et ne sont pas dans le dépôt. Rien à mettre en ligne sur le site.
 - **Fait (branche `marketing/promo-explainer`, 31/10)** : vidéo explicative « Stalak, comment ça marche » (40,75 s, 9:16, anglais américain), faite avec HyperFrames et le kit saas-motion-video. C'est la version 2 de la promo, refaite à la demande du propriétaire. Détail dans `docs/handoff/marketing-promo-explainer.md`.
   - Version finale après ses retours : tout est dans la zone sûre de TikTok, Reels et Shorts, « Synced to the song » est lisible, les paroles sont en anglais américain et le moment polices / couleurs / filtres est plus clair (voix off d'origine).
   - Contenu : à qui sert l'app, iPhone puis Mac, son, prises (filmer ou importer), synchro, coupes sur le rythme, paroles (à la main ou automatiques avec Pro), polices, couleurs, filtres, Shuffle, export avec l'igloo, packs de 30 vidéos (Creator Plus), sans téléchargement ni inscription, publication partout.

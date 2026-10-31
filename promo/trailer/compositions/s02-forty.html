@@ -10,15 +10,15 @@
           #f-ringbox { position: absolute; left: 160px; top: 560px; width: 760px; height: 760px; }
           #f-ringbox .ring, #f-ringbox .ring-glow { left: 0; top: 0; }
           #f-time { top: 1340px; }
-          #f-l1 { top: 290px; } #f-l1 .w { font-size: 72px; }
-          #f-echo { top: 866px; }
+          #f-l1 { top: 250px; } #f-l1 .w { font-size: 72px; }
+          #f-echo { top: 400px; }
           #f-flash { position: absolute; inset: 0; background: #f5f6f8; opacity: 0; }
         </style>
         <div class="ground dark" id="f-g"></div>
         <div id="f-ringbox" data-layout-allow-overflow><div class="ring-glow"></div><div class="ring"></div><div class="hand hr"></div><div class="hand min"></div></div>
         <div class="time" id="f-time">11:42 <small>PM</small></div>
         <div class="ln" id="f-l1"><span class="w">Your</span> <span class="w">snippet?</span> <span class="w">Not</span> <span class="w">edited.</span></div>
-        <div class="echo" id="f-echo"><span class="m">40 MIN</span></div>
+        <div class="echo" id="f-echo" data-layout-allow-overlap><span class="m">40 MIN</span></div>
         <div id="f-flash"></div>
         <script>
           (function () {
