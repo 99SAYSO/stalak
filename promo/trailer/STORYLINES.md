@@ -80,3 +80,37 @@ On voit d'abord le résultat : un immense mur 3D de 30 vidéos, qui se replie en
 | 0:27–0:31 | Fond noir. L'icône, « Stalak », « stalak.app » se tape, puis le bouton « Try it free », avec « No download. No sign-up. » en petit. | Stalak / stalak.app / Try it free | « Stalak. Try it free at stalak.app. » | « Stalak. Essaie gratuitement sur stalak.app. » |
 
 Son : la voix, le beat, un petit clic à chaque vidéo qui s'allume, une montée avant « Make the pack ».
+
+---
+
+## Choix du propriétaire (31/10, 23 h 36) : le thème de la 2, le motion design de la 1
+
+Il garde l'horloge et le jeu sur le temps de la 2 (40 min à la main, puis le temps gagné avec Stalak). Il garde aussi tous les éléments de motion design de la 1 :
+- les mots qui arrivent un par un ;
+- l'écho sur « 40 MIN » ;
+- le carré qui devient le logo ;
+- l'anneau lumineux ;
+- l'iPhone 3D ;
+- les prises en orbite ;
+- la vidéo qui sort du téléphone ;
+- le trait fin de « No download » ;
+- la fin tapée.
+
+L'anneau lumineux de la 1 devient le cadran de l'horloge de la 2.
+
+| Temps | Image | Texte à l'écran | Voix off (anglais) |
+|---|---|---|---|
+| 0:00–0:02 | Ta vraie prise, assombrie, et par-dessus l'anneau lumineux qui est une horloge : « 11:42 PM ». Les mots arrivent un par un. | 11:42 PM / Your song drops / at midnight | « Your song drops at midnight. » |
+| 0:02–0:05 | La prise s'efface dans le noir, l'anneau reste. L'aiguille tourne vite, et « 40 MIN » claque en bleu avec l'écho. | Your snippet? Not edited. / **40 MIN** | « Your snippet isn't edited. That's forty minutes by hand. » |
+| 0:05–0:08 | Flash blanc : « cut. trim. sync. again. », un mot par temps. À chaque mot, l'heure avance : 11:52, 12:02, 12:12, 12:22 AM. | cut. / trim. / sync. / again. / 12:22 AM | « Cut. Trim. Sync. Again… You missed the drop. » |
+| 0:08–0:11 | Retour au noir. L'aiguille rembobine jusqu'à 11:42. Un petit carré noir tourne et devient l'icône Stalak, avec des rayons, puis « Stalak » s'écrit. | Rewind. / Stalak | « Rewind. Meet Stalak. » |
+| 0:11–0:14 | L'iPhone 3D arrive en tournant, avec la vraie app. Le fichier « neva die » tombe dedans et sa forme d'onde se déroule. Une petite horloge en haut. | Drop your song | « Drop your song. » |
+| 0:14–0:16 | Les 3 vraies prises tournent autour du mot. | Add your takes | « Add your takes. » |
+| 0:16–0:20 | La timeline en gros plan, l'anneau en tête de lecture, une coupe sur chaque temps. Le beat arrive en entier. | It cuts on the **beat** | « Stalak cuts them on the beat, in sync with your lips. » |
+| 0:20–0:23 | Sur ta vraie vidéo, les paroles, puis la police, la couleur et le filtre changent. | Lyrics. Font. Filter. | « Add your lyrics. Pick your style. » |
+| 0:23–0:26 | La vidéo finie sort du téléphone et remplit l'écran. La petite horloge affiche l'heure réelle avec Stalak (à mesurer par le propriétaire). | Done. 11:4? PM | « Done. Before midnight. » |
+| 0:26–0:29 | Fond blanc : « 40 min » se barre, et le vrai temps avec Stalak claque en bleu avec l'écho. | ~~40 min~~ → **? min** | « Forty minutes by hand. ? with Stalak. » |
+| 0:29–0:32 | Fond blanc avec un trait fin. | No download. / No sign-up. | « No download. No sign-up. » |
+| 0:32–0:35 | Fond noir. L'anneau se referme en icône Stalak, « stalak.app » se tape, puis le bouton « Try it free » apparaît. | stalak.app / Try it free | « Stalak. Try it free at stalak.app. » |
+
+À fournir par le propriétaire : son vrai temps avec Stalak pour un snippet, de l'ouverture du site à la vidéo enregistrée. Ce chiffre apparaît à l'écran et dans la voix : il doit être mesuré.
