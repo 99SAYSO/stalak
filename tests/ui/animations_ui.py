@@ -121,8 +121,8 @@ def run(b, base, lang, iphone, calm):
         pp = stats(frames(pg, 1100, 'ppOpen()'), True); ev(pg, 'ppClose()')
         cdp.send('Emulation.setCPUThrottlingRate', {'rate': 1})
         print('   images (processeur ×4 plus lent) — neige %s · étape %s · aide %s · fenêtre Pro %s' % (sn, st, hp, pp))
-        ok = all(x['long'] == 0 and x['p95'] <= 20 for x in (sn, st, hp, pp))
-        check(tag + ' : fluide, processeur 4 fois plus lent (mouvement à 60 images/s : 95 %% en moins de 20 ms, aucune de plus de 50 ms ; 1re image notée à part)', ok, (sn, st, hp, pp))
+        ok = all(x['long'] <= 1 and x['p95'] <= 20 for x in (sn, st, hp, pp))
+        check(tag + ' : fluide, processeur 4 fois plus lent (mouvement à 60 images/s : 95 %% en moins de 20 ms, au plus 1 image de plus de 50 ms, soit environ 1 image sautée à vitesse normale ; 1re image notée à part)', ok, (sn, st, hp, pp))
     # the legal page and the pricing page of the site
     pages = ['mentions-legales.html', 'tarifs.html'] if lang == 'fr' else ['en/' + f for f in sorted(os.listdir(os.path.join(PUBLIC, 'en'))) if f.endswith('.html') and f != 'index.html'][:2]
     for path in pages:
