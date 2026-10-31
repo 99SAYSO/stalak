@@ -1,4 +1,4 @@
-Statut : EN COURS (tests en cours)
+Statut : PRÊT
 Branche : app/audit-fix (créée depuis `main` du 31/10, 3 h : 1f1bba7).
 
 Résumé :
@@ -24,4 +24,11 @@ Pour le Chef de projet :
 - **Comptes : ajouter `pro_offer` à la liste `EVENTS` de `functions/_lib/metrics.js`** (fichier de Comptes, pas touché ici) : sans ça, le serveur refuse ce compteur et il n'apparaît pas au tableau de bord.
 - « pub affichée » (`ad_shown`) n'est plus compté (la demande de pub l'est : `ad_offer`).
 
-Tests : voir la fin de ce fichier.
+5. **Bouton « Exporter ↓ » fixe** : après l'appui, il vise encore les boutons pendant 3 s s'ils se retrouvent sous l'aperçu (la page au-dessus peut encore bouger), sauf si la personne fait défiler elle-même.
+
+Tests (31/10, iPhone 15 Pro émulé + ordinateur, FR + EN) :
+- `audit_ui.py` 158/158 (dont la fenêtre Pro : pas tout de suite puis environ 1 s après, au milieu, fond assombri, apparition et reflet givré, mascotte + titre + 3 avantages + 4,17 $/mois, focus sur « Passer à Pro », fermeture par Échap / « Plus tard » / × / à côté, ne bloque pas l'enregistrement, « Passer à Pro » → formules Pro, une seule fois même après rechargement, jamais pour un abonné, compteur `pro_offer`)
+- `gallery_ui.py` 49/49 (aussi sous charge), `formules_ui.py` 169/169, `projet_local_ui.py` 48/48, `export_pub_ui.py` 22/22, `son_passage.py` 86/86, `filtres_ui.py` 106/106, `remux_frag.py`, `paroles_suppr.py`, `plans_ui.py`, `help_ui.py` : tous réussis ; `tests/backend/run.mjs` 78/78
+- `support_ui.py` et `lyrics_ui.py` : même arrêt sur une attente trop longue que sur `main`, sans lien avec cette branche.
+
+À tester par le propriétaire sur un vrai iPhone : un 1er export en Gratuit → la fenêtre Pro 1 s après ; « Plus tard », puis enregistrer la vidéo dans Photos ; un 2e export → plus de fenêtre. Ouvrir « Démo glace » depuis la Galerie.

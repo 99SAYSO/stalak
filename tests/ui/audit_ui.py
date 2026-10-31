@@ -84,7 +84,8 @@ def run(b, base, lang, iphone):
     pg.evaluate("document.querySelector('#expFab').click()")
     try: pg.wait_for_function("() => document.querySelector('#expFab').hidden && (() => ['#exportBtn', '#adBtn'].every(s => { const e = document.querySelector(s), r = e.getBoundingClientRect(); if (!r.width) return true; const x = r.left + r.width / 2, y = r.top + r.height / 2; return y > 0 && y < innerHeight && e.contains(document.elementFromPoint(x, y)); }))()", timeout=8000); inview = True
     except Exception: inview = False
-    check(tag + ' : un appui amène aux boutons d’export, puis il disparaît', inview and not fab.is_visible())
+    st = pg.evaluate("() => [scrollY, innerHeight, document.querySelector('#expFab').hidden, ...['#exportBtn', '#adBtn'].map(s => { const e = document.querySelector(s), r = e.getBoundingClientRect(), t = r.width ? document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2) : null; return [Math.round(r.top), Math.round(r.bottom), t && (t.id || t.className || t.tagName)]; })]")
+    check(tag + ' : un appui amène aux boutons d’export, puis il disparaît', inview and not fab.is_visible(), st)
 
     # ---- n° 9: fewer PRO tags; n° 7: « Exporter sans ce filtre » ----
     vis_tags = pg.evaluate("() => [...document.querySelectorAll('#filtRow .filtpro')].filter(e => e.offsetParent).length")
