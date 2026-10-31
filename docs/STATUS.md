@@ -4,6 +4,7 @@
 > Dernière mise à jour : 30/10/2026 à 21 h (offre hybride fusionnée et en ligne : App, Comptes, Juridique, Marketing ; migration 0008 appliquée).
 
 ## Décisions récentes du propriétaire
+- **31/10 : comptes officiels créés, Instagram et TikTok `@stalak_app`.** Ajoutés au pied de page de l'accueil et à la fiche Google (`SOCIAL` dans `build_site.py`). YouTube : pas encore.
 - **31/10, 4 h : le texte d'accueil du premier écran (« Tes prises, montées sur le rythme », vidéo d'exemple, pastilles) est retiré à la demande du propriétaire** (trop de place, mal placé sur ordinateur). Ne pas le remettre ; la vidéo `site_src/demo/hero.mp4` n'est plus utile.
 - **31/10, 3 h : audit fusionné et en ligne** (`app/audit` avec `app/export-pub`, `compte/audit`, `marketing/audit-us`), migration 0009 appliquée. Compteurs de l'entonnoir : un seul chemin, `acctEvent` (Comptes) ; `evt()` d'App ne fait plus rien (son test `audit_ui.py` attend encore ses anciens noms : 12 échecs attendus, à adapter par App). **Bug à corriger par App** : ouvrir un projet depuis la Galerie reste bloqué sur « Je remets ton montage en place… » (`gallery_ui.py`, étape « en-1280 Pro: the project opens » ; passe sur `compte/audit` seule, échoue sur `app/audit` seule).
 - **30/10 au soir : audit complet** par le Chef de projet, en 3 parties : `docs/audit/2026-10-30-ux.md`, `docs/audit/2026-10-30-technique.md`, `docs/audit/2026-10-30-croissance.md`. Chaque point indique la conversation responsable. Les tâches sont données par le propriétaire.
