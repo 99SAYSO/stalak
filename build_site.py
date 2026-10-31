@@ -111,9 +111,18 @@ PAGE = {
 }
 
 # Marketing & croissance : liens vers les comptes officiels dans le pied de page (rel="me")
+# (31/10) shown as icons next to the legal links: the glyphs come from Simple Icons (site_src/icons/social/, CC0), white on the ink
+SOCIAL_HTML = ''
 if SOCIAL:
-    for L in PAGE:
-        PAGE[L]['legal'] += ' · ' + ' · '.join(f'<a href="{H.escape(u)}" rel="me noopener" target="_blank">{n}</a>' for n, u in SOCIAL.items())
+    def _glyph(n):
+        f = extra / 'icons' / 'social' / (n.lower() + '.svg')
+        if not f.exists(): return H.escape(n)
+        sv = f.read_text(encoding='utf-8')
+        sv = re.sub(r'<title>.*?</title>', '', sv).replace('role="img" ', '')
+        return sv.replace('<svg ', '<svg aria-hidden="true" focusable="false" fill="currentColor" ', 1)
+    SOCIAL_HTML = '<div class="social-links">' + ''.join(
+        f'<a href="{H.escape(u)}" rel="me noopener" target="_blank" aria-label="{n} @stalak_app" title="{n} @stalak_app">{_glyph(n)}</a>'
+        for n, u in SOCIAL.items()) + '</div>'
 # 2. the app: contact address for the help bubble; « Stalak, c'est quoi ? » and the links to the legal pages under the « by Alaska » badge
 if EMAIL:
     assert "const SUPPORT_EMAIL = '';" in js
@@ -124,8 +133,8 @@ markup = markup.replace(a, '<section class="about" aria-labelledby="aboutT" data
 # the legal links go in the footer, next to the FR / EN switch (the claude.ai page has the footer with the switch only)
 f = '<footer class="sitefoot" id="siteFoot">'
 assert f in markup
-markup = markup.replace(f, f + '<nav class="legal-links" data-i18n="site.legal">' + PAGE['fr']['legal'] + '</nav>')
-css += '\n.about{align-self:center;max-width:760px;width:100%;color:#fff;font-size:14.5px;line-height:1.55;margin-top:18px}.about h2{font:400 22px/1.2 var(--display);margin:0 0 6px;color:#fff;text-shadow:0 2px 0 var(--ink)}.about p{margin:0 0 8px}.about ul{margin:0 0 8px;padding-left:20px}.about strong{font-weight:700}\n.legal-links{font-size:13px;color:#fff;opacity:.9}.legal-links a{color:#fff}\n'
+markup = markup.replace(f, f + SOCIAL_HTML + '<nav class="legal-links" data-i18n="site.legal">' + PAGE['fr']['legal'] + '</nav>')
+css += '\n.about{align-self:center;max-width:760px;width:100%;color:#fff;font-size:14.5px;line-height:1.55;margin-top:18px}.about h2{font:400 22px/1.2 var(--display);margin:0 0 6px;color:#fff;text-shadow:0 2px 0 var(--ink)}.about p{margin:0 0 8px}.about ul{margin:0 0 8px;padding-left:20px}.about strong{font-weight:700}\n.legal-links{font-size:13px;color:#fff;opacity:.9}.legal-links a{color:#fff}\n.social-links{display:flex;gap:10px;justify-content:center}.social-links a{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:var(--ink,#0a0d14);color:#fff;border:2px solid #fff;box-shadow:0 3px 0 rgba(10,13,20,.35);transition:transform .15s}.social-links a:hover,.social-links a:focus-visible{transform:translateY(-2px)}.social-links svg{width:20px;height:20px}\n'
 
 # 3. languages: the dictionaries are in app.js (between /*@EN*/ … /*EN@*/ and /*@FR*/ … /*FR@*/); the French of the page's
 #    fixed texts is read from the markup (data-i18n, data-i18n-attr) and given to the app, so that the English page can
