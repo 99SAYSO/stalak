@@ -10,13 +10,19 @@ TIME : 28,0 s × 30 = 840 images. Instru de « neva die » à 157 BPM : un temps
 - Les vidéos du rappeur sont calées sur l'instru : temps de la prise = temps du film − 8,946 (même calage que la v2). La ligne « After all this time, baby » (0:05.83) tombe ainsi à 14,776 s.
 
 LOOK :
-- **Sol** : le monde de glace de Stalak. Dégradé bleu #1f6fd6 → #0e3f8f, blocs de glace en 3D (verre bleuté, rugosité 0,15, bords clairs), neige légère.
+- **Sol** : le monde de glace de Stalak, en 3D réaliste (retour du propriétaire : « trop carton, jouet, trop cubique »).
+  - Un ciel froid tout autour : bleu Stalak #1f6fd6 à l'horizon, presque blanc en haut (#d4ecff), bleu nuit en bas (#051c4f). La lumière vient d'en haut à gauche, avec des rayons très discrets.
+  - Des morceaux de glace aux formes cassées et irrégulières (bords fondus, faces planes), jamais de cubes ni de boules ; de la poussière de glace et une neige légère.
 - **Encre** : #0a0d14 (contours de 6 px, comme l'app) ; blanc #f6faff ; glace #cfe6ff.
 - **Accent** : #ffe14d (jaune), un seul mot par plan : « 40 min », « stalak.app », « beat », « done ».
 - **Titres** : Lilita One (mots-clés, contour encre 6 px) et Rubik 700/400 (phrases), 84 à 150 px.
 - **Matières** :
   - mascotte 3D (Meshy 7, en couleurs, avec squelette) éclairée par une lumière principale chaude en haut à gauche et un contre-jour froid ;
-  - glace : MeshPhysicalMaterial, transmission 0,6, IOR 1,31 ;
+  - le bloc de glace : vraie réfraction (transmission 1, IOR 1,31, épaisseur 0,16), givre sur les arêtes, bulles d'air, fissure fine qui accroche la lumière ;
+  - les morceaux et les éclats : shader léger (le ciel vu à travers la glace, un rebond intérieur, reflets, éclats des lumières, arêtes givrées) ;
+  - la crevasse (dans la fissure) : murs de glace bleue en relief, lumière au fond ;
+  - l'objectif : profondeur de champ (la mise au point suit le sujet), halo seulement sur les reflets plus clairs que le blanc, tonalité neutre, léger vignettage ;
+  - la lumière : des « softbox » pour les reflets, une lumière principale chaude en haut à gauche, un contre-jour froid à droite ;
   - interface : les vraies captures de l'app et les cartes « appcard » de la v2 (fond blanc, bord encre 6 px, ombre dure de 12 px).
 - **Mélange 2D / 3D** :
   - en 2D : la mascotte quand elle joue (poses de l'app), les clips à plat, les textes, les traits et flashs dessinés ;
@@ -46,8 +52,8 @@ SHOTS (images à 30 i/s) :
 | # | Images | Mouvement principal | Ce qu'on lit (durée) | Son | Passage au plan suivant |
 |---|---|---|---|---|---|
 | 1 | 0–60 | Mascotte 3D gelée dans un bloc de glace, clips 2D empilés ; la caméra tourne de 8° par seconde et avance de 6 % | « me spending **40 min** / editing a 15 sec snippet », déjà à l'écran à l'image 0 (2 s) | instru étouffée (passe-bas 600 Hz), craquement de glace | la caméra entre dans une fissure (0,35 s, `power3.in`) |
-| 2 | 60–105 | Dans la fissure, des clips coupés à la main tombent en désordre | « cut. » × 3, sur les temps 2,354 / 2,736 / 3,118 | clic sur chaque « cut », montée | la fissure s'ouvre en flash blanc sur la mesure 3,500 |
-| 3 | 105–151 | Le bloc explose : 120 éclats 3D vers la caméra, la mascotte sort en faisant un tour, puis le logo STALAK claque | **STALAK** | impact, l'instru s'ouvre | les éclats retombent et dessinent le contour de l'iPhone |
+| 2 | 60–105 | Dans la fissure : une crevasse de glace en 3D, lumière au fond ; des clips coupés à la main tombent en désordre | « cut. » × 3, sur les temps 2,354 / 2,736 / 3,118 | clic sur chaque « cut », montée | la fissure s'ouvre en flash blanc sur la mesure 3,500 |
+| 3 | 105–151 | Le bloc explose : 150 éclats de glace cassée vers la caméra, de la poudre de glace, la mascotte sort en faisant un tour, puis le logo STALAK claque | **STALAK** | impact, l'instru s'ouvre | les éclats retombent et dessinent le contour de l'iPhone |
 | 4 | 151–243 | L'iPhone pivote (35° → 0), « stalak.app » se tape (10 lettres, 0,07 s chacune), l'app s'ouvre | « just open **stalak.app** » (2,5 s) | frappe au clavier, clic | plongée dans l'écran, son bleu devient le décor |
 | 5 | 243–288 | Le fichier son tombe et sa forme d'onde se déroule en ruban de glace | « 1. drop your song » | la basse coupe à 8,685, quand le fichier se pose | le ruban s'enroule en bord de carte |
 | 6 | 288–334 | 3 cartes de prises arrivent en tournant (décalage de 0,08 s) | « 2. add your takes » | souffles courts | les cartes basculent à plat et forment la timeline |
@@ -75,7 +81,8 @@ BANNED :
 - tout chiffre que le propriétaire n'a pas donné. Les chiffres autorisés : 40 min (son vrai temps de montage), 15 sec, 30 (le pack, cité dans l'avis de Kazzy) ;
 - les textes qui bougent pendant qu'on les lit ;
 - les fondus enchaînés entre deux mondes ;
-- les halos et les particules décoratives, sauf la neige et les éclats qui ont une cause.
+- les halos et les particules décoratives, sauf la neige, la poussière de glace et les éclats qui ont une cause ; le halo de l'objectif seulement sur les vrais reflets ;
+- les cubes, les boules, les formes de jouet et l'éclairage plat (retour du propriétaire).
 
 QA (images à vérifier) :
 - 0 : le hook est déjà lisible ;
