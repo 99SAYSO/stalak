@@ -84,7 +84,7 @@ PAGE = {
       <li>Le montage se fait dans ton navigateur, sur iPhone, Android ou ordinateur : tes vidéos restent sur ton appareil, sauf tes projets en ligne, enregistrés automatiquement avec Creator Plus, et le son envoyé pour tes paroles automatiques.</li>
     </ul>
   """,
-    'legal': '<a href="/fr/tarifs">Tarifs</a> · <a href="/fr/conditions">Conditions</a> · <a href="/fr/remboursement">Remboursement</a> · <a href="/fr/confidentialite">Confidentialité</a> · <a href="/fr/mentions-legales">Mentions légales</a>',
+    'legal': '<a href="/fr/tarifs">Tarifs</a> · <a href="/fr/conditions">Conditions</a> · <a href="/fr/remboursement">Remboursement</a> · <a href="/fr/confidentialite">Confidentialité</a> · <a href="/fr/mentions-legales">Mentions légales</a> · <a href="/fr/confidentialite#cookies" data-ck>Gérer les cookies</a> · <a href="/fr/confidentialite#cookies" data-pc>Vos choix de confidentialité</a>',
     'guides': '',
   },
   'en': {
@@ -114,7 +114,7 @@ PAGE = {
       <li>Everything happens in your browser, so your videos stay on your device. The only exceptions: your cloud projects, saved automatically with Creator Plus, and the audio sent for auto lyrics.</li>
     </ul>
   """,
-    'legal': '<a href="/pricing">Pricing</a> · <a href="/terms">Terms</a> · <a href="/refunds">Refunds</a> · <a href="/privacy">Privacy</a> · <a href="/legal-notice">Legal notice</a>',
+    'legal': '<a href="/pricing">Pricing</a> · <a href="/terms">Terms</a> · <a href="/refunds">Refunds</a> · <a href="/privacy">Privacy</a> · <a href="/legal-notice">Legal notice</a> · <a href="/privacy#cookies" data-ck>Cookie settings</a> · <a href="/privacy#choices" data-pc>Your Privacy Choices</a>',
     'guides': 'Guides: ' + ' · '.join(f'<a href="/{s}">{n}</a>' for s, n in GUIDES),
   },
 }

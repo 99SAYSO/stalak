@@ -101,13 +101,13 @@ h2{font:400 clamp(24px,3vw,30px)/1.05 var(--display);letter-spacing:.005em;color
 /* ---------- boutons gonflés comme la doudoune ---------- */
 .btn{position:relative;font:600 15px var(--body);color:var(--ink);background:#fff;border:var(--stroke) solid var(--ink);border-radius:16px;padding:8px 16px;min-height:44px;
   box-shadow:inset 0 -4px 0 rgba(31,111,214,.14),0 4px 0 var(--ink);transition:transform var(--dur-1) var(--ease-press)}
-.btn:hover:not([disabled]){background:var(--frost);border-color:var(--ink)}
+@media (hover:hover){.btn:hover:not([disabled]){background:var(--frost);border-color:var(--ink)}}   /* (on a touch screen a hover stays stuck after a tap) */
 /* appui : le bouton s'enfonce dans la neige */
 .btn:active:not([disabled]){transform:translateY(4px);box-shadow:inset 0 -2px 0 rgba(31,111,214,.14),0 0 0 var(--ink)}
 .btn.primary{color:#fff;background:var(--ink);border-color:var(--ink);font-weight:700;
   background-image:radial-gradient(60% 50% at 30% 18%,rgba(255,255,255,.28),transparent 70%);
   box-shadow:inset 0 3px 0 rgba(255,255,255,.16),inset 0 -5px 0 rgba(0,0,0,.5),0 5px 0 var(--ink)}
-.btn.primary:hover:not([disabled]){background-color:#1b2233}
+@media (hover:hover){.btn.primary:hover:not([disabled]){background-color:#1b2233}}   /* (on a touch screen a hover stays stuck after a tap) */
 .btn.primary:active:not([disabled]){box-shadow:inset 0 3px 0 rgba(255,255,255,.12),inset 0 -2px 0 rgba(0,0,0,.5),0 0 0 var(--ink)}
 .btn.big{font:400 20px/1 var(--display);letter-spacing:.02em;padding:15px 30px;min-height:58px;border-radius:20px}
 .btn.sm{font-size:13.5px;padding:5px 11px;min-height:36px;border-width:2.5px;border-radius:12px;box-shadow:0 3px 0 var(--ink)}
@@ -825,7 +825,7 @@ header .stepper{margin-left:auto}
 .pricebtn{display:inline-flex;align-items:center;gap:6px;font:600 13.5px/1 var(--body);color:var(--ink);background:var(--fur);border:2.5px solid var(--ink);border-radius:14px;padding:0 12px 0 9px;min-height:40px;box-shadow:0 4px 0 var(--ink);cursor:pointer;white-space:nowrap}
 .pricebtn[hidden]{display:none}
 .pricebtn svg{width:16px;height:16px;fill:none;stroke:var(--sky-deep);stroke-width:2.6;stroke-linecap:round}
-.pricebtn:hover{background:#ffe9c2}
+@media (hover:hover){.pricebtn:hover{background:#ffe9c2}}   /* (on a touch screen a hover stays stuck after a tap) */
 .pricebtn:focus-visible{outline:3px solid #fff;outline-offset:3px}
 @media (max-width:640px){ .pricebtn{min-height:44px;padding:0 11px 0 9px} }
 @media (max-width:350px){ .pricebtn svg{display:none} }
@@ -840,7 +840,7 @@ header .stepper{margin-left:auto}
     radial-gradient(circle at 100% 100%,rgba(214,236,255,.9) 0 5px,rgba(214,236,255,0) 13px),
     radial-gradient(circle at 100% 0,rgba(214,236,255,.7) 0 3px,rgba(214,236,255,0) 9px);
   background-repeat:no-repeat;background-size:300% 100%,100% 100%,100% 100%,100% 100%;background-position:160% 0,0 0,0 0,0 0;}
-.pricebtn:hover{background-color:#ffe9c2}
+@media (hover:hover){.pricebtn:hover{background-color:#ffe9c2}}   /* (on a touch screen a hover stays stuck after a tap) */
 
 .pricebtn::before{content:"";position:absolute;left:12px;right:12px;top:100%;height:11px;margin-top:2px;pointer-events:none;
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='11' viewBox='0 0 40 11'%3E%3Cpath d='M1 0.5 L4 8.5 L7 0.5 M10 0.5 L12.5 5.5 L15 0.5 M18 0.5 L21.5 10 L25 0.5 M28 0.5 L30.5 6 L33 0.5 M35 0.5 L37 4 L39 0.5' fill='%23eaf6ff' stroke='%230a0d14' stroke-width='1.4' stroke-linejoin='round'/%3E%3C/svg%3E") left top/40px 11px repeat-x;
@@ -1064,3 +1064,8 @@ header .stepper{margin-left:auto}
 @keyframes pp-rise{from{opacity:0;transform:translateY(12px) scale(.95)}to{opacity:1;transform:none}}
 @keyframes pp-frost{from{transform:translateX(-120%)}to{transform:translateX(260%)}}
 @media (prefers-reduced-motion:reduce){.propop.pp-in,.propop.pp-in .pp-card,.propop.pp-in .pp-shine::before{animation:none}}
+/* « Your Privacy Choices »: the two choices side by side, same size and same look (neither is pushed) */
+.pc-row{gap:10px;flex-wrap:wrap;align-items:center}
+#pcAsk .pc-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#pcAsk .pc-two .btn{min-width:0;white-space:normal;text-align:center;justify-content:center}
+#pcAsk .linkbtn{color:var(--sky-deep);font:600 14px var(--body);text-decoration:underline}

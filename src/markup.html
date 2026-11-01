@@ -483,6 +483,24 @@
   </div>
 </div>
 
+<!-- « Your Privacy Choices » (United States: do not sell or share, kept on this device; GPC counts as a refusal) -->
+<div class="askbox" id="pcAsk" role="dialog" aria-modal="true" aria-labelledby="pcAskT" hidden>
+  <div class="card">
+    <h2 id="pcAskT" data-i18n="pc.t">Vos choix de confidentialité</h2>
+    <p data-i18n="pc.p">Stalak ne montre une pub que si tu choisis « Regarder une pub » pour retirer le filigrane. Tu peux interdire à Google et à ses partenaires d’utiliser tes informations pour des pubs ciblées (« Ne pas vendre ni partager mes informations »). Tu pourras quand même regarder une pub : elle ne sera pas personnalisée.</p>
+    <p class="note" id="pcGpc" data-i18n="pc.gpc" hidden>Le contrôle « Global Privacy Control » est activé dans ton navigateur : c’est déjà un refus.</p>
+    <div class="pc-two">
+      <button class="btn" id="pcOut" type="button" aria-describedby="pcState" data-i18n="pc.out">Ne pas vendre ni partager</button>
+      <button class="btn" id="pcIn" type="button" aria-describedby="pcState" data-i18n="pc.in">Autoriser</button>
+    </div>
+    <p class="note" id="pcState" role="status" aria-live="polite"></p>
+    <div class="row pc-row">
+      <a class="linkbtn" id="pcMore" href="/fr/confidentialite#cookies" target="_blank" rel="noopener" data-i18n="pc.more">En savoir plus</a>
+      <button class="btn primary" id="pcClose" type="button" data-i18n="pc.ok">OK</button>
+    </div>
+  </div>
+</div>
+
 <div class="askbox" id="filtAsk" role="alertdialog" aria-modal="true" aria-labelledby="filtAskT" hidden>
   <div class="card">
     <h2 id="filtAskT"></h2>
