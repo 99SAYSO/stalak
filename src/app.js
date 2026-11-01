@@ -1183,7 +1183,16 @@ const I18N_EN = /*@EN*/{
   "pp.l3": "Every filter",
   "pp.price": "<strong>$4.17</strong>/mo, billed yearly",
   "pp.go": "Go Pro",
-  "pp.later": "Maybe later"
+  "pp.later": "Maybe later",
+  "pc.t": "Your Privacy Choices",
+  "pc.p": "Stalak shows an ad only if you choose “Watch an ad” to remove the watermark. You can stop Google and its partners from using your information for targeted ads (“Do Not Sell or Share My Personal Information”). You can still watch an ad: it just won’t be personalized.",
+  "pc.gpc": "Global Privacy Control is on in your browser: that already counts as opting out.",
+  "pc.out": "Do Not Sell or Share",
+  "pc.in": "Allow",
+  "pc.state.out": "Your choice: do not sell or share ✓",
+  "pc.state.in": "Your choice: allowed",
+  "pc.more": "Learn more",
+  "pc.ok": "OK"
 }/*EN@*/;
 const I18N_FR = /*@FR*/{
   "kind.hint.reel": "Une vidéo verticale 9:16, de tout le son ou de quelques mesures.",
@@ -1862,13 +1871,16 @@ const I18N_FR = /*@FR*/{
   "pp.l3": "Tous les filtres",
   "pp.price": "<strong>4,17 $</strong>/mois, facturé à l’année",
   "pp.go": "Passer à Pro",
-  "pp.later": "Plus tard"
+  "pp.later": "Plus tard",
+  "pc.state.out": "Ton choix : ne pas vendre ni partager ✓",
+  "pc.state.in": "Ton choix : autorisé"
 }/*FR@*/;
 let STATIC_FR = /*@STATIC_FR*/null/*STATIC_FR@*/;
 const LANGS = ['fr', 'en'];
 let LANG = (() => {
   try { const q = new URLSearchParams(location.search).get('lang'); if (LANGS.includes(q)) return q; } catch(e){}
   const saved = store.get('stalak:lang'); if (LANGS.includes(saved)) return saved;
+  // (/en/ … : the old English addresses, before 01/11; the server sends them on to / with a 301)
   try { if (/^\/en(\/|$)/.test(location.pathname) || document.documentElement.getAttribute('lang') === 'en') return 'en'; } catch(e){}
   // Marketing & croissance (SEO) : sur stalak.app, chaque page garde sa langue (balise lang : / en anglais, /fr/ en français, depuis le 31/10) ;
   // le visiteur change avec le bouton FR / EN. La version claude.ai (sans balise canonical) suit la langue du navigateur.
@@ -5206,6 +5218,27 @@ function wmDraw(c, t, lw, lh){
    such check for the web. Until there is a consent tool, ads are asked in « limited ads » mode. AD_UNIT: Google's test unit,
    to be replaced by the real one once the Ad Manager account exists. */
 const AD_UNIT = '/22639388115/rewarded_web_example';
+/* consent (Juridique, STATUS « bandeau de consentement (CMP) »): Google's GDPR message (Ad Manager > Privacy & messaging,
+   certified, IAB TCF v2.2) comes with Google's ad script itself, so it shows only when « Regarder une pub » is touched, and
+   only where the owner targets it in Ad Manager (Europe, UK, Switzerland). CMP_ON: true once that message is published;
+   until then (no certified tool) ads are asked in « limited ads » mode only, and « Gérer les cookies » leads to the privacy
+   page. United States: « Your Privacy Choices » (do not sell or share) and Global Privacy Control make the ad
+   non-personalised (restrictDataProcessing). */
+let CMP_ON = false;   // (let: the tests switch it on)
+const PC_KEY = 'stalak:optout';
+const gpcOn = () => { try { return navigator.globalPrivacyControl === true; } catch(e){ return false; } };
+const optedOut = () => gpcOn() || store.get(PC_KEY) === true;
+function fcQueue(){ window.googlefc = window.googlefc || {}; window.googlefc.callbackQueue = window.googlefc.callbackQueue || []; return window.googlefc.callbackQueue; }
+/* the consent is known (or there is nothing to wait for): before an ad is asked. Google's message, when it is there, says so
+   within a few seconds (CONSENT_API_READY); the person then has up to 2 minutes to choose (CONSENT_DATA_READY). */
+function cmpReady(){
+  if (!CMP_ON) return Promise.resolve('off');
+  return new Promise(res => {
+    let api = false; const q = fcQueue();
+    const t1 = setTimeout(() => { if (!api) res('none'); }, 5000), t2 = setTimeout(() => res('timeout'), 125000);
+    q.push({ CONSENT_API_READY: () => { api = true; clearTimeout(t1); }, CONSENT_DATA_READY: () => { clearTimeout(t1); clearTimeout(t2); res('ready'); } });
+  });
+}
 let adBusy = false, gptP = null;
 const adAvail = () => !!ACCT && !can('nowm');
 function adSay(k){ const el = $('#adStatus'); if (!el) return; el.hidden = !k; if (k) setT(el, k); else setT(el, null); }
@@ -5238,10 +5271,15 @@ function gptLoad(){
 async function adWatch(){
   if (adBusy || S.exporting || !adAvail()) return;
   adBusy = true; adUI(); adSay('ad.load'); acctEvent('ad_offer');   // a rewarded ad asked (funnel of the dashboard)
+  // Google's script first: Google's own consent window (Europe, UK, Switzerland) comes with it; the ad is asked once the choice is made
+  window.googletag = window.googletag || { cmd: [] };
+  window.googletag.cmd.push(() => { try { window.googletag.pubads().setPrivacySettings(adPrivacy()); } catch(e){} });
   try { await gptLoad(); } catch(e){ diag('pub : script de Google indisponible (' + (e && e.message || e) + ')'); adBusy = false; adUI(); adSay('ad.none'); return; }
+  const cmp = await cmpReady(); if (CMP_ON) diag('pub : consentement ' + cmp);
+  if (cmp === 'timeout'){ adBusy = false; adUI(); adSay('ad.none'); return; }
   googletag.cmd.push(() => {
     const pa = googletag.pubads();
-    try { pa.setPrivacySettings({ limitedAds: true }); } catch(e){}
+    try { pa.setPrivacySettings(adPrivacy()); } catch(e){}
     const slot = googletag.defineOutOfPageSlot(AD_UNIT, googletag.enums.OutOfPageFormat.REWARDED);
     // null: this page or this device cannot show rewarded ads
     if (!slot){ diag('pub : format récompensé non pris en charge ici'); adBusy = false; adUI(); adSay('ad.na'); return; }
@@ -5262,6 +5300,48 @@ async function adWatch(){
     googletag.enableServices(); googletag.display(slot);
   });
 }
+// what Google may do with this ad: limited ads without a certified consent tool; not personalised for a US opt-out (or GPC)
+function adPrivacy(){
+  const o = {};
+  if (!CMP_ON) o.limitedAds = true;
+  if (optedOut()){ o.restrictDataProcessing = true; o.nonPersonalizedAds = true; }
+  return o;
+}
+/* « Gérer les cookies » (footer): Google's window again, to change the choice (Europe…); without the certified tool, the
+   privacy page (cookies) */
+function cookieSettings(e, a){
+  if (!CMP_ON || !ACCT) return;   // the link goes to the privacy page
+  e.preventDefault();
+  gptLoad().then(() => {
+    let shown = false; const t = setTimeout(() => { if (!shown) location.href = a.href; }, 6000);
+    fcQueue().push({ CONSENT_API_READY: () => { shown = true; clearTimeout(t); try { window.googlefc.showRevocationMessage(); } catch(err){ location.href = a.href; } } });
+  }, () => { location.href = a.href; });
+}
+/* « Your Privacy Choices » (footer): do not sell or share (United States), kept on this device; GPC counts as a refusal */
+let pcBack = null;
+function pcOpen(e){
+  if (e) e.preventDefault();
+  pcBack = document.activeElement; pcUi();
+  $('#pcAsk').hidden = false; modalOn(true); $('#pcOut').focus();
+}
+function pcUi(){
+  const out = optedOut();
+  $('#pcGpc').hidden = !gpcOn();
+  setT('#pcState', out ? 'pc.state.out' : 'pc.state.in');
+  $('#pcIn').disabled = gpcOn();   // (the two buttons look the same: the choice is written under them)
+  const more = $('#pcMore'); if (more) more.href = LANG === 'en' ? '/privacy#choices' : '/fr/confidentialite#cookies';
+}
+function pcClose(){ $('#pcAsk').hidden = true; modalOn(false); try { pcBack && pcBack.focus(); } catch(e){} }
+$('#pcOut').onclick = () => { store.set(PC_KEY, true); pcUi(); diag('confidentialité : ne pas vendre ni partager'); };
+$('#pcIn').onclick = () => { if (gpcOn()) return; store.set(PC_KEY, false); pcUi(); diag('confidentialité : autorisé'); };
+$('#pcClose').onclick = pcClose;
+$('#pcAsk').addEventListener('keydown', e => { if (e.key === 'Escape'){ e.stopPropagation(); pcClose(); } });
+$('#pcAsk').addEventListener('click', e => { if (e.target === e.currentTarget) pcClose(); });
+// the footer's links are written again at each change of language: one listener for the whole page
+document.addEventListener('click', e => {
+  const a = e.target.closest && e.target.closest('a[data-ck], a[data-pc]'); if (!a) return;
+  if (a.hasAttribute('data-ck')) cookieSettings(e, a); else pcOpen(e);
+});
 /* the reward: no watermark for this video, and its export starts at once, without another touch */
 function adReward(){
   wmPass = true; diag('pub : récompense accordée, export sans filigrane lancé'); acctEvent('ad_ok');
@@ -10835,6 +10915,18 @@ const langPick = e => {
   LANG = b.dataset.lang; store.set('stalak:lang', LANG);
   // a ?lang= in the address would win on the next visit: it follows the choice
   try { const u = new URL(location.href); if (u.searchParams.has('lang')){ u.searchParams.set('lang', LANG); history.replaceState(history.state, '', u.href); } } catch(err){}
+  // stalak.app (since 01/11: English on /, French on /fr/): the address follows the language, without reloading the page
+  // (the work on screen stays), so that a reload, a bookmark or a shared link give this language; the page's canonical
+  // address and the manifest of the installable app follow too. The claude.ai version (no canonical address) is left as it is.
+  try {
+    const can = document.querySelector('link[rel="canonical"]'), u = new URL(location.href);
+    if (can && /^\/(fr\/)?(index\.html)?$/.test(u.pathname)){
+      const home = LANG === 'fr' ? '/fr/' : '/';
+      if (u.pathname !== home){ u.pathname = home; history.replaceState(history.state, '', u.href); }
+      can.href = new URL(can.href).origin + home;
+      const man = document.querySelector('link[rel="manifest"]'); if (man) man.setAttribute('href', LANG === 'fr' ? '/fr/manifest.webmanifest' : '/manifest.webmanifest');
+    }
+  } catch(err){}
   diag('langue : ' + LANG);
   applyLang();
 };
