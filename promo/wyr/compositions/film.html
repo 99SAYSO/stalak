@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><title>film — would you rather, the boom, one shape to the logo</title></head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="film" data-width="1080" data-height="1920">
+        <style>
+          @font-face { font-family: "Rubik"; src: url("assets/fonts/rubik.ttf"); font-weight: 300 900; }
+          @font-face { font-family: "Lilita One"; src: url("assets/fonts/lilitaone.ttf"); }
+          @font-face { font-family: "NunitoW"; src: url("assets/fonts/nunito-900.woff2") format("woff2"); font-weight: 900; }
+          @font-face { font-family: "OpenSansW"; src: url("assets/fonts/opensans-800.woff2") format("woff2"); font-weight: 800; }
+          #root { position: absolute; inset: 0; overflow: hidden; font-family: "Rubik", sans-serif; color: #0a0d14;
+            background: radial-gradient(120% 78% at 50% 36%, #2b7ce7 0%, #1f6fd6 52%, #1a5fc0 100%); }
+          #root * { box-sizing: border-box; }
+          .abs { position: absolute; }
+          #snow { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+          /* the game: red / blue, the line, the options, the clock, the votes; then its shards and its snow (canvas) */
+          #wyr { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+          #flash { position: absolute; inset: 0; background: #ffffff; opacity: 0; visibility: hidden; pointer-events: none; }
+          #c-or { display: grid; place-items: center; font-family: "OpenSansW", sans-serif; font-weight: 800; font-size: 92px; line-height: 1; color: #ffffff; letter-spacing: -0.01em; padding-bottom: 4px; }
+          #c-ice { background-image: radial-gradient(circle at 20px 20px, #a9d3ff 3.2px, transparent 4px), radial-gradient(circle at 15px 15px, #ffffff 2.4px, transparent 3px); background-size: 70px 70px, 52px 52px; }
+          #ice-flake { position: absolute; left: 50%; top: 50%; width: 64%; height: 64%; margin: -32% 0 0 -32%; }
+          #hourg { position: absolute; left: 0; top: 0; width: 210px; height: 210px; visibility: hidden; filter: drop-shadow(0 14px 12px rgba(10,13,20,0.35)); }
+          .pre { position: absolute; left: 0; top: 0; width: 1px; height: 1px; overflow: hidden; opacity: 0; }
+          .pre span { font-family: "NunitoW"; font-weight: 900; }
+          #grain { position: absolute; inset: 0; background: url("assets/brand/grain.png"); opacity: 0.05; mix-blend-mode: overlay; pointer-events: none; }
+          #stage3d { position: absolute; inset: 0; perspective: 1300px; perspective-origin: 540px 1880px; }
+          #world { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; transform-style: preserve-3d; transform-origin: 0 0; }
+          #fshadow { position: absolute; left: 0; top: 0; border-radius: 50%; background: radial-gradient(closest-side, rgba(10, 13, 20, 0.34), rgba(10, 13, 20, 0)); }
+          /* the one shape: a face, an extrusion behind it (ink-blue sides, a light lip), icicles under it */
+          #shape { position: absolute; left: 0; top: 0; transform-style: preserve-3d; }
+          #shape .ly { position: absolute; inset: 0; }
+          /* the back of the shape: the icon (seen only while it flips) */
+          #backf { position: absolute; inset: 0; backface-visibility: hidden; background: #1f6fd6 url(assets/brand/icon.svg) center / 106.7% 106.7% no-repeat; visibility: hidden; }
+          #face { position: absolute; inset: 0; overflow: hidden; border: 6px solid #0a0d14; }
+          #shade { position: absolute; inset: 0; pointer-events: none; z-index: 29; background: #0a0d14; opacity: 0; }
+          #sheen { position: absolute; inset: 0; pointer-events: none; z-index: 30; opacity: 0;
+            background: linear-gradient(112deg, rgba(255,255,255,0) 41%, rgba(255,255,255,0.46) 48%, rgba(255,255,255,0.12) 52%, rgba(255,255,255,0) 59%); background-size: 300% 100%; }
+          #rim { position: absolute; inset: 0; pointer-events: none; z-index: 31; border-radius: inherit; box-shadow: inset 0 3px 0 rgba(255,255,255,0.22), inset 0 -10px 18px rgba(10,13,20,0.10); }
+          #icb { position: absolute; left: 0; top: 0; overflow: visible; }
+          #fringe { position: absolute; left: 0; top: 0; overflow: visible; z-index: 25; }
+          .blk { position: absolute; left: 50%; top: 50%; }
+          .blk.top { top: 0; }
+          .v { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+          .lil { font-family: "Lilita One", sans-serif; font-weight: 400; }
+          .cap { position: absolute; left: 0; right: 0; text-align: center; color: #fff; font-weight: 800; letter-spacing: -0.01em; line-height: 1.06;
+            text-shadow: 0 4px 0 rgba(10,13,20,0.92), 0 0 24px rgba(10,13,20,0.25); }
+          .muted { color: #3f5170; }
+          /* the drop zone */
+          #z-dash { position: absolute; inset: 24px; border-radius: 30px; border: 5px dashed #1f6fd6; }
+          #z-hover { position: absolute; inset: 24px; border-radius: 30px; border: 5px solid #1f6fd6; background: #d6ecff; }
+          /* the song */
+          .sdot { position: absolute; top: 0; width: 44px; height: 44px; border-radius: 50%; border: 4px solid #fff; }
+          /* takes card */
+          .row { position: absolute; left: 52px; width: 776px; height: 112px; border-radius: 28px; background: #eef7ff; border: 3px solid #0a0d14; }
+          .row .dot { position: absolute; left: 26px; top: 31px; width: 44px; height: 44px; border-radius: 50%; box-shadow: 0 0 0 3px #0a0d14, inset 0 5px 0 rgba(255,255,255,0.35); }
+          .row .nm { position: absolute; left: 92px; top: 14px; font-size: 40px; }
+          .row .st { position: absolute; left: 94px; top: 62px; font-size: 28px; font-weight: 500; color: #3f5170; }
+          .row .sp { position: absolute; right: 30px; top: 32px; width: 44px; height: 44px; }
+          /* sync tiles: the video, its chip, its check, its waveform */
+          .tile { position: absolute; left: 0; top: 0; width: 240px; height: 504px; transform-style: preserve-3d; }
+          .tile .ly { position: absolute; left: 0; top: 0; width: 240px; height: 426px; border-radius: 34px; }
+          .tile .tf { position: absolute; left: 0; top: 0; width: 240px; height: 426px; border-radius: 34px; overflow: hidden; border: 5px solid #0a0d14; background: #0a0d14; }
+          .tile .chipk { position: absolute; left: 14px; top: 14px; height: 46px; padding: 0 16px 0 10px; border-radius: 23px; background: #0a0d14; color: #fff; display: flex; align-items: center; gap: 9px; font-size: 28px; z-index: 3; }
+          .tile .chipk i { width: 24px; height: 24px; border-radius: 50%; box-shadow: 0 0 0 3px #fff inset; display: inline-block; }
+          .tile .ok { position: absolute; right: 12px; top: 12px; width: 52px; height: 52px; border-radius: 50%; background: #fff; border: 4px solid #0a0d14; z-index: 3; display: grid; place-items: center; }
+          .tile .wv { position: absolute; left: 0; top: 440px; width: 240px; height: 64px; border-radius: 18px; background: #fff; border: 3px solid #0a0d14; overflow: hidden; }
+          .tile .wv b { position: absolute; width: 4px; border-radius: 2px; }
+          .tile .wv .mk { position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; margin-left: -2px; background: #ff6fae; z-index: 2; }
+          /* lyrics card */
+          #l-seg { position: absolute; left: 52px; top: 150px; width: 776px; height: 88px; border-radius: 44px; background: #eef7ff; border: 3px solid #0a0d14; }
+          #l-seg .s { position: absolute; top: 3px; height: 76px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 600; white-space: nowrap; }
+          #l-seg .pro { background: #0a0d14; color: #fff; font-size: 20px; font-weight: 700; padding: 3px 9px; border-radius: 9px; }
+          #l-box { position: absolute; left: 52px; top: 268px; width: 776px; height: 300px; border-radius: 32px; background: #fff; border: 3px solid #0a0d14; box-shadow: inset 0 6px 0 rgba(10,13,20,0.06); }
+          .ln { position: absolute; left: 34px; font-size: 48px; font-weight: 600; color: #0a0d14; white-space: pre; }
+          /* edit card */
+          .pv { position: absolute; overflow: hidden; border: 5px solid #0a0d14; background: #0a0d14; }
+          #e-ruler { position: absolute; left: 52px; width: 796px; height: 24px; }
+          #e-bar { position: absolute; left: 52px; width: 796px; height: 60px; border-radius: 20px; border: 4px solid #0a0d14; background: #eef7ff; }
+          .bk { position: absolute; top: 0; height: 100%; display: grid; place-items: center; color: #fff; font-weight: 700; box-shadow: inset -3px 0 0 #0a0d14; }
+          .bk b { position: absolute; inset: 0; background: #fff; opacity: 0; border-radius: inherit; }
+          .btn-ink { position: absolute; border-radius: 48px; background: #0a0d14; color: #fff; display: grid; place-items: center; box-shadow: inset 0 3px 0 rgba(255,255,255,0.18); }
+          /* filter */
+          .th { position: absolute; top: 52px; width: 150px; height: 160px; border-radius: 18px; border: 3px solid #0a0d14; background-size: cover; background-position: center 30%; }
+          .thl { position: absolute; top: 224px; width: 210px; text-align: center; font-size: 30px; font-weight: 600; line-height: 1.08; }
+          #f-ring { position: absolute; top: 44px; height: 176px; border-radius: 24px; border: 6px solid #fff; box-shadow: 0 0 0 4px #1f6fd6, 0 0 0 7px #0a0d14; }
+          /* the voice, word by word (screen space: never moves once a word has landed) */
+          .capc { position: absolute; left: 40px; right: 40px; top: 140px; text-align: center; font-family: "Lilita One", sans-serif; font-size: 108px; line-height: 1.04; color: #fff;
+            -webkit-text-stroke: 10px #0a0d14; paint-order: stroke fill; text-shadow: 0 9px 0 #0a0d14; letter-spacing: 0.01em; }
+          .capc .w { display: inline-block; margin: 0 0.02em; transform-origin: 50% 70%; }
+          .capc .w.pk { color: #ff6fae; }
+          #caplogo { position: absolute; left: 270px; top: 150px; width: 540px; height: 238px; transform-style: preserve-3d; }
+          #caplogo img, #logo img { position: absolute; inset: 0; width: 100%; height: 100%; }
+          #chip { position: absolute; left: 0; top: 0; height: 84px; padding: 0 28px 0 18px; border-radius: 26px; background: #fff; border: 4px solid #0a0d14; box-shadow: 0 7px 0 #0a0d14;
+            display: flex; align-items: center; gap: 14px; font-size: 32px; font-weight: 700; white-space: nowrap; }
+          #logo { position: absolute; left: 220px; top: 819px; width: 640px; height: 282px; transform-style: preserve-3d; }
+          #tag1 { position: absolute; left: 0; width: 1080px; top: 1166px; text-align: center; color: #fff; font-size: 52px; font-weight: 700; text-shadow: 0 4px 0 #0a0d14; }
+          #tag1 span { display: inline-block; }
+          #tag2 { position: absolute; left: 0; width: 1080px; top: 1250px; text-align: center; font-family: "Lilita One", sans-serif; font-size: 104px; color: #fff;
+            -webkit-text-stroke: 10px #0a0d14; paint-order: stroke fill; text-shadow: 0 9px 0 #0a0d14; white-space: pre; }
+          #cursor { position: absolute; left: 0; top: 0; filter: drop-shadow(0 8px 10px rgba(10,13,20,0.35)); }
+        </style>
+
+        <div class="pre" aria-hidden="true"><span>Would 0123456789%,</span><!--PRELOAD-->
+<img id="im-brain" src="assets/wyr/brain_3d.png" alt="" /><img id="im-headphone" src="assets/wyr/headphone_3d.png" alt="" /><img id="im-prohibited" src="assets/wyr/prohibited_3d.png" alt="" /><img id="im-stopwatch" src="assets/wyr/stopwatch_3d.png" alt="" /><img id="im-television" src="assets/wyr/television_3d.png" alt="" /><img id="im-weary_face" src="assets/wyr/weary_face_3d.png" alt="" /><img id="im-icon" src="assets/brand/icon.svg" alt="" />
+<!--/PRELOAD--></div>
+        <div class="abs" style="left:0;top:0;width:1px;height:1px;overflow:hidden;opacity:0" aria-hidden="true"><img src="assets/stills/f_none.jpg" alt="" /><img src="assets/stills/f_frost.jpg" alt="" /><img src="assets/stills/f_film.jpg" alt="" /><img src="assets/stills/f_bw.jpg" alt="" /></div>
+        <canvas id="snow" width="1080" height="1920"></canvas>
+        <div id="grain"></div>
+        <canvas id="wyr" width="1080" height="1920"></canvas>
+        <div id="stage3d">
+          <div id="world">
+            <div id="fshadow"></div>
+
+            <div id="shape">
+              <div id="backf"></div>
+              <div id="face">
+                <!-- g0: "OR", the circle of the game (the one shape, flat and black) -->
+                <div class="blk" id="c-or" style="width:100%;height:100%;left:0;top:0">OR</div>
+                <!-- g1: after the boom, the circle turned to ice -->
+                <div class="blk" id="c-ice" style="width:100%;height:100%;left:0;top:0"><img id="ice-flake" src="assets/wyr/snowflake_3d.png" alt="" /></div>
+                <!-- m1: the drop zone of the app -->
+                <div class="blk" id="c-zone" style="width:860px;height:520px">
+                  <div id="z-hover"></div>
+                  <div id="z-dash"></div>
+                  <div class="abs lil" style="left:0;right:0;top:112px;text-align:center;font-size:72px">Import your music</div>
+                  <div class="abs muted" style="left:80px;right:80px;top:212px;text-align:center;font-size:38px;font-weight:500;line-height:1.28">MP3, WAV, M4A, or a video:<br>we use its sound</div>
+                </div>
+                <!-- m2: it takes the file -->
+                <div class="blk" id="c-load" style="width:176px;height:176px">
+                  <svg id="l-spin" class="abs" style="left:22px;top:22px" width="120" height="120" viewBox="0 0 120 120"><circle cx="60" cy="60" r="44" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="11"/><path d="M60 16 A44 44 0 0 1 104 60" fill="none" stroke="#fff" stroke-width="11" stroke-linecap="round"/></svg>
+                </div>
+                <!-- m3: the song, its tempo found, its beats counted -->
+                <div class="blk" id="c-song" style="width:880px;height:230px">
+                  <div class="abs" style="left:40px;top:40px;width:150px;height:150px;border-radius:50%;background:#fff;display:grid;place-items:center">
+                    <svg width="60" height="66" viewBox="0 0 18 20"><path d="M3.5 1.8 L16 10 L3.5 18.2 Z" fill="#0a0d14" stroke="#0a0d14" stroke-width="2.2" stroke-linejoin="round"/></svg>
+                  </div>
+                  <div class="abs" style="left:222px;top:38px;color:#9fb0cc;font-weight:600;font-size:40px">neva-die</div>
+                  <div class="abs lil" id="s-bpm" style="left:220px;top:94px;color:#fff;font-size:70px;line-height:1;white-space:pre;transform-origin:0 50%">157.0 BPM</div>
+                  <div class="abs" id="s-dots" style="left:578px;top:93px;width:242px;height:44px"></div>
+                </div>
+                <!-- m4: add your takes (the card grows with each take) -->
+                <div class="blk top" id="c-takes" style="width:880px;height:820px">
+                  <div class="abs lil" style="left:54px;top:50px;font-size:62px">Add your takes</div>
+                  <div class="abs muted" style="left:56px;top:130px;font-size:34px;font-weight:500">Film several lip-syncs of the same part.</div>
+                  <div class="abs" id="t-imp" style="left:52px;top:196px;width:776px;height:176px;border-radius:32px;background:#d6ecff;border:4px solid #0a0d14;box-shadow:0 7px 0 #0a0d14">
+                    <div class="abs lil" style="left:0;right:0;top:30px;text-align:center;font-size:52px">Import my videos</div>
+                    <div class="abs muted" style="left:0;right:0;top:102px;text-align:center;font-size:30px;font-weight:500">Filmed with the song playing out loud</div>
+                  </div>
+                  <div class="row" id="t-r1" style="top:410px"><i class="dot" style="background:#d6336c"></i><div class="nm lil">Take 1</div><div class="st">Analyzing the sound…</div><svg class="sp" viewBox="0 0 44 44"><circle cx="22" cy="22" r="16" fill="none" stroke="#c9d8ee" stroke-width="6"/><path d="M22 6 A16 16 0 0 1 38 22" fill="none" stroke="#1f6fd6" stroke-width="6" stroke-linecap="round"/></svg></div>
+                  <div class="row" id="t-r2" style="top:540px"><i class="dot" style="background:#3a6fe0"></i><div class="nm lil">Take 2</div><div class="st">Analyzing the sound…</div><svg class="sp" viewBox="0 0 44 44"><circle cx="22" cy="22" r="16" fill="none" stroke="#c9d8ee" stroke-width="6"/><path d="M22 6 A16 16 0 0 1 38 22" fill="none" stroke="#1f6fd6" stroke-width="6" stroke-linecap="round"/></svg></div>
+                  <div class="row" id="t-r3" style="top:670px"><i class="dot" style="background:#e0952c"></i><div class="nm lil">Take 3</div><div class="st">Analyzing the sound…</div><svg class="sp" viewBox="0 0 44 44"><circle cx="22" cy="22" r="16" fill="none" stroke="#c9d8ee" stroke-width="6"/><path d="M22 6 A16 16 0 0 1 38 22" fill="none" stroke="#1f6fd6" stroke-width="6" stroke-linecap="round"/></svg></div>
+                </div>
+                <!-- m5: the tray the three takes land on, in sync -->
+                <div class="blk" id="c-sync" style="width:880px;height:780px">
+                  <div class="abs" id="s-ok" style="left:60px;top:598px;width:760px;height:100px;border-radius:50px;background:#fff;border:4px solid #0a0d14;box-shadow:0 7px 0 #0a0d14;display:flex;align-items:center;justify-content:center;gap:16px;font-size:48px;font-weight:700;white-space:nowrap"><svg width="48" height="48" viewBox="0 0 30 30"><path d="M6 16 L12 22 L24 9" fill="none" stroke="#11804a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>All the takes are synced.</div>
+                </div>
+                <!-- m6: lyrics on screen -->
+                <div class="blk" id="c-lyr" style="width:880px;height:620px">
+                  <div class="abs lil" style="left:54px;top:50px;font-size:62px">Lyrics on screen</div>
+                  <div id="l-seg">
+                    <div class="s" id="l-s1" style="left:5px;width:262px;border-radius:38px;background:#1f6fd6;color:#fff;font-weight:700">Paste my lyrics</div>
+                    <div class="s" style="left:272px;width:340px">Auto transcription&nbsp;<span class="pro">PRO</span></div>
+                    <div class="s" style="left:612px;width:158px">No lyrics</div>
+                  </div>
+                  <div id="l-box">
+                    <div class="abs" id="l-sel" style="left:22px;top:38px;width:640px;height:150px;border-radius:14px;background:#a9d3ff;opacity:0"></div>
+                    <div class="abs" id="l-hint" style="left:34px;top:30px;font-size:28px;font-weight:500;color:#6d7f9e">Paste the lyrics of this part, one line per row.</div>
+                    <div class="ln" id="l-1" style="top:44px">After all this time, baby</div>
+                    <div class="ln" id="l-2" style="top:116px">I gotta bounce</div>
+                  </div>
+                </div>
+                <!-- m7-m10: your edit, cut on the beat, shuffled; then its look, in the same preview -->
+                <div class="blk" id="c-edit" style="width:900px;height:1020px">
+                  <div class="pv" id="e-pv" style="left:265px;top:28px;width:370px;height:658px;border-radius:30px">
+                    <!--EDIT-->
+<video id="ve04" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="33.153" data-duration="0.466" data-media-start="4.025" muted playsinline></video>
+<video id="ve05" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="33.619" data-duration="0.765" data-media-start="4.491" muted playsinline></video>
+<video id="ve06" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="34.384" data-duration="2.113" data-media-start="5.256" muted playsinline></video>
+<video id="vn06" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="36.497" data-duration="0.944" data-media-start="7.369" muted playsinline></video>
+<video id="vn07" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="37.441" data-duration="1.005" data-media-start="8.313" muted playsinline></video>
+<!--/EDIT-->
+                    <div class="abs" id="f-frost" style="left:0;top:0;width:100%;height:100%;clip-path:inset(0 100% 0 0)">
+                      <!--FROST-->
+<video id="vf07" class="clip v" data-color-grading="{&quot;preset&quot;:null,&quot;intensity&quot;:1,&quot;adjust&quot;:{&quot;exposure&quot;:0.08,&quot;contrast&quot;:0.1,&quot;highlights&quot;:0.15,&quot;shadows&quot;:0,&quot;whites&quot;:0,&quot;blacks&quot;:0,&quot;temperature&quot;:-0.8,&quot;tint&quot;:0,&quot;vibrance&quot;:0,&quot;saturation&quot;:-0.4},&quot;details&quot;:{&quot;vignette&quot;:0,&quot;vignetteMidpoint&quot;:0.5,&quot;vignetteRoundness&quot;:0,&quot;vignetteFeather&quot;:0.65,&quot;grain&quot;:0,&quot;grainSize&quot;:0.25,&quot;grainRoughness&quot;:0.5},&quot;effects&quot;:{&quot;blur&quot;:0,&quot;pixelate&quot;:0,&quot;chromaBleed&quot;:0,&quot;tapeDamage&quot;:0,&quot;tapeTracking&quot;:0,&quot;tapeNoise&quot;:1,&quot;tapeSpeed&quot;:0.5,&quot;filmArtifacts&quot;:0,&quot;halftone&quot;:0,&quot;halftoneSize&quot;:0,&quot;twoInkPrint&quot;:0,&quot;twoInkPrintSize&quot;:0,&quot;ascii&quot;:0,&quot;asciiSize&quot;:0.06578947368421052,&quot;asciiInvert&quot;:0,&quot;asciiStyle&quot;:0,&quot;asciiColor&quot;:1,&quot;asciiRotation&quot;:0,&quot;dither&quot;:0,&quot;ditherSize&quot;:0,&quot;bloom&quot;:0.25,&quot;bloomRadius&quot;:8,&quot;monoScreen&quot;:0,&quot;monoScreenSize&quot;:0,&quot;monoScreenAngle&quot;:0,&quot;monoScreenSpread&quot;:0,&quot;monoScreenShape&quot;:0,&quot;monoScreenInvert&quot;:0,&quot;scanlines&quot;:0,&quot;scanlineCount&quot;:0,&quot;scanlineSoftness&quot;:0,&quot;chromaticAberration&quot;:0,&quot;chromaticAngle&quot;:0,&quot;crtCurvature&quot;:0,&quot;digitalGlitch&quot;:0,&quot;digitalGlitchColorSplit&quot;:0,&quot;digitalGlitchLineTear&quot;:0,&quot;digitalGlitchPixelate&quot;:0,&quot;digitalGlitchBlockAmount&quot;:0,&quot;digitalGlitchBlockDisplacement&quot;:0,&quot;digitalGlitchBlockOpacity&quot;:0,&quot;digitalGlitchSpeed&quot;:0,&quot;engraving&quot;:0,&quot;engravingSpacing&quot;:0.4117647058823529,&quot;engravingMinThickness&quot;:0.2,&quot;engravingMaxThickness&quot;:0.4571428571428572,&quot;engravingAngle&quot;:0.25,&quot;engravingContrast&quot;:0.4666666666666667,&quot;engravingSharpness&quot;:0.59,&quot;engravingWave&quot;:0.2,&quot;engravingWaveFrequency&quot;:0.2222222222222222,&quot;crosshatch&quot;:0,&quot;crosshatchSpacing&quot;:0.28,&quot;crosshatchThickness&quot;:0.25,&quot;crosshatchAngle&quot;:0.25,&quot;crosshatchContrast&quot;:0.3333333333333333,&quot;crosshatchEdges&quot;:0.5,&quot;crosshatchLineWeight&quot;:0,&quot;crosshatchWave&quot;:0.33,&quot;crosshatchWaveFrequency&quot;:0.2222222222222222,&quot;kuwahara&quot;:0,&quot;kuwaharaRadius&quot;:0.14285714285714285,&quot;kuwaharaSharpness&quot;:0.3125,&quot;kuwaharaSaturation&quot;:0.5},&quot;lut&quot;:null,&quot;colorSpace&quot;:&quot;rec709&quot;,&quot;wheels&quot;:{&quot;shadows&quot;:{&quot;hue&quot;:212,&quot;amount&quot;:0.42,&quot;level&quot;:0},&quot;midtones&quot;:{&quot;hue&quot;:205,&quot;amount&quot;:0.3,&quot;level&quot;:0.04},&quot;highlights&quot;:{&quot;hue&quot;:195,&quot;amount&quot;:0.22,&quot;level&quot;:0.08}}}" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="37.682" data-duration="0.783" data-media-start="8.553" muted playsinline></video>
+<!--/FROST-->
+                    </div>
+                    <div class="abs" id="f-edge" style="top:0;bottom:0;left:0;width:6px;margin-left:-3px;background:#fff;box-shadow:0 0 0 2px rgba(10,13,20,0.35);opacity:0"></div>
+                  </div>
+                  <div class="abs" id="e-low" style="left:0;top:700px;width:900px;height:320px">
+                    <div class="abs" id="e-ver" style="left:52px;top:4px;font-size:40px;font-weight:700;height:50px;width:320px;overflow:hidden">
+                      <div id="e-ver1" class="abs" style="left:0;top:0">Version 1</div><div id="e-ver2" class="abs" style="left:0;top:50px">Version 2</div>
+                    </div>
+                    <div class="abs muted" style="right:52px;top:10px;font-size:32px;font-weight:500">21 shots • 25.6 s</div>
+                    <div id="e-ruler" style="top:70px"></div>
+                    <div id="e-bar" style="top:98px"></div>
+                    <div class="abs" id="e-ph" style="left:0;top:84px;width:6px;height:88px;background:#0a0d14;border-radius:3px"></div>
+                    <div class="abs" id="e-knob" style="left:0;top:70px;width:30px;height:30px;border-radius:50%;background:#ff6fae;box-shadow:0 0 0 3px #0a0d14"></div>
+                    <div class="abs lil" id="e-play" style="left:118px;top:184px;width:310px;height:88px;border-radius:44px;background:#fff;border:4px solid #0a0d14;box-shadow:0 6px 0 #0a0d14;display:grid;place-items:center;font-size:44px">▶ Play</div>
+                    <div class="btn-ink lil" id="e-shuf" style="left:472px;top:184px;width:310px;height:88px;font-size:44px">↻ Shuffle</div>
+                    <svg id="e-shufice" class="abs" style="left:472px;top:266px;overflow:visible" width="310" height="40"></svg>
+                  </div>
+                  <div class="abs" id="f-low" style="left:0;top:700px;width:900px;height:320px">
+                    <div class="abs" style="left:52px;top:0;font-size:36px;font-weight:700">Filter</div>
+                    <div id="f-ring"></div>
+                    <div class="th" style="left:60px;background-image:url(assets/stills/f_none.jpg)"></div>
+                    <div class="th" style="left:270px;background-image:url(assets/stills/f_frost.jpg)"></div>
+                    <div class="th" style="left:480px;background-image:url(assets/stills/f_film.jpg)"></div>
+                    <div class="th" style="left:690px;background-image:url(assets/stills/f_bw.jpg)"></div>
+                    <div class="thl" style="left:30px">None</div><div class="thl" style="left:240px">Frost</div><div class="thl" style="left:450px">35 mm<br>film</div><div class="thl" style="left:660px">Black &amp;<br>white</div>
+                  </div>
+                </div>
+                <!-- m11: export -->
+                <div class="blk" id="c-exp" style="width:600px;height:180px">
+                  <div class="abs" id="x-fill" style="left:0;top:0;height:100%;width:0;background:#d6ecff"></div>
+                  <div class="abs lil" id="x-lab1" data-layout-allow-overlap="true" style="left:0;right:0;top:50px;text-align:center;color:#fff;font-size:76px;line-height:1">Export ↓</div>
+                  <div class="abs lil" id="x-lab2" data-layout-allow-overlap="true" style="left:0;right:0;top:50px;text-align:center;color:#0a0d14;font-size:76px;line-height:1;clip-path:inset(0 100% 0 0)">Export ↓</div>
+                </div>
+                <!-- m12: the finished snippet, full screen, one bar -->
+                <div class="blk" id="c-pay" style="width:1240px;height:2140px">
+                  <!--PAY-->
+<video id="vp07" class="clip v" data-color-grading="{&quot;preset&quot;:null,&quot;intensity&quot;:1,&quot;adjust&quot;:{&quot;exposure&quot;:0.08,&quot;contrast&quot;:0.1,&quot;highlights&quot;:0.15,&quot;shadows&quot;:0,&quot;whites&quot;:0,&quot;blacks&quot;:0,&quot;temperature&quot;:-0.8,&quot;tint&quot;:0,&quot;vibrance&quot;:0,&quot;saturation&quot;:-0.4},&quot;details&quot;:{&quot;vignette&quot;:0,&quot;vignetteMidpoint&quot;:0.5,&quot;vignetteRoundness&quot;:0,&quot;vignetteFeather&quot;:0.65,&quot;grain&quot;:0,&quot;grainSize&quot;:0.25,&quot;grainRoughness&quot;:0.5},&quot;effects&quot;:{&quot;blur&quot;:0,&quot;pixelate&quot;:0,&quot;chromaBleed&quot;:0,&quot;tapeDamage&quot;:0,&quot;tapeTracking&quot;:0,&quot;tapeNoise&quot;:1,&quot;tapeSpeed&quot;:0.5,&quot;filmArtifacts&quot;:0,&quot;halftone&quot;:0,&quot;halftoneSize&quot;:0,&quot;twoInkPrint&quot;:0,&quot;twoInkPrintSize&quot;:0,&quot;ascii&quot;:0,&quot;asciiSize&quot;:0.06578947368421052,&quot;asciiInvert&quot;:0,&quot;asciiStyle&quot;:0,&quot;asciiColor&quot;:1,&quot;asciiRotation&quot;:0,&quot;dither&quot;:0,&quot;ditherSize&quot;:0,&quot;bloom&quot;:0.25,&quot;bloomRadius&quot;:8,&quot;monoScreen&quot;:0,&quot;monoScreenSize&quot;:0,&quot;monoScreenAngle&quot;:0,&quot;monoScreenSpread&quot;:0,&quot;monoScreenShape&quot;:0,&quot;monoScreenInvert&quot;:0,&quot;scanlines&quot;:0,&quot;scanlineCount&quot;:0,&quot;scanlineSoftness&quot;:0,&quot;chromaticAberration&quot;:0,&quot;chromaticAngle&quot;:0,&quot;crtCurvature&quot;:0,&quot;digitalGlitch&quot;:0,&quot;digitalGlitchColorSplit&quot;:0,&quot;digitalGlitchLineTear&quot;:0,&quot;digitalGlitchPixelate&quot;:0,&quot;digitalGlitchBlockAmount&quot;:0,&quot;digitalGlitchBlockDisplacement&quot;:0,&quot;digitalGlitchBlockOpacity&quot;:0,&quot;digitalGlitchSpeed&quot;:0,&quot;engraving&quot;:0,&quot;engravingSpacing&quot;:0.4117647058823529,&quot;engravingMinThickness&quot;:0.2,&quot;engravingMaxThickness&quot;:0.4571428571428572,&quot;engravingAngle&quot;:0.25,&quot;engravingContrast&quot;:0.4666666666666667,&quot;engravingSharpness&quot;:0.59,&quot;engravingWave&quot;:0.2,&quot;engravingWaveFrequency&quot;:0.2222222222222222,&quot;crosshatch&quot;:0,&quot;crosshatchSpacing&quot;:0.28,&quot;crosshatchThickness&quot;:0.25,&quot;crosshatchAngle&quot;:0.25,&quot;crosshatchContrast&quot;:0.3333333333333333,&quot;crosshatchEdges&quot;:0.5,&quot;crosshatchLineWeight&quot;:0,&quot;crosshatchWave&quot;:0.33,&quot;crosshatchWaveFrequency&quot;:0.2222222222222222,&quot;kuwahara&quot;:0,&quot;kuwaharaRadius&quot;:0.14285714285714285,&quot;kuwaharaSharpness&quot;:0.3125,&quot;kuwaharaSaturation&quot;:0.5},&quot;lut&quot;:null,&quot;colorSpace&quot;:&quot;rec709&quot;,&quot;wheels&quot;:{&quot;shadows&quot;:{&quot;hue&quot;:212,&quot;amount&quot;:0.42,&quot;level&quot;:0},&quot;midtones&quot;:{&quot;hue&quot;:205,&quot;amount&quot;:0.3,&quot;level&quot;:0.04},&quot;highlights&quot;:{&quot;hue&quot;:195,&quot;amount&quot;:0.22,&quot;level&quot;:0.08}}}" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="39.745" data-duration="0.754" data-media-start="9.088" muted playsinline></video>
+<video id="vp08" class="clip v" data-color-grading="{&quot;preset&quot;:null,&quot;intensity&quot;:1,&quot;adjust&quot;:{&quot;exposure&quot;:0.08,&quot;contrast&quot;:0.1,&quot;highlights&quot;:0.15,&quot;shadows&quot;:0,&quot;whites&quot;:0,&quot;blacks&quot;:0,&quot;temperature&quot;:-0.8,&quot;tint&quot;:0,&quot;vibrance&quot;:0,&quot;saturation&quot;:-0.4},&quot;details&quot;:{&quot;vignette&quot;:0,&quot;vignetteMidpoint&quot;:0.5,&quot;vignetteRoundness&quot;:0,&quot;vignetteFeather&quot;:0.65,&quot;grain&quot;:0,&quot;grainSize&quot;:0.25,&quot;grainRoughness&quot;:0.5},&quot;effects&quot;:{&quot;blur&quot;:0,&quot;pixelate&quot;:0,&quot;chromaBleed&quot;:0,&quot;tapeDamage&quot;:0,&quot;tapeTracking&quot;:0,&quot;tapeNoise&quot;:1,&quot;tapeSpeed&quot;:0.5,&quot;filmArtifacts&quot;:0,&quot;halftone&quot;:0,&quot;halftoneSize&quot;:0,&quot;twoInkPrint&quot;:0,&quot;twoInkPrintSize&quot;:0,&quot;ascii&quot;:0,&quot;asciiSize&quot;:0.06578947368421052,&quot;asciiInvert&quot;:0,&quot;asciiStyle&quot;:0,&quot;asciiColor&quot;:1,&quot;asciiRotation&quot;:0,&quot;dither&quot;:0,&quot;ditherSize&quot;:0,&quot;bloom&quot;:0.25,&quot;bloomRadius&quot;:8,&quot;monoScreen&quot;:0,&quot;monoScreenSize&quot;:0,&quot;monoScreenAngle&quot;:0,&quot;monoScreenSpread&quot;:0,&quot;monoScreenShape&quot;:0,&quot;monoScreenInvert&quot;:0,&quot;scanlines&quot;:0,&quot;scanlineCount&quot;:0,&quot;scanlineSoftness&quot;:0,&quot;chromaticAberration&quot;:0,&quot;chromaticAngle&quot;:0,&quot;crtCurvature&quot;:0,&quot;digitalGlitch&quot;:0,&quot;digitalGlitchColorSplit&quot;:0,&quot;digitalGlitchLineTear&quot;:0,&quot;digitalGlitchPixelate&quot;:0,&quot;digitalGlitchBlockAmount&quot;:0,&quot;digitalGlitchBlockDisplacement&quot;:0,&quot;digitalGlitchBlockOpacity&quot;:0,&quot;digitalGlitchSpeed&quot;:0,&quot;engraving&quot;:0,&quot;engravingSpacing&quot;:0.4117647058823529,&quot;engravingMinThickness&quot;:0.2,&quot;engravingMaxThickness&quot;:0.4571428571428572,&quot;engravingAngle&quot;:0.25,&quot;engravingContrast&quot;:0.4666666666666667,&quot;engravingSharpness&quot;:0.59,&quot;engravingWave&quot;:0.2,&quot;engravingWaveFrequency&quot;:0.2222222222222222,&quot;crosshatch&quot;:0,&quot;crosshatchSpacing&quot;:0.28,&quot;crosshatchThickness&quot;:0.25,&quot;crosshatchAngle&quot;:0.25,&quot;crosshatchContrast&quot;:0.3333333333333333,&quot;crosshatchEdges&quot;:0.5,&quot;crosshatchLineWeight&quot;:0,&quot;crosshatchWave&quot;:0.33,&quot;crosshatchWaveFrequency&quot;:0.2222222222222222,&quot;kuwahara&quot;:0,&quot;kuwaharaRadius&quot;:0.14285714285714285,&quot;kuwaharaSharpness&quot;:0.3125,&quot;kuwaharaSaturation&quot;:0.5},&quot;lut&quot;:null,&quot;colorSpace&quot;:&quot;rec709&quot;,&quot;wheels&quot;:{&quot;shadows&quot;:{&quot;hue&quot;:212,&quot;amount&quot;:0.42,&quot;level&quot;:0},&quot;midtones&quot;:{&quot;hue&quot;:205,&quot;amount&quot;:0.3,&quot;level&quot;:0.04},&quot;highlights&quot;:{&quot;hue&quot;:195,&quot;amount&quot;:0.22,&quot;level&quot;:0.08}}}" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="40.499" data-duration="0.764" data-media-start="9.842" muted playsinline></video>
+<video id="vp09" class="clip v" data-color-grading="{&quot;preset&quot;:null,&quot;intensity&quot;:1,&quot;adjust&quot;:{&quot;exposure&quot;:0.08,&quot;contrast&quot;:0.1,&quot;highlights&quot;:0.15,&quot;shadows&quot;:0,&quot;whites&quot;:0,&quot;blacks&quot;:0,&quot;temperature&quot;:-0.8,&quot;tint&quot;:0,&quot;vibrance&quot;:0,&quot;saturation&quot;:-0.4},&quot;details&quot;:{&quot;vignette&quot;:0,&quot;vignetteMidpoint&quot;:0.5,&quot;vignetteRoundness&quot;:0,&quot;vignetteFeather&quot;:0.65,&quot;grain&quot;:0,&quot;grainSize&quot;:0.25,&quot;grainRoughness&quot;:0.5},&quot;effects&quot;:{&quot;blur&quot;:0,&quot;pixelate&quot;:0,&quot;chromaBleed&quot;:0,&quot;tapeDamage&quot;:0,&quot;tapeTracking&quot;:0,&quot;tapeNoise&quot;:1,&quot;tapeSpeed&quot;:0.5,&quot;filmArtifacts&quot;:0,&quot;halftone&quot;:0,&quot;halftoneSize&quot;:0,&quot;twoInkPrint&quot;:0,&quot;twoInkPrintSize&quot;:0,&quot;ascii&quot;:0,&quot;asciiSize&quot;:0.06578947368421052,&quot;asciiInvert&quot;:0,&quot;asciiStyle&quot;:0,&quot;asciiColor&quot;:1,&quot;asciiRotation&quot;:0,&quot;dither&quot;:0,&quot;ditherSize&quot;:0,&quot;bloom&quot;:0.25,&quot;bloomRadius&quot;:8,&quot;monoScreen&quot;:0,&quot;monoScreenSize&quot;:0,&quot;monoScreenAngle&quot;:0,&quot;monoScreenSpread&quot;:0,&quot;monoScreenShape&quot;:0,&quot;monoScreenInvert&quot;:0,&quot;scanlines&quot;:0,&quot;scanlineCount&quot;:0,&quot;scanlineSoftness&quot;:0,&quot;chromaticAberration&quot;:0,&quot;chromaticAngle&quot;:0,&quot;crtCurvature&quot;:0,&quot;digitalGlitch&quot;:0,&quot;digitalGlitchColorSplit&quot;:0,&quot;digitalGlitchLineTear&quot;:0,&quot;digitalGlitchPixelate&quot;:0,&quot;digitalGlitchBlockAmount&quot;:0,&quot;digitalGlitchBlockDisplacement&quot;:0,&quot;digitalGlitchBlockOpacity&quot;:0,&quot;digitalGlitchSpeed&quot;:0,&quot;engraving&quot;:0,&quot;engravingSpacing&quot;:0.4117647058823529,&quot;engravingMinThickness&quot;:0.2,&quot;engravingMaxThickness&quot;:0.4571428571428572,&quot;engravingAngle&quot;:0.25,&quot;engravingContrast&quot;:0.4666666666666667,&quot;engravingSharpness&quot;:0.59,&quot;engravingWave&quot;:0.2,&quot;engravingWaveFrequency&quot;:0.2222222222222222,&quot;crosshatch&quot;:0,&quot;crosshatchSpacing&quot;:0.28,&quot;crosshatchThickness&quot;:0.25,&quot;crosshatchAngle&quot;:0.25,&quot;crosshatchContrast&quot;:0.3333333333333333,&quot;crosshatchEdges&quot;:0.5,&quot;crosshatchLineWeight&quot;:0,&quot;crosshatchWave&quot;:0.33,&quot;crosshatchWaveFrequency&quot;:0.2222222222222222,&quot;kuwahara&quot;:0,&quot;kuwaharaRadius&quot;:0.14285714285714285,&quot;kuwaharaSharpness&quot;:0.3125,&quot;kuwaharaSaturation&quot;:0.5},&quot;lut&quot;:null,&quot;colorSpace&quot;:&quot;rec709&quot;,&quot;wheels&quot;:{&quot;shadows&quot;:{&quot;hue&quot;:212,&quot;amount&quot;:0.42,&quot;level&quot;:0},&quot;midtones&quot;:{&quot;hue&quot;:205,&quot;amount&quot;:0.3,&quot;level&quot;:0.04},&quot;highlights&quot;:{&quot;hue&quot;:195,&quot;amount&quot;:0.22,&quot;level&quot;:0.08}}}" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="41.263" data-duration="0.202" data-media-start="10.606" muted playsinline></video>
+<!--/PAY-->
+                  <div class="cap" id="p-cap" style="top:1240px;font-size:72px">I gotta bounce</div>
+                  <img id="p-wm" class="abs" src="assets/brand/wordmark.svg?wm" alt="" style="left:140px;top:330px;width:150px;opacity:0.85" />
+                </div>
+                <!-- m15: the app icon -->
+                <div class="blk" id="c-icon" style="width:100%;height:100%;left:0;top:0;background:url(assets/brand/icon.svg) center / 106.7% 106.7% no-repeat"></div>
+                <svg id="fringe"></svg>
+                <div id="shade"></div>
+                <div id="sheen"></div>
+                <div id="rim"></div>
+              </div>
+              <svg id="icb"></svg>
+            </div>
+
+            <!-- a2: "an hour" ... "are over." -->
+            <img id="hourg" src="assets/wyr/hourglass_not_done_3d.png" alt="" data-layout-allow-overlap="true" />
+
+            <!-- m5: the three takes leave the card in depth, then sync -->
+            <div class="tile" id="tile1" data-layout-allow-overlap="true"><div class="tf"><!--SYNC1-->
+<video id="vs1a" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="30.420" data-duration="0.917" data-media-start="1.712" muted playsinline></video>
+<video id="vs1b" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="31.338" data-duration="1.223" data-media-start="2.209" muted playsinline></video>
+<!--/SYNC1--></div><div class="chipk"><i style="background:#d6336c"></i><span class="lil">Take 1</span></div><div class="ok"><svg width="30" height="30" viewBox="0 0 30 30"><path d="M6 16 L12 22 L24 9" fill="none" stroke="#11804a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="wv"><i class="mk"></i></div></div>
+            <div class="tile" id="tile2" data-layout-allow-overlap="true"><div class="tf"><!--SYNC2-->
+<video id="vs2a" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="30.420" data-duration="0.917" data-media-start="0.982" muted playsinline></video>
+<video id="vs2b" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="31.338" data-duration="1.223" data-media-start="2.209" muted playsinline></video>
+<!--/SYNC2--></div><div class="chipk"><i style="background:#3a6fe0"></i><span class="lil">Take 2</span></div><div class="ok"><svg width="30" height="30" viewBox="0 0 30 30"><path d="M6 16 L12 22 L24 9" fill="none" stroke="#11804a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="wv"><i class="mk"></i></div></div>
+            <div class="tile" id="tile3" data-layout-allow-overlap="true"><div class="tf"><!--SYNC3-->
+<video id="vs3a" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="30.420" data-duration="0.917" data-media-start="1.522" muted playsinline></video>
+<video id="vs3b" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="31.338" data-duration="1.223" data-media-start="2.209" muted playsinline></video>
+<!--/SYNC3--></div><div class="chipk"><i style="background:#e0952c"></i><span class="lil">Take 3</span></div><div class="ok"><svg width="30" height="30" viewBox="0 0 30 30"><path d="M6 16 L12 22 L24 9" fill="none" stroke="#11804a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="wv"><i class="mk"></i></div></div>
+
+            <div id="chip" data-layout-allow-overlap="true"><svg width="40" height="40" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13" fill="none" stroke="#0a0d14" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="18" r="3" fill="#1f6fd6" stroke="#0a0d14" stroke-width="2"/><circle cx="17" cy="16" r="3" fill="#1f6fd6" stroke="#0a0d14" stroke-width="2"/></svg>neva-die.mp3</div>
+            <div id="logo"></div>
+            <div id="tag1"><span>Free</span> <span>·</span> <span>in</span> <span>your</span> <span>browser</span> <span>·</span> <span>no</span> <span>sign-up</span></div>
+            <div id="tag2"></div>
+            <svg id="cursor" data-layout-allow-overlap="true" width="76" height="108" viewBox="0 0 28 40"><path d="M2 2 L2 31 L9.5 24.5 L14.5 36 L19.5 33.8 L14.6 22.6 L24.5 22.6 Z" fill="#0a0d14" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <!-- the voice, word by word; "Stalak" is the logo -->
+        <div id="caps">
+          <div class="abs" style="left:0;top:0;width:1080px;height:700px;perspective:1100px;perspective-origin:540px 260px"><div id="caplogo"></div></div>
+        </div>
+
+        <div id="flash"></div>
+
+        <script>
+          (function () {
+            var root = document.getElementById("root");
+            window.ONE.init(root);
+            var tl = gsap.timeline({ paused: true });
+            var clock = { t: 0 };
+            tl.to(clock, { t: window.T.TOTAL, duration: window.T.TOTAL, ease: "none", onUpdate: function () { window.ONE.render(clock.t); } }, 0);
+            window.addEventListener("hf-seek", function (e) { if (e && e.detail && typeof e.detail.time === "number") window.ONE.render(e.detail.time); });
+            window.ONE.render(0);
+            window.__timelines = window.__timelines || {};
+            window.__timelines["film"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>
