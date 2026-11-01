@@ -32,12 +32,13 @@ def song_bar(j): return inst_bar(j + 2) - OFF
 #     https://www.jeu-tu-preferes.fr/q/14936/tu-preferes-un-monde-sans-musique-ou-un-monde-sans-tele
 #     "Sur 228 186 votes, 24% des joueurs ont choisi « Un monde sans musique » et 76% ont préféré « Un monde sans télé »."
 #  Q3 no votes: it explodes.
-# Images: Microsoft Fluent Emoji 3D (MIT licence, assets/wyr/LICENSE-fluent-emoji.txt); Q3's answer is Stalak's real icon.
+# Images: Microsoft Fluent Emoji 3D (MIT licence, assets/wyr/LICENSE-fluent-emoji.txt); "no" = a red ring and slash drawn over the
+# picture ("without ..."); Q3's answer is Stalak's real icon.
 WC = [
     {"a": {"lines": ["Stop time"], "img": ["stopwatch_3d"], "pct": 64},
      "b": {"lines": ["Move things", "with your mind"], "img": ["brain_3d"], "pct": 36}, "votes": "29,204 votes"},
-    {"a": {"lines": ["A world", "without music"], "img": ["headphone_3d", "prohibited_3d"], "pct": 24},
-     "b": {"lines": ["A world", "without TV"], "img": ["television_3d", "prohibited_3d"], "pct": 76}, "votes": "228,186 votes"},
+    {"a": {"lines": ["A world", "without music"], "img": ["headphone_3d", "no"], "pct": 24},
+     "b": {"lines": ["A world", "without TV"], "img": ["television_3d", "no"], "pct": 76}, "votes": "228,186 votes"},
     {"a": {"lines": ["Spend an hour", "editing your snippet"], "img": ["weary_face_3d"]},
      "b": {"lines": ["3 minutes", "with Stalak"], "img": ["icon"]}, "votes": ""},
 ]
@@ -267,7 +268,7 @@ V_["EDIT"] = edl("ve", V(26.75), V(35.5), take_prev) + "\n" + edl("vn", V(35.5),
 V_["FROST"] = edl("vf", V(38.6), V(40.65), take_prev, extra=GRADE_FROST, takes=NEW)
 V_["PAY"] = edl("vp", V(44), V(48.5), take_pay, extra=GRADE_FROST, takes=NEW)
 # the pictures of the game, preloaded (the canvas draws them)
-IMGS = sorted({im for q in WC for side in ("a", "b") for im in q[side]["img"] if im != "icon"})
+IMGS = sorted({im for q in WC for side in ("a", "b") for im in q[side]["img"] if im not in ("icon", "no")})
 V_["PRELOAD"] = "".join('<img id="im-%s" src="assets/wyr/%s.png" alt="" />' % (im.replace("_3d", ""), im) for im in IMGS) + '<img id="im-icon" src="assets/brand/icon.svg" alt="" />'
 
 film = HERE / "compositions" / "film.html"

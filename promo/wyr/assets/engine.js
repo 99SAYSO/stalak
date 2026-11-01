@@ -199,7 +199,7 @@
   // the owner's background, redrawn sharp at 1080 x 1920 (his file is 415 x 739): same colours, the line and the circle in the middle
   var RED = "#ff3728", BLUE = "#129aff", GREEN = "#2df014";
   var G = { c: null, x: null, im: {}, fit: null, plate: null };
-  var LAY = { a: { txt: 292, img: 590, pct: 826 }, b: { txt: 1268, img: 1530, pct: 1090 } };
+  var LAY = { a: { txt: 292, img: 590, pct: 814 }, b: { txt: 1268, img: 1530, pct: 1104 } };
   var IMS = 300, FS = 86, MAXW = 900;
   function gReady() {
     if (document.fonts && document.fonts.check && !document.fonts.check('900 80px "NunitoW"')) return false;
@@ -242,8 +242,8 @@
     c.translate(540, L.img + dy + bob); c.rotate(rot * Math.PI / 180); c.scale(sc, sc);
     for (var j = 0; j < o.img.length; j++) {
       var nm = o.img[j], im = G.im[nm.replace("_3d", "")];
-      if (!im) continue;
-      if (nm === "prohibited_3d") {     // "without": a red "no" ring and slash over the thing, which stays visible
+      if (!im && nm !== "no") continue;
+      if (nm === "no") {     // "without": a red "no" ring and slash over the thing, which stays visible
         c.lineCap = "round";
         for (var pass = 0; pass < 2; pass++) {
           c.lineWidth = pass ? 24 : 36; c.strokeStyle = pass ? "#ff2b2b" : "rgba(90,0,0,0.45)";
