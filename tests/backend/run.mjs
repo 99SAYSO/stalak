@@ -1088,7 +1088,7 @@ test('oauth Apple: form_post callback, ES256 and RS256 keys, client secret = ES2
   assert.equal(payload.iss, 'TEAM123456'); assert.equal(payload.sub, 'app.stalak.web'); assert.equal(payload.aud, 'https://appleid.apple.com');
   assert.ok(payload.exp > payload.iat && payload.exp - payload.iat <= 15777000);
   let me = await call(env, 'GET', '/api/me', { cookie: r.jar('stalak_s') });
-  assert.equal(me.data.user.email, 'x7k2@privaterelay.appleid.com'); assert.equal(me.data.user.displayName, 'Ana Glace'); assert.equal(me.data.user.lang, 'fr');
+  assert.equal(me.data.user.email, 'x7k2@privaterelay.appleid.com'); assert.equal(me.data.user.displayName, 'Ana Glace'); assert.equal(me.data.user.lang, 'en');   // return path "/" = English since 1/11 (French is /fr/)
   // next time: no name sent, RS256 key; the name stays
   b = await oauthBegin(env, 'apple');
   r = await oauthFinish(env, 'apple', b, { key: KEYS.appleRsa });
