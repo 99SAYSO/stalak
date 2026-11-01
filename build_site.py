@@ -16,6 +16,16 @@ def arg(name, default=''):
 EMAIL = arg('--email')
 DOMAIN = arg('--domain', 'stalak.app')
 SELLER = arg('--seller')   # legal name of the seller (company or sole proprietor), shown in the terms of sale
+# Juridique & business (01/11/2026): identity of the micro-entreprise (vendeur.json at the root, not published as a file).
+# Empty name / SIRET / address / phone = « private individual » texts; all four filled = the business texts of the legal pages.
+VENDEUR = json.loads((root / 'vendeur.json').read_text(encoding='utf-8')) if (root / 'vendeur.json').exists() else {}
+BIZ = {k: str(VENDEUR.get(k) or '').strip() for k in ('nom', 'siret', 'adresse', 'telephone')}
+BIZ_ON = all(BIZ.values())
+assert BIZ_ON or not any(BIZ.values()), 'vendeur.json: fill in nom, siret, adresse and telephone together (or leave all four empty)'
+MED = {k: str((VENDEUR.get('mediateur') or {}).get(k) or '').strip() for k in ('nom', 'site')}
+MED_ON = all(MED.values())
+assert MED_ON or not any(MED.values()), 'vendeur.json: the mediator needs both its name and its website'
+assert not MED_ON or MED['site'].startswith('https://'), 'vendeur.json: the mediator website must start with https://'
 URL = 'https://' + DOMAIN
 # Marketing & croissance : comptes officiels de Stalak, déclarés à Google (schema.org « sameAs ») et en liens dans le pied de page.
 # Mettre l'adresse complète du profil (ex. 'https://www.instagram.com/<compte>/') ; une case vide n'apparaît nulle part.
@@ -295,7 +305,17 @@ for f in list(out.glob('*.html')) + list((out / 'fr').glob('*.html')):
 DEMO = (extra / 'demo' / 'exemple.mp4').exists()
 for p in [f for f in list(out.glob('*.html')) + list((out / 'fr').glob('*.html')) if f.name != 'index.html']:
     fr = p.parent.name == 'fr'
-    t = p.read_text(encoding='utf-8').replace('{{EMAIL}}', EMAIL or ('[ADRESSE E-MAIL]' if fr else '[E-MAIL ADDRESS]')).replace('{{URL}}', URL).replace('{{SELLER}}', SELLER or ('l’éditeur du site, un particulier' if fr else 'the publisher of the site, a private individual'))
+    seller = SELLER or ((BIZ['nom'] + (', entrepreneur individuel (EI)' if fr else ', sole proprietor (EI, France)')) if BIZ_ON else
+                        ('l’éditeur du site, un particulier' if fr else 'the publisher of the site, a private individual'))
+    t = p.read_text(encoding='utf-8').replace('{{EMAIL}}', EMAIL or ('[ADRESSE E-MAIL]' if fr else '[E-MAIL ADDRESS]')).replace('{{URL}}', URL).replace('{{SELLER}}', seller)
+    # Juridique & business: <!--PRO-->…<!--/PRO--> shown once vendeur.json is filled, <!--PARTICULIER-->…<!--/PARTICULIER--> before;
+    # <!--MED-->…<!--/MED--> once the mediator is filled, <!--NOMED-->…<!--/NOMED--> before.
+    for on, yes, no in ((BIZ_ON, 'PRO', 'PARTICULIER'), (MED_ON, 'MED', 'NOMED')):
+        keep, drop = (yes, no) if on else (no, yes)
+        t = re.sub(r'<!--' + drop + r'-->.*?<!--/' + drop + r'-->', '', t, flags=re.S).replace('<!--' + keep + '-->', '').replace('<!--/' + keep + '-->', '')
+    for k, v in (('NOM', BIZ['nom']), ('SIRET', BIZ['siret']), ('ADRESSE', BIZ['adresse']), ('TEL', BIZ['telephone']),
+                 ('MED_NOM', MED['nom']), ('MED_SITE', MED['site'])):
+        t = t.replace('{{' + k + '}}', H.escape(v))
     t = t.replace('<!--DEMO-->', '').replace('<!--/DEMO-->', '') if DEMO else re.sub(r'<!--DEMO-->.*?<!--/DEMO-->', '', t, flags=re.S)
     assert '{{' not in t, 'a {{…}} is left in ' + str(p)
     p.write_text(t, encoding='utf-8')

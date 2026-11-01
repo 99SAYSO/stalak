@@ -1,0 +1,11 @@
+{
+  "_lisez-moi": "Juridique & business (01/11/2026). Identité de la micro-entreprise, affichée dans les mentions légales et les conditions (FR/EN) au prochain build_site.py. Tant que nom, siret, adresse et telephone sont vides, le site reste en « éditeur particulier ». Le médiateur s'affiche dès que son nom et son site sont remplis. Ces informations sont publiques sur le site : pas de mot de passe ni de numéro de compte ici.",
+  "nom": "",
+  "siret": "",
+  "adresse": "",
+  "telephone": "",
+  "mediateur": {
+    "nom": "",
+    "site": ""
+  }
+}
