@@ -1,4 +1,4 @@
-Statut : EN COURS (le film est en train d'être rendu et vérifié)
+Statut : PRÊT (le film est fini et envoyé au propriétaire ; dans le dépôt, seulement les sources et les notes : rien à intégrer dans l'app ni le site)
 Branche : marketing/promo-machine (partie de `marketing/promo-lesson`, qu'elle contient, elle-même partie de `marketing/promo-wyr` et `marketing/promo-one-shape` : l'intégrer après elles, ou à leur place)
 
 Résumé : promo v8 « The Snippet Machine », demandée par le propriétaire le 1/11 : une vidéo en motion design, en 3D isométrique, « pour montrer tes capacités », faite uniquement avec HyperFrames, sur un script original. Trois idées proposées, il a choisi la première (« 1 »).
@@ -8,7 +8,7 @@ Résumé : promo v8 « The Snippet Machine », demandée par le propriétaire le
   - 8 dominos, un par temps, « 157 BPM » (« It finds every beat. ») ;
   - 3 bobines aux couleurs des prises, avec ses vraies prises sur des cartes (« Drop your takes. ») ;
   - sur le vrai drop du beat, la lame coupe 21 fois, une par demi-temps, dans l'ordre réel de son montage (« Every cut, on the beat. ») ;
-  - l'arche de synchro (« Lips stay in sync. »), le tampon « I · GOTTA · BOUNCE » (« Lyrics on screen. »), le canon à neige (« Add the Frost. »), le chrono à 03:00 (« 3 minutes. Not an hour. ») ;
+  - l'arche de synchro (« Lips stay in sync. »), le tampon « I · GOTTA · BOUNCE » (« Lyrics on screen. »), le canon à neige (« Add the Frost. »), l'écran du téléphone qui compte jusqu'à 03:00 (« 3 minutes. Not an hour. ») ;
   - la plongée dans le téléphone : son vrai snippet en plein écran, avec sa chanson ;
   - le recul : l'icône Stalak, le logo, stalak.app, « Free · in your browser ».
 - **Fait uniquement avec HyperFrames** : tout le décor est dessiné en code (un petit moteur 3D isométrique dans `promo/machine/assets/engine.js`) ; aucune image ni vidéo générée par un autre outil. Pas de voix : titres, musique et sons.
@@ -25,7 +25,7 @@ Aucun fichier de l'app ni du site n'est touché. Aucune vidéo, aucun son, aucun
 
 Migration SQL : aucune.
 
-Tests : TESTS
+Tests : `hyperframes lint` (0 erreur, 0 avertissement) et `hyperframes check` (réussi) ; deux rendus complets regardés (une image par temps, 10 images de suite autour de chacun des 24 changements, la planche à la largeur d'un téléphone, la première image) : le 1er rendu montrait le chrono coupé au bord puis devant la pile, et le téléphone sur la scène du canon, corrigés dans le 2e ; aucune image noire ; son mesuré : −15,1 LUFS, crête −2,9 dB, son snippet le plus fort (détail dans `promo/machine/REVIEW.md`).
 
 Reste au propriétaire :
 - Regarder le film et dire s'il le valide.
