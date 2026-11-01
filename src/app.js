@@ -10930,6 +10930,7 @@ const langPick = e => {
   diag('langue : ' + LANG);
   applyLang();
 };
-$$('.langsw').forEach(sw => { sw.onclick = langPick; });
+// (one listener for the page: the footer's switch is written again with the footer when the language changes)
+document.addEventListener('click', e => { if (e.target.closest && e.target.closest('.langsw button[data-lang]')) langPick(e); });
 applyLang();
 })();

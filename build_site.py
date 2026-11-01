@@ -27,22 +27,15 @@ MED_ON = all(MED.values())
 assert MED_ON or not any(MED.values()), 'vendeur.json: the mediator needs both its name and its website'
 assert not MED_ON or MED['site'].startswith('https://'), 'vendeur.json: the mediator website must start with https://'
 URL = 'https://' + DOMAIN
-# Marketing & croissance : comptes officiels de Stalak, déclarés à Google (schema.org « sameAs ») et en liens dans le pied de page.
-# Mettre l'adresse complète du profil (ex. 'https://www.instagram.com/<compte>/') ; une case vide n'apparaît nulle part.
-SOCIAL = {
-    'Instagram': 'https://www.instagram.com/stalak_app/',
-    'TikTok': 'https://www.tiktok.com/@stalak_app',
-    'YouTube': 'https://www.youtube.com/@stalak_app',
-}
-SOCIAL = {k: v for k, v in SOCIAL.items() if v}
+# Marketing & croissance : comptes officiels de Stalak (schema.org « sameAs ») et les 6 guides : depuis le 01/11 ils sont listés dans
+# src/footer.py (le pied de page, la même source pour toutes les pages) ; c'est là qu'il faut les changer.
+sys.path.insert(0, str(src)); import footer as FOOT
+SOCIAL = FOOT.SOCIAL
 # pages FR / EN du plan du site (en plus de l'accueil) ; l'anglais est à la racine, le français dans /fr/ (31/10).
 # Confidentialité et mentions légales n'y sont pas : elles sont en « noindex » (choix Juridique), Google ne doit pas les recevoir.
 SITEMAP_PAIRS = [('/fr/tarifs', '/pricing'), ('/fr/conditions', '/terms'), ('/fr/remboursement', '/refunds'),
                  ('/fr/alternative-triller', '/triller-alternative')]
-# Marketing & croissance : les 6 guides par cas d'usage (anglais seulement, sans page française ; décision du 31/10)
-GUIDES = [('lip-sync-video-editor', 'Lip-sync video editor'), ('music-video-maker-for-rappers', 'Music video maker for rappers'),
-          ('rap-snippet-video', 'Rap snippet video'), ('lip-sync-videos-for-singers', 'Performance videos for singers'),
-          ('how-to-make-a-lip-sync-video', 'How to make a lip-sync video'), ('edit-video-to-the-beat', 'Edit video to the beat')]
+GUIDES = FOOT.GUIDES   # les 6 guides (anglais seulement) : src/footer.py
 
 head = (src / 'head.html').read_text(encoding='utf-8')
 css = (src / 'style.css').read_text(encoding='utf-8') + '\n/* ---- theme ---- */\n' + (src / 'theme.css').read_text(encoding='utf-8') + '\n' + (src / 'pricing.css').read_text(encoding='utf-8')
@@ -94,8 +87,6 @@ PAGE = {
       <li>Le montage se fait dans ton navigateur, sur iPhone, Android ou ordinateur : tes vidéos restent sur ton appareil, sauf tes projets en ligne, enregistrés automatiquement avec Creator Plus, et le son envoyé pour tes paroles automatiques.</li>
     </ul>
   """,
-    'legal': '<a href="/fr/tarifs">Tarifs</a> · <a href="/fr/conditions">Conditions</a> · <a href="/fr/remboursement">Remboursement</a> · <a href="/fr/confidentialite">Confidentialité</a> · <a href="/fr/mentions-legales">Mentions légales</a> · <a href="/fr/confidentialite#cookies" data-ck>Gérer les cookies</a> · <a href="/fr/confidentialite#cookies" data-pc>Vos choix de confidentialité</a>',
-    'guides': '',
   },
   'en': {
     'path': '/', 'locale': 'en_US',
@@ -124,24 +115,9 @@ PAGE = {
       <li>Everything happens in your browser, so your videos stay on your device. The only exceptions: your cloud projects, saved automatically with Creator Plus, and the audio sent for auto lyrics.</li>
     </ul>
   """,
-    'legal': '<a href="/pricing">Pricing</a> · <a href="/terms">Terms</a> · <a href="/refunds">Refunds</a> · <a href="/privacy">Privacy</a> · <a href="/legal-notice">Legal notice</a> · <a href="/privacy#cookies" data-ck>Cookie settings</a> · <a href="/privacy#choices" data-pc>Your Privacy Choices</a>',
-    'guides': 'Guides: ' + ' · '.join(f'<a href="/{s}">{n}</a>' for s, n in GUIDES),
   },
 }
 
-# Marketing & croissance : liens vers les comptes officiels dans le pied de page (rel="me")
-# (31/10) shown as icons next to the legal links: the glyphs come from Simple Icons (site_src/icons/social/, CC0), white on the ink
-SOCIAL_HTML = ''
-if SOCIAL:
-    def _glyph(n):
-        f = extra / 'icons' / 'social' / (n.lower() + '.svg')
-        if not f.exists(): return H.escape(n)
-        sv = f.read_text(encoding='utf-8')
-        sv = re.sub(r'<title>.*?</title>', '', sv).replace('role="img" ', '')
-        return sv.replace('<svg ', '<svg aria-hidden="true" focusable="false" fill="currentColor" ', 1)
-    SOCIAL_HTML = '<div class="social-links">' + ''.join(
-        f'<a href="{H.escape(u)}" rel="me noopener" target="_blank" aria-label="{n} @stalak_app" title="{n} @stalak_app">{_glyph(n)}</a>'
-        for n, u in SOCIAL.items()) + '</div>'
 # 2. the app: contact address for the help bubble; « Stalak, c'est quoi ? » and the links to the legal pages under the « by Alaska » badge
 if EMAIL:
     assert "const SUPPORT_EMAIL = '';" in js
@@ -149,12 +125,11 @@ if EMAIL:
 a = '<div class="byalaska" id="byAlaska">by Alaska</div>'
 assert a in markup
 markup = markup.replace(a, '<section class="about" aria-labelledby="aboutT" data-i18n="site.about">' + PAGE['fr']['about'] + '</section>\n  ' + a)
-# the legal links go in the footer, next to the FR / EN switch (the claude.ai page has the footer with the switch only)
-f = '<footer class="sitefoot" id="siteFoot">'
-assert f in markup
-markup = markup.replace(f, f + SOCIAL_HTML + '<nav class="guide-links" aria-label="Guides" data-i18n="site.guides">' + PAGE['fr']['guides'] + '</nav>'
-                          + '<nav class="legal-links" data-i18n="site.legal">' + PAGE['fr']['legal'] + '</nav>')
-css += '\n.about{align-self:center;max-width:760px;width:100%;color:#fff;font-size:14.5px;line-height:1.55;margin-top:18px}.about h2{font:400 22px/1.2 var(--display);margin:0 0 6px;color:#fff;text-shadow:0 2px 0 var(--ink)}.about p{margin:0 0 8px}.about ul{margin:0 0 8px;padding-left:20px}.about strong{font-weight:700}\n.legal-links{font-size:13px;color:#fff;opacity:.9}.legal-links a{color:#fff}\n.about a{color:#fff;text-decoration:underline}.guide-links{flex-basis:100%;text-align:center;font-size:13px;color:#fff;opacity:.9}.guide-links a{color:#fff}.guide-links:empty{display:none}\n.social-links{display:flex;gap:10px;justify-content:center}.social-links a{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:var(--ink,#0a0d14);color:#fff;border:2px solid #fff;box-shadow:0 3px 0 rgba(10,13,20,.35);transition:transform .15s}.social-links a:hover,.social-links a:focus-visible{transform:translateY(-2px)}.social-links svg{width:20px;height:20px}\n'
+# the footer: src/footer.py (the same on every page, owner 01/11); in the other language, the app takes it from the dictionary (site.footer)
+assert '<!--FOOTER-->' in markup
+markup = markup.replace('<!--FOOTER-->', FOOT.render('fr', i18n='site.footer'))
+css += '\n' + (src / 'footer.css').read_text(encoding='utf-8')
+css += '\n.about{align-self:center;max-width:760px;width:100%;color:#fff;font-size:14.5px;line-height:1.55;margin-top:18px}.about h2{font:400 22px/1.2 var(--display);margin:0 0 6px;color:#fff;text-shadow:0 2px 0 var(--ink)}.about p{margin:0 0 8px}.about ul{margin:0 0 8px;padding-left:20px}.about strong{font-weight:700}\n'
 
 # 3. languages: the dictionaries are in app.js (between /*@EN*/ … /*EN@*/ and /*@FR*/ … /*FR@*/); the French of the page's
 #    fixed texts is read from the markup (data-i18n, data-i18n-attr) and given to the app, so that the English page can
@@ -164,7 +139,7 @@ def block(name):
     assert m, 'no ' + name + ' block in app.js'
     return m
 EN = json.loads(block('EN').group(1)); FR = json.loads(block('FR').group(1))
-EN.update({'doc.title': PAGE['en']['title'], 'site.about': PAGE['en']['about'], 'site.legal': PAGE['en']['legal'], 'site.guides': PAGE['en']['guides']})
+EN.update({'doc.title': PAGE['en']['title'], 'site.about': PAGE['en']['about'], 'site.footer': FOOT.inner('en')})
 FR.update({'doc.title': PAGE['fr']['title']})
 
 TAG = re.compile(r'<(\w+)\b([^>]*?)\bdata-i18n="([^"]+)"([^>]*)>(.*?)</\1>', re.S)
@@ -290,6 +265,8 @@ shutil.copytree(extra, out)
 (out / 'pricing.css').write_text(PRICING_CSS, encoding='utf-8')
 # the stylesheets of the static pages get a version in their address: a browser never keeps an old one
 import hashlib
+# the footer of the static pages (src/footer.py): its style goes into /site.css, which all of them load
+(out / 'site.css').write_text((out / 'site.css').read_text(encoding='utf-8') + '\n' + (src / 'footer.css').read_text(encoding='utf-8'), encoding='utf-8')
 _v = {n: hashlib.sha1((out / n).read_bytes()).hexdigest()[:8] for n in ('pricing.css', 'site.css') if (out / n).exists()}
 for f in list(out.glob('*.html')) + list((out / 'fr').glob('*.html')):
     t = f.read_text(encoding='utf-8'); t2 = t
@@ -318,6 +295,9 @@ for p in [f for f in list(out.glob('*.html')) + list((out / 'fr').glob('*.html')
         t = t.replace('{{' + k + '}}', H.escape(v))
     t = t.replace('<!--DEMO-->', '').replace('<!--/DEMO-->', '') if DEMO else re.sub(r'<!--DEMO-->.*?<!--/DEMO-->', '', t, flags=re.S)
     assert '{{' not in t, 'a {{…}} is left in ' + str(p)
+    # the footer: the same on every page (src/footer.py), in the page's language, with « Français / English » to the same page
+    assert t.count('<footer>') == 1 and t.count('</footer>') == 1, 'one <footer> expected in ' + str(p)
+    t = re.sub(r'<footer>.*?</footer>', lambda m: FOOT.render('fr' if fr else 'en', page=('/fr/' if fr else '/') + p.stem), t, flags=re.S)
     p.write_text(t, encoding='utf-8')
 (out / 'robots.txt').write_text(f'User-agent: *\nAllow: /\nSitemap: {URL}/sitemap.xml\n', encoding='utf-8')
 today = datetime.date.today().isoformat()
