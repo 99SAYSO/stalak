@@ -1,17 +1,15 @@
-Statut : EN COURS (en attente du choix du propriétaire, rien à intégrer pour l'instant)
+Statut : EN COURS (le film est en fabrication, rien à intégrer pour l'instant)
 Branche : marketing/promo-one-shape
 
-Résumé : promo v5, repartie de zéro le 1/11 à la demande du propriétaire, après le refus des v3 et v4.
-- **Ce qu'il veut** : une vidéo en motion design qui présente ce qu'on fait avec Stalak, inspirée d'une vidéo de @twoclipping (une seule forme qui reste la même et se transforme en chaque élément d'interface), avec du mouvement et de la 3D, au niveau d'une vidéo de portfolio, pour convaincre des rappeurs.
-- **Fait** : l'exemple regardé image par image (`promo/one-shape/REFERENCE.md`) et trois idées avec le script exact, la recommandation d'abord (`promo/one-shape/STORYLINES.md`) :
-  - A « One take » (recommandée) : une forme noire en 3D devient chaque étape de la vraie app sous le curseur, sur les temps de « neva die », et commence et finit sur le snippet terminé (boucle) ;
-  - B « Ride the beat » : un vol en 3D sur une route faite de la forme d'onde du son, et chaque traversée d'une prise est une coupe ;
-  - C « I'm a rapper » : l'histoire du fondateur en 4 phrases sur une carte Stalak qui se transforme (40 min à la main, 3 min avec Stalak).
-- Des images de travail des trois idées ont été envoyées directement au propriétaire. Elles ne sont pas dans le dépôt (son visage y apparaît).
-- Pas de voix off cette fois (comme l'exemple) : tout est calé sur les temps du son, ce qui évite le décalage de la v4.
+Résumé : promo v5 « One take », repartie de zéro le 1/11 à la demande du propriétaire, après le refus des v3 et v4.
+- **Ce qu'il veut** : une vidéo en motion design qui présente ce qu'on fait avec Stalak, inspirée d'une vidéo de @twoclipping (une seule forme qui reste la même et se transforme en chaque élément d'interface), au niveau d'une vidéo de portfolio, pour convaincre des rappeurs.
+- **Son choix (1/11, 2 h)** : l'idée A « One take », faite avec HyperFrames, avec une voix off, beaucoup de mouvement et de 3D, un motion design poussé, aux couleurs de Stalak, avec des transitions fluides.
+- **Le film** (9:16, 1080 × 1920, 30 i/s, 29,4 s, anglais américain) : une seule forme 3D (un bloc extrudé à l'encre, aux stalactites de l'app) devient chaque étape de la vraie app sous le curseur : le snippet fini, la zone « Import your music », le son « neva-die » (157 BPM), les 3 prises qui se synchronisent en profondeur, les paroles, le vrai montage de 21 plans coupé sur le temps, Shuffle, le filtre Frost, l'export, le snippet en plein écran au drop, « 40 min by hand » → « 3 min with Stalak », puis le logo en 3D et stalak.app.
+- **Le son** : « neva die » et son instru calés à l'échantillon ; la voix de 99Sayso sur les snippets (lèvres synchro), l'instru sous la voix off. La voix off (Gemini TTS dans Flora, voix Achird, 0,013 $) est coupée en 14 phrases, chacune posée sur un temps : plus aucun décalage possible entre la voix et l'image.
+- **Les vrais éléments** : les vraies prises, le vrai montage de Stalak, les vrais textes de l'app, le vrai filtre Frost (media-treatment), le logo officiel. Chiffres : 40 min et 3 min (les temps du propriétaire).
 
 Fichiers touchés :
-- `promo/one-shape/REFERENCE.md`, `promo/one-shape/STORYLINES.md` (nouveaux) ;
+- `promo/one-shape/` : `REFERENCE.md`, `STORYLINES.md`, `SPEC.md`, `MEDIA.md`, `build.py`, `index.html` et `assets/times.js` (générés), `compositions/film.html`, `assets/engine.js`, polices, logo, GSAP, `.gitignore` ;
 - `docs/STATUS.md` ;
 - `docs/handoff/marketing-promo-one-shape.md`.
 
@@ -19,8 +17,8 @@ Aucun fichier de l'app ni du site n'est touché.
 
 Migration SQL : aucune.
 
-Tests : sans objet pour l'instant (documents seulement).
+Tests : en cours (voir `promo/one-shape/REVIEW.md` quand le film sera fini).
 
 Reste au propriétaire :
-- Choisir une idée (ou un mélange) dans `promo/one-shape/STORYLINES.md`.
+- Valider le brouillon, puis le film final.
 - Vérifier la licence de l'instru de « neva die » avant d'en faire une pub.
