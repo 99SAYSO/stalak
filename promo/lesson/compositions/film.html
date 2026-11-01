@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><title>film — your snippet is the problem</title></head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="film" data-width="1080" data-height="1920">
+        <style>
+          @font-face { font-family: "Rubik"; src: url("assets/fonts/rubik.ttf"); font-weight: 300 900; }
+          @font-face { font-family: "Lilita One"; src: url("assets/fonts/lilitaone.ttf"); }
+          #root { position: absolute; inset: 0; overflow: hidden; font-family: "Rubik", sans-serif; color: #0a0d14;
+            background: radial-gradient(115% 80% at 50% 42%, #ffffff 0%, #f4f9ff 46%, #e4effc 100%); }
+          #root * { box-sizing: border-box; }
+          .abs { position: absolute; }
+          .lil { font-family: "Lilita One", sans-serif; font-weight: 400; }
+          /* light: soft blue blobs, thin rings, a little snow (the example's lavender, in Stalak's ice blue) */
+          .blob { position: absolute; left: 0; top: 0; border-radius: 50%; }
+          .ring { position: absolute; left: 0; top: 0; border-radius: 50%; border: 2px solid rgba(31, 111, 214, 0.16); }
+          #snow { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+          #grain { position: absolute; inset: 0; background: url("assets/brand/grain.png"); opacity: 0.035; mix-blend-mode: multiply; pointer-events: none; }
+          #stage { position: absolute; inset: 0; perspective: 1600px; perspective-origin: 540px 900px; }
+          .c3 { position: absolute; transform-style: preserve-3d; visibility: hidden; }
+          /* the plain cards of the problem part: white, soft shadow, no outline */
+          .card { background: #ffffff; border-radius: 34px; border: 1.5px solid #dde8f6;
+            box-shadow: 0 34px 70px rgba(31, 111, 214, 0.16), 0 8px 20px rgba(10, 13, 20, 0.06); }
+          .ctitle { position: absolute; left: 42px; top: 30px; font-size: 30px; font-weight: 600; color: #7b8aa1; letter-spacing: 0.01em; }
+          .tile { position: absolute; width: 240px; height: 400px; border-radius: 26px; overflow: hidden; background: linear-gradient(165deg, #e9eef5, #d4dce8); }
+          .tile svg { position: absolute; left: 0; top: 0; }
+          .tag { position: absolute; height: 48px; padding: 0 14px; border-radius: 16px; background: #eef2f7; color: #6b7a90; font-size: 30px; font-weight: 600;
+            display: flex; align-items: center; white-space: nowrap; transform-origin: 50% 50%; }
+          .phone { border-radius: 60px; background: #0a0d14; padding: 14px; box-shadow: 0 40px 80px rgba(31, 111, 214, 0.2), 0 10px 24px rgba(10, 13, 20, 0.12); }
+          .screen { position: relative; width: 100%; height: 100%; border-radius: 46px; overflow: hidden; background: #e9eef5; }
+          .row { position: absolute; left: 42px; right: 42px; height: 130px; border-top: 1.5px solid #e8eef6; }
+          .row .lab { position: absolute; left: 0; top: 24px; font-size: 38px; font-weight: 600; color: #0a0d14; }
+          .row .sub { position: absolute; left: 0; top: 76px; font-size: 26px; font-weight: 500; color: #8a98ad; }
+          .row .big { position: absolute; right: 0; top: 12px; font-size: 96px; font-weight: 700; line-height: 1; color: #0a0d14; }
+          /* Stalak's own style (the app): ink outline, offset ink shadow, icicles */
+          .pill { position: absolute; left: 0; top: 0; height: 118px; padding: 0 54px; border-radius: 59px; border: 5px solid #0a0d14; box-shadow: 0 9px 0 #0a0d14;
+            display: flex; align-items: center; gap: 18px; font-family: "Lilita One", sans-serif; font-size: 56px; white-space: nowrap; visibility: hidden; }
+          .pill svg.ice { position: absolute; left: 0; top: 104px; overflow: visible; }
+          .pill i { width: 30px; height: 30px; border-radius: 50%; display: inline-block; box-shadow: 0 0 0 4px #0a0d14; }
+          #icon { position: absolute; left: 390px; top: 760px; width: 300px; height: 300px; visibility: hidden; filter: drop-shadow(0 26px 30px rgba(31, 111, 214, 0.35)); }
+          .ecard { background: #ffffff; border-radius: 56px; border: 6px solid #0a0d14; box-shadow: 0 12px 0 #0a0d14, 0 40px 80px rgba(31, 111, 214, 0.2); }
+          .pv { position: absolute; overflow: hidden; border: 5px solid #0a0d14; background: #0a0d14; }
+          .v { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+          #e-ruler { position: absolute; left: 52px; width: 796px; height: 24px; }
+          #e-bar { position: absolute; left: 52px; width: 796px; height: 60px; border-radius: 20px; border: 4px solid #0a0d14; background: #eef7ff; }
+          .bk { position: absolute; top: 0; height: 100%; display: grid; place-items: center; color: #fff; font-weight: 700; box-shadow: inset -3px 0 0 #0a0d14; }
+          .bk b { position: absolute; inset: 0; background: #fff; opacity: 0; border-radius: inherit; }
+          .btn-ink { position: absolute; border-radius: 48px; background: #0a0d14; color: #fff; display: grid; place-items: center; box-shadow: inset 0 3px 0 rgba(255,255,255,0.18); }
+          .bigphone { border-radius: 64px; border: 8px solid #0a0d14; background: #0a0d14; overflow: hidden; box-shadow: 0 14px 0 #0a0d14, 0 50px 90px rgba(31, 111, 214, 0.25); }
+          #p-cap { position: absolute; left: 0; right: 0; top: 1010px; text-align: center; color: #fff; font-size: 70px; font-weight: 800; line-height: 1.05;
+            text-shadow: 0 4px 0 rgba(10,13,20,0.92), 0 0 24px rgba(10,13,20,0.25); visibility: hidden; }
+          /* the voice, word by word */
+          .capc { position: absolute; left: 60px; right: 60px; top: 0; text-align: center; font-size: 62px; font-weight: 600; line-height: 1.2; color: #0a0d14; visibility: hidden; }
+          .capc .w { display: inline-block; margin: 0 0.06em; transform-origin: 50% 80%; }
+          .capc .ac { font-family: "Lilita One", sans-serif; font-weight: 400; font-size: 76px; color: #1f6fd6; letter-spacing: 0.005em; }
+          #circle { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+          #end-wm { position: absolute; left: 250px; top: 760px; width: 580px; height: 256px; visibility: hidden; }
+          #end-url { position: absolute; left: 0; right: 0; top: 1080px; text-align: center; font-family: "Lilita One", sans-serif; font-size: 86px; color: #1f6fd6; white-space: pre; }
+          #cursor { position: absolute; left: 0; top: 0; filter: drop-shadow(0 8px 10px rgba(10,13,20,0.3)); visibility: hidden; }
+          .note { position: absolute; left: 0; top: 0; visibility: hidden; }
+        </style>
+
+        <div class="abs" style="left:0;top:0;width:1px;height:1px;overflow:hidden;opacity:0" aria-hidden="true"><span class="lil">Stalak</span><span style="font-weight:600">Your</span></div>
+        <div id="blobs"></div>
+        <div id="rings"></div>
+        <canvas id="snow" width="1080" height="1920"></canvas>
+        <div id="grain"></div>
+        <div id="notes"></div>
+
+        <div id="stage">
+          <!-- s2: everyone's snippet, the same three times -->
+          <div class="c3 card" id="c-feed" style="left:90px;top:470px;width:900px;height:660px">
+            <div class="ctitle">Your feed</div>
+            <div class="abs" style="right:42px;top:24px;font-size:34px;font-weight:700;color:#b3bfcf;letter-spacing:0.1em">•••</div>
+            <div id="tiles"></div>
+          </div>
+          <!-- s3: the feed scrolls right past it -->
+          <div class="c3 phone" id="c-phone" style="left:310px;top:330px;width:460px;height:820px">
+            <div class="screen"><div id="feedlist" class="abs" style="left:0;top:0;width:432px"></div></div>
+          </div>
+          <!-- s4: the numbers stay flat -->
+          <div class="c3 card" id="c-stats" style="left:120px;top:520px;width:840px;height:600px">
+            <div class="ctitle">Your snippet · this week</div>
+            <div class="row" style="top:96px;border-top:0">
+              <div class="lab">Views</div><div class="sub">this week</div>
+              <svg class="abs" style="left:250px;top:14px" width="500" height="110" viewBox="0 0 500 110">
+                <line x1="0" y1="96" x2="500" y2="96" stroke="#edf2f8" stroke-width="3"/>
+                <path id="s-line" d="M0 74 C 60 72, 90 76, 140 73 S 230 75, 270 72 S 380 75, 420 73 S 470 74, 500 73" fill="none" stroke="#9fb4cf" stroke-width="7" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="row" style="top:252px"><div class="lab">Replays</div><div class="sub">people who watched it twice</div><div class="big" id="s-rep">0</div></div>
+            <div class="row" style="top:408px"><div class="lab">Shares</div><div class="sub">sent to someone</div><div class="big" id="s-sha">0</div></div>
+          </div>
+          <!-- s5: the snippets people replay are built differently -->
+          <div class="c3 card" id="c-chart" style="left:120px;top:400px;width:840px;height:800px">
+            <div class="ctitle">Replays</div>
+            <svg id="chart" class="abs" style="left:0;top:0" width="840" height="800" viewBox="0 0 840 800">
+              <line x1="80" y1="96" x2="80" y2="700" stroke="#d7e1ee" stroke-width="3"/>
+              <line x1="80" y1="700" x2="780" y2="700" stroke="#d7e1ee" stroke-width="3"/>
+              <line x1="80" y1="400" x2="780" y2="400" stroke="#eef3f9" stroke-width="2" stroke-dasharray="6 10"/>
+              <line x1="80" y1="250" x2="780" y2="250" stroke="#eef3f9" stroke-width="2" stroke-dasharray="6 10"/>
+              <text x="780" y="745" text-anchor="end" font-family="Rubik" font-weight="600" font-size="28" fill="#6b7a90">every snippet posted</text>
+              <g id="dots"></g>
+              <path id="ch-trail" fill="none" stroke="#1f6fd6" stroke-width="5" stroke-linecap="round" stroke-dasharray="2 14"/>
+              <circle id="ch-ring" r="20" fill="none" stroke="#1f6fd6" stroke-width="4" opacity="0"/>
+              <circle id="ch-dot" r="17" fill="#1f6fd6" stroke="#ffffff" stroke-width="6" opacity="0"/>
+            </svg>
+            <div class="abs lil" id="ch-lab" style="left:0;top:0;height:64px;padding:0 26px;border-radius:32px;background:#1f6fd6;color:#fff;font-size:36px;display:flex;align-items:center;white-space:nowrap;visibility:hidden">built differently</div>
+          </div>
+          <!-- s6: the three things -->
+          <div class="pill" id="p1" style="background:#1f6fd6;color:#ffffff">Cut on the beat<svg class="ice" width="10" height="60"></svg></div>
+          <div class="pill" id="p2" style="background:#ffffff"><i style="background:#d6336c"></i><i style="background:#3a6fe0;margin-left:-6px"></i><i style="background:#e0952c;margin-left:-6px"></i>Switch between takes<svg class="ice" width="10" height="60"></svg></div>
+          <div class="pill" id="p3" style="background:#ffffff"><span style="color:#1f6fd6">Lyrics</span> on screen<svg class="ice" width="10" height="60"></svg></div>
+          <!-- s7: Stalak, then its real edit -->
+          <img id="icon" src="assets/brand/icon.svg" alt="" />
+          <div class="c3 ecard" id="c-edit" style="left:90px;top:520px;width:900px;height:1020px">
+            <div class="pv" id="e-pv" style="left:259px;top:28px;width:370px;height:658px;border-radius:30px">
+              <!--EDIT-->
+<video id="ve06" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="22.839" data-duration="0.845" data-media-start="7.468" muted playsinline></video>
+<video id="ve07" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="23.683" data-duration="0.825" data-media-start="8.313" muted playsinline></video>
+<!--/EDIT-->
+            </div>
+            <div class="abs" style="left:46px;top:704px;font-size:40px;font-weight:700">Version 1</div>
+            <div class="abs" style="right:46px;top:710px;font-size:32px;font-weight:500;color:#3f5170">21 shots • 25.6 s</div>
+            <div id="e-ruler" style="left:46px;top:770px"></div>
+            <div id="e-bar" style="left:46px;top:798px"></div>
+            <div class="abs" id="e-ph" style="left:0;top:784px;width:6px;height:88px;background:#0a0d14;border-radius:3px"></div>
+            <div class="abs lil" style="left:112px;top:892px;width:310px;height:88px;border-radius:44px;background:#fff;border:4px solid #0a0d14;box-shadow:0 6px 0 #0a0d14;display:grid;place-items:center;font-size:44px">▶ Play</div>
+            <div class="btn-ink lil" style="left:466px;top:892px;width:310px;height:88px;font-size:44px">↻ Shuffle</div>
+          </div>
+          <!-- s8: his finished snippet, his song -->
+          <div class="c3 bigphone" id="c-pay" style="left:160px;top:285px;width:760px;height:1350px">
+            <!--PAY-->
+<video id="vp07" class="clip v" data-color-grading="{&quot;preset&quot;:null,&quot;intensity&quot;:1,&quot;adjust&quot;:{&quot;exposure&quot;:0.08,&quot;contrast&quot;:0.1,&quot;highlights&quot;:0.15,&quot;shadows&quot;:0,&quot;whites&quot;:0,&quot;blacks&quot;:0,&quot;temperature&quot;:-0.8,&quot;tint&quot;:0,&quot;vibrance&quot;:0,&quot;saturation&quot;:-0.4},&quot;details&quot;:{&quot;vignette&quot;:0,&quot;vignetteMidpoint&quot;:0.5,&quot;vignetteRoundness&quot;:0,&quot;vignetteFeather&quot;:0.65,&quot;grain&quot;:0,&quot;grainSize&quot;:0.25,&quot;grainRoughness&quot;:0.5},&quot;effects&quot;:{&quot;blur&quot;:0,&quot;pixelate&quot;:0,&quot;chromaBleed&quot;:0,&quot;tapeDamage&quot;:0,&quot;tapeTracking&quot;:0,&quot;tapeNoise&quot;:1,&quot;tapeSpeed&quot;:0.5,&quot;filmArtifacts&quot;:0,&quot;halftone&quot;:0,&quot;halftoneSize&quot;:0,&quot;twoInkPrint&quot;:0,&quot;twoInkPrintSize&quot;:0,&quot;ascii&quot;:0,&quot;asciiSize&quot;:0.06578947368421052,&quot;asciiInvert&quot;:0,&quot;asciiStyle&quot;:0,&quot;asciiColor&quot;:1,&quot;asciiRotation&quot;:0,&quot;dither&quot;:0,&quot;ditherSize&quot;:0,&quot;bloom&quot;:0.25,&quot;bloomRadius&quot;:8,&quot;monoScreen&quot;:0,&quot;monoScreenSize&quot;:0,&quot;monoScreenAngle&quot;:0,&quot;monoScreenSpread&quot;:0,&quot;monoScreenShape&quot;:0,&quot;monoScreenInvert&quot;:0,&quot;scanlines&quot;:0,&quot;scanlineCount&quot;:0,&quot;scanlineSoftness&quot;:0,&quot;chromaticAberration&quot;:0,&quot;chromaticAngle&quot;:0,&quot;crtCurvature&quot;:0,&quot;digitalGlitch&quot;:0,&quot;digitalGlitchColorSplit&quot;:0,&quot;digitalGlitchLineTear&quot;:0,&quot;digitalGlitchPixelate&quot;:0,&quot;digitalGlitchBlockAmount&quot;:0,&quot;digitalGlitchBlockDisplacement&quot;:0,&quot;digitalGlitchBlockOpacity&quot;:0,&quot;digitalGlitchSpeed&quot;:0,&quot;engraving&quot;:0,&quot;engravingSpacing&quot;:0.4117647058823529,&quot;engravingMinThickness&quot;:0.2,&quot;engravingMaxThickness&quot;:0.4571428571428572,&quot;engravingAngle&quot;:0.25,&quot;engravingContrast&quot;:0.4666666666666667,&quot;engravingSharpness&quot;:0.59,&quot;engravingWave&quot;:0.2,&quot;engravingWaveFrequency&quot;:0.2222222222222222,&quot;crosshatch&quot;:0,&quot;crosshatchSpacing&quot;:0.28,&quot;crosshatchThickness&quot;:0.25,&quot;crosshatchAngle&quot;:0.25,&quot;crosshatchContrast&quot;:0.3333333333333333,&quot;crosshatchEdges&quot;:0.5,&quot;crosshatchLineWeight&quot;:0,&quot;crosshatchWave&quot;:0.33,&quot;crosshatchWaveFrequency&quot;:0.2222222222222222,&quot;kuwahara&quot;:0,&quot;kuwaharaRadius&quot;:0.14285714285714285,&quot;kuwaharaSharpness&quot;:0.3125,&quot;kuwaharaSaturation&quot;:0.5},&quot;lut&quot;:null,&quot;colorSpace&quot;:&quot;rec709&quot;,&quot;wheels&quot;:{&quot;shadows&quot;:{&quot;hue&quot;:212,&quot;amount&quot;:0.42,&quot;level&quot;:0},&quot;midtones&quot;:{&quot;hue&quot;:205,&quot;amount&quot;:0.3,&quot;level&quot;:0.04},&quot;highlights&quot;:{&quot;hue&quot;:195,&quot;amount&quot;:0.22,&quot;level&quot;:0.08}}}" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="24.459" data-duration="0.754" data-media-start="9.088" muted playsinline></video>
+<video id="vp08" class="clip v" data-color-grading="{&quot;preset&quot;:null,&quot;intensity&quot;:1,&quot;adjust&quot;:{&quot;exposure&quot;:0.08,&quot;contrast&quot;:0.1,&quot;highlights&quot;:0.15,&quot;shadows&quot;:0,&quot;whites&quot;:0,&quot;blacks&quot;:0,&quot;temperature&quot;:-0.8,&quot;tint&quot;:0,&quot;vibrance&quot;:0,&quot;saturation&quot;:-0.4},&quot;details&quot;:{&quot;vignette&quot;:0,&quot;vignetteMidpoint&quot;:0.5,&quot;vignetteRoundness&quot;:0,&quot;vignetteFeather&quot;:0.65,&quot;grain&quot;:0,&quot;grainSize&quot;:0.25,&quot;grainRoughness&quot;:0.5},&quot;effects&quot;:{&quot;blur&quot;:0,&quot;pixelate&quot;:0,&quot;chromaBleed&quot;:0,&quot;tapeDamage&quot;:0,&quot;tapeTracking&quot;:0,&quot;tapeNoise&quot;:1,&quot;tapeSpeed&quot;:0.5,&quot;filmArtifacts&quot;:0,&quot;halftone&quot;:0,&quot;halftoneSize&quot;:0,&quot;twoInkPrint&quot;:0,&quot;twoInkPrintSize&quot;:0,&quot;ascii&quot;:0,&quot;asciiSize&quot;:0.06578947368421052,&quot;asciiInvert&quot;:0,&quot;asciiStyle&quot;:0,&quot;asciiColor&quot;:1,&quot;asciiRotation&quot;:0,&quot;dither&quot;:0,&quot;ditherSize&quot;:0,&quot;bloom&quot;:0.25,&quot;bloomRadius&quot;:8,&quot;monoScreen&quot;:0,&quot;monoScreenSize&quot;:0,&quot;monoScreenAngle&quot;:0,&quot;monoScreenSpread&quot;:0,&quot;monoScreenShape&quot;:0,&quot;monoScreenInvert&quot;:0,&quot;scanlines&quot;:0,&quot;scanlineCount&quot;:0,&quot;scanlineSoftness&quot;:0,&quot;chromaticAberration&quot;:0,&quot;chromaticAngle&quot;:0,&quot;crtCurvature&quot;:0,&quot;digitalGlitch&quot;:0,&quot;digitalGlitchColorSplit&quot;:0,&quot;digitalGlitchLineTear&quot;:0,&quot;digitalGlitchPixelate&quot;:0,&quot;digitalGlitchBlockAmount&quot;:0,&quot;digitalGlitchBlockDisplacement&quot;:0,&quot;digitalGlitchBlockOpacity&quot;:0,&quot;digitalGlitchSpeed&quot;:0,&quot;engraving&quot;:0,&quot;engravingSpacing&quot;:0.4117647058823529,&quot;engravingMinThickness&quot;:0.2,&quot;engravingMaxThickness&quot;:0.4571428571428572,&quot;engravingAngle&quot;:0.25,&quot;engravingContrast&quot;:0.4666666666666667,&quot;engravingSharpness&quot;:0.59,&quot;engravingWave&quot;:0.2,&quot;engravingWaveFrequency&quot;:0.2222222222222222,&quot;crosshatch&quot;:0,&quot;crosshatchSpacing&quot;:0.28,&quot;crosshatchThickness&quot;:0.25,&quot;crosshatchAngle&quot;:0.25,&quot;crosshatchContrast&quot;:0.3333333333333333,&quot;crosshatchEdges&quot;:0.5,&quot;crosshatchLineWeight&quot;:0,&quot;crosshatchWave&quot;:0.33,&quot;crosshatchWaveFrequency&quot;:0.2222222222222222,&quot;kuwahara&quot;:0,&quot;kuwaharaRadius&quot;:0.14285714285714285,&quot;kuwaharaSharpness&quot;:0.3125,&quot;kuwaharaSaturation&quot;:0.5},&quot;lut&quot;:null,&quot;colorSpace&quot;:&quot;rec709&quot;,&quot;wheels&quot;:{&quot;shadows&quot;:{&quot;hue&quot;:212,&quot;amount&quot;:0.42,&quot;level&quot;:0},&quot;midtones&quot;:{&quot;hue&quot;:205,&quot;amount&quot;:0.3,&quot;level&quot;:0.04},&quot;highlights&quot;:{&quot;hue&quot;:195,&quot;amount&quot;:0.22,&quot;level&quot;:0.08}}}" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="25.212" data-duration="0.764" data-media-start="9.842" muted playsinline></video>
+<video id="vp09" class="clip v" data-color-grading="{&quot;preset&quot;:null,&quot;intensity&quot;:1,&quot;adjust&quot;:{&quot;exposure&quot;:0.08,&quot;contrast&quot;:0.1,&quot;highlights&quot;:0.15,&quot;shadows&quot;:0,&quot;whites&quot;:0,&quot;blacks&quot;:0,&quot;temperature&quot;:-0.8,&quot;tint&quot;:0,&quot;vibrance&quot;:0,&quot;saturation&quot;:-0.4},&quot;details&quot;:{&quot;vignette&quot;:0,&quot;vignetteMidpoint&quot;:0.5,&quot;vignetteRoundness&quot;:0,&quot;vignetteFeather&quot;:0.65,&quot;grain&quot;:0,&quot;grainSize&quot;:0.25,&quot;grainRoughness&quot;:0.5},&quot;effects&quot;:{&quot;blur&quot;:0,&quot;pixelate&quot;:0,&quot;chromaBleed&quot;:0,&quot;tapeDamage&quot;:0,&quot;tapeTracking&quot;:0,&quot;tapeNoise&quot;:1,&quot;tapeSpeed&quot;:0.5,&quot;filmArtifacts&quot;:0,&quot;halftone&quot;:0,&quot;halftoneSize&quot;:0,&quot;twoInkPrint&quot;:0,&quot;twoInkPrintSize&quot;:0,&quot;ascii&quot;:0,&quot;asciiSize&quot;:0.06578947368421052,&quot;asciiInvert&quot;:0,&quot;asciiStyle&quot;:0,&quot;asciiColor&quot;:1,&quot;asciiRotation&quot;:0,&quot;dither&quot;:0,&quot;ditherSize&quot;:0,&quot;bloom&quot;:0.25,&quot;bloomRadius&quot;:8,&quot;monoScreen&quot;:0,&quot;monoScreenSize&quot;:0,&quot;monoScreenAngle&quot;:0,&quot;monoScreenSpread&quot;:0,&quot;monoScreenShape&quot;:0,&quot;monoScreenInvert&quot;:0,&quot;scanlines&quot;:0,&quot;scanlineCount&quot;:0,&quot;scanlineSoftness&quot;:0,&quot;chromaticAberration&quot;:0,&quot;chromaticAngle&quot;:0,&quot;crtCurvature&quot;:0,&quot;digitalGlitch&quot;:0,&quot;digitalGlitchColorSplit&quot;:0,&quot;digitalGlitchLineTear&quot;:0,&quot;digitalGlitchPixelate&quot;:0,&quot;digitalGlitchBlockAmount&quot;:0,&quot;digitalGlitchBlockDisplacement&quot;:0,&quot;digitalGlitchBlockOpacity&quot;:0,&quot;digitalGlitchSpeed&quot;:0,&quot;engraving&quot;:0,&quot;engravingSpacing&quot;:0.4117647058823529,&quot;engravingMinThickness&quot;:0.2,&quot;engravingMaxThickness&quot;:0.4571428571428572,&quot;engravingAngle&quot;:0.25,&quot;engravingContrast&quot;:0.4666666666666667,&quot;engravingSharpness&quot;:0.59,&quot;engravingWave&quot;:0.2,&quot;engravingWaveFrequency&quot;:0.2222222222222222,&quot;crosshatch&quot;:0,&quot;crosshatchSpacing&quot;:0.28,&quot;crosshatchThickness&quot;:0.25,&quot;crosshatchAngle&quot;:0.25,&quot;crosshatchContrast&quot;:0.3333333333333333,&quot;crosshatchEdges&quot;:0.5,&quot;crosshatchLineWeight&quot;:0,&quot;crosshatchWave&quot;:0.33,&quot;crosshatchWaveFrequency&quot;:0.2222222222222222,&quot;kuwahara&quot;:0,&quot;kuwaharaRadius&quot;:0.14285714285714285,&quot;kuwaharaSharpness&quot;:0.3125,&quot;kuwaharaSaturation&quot;:0.5},&quot;lut&quot;:null,&quot;colorSpace&quot;:&quot;rec709&quot;,&quot;wheels&quot;:{&quot;shadows&quot;:{&quot;hue&quot;:212,&quot;amount&quot;:0.42,&quot;level&quot;:0},&quot;midtones&quot;:{&quot;hue&quot;:205,&quot;amount&quot;:0.3,&quot;level&quot;:0.04},&quot;highlights&quot;:{&quot;hue&quot;:195,&quot;amount&quot;:0.22,&quot;level&quot;:0.08}}}" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="25.976" data-duration="0.311" data-media-start="10.606" muted playsinline></video>
+<!--/PAY-->
+            <div id="p-cap">I gotta bounce</div>
+            <img class="abs" src="assets/brand/wordmark.svg?wm" alt="" style="left:42px;top:56px;width:150px;opacity:0.85" />
+          </div>
+          <!-- s10: the logo -->
+          <img id="end-wm" src="assets/brand/wordmark.svg" alt="Stalak" />
+          <div id="end-url"></div>
+          <svg id="cursor" width="76" height="108" viewBox="0 0 28 40"><path d="M2 2 L2 31 L9.5 24.5 L14.5 36 L19.5 33.8 L14.6 22.6 L24.5 22.6 Z" fill="#0a0d14" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/></svg>
+        </div>
+        <!-- the voice, word by word; "everywhere" gets circled -->
+        <div id="caps"></div>
+        <svg id="circle" width="1080" height="1920" viewBox="0 0 1080 1920"><path id="circ" fill="none" stroke="#1f6fd6" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+
+        <script>
+          (function () {
+            var root = document.getElementById("root");
+            window.LESSON.init(root);
+            var tl = gsap.timeline({ paused: true });
+            var clock = { t: 0 };
+            tl.to(clock, { t: window.T.TOTAL, duration: window.T.TOTAL, ease: "none", onUpdate: function () { window.LESSON.render(clock.t); } }, 0);
+            window.addEventListener("hf-seek", function (e) { if (e && e.detail && typeof e.detail.time === "number") window.LESSON.render(e.detail.time); });
+            window.LESSON.render(0);
+            window.__timelines = window.__timelines || {};
+            window.__timelines["film"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>
