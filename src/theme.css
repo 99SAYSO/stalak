@@ -517,7 +517,6 @@ header .stepper{margin-left:auto}
 }
 
 /* ---- footer: legal links and the FR / EN switch (with flags) ---- */
-.sitefoot{align-self:center;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px 18px;margin-top:-2px;max-width:100%}
 .langsw{display:inline-flex;flex:none;background:var(--frost);border:2.5px solid var(--ink);border-radius:14px;padding:3px;gap:3px;box-shadow:0 4px 0 var(--ink)}
 .langsw button{display:inline-flex;align-items:center;gap:8px;font:600 14px/1 var(--body);color:var(--ink);background:transparent;border:0;border-radius:10px;padding:0 12px;min-height:40px;cursor:pointer;}
 .langsw button:hover:not([aria-pressed="true"]){background:var(--ice)}
