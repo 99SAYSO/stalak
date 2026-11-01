@@ -10,7 +10,7 @@ Pour les 3 idées :
 - Seulement de vrais écrans, de vrais textes de l'app et de vrais chiffres : 40 min à la main et 3 min avec Stalak, ce sont tes temps.
 - Rien à payer : tout est fait en code, avec des sons libres.
 
-Les heures sont approximatives (m:ss). Les textes entre guillemets sont exactement ceux qui s'affichent.
+Les heures sont approximatives (m:ss). Les textes en anglais entre guillemets sont exactement ceux qui s'affichent.
 
 ---
 
@@ -28,22 +28,22 @@ Les heures sont approximatives (m:ss). Les textes entre guillemets sont exacteme
 **Le script.**
 | Quand | La forme devient | Ce qu'on voit et lit |
 |---|---|---|
-| 0:00 | Ton snippet fini | Ta prise, la parole « After all this time, baby », deux coupes sur le temps. |
-| 0:01,5 | Le bouton | Clic : la vidéo rétrécit en pilule « Import your music ». Deuxième clic : la pilule s'enfonce un peu (3D), le texte part en flou, elle devient un rond qui charge. |
-| 0:03 | Le son | Coche ✓ sur le temps. Le rond s'étire en longue pilule : petite pochette, « neva-die  157.0 BPM  0:25.57 » (comme dans l'app), et des barres de son qui sautent sur chaque 808. Dessous : « Tempo detected: 157.0 BPM. » |
-| 0:04,5 | Les prises | La pilule devient « Import my videos ». Clic : tes 3 prises tombent dans la forme, une par temps, avec leurs pastilles (rose 1, bleu 2, jaune 3). |
-| 0:06 | La synchro (moment 3D) | Les 3 prises sortent en profondeur, l'une derrière l'autre, chacune à un moment différent (les lèvres ne collent pas). « Analyzing the takes… ». Sur le temps fort, elles se plaquent en une seule : « All the takes are synced. » et trois coches. |
-| 0:07,5 | Le montage | La forme s'élargit en timeline : « Version 1 » et « 21 shots • 25.6 s ». Les blocs de couleur (1, 2, 3) tombent un par temps, et l'aperçu au-dessus coupe sur la bonne prise à chaque temps. La tête de lecture avance. |
-| 0:10,5 | Shuffle | Clic sur « ↻ Shuffle » : tous les blocs se mélangent d'un coup de ressort, « Version 2 ». Un nouveau montage en un clic. |
-| 0:12 | Les paroles | La timeline se replie en pilule « Lyrics on screen ». Clic sur « Paste my lyrics » : « After all this time, baby » se pose sur l'aperçu. |
-| 0:13,5 | Le style | La pilule devient la rangée de filtres « None · Frost · 35 mm film · Black & white » (avec tes vraies images). L'indicateur noir glisse et s'étire jusqu'à « Frost » : l'aperçu prend le look givré. |
-| 0:15 | L'export | La forme devient « Export ↓ ». Clic : un anneau se remplit sur deux temps, puis « Post your video » et « Share to TikTok, Insta, YouTube… ». |
+| 0:00 | Ton snippet fini | Pas de titre. Ta prise, la parole « After all this time, baby », deux coupes sur le temps. |
+| 0:01,5 | Le bouton | Titre : « Drop your song. » Clic : la vidéo rétrécit en pilule « Import your music ». Deuxième clic : la pilule s'enfonce un peu (3D), le texte part en flou, elle devient un rond qui charge. |
+| 0:03 | Le son | Coche ✓ sur le temps. Le rond s'étire en longue pilule : un bouton lecture, « neva-die  157.0 BPM  0:25.57 » (comme dans l'app), et des barres de son qui sautent sur chaque 808. Dessous : « Tempo detected: 157.0 BPM. » |
+| 0:04,5 | Les prises | Titre : « Add your takes. » La pilule devient « Import my videos ». Clic : tes 3 prises tombent dans la forme, une par temps, avec leurs pastilles (rose 1, bleu 2, jaune 3). |
+| 0:06 | La synchro (moment 3D) | Titre : « Every take, in sync. » Les 3 prises sortent en profondeur, l'une derrière l'autre, chacune à un moment différent (les lèvres ne collent pas). « Analyzing the takes… ». Sur le temps fort, elles se plaquent en une seule : « All the takes are synced. » et trois coches. |
+| 0:07,5 | Le montage | Titre : « Cut on the beat. » (le mot « beat » en bleu). La forme s'élargit en timeline : « Version 1 » et « 21 shots • 25.6 s ». Les blocs de couleur (1, 2, 3) tombent un par temps, et l'aperçu au-dessus coupe sur la bonne prise à chaque temps. La tête de lecture avance. |
+| 0:10,5 | Shuffle | Titre : « New edit in one tap. » Clic sur « ↻ Shuffle » : tous les blocs se mélangent d'un coup de ressort, « Version 2 ». |
+| 0:12 | Les paroles | Titre : « Add your lyrics. » La timeline se replie en pilule « Lyrics on screen ». Clic sur « Paste my lyrics » : « After all this time, baby » se pose sur l'aperçu. |
+| 0:13,5 | Le style | Titre : « Pick your look. » La pilule devient la rangée de filtres « None · Frost · 35 mm film · Black & white » (avec tes vraies images). L'indicateur noir glisse et s'étire jusqu'à « Frost » : l'aperçu prend le look givré. |
+| 0:15 | L'export | Titre : « Ready for TikTok, Reels, Shorts. » La forme devient « Export ↓ ». Clic : un anneau se remplit sur deux temps, puis « Post your video » et « Share to TikTok, Insta, YouTube… ». |
 | 0:16,5 | Le résultat | La forme s'ouvre en grand sur ton snippet fini, qui joue deux mesures à vitesse normale : coupes sur le temps, lèvres synchro, paroles, Frost. La caméra avance doucement. Le petit logo Stalak en filigrane, comme dans la version gratuite. |
 | 0:20 | La preuve | La vidéo rétrécit en pilule : « 40 min by hand ». Le 40 roule et devient 3 : « 3 min with Stalak ». |
 | 0:21,5 | La fin | La pilule devient le logo Stalak en relief, qui fait un tour et se pose. « stalak.app » s'écrit dessous, puis « Free · in your browser · no sign-up ». Sur le dernier temps, le curseur clique le logo : il redevient ton snippet, et la vidéo reboucle. |
 
 **Durée.** 16 mesures, environ 24,5 s.
-**Look.** Fond blanc neige très légèrement bleuté, plus sombre dans les coins. La forme en noir encre (#0a0d14), textes en blanc, police Rubik (celle de l'app). Une seule couleur vive, le bleu Stalak, pour ce qui est choisi ou validé. Les couleurs des prises seulement dans la timeline, comme dans l'app. Lilita One seulement pour le logo.
+**Look.** Fond blanc neige très légèrement bleuté, plus sombre dans les coins. La forme en noir encre (#0a0d14), textes en blanc, police Rubik (celle de l'app). En vertical, il reste de la place au-dessus de la forme : un titre court y dit chaque étape, pour qu'on comprenne même sans le son (Rubik très gras, noir encre ; il change avec un court flou, comme le contenu de la forme). C'est un ajout par rapport à l'exemple, qui est carré et n'a pas besoin d'expliquer un produit. Une seule couleur vive, le bleu Stalak, pour ce qui est choisi ou validé. Les couleurs des prises seulement dans la timeline, comme dans l'app. Lilita One seulement pour le logo.
 **Son.** « neva die » du début à la fin, plus un petit son posé exactement sur chaque clic (clic, tic, coche) et un seul souffle quand la forme s'ouvre sur le résultat.
 **Pourquoi ça convainc.** Le rappeur voit la vraie app faire exactement son travail, très vite et très proprement, et le résultat de la fin est un snippet qu'il posterait.
 
@@ -114,6 +114,9 @@ Les heures sont approximatives (m:ss). Les textes entre guillemets sont exacteme
 
 ## Mélanges possibles
 Un mélange compte comme une idée, par exemple : A avec la première phrase de C (« I'm a rapper. » sur l'image 0), ou A avec le plongeon à travers les prises de B au moment des coupes.
+
+## Images de travail
+Le 1/11, des images de travail des 3 idées (pas le rendu final : la vraie version bouge, avec la vraie 3D) ont été envoyées directement au propriétaire. Elles ne sont pas dans le dépôt, parce qu'on y voit son visage.
 
 ## La méthode, après ton choix
 1. Une image par temps de l'idée choisie (une planche), que tu valides.
