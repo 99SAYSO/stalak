@@ -9,7 +9,8 @@
 //   POST /api/support/tickets                      Pro; {lang, message, email?, context?} → {id, token, available, email, messages}
 //   GET  /api/support/tickets/:id?after=<msg id>   header X-Ticket-Token → {status, available, email, messages}
 //   POST /api/support/tickets/:id/messages         Pro, own ticket; header X-Ticket-Token, {text, email?} → {messages}
-import { HttpError, json, readJson, clientIp, isDev } from './http.js';
+import { HttpError, json, readJson, clientIp, isDev, appOrigin } from './http.js';
+import { mail, homeOf } from './mail-layout.js';
 import { requireUser } from './auth.js';
 import { requirePlan } from './entitlements.js';
 import { limit } from './ratelimit.js';
@@ -77,19 +78,19 @@ const page = (lang, inner) => `<!doctype html><html lang="${lang === 'fr' ? 'fr'
 <p style="color:#888;font-size:12px">Stalak — <a href="https://stalak.app" style="color:#888">stalak.app</a></p></body></html>`;
 
 const REPLY = {
-  fr: { subject: 'Réponse de l’équipe Stalak', intro: 'Voici la réponse à ton message :', yours: 'Ton message :',
-    more: 'Pour répondre, réponds simplement à cet e-mail, ou rouvre le glaçon d’aide sur stalak.app.' },
-  en: { subject: 'Reply from the Stalak team', intro: 'Here is the reply to your message:', yours: 'Your message:',
-    more: 'To answer, just reply to this email, or open the help ice cube on stalak.app again.' },
+  fr: { subject: 'Réponse de l’équipe Stalak', title: 'On t’a répondu !', label: 'Notre réponse', yours: 'Ton message',
+    more: 'Pour continuer, réponds simplement à cet e-mail, ou rouvre le glaçon d’aide sur stalak.app.', btn: 'Ouvrir Stalak',
+    reason: 'Tu as écrit à l’équipe Stalak avec « Parler à un humain ».' },
+  en: { subject: 'Reply from the Stalak team', title: 'We got back to you!', label: 'Our reply', yours: 'Your message',
+    more: 'To keep the conversation going, just reply to this email, or open the help ice cube on stalak.app again.', btn: 'Open Stalak',
+    reason: 'You wrote to the Stalak team with “Talk to a human”.' },
 };
-export function replyEmail(lang, answer, question) {
-  const t = REPLY[lang] || REPLY.en;
-  const q = question ? `\n\n${t.yours}\n> ${question.slice(0, 600).replace(/\n/g, '\n> ')}` : '';
-  const text = `${t.intro}\n\n${answer}${q}\n\n${t.more}\n\nStalak — stalak.app`;
-  const html = page(lang, `<p>${esc(t.intro)}</p><div style="white-space:pre-wrap;border-left:3px solid #2a7de1;padding:4px 12px;margin:12px 0">${esc(answer)}</div>`
-    + (question ? `<p style="color:#555">${esc(t.yours)}</p><div style="white-space:pre-wrap;color:#555;border-left:3px solid #ccc;padding:4px 12px">${esc(question.slice(0, 600))}</div>` : '')
-    + `<p>${esc(t.more)}</p>`);
-  return { subject: t.subject, text, html };
+export function replyEmail(lang, answer, question, site) {
+  const fr = lang === 'fr', t = fr ? REPLY.fr : REPLY.en;
+  const blocks = [{ box: { label: t.label, text: String(answer) } }];
+  if (question) blocks.push({ quote: { label: t.yours, text: String(question).slice(0, 600) } });
+  blocks.push({ p: t.more }, { button: { href: homeOf(site, lang), label: t.btn } });
+  return mail({ lang: fr ? 'fr' : 'en', site, subject: t.subject, preheader: String(answer).slice(0, 110), title: t.title, mascot: 'cool', reason: t.reason, blocks });
 }
 export function ownerEmail(env, ticket, text) {
   const host = env.ADMIN_HOST || 'admin.stalak.app';
@@ -119,7 +120,7 @@ async function tellOwner(env, ticket, text, ctx) {
 //   when his page has not fetched it within 12 s (he closed the window just before the answer, say).
 async function sendReply(env, ticket, msgId, text, now = Date.now()) {
   const q = await env.DB.prepare("SELECT body FROM ticket_messages WHERE ticket_id = ?1 AND sender = 'user' ORDER BY id DESC LIMIT 1").bind(ticket.id).first();
-  const ok = await sendMail(env, { to: ticket.email, replyTo: supportAddress(env), ...replyEmail(ticket.lang, text, q && q.body) }).catch(() => false);
+  const ok = await sendMail(env, { to: ticket.email, replyTo: supportAddress(env), ...replyEmail(ticket.lang, text, q && q.body, appOrigin(env)) }).catch(() => false);
   if (ok) await env.DB.prepare('UPDATE ticket_messages SET emailed_at = ?2 WHERE id = ?1').bind(msgId, now).run();
   return ok;
 }

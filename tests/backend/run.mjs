@@ -14,6 +14,10 @@ import { verifyJwtSignature, decodeJwt } from '../../functions/_lib/jwt.js';
 import { resetJwksCache } from '../../functions/_lib/oauth.js';
 import { cleanPrompt, songPrompt, PROMPT_MAX } from '../../functions/_lib/lyrics.js';
 import { HELP_GUIDE_FR, HELP_GUIDE_EN } from '../../functions/_lib/help-guide.js';
+import { codeEmail } from '../../functions/_lib/email.js';
+import { warningEmail } from '../../functions/_lib/cloud.js';
+import { replyEmail } from '../../functions/_lib/support.js';
+import { reminderEmail } from '../../functions/_lib/reminders.js';
 import { openToken, socialAccessToken, parseSignedRequest } from '../../functions/_lib/social.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -2862,6 +2866,45 @@ test('preview deployments share the real database: payments, jobs and account de
   const iso = { ...env, PREVIEW_ISOLATED: '1', EXTRA_ORIGINS: 'https://abc123.stalak-site.pages.dev' };
   res = await onRequest({ request: new Request('https://abc123.stalak-site.pages.dev/api/cron/cloud-cleanup', { method: 'POST', headers: { Authorization: 'Bearer cron-secret-0123456789' } }), env: iso, params: {}, waitUntil() {} });
   assert.equal(res.status, 200, 'with its own database (PREVIEW_ISOLATED) a preview works fully');
+});
+
+// ---- e-mails in Stalak's look (owner's request of 1/11): one template, FR and EN, e-mail-safe HTML + plain text ----
+test('e-mails to people: one Stalak template (tables, inline styles, PNG on stalak.app, big code, button, footer), FR and EN, text kept', async () => {
+  const site = 'https://stalak.app';
+  for (const lang of ['en', 'fr']) {
+    const all = {
+      signup: codeEmail('482913', lang, 'signup', site), login: codeEmail('730551', lang, 'login', site), reset: codeEmail('164208', lang, 'reset', site),
+      reply: replyEmail(lang, 'Answer <b>with</b> a tag & https://stalak.app/pricing', 'My question', site),
+      warning: warningEmail(lang, ['Ice <the> Beat'], Date.now() + 15 * 864e5, site),
+      reminder: reminderEmail({ APP_ORIGIN: site }, lang, 'pro', '7.99', Date.now() - 366 * 864e5),
+    };
+    for (const [k, m] of Object.entries(all)) {
+      const h = m.html, tag = `${k}/${lang}`;
+      assert.ok(h.startsWith('<!doctype html>') && h.includes(`<html lang="${lang}"`), tag);
+      assert.ok(h.includes('role="presentation"') && h.includes('max-width:600px'), tag + ': table layout, 600 px');
+      assert.ok(!/<svg/i.test(h), tag + ': no SVG (Gmail)');
+      const imgs = [...h.matchAll(/<img[^>]+src="([^"]+)"/g)].map((x) => x[1]);
+      assert.ok(imgs.length >= 3 && imgs.every((u) => u.startsWith(site + '/icons/') && u.endsWith('.png')), tag + ' ' + imgs);
+      assert.ok(imgs.includes(site + '/icons/icon-192.png'), tag + ': the logo');
+      assert.ok(h.includes('background:#1f6fd6') && h.includes('border:3px solid #0a0d14'), tag + ': sky and ink card');
+      assert.ok(h.includes('prefers-color-scheme:dark') && h.includes('name="color-scheme"'), tag + ': dark mode');
+      assert.ok(h.includes('@stalak_app') && h.includes('https://www.instagram.com/stalak_app/') && h.includes('https://www.tiktok.com/@stalak_app'), tag + ': footer');
+      assert.ok(h.length < 60000, tag + ': small (Gmail clips above 102 KB)');
+      assert.ok(m.text && !/<[a-z]/i.test(m.text.replace(/<the>|<\/?b>/g, '')) && m.text.includes('@stalak_app'), tag + ': plain text kept');
+      assert.ok(m.subject && m.subject.length < 90, tag);
+      assert.match(m.text, lang === 'fr' ? /Pourquoi cet e-mail \?/ : /Why this email\?/);
+    }
+    for (const k of ['signup', 'login', 'reset']) {
+      const code = { signup: '482913', login: '730551', reset: '164208' }[k];
+      assert.match(all[k].html, new RegExp(`font:800 46px[^"]*">${code}<`), k + ': the code, very big');
+      assert.match(all[k].text, new RegExp(`\\b${code}\\b`));
+    }
+    for (const k of ['reply', 'warning', 'reminder']) assert.ok(/bgcolor="#1f6fd6" class="st-btn"/.test(all[k].html), k + ': a blue button');
+    assert.ok(!all.reply.html.includes('<b>with</b>') && all.reply.html.includes('&lt;b&gt;with&lt;/b&gt;'), 'reply escaped');
+    assert.ok(all.reply.html.includes('<a href="https://stalak.app/pricing"'), 'links clickable');
+    assert.ok(all.warning.html.includes('Ice &lt;the&gt; Beat'), 'project names escaped');
+    assert.match(all.reminder.text, lang === 'fr' ? /7,99 \$ par mois/ : /\$7\.99 a month/);
+  }
 });
 
 // ---- runner --------------------------------------------------------------------------
