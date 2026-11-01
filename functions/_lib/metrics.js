@@ -35,6 +35,21 @@ export const NEW_VISITS_PER_IP_HOUR = 60; // new page loads counted per connecti
 export const VISITS_KEEP_DAYS = 90;
 const VID = /^[A-Za-z0-9_-]{16,40}$/;
 
+// Where a request comes from, for the dashboard: the COUNTRY Cloudflare gives (2 letters; never the IP nor the city) and the
+// kind of device read from the browser's name (iPhone/iPad, Android, computer); nothing else is kept.
+export function countryOf(request) {
+  const c = String((request.cf && request.cf.country) || request.headers.get('CF-IPCountry') || '').toUpperCase();
+  return /^[A-Z]{2}$/.test(c) && c !== 'XX' && c !== 'T1' ? c : null;
+}
+export function deviceOf(request) {
+  const ua = request.headers.get('User-Agent') || '';
+  if (/iPhone|iPad|iPod/i.test(ua)) return 'ios';
+  if (/Android/i.test(ua)) return 'android';
+  return ua ? 'desktop' : null;
+}
+// where the visit comes from (?ref=…, or the site that sent it, read by the page: src/app.js VISIT_REF)
+export const SOURCE = /^[a-z0-9_-]{1,24}$/;
+
 // POST /api/event {name, cat?, ios?, why?}: one step of the funnel. Unknown names are refused (400), so the table holds
 // only the names above. Limited per connection (hashed, like the visits).
 export async function event(request, env) {
@@ -56,11 +71,13 @@ export async function presence(request, env) {
   const vid = typeof body.vid === 'string' && VID.test(body.vid) ? body.vid : null;
   if (!vid) throw new HttpError(400, 'invalid_vid', 'vid: 16-40 letters, digits, - or _.');
   const lang = body.lang === 'fr' ? 'fr' : 'en';
+  const source = typeof body.ref === 'string' && SOURCE.test(body.ref) ? body.ref : null;
+  const back = body.back === true ? 1 : body.back === false ? 0 : null;
   const now = Date.now(), day = today(now);
   const row = await env.DB.prepare(
-    `INSERT INTO visits (day, vid, first_at, last_at, lang) VALUES (?1, ?2, ?3, ?3, ?4)
+    `INSERT INTO visits (day, vid, first_at, last_at, lang, country, device, source, came_back) VALUES (?1, ?2, ?3, ?3, ?4, ?5, ?6, ?7, ?8)
      ON CONFLICT(day, vid) DO UPDATE SET last_at = ?3 RETURNING first_at`
-  ).bind(day, vid, now, lang).first();
+  ).bind(day, vid, now, lang, countryOf(request), deviceOf(request), source, back).first();
   if (row && row.first_at === now) {
     // a new page load: limited per connection, so nobody can fill the table with made-up visits
     const ipKey = (await sha256Hex('ip:' + clientIp(request))).slice(0, 32);

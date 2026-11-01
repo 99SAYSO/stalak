@@ -8,7 +8,7 @@ import { sendCodeEmail } from './email.js';
 import { normalizeDisplayName } from './profile.js';
 import { checkTurnstile } from './turnstile.js';
 import { alertOwner } from './alerts.js';
-import { bump, today } from './metrics.js';
+import { bump, today, countryOf, deviceOf } from './metrics.js';
 
 export const CODE_TTL_MS = 10 * 60e3;
 export const MAX_ATTEMPTS = 5;
@@ -276,9 +276,10 @@ export async function signupVerify(request, env, body) {
   const id = randomId('u_'), now = Date.now();
   try {
     await env.DB.prepare(
-      `INSERT INTO users (id, email, lang, created_at, last_login_at, display_name, password_hash, password_salt, password_iter, password_set_at, email_verified_at)
-       VALUES (?1, ?2, ?3, ?4, ?4, ?5, ?6, ?7, ?8, ?4, ?4)`
-    ).bind(id, email, normalizeLang(body.lang || lang), now, data.name || null, data.h, data.s, data.i || PBKDF2_ITER).run();
+      `INSERT INTO users (id, email, lang, created_at, last_login_at, display_name, password_hash, password_salt, password_iter, password_set_at, email_verified_at,
+         country, device, signup_method)
+       VALUES (?1, ?2, ?3, ?4, ?4, ?5, ?6, ?7, ?8, ?4, ?4, ?9, ?10, 'email')`
+    ).bind(id, email, normalizeLang(body.lang || lang), now, data.name || null, data.h, data.s, data.i || PBKDF2_ITER, countryOf(request), deviceOf(request)).run();
   } catch (e) {
     if (/UNIQUE/i.test(String(e && e.message))) throw new HttpError(409, 'email_taken', 'An account already exists with this email.');
     throw e;

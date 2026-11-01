@@ -9,6 +9,7 @@
 //       Microsoft https://learn.microsoft.com/entra/identity-platform/v2-protocols-oidc
 //       Apple https://developer.apple.com/documentation/signinwithapplerestapi
 import { HttpError, getCookie, appOrigin, readText, clientIp } from './http.js';
+import { countryOf, deviceOf } from './metrics.js';
 import { randomToken, randomId, sha256Hex, base64url, timingSafeEqual } from './crypto.js';
 import { verifyJwtSignature, signEs256, decodeJwt } from './jwt.js';
 import { createSession, trustDevice, normalizeLang } from './auth.js';
@@ -233,7 +234,7 @@ export async function oauthCallback(request, env, provider, method) {
     if (provider === 'apple' && params.get('user')) {
       try { const u = JSON.parse(params.get('user')); name = [u.name && u.name.firstName, u.name && u.name.lastName].filter(Boolean).join(' '); } catch {}
     }
-    const user = await linkOrCreate(env, provider, claims, name, row.lang);
+    const user = await linkOrCreate(env, provider, claims, name, row.lang, { country: countryOf(request), device: deviceOf(request) });
     const cookies = [await createSession(env, user, 'oauth:' + provider), await trustDevice(request, env, user.id)];
     return backTo(env, ret, 'auth-ok-' + (String(ret.split('#')[1]).startsWith('pro') ? 'pro' : 'account'), cookies);
   } catch (e) {
@@ -245,7 +246,7 @@ export async function oauthCallback(request, env, provider, method) {
 
 // An identity already linked signs in its account. Otherwise the account with the same (verified) e-mail gets the identity,
 // or a new account is made, its address counted as verified.
-export async function linkOrCreate(env, provider, claims, name, lang) {
+export async function linkOrCreate(env, provider, claims, name, lang, meta = {}) {
   const now = Date.now(), sub = String(claims.sub);
   const email = claims.email ? String(claims.email).trim().toLowerCase() : null;
   const ident = await env.DB.prepare('SELECT * FROM identities WHERE provider = ?1 AND subject = ?2').bind(provider, sub).first();
@@ -267,8 +268,9 @@ export async function linkOrCreate(env, provider, claims, name, lang) {
     try { dn = normalizeDisplayName(name ? String(name).slice(0, 60) : null); } catch { dn = null; }
     if (dn && [...dn].length > 30) dn = null;
     const id = randomId('u_');
-    await env.DB.prepare('INSERT INTO users (id, email, lang, created_at, last_login_at, display_name, email_verified_at) VALUES (?1, ?2, ?3, ?4, ?4, ?5, ?4)')
-      .bind(id, email, lang === 'fr' ? 'fr' : 'en', now, dn).run();
+    // country (Cloudflare, 2 letters) and kind of device at sign-up, for the dashboard; never the IP nor the city
+    await env.DB.prepare('INSERT INTO users (id, email, lang, created_at, last_login_at, display_name, email_verified_at, country, device, signup_method) VALUES (?1, ?2, ?3, ?4, ?4, ?5, ?4, ?6, ?7, ?8)')
+      .bind(id, email, lang === 'fr' ? 'fr' : 'en', now, dn, meta.country || null, meta.device || null, provider).run();
     user = await env.DB.prepare('SELECT * FROM users WHERE id = ?1').bind(id).first();
   }
   await env.DB.prepare('INSERT INTO identities (provider, subject, user_id, email, created_at, last_login_at) VALUES (?1, ?2, ?3, ?4, ?5, ?5)')

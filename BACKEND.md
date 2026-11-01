@@ -461,14 +461,24 @@ Le glaçon en bas à droite répond aux questions sur Stalak. Sur claude.ai, c'e
 
 ## 13. Ton tableau de bord privé (admin.stalak.app) et « Parler à un humain »
 
-Le tableau de bord montre les inscrits, les abonnés Pro (mensuels, annuels) et le revenu, les visiteurs en direct, l'évolution
-jour par jour, l'usage des fonctions et les messages des visiteurs, auxquels tu réponds depuis la page.
+Le tableau de bord (refait le 1/11) est rangé en 6 onglets, avec la période au choix (7 j, 30 j, 90 j, tout) et chaque chiffre
+expliqué en une phrase : **Aujourd'hui** (en direct, visites, inscriptions, vidéos exportées, abonnés, revenu, messages),
+**Utilisateurs** (carte du monde des comptes et des visites par pays, inscriptions par jour, e-mail ou Google, appareils,
+langues, provenance `?ref=` / Google / TikTok…, comptes et visites qui reviennent, derniers inscrits), **Argent** (abonnés par
+formule, revenu mensuel, encaissé, nouveaux abonnés, désabonnements, remboursements), **Entonnoir** (visite → export → offre
+Pro → formules → paiement, avec les taux, exports ratés et pourquoi, pubs), **Messages** (« Parler à un humain ») et **Santé du
+serveur** (erreurs, limites du jour : e-mails de code, IA, paroles auto, stockage). Les chiffres des paiements de test (Paddle
+sandbox) sont marqués **TEST**.
+**Pays** : seul le pays donné par Cloudflare (2 lettres) est gardé, à l'inscription et sur les visites ; jamais l'adresse IP
+ni la ville (migration `0010_dashboard.sql`). « Visites de retour » : la page dit seulement oui / non (la date de la dernière
+visite reste dans le navigateur, `localStorage` « stalak:lastDay »).
 Il est à `https://admin.stalak.app/admin/`, réservé à ton e-mail par **Cloudflare Access**. Le serveur vérifie lui-même,
 à chaque requête, la signature d'Access, l'adresse `admin.stalak.app` et ton e-mail : ailleurs (stalak.app, pages.dev),
 ces pages n'existent pas. Tant que les 2 secrets de l'étape 13.4 manquent, le tableau de bord est éteint.
 
 ### 13.1 La base (avant de publier)
 Dans la **Console** de la base D1 `stalak`, colle **tout** `migrations/0006_admin_support.sql` et clique sur **Execute** (une seule fois).
+Pour le nouveau tableau de bord (1/11) : colle de même **tout** `migrations/0010_dashboard.sql` (7 colonnes vides) **avant** de publier.
 
 ### 13.2 L'adresse admin.stalak.app
 **Workers & Pages → stalak-site → Custom domains → Set up a custom domain** → `admin.stalak.app` → **Continue** → **Activate domain**.

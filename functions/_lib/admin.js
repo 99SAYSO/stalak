@@ -113,21 +113,24 @@ export async function stats(env, days = 30, now = Date.now()) {
   const R = (r) => r.results || [];
 
   const series = {};
-  for (const d of list) series[d] = { day: d, signups: 0, visits: 0, newPro: 0, payments: 0, revenue: 0, refunds: 0,
+  for (const d of list) series[d] = { day: d, signups: 0, visits: 0, newPro: 0, payments: 0, revenue: 0, revenueUsd: 0, refunds: 0,
+    exportOk: 0, exportFail: 0, adOk: 0, paid: 0, errors: 0, codeMails: 0,
     lyricsJobs: 0, lyricsMinutes: 0, lyricsUsers: 0, cloudSaves: 0, helpQuestions: 0, helpFailed: 0, tickets: 0, ticketMessages: 0 };
   const at = (d) => series[d];
   for (const r of R(signups)) if (at(r.d)) at(r.d).signups = r.n;
   for (const r of R(visitDays)) if (at(r.d)) at(r.d).visits = r.n;
   // revenue per day in euros (other currencies are listed in the totals, not in the chart)
-  for (const r of R(payDays)) if (at(r.d)) { at(r.d).payments += r.n; at(r.d).newPro += r.first || 0; if (r.currency === 'EUR') at(r.d).revenue += r.total || 0; }
+  for (const r of R(payDays)) if (at(r.d)) { at(r.d).payments += r.n; at(r.d).newPro += r.first || 0; if (r.currency === 'EUR') at(r.d).revenue += r.total || 0; if (r.currency === 'USD') at(r.d).revenueUsd += r.total || 0; }
   for (const r of R(refDays)) if (at(r.d) && r.currency === 'EUR') at(r.d).refunds += r.total || 0;
   for (const r of R(lyrDays)) if (at(r.d)) { at(r.d).lyricsJobs = r.jobs || 0; at(r.d).lyricsMinutes = Math.round((r.seconds || 0) / 6) / 10; at(r.d).lyricsUsers = r.users || 0; }
   const KEY = { help_q: 'helpQuestions', help_fail: 'helpFailed', cloud_save: 'cloudSaves', ticket: 'tickets', ticket_msg: 'ticketMessages' };
   for (const r of R(counts)) if (at(r.d) && KEY[r.name] && r.name !== 'ticket') at(r.d)[KEY[r.name]] = r.n;
+  const DAY_EV = { ev_export_ok: 'exportOk', ev_export_fail: 'exportFail', ev_ad_ok: 'adOk', paid_first: 'paid', err_5xx: 'errors', code_mail: 'codeMails' };
+  for (const r of R(counts)) if (at(r.d) && DAY_EV[r.name]) at(r.d)[DAY_EV[r.name]] = r.n;
   // the funnel (audit of 30/10): visit → export → ad → plans page → payment window → first payment, over the last 30 days;
   // plus the server errors and the code e-mails (anonymous counters, metrics.js)
-  const last30 = new Set(list.slice(-30)), ev = {};
-  for (const r of R(counts)) if (last30.has(r.d)) ev[r.name] = (ev[r.name] || 0) + (r.n || 0);
+  const inRange = new Set(list), ev = {};
+  for (const r of R(counts)) if (inRange.has(r.d)) ev[r.name] = (ev[r.name] || 0) + (r.n || 0);
   const pick = (prefix) => { const o = {}; for (const k in ev) if (k.startsWith(prefix)) o[k.slice(prefix.length)] = ev[k]; return o; };
   for (const r of R(ticketDays)) if (at(r.d)) at(r.d).tickets = r.n;
 
@@ -191,8 +194,67 @@ export async function stats(env, days = 30, now = Date.now()) {
         codeMailsToday: R(counts).filter((r) => r.d === list[list.length - 1] && r.name === 'code_mail').reduce((n, r) => n + r.n, 0) },
     },
     env: pe,
+    ...(await insights(env, list, fromMs, now)),
     recentUsers: R(recent).map((r) => ({ email: r.email, name: r.display_name || null, createdAt: new Date(r.created_at).toISOString(),
       verified: !!r.email_verified_at, pro: proUsers.has(r.id), plan: proUsers.get(r.id) || null })),
+  };
+}
+
+// ---- the new dashboard (1/11): who, from where, what they do, what it brings, how the server is (one batch of queries) ----
+const DEVICES = ['ios', 'android', 'desktop'];
+const tally = (rows, key = 'k') => { const o = {}; for (const r of rows) o[r[key] == null ? 'unknown' : r[key]] = (o[r[key] == null ? 'unknown' : r[key]] || 0) + (r.n || 0); return o; };
+export async function insights(env, list, fromMs, now = Date.now()) {
+  const from = list[0], pe = payEnv(env), q = (sql, ...b) => env.DB.prepare(sql).bind(...b);
+  // how an account was made: the column (from 1/11), else Google / Apple / Microsoft when its identity came with it, else e-mail
+  const method = `COALESCE(u.signup_method, (SELECT i.provider FROM identities i WHERE i.user_id = u.id AND i.created_at <= u.created_at + 120000 ORDER BY i.created_at LIMIT 1), 'email')`;
+  const [uMethod, uLang, uDevice, uCountry, uCountryAll, vCountry, vSource, vDevice, vLang, vBack, back, subsEnd, canceled, firstPay, refunds, storage] = await env.DB.batch([
+    q(`SELECT ${method} AS k, COUNT(*) AS n FROM users u WHERE u.created_at >= ?1 GROUP BY k`, fromMs),
+    q('SELECT lang AS k, COUNT(*) AS n FROM users WHERE created_at >= ?1 GROUP BY lang', fromMs),
+    q('SELECT device AS k, COUNT(*) AS n FROM users WHERE created_at >= ?1 GROUP BY device', fromMs),
+    q('SELECT country AS k, COUNT(*) AS n FROM users WHERE created_at >= ?1 GROUP BY country', fromMs),
+    q('SELECT country AS k, COUNT(*) AS n FROM users GROUP BY country'),
+    q('SELECT country AS k, COUNT(*) AS n FROM visits WHERE day >= ?1 GROUP BY country', from),
+    q('SELECT source AS k, COUNT(*) AS n FROM visits WHERE day >= ?1 GROUP BY source', from),
+    q('SELECT device AS k, COUNT(*) AS n FROM visits WHERE day >= ?1 GROUP BY device', from),
+    q('SELECT lang AS k, COUNT(*) AS n FROM visits WHERE day >= ?1 GROUP BY lang', from),
+    q('SELECT came_back AS k, COUNT(*) AS n FROM visits WHERE day >= ?1 GROUP BY came_back', from),
+    // accounts that came back: a session opened in the period on a later day than the sign-up day
+    q(`SELECT COUNT(DISTINCT s.user_id) AS n FROM sessions s JOIN users u ON u.id = s.user_id
+       WHERE s.created_at >= ?1 AND date(s.created_at / 1000, 'unixepoch') > date(u.created_at / 1000, 'unixepoch')`, fromMs),
+    q("SELECT COUNT(*) AS n FROM subscriptions WHERE env = ?1 AND cancel_at IS NOT NULL AND status IN ('active','trialing','past_due')", pe),
+    q("SELECT COUNT(*) AS n FROM subscriptions WHERE env = ?1 AND status = 'canceled' AND updated_at >= ?2", pe, fromMs),
+    q("SELECT currency, COUNT(*) AS n, SUM(total) AS total FROM payments WHERE env = ?1 AND billed_at >= ?2 AND origin <> 'subscription_recurring' GROUP BY currency", pe, fromMs),
+    q("SELECT currency, COUNT(*) AS n, SUM(total) AS total FROM refunds WHERE env = ?1 AND created_at >= ?2 AND status = 'approved' AND action IN ('refund','chargeback') GROUP BY currency", pe, fromMs),
+    q('SELECT COALESCE(SUM(media_bytes), 0) + COALESCE(SUM(size), 0) AS bytes FROM projects'),
+  ]);
+  const R = (r) => r.results || [];
+  const dev = (rows) => { const t = tally(rows), o = { ios: 0, android: 0, desktop: 0, unknown: 0 }; for (const k in t) o[DEVICES.includes(k) ? k : 'unknown'] += t[k]; return o; };
+  const one = (r) => (R(r)[0] || {}).n || 0;
+  const cur = (rows) => { const o = {}; for (const r of R(rows)) o[r.currency || '?'] = { n: r.n || 0, total: r.total || 0 }; return o; };
+  const todayStr = today(now);
+  const counts = (await q('SELECT name, n FROM daily_counts WHERE day = ?1', todayStr).all()).results || [];
+  const t = Object.fromEntries(counts.map((r) => [r.name, r.n]));
+  const lyr = await q('SELECT COALESCE(SUM(seconds), 0) AS s, COALESCE(SUM(jobs), 0) AS j FROM lyrics_usage WHERE day = ?1', todayStr).first();
+  const num = (v, d) => { const n = Number.parseInt(v, 10); return Number.isFinite(n) && n > 0 ? n : d; };
+  return {
+    range: { days: list.length, from, to: list[list.length - 1], visitsKeptDays: 90 },
+    test: pe !== 'production',
+    people: {
+      byMethod: tally(R(uMethod)), byLang: tally(R(uLang)), byDevice: dev(R(uDevice)),
+      byCountry: tally(R(uCountry)), byCountryAll: tally(R(uCountryAll)), returningAccounts: one(back),
+    },
+    audience: {
+      byCountry: tally(R(vCountry)), bySource: tally(R(vSource)), byDevice: dev(R(vDevice)), byLang: tally(R(vLang)),
+      returning: (() => { const b = tally(R(vBack)); return { yes: b['1'] || 0, no: b['0'] || 0, unknown: b.unknown || 0 }; })(),
+    },
+    money: { newSubscribers: cur(firstPay), refunds: cur(refunds), canceled: one(canceled), ending: one(subsEnd) },
+    limits: {
+      codeMails: { today: t.code_mail || 0, max: num(env.EMAIL_DAILY_MAX, 1000) },
+      help: { today: t.help_q || 0, max: num(env.HELP_DAILY_MAX, 60) },
+      lyrics: { todayJobs: (lyr && lyr.j) || 0, todayMinutes: Math.round(((lyr && lyr.s) || 0) / 60), freeMinutes: 210 },
+      storage: { bytes: (R(storage)[0] || {}).bytes || 0, perAccount: 100 * 1024 ** 3 },
+      errorsToday: t.err_5xx || 0,
+    },
   };
 }
 
@@ -250,8 +312,14 @@ export async function admin(request, env, method, rest) {
 
   if (route === 'me' && method === 'GET') return json({ email: who.email });
   if (route === 'stats' && method === 'GET') {
-    const d = Number.parseInt(url.searchParams.get('days') || '30', 10);
-    return json(await stats(env, Math.min(120, Math.max(7, Number.isFinite(d) ? d : 30))));
+    // 7, 30, 90 days, or « all »: since the first account (at most 2 years of days)
+    const raw = url.searchParams.get('days') || '30';
+    let d = Number.parseInt(raw, 10);
+    if (raw === 'all') {
+      const first = await env.DB.prepare('SELECT MIN(created_at) AS t FROM users').first();
+      d = first && first.t ? Math.ceil((Date.now() - first.t) / 864e5) + 1 : 30;
+    }
+    return json(await stats(env, Math.min(730, Math.max(7, Number.isFinite(d) ? d : 30))));
   }
   if (route === 'live' && method === 'GET') {
     // the dashboard is open: it counts as « here » for the visitors when « disponible » is on
