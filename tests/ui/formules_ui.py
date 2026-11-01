@@ -209,7 +209,7 @@ def engine(b, base):
     ctx = b.new_context(viewport={'width': 1280, 'height': 860}, locale='fr-FR'); pg = ctx.new_page(); errs = []
     ctx.route('**/tag/js/gpt.js', lambda r: r.fulfill(status=200, content_type='application/javascript', body=FAKE_GPT))
     pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
-    pg.goto(base, wait_until='load'); pg.wait_for_function('window.__ev && window.MP4Box', timeout=20000)
+    pg.goto(base + 'fr/', wait_until='load'); pg.wait_for_function('window.__ev && window.MP4Box', timeout=20000)
     pg.locator('#demoBtn').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000)
     ev(pg, "ACCT.state.user = null")
     r = ev(pg, """(() => {

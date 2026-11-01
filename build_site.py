@@ -106,7 +106,7 @@ PAGE = {
     </ul>
     <p><strong>What you can do:</strong></p>
     <ul>
-      <li>Auto cuts on the beat, on every word or every bar.</li>
+      <li>Auto cuts that land on the beat: phrase by phrase, on your lines and rhymes, or every bar.</li>
       <li>On-screen lyrics, one line at a time; word-by-word and karaoke styles with Stalak Pro.</li>
       <li>Auto lyrics: Stalak writes and syncs your lyrics from your vocals (Stalak Pro).</li>
       <li>16:9 music video mode for YouTube, with effects like flash, zoom, shake and slow-mo (Stalak Pro).</li>
@@ -232,7 +232,7 @@ def meta(lang):
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="{URL}/og.png">
-<link rel="manifest" href="/manifest.webmanifest">
+<link rel="manifest" href="{'/fr/manifest.webmanifest' if lang == 'fr' else '/manifest.webmanifest'}">
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -255,10 +255,11 @@ function show(){var q;try{q=new URLSearchParams(location.search).has('lang')}cat
 b.hidden=!(document.documentElement.lang==='en'&&get('stalak:lang')==null&&get('stalak:frHint')==null&&!q);}
 show();try{new MutationObserver(show).observe(document.documentElement,{attributes:true,attributeFilter:['lang']})}catch(e){}
 document.getElementById('frHintX').onclick=function(){set('stalak:frHint','0');b.hidden=true;};
-document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.stringify('fr'));};})();</script>
+document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.stringify('fr'));this.href='/fr/'+location.hash;};})();</script>
 '''
-# the app installed on the home screen opens /?app=1 (manifest): on a phone set to French, with no language chosen yet, it stays in
-# French as before the move (the app reads ?lang= first); runs before the app
+# the app installed from the English home opens /?app=1 (site_src/manifest.webmanifest; installed from /fr/, it opens /fr/?app=1 with
+# site_src/fr/manifest.webmanifest): on a phone set to French, with no language chosen yet, /?app=1 stays in French as before the
+# move (the app reads ?lang= first) — for the apps installed before 01/11; runs before the app
 PWA_LANG_JS = r'''<script>/* Marketing & croissance: the installed app keeps French on a French phone (no language chosen yet) */
 (function(){try{var q=new URLSearchParams(location.search);if(q.has('lang')||localStorage.getItem('stalak:lang')!=null)return;
 var app=q.get('app')==='1'||navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches);
@@ -268,8 +269,9 @@ if(app&&/^fr\b/i.test(l)){q.set('lang','fr');history.replaceState(history.state,
 css += '\n.frhint{display:flex;align-items:center;gap:2px;width:max-content;max-width:calc(100% - 32px);margin:0 auto 12px;background:#fff;color:var(--ink,#0a0d14);border:2px solid var(--ink,#0a0d14);border-radius:999px;box-shadow:0 3px 0 var(--ink,#0a0d14);font-size:14.5px;font-weight:600;line-height:1.2}.frhint[hidden]{display:none}.frhint a{color:inherit;text-decoration:none;padding:10px 4px 10px 16px}.frhint button{flex:none;width:40px;height:40px;border:0;border-radius:50%;background:transparent;color:inherit;font:inherit;font-size:20px;line-height:1;cursor:pointer}\n'
 def page(lang, body):
     h = meta(lang) + head.replace('<title>Stalak</title>', '<title>' + H.escape(PAGE[lang]['title']) + '</title>')
-    if lang == 'en': h, body = h + PWA_LANG_JS, FR_HINT_HTML + body
-    tail = FR_HINT_JS if lang == 'en' else ''
+    # the banner and its script come first in the page: shown or not before the first paint, so nothing moves afterwards
+    if lang == 'en': h, body = h + PWA_LANG_JS, FR_HINT_HTML + FR_HINT_JS + body
+    tail = ''
     return '<!doctype html>\n<html lang="' + lang + '">\n<head>\n' + h + '<style>' + css + '</style>\n</head>\n<body>\n' + body + '<script>' + ACCOUNT_JS + '</script>\n<script>' + js + '</script>\n' + tail + '</body>\n</html>\n'
 
 if out.exists(): shutil.rmtree(out)

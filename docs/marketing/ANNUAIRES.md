@@ -53,11 +53,11 @@ Tags : lip sync video editor, music video maker, beat sync video editing, video 
 Fondateur :
 > I'm 99Sayso, a rapper from the Alaska collective. I coded Stalak to cut my own takes to the beat for my videos. Now any artist can use it for free, right in the browser.
 
-**A — sites de lancement.** Accroche : `Cut your lip-sync takes to the beat, automatically` · Courte : `Free lip-sync video editor that cuts your takes on the beat` · Product Hunt (233 car.) :
-> Stalak turns a few phone takes of your song into a video cut on the beat. Add your track and 2+ takes: it switches between them on every beat, word or bar, lip sync locked in, lyrics on screen. Runs in your browser. Free, no sign-up.
+**A — sites de lancement.** Accroche : `Cut your lip-sync takes to the beat, automatically` · Courte : `Free lip-sync video editor that cuts your takes on the beat` · Product Hunt (251 car.) :
+> Stalak turns a few phone takes of your song into a video cut on the beat. Add your track and 2+ takes: it switches between them phrase by phrase, on your lines or every bar, lip sync locked in, lyrics on screen. Runs in your browser. Free, no sign-up.
 
 Longue :
-> Stalak turns a few phone takes of your song into a video cut on the beat. Upload the track, add two or more videos of you performing it, and Stalak switches between them on every beat, every word or every bar, with your lip sync locked in. Put your lyrics on screen, then export a vertical video for TikTok, Reels or Shorts, or a full 16:9 music video for YouTube.
+> Stalak turns a few phone takes of your song into a video cut on the beat. Upload the track, add two or more videos of you performing it, and Stalak switches between them on the beat, phrase by phrase, on your lines and rhymes, or every bar, with your lip sync locked in. Put your lyrics on screen, then export a vertical video for TikTok, Reels or Shorts, or a full 16:9 music video for YouTube.
 >
 > It runs in the browser on iPhone, Android or desktop. There's nothing to install, and the free plan needs no account. Editing happens on your device, so your footage stays yours.
 >
@@ -69,7 +69,7 @@ Premier commentaire Product Hunt :
 > Hey Product Hunt! I'm 99Sayso, a rapper. Every song I put out needs a bunch of short videos, and cutting several takes by hand on a timeline is slow. So I built Stalak: drop your song and a few takes, and it cuts between them on the beat while keeping the lip sync tight. It runs in the browser, and the free plan needs no account. I'd love your honest take: what would make you use it for your next post?
 
 **B — logiciels et alternatives.** Accroche : `Browser-based lip-sync video editor for musicians` · Courte : `Auto-edits your lip-sync takes on the beat, in the browser` · Longue :
-> Stalak is a lip-sync video editor for rappers and singers that does the cutting for you. Instead of placing every cut on a timeline, you give it your song and a few takes; Stalak finds the beat and switches takes on every beat, every word or every bar.
+> Stalak is a lip-sync video editor for rappers and singers that does the cutting for you. Instead of placing every cut on a timeline, you give it your song and a few takes; Stalak finds the beat and switches takes phrase by phrase, on your lines and rhymes, or every bar.
 >
 > Main features:
 > - Automatic multi-take editing, with the lip sync kept tight
@@ -85,8 +85,8 @@ Premier commentaire Product Hunt :
 >
 > Free in the browser, with no download and no account. Made by 99Sayso, an independent rapper from the Alaska collective.
 
-**C courte** (Buzzsonic, 431 caractères) :
-> Stalak turns a few phone takes of your song into videos cut on the beat. Drop in the track and your takes: it switches between them on every beat, word or bar, keeps the lip sync tight and puts your lyrics on screen. Export for TikTok, Reels, Shorts or a 16:9 YouTube music video. Creator Plus makes 5 to 30 differently cut videos from one song. Free in the browser, no download, no account. Made by 99Sayso, an independent rapper.
+**C courte** (Buzzsonic, 444 caractères) :
+> Stalak turns a few phone takes of your song into videos cut on the beat. Drop in the track and your takes: it switches between them on the beat, on your lines or every bar, keeps the lip sync tight and puts your lyrics on screen. Export for TikTok, Reels, Shorts or a 16:9 YouTube music video. Creator Plus makes 5 to 30 differently cut videos from one song. Free in the browser, no download, no account. Made by 99Sayso, an independent rapper.
 
 **D — annuaires d'IA** (aucun retenu ; seulement si on en ajoute un) :
 > Stalak uses beat detection to cut between your real takes on the beat, and speech recognition to write and sync your lyrics from your vocals (Pro). It never generates a face or fake mouth movements: every frame is you, filmed on your phone. Upload a song and 2+ takes, then export 9:16 for TikTok, Reels and Shorts, or 16:9 for YouTube. Free in the browser.
