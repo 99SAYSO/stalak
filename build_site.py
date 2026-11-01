@@ -306,8 +306,18 @@ _listed = ['/', '/fr/'] + [u for pair in SITEMAP_PAIRS for u in pair] + ['/' + s
 _gone = [u for u in _listed if not _page_file(u).exists()]
 assert not _gone, 'sitemap: no page for ' + ', '.join(_gone)
 def _alts(fr, en): return ''.join(f'<xhtml:link rel="alternate" hreflang="{l}" href="{URL}{u}"/>' for l, u in [('fr', fr), ('en', en), ('x-default', en)])
+# lastmod = the date the page's source last changed (Bing and Google only trust a true date): the last commit touching it,
+# or today if it is changed and not committed yet (or if git is not there). The two app pages follow src/ and this script.
+import subprocess
+def _lastmod(u):
+    srcs = ['src', 'build_site.py'] if u in ('/', '/fr/') else ['site_src' + u + '.html']
+    try:
+        g = lambda *a: subprocess.run(['git', *a, '--', *srcs], cwd=root, capture_output=True, text=True, timeout=20).stdout.strip()
+        return today if g('status', '--porcelain') else (g('log', '-1', '--format=%cs') or today)
+    except Exception:
+        return today
 (out / 'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">'
-    + ''.join(f'<url><loc>{URL}{u}</loc><lastmod>{today}</lastmod>{_alts(fr, en)}</url>' for fr, en in [('/fr/', '/')] + SITEMAP_PAIRS for u in (en, fr))
-    + ''.join(f'<url><loc>{URL}/{s}</loc><lastmod>{today}</lastmod></url>' for s, _ in GUIDES) + '</urlset>\n', encoding='utf-8')
+    + ''.join(f'<url><loc>{URL}{u}</loc><lastmod>{_lastmod(u)}</lastmod>{_alts(fr, en)}</url>' for fr, en in [('/fr/', '/')] + SITEMAP_PAIRS for u in (en, fr))
+    + ''.join(f'<url><loc>{URL}/{s}</loc><lastmod>{_lastmod("/" + s)}</lastmod></url>' for s, _ in GUIDES) + '</urlset>\n', encoding='utf-8')
 n = sum(1 for _ in out.rglob('*') if _.is_file()); size = sum(f.stat().st_size for f in out.rglob('*') if f.is_file())
 print('site built in', out, '·', n, 'files ·', round(size / 1048576, 1), 'MB')

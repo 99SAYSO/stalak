@@ -8,7 +8,7 @@ Ce document remplace `PLAN_TRILLER.md` : le site ne cite plus aucun concurrent.
 
 ## A. Proposition : l'anglais à l'adresse principale, le français dans `/fr/`
 
-**Rien n'est appliqué. J'attends l'accord du propriétaire.**
+**Accepté par le propriétaire le 31/10 (20 h 15). Appliqué le 01/11 sur la branche `marketing/en-racine`** (compte rendu : `docs/handoff/marketing-en-racine.md`) : pages déplacées, redirections 301 directes, `hreflang`, plan du site, manifest en anglais, bandeau « Version française → », liens de l'app. Mise en ligne coordonnée par le Chef de projet. Changement depuis la proposition : les anciennes pages Triller mènent maintenant à la nouvelle page comparative (`/en/triller-alternative` → `/triller-alternative`, `/alternative-triller` → `/fr/alternative-triller`), décision du 31/10 (option B).
 
 ### Aujourd'hui
 

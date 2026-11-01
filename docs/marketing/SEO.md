@@ -1,5 +1,7 @@
 # SEO — nom « Stalak » et recherches de la niche (30/10/2026)
 
+> **Mis à jour le 01/11/2026 (branche `marketing/en-racine`)** : l'anglais est à l'adresse principale (`/`, `/pricing`, `/terms`…), le français dans `/fr/` ; les anciennes adresses sont redirigées en 301 (`site_src/_redirects`). Les 6 guides anglais sont publiés (`site_drafts/README.md`). Une seule page cite un concurrent : `/triller-alternative` (et `/fr/alternative-triller`), comparaison neutre et sourcée avec Triller, liée depuis aucune autre page (plan du site seulement ; décision du 31/10, option B). Annuaires et Bing : document « Stalak — annuaires d'outils et Bing » (https://claude.ai/artifact/EbcSbWg4zfAhNLrN6XWDn9) et `docs/marketing/ANNUAIRES.md`, qui remplacent le tableau des annuaires du document ci-dessous.
+
 Plan complet, avec le classement des recherches, le tableau des annuaires et les textes prêts à copier : document « Stalak — passer premier sur Google » dans claude.ai (https://claude.ai/artifact/YbAGap5KoT5siSTbWVfP7W).
 
 Skills utilisés : `seo-audit`, `ai-seo`, `directory-submissions`, `competitors`, `programmatic-seo`, `content-strategy`, `webapp-testing`.
