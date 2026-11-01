@@ -112,7 +112,7 @@
 ## À faire, par rôle
 
 ### Chef de projet
-- **Bascule « anglais à la racine »** (`marketing/en-racine`, en relecture) : la mettre en ligne en même temps que les liens d'e-mails de Comptes (ci-dessous) ; ensuite Search Console : soumettre `sitemap.xml` et `sitemap-old.xml`, demander l'indexation de `/` et `/fr/` ; prévenir le propriétaire pour Bing (document annuaires). `STALAK_CONTEXTE.md` dit encore « FR sur `/`, EN sur `/en/` » pour le build : à corriger.
+- **Bascule « anglais à la racine »** (`marketing/en-racine`, PRÊT, relue par un agent indépendant) : la mettre en ligne en même temps que les liens d'e-mails de Comptes (ci-dessous) ; ensuite Search Console : soumettre `sitemap.xml` et `sitemap-old.xml`, demander l'indexation de `/` et `/fr/` ; prévenir le propriétaire pour Bing (document annuaires). `STALAK_CONTEXTE.md` dit encore « FR sur `/`, EN sur `/en/` » pour le build : à corriger.
 - Supprimer l'ancien projet Cloudflare « stalak » en double.
 
 ### App & montage
@@ -183,7 +183,7 @@
 - À décider : la publication directe est-elle réservée à Stalak Pro ou ouverte à tous ? Meta risque de demander une vérification d'entreprise (lien avec la LLC).
 
 ### Marketing & croissance
-- **En cours, relecture (branche `marketing/en-racine`, 1/11) — décisions du 31/10, 20 h 15 (référencement)** :
+- **Prêt (branche `marketing/en-racine`, 1/11) — décisions du 31/10, 20 h 15 (référencement)** :
   - **L'anglais à l'adresse principale, le français dans `/fr/`** (plan `docs/marketing/US_FIRST.md` partie A) : accueil anglais sur `/`, français sur `/fr/` ; `/pricing`, `/terms`, `/refunds`, `/privacy`, `/legal-notice` et `/fr/tarifs`, `/fr/conditions`… ; `hreflang` (fr → `/fr/`, en et x-default → `/`) ; **redirections 301 directes** de chaque ancienne adresse (`/en/…`, `/tarifs`…, anciennes pages Triller) dans `site_src/_redirects` ; un manifest par langue (`/manifest.webmanifest` anglais, `/fr/manifest.webmanifest` français) ; bandeau « Version française → » sur l'accueil anglais pour un téléphone en français (fermable, choix retenu, sans redirection automatique, sans décalage de la page) ; les apps déjà installées gardent le français sur un téléphone en français ; liens Tarifs / Conditions / Remboursement / Confidentialité de l'app mis à jour (fichiers partagés, minimum : `src/markup.html`, `I18N_EN` de `src/app.js`) ; chemins des tests `tests/ui/` mis à jour.
   - Textes corrigés partout (accueil anglais, `llms.txt`, guides, page Triller, annuaires) : les coupes suivent la musique phrase par phrase, « On the words » coupe au début des lignes et sur les rimes, « Every bar » à chaque mesure (plus de « every beat, every word »).
   - **Les 6 guides anglais publiés** (`/lip-sync-video-editor`, `/music-video-maker-for-rappers`, `/rap-snippet-video`, `/lip-sync-videos-for-singers`, `/how-to-make-a-lip-sync-video`, `/edit-video-to-the-beat`), liés depuis le pied de page de l'accueil anglais.

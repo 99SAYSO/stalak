@@ -1,6 +1,6 @@
 # Compte rendu — branche `marketing/en-racine` (Marketing & croissance, 01/11/2026)
 
-Statut : EN COURS (relecture indépendante en cours : ne pas intégrer encore)
+Statut : PRÊT
 
 Branche partie de `main` (f87bdac). À mettre en ligne **en une fois avec les liens d'e-mails de Comptes** (point 5). Aucune migration SQL.
 
@@ -43,11 +43,11 @@ Aussi : plan du site à 16 adresses, **sans** les pages « noindex » (confident
 
 ## Tests
 
-- `python3 build_site.py --domain stalak.app --email contact@stalak.app` : OK (67 fichiers) ; `python3 build.py` (version claude.ai) : OK ; syntaxe de `src/app.js` : OK.
+- `python3 build_site.py --domain stalak.app --email contact@stalak.app` : OK (68 fichiers) ; `python3 build.py` (version claude.ai) : OK ; syntaxe de `src/app.js` : OK.
 - `node tests/backend/run.mjs` : **78/78**.
-- Vérification du site construit (script Marketing) : 20 pages, 351 liens internes, **aucun lien cassé ni vers une adresse redirigée**, JSON-LD valides, canonical et `hreflang` cohérents, aucun concurrent cité hors des 2 pages Triller, aucune page ne lie la page Triller.
-- Playwright, **390 px et 1280 px, FR et EN, 20 pages** : bonne langue, pas de défilement horizontal, un seul titre H1, aucune erreur ; bandeau (affiché pour un téléphone français, × le ferme pour de bon, le lien ouvre `/fr/` et retient le français, rien pour en-US / de-DE ni sur `/fr/`, caché après le bouton FR) ; app installée (fr-FR → français, en-US → anglais, choix anglais gardé) ; liens Tarifs / Conditions de l'app dans la bonne langue : **54/54**.
-- `tests/ui/help_ui.py` : **42/42** (FR et EN, et la version claude.ai) ; `tests/ui/plans_ui.py` : **35/35** ; `tests/ui/gallery_ui.py` : **49/49** ; `tests/ui/support_ui.py` : **39/39** sur un serveur de test neuf (ces quatre tests utilisent les nouveaux chemins `/` et `/fr/`).
+- Vérification du site construit (script Marketing) : 20 pages, 355 liens internes, **aucun lien cassé ni vers une adresse redirigée**, JSON-LD valides, canonical et `hreflang` cohérents, aucun concurrent cité hors des 2 pages Triller, aucune page ne lie la page Triller.
+- Playwright, **390 px et 1280 px, FR et EN, 20 pages** : bonne langue, pas de défilement horizontal, un seul titre H1, aucune erreur ; bandeau (affiché pour un téléphone français, × le ferme pour de bon, le lien ouvre `/fr/` et retient le français, rien pour en-US / de-DE ni sur `/fr/`, caché après le bouton FR) ; app installée (fr-FR → français, en-US → anglais, choix anglais gardé) ; liens Tarifs / Conditions de l'app dans la bonne langue ; bandeau sans décalage (CLS 0,000) ; lien du bandeau qui garde le panneau ouvert ; un manifest par langue : **58/58**.
+- `tests/ui/help_ui.py` : **42/42** (FR et EN, et la version claude.ai) ; `tests/ui/plans_ui.py` : **35/35** ; `tests/ui/gallery_ui.py` : **49/49** ; `tests/ui/support_ui.py` : **39/39** sur un serveur de test neuf ; `tests/ui/formules_ui.py` : **169/169** ; `tests/ui/filtres_ui.py` : **106/106** (ces six tests utilisent les nouveaux chemins `/` et `/fr/`).
 - `tests/ui/lyrics_ui.py` : FR 390 px entier et EN 1280 px jusqu'à « vocals of the same length » (51 réussis), puis arrêt sur le message « fichier de voix illisible » en anglais. **Exactement le même arrêt sur `main`** (51 réussis, même ligne 192) : préexistant, sans lien avec la bascule ; à regarder par App (la clé `lyr.vox.bad` n'a pas de version anglaise dans `I18N_EN`).
 - `tests/ui/animations_ui.py` : 42 à 43/44 selon les passages. Les échecs sont la mesure de fluidité « processeur 4 fois plus lent » (images de plus de 20 ms), qui varie d'un passage à l'autre sur cette machine : **le même test sur `main` donne aussi 43/44, avec le même échec** (« iPhone fr : fluide… »). Rien à voir avec ce changement ; toutes les autres règles d'animation passent, pages `/fr/…` et anglaises comprises.
 
