@@ -58,3 +58,16 @@ L'idée A choisie par le propriétaire le 1/11 : une seule forme 3D qui ne coupe
 - Au clic (1,55 s), l'image figée montre sa main devant son visage ; son visage revient dès que la tête de lecture recule (0,4 s plus tard).
 - La phase « pas encore synchro » des 3 prises est courte (0,6 s) : on voit le décalage des ondes, moins celui des gestes.
 - Au repli après le drop (23,1 s), la pilule reste vide une fraction de seconde avant « 40 min ».
+
+## Rendu final de la version 3 (1/11 après-midi)
+- Fichier : 1080 × 1920, 30 i/s, 757 images, 25,23 s, H.264 + AAC, 34,8 Mo, qualité « delivery » (21 min de rendu). Envoyé au propriétaire, pas dans le dépôt.
+- **Regardé** : une image par temps (66), une bande de 12 images autour de chacun des 17 changements d'état, la planche à la largeur d'un téléphone. Les 5 mots du début se verrouillent sans se couvrir ; le logo arrive sur « Stalak » ; aucune image noire.
+- Corrigé pendant la vérification : les gros mots étaient mesurés avant le chargement de leur police (tailles fausses) ; la dernière lettre de « STILL » passait derrière le plan du snippet penché (les mots sont maintenant 90 px devant, à la même place à l'écran) ; « BY » arrive par la droite pour ne plus passer sur « STILL ».
+- **Mesuré, pas écouté** : −15,0 LUFS au total, crête −1,7 dB. Passages avec la voix −15,7 LUFS ; début −12,5 et drop −11,3 LUFS (le snippet est plus fort, c'est voulu) ; fin −16,0 LUFS. Avant le drop, la montée remplit les 0,6 s sans voix ; aux raccords, aucun trou dans le volume.
+- Le passage final avec le filtre dure 1,53 s (demande : 2 s au plus).
+
+## Les points les plus faibles de la version 3
+- Pendant le repli après le drop, les dernières images passent sur la prise 2 (mains devant les yeux).
+- La carte du montage apparaît vide une fraction de seconde avant son contenu.
+- La voix étant continue, la musique reste basse pendant toute la démo (0,18) : à vérifier à l'oreille.
+
