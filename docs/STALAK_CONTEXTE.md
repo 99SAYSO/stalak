@@ -57,7 +57,7 @@
 - **Code** : GitHub `99SAYSO/stalak`, branche `main`. Le dépôt est la **source de vérité**.
 - **Hébergement** : Cloudflare Pages, projet `stalak-site`. Déploiement automatique à chaque push sur `main` : sortie `public/`, fonctions serveur dans `functions/`.
 - **Build** :
-  - site : `python3 build_site.py --domain stalak.app --email contact@stalak.app`, qui produit `public/` (FR sur `/`, EN sur `/en/`) ;
+  - site : `python3 build_site.py --domain stalak.app --email contact@stalak.app`, qui produit `public/` (EN sur `/`, FR sur `/fr/` depuis le 1/11) ;
   - version claude.ai (un seul fichier, sans comptes) : `python3 build.py`, qui produit `shuffle-lab.html` ;
   - **toujours reconstruire `public/` avant de pousser.**
 - **Sources** :

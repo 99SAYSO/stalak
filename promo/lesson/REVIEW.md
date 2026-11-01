@@ -12,7 +12,7 @@ Une explication de 30 s racontée par une voix, sur le modèle de la vidéo envo
 | Le snippet générique gris (une silhouette, « 1 take », « 0 cuts », « no lyrics ») | Montrer le problème sans montrer personne ni un vrai compte ; les seuls chiffres sont des zéros, pas des statistiques inventées. |
 | Le drop du beat sur « differently » | Le moment où le film bascule du problème à la solution tombe sur le vrai drop de l'instru. |
 | Les 3 pastilles dans le style de l'app (contour encre, ombre décalée, glaçons) | Ce sont les 3 choses que fait Stalak ; elles se jettent dans l'icône, qui s'ouvre en la vraie carte de montage (ses prises, ses 21 plans). |
-| Son vrai snippet en grand, sa chanson (« I gotta bounce ») | La preuve, avec sa voix, 4 mesures. |
+| Son vrai snippet en grand, sa chanson (« I gotta bounce ») | La preuve, avec sa voix, 1 mesure (4 temps). |
 | « everywhere » entouré à la main | Le geste de l'exemple, sur le mot qui dit où poster. |
 
 ## Contrôles avant le rendu
@@ -31,4 +31,4 @@ Une explication de 30 s racontée par une voix, sur le modèle de la vidéo envo
 - Les 3 premières secondes ne montrent que du texte sur fond clair (pas de visage) : c'est la façon de l'exemple, mais un visage arrête peut-être plus le défilement.
 - Les petits textes des cartes (« people who watched it twice », les numéros des blocs du montage) sont petits sur un téléphone : la voix porte le message.
 - La voix est une voix de synthèse (la même que les v5 et v6) : à vérifier à l'oreille.
-- Son snippet ne dure que 4 mesures (1,5 s) : assez pour la preuve, court pour l'émotion.
+- Son snippet ne dure qu'une mesure (4 temps, 1,5 s) : assez pour la preuve, court pour l'émotion.
