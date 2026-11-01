@@ -6,7 +6,7 @@ Build the site first (python3 build_site.py …, python3 build.py), then run nod
 (a fresh one for each run): the real Functions on node:sqlite; Cloudflare Access is imitated by a test key (cookie
 test_admin=1, set by /__test/admin-login); test accounts come from POST /__test/user {pro}.
 Checks: signed out and free → « Réservé à Stalak Pro » screen (button to the Pro page, contact address); a Pro member when
-nobody is there (answer by e-mail « sous 24 h », owner told by e-mail); the dashboard (figures, 8 charts, table, « Pro » badge)
+nobody is there (answer by e-mail « sous 24 h », owner told by e-mail); the dashboard (6 tabs, figures explained, map, charts, table, « Pro » badge, TEST)
 on a computer and a phone; the owner's answer e-mailed to the member who left; the live chat when the owner is « disponible »;
 an ex-Pro keeps the answers already received but cannot write; FR and EN; no horizontal scroll; no page error (strict CSP);
 the claude.ai build. Run this file by absolute path from a clean directory."""
@@ -129,18 +129,30 @@ async def main():
         aerr = []
         watch(a, aerr)
         await a.goto(BASE + '/__test/admin-login', wait_until='load')
-        await a.wait_for_selector('#charts .chart', timeout=15000)
+        await a.wait_for_selector('#todayCharts .chart', timeout=15000)
         await a.wait_for_function("() => document.querySelector('#who').textContent.includes('@')", timeout=10000)
-        check('admin-1280: 8 day-by-day charts', await a.eval_on_selector_all('#charts .chart', 'e => e.length') == 8)
-        check('admin-1280: Pro subscribers counted', (await a.inner_text('#kPro')).strip() == '1', await a.inner_text('#kPro'))
+        tabs = await a.eval_on_selector_all('[role=tab]', 'els => els.map(e => e.textContent.replace(/\\s+/g, " ").trim())')
+        check('admin-1280: 6 tabs (Aujourd’hui, Utilisateurs, Argent, Entonnoir, Messages, Santé)', [t.split(' ')[0] for t in tabs] == ['Aujourd’hui', 'Utilisateurs', 'Argent', 'Entonnoir', 'Messages', 'Santé'], tabs)
+        check('admin-1280: Pro subscribers counted, marked TEST (sandbox)', (await a.inner_text('#kPro')).strip() == '1' and await a.is_visible('#testNote'), await a.inner_text('#kPro'))
+        expl = await a.eval_on_selector_all('#p-today .kpi', 'els => els.filter(e => !e.querySelector(".e") || e.querySelector(".e").textContent.length < 20).length')
+        check('admin-1280: every figure explained in a sentence', expl == 0, expl)
+        await a.click('#tab-users')
+        await a.wait_for_selector('#map svg path', timeout=10000)
+        check('admin-1280: world map drawn', await a.eval_on_selector_all('#map svg path', 'e => e.length') > 150)
+        check('admin-1280: 4 day-by-day charts', await a.eval_on_selector_all('#charts .chart', 'e => e.length') == 4)
+        await a.click('#tab-msgs')
         await a.wait_for_selector('#tlist button', timeout=10000)
         item = await a.inner_text('#tlist button')
         check('admin-1280: conversation listed, new, with the « Creator Plus » badge', 'nouveau' in item and 'Creator Plus' in item, item)
+        await a.click('#tab-users')
         await a.click('#tableBtn')
         check('admin-1280: table view', await a.is_visible('#tableWrap table'))
         await a.hover('#charts .chart .hit >> nth=-1')
         tip = await a.eval_on_selector_all('#charts .chart .tip', "els => els.filter(e => getComputedStyle(e).display !== 'none').map(e => e.textContent)")
         check('admin-1280: tooltip on hover', len(tip) == 1 and '·' in tip[0], tip)
+        await a.click('#tab-money')
+        check('admin-1280: money tab marked TEST', await a.is_visible('#p-money [data-test]'))
+        await a.click('#tab-msgs')
         await a.click('#tlist button')
         await a.wait_for_selector('#replyText')
         head = await a.inner_text('#conv .head')
@@ -170,7 +182,12 @@ async def main():
         await a.wait_for_function("() => [...document.querySelectorAll('#tlist button')].some(b => /remove the logo/.test(b.innerText))", timeout=25000)
         await a.click("#tlist button:has-text('remove the logo')")
         await a.wait_for_selector('#replyText')
-        check('admin: the member shows as online', 'en ligne' in (await a.inner_text('#conv .head')))
+        # « en ligne » = the member's page asked for news in the last 15 s (it asks every 5 s); the open conversation refreshes every 4 s
+        try:
+            await a.wait_for_function("() => /en ligne/.test(document.querySelector('#conv .head').innerText)", timeout=12000); online = True
+        except Exception:
+            online = False
+        check('admin: the member shows as online', online, await a.inner_text('#conv .head'))
         await a.fill('#replyText', 'Stalak Pro removes it: export again.')
         await a.press('#replyText', 'Control+Enter')
         await v.wait_for_function("() => /export again/.test(document.querySelector('#helpLog').innerText)", timeout=12000)
@@ -206,9 +223,14 @@ async def main():
         perr = []
         watch(ph, perr)
         await ph.goto(BASE + '/__test/admin-login', wait_until='load')
-        await ph.wait_for_selector('#charts .chart', timeout=15000)
+        await ph.wait_for_selector('#todayCharts .chart', timeout=15000)
+        for t in ['today', 'users', 'money', 'funnel', 'msgs', 'health']:
+            await ph.click('#tab-' + t)
+            await ph.wait_for_timeout(150)
+            if not await no_scroll(ph): check('admin-390: no horizontal scroll on ' + t, False)
+        await ph.click('#tab-msgs')
         await ph.wait_for_selector('#tlist button', timeout=10000)
-        check('admin-390: no horizontal scroll', await no_scroll(ph))
+        check('admin-390: no horizontal scroll (6 tabs)', await no_scroll(ph))
         await shot(ph, 'humain-pro-admin-390')
         check('admin-390: no page error (strict CSP)', not perr, perr)
         await pctx.close()

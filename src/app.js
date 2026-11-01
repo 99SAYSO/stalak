@@ -9237,6 +9237,9 @@ const VISIT_REF = (() => {
   } catch(e){}
   return r;
 })();
+/* Comptes : « people who come back » on the dashboard: this browser came on an earlier day (yes / no). Only the date of the last
+   visit is kept in this browser (localStorage "stalak:lastDay"); nothing is sent but the yes / no. */
+const VISIT_BACK = (() => { try { const d = new Date().toISOString().slice(0, 10), p = localStorage.getItem('stalak:lastDay'); localStorage.setItem('stalak:lastDay', d); return p ? p !== d : false; } catch(e){ return null; } })();
 /* visits for the dashboard: a random number made now (no cookie, nothing stored), sent every 5 minutes while the page is shown
    (the server says how often: `every`), and when the page comes back after a minute or more */
 if (HELP_SITE){
@@ -9244,7 +9247,7 @@ if (HELP_SITE){
   let every = 300e3, last = 0, timer = 0;
   const ping = () => { if (document.hidden) return; last = Date.now();
     fetch('/api/presence', { method: 'POST', credentials: 'same-origin', keepalive: true, headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(Object.assign({ vid, lang: LANG === 'fr' ? 'fr' : 'en' }, VISIT_REF ? { ref: VISIT_REF } : {})) })
+      body: JSON.stringify(Object.assign({ vid, lang: LANG === 'fr' ? 'fr' : 'en', back: VISIT_BACK }, VISIT_REF ? { ref: VISIT_REF } : {})) })
       .then(r => r.json()).then(d => { const e = +(d && d.every) * 1e3; if (e >= 60e3 && e <= 3600e3 && e !== every){ every = e; clearInterval(timer); timer = setInterval(ping, every); } })
       .catch(() => {}); };
   ping(); timer = setInterval(ping, every);

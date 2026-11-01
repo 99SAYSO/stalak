@@ -2333,7 +2333,7 @@ test('visits: one row per page load and day, live count, limited new visits per 
   assert.equal(r.status, 200);
   // no IP in the table
   const cols = env.DB.raw.prepare('SELECT * FROM visits LIMIT 1').get();
-  assert.deepEqual(Object.keys(cols).sort(), ['day', 'first_at', 'lang', 'last_at', 'vid']);
+  assert.deepEqual(Object.keys(cols).sort(), ['came_back', 'country', 'day', 'device', 'first_at', 'lang', 'last_at', 'source', 'vid'], 'no IP, no city');
 });
 
 test('payments and refunds from Paddle → revenue, Pro by plan and day-by-day stats on the dashboard', async () => {
@@ -2384,7 +2384,7 @@ test('payments and refunds from Paddle → revenue, Pro by plan and day-by-day s
   assert.equal(env.DB.raw.prepare("SELECT user_id FROM payments WHERE id = 'txn_1'").get().user_id, null);
   // the period is bounded
   r = await adminCall(env, 'GET', '/api/admin/stats?days=100000', { token });
-  assert.equal(r.data.days.length, 120);
+  assert.equal(r.data.days.length, 730, 'at most 2 years of days');
 });
 
 // ---- Galerie: project covers in R2 (cloud.js projectCover) — domaine Comptes, paiements & serveur ----
@@ -2905,6 +2905,51 @@ test('e-mails to people: one Stalak template (tables, inline styles, PNG on stal
     assert.ok(all.warning.html.includes('Ice &lt;the&gt; Beat'), 'project names escaped');
     assert.match(all.reminder.text, lang === 'fr' ? /7,99 \$ par mois/ : /\$7\.99 a month/);
   }
+});
+
+// ---- the new dashboard (1/11): countries, devices, sources, sign-up methods, returning, limits, test marking ----
+test('dashboard: country (Cloudflare) and device at sign-up and on visits, never the IP nor the city; sources; periods; test marked', async () => {
+  const env = makeEnv(ADMIN_ENV), token = await accessToken();
+  const at = (path, body, { country, ua, ip } = {}) => onRequest({ request: Object.assign(new Request('https://stalak.app' + path, { method: 'POST',
+    headers: { 'Content-Type': 'application/json', Origin: ORIGIN, 'CF-Connecting-IP': ip || '10.70.0.1', 'User-Agent': ua || '', ...(country ? { 'CF-IPCountry': country } : {}) },
+    body: JSON.stringify(body) }), country ? { cf: { country, city: 'Albi' } } : {}), env, params: {}, waitUntil() {} });
+  const IPHONE = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15', ANDROID = 'Mozilla/5.0 (Linux; Android 15; Pixel 9)', MAC = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0)';
+  let res = await at('/api/auth/signup', { email: 'us@example.com', password: PW, lang: 'en' }, { country: 'US', ua: IPHONE });
+  assert.equal(res.status, 200);
+  res = await at('/api/auth/signup/verify', { email: 'us@example.com', code: lastCode('us@example.com') }, { country: 'US', ua: IPHONE });
+  assert.equal(res.status, 200);
+  const u = env.DB.raw.prepare("SELECT * FROM users WHERE email = 'us@example.com'").get();
+  assert.equal(u.country, 'US'); assert.equal(u.device, 'ios'); assert.equal(u.signup_method, 'email');
+  assert.ok(!JSON.stringify(u).includes('Albi') && !JSON.stringify(u).includes('10.70.0.1'), 'no city, no IP');
+  await login(env, 'fr@example.com', 'fr');   // no country header: unknown
+  // a Google account made by the identity (before the column existed: inferred)
+  env.DB.raw.prepare("INSERT INTO users (id, email, lang, created_at) VALUES ('u_g1', 'g@example.com', 'en', ?)").run(Date.now());
+  env.DB.raw.prepare("INSERT INTO identities (provider, subject, user_id, email, created_at, last_login_at) VALUES ('google', 's1', 'u_g1', 'g@example.com', ?, ?)").run(Date.now(), Date.now());
+  // visits: country, device, source, came back
+  const vis = [['US', IPHONE, 'tiktok', false], ['US', ANDROID, 'ig', true], ['FR', MAC, null, true], ['XX', MAC, 'google', null], [null, IPHONE, '<bad>', false]];
+  for (const [i, [c, ua, ref, back]] of vis.entries()) {
+    res = await at('/api/presence', { vid: 'v_dash_visit_' + i + '000000', lang: 'en', ...(ref ? { ref } : {}), ...(back == null ? {} : { back }) }, { country: c, ua, ip: '10.71.0.' + i });
+    assert.equal(res.status, 200);
+  }
+  assert.ok(!env.DB.raw.prepare('SELECT * FROM visits').all().some((r) => JSON.stringify(r).includes('Albi') || JSON.stringify(r).includes('10.71')), 'no city, no IP in visits');
+  let r = await adminCall(env, 'GET', '/api/admin/stats?days=30', { token });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  const d = r.data;
+  assert.deepEqual(d.people.byCountry, { US: 1, unknown: 2 });
+  assert.equal(d.people.byMethod.email, 2); assert.equal(d.people.byMethod.google, 1);
+  assert.equal(d.people.byDevice.ios, 1);
+  assert.equal(d.people.byLang.en, 2); assert.equal(d.people.byLang.fr, 1);
+  assert.deepEqual(d.audience.byCountry, { US: 2, FR: 1, unknown: 2 }, 'XX is unknown');
+  assert.equal(d.audience.bySource.tiktok, 1); assert.equal(d.audience.bySource.ig, 1); assert.equal(d.audience.bySource.unknown, 2, 'a bad ref is not kept');
+  assert.deepEqual(d.audience.byDevice, { ios: 2, android: 1, desktop: 2, unknown: 0 });
+  assert.deepEqual(d.audience.returning, { yes: 2, no: 2, unknown: 1 });
+  assert.equal(d.test, true, 'sandbox figures are marked test'); assert.equal(d.range.days, 30);
+  assert.ok(d.limits.codeMails.max > 0 && d.limits.codeMails.today >= 2 && d.limits.help.max === 60);
+  assert.equal(typeof d.people.returningAccounts, 'number');
+  r = await adminCall(env, 'GET', '/api/admin/stats?days=all', { token });
+  assert.equal(r.status, 200); assert.ok(r.data.days.length >= 7);
+  r = await adminCall({ ...env, PADDLE_ENV: 'production' }, 'GET', '/api/admin/stats?days=7', { token });
+  assert.equal(r.data.test, false);
 });
 
 // ---- runner --------------------------------------------------------------------------
