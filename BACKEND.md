@@ -213,7 +213,7 @@ supprimé et tu reçois une alerte pour vérifier l'abonnement dans Paddle. Si P
 personne réessaie (personne ne continue de payer sans le savoir).
 
 ### 7.2 Rappel annuel aux abonnés mensuels
-Les conditions américaines (`/en/terms`, « Reminders ») annoncent un e-mail de rappel une fois par an aux abonnés **mensuels**.
+Les conditions anglaises (`/terms`, « Reminders ») annoncent un e-mail de rappel une fois par an aux abonnés **mensuels**.
 Le site l'envoie seul : chaque jour, un abonnement mensuel actif depuis un an (ou rappelé il y a un an) reçoit un e-mail
 (formule, prix par mois, comment l'arrêter), en anglais ou en français selon la langue du compte. Les annuels reçoivent
 l'e-mail de renouvellement de Paddle. Le rappel part avec la tâche du jour (Worker `workers/cloud-cleanup`, ou à défaut
@@ -249,8 +249,8 @@ Les adresses de retour (*redirect URI*) à recopier **exactement** :
    - Coordonnées : ton adresse. Accepte le règlement, puis **Créer**.
 4. Dans **Branding** (Image de marque) :
    - Page d'accueil : `https://stalak.app`
-   - Règles de confidentialité : `https://stalak.app/confidentialite`
-   - Conditions d'utilisation : `https://stalak.app/conditions`
+   - Règles de confidentialité : `https://stalak.app/privacy`
+   - Conditions d'utilisation : `https://stalak.app/terms`
    - Domaines autorisés : ajoute `stalak.app`. Enregistre.
    - Ne mets **pas** de logo pour l'instant : un logo oblige Google à vérifier l'application (plusieurs jours). Sans logo, c'est immédiat.
 5. Dans **Audience**, clique sur **Publier l'application** puis confirme : le statut passe à **En production**.
@@ -285,8 +285,8 @@ Les comptes Microsoft personnels (Outlook, Hotmail, Live, Xbox) et les comptes d
    (si une case « Activer l'autorisation Microsoft Graph email » apparaît, coche-la).
    Pourquoi : pour les comptes d'entreprise, Microsoft ne garantit pas toujours l'adresse e-mail. Stalak n'accepte l'adresse d'un compte
    d'entreprise que si Microsoft confirme qu'elle appartient bien à l'entreprise (`xms_edov`). Les comptes personnels sont toujours acceptés.
-6. **Personnalisation et propriétés** (Branding) : URL de la page d'accueil `https://stalak.app`, conditions `https://stalak.app/conditions`,
-   confidentialité `https://stalak.app/confidentialite`. Enregistre.
+6. **Personnalisation et propriétés** (Branding) : URL de la page d'accueil `https://stalak.app`, conditions `https://stalak.app/terms`,
+   confidentialité `https://stalak.app/privacy`. Enregistre.
    Tant que l'éditeur n'est pas « vérifié », Microsoft affiche « non vérifié » sur sa page de consentement pour les comptes d'entreprise.
    Ce n'est pas bloquant. La vérification (*Publisher verification*) demande un compte Microsoft Partner : à faire plus tard si besoin.
 

@@ -354,7 +354,28 @@
 Ces montants sont avant TVA et frais. Réaliste : 10 000 € par mois en avril 2027.
 
 ### Juridique & business
-- **Après la bascule** (`marketing/en-racine`) : vérifier les adresses des pages légales citées dans les conditions et les e-mails Paddle (`/terms`, `/refunds`, `/privacy`, `/fr/conditions`…) ; les anciennes redirigent en 301.
+- **Fait (branche `legal/adresses-vendeur`, 01/11)** : détail dans `docs/juridique/PADDLE.md`.
+  - **Adresses vérifiées** après la bascule :
+    - pages légales, app, e-mails et liens externes : tout répond ; anciennes adresses en 301 ;
+    - `BACKEND.md` corrigé (fiches Google/Microsoft : `/privacy`, `/terms`) ;
+    - « Account → Manage my subscription » aligné sur le bouton de l'app ;
+    - adresses et textes à donner à Paddle prêts.
+  - **Bouton « Renoncer au contrat ici »** : l'obligation pèse d'abord sur Paddle (vendeur légal), mais rien n'est sûr pour un revendeur. Recommandé : demander par écrit à Paddle s'il le fournit ; sinon Comptes l'ajoute (cahier des charges dans `PADDLE.md`, partie 2).
+  - **Identité de la micro-entreprise prête** : remplir `vendeur.json` (nom, SIRET, adresse, téléphone, médiateur) puis relancer `build_site.py`. Mentions légales et conditions FR/EN passent seules du « particulier » au « micro-entrepreneur EI ».
+  - **Confidentialité FR/EN** : pays à l'inscription et sur les visites ; compteurs de l'entonnoir ; Cloudflare Turnstile ; signe de vie toutes les 5 min (et non 1) ; empreinte d'IP pour les limites.
+- **À faire par Comptes (tableau de bord, pays)** : la confidentialité annonce exactement ceci, à respecter :
+  - pays = `request.cf.country` (2 lettres, par exemple `US`), **jamais** la ville, la région, le code postal, la latitude/longitude ni l'adresse IP ;
+  - comptes : enregistré **une fois, à l'inscription**, pas mis à jour ensuite, effacé avec le compte ;
+  - visites : une colonne pays sur la ligne de visite (nombre au hasard + langue), effacée avec elle au bout de 90 jours ;
+  - si Cloudflare ne donne pas de pays (`XX`, `T1` pour Tor, vide) : stocker `null` ;
+  - sur la carte et les tableaux du tableau de bord : seulement des totaux par pays.
+  - Si autre chose est enregistré (ville, région…), prévenir Juridique avant la mise en ligne : la page devra changer.
+- **À faire (propriétaire)** :
+  - demander à Paddle s'il fournit le bouton de rétractation (texte prêt dans `PADDLE.md`) ;
+  - adhérer à un médiateur de la consommation (liste CECMC, environ 25 à 50 €/an), puis le noter dans `vendeur.json` ;
+  - changer les adresses dans Google Cloud → Stalak → Branding (`/privacy`, `/terms`).
+- **À faire (Chef de projet)** : couper « Email Address Obfuscation » dans Cloudflare (Scrape Shield). Sans JavaScript, les pages légales affichent « [email protected] » au lieu de l'adresse de contact.
+- **À faire (App ou Marketing)** : lien « Your Privacy Choices » aussi dans le pied de page de l'accueil anglais (il est déjà sur Tarifs et les pages légales).
 - **Fait (branche `legal/etat-des-lieux`)** : état des lieux du statut, de Paddle en réel et des pages légales (infos pour décider, pas un avis juridique).
 - **À décider (propriétaire)** : statut. La LLC prévue est remise en question : pour un résident français, elle ne supprime ni l'impôt ni les cotisations en France et ajoute des obligations (formulaire américain 5472, 25 000 $ d'amende si oublié ; compte étranger à déclarer). La micro-entreprise paraît plus simple. Rendez-vous avec un expert-comptable avant de créer quoi que ce soit (BIC ou BNC, ACRE).
 - **Fait (branche `legal/nouvelle-offre`, 30/10 au soir)** : pages légales FR/EN adaptées à l'offre Gratuit (filigrane + pub récompensée) / Pro / Creator Plus en dollars. Tout ce qui parlait de la vidéo du jour, de l'e-mail de rappel et de Basic / Max est retiré.
