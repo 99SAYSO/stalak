@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Marketing & croissance (01/11/2026) : les anciennes adresses, à donner à Search Console et Bing juste après la bascule
+     « anglais à la racine, français dans /fr/ », pour que Google et Bing revisitent vite les redirections 301.
+     À retirer (fichier et soumission) environ 6 semaines après la mise en ligne. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url><loc>https://stalak.app/en/</loc></url>
+<url><loc>https://stalak.app/en/pricing</loc></url>
+<url><loc>https://stalak.app/en/terms</loc></url>
+<url><loc>https://stalak.app/en/refunds</loc></url>
+<url><loc>https://stalak.app/en/privacy</loc></url>
+<url><loc>https://stalak.app/en/legal-notice</loc></url>
+<url><loc>https://stalak.app/en/triller-alternative</loc></url>
+<url><loc>https://stalak.app/tarifs</loc></url>
+<url><loc>https://stalak.app/conditions</loc></url>
+<url><loc>https://stalak.app/remboursement</loc></url>
+<url><loc>https://stalak.app/confidentialite</loc></url>
+<url><loc>https://stalak.app/mentions-legales</loc></url>
+<url><loc>https://stalak.app/alternative-triller</loc></url>
+</urlset>

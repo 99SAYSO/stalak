@@ -49,7 +49,7 @@ def run(b, base, site, lang, iphone):
     ctx = b.new_context(**opts, locale='en-US' if lang == 'en' else 'fr-FR')
     pg = ctx.new_page(); errs = []
     pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
-    url = base + ('en/' if lang == 'en' else '')
+    url = base + ('' if lang == 'en' else 'fr/')
     pg.goto(url, wait_until='load'); ready(pg)
     # the example alone: nothing to pick up afterwards
     pg.locator('#demoBtn').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000)
@@ -108,7 +108,7 @@ def run(b, base, site, lang, iphone):
 def main():
     tmp = tempfile.mkdtemp(prefix='stalak-local-')
     site = os.path.join(tmp, 'site'); shutil.copytree(PUBLIC, site)
-    for page in ('index.html', 'en/index.html'):
+    for page in ('index.html', 'fr/index.html'):
         p = os.path.join(site, page); html = open(p, encoding='utf-8').read()
         assert 'applyLang();\n})();' in html, 'repère de la sonde introuvable'
         open(p, 'w', encoding='utf-8').write(html.replace('applyLang();\n})();', 'applyLang();\nwindow.__ev = (s) => eval(s);\n})();'))

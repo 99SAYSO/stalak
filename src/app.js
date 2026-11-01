@@ -92,7 +92,8 @@ function crumb(msg, force){ bb.crumbs.push(new Date().toTimeString().slice(0, 8)
 const store = { get(k){ try { return JSON.parse(localStorage.getItem(k)); } catch(e){ return null; } }, set(k,v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} } };
 
 /* ---------- languages: French (the source) and English ----------
-   LANG: ?lang= in the address, else the choice saved with the FR / EN switch, else /en/ (the English page), else the
+   LANG: ?lang= in the address, else the choice saved with the FR / EN switch, else the language of the page (stalak.app: / in
+   English, /fr/ in French, set by the site build), else the
    browser's language (fr… = French, anything else = English). The page's fixed texts carry data-i18n (inner HTML) or
    data-i18n-attr ("attribute:key;…"); their French is read from the page itself (or given by the site build, STATIC_FR).
    The texts written from here go through _t(key, vars) (tn: with a number, singular / plural). The technical log (diag)
@@ -734,11 +735,11 @@ const I18N_EN = /*@EN*/{
   "ap.sub": "Subscription",
   "ap.lang": "Language",
   "ap.pricing": "Pricing",
-  "ap.pricingHref": "/en/pricing",
+  "ap.pricingHref": "/pricing",
   "ap.terms": "Terms",
-  "ap.termsHref": "/en/terms",
+  "ap.termsHref": "/terms",
   "ap.refunds": "Refunds",
-  "ap.refundsHref": "/en/refunds",
+  "ap.refundsHref": "/refunds",
   "pt.merci": "Thank you!",
   "pt.carousel": "carousel",
   "pt.aria": "What Stalak Pro gets you",
@@ -807,7 +808,7 @@ const I18N_EN = /*@EN*/{
   "ap.pwPick": "Choose a password",
   "ap.opt": "(optional)",
   "ap.upGo": "Create my account",
-  "ap.upLegal": "By creating an account, you accept the <a href=\"/en/terms\">Terms</a> and the <a href=\"/en/privacy\">Privacy policy</a>.",
+  "ap.upLegal": "By creating an account, you accept the <a href=\"/terms\">Terms</a> and the <a href=\"/privacy\">Privacy policy</a>.",
   "ap.toUp": "No account yet?",
   "ap.toIn": "Already have an account?",
   "ap.noPw": "Account made with an email code?",
@@ -924,7 +925,7 @@ const I18N_EN = /*@EN*/{
   "pr.q.stop": "Can I stop anytime?",
   "pr.a.stop": "Yes. Cancel in two clicks from your account: you keep your plan until the end of the paid period, then go back to Free. Your projects saved online are no longer accessible, but we keep them for 6 months: they come back if you get Creator Plus again.",
   "pr.q.refund": "What if I don’t like it?",
-  "pr.a.refund": "You get a full refund if you ask within 14 days of a payment. See the <a href=\"/en/refunds\">refund policy</a>.",
+  "pr.a.refund": "You get a full refund if you ask within 14 days of a payment. See the <a href=\"/refunds\">refund policy</a>.",
   "pr.q.pay": "How do I pay?",
   "pr.a.pay": "By card, Apple Pay, Google Pay or PayPal. Payments are handled by Paddle.com, our authorized reseller, which also sends the invoices. Prices are in dollars; Paddle adds your country’s taxes at checkout.",
   "pr.q.videos": "Are my videos sent to your servers?",
@@ -1869,8 +1870,8 @@ let LANG = (() => {
   try { const q = new URLSearchParams(location.search).get('lang'); if (LANGS.includes(q)) return q; } catch(e){}
   const saved = store.get('stalak:lang'); if (LANGS.includes(saved)) return saved;
   try { if (/^\/en(\/|$)/.test(location.pathname) || document.documentElement.getAttribute('lang') === 'en') return 'en'; } catch(e){}
-  // Marketing & croissance (SEO) : sur stalak.app, la page française reste en français (Google la lisait en anglais) ;
-  // le visiteur choisit l'anglais avec le bouton FR / EN ou la page /en/. La version claude.ai (sans balise canonical) suit la langue du navigateur.
+  // Marketing & croissance (SEO) : sur stalak.app, chaque page garde sa langue (balise lang : / en anglais, /fr/ en français, depuis le 31/10) ;
+  // le visiteur change avec le bouton FR / EN. La version claude.ai (sans balise canonical) suit la langue du navigateur.
   try { if (document.documentElement.getAttribute('lang') === 'fr' && document.querySelector('link[rel="canonical"]')) return 'fr'; } catch(e){}
   const nl = (navigator.languages && navigator.languages[0]) || navigator.language || '';
   return /^fr/i.test(nl) ? 'fr' : 'en';

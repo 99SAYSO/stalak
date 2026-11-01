@@ -5,10 +5,18 @@
 Stalak is not related to the Dofus game creature of the same name.
 
 ## Main pages
-- [Stalak (English)](https://stalak.app/en/): the editor, with "What is Stalak?" explaining the product.
-- [Stalak (French)](https://stalak.app/): the same app in French.
-- [Pricing (English)](https://stalak.app/en/pricing): Free, Stalak Pro and Creator Plus.
-- [Pricing (French)](https://stalak.app/tarifs): the same in French.
+- [Stalak](https://stalak.app/): the editor, in English, with "What is Stalak?" explaining the product.
+- [Stalak in French](https://stalak.app/fr/): the same app in French.
+- [Pricing](https://stalak.app/pricing): Free, Stalak Pro and Creator Plus.
+- [Pricing in French](https://stalak.app/fr/tarifs): the same in French.
+
+## Guides
+- [Lip-sync video editor](https://stalak.app/lip-sync-video-editor): what Stalak does; it edits your real takes (no AI face, no fake mouth).
+- [Music video maker for rappers](https://stalak.app/music-video-maker-for-rappers): from a few phone takes to a rap video cut on the beat, 9:16 or 16:9.
+- [Rap snippet video](https://stalak.app/rap-snippet-video): a 10 to 30 second snippet cut on the beat, with lyrics on screen.
+- [Performance videos for singers](https://stalak.app/lip-sync-videos-for-singers): multi-take edits for covers and originals, cuts on the words or every bar.
+- [How to make a lip-sync video](https://stalak.app/how-to-make-a-lip-sync-video): the 3 steps, with filming tips.
+- [Edit video to the beat](https://stalak.app/edit-video-to-the-beat): how the automatic cuts on the beat work.
 
 ## Facts
 - No download and no sign-up: Stalak runs in the browser. The free plan needs no account.

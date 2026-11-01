@@ -47,7 +47,7 @@ async def open_page(browser, lang, w, h, email=None, q='pro=0'):
     page = await ctx.new_page()
     errors = []
     watch(page, errors)
-    to = '/' if lang == 'fr' else '/en/'
+    to = '/fr/' if lang == 'fr' else '/'
     if email:
         await page.goto(BASE + f'/__test/login?email={email}&{q}&lang={lang}&to={to}', wait_until='load')
         uid = await page.evaluate("() => fetch('/api/me').then(r => r.json()).then(d => d.user && d.user.id)")

@@ -66,8 +66,8 @@ async def page_for(p, w=390, h=844, mobile=True, lang='fr', email=None, pro=True
     async def hook(route):
         r = await route.fetch(); body = await r.text()
         await route.fulfill(response=r, body=body.replace('const S = {', 'const S = window.__S = {', 1))
-    await pg.route(lambda u: u.startswith(BASE) and (u.rstrip('/') in (BASE, BASE + '/en') or '?' in u and u.split('?')[0].rstrip('/') in (BASE, BASE + '/en')), hook)
-    home = '/en/' if lang == 'en' else '/'
+    await pg.route(lambda u: u.startswith(BASE) and (u.rstrip('/') in (BASE, BASE + '/fr') or '?' in u and u.split('?')[0].rstrip('/') in (BASE, BASE + '/fr')), hook)
+    home = '/' if lang == 'en' else '/fr/'
     if email: await sign_in(ctx, email, pro, lang)
     await pg.goto(BASE + (url or home))
     await pg.wait_for_function("window.__S && document.querySelector('#acctBtn') && !document.querySelector('#acctBtn').hidden", timeout=20000)
@@ -324,7 +324,7 @@ async def t_clip_downgrade(p):
     assert await pg.evaluate("window.__S.kind") == 'clip'
     await save(pg, 'Mon clip'); await pg.click('#clDone')
     await sign_in(t.ctx, 'ex-pro@example.com', pro=False)
-    await pg.goto(BASE + '/')
+    await pg.goto(BASE + '/fr/')
     await pg.wait_for_function("window.__S && !document.querySelector('#acctBtn').hidden")
     await open_account(pg)
     assert 'protag' in await pg.get_attribute('#clSaveHere', 'class') or await pg.is_hidden('#clSaveHere')

@@ -1,4 +1,4 @@
-# Marketing & croissance — 6 English use-case pages (drafts, NOT published).
+# Marketing & croissance — 6 English use-case pages. Published on 01/11/2026 (owner's decision of 31/10), English at the root.
 # Run: python3 site_drafts/make_pages.py [--base ""|"/en"]   -> writes site_drafts/out/<slug>.html
 # --base is where the English site lives: "" if English moves to the root (US_FIRST part A), "/en" otherwise.
 # To publish (after the owner's decision): copy out/*.html into site_src/ (root) or site_src/en/, add them to
@@ -8,7 +8,7 @@ ROOT = pathlib.Path(__file__).parent
 BASE = sys.argv[sys.argv.index('--base') + 1] if '--base' in sys.argv else ''
 HOME = BASE + '/' if BASE else '/'
 PRICING = BASE + '/pricing' if BASE else '/pricing'
-TODAY = '2026-10-30'
+TODAY = '2026-11-01'
 
 COMMON_FAQ = [
   ('Is Stalak free?', 'Yes. Unlimited videos, no account. Free videos carry a small Stalak logo that moves to a new spot now and then; watch a ~30-second ad to remove it from that video, or go Pro ($7.99/mo or $49.99/yr) for no ads and no watermark.'),
@@ -47,7 +47,7 @@ PAGES = [
   h1='Performance videos for singers, edited for you',
   lead='Stalak edits a few takes of you singing into one performance video. Upload your song and your takes; Stalak cuts between them on the beat or on the words, keeps every take in sync and adds your lyrics on screen. It works for covers and originals, free in your browser.',
   why=('What singers get', ['Cuts on every word or every bar, for slower songs that need longer shots.', 'Karaoke and word-by-word lyrics with Pro, so the words follow your voice.', 'Filters like 35mm Film, Frost and Black & White for free.', 'A full 16:9 video of the whole song for YouTube with Pro.']),
-  tips=('Tips for a singing performance video', ['For ballads, choose cuts every bar instead of every beat.', 'Mix close-ups and wide shots so the emotion and the setting both show.', 'For covers, only post songs you’re allowed to use on the platform.']),
+  tips=('Tips for a singing performance video', ['For ballads, choose cuts every bar instead of every beat. To cut on the words, sync your lyrics first.', 'Mix close-ups and wide shots so the emotion and the setting both show.', 'For covers, only post songs you’re allowed to use on the platform.']),
   faq=[('Does it work for slow songs?', 'Yes. Choose cuts every bar or on the words instead of every beat, and the edit breathes with the song.')]),
  dict(slug='how-to-make-a-lip-sync-video', crumb='How to make a lip-sync video',
   title='How to Make a Lip-Sync Video in 3 Steps (Free, No App) | Stalak',
@@ -62,7 +62,7 @@ PAGES = [
   desc='Stop cutting frame by frame. Stalak finds the beat of your song and cuts between your takes automatically, on the beat, every word or every bar. Free.',
   h1='Edit multiple takes to the beat, automatically',
   lead='Stalak finds the beat of your song and cuts between your takes automatically. Choose cuts on every beat, on every word or every bar, and Stalak keeps each take in sync with the audio. No timeline to drag, no frame-by-frame editing. Free, right in your browser.',
-  why=('What “automatic” means here', ['Stalak hears the beat and the words of your song and places the cuts for you.', 'Every take stays lined up with the audio, so the lip sync holds after each cut.', 'Don’t like the result? Pick another cut rhythm and get a new edit.', 'Creator Plus makes 5 to 30 different edits of the same song at once.']),
+  why=('What “automatic” means here', ['Stalak finds the beat of your song and places the cuts for you. To cut on the words, sync your lyrics first: tap along, or let auto lyrics do it (Pro).', 'Every take stays lined up with the audio, so the lip sync holds after each cut.', 'Don’t like the result? Pick another cut rhythm and get a new edit.', 'Creator Plus makes 5 to 30 different edits of the same song at once.']),
   tips=('Tips for beat-synced edits', ['Fast songs: cuts every beat or every bar both work; try both.', 'Use takes with different framing so each cut is easy to see.', 'Keep the same audio playing while filming every take.']),
   faq=[('Do I need editing software?', 'No. Everything happens in your browser on iPhone, Android or desktop. There’s nothing to install.')]),
 ]
@@ -133,7 +133,7 @@ def page(p):
 <ul class="more">{others}</ul>
 <p><a class="cta" href="{HOME}?ref=seo">Make your video now</a></p>
 </main>
-<footer><a href="{PRICING}">Pricing</a> · <a href="{BASE}/terms">Terms</a> · <a href="{BASE}/refunds">Refunds</a> · <a href="{BASE}/privacy">Privacy</a> · <a href="{BASE}/legal-notice">Legal notice</a></footer>
+<footer><a href="{PRICING}">Pricing</a> · <a href="{BASE}/terms">Terms</a> · <a href="{BASE}/refunds">Refunds</a> · <a href="{BASE}/privacy">Privacy</a> · <a href="{BASE}/legal-notice">Legal notice</a> · <a href="{BASE}/privacy#choices">Your Privacy Choices</a></footer>
 </body></html>
 '''
 

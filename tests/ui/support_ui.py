@@ -58,7 +58,7 @@ async def visitor(browser, lang, width, height, user=None):
     page = await ctx.new_page()
     errors = []
     watch(page, errors)
-    await page.goto(BASE + ('/' if lang == 'fr' else '/en/'), wait_until='load')
+    await page.goto(BASE + ('/fr/' if lang == 'fr' else '/'), wait_until='load')
     await page.wait_for_timeout(700)
     await page.click('#helpBtn', force=True)
     await page.wait_for_selector('#helpPanel:not([hidden])')

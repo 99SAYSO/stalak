@@ -10,10 +10,10 @@
 /index.html
   Cache-Control: no-cache
 
-/en/
+/fr/
   Cache-Control: no-cache
 
-/en/index.html
+/fr/index.html
   Cache-Control: no-cache
 
 /fonts/*

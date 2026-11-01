@@ -97,7 +97,7 @@ def run(b, base, lang, iphone):
     ctx.route('**/tag/js/gpt.js', lambda r: r.fulfill(status=200, content_type='application/javascript', body=FAKE_GPT))
     pg = ctx.new_page(); errs = []
     pg.on('pageerror', lambda e: errs.append(str(e)[:200]) if 'test : export arrêté ici' not in str(e) else None)
-    pg.goto(base + ('en/' if lang == 'en' else ''), wait_until='load')
+    pg.goto(base + ('' if lang == 'en' else 'fr/'), wait_until='load')
     pg.wait_for_function('window.__ev && window.MP4Box', timeout=20000)
     pg.locator('#demoBtn').click()
     pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000)
@@ -239,7 +239,7 @@ def engine(b, base):
 def main():
     tmp = tempfile.mkdtemp(prefix='stalak-formules-')
     site = os.path.join(tmp, 'site'); shutil.copytree(PUBLIC, site)
-    for page in ('index.html', 'en/index.html'):
+    for page in ('index.html', 'fr/index.html'):
         p = os.path.join(site, page); html = open(p, encoding='utf-8').read()
         assert 'applyLang();\n})();' in html, 'repère de la sonde introuvable'
         open(p, 'w', encoding='utf-8').write(html.replace('applyLang();\n})();', 'applyLang();\nwindow.__ev = (s) => eval(s);\n})();'))

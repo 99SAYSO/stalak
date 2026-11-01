@@ -1,5 +1,38 @@
-# Marketing & croissance : pages de comparaison retirées le 30/10/2026 (aucun concurrent cité sur le site) -> accueil
-/alternative-triller /  301
-/alternative-triller.html /  301
-/en/triller-alternative /en/  301
-/en/triller-alternative.html /en/  301
+# Marketing & croissance (01/11/2026) : l'anglais à l'adresse principale, le français dans /fr/ (décision du propriétaire du 31/10).
+# Chaque ancienne adresse mène directement à sa page finale, jamais à une autre redirection (Cloudflare garde le ?… de l'adresse).
+# Les adresses exactes d'abord, la règle générale /en/* en dernier.
+
+# anciennes pages anglaises (/en/…) -> la racine
+/en                            /                         301
+/en/                           /                         301
+/en/index.html                 /                         301
+/en/pricing                    /pricing                  301
+/en/pricing.html               /pricing                  301
+/en/terms                      /terms                    301
+/en/terms.html                 /terms                    301
+/en/refunds                    /refunds                  301
+/en/refunds.html               /refunds                  301
+/en/privacy                    /privacy                  301
+/en/privacy.html               /privacy                  301
+/en/legal-notice               /legal-notice             301
+/en/legal-notice.html          /legal-notice             301
+/en/triller-alternative        /triller-alternative      301
+/en/triller-alternative.html   /triller-alternative      301
+
+# anciennes pages françaises -> /fr/
+/tarifs                        /fr/tarifs                301
+/tarifs.html                   /fr/tarifs                301
+/conditions                    /fr/conditions            301
+/conditions.html               /fr/conditions            301
+/remboursement                 /fr/remboursement         301
+/remboursement.html            /fr/remboursement         301
+/confidentialite               /fr/confidentialite       301
+/confidentialite.html          /fr/confidentialite       301
+/mentions-legales              /fr/mentions-legales      301
+/mentions-legales.html         /fr/mentions-legales      301
+# l'ancienne page comparative française (retirée le 30/10, de retour le 31/10 dans /fr/ : option B)
+/alternative-triller           /fr/alternative-triller   301
+/alternative-triller.html      /fr/alternative-triller   301
+
+# toute autre ancienne adresse anglaise
+/en/*                          /:splat                   301

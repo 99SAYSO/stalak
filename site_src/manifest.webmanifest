@@ -1,8 +1,8 @@
 {
   "name": "Stalak",
   "short_name": "Stalak",
-  "description": "Ton playback monté sur le rythme : synchro des lèvres parfaite, export pour TikTok, Reels, Shorts et YouTube.",
-  "lang": "fr",
+  "description": "Free lip-sync video editor: drop your song and a few takes, Stalak cuts them on the beat. Ready for TikTok, Reels, Shorts and YouTube.",
+  "lang": "en",
   "start_url": "/?app=1",
   "scope": "/",
   "display": "standalone",

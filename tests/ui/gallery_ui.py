@@ -46,7 +46,7 @@ async def ctx_page(browser, lang, w, h, email=None, pro=None):
     page = await ctx.new_page()
     errors = []
     watch(page, errors)
-    to = '/' if lang == 'fr' else '/en/'
+    to = '/fr/' if lang == 'fr' else '/'
     if email:
         await page.goto(BASE + f'/__test/login?email={email}&pro={pro}&to={to}', wait_until='load')
         uid = await page.evaluate("() => fetch('/api/me').then(r => r.json()).then(d => d.user && d.user.id)")
@@ -264,7 +264,7 @@ async def main():
 
         # 5. the same account on a computer: more columns
         ctx, pg, err = await ctx_page(browser, 'en', 1280, 800, 'pro-gal@example.com', '1')
-        await pg.goto(BASE + '/en/#galerie', wait_until='load')
+        await pg.goto(BASE + '/#galerie', wait_until='load')
         await pg.wait_for_selector('#clList .gal-item', timeout=10000)
         await pg.wait_for_timeout(500)
         t = await tiles(pg)

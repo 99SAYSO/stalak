@@ -87,7 +87,7 @@ async def main():
     async with async_playwright() as p:
         browser = await p.chromium.launch()
         help_max(1000)
-        for path, lang in (('/', 'fr'), ('/en/', 'en')):
+        for path, lang in (('/fr/', 'fr'), ('/', 'en')):
             for w, h in ((390, 844), (1280, 800)):
                 await run_one(browser, path, lang, w, h)
         # the claude.ai build (no account, no server): still loads, the help window still opens
