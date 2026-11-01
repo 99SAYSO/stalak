@@ -32,7 +32,7 @@ URL = 'https://' + DOMAIN
 SOCIAL = {
     'Instagram': 'https://www.instagram.com/stalak_app/',
     'TikTok': 'https://www.tiktok.com/@stalak_app',
-    'YouTube': '',
+    'YouTube': 'https://www.youtube.com/@stalak_app',
 }
 SOCIAL = {k: v for k, v in SOCIAL.items() if v}
 # pages FR / EN du plan du site (en plus de l'accueil) ; l'anglais est à la racine, le français dans /fr/ (31/10).
