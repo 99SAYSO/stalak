@@ -84,7 +84,7 @@ def run(b, base, lang, iphone, calm):
     pg = ctx.new_page(); errs = []
     pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
     pg.add_init_script('window.__LONG = ' + json.dumps(sorted(LONG_OK)))
-    pg.goto(base + ('en/' if lang == 'en' else ''), wait_until='load'); pg.wait_for_function('typeof window.__ev === "function"', timeout=20000)
+    pg.goto(base + ('' if lang == 'en' else 'fr/'), wait_until='load'); pg.wait_for_function('typeof window.__ev === "function"', timeout=20000)
     if not calm:
         r = pg.evaluate(SCAN)
         check(tag + ' : app : images-clés seulement en transform / opacity', not r['kfBad'], r['kfBad'])
@@ -124,7 +124,7 @@ def run(b, base, lang, iphone, calm):
         ok = all(x['long'] <= 1 and x['p95'] <= 20 for x in (sn, st, hp, pp))
         check(tag + ' : fluide, processeur 4 fois plus lent (mouvement à 60 images/s : 95 %% en moins de 20 ms, au plus 1 image de plus de 50 ms, soit environ 1 image sautée à vitesse normale ; 1re image notée à part)', ok, (sn, st, hp, pp))
     # the legal page and the pricing page of the site
-    pages = ['mentions-legales.html', 'tarifs.html'] if lang == 'fr' else ['en/' + f for f in sorted(os.listdir(os.path.join(PUBLIC, 'en'))) if f.endswith('.html') and f != 'index.html'][:2]
+    pages = ['fr/mentions-legales.html', 'fr/tarifs.html'] if lang == 'fr' else ['legal-notice.html', 'pricing.html']
     for path in pages:
         pg.goto(base + path, wait_until='load')
         r = pg.evaluate(SCAN)
@@ -136,7 +136,7 @@ def run(b, base, lang, iphone, calm):
 def main():
     tmp = tempfile.mkdtemp(prefix='stalak-anim-')
     site = os.path.join(tmp, 'site'); shutil.copytree(PUBLIC, site)
-    for page in ('index.html', 'en/index.html'):
+    for page in ('index.html', 'fr/index.html'):
         p = os.path.join(site, page); html = open(p, encoding='utf-8').read()
         assert 'applyLang();\n})();' in html, 'repère de la sonde introuvable'
         open(p, 'w', encoding='utf-8').write(html.replace('applyLang();\n})();', 'applyLang();\nwindow.__ev = (s) => eval(s);\n})();'))

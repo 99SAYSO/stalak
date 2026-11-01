@@ -41,7 +41,7 @@ def ui(b, base, lang, phone):
                         has_touch=phone, is_mobile=phone, locale='en-US' if lang == 'en' else 'fr-FR')
     pg = ctx.new_page(); errs = []
     pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
-    pg.goto(base + ('en/' if lang == 'en' else ''), wait_until='load')
+    pg.goto(base + ('' if lang == 'en' else 'fr/'), wait_until='load')
     pg.wait_for_function('window.__ev && window.MP4Box', timeout=20000)
     pg.locator('#demoBtn').click()
     pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=40000)
@@ -107,7 +107,7 @@ def engine(b, base, video):
     """same picture in preview / export 2D / export WebGL; cost per picture; save and reopen; whole export timings"""
     ctx = b.new_context(viewport={'width': 1280, 'height': 860}, locale='fr-FR'); pg = ctx.new_page(); errs = []
     pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
-    pg.goto(base, wait_until='load'); pg.wait_for_function('window.__ev && window.MP4Box', timeout=20000)
+    pg.goto(base + 'fr/', wait_until='load'); pg.wait_for_function('window.__ev && window.MP4Box', timeout=20000)
     pg.locator('#demoBtn').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=40000)
     # a real picture for the WebGL / 2D comparison: a test pattern in 1080×1920 (sharp colours, gradients, text)
     ev(pg, """window.__pic = (() => { const c = document.createElement('canvas'); c.width = 1080; c.height = 1920; const x = c.getContext('2d');
@@ -185,7 +185,7 @@ def engine(b, base, video):
 def main():
     tmp = tempfile.mkdtemp(prefix='stalak-filtres-')
     site = os.path.join(tmp, 'site'); shutil.copytree(PUBLIC, site)
-    for page in ('index.html', 'en/index.html'):
+    for page in ('index.html', 'fr/index.html'):
         p = os.path.join(site, page); html = open(p, encoding='utf-8').read()
         assert 'applyLang();\n})();' in html, 'repère de la sonde introuvable'
         open(p, 'w', encoding='utf-8').write(html.replace('applyLang();\n})();', 'applyLang();\nwindow.__ev = (s) => eval(s);\n})();'))

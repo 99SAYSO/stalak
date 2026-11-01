@@ -16,7 +16,7 @@ export function reminderEmail(env, lang, plan, amount, startedAt) {
   const since = new Date(startedAt).toLocaleDateString(fr ? 'fr-FR' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
   const price = amount ? (fr ? `${amount.replace('.', ',')} $ par mois (plus les taxes de ton pays)` : `$${amount} a month (plus your local tax)`)
     : (fr ? 'au prix de ton abonnement, chaque mois' : 'at your subscription price, every month');
-  const manage = fr ? `${site}/#compte` : `${site}/en/#account`;
+  const manage = fr ? `${site}/fr/#compte` : `${site}/#account`;
   const lines = fr ? [
     'Bonjour,',
     `Petit rappel annuel : ton abonnement ${name} est actif depuis le ${since}. Il se renouvelle automatiquement chaque mois, ${price}, jusqu’à ce que tu l’arrêtes.`,

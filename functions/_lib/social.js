@@ -236,7 +236,7 @@ function safeReturn(v) {
   const s = String(v || '/');
   return /^\/(?!\/)[A-Za-z0-9._~\/-]{0,200}$/.test(s) && !s.startsWith('/api') ? s : '/';
 }
-// returnTo = "/en/" or "/en/#popup" (the link runs in a small window opened by the app, so an open project is not lost)
+// returnTo = "/" or "/#popup" (French: "/fr/…") (the link runs in a small window opened by the app, so an open project is not lost)
 function backTo(env, returnTo, frag) {
   const [path, tail = ''] = String(returnTo || '/').split('#');
   const url = appOrigin(env) + safeReturn(path) + '#' + frag;

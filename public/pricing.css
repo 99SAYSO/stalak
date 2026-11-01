@@ -1,6 +1,6 @@
 /* ---- pricing: promo, plan cards, trust line, comparison, FAQ ----
    One component for the Stalak Pro page in the app (#pro, appended to the theme by build.py / build_site.py) and the
-   static pages /tarifs and /en/pricing (served as /pricing.css). Tokens: the theme's (--ink, --sky-deep, --ice, --fur…).
+   static pages /pricing and /fr/tarifs (served as /pricing.css). Tokens: the theme's (--ink, --sky-deep, --ice, --fur…).
    Direction: snow cards with an ink outline; the recommended plan wears the parka's fur trim and the one pink touch. */
 .pr-promo{align-self:center;display:inline-flex;align-items:center;gap:10px;margin:0 auto;max-width:100%;box-sizing:border-box;padding:6px 18px 6px 6px;background:var(--fur);color:var(--ink);border:2.5px solid var(--ink);border-radius:99px;box-shadow:0 4px 0 var(--ink);font:600 15px/1.3 var(--body);text-align:left}
 .pr-promo[hidden],.pr-sub[hidden],.pr[hidden]{display:none}

@@ -1,8 +1,8 @@
-# Pages anglaises par cas d'usage : brouillons, NON publiés
+# Pages anglaises par cas d'usage : publiées le 01/11/2026
 
-Marketing & croissance, 30/10/2026. Ce dossier n'est pas copié dans `public/` : rien n'est en ligne.
+Marketing & croissance. Écrites le 30/10/2026, publiées le 01/11/2026 sur la branche `marketing/en-racine` (décision du propriétaire du 31/10 : les 6 pages sont publiées, l'anglais passe à l'adresse principale).
 
-**Les 6 pages :**
+**Les 6 pages** (en ligne à la racine du site, ex. `https://stalak.app/rap-snippet-video`) :
 - `lip-sync-video-editor`
 - `music-video-maker-for-rappers`
 - `rap-snippet-video`
@@ -10,21 +10,16 @@ Marketing & croissance, 30/10/2026. Ce dossier n'est pas copié dans `public/` :
 - `how-to-make-a-lip-sync-video`
 - `edit-video-to-the-beat`
 
-**À publier seulement après la décision du propriétaire** sur l'anglais à l'adresse principale (`docs/marketing/US_FIRST.md`, partie A). Ensuite :
+**Pour les modifier :**
+1. Changer le texte dans `site_drafts/make_pages.py`.
+2. Régénérer : `python3 site_drafts/make_pages.py --base ""` (l'anglais est à la racine).
+3. Copier `site_drafts/out/*.html` dans `site_src/`.
+4. Reconstruire le site : `python3 build_site.py --domain stalak.app --email contact@stalak.app`.
 
-1. Régénérer les pages pour le bon emplacement :
-   - si l'anglais passe à la racine : `python3 site_drafts/make_pages.py --base ""` ;
-   - sinon : `python3 site_drafts/make_pages.py --base /en`.
-2. Copier `site_drafts/out/*.html` dans `site_src/` (anglais à la racine) ou dans `site_src/en/`.
-3. Dans `build_site.py` :
-   - ajouter ces pages au plan du site (anglais seul, sans page française jumelle) ;
-   - les ajouter à la boucle qui remplace `{{URL}}` ;
-   - leur appliquer le retrait du bloc `<!--DEMO-->`, qui n'apparaît que si `site_src/demo/exemple.mp4` existe ;
-   - ajouter les liens dans le pied de page de l'accueil anglais.
-4. Le mieux est d'attendre une vraie vidéo d'exemple : sans elle, les pages perdent leur principal argument.
+`build_site.py` s'occupe du reste : plan du site (liste `GUIDES`, anglais seul), liens « Guides » dans le pied de page de l'accueil anglais, `{{URL}}`, et le bloc vidéo `<!--DEMO-->`, qui n'apparaît que si `site_src/demo/exemple.mp4` existe (une vraie vidéo finie, 9:16, sans son). Dès que cette vidéo est là, les 6 pages et la page comparative la montrent.
 
 **Règles :**
-- aucun concurrent cité ;
+- aucun concurrent cité (la seule page qui en parle est `/triller-alternative`, décision du 31/10) ;
 - aucun chiffre inventé ;
 - les prix sont ceux de la page Tarifs ;
-- les boutons mènent à l'accueil avec `?ref=seo`.
+- les boutons mènent à l'accueil avec `?ref=seo` (la page comparative : `?ref=seo-triller`).

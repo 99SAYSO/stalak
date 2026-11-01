@@ -32,7 +32,7 @@ def run(b, base, lang, phone):
                         has_touch=phone, is_mobile=phone, locale='en-US' if lang == 'en' else 'fr-FR')
     pg = ctx.new_page(); errs = []
     pg.on('pageerror', lambda e: errs.append(str(e)[:160]))
-    pg.goto(base + ('en/' if lang == 'en' else ''), wait_until='load')
+    pg.goto(base + ('' if lang == 'en' else 'fr/'), wait_until='load')
     pg.wait_for_function('window.__ev && window.MP4Box', timeout=20000)
     pg.set_input_files('#songFile', os.path.join(SITE, 'beat.wav'))
     pg.wait_for_function('() => __ev("!!S.song")', timeout=30000)
@@ -83,7 +83,7 @@ def main():
     global SITE
     tmp = tempfile.mkdtemp(prefix='stalak-paroles-')
     SITE = os.path.join(tmp, 'site'); shutil.copytree(PUBLIC, SITE)
-    for page in ('index.html', 'en/index.html'):
+    for page in ('index.html', 'fr/index.html'):
         p = os.path.join(SITE, page); html = open(p, encoding='utf-8').read()
         assert 'applyLang();\n})();' in html, 'repère de la sonde introuvable'
         open(p, 'w', encoding='utf-8').write(html.replace('applyLang();\n})();', 'applyLang();\nwindow.__ev = (s) => eval(s);\n})();'))

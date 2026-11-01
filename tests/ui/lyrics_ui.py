@@ -65,7 +65,7 @@ async def pro_flow(browser, width, lang):
     tag = f'pro {lang} {width}'
     user = post('/__test/user', {'pro': True})
     ctx, page, errors = await new_page(browser, width, lang, user)
-    await page.goto(BASE + ('/en/' if lang == 'en' else '/') + '?lang=' + lang)
+    await page.goto(BASE + ('/' if lang == 'en' else '/fr/') + '?lang=' + lang)
     await wait(page, '() => window.StalakAccount && StalakAccount.state.entitlements && StalakAccount.state.entitlements.plan === "pro"', timeout=15000)
     await demo_to_lyrics(page)
     auto = page.locator('#lyrMode button[data-mode="auto"]')
@@ -197,7 +197,7 @@ async def free_flow(browser, width, lang, signed_in=True):
     tag = f'{"free" if signed_in else "signed-out"} {lang} {width}'
     user = post('/__test/user', {'pro': False}) if signed_in else None
     ctx, page, errors = await new_page(browser, width, lang, user)
-    await page.goto(BASE + ('/en/' if lang == 'en' else '/') + '?lang=' + lang)
+    await page.goto(BASE + ('/' if lang == 'en' else '/fr/') + '?lang=' + lang)
     await wait(page, '() => window.StalakAccount && StalakAccount.state.entitlements', timeout=15000)
     await demo_to_lyrics(page)
     auto = page.locator('#lyrMode button[data-mode="auto"]')

@@ -430,13 +430,13 @@ const WARN_TEXTS = {
     subject: 'Tes projets Stalak vont être supprimés',
     intro: 'Tu n’as pas ouvert ces projets sauvegardés en ligne depuis bientôt 6 mois :',
     when: (d) => `Ils seront supprimés le ${d}, avec leurs vidéos et leur son.`,
-    keep: 'Pour en garder un, ouvre-le simplement depuis Compte → Mes projets sur https://stalak.app/#compte',
+    keep: 'Pour en garder un, ouvre-le simplement depuis Compte → Mes projets sur https://stalak.app/fr/#compte',
   },
   en: {
     subject: 'Your Stalak projects will be deleted',
     intro: 'You haven’t opened these projects saved online for almost 6 months:',
     when: (d) => `They will be deleted on ${d}, with their videos and sound.`,
-    keep: 'To keep one, just open it from Account → My projects at https://stalak.app/en/#compte',
+    keep: 'To keep one, just open it from Account → My projects at https://stalak.app/#account',
   },
 };
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));

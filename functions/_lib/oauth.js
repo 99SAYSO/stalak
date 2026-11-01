@@ -130,7 +130,7 @@ function safeReturn(v) {
   const s = String(v || '/');
   return /^\/(?!\/)[A-Za-z0-9._~\/-]{0,200}$/.test(s) && !s.startsWith('/api') ? s : '/';
 }
-// ret = "/en/#pro" (path # where to go), or "/en/#pro:popup" when the sign-in runs in a small window opened by the app
+// ret = "/#pro" (path # where to go), or "/#pro:popup" when the sign-in runs in a small window opened by the app
 // (used when a project is open: leaving the page would lose it). The window then tells the app and closes itself.
 function backTo(env, ret, frag, cookies = []) {
   const [path, tail = ''] = String(ret || '/').split('#');
@@ -172,7 +172,7 @@ export async function oauthStart(request, env, provider) {
     `INSERT INTO oauth_states (state_hash, provider, nonce, verifier, binding, return_to, lang, created_at, expires_at)
      VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)`
   ).bind(await sha256Hex(state), provider, nonce, verifier, await sha256Hex(binding), ret + '#' + to,
-    normalizeLang(url.searchParams.get('lang') || (ret.startsWith('/en') ? 'en' : 'fr')), now, now + STATE_TTL_MS).run();
+    normalizeLang(url.searchParams.get('lang') || (ret.startsWith('/fr') ? 'fr' : 'en')), now, now + STATE_TTL_MS).run();
   const q = new URLSearchParams({ client_id: P.clientId(env), redirect_uri: redirectUri(env, provider), response_type: 'code',
     scope: P.scope, state, nonce, ...P.extra });
   if (verifier) {

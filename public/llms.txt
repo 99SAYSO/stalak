@@ -5,14 +5,22 @@
 Stalak is not related to the Dofus game creature of the same name.
 
 ## Main pages
-- [Stalak (English)](https://stalak.app/en/): the editor, with "What is Stalak?" explaining the product.
-- [Stalak (French)](https://stalak.app/): the same app in French.
-- [Pricing (English)](https://stalak.app/en/pricing): Free, Stalak Pro and Creator Plus.
-- [Pricing (French)](https://stalak.app/tarifs): the same in French.
+- [Stalak](https://stalak.app/): the editor, in English, with "What is Stalak?" explaining the product.
+- [Stalak in French](https://stalak.app/fr/): the same app in French.
+- [Pricing](https://stalak.app/pricing): Free, Stalak Pro and Creator Plus.
+- [Pricing in French](https://stalak.app/fr/tarifs): the same in French.
+
+## Guides
+- [Lip-sync video editor](https://stalak.app/lip-sync-video-editor): what Stalak does; it edits your real takes (no AI face, no fake mouth).
+- [Music video maker for rappers](https://stalak.app/music-video-maker-for-rappers): from a few phone takes to a rap video cut on the beat, 9:16 or 16:9.
+- [Rap snippet video](https://stalak.app/rap-snippet-video): a 10 to 30 second snippet cut on the beat, with lyrics on screen.
+- [Performance videos for singers](https://stalak.app/lip-sync-videos-for-singers): multi-take edits for covers and originals, cuts on the words or every bar.
+- [How to make a lip-sync video](https://stalak.app/how-to-make-a-lip-sync-video): the 3 steps, with filming tips.
+- [Edit video to the beat](https://stalak.app/edit-video-to-the-beat): how the automatic cuts on the beat work.
 
 ## Facts
 - No download and no sign-up: Stalak runs in the browser. The free plan needs no account.
-- Free: unlimited videos; auto cuts on the beat, on every word or every bar; on-screen lyrics one line at a time (size M), pasted in and synced by tapping; 3 filters (Frost, 35mm Film, Black & White); vertical 9:16 export. Free videos carry a small Stalak logo watermark that moves to a new spot now and then; watching a ~30-second ad removes it from that video.
+- Free: unlimited videos; auto cuts that land on the beat (phrase by phrase, on the lines and rhymes of your lyrics, or every bar); on-screen lyrics one line at a time (size M), pasted in and synced by tapping; 3 filters (Frost, 35mm Film, Black & White); vertical 9:16 export. Free videos carry a small Stalak logo watermark that moves to a new spot now and then; watching a ~30-second ad removes it from that video.
 - Stalak Pro ($7.99/month or $49.99/year): no ads, no watermark, 16:9 music video mode, premium effects, word-by-word and karaoke lyrics in any size, all filters, auto lyrics written and synced from your vocals.
 - Creator Plus ($14.99/month or $99.99/year): everything in Pro, plus video packs (5 to 30 differently cut videos from one song, from just 2 takes), automatic cloud saving, and "Talk to a human" (live chat, or an email reply within 24 hours).
 - Prices are in US dollars; any sales tax or VAT is added at checkout. Subscribers keep their price.
