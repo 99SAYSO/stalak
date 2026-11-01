@@ -1,4 +1,4 @@
-Statut : EN COURS (tests en cours)
+Statut : PRÊT
 Branche : app/liens-cmp (créée depuis `main` du 1/11, 22 h 40 : ff69d15).
 
 Résumé :
@@ -37,4 +37,6 @@ Pour Juridique (à relire) :
 - **Moins de 13 ans** : rien n'est fait dans l'app, car aucun âge n'est demandé.
 - **Pages légales et Tarifs.** Le lien « Cookie settings » / « Gérer les cookies » mène à la partie cookies de la Confidentialité. Cette partie pourrait dire « pour changer ton choix : “Gérer les cookies” en bas de la page de l'app ». Je n'ai pas touché au texte juridique.
 
-Tests : voir la fin de ce fichier.
+Tests (1/11, iPhone 15 Pro émulé + ordinateur, FR + EN) : nouveau `tests/ui/liens_cmp_ui.py` (liens de l'app dans les 2 langues et des 10 pages Tarifs et légales, adresse qui suit la langue, aucun script Google avant la pub, pubs limitées sans outil certifié, attente du choix dans la fenêtre de Google avec l'outil, « Gérer les cookies », « Your Privacy Choices », GPC) ; `liens_cmp_ui.py` 98/98, `formules_ui.py` 169/169, `son_passage.py` 86/86, `filtres_ui.py` 106/106, `audit_ui.py` 158/158, `projet_local_ui.py` 48/48, `export_pub_ui.py` 22/22, `animations_ui.py` 44/44, `remux_frag.py` 10/10, `paroles_suppr.py` 44/44, `plans_ui.py` 35/35, `gallery_ui.py` 49/49, `help_ui.py` 42/42, `tests/backend/run.mjs` 79/79. `support_ui.py` et `lyrics_ui.py` : même arrêt que sur `main`, sans lien.
+
+À tester par le propriétaire : sur `/`, toucher « Français » en bas → l'adresse devient `/fr/` sans perdre le montage ; « Your Privacy Choices » en bas de l'app ; dans Ad Manager, créer et publier le message RGPD (voir plus haut).
