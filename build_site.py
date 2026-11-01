@@ -207,6 +207,7 @@ def meta(lang):
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="{H.escape(P['desc'])}">
 <meta name="theme-color" content="#1f6fd6">
+<meta name="google-adsense-account" content="ca-pub-2317718448369640">
 <link rel="canonical" href="{url}">
 <link rel="alternate" hreflang="fr" href="{URL}/">
 <link rel="alternate" hreflang="en" href="{URL}/en/">
