@@ -4,6 +4,7 @@
 > Dernière mise à jour : 30/10/2026 à 21 h (offre hybride fusionnée et en ligne : App, Comptes, Juridique, Marketing ; migration 0008 appliquée).
 
 ## Décisions récentes du propriétaire
+- **1/11, 23 h 20 : en ligne** `compte/tableau-de-bord-v2` (tableau de bord refait : 6 onglets, carte du monde, provenance, appareils ; migration 0010 appliquée), `legal/adresses-vendeur` (adresses vérifiées, `vendeur.json` à remplir, pays dans la confidentialité), `marketing/annuaires` (documents). En cours : `app/liens-cmp`.
 - **1/11, 23 h : annuaires (Chef de projet + propriétaire)** : envoyés en file gratuite : contentcreators.com, The Music Industry Toolkit, Buzzsonic (captcha par le propriétaire), AlternativeTo (fiche + alternative : CapCut ; Triller n'existe pas sur AlternativeTo), SaaSHub (concurrents : CapCut, CapCut Web, InShot ; vérification par e-mail @stalak.app possible pour passer devant). Launching Next rempli (reste la question anti-robot du propriétaire). Restent (compte à créer par le propriétaire) : Uneed, Tinyshelf, PeerPush, WebCatalog, Peerlist. Rien n'a été payé.
 - **1/11, 22 h 45 : Bing Webmaster Tools fait** (site déjà présent depuis le 27/10) : `sitemap.xml` renvoyé, `sitemap-old.xml` ajouté, 12 adresses soumises (accueils, tarifs, page Triller FR/EN, 6 guides). Reste au propriétaire : Crawler Hints dans Cloudflare (facultatif), puis les annuaires.
 - **1/11, 22 h 40** : `compte/emails-da` en ligne (e-mails aux couleurs de Stalak ; liens `FR_HOME = /fr/`, `EN_HOME = /`). **Annuaires** : Stalak présenté comme « alternative à Triller » sur AlternativeTo / SaaSHub (sur leurs sites) = **oui** ; **aucun lien vers un autre site en bas de stalak.app** : Twelve Tools et Fazier sont sautés. **Nouveau chantier Comptes** : tableau de bord privé refait (plus beau, mieux rangé, beaucoup de données, carte des pays où les comptes sont créés).
@@ -115,7 +116,7 @@
   - migration 0008 (`migrations/0008_plans.sql`, 3 colonnes) appliquée le 30/10 au soir.
 
 ## Base de données D1
-- Migrations appliquées : 0001, 0002, 0003, 0004_lyrics_usage, 0004_cloud_save, 0005_social_accounts (27/10), 0006_admin_support (27/10), 0007_project_covers (28/10), 0008_plans (30/10), 0009_audit (31/10).
+- Migrations appliquées : 0001, 0002, 0003, 0004_lyrics_usage, 0004_cloud_save, 0005_social_accounts (27/10), 0006_admin_support (27/10), 0007_project_covers (28/10), 0008_plans (30/10), 0009_audit (31/10), 0010_dashboard (1/11).
 - En attente : aucune.
 
 ## À faire, par rôle
