@@ -1,6 +1,6 @@
 # Médias du projet (hors dépôt)
 
-Sur décision du propriétaire, aucun fichier vidéo ni audio n'est dans le dépôt (`.gitignore`), ni les images tirées de ses prises (son visage). Pour refaire un rendu : remettre les fichiers ci-dessous aux mêmes noms, lancer `python3 build.py`, puis `npx hyperframes render --quality delivery --fps 30 --page-motion-blur off -o renders/one-take-v2.mp4`.
+Sur décision du propriétaire, aucun fichier vidéo ni audio n'est dans le dépôt (`.gitignore`), ni les images tirées de ses prises (son visage). Pour refaire un rendu : remettre les fichiers ci-dessous aux mêmes noms, lancer `python3 build.py`, puis `npx hyperframes render --quality delivery --fps 30 --page-motion-blur off -o renders/one-take-v3.mp4`.
 
 | Fichier | D'où il vient |
 |---|---|
@@ -9,7 +9,8 @@ Sur décision du propriétaire, aucun fichier vidéo ni audio n'est dans le dép
 | `assets/audio/inst.mp3` | L'instru de « neva die » (« free tana untiljapan type beat wakeup »). Calée à l'échantillon : instru = son + 23,13007 s (corrélation 0,99 sur les basses). Licence à vérifier avant une pub. |
 | `assets/audio/vo/vo01.wav` à `vo14.wav` | La voix off : Gemini 3.1 Flash TTS dans Flora, voix Achird, une lecture (0,013 $, run `run_m17dkqycysna0dgp53gb40fwch8hcg6m`), téléchargée par le propriétaire. Limitée puis normalisée en deux passes (−16 LUFS, −1,5 dBTP), coupée en 14 phrases (14 silences d'au moins 1,2 s ; durées et nombre de syllabes vérifiés). `vo_clips.json` : début, durée et décalage de chaque phrase. |
 | `assets/sfx/*.mp3` | Les sons de la bibliothèque fournie avec HyperFrames (`CREDITS.md`). `peaks.json` : où chaque son frappe. |
-| `assets/stills/scrub.jpg` | Les 24 images du snippet du début (prise 3 puis prise 1, de 9,088 à 10,600 s), en une seule image 6 × 4 : celles qu'il parcourt en traînant la tête de lecture. `build.py` la fabrique depuis les prises si elle manque. |
+| `assets/stills/scrub3.jpg` | v3 : les 24 images du snippet du début (prise 3 puis prise 2, de 4,503 à 6,032 s), en une image 6 × 4, qui défilent dans le cadre figé. `build.py` la fabrique depuis les prises si elle manque. |
+| `assets/stills/scrub.jpg` | (v2, plus utilisée) Les 24 images du snippet du début (prise 3 puis prise 1, de 9,088 à 10,600 s), en une seule image 6 × 4 : celles qu'il parcourt en traînant la tête de lecture. `build.py` la fabrique depuis les prises si elle manque. |
 | `assets/stills/freeze_hook.jpg` | L'image de la prise 1 à 10,618 s (version 1 ; plus utilisée). |
 | `assets/stills/f_none.jpg`, `f_frost.jpg`, `f_film.jpg`, `f_bw.jpg`, `thumb_src.jpg` | Les vignettes de la rangée de filtres, tirées de la prise 1 à 5 s (approximations des filtres de l'app pour des vignettes ; l'aperçu, lui, utilise le vrai traitement Frost). |
 | `assets/stills/take*_pose.jpg` | Images de référence (non utilisées dans le film). |

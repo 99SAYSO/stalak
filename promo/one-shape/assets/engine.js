@@ -1,10 +1,12 @@
-/* « One take » v2 — the render engine. One shape that never cuts: every style below is a pure function of t (seconds).
+/* « One take » v3 — the render engine. One shape that never cuts: every style below is a pure function of t (seconds).
    Springs are closed-form step responses; a value with many targets is the sum of one spring per change.
-   window.T comes from times.js (build.py). ONE.init(root) builds the repeated parts, ONE.render(t) draws a frame. */
+   window.T comes from times.js (build.py). ONE.init(root) builds the repeated parts, ONE.render(t) draws a frame.
+   v3: the voice runs without gaps, its words appear one by one, "Stalak" is the logo, the snippet at the end lasts one bar. */
 (function () {
   "use strict";
   var T = window.T, P = T.P, TOTAL = T.TOTAL;
   function B(b) { return b * P; }
+  function W(i, rel) { return T.VO[i][0] + rel; }   // a word of voice line i, rel seconds after the line starts (measured in the files)
   function sat(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
   function mix(a, b, k) { return a + (b - a) * k; }
   function eOut(x) { x = sat(x); return 1 - Math.pow(1 - x, 3); }
@@ -42,7 +44,6 @@
   }
   function rng(s) { return function () { s |= 0; s = s + 0x6D2B79F5 | 0; var t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
   function hash(i) { var x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); }
-  // visibility window: fades in at a over din, out at b over dout
   function win(t, a, b, din, dout) {
     if (din === undefined) din = 0.16; if (dout === undefined) dout = 0.12;
     if (t < a || t > b + dout) return 0;
@@ -67,80 +68,77 @@
   // [t, W, H, R, X, Y, spring w]
   var S = [
     [0,              1240, 2140,   0, 540, 960],        // the finished snippet, full screen
-    [B(4) + 0.03,     484,  860,  44, 540, 960, 10.5],  // the click: it freezes into a frame he scrubs by hand
-    [B(8),            860,  520,  46, 540, 930, 12],    // the drop zone
-    [B(10.4) + 0.04,  176,  176,  88, 540, 900, 16],    // analyzing
-    [B(12),           880,  230, 115, 540, 880, 13],    // the song pill
-    [B(16),           880,  430,  52, 540, 700, 12],    // add your takes (top stays at 485 while it grows)
-    [B(18.25),        880,  560,  52, 540, 765, 15],
-    [B(18.75),        880,  690,  52, 540, 830, 15],
-    [B(19.25),        880,  820,  52, 540, 895, 15],
-    [B(20),           880,  780,  52, 540, 895, 10],    // the tray of the sync
-    [B(24.25),        880,  620,  52, 540, 850, 13],    // lyrics
-    [B(28),           900, 1020,  56, 540, 905, 12],    // the edit, then the look (same card)
-    [B(44),           600,  180,  90, 540, 900, 14],    // export
-    [B(48),          1240, 2140,   0, 540, 960, 10],    // the payoff, full screen
-    [B(60),           880,  230, 115, 540, 900, 12],    // the time
-    [B(68),           300,  300,  70, 540, 610, 11],    // the app icon
+    [B(4) + 0.03,     360,  640,  40, 540, 860, 11],    // the click: it freezes, the words lock around it
+    [B(9.75),         860,  520,  46, 540, 930, 14],    // the drop zone
+    [B(10.75),        176,  176,  88, 540, 900, 17],    // it takes the file
+    [B(11.25),        880,  230, 115, 540, 880, 15],    // the song pill
+    [B(17),           880,  430,  52, 540, 700, 14],    // add your takes (top stays at 485 while it grows)
+    [B(18.5),         880,  560,  52, 540, 765, 16],
+    [B(18.875),       880,  690,  52, 540, 830, 16],
+    [B(19.25),        880,  820,  52, 540, 895, 16],
+    [B(20),           880,  780,  52, 540, 895, 11],    // the tray of the sync
+    [B(24.25),        880,  620,  52, 540, 850, 15],    // lyrics
+    [B(26.75),        900, 1020,  56, 540, 925, 14],    // the edit, then the look (same card)
+    [B(40.25),        600,  180,  90, 540, 900, 15],    // export
+    [B(44),          1240, 2140,   0, 540, 960, 11],    // the payoff, full screen, one bar
+    [B(48),           880,  230, 115, 540, 900, 13],    // the time
+    [B(56.25),        300,  300,  70, 540, 610, 12],    // the app icon
   ];
   function col(i) { return S.map(function (s) { return [s[0], s[i], s[6] || 13, 0.8]; }); }
   var sW = K(col(1)), sH = K(col(2)), sR = K(col(3)), sX = K(col(4)), sY = K(col(5));
-  var sZ = K([[0, 0], [B(20), -130, 7, 0.9], [B(22), -40, 12, 0.85], [B(24.25), 0, 9, 0.9], [B(47.55), -34, 18, 0.9], [B(48), 40, 10, 0.85], [B(60), 0, 10, 0.9], [B(68), 90, 8, 0.8], [B(68.9), 0, 7, 0.9]]);
-  var sSpin = K([[0, 0], [B(68), 360, 7.5, 0.78]]);   // the pill flips into the icon (90 deg at +0.12 s)
-  // face colour, swapped while the content is blurred
-  var sFace = CE([[0, INK], [B(8) + 0.1, "#eef7ff"], [B(10.4) + 0.12, INK], [B(16) + 0.1, "#ffffff"], [B(20) + 0.08, "#d6ecff"], [B(24.25) + 0.1, "#ffffff"],
-                  [B(44) + 0.1, INK], [B(64.75) + 0.05, "#ffffff"], [B(68) + 0.12, "#1f6fd6"]], 0.07);
-  var PRESS = [[B(4), 0.035], [B(45), 0.05]];
+  var sZ = K([[0, 0], [B(20), -130, 7, 0.9], [B(22), -40, 12, 0.85], [B(24.25), 0, 9, 0.9], [B(43.55), -34, 18, 0.9], [B(44), 40, 11, 0.85], [B(48), 0, 11, 0.9],
+              [B(56.25), 90, 8, 0.8], [B(57.1), 0, 7, 0.9]]);
+  var sSpin = K([[0, 0], [B(56.25), 360, 7.5, 0.78]]);   // the pill flips into the icon (90 deg at +0.12 s)
+  var sFace = CE([[0, INK], [B(9.75) + 0.1, "#eef7ff"], [B(10.75) + 0.08, INK], [B(17) + 0.1, "#ffffff"], [B(20) + 0.08, "#d6ecff"], [B(24.25) + 0.1, "#ffffff"],
+                  [B(40.25) + 0.1, INK], [B(52.75) + 0.05, "#ffffff"], [B(56.25) + 0.12, "#1f6fd6"]], 0.07);
+  var PRESS = [[B(4), 0.035], [B(41.25), 0.05]];
   // a 3D kick at each morph, sized to the change: [t, rotateX deg, rotateY deg]
-  var KICKS = [[B(4) + 0.03, 10, -24], [B(8), 14, 0], [B(10.4) + 0.04, 0, 10], [B(12), 0, -15], [B(16), 16, 0], [B(24.25), 0, 12], [B(28), -12, 0], [B(40), 0, -4],
-               [B(44), 15, 0], [B(48), 4, 0], [B(60), 0, 19], [B(64.75), 9, 0], [B(68), 12, 0]];
-  // camera: an orbit while the takes fly out
+  var KICKS = [[B(4) + 0.03, 10, -24], [B(9.75), 14, 0], [B(10.75), 0, 8], [B(11.25), 0, -15], [B(17), 16, 0], [B(24.25), 0, 12], [B(26.75), -12, 0], [B(37.75), 0, -4],
+               [B(40.25), 15, 0], [B(44), 4, 0], [B(48), 0, 19], [B(52.75), 9, 0], [B(56.25), 12, 0]];
+  // camera: whips on the changes [t, dx, dy, rotateZ], an orbit while the takes fly out
+  var CAMK = [[B(2), 0, 0, 2.5], [B(4) + 0.03, 0, 0, -3], [B(9.75), -60, 0, 3], [B(10.75), 0, 0, -2], [B(11.25), 50, 0, 2.5], [B(17), 0, -40, -2.5], [B(24.25), -50, 0, 2],
+              [B(26.75), 0, 40, -2], [B(35), 0, 0, 0.8], [B(37.75), 40, 0, -1.5], [B(40.25), 0, -30, 2], [B(44), 0, 0, -3], [B(48), -40, 0, 3], [B(52.75), 0, 0, -2], [B(56.25), 0, 0, 2.5]];
   var cZ = K([[0, 1], [B(20), 0.93, 5, 0.9], [B(22), 1.0, 14, 0.85]]);
   var cRY = K([[0, 0], [B(20.1), -15, 4.5, 0.85], [B(21.4), 7, 4.5, 0.85], [B(22), 0, 14, 0.9]]);
   var cRX = K([[0, 0], [B(20.1), 5, 5, 0.9], [B(22), 0, 14, 0.9]]);
-  // the playhead he drags by hand (0 = start of the snippet, 1 = end)
-  var scrubK = K([[0, 1], [B(4.7), 0.08, 7.5, 0.8], [B(5.55), 0.72, 8, 0.78], [B(6.3), 0.3, 8.5, 0.8], [B(6.9), 0.62, 9, 0.85], [B(7.3), 0.55, 11, 0.9]]);
-  function scrub(t) { return sat(scrubK(Math.min(t, B(7.75)))); }
-  // cursor: [t0, t1, x, y, arc] = move to (x, y) between t0 and t1 on an arc, settling; the tip, in world coordinates
+  // the frozen snippet's frames, scrubbed back and forth (0 = start of the snippet, 1 = end)
+  var scrubK = K([[0, 1], [B(4.6), 0.1, 9, 0.75], [B(5.6), 0.72, 9, 0.75], [B(6.6), 0.22, 9, 0.75], [B(7.6), 0.85, 9, 0.75], [B(8.6), 0.45, 10, 0.8]]);
+  // cursor: [t0, t1, x, y, arc] = move to (x, y) between t0 and t1 on an arc (below if arc < 0), settling; the tip, in world coordinates
   var CUR = [
-    [0, 0, 1180, 1700, 0],
-    [B(2.3), B(3.55), 760, 1330, 0.16],       // in, to click the snippet (below its caption)
-    [B(4.15), B(4.55), 780, 1404, 0.1],       // to the playhead (dragged until 7.75)
-    [B(7.75), B(7.75) + 0.001, 304 + scrub(B(7.75)) * 476, 1404, 0],
-    [B(7.8), B(8.2), 1420, 1250, 0.12],       // out, to fetch the file
-    [B(8.35), B(10.0), 712, 1094, -0.18],     // back with the file, under the zone's text (arc below)
-    [B(10.55), B(11.3), 1230, 1480, 0.1],
-    [B(16.6), B(17.35), 800, 722, 0.15],      // "Import my videos", right of the label
-    [B(18.1), B(18.8), 1230, 1250, 0.1],
-    [B(24.5), B(25.0), 410, 752, 0.14],       // "Paste my lyrics"
-    [B(25.7), B(26.4), 1230, 1200, 0.1],
-    [B(35.3), B(36.1), 820, 1335, 0.15],      // "Shuffle"
-    [B(36.9), B(37.6), 1230, 1320, 0.1],
-    [B(40.25), B(40.95), 470, 1262, 0.16],    // the Frost thumbnail
-    [B(41.6), B(42.3), 1230, 1300, 0.1],
-    [B(44.1), B(44.75), 770, 905, 0.15],      // "Export", right of the arrow
-    [B(45.4), B(46.2), 1250, 1300, 0.1],
+    [0, 0, 1180, 1750, 0],
+    [B(2.6), B(3.6), 760, 1330, 0.16],        // in, to click the snippet
+    [B(4.2), B(4.7), 1260, 1560, 0.1],        // out of the way of the words
+    [B(9.75), B(9.751), 1420, 1250, 0],
+    [B(9.8), B(10.5), 712, 1094, -0.18],      // back with the file, under the zone's text
+    [B(10.9), B(11.6), 1230, 1480, 0.1],
+    [B(17.2), B(17.75), 800, 722, 0.15],      // "Import my videos", right of the label
+    [B(18.2), B(18.9), 1230, 1250, 0.1],
+    [B(24.3), B(24.75), 410, 752, 0.14],      // "Paste my lyrics"
+    [B(25.3), B(26.0), 1230, 1200, 0.1],
+    [B(33.8), B(34.6), 820, 1355, 0.15],      // "Shuffle"
+    [B(35.4), B(36.1), 1230, 1320, 0.1],
+    [B(37.9), B(38.45), 470, 1282, 0.16],     // the Frost thumbnail
+    [B(39.0), B(39.7), 1230, 1300, 0.1],
+    [B(40.4), B(40.95), 770, 905, 0.15],      // "Export", right of the arrow
+    [B(41.6), B(42.3), 1250, 1300, 0.1],
   ];
-  var CLICKS = [B(4), B(10.4), B(17.75), B(25.25), B(36.5), B(41.25), B(45)];
+  var CLICKS = [B(4), B(10.75), B(18), B(25), B(35), B(38.75), B(41.25)];
   function cursorAt(t) {
-    if (t >= B(4.55) && t < B(7.75)) return [304 + scrub(t) * 476, 1404 + 2.5 * Math.sin(t * 9.1)];
     var x = CUR[0][2], y = CUR[0][3];
     for (var i = 1; i < CUR.length; i++) {
       var c = CUR[i]; if (t <= c[0]) break;
       var p = (t - c[0]) / Math.max(1e-4, c[1] - c[0]), e = eBack(p, 0.9);
       var dx = c[2] - x, dy = c[3] - y, d = Math.sqrt(dx * dx + dy * dy) || 1;
-      var nx = dy / d, ny = -dx / d; if ((ny > 0) !== (c[4] < 0)) { nx = -nx; ny = -ny; }   // arcs bulge upward (downward if arc < 0)
+      var nx = dy / d, ny = -dx / d; if ((ny > 0) !== (c[4] < 0)) { nx = -nx; ny = -ny; }
       var a = Math.abs(c[4]) * d * bump(sat(p));
       x = x + dx * e + nx * a; y = y + dy * e + ny * a;
     }
     return [x, y];
   }
-  // titles: [id, in, out, entrance, unit start times (optional)]
-  var TITLES = [
-    ["ti0", B(4.1), B(9.55), "pop", [B(4.1), B(4.42), B(7.05), B(7.85)]],   // on the words of the voice
-    ["ti1", B(10.25), B(15.58), "up"], ["ti2", B(16), B(23.83), "drop"], ["ti3", B(24.25), B(27.58), "pop"], ["ti4", B(28), B(35.58), "up"],
-    ["ti5", B(36), B(39.58), "drop"], ["ti6", B(40), B(43.58), "pop"], ["ti7", B(44), B(47.6), "up"],
-  ];
+  // L1: the words lock around the frozen snippet, each on its word of the voice
+  var KW = [{ id: "k-still", rel: 0.00, kind: "top" }, { id: "k-edit", rel: 0.18, kind: "left" }, { id: "k-snip", rel: 0.60, kind: "bottom" },
+            { id: "k-by", rel: 1.18, kind: "right" }, { id: "k-hand", rel: 1.48, kind: "slam" }];
+  var KW_OUT = B(9.75);
   // the sync tiles: out of the card's rows, into depth, out of time; then in line and in sync on b22
   function tileTracks(k) {
     var tl = B(20) + 0.07 * k, y0 = 485 + 410 + 56 + 130 * k;
@@ -160,10 +158,8 @@
     if (i < 0) return T.env[0]; if (i >= n - 1) return T.env[n - 1];
     var u = f - i; return T.env[i] * (1 - u) + T.env[i + 1] * u;
   }
-  // the edit
   var TCOL = { 1: "#d6336c", 2: "#3a6fe0", 3: "#e0952c" };
-  var ringL = K([[0, 52, 9, 0.8], [B(41.25), 262, 8.5, 0.78]]), ringR = K([[0, 218, 9, 0.8], [B(41.25), 428, 15, 0.72]]);
-  var TAGT = [B(68.8), B(70.25), B(70.35), B(70.5), B(70.7), B(71.15), B(71.3), B(71.45)];
+  var ringL = K([[0, 52, 9, 0.8], [B(38.75), 262, 9.5, 0.78]]), ringR = K([[0, 218, 9, 0.8], [B(38.75), 428, 16, 0.72]]);
 
   var FL = [], sprite = null, ctx = null;
   function initSnow() {
@@ -191,7 +187,6 @@
     }
     ctx.globalAlpha = 1;
   }
-
   // icicles under a button (bottom edge), grown by g in [0,1]: uneven, with a few long drips
   function iciclesPath(w, r, g, seed, stepPx) {
     var d = "", half = w / 2 - r * 0.72 - 8, step = stepPx || 34;
@@ -205,7 +200,6 @@
     }
     return d;
   }
-  // the fringe of icicles along the top of a card (the app's card style)
   function fringePath(w, r, g) {
     if (g <= 0.01) return "";
     var x = -(w / 2 - r * 0.9), end = w / 2 - r * 0.9, d = "M" + x.toFixed(1) + " 0 ", i = 0;
@@ -221,17 +215,26 @@
     var m = (k - 2) / Math.max(1, n - 2);
     return "rgb(" + Math.round(mix(36, 18, m)) + "," + Math.round(mix(50, 26, m)) + "," + Math.round(mix(76, 42, m)) + ")";
   }
+  function layeredLogo(host, n, dz) {   // the official wordmark, extruded in ink
+    var out = [];
+    for (var k = n; k >= 0; k--) {
+      var im = document.createElement("img"); im.src = "assets/brand/wordmark.svg"; im.alt = "";
+      im.style.transform = "translateZ(" + (-k * dz).toFixed(1) + "px)";
+      if (k > 0) im.style.filter = "brightness(0)";
+      host.appendChild(im); out.push(im);
+    }
+    return out;
+  }
 
   function init(root) {
     R0 = root;
     ["snow", "world", "fshadow", "shape", "face", "shade", "sheen", "rim", "icb", "fringe",
      "c-hook", "c-zone", "c-load", "c-song", "c-takes", "c-sync", "c-lyr", "c-edit", "c-exp", "c-pay", "c-claim", "c-icon",
-     "h-scrub", "h-sprite", "h-cap", "h-wm", "h-strip", "h-ph", "h-knob", "z-hover", "z-dash", "l-spin", "l-ck", "s-bpm", "s-dots", "t-imp", "s-ok",
-     "l-s1", "l-sel", "l-hint", "l-1", "l-2", "e-pv", "e-low", "f-low", "e-ver1", "e-ver2", "e-ruler", "e-bar", "e-ph", "e-knob", "e-shuf", "e-shufice",
+     "h-sprite", "h-wm", "z-hover", "l-spin", "s-bpm", "s-dots", "t-imp", "s-ok",
+     "l-s1", "l-sel", "l-hint", "l-1", "l-2", "e-low", "f-low", "e-ver1", "e-ver2", "e-ruler", "e-bar", "e-ph", "e-knob", "e-shuf", "e-shufice",
      "f-ring", "f-frost", "f-edge", "x-fill", "x-lab2", "p-cap", "k-num", "k-sub1", "k-sub2",
-     "tile1", "tile2", "tile3", "st1", "st2", "chip", "logo", "tag1", "tag2", "cursor"].forEach(function (id) { $[id] = root.querySelector("#" + id); });
+     "tile1", "tile2", "tile3", "chip", "logo", "caplogo", "caps", "tag1", "tag2", "cursor"].forEach(function (id) { $[id] = root.querySelector("#" + id); });
     ctx = $.snow.getContext("2d"); initSnow();
-    // the extrusion of the shape
     $.layers = [];
     for (var k = 16; k >= 1; k--) {
       var L = document.createElement("div"); L.className = "ly";
@@ -241,12 +244,9 @@
     $.zflakes = document.createElement("div"); $.zflakes.className = "abs";
     $.zflakes.style.cssText = "inset:24px;border-radius:30px;opacity:0.9;background-image:radial-gradient(circle at 20px 20px, #a9d3ff 3.2px, transparent 4px),radial-gradient(circle at 15px 15px, #d6ecff 2.4px, transparent 3px);background-size:120px 120px, 90px 90px;";
     $["c-zone"].insertBefore($.zflakes, $["c-zone"].firstChild);
-    // the song's four beat dots
     $.dots = [];
     for (var i = 0; i < 4; i++) { var dd = document.createElement("i"); dd.className = "sdot"; dd.style.left = (i * 66) + "px"; $["s-dots"].appendChild(dd); $.dots.push(dd); }
-    // the takes card's rows
     $.rows = ["t-r1", "t-r2", "t-r3"].map(function (id) { var r = root.querySelector("#" + id); r.sp = r.querySelector(".sp"); return r; });
-    // tiles: thickness, waveform bars
     $.tiles = [$.tile1, $.tile2, $.tile3];
     $.tiles.forEach(function (tile, ti) {
       tile.style.transformOrigin = "120px 213px";
@@ -275,65 +275,103 @@
       ruler.appendChild(tk);
     }
     $["e-shufice"].innerHTML = '<g transform="translate(155,0)"><path d="' + iciclesPath(310, 44, 1, 3, 28) + '" fill="#d6ecff" stroke="#0a0d14" stroke-width="4" stroke-linejoin="round"/></g>';
-    // the wordmark, extruded in ink
-    $.logoL = [];
-    for (k = 22; k >= 0; k--) {
-      var im = document.createElement("img"); im.src = "assets/brand/wordmark.svg"; im.alt = "";
-      im.style.transform = "translateZ(" + (-k * 1.6).toFixed(1) + "px)";
-      if (k > 0) im.style.filter = "brightness(0)";
-      $.logo.appendChild(im); $.logoL.push(im);
-    }
-    // titles: one span per letter ("up") or per word
-    $.titles = TITLES.map(function (tt) {
-      var el = root.querySelector("#" + tt[0]);
-      if (!tt[4]) {
-        var txt = el.textContent; el.innerHTML = "";
-        if (tt[3] === "up") {
-          for (var c = 0; c < txt.length; c++) { if (txt[c] === " ") { el.appendChild(document.createTextNode(" ")); continue; } var s = document.createElement("span"); s.textContent = txt[c]; el.appendChild(s); }
-        } else el.innerHTML = txt.split(" ").map(function (w) { return "<span>" + w + "</span>"; }).join(" ");
-      }
-      var spans = el.querySelectorAll("span"), st = [];
-      for (var q = 0; q < spans.length; q++) st.push(tt[4] ? tt[4][q] : tt[1] + (tt[3] === "up" ? 0.024 : 0.075) * q);
-      return { el: el, spans: spans, a: tt[1], b: tt[2], mode: tt[3], st: st };
+    $.logoL = layeredLogo($.logo, 22, 1.6);
+    $.capL = layeredLogo($.caplogo, 14, 1.8);
+    $.kwEls = KW.map(function (d) { return root.querySelector("#" + d.id); });
+    // the voice, word by word (each line in chunks that fit two lines on screen)
+    var CAPS = [
+      { b: W(2, 0) - 0.06, words: [["Drop", W(1, 0)], ["your", W(1, 0.26)], ["song.", W(1, 0.42), 1]] },
+      { b: W(3, 0) - 0.06, top: 396, logo: W(2, 0), words: [["finds", W(2, 0.70)], ["the", W(2, 1.12)], ["beat.", W(2, 1.38), 1]] },
+      { b: W(4, 0) - 0.06, words: [["Add", W(3, 0)], ["your", W(3, 0.20)], ["takes.", W(3, 0.36), 1]] },
+      { b: W(5, 0) - 0.06, words: [["They", W(4, 0)], ["sync", W(4, 0.12), 1], ["up", W(4, 0.46)], ["by", W(4, 0.70)], ["themselves.", W(4, 0.88)]] },
+      { b: W(6, 0) - 0.06, words: [["Paste", W(5, 0)], ["your", W(5, 0.26)], ["lyrics.", W(5, 0.38), 1]] },
+      { b: W(6, 0.98) - 0.04, words: [["Then", W(6, 0)], ["it", W(6, 0.28)], ["cuts", W(6, 0.38), 1], ["between", W(6, 0.66)]] },
+      { b: W(6, 1.78) - 0.04, words: [["your", W(6, 0.98)], ["takes,", W(6, 1.16)]] },
+      { b: W(7, 0) - 0.06, words: [["on", W(6, 1.78)], ["the", W(6, 1.96)], ["beat.", W(6, 2.12), 1]] },
+      { b: W(8, 0) - 0.06, words: [["Shuffle", W(7, 0), 1], ["for", W(7, 0.30)], ["a", W(7, 0.42)], ["new", W(7, 0.48)], ["edit.", W(7, 0.66)]] },
+      { b: W(9, 0) - 0.06, words: [["Pick", W(8, 0)], ["a", W(8, 0.14)], ["look.", W(8, 0.22), 1]] },
+      { b: B(44) - 0.05, words: [["And", W(9, 0)], ["export.", W(9, 0.16), 1]] },
+    ];
+    $.caps = CAPS.map(function (c) {
+      var el = document.createElement("div"); el.className = "capc";
+      if (c.top) el.style.top = c.top + "px";
+      el.innerHTML = c.words.map(function (w) { return '<span class="w' + (w[2] ? " pk" : "") + '">' + w[0] + "</span>"; }).join(" ");
+      $.caps.appendChild(el);
+      return { el: el, spans: el.querySelectorAll(".w"), a: c.logo || c.words[0][1], b: c.b, logo: c.logo, ts: c.words.map(function (w) { return w[1]; }) };
     });
     $.tag1w = $.tag1.querySelectorAll("span");
+    $.tagT = [W(12, 0), W(12, 0.45), W(12, 0.74), W(12, 0.82), W(12, 0.94), W(12, 1.15), W(12, 1.22), W(12, 1.30)];
     $.cursor.style.transformOrigin = "6px 4px";
+  }
+
+  // L1 words, fitted to the frozen snippet's frame (360 x 640 at 540,860) once the font has loaded (it sets their widths)
+  function fitKW() {
+    if ($.kw) return true;
+    if (document.fonts && document.fonts.check && !document.fonts.check('100px "Lilita One"')) return false;
+    var FX0 = 360, FX1 = 720, FY0 = 540, FY1 = 1180, GAP = 6;
+    var kw = KW.map(function (d, i) {
+      var el = $.kwEls[i]; el.style.fontSize = "100px";
+      return { d: d, el: el, w100: el.offsetWidth, target: d.kind === "top" || d.kind === "bottom" ? 700 : d.kind === "left" ? 640 : d.kind === "slam" ? 760 : 0 };
+    });
+    var fsEdit = 100 * 640 / kw[1].w100, snipBottom = 0;
+    kw.forEach(function (o) {
+      var fs = o.target ? 100 * o.target / o.w100 : fsEdit;
+      o.el.style.fontSize = fs.toFixed(1) + "px";
+      o.w = o.el.offsetWidth; o.h = o.el.offsetHeight; o.t = W(0, o.d.rel);
+      // capitals fill about 0.1-0.8 of the line box: place the letters, not the box
+      if (o.d.kind === "top") { o.cx = 540; o.cy = FY0 - GAP - o.h / 2 + 0.17 * fs; o.rot = 0; }
+      else if (o.d.kind === "bottom") { o.cx = 540; o.cy = FY1 + GAP + o.h / 2 - 0.08 * fs; o.rot = 0; snipBottom = o.cy - o.h / 2 + 0.8 * fs; }
+      else if (o.d.kind === "left") { o.cx = FX0 - GAP - o.h / 2 + 0.17 * fs; o.cy = (FY0 + FY1) / 2; o.rot = -90; }
+      else if (o.d.kind === "right") { o.cx = FX1 + GAP + o.h / 2 - 0.17 * fs; o.cy = FY0 + o.w / 2; o.rot = 90; }
+      else { o.cx = 540; o.cy = snipBottom + 18 - 0.1 * fs + o.h / 2; o.rot = -5; }
+      if (o.d.kind === "top" || o.d.kind === "bottom") {
+        var txt = o.el.textContent; o.el.innerHTML = "";
+        for (var c = 0; c < txt.length; c++) { var s = document.createElement("span"); s.textContent = txt[c]; o.el.appendChild(s); }
+        o.spans = o.el.querySelectorAll("span");
+      }
+    });
+    $.kw = kw;
+    return true;
   }
 
   function render(t) {
     if (!R0) return;
     if (t < 0) t = 0; if (t > TOTAL) t = TOTAL;
-    // ----------------------------------------------------------- camera: a punch on each downbeat
-    var punch = 0, bNow = Math.floor(t / P + 1e-6), d0 = bNow - (bNow % 4);
-    for (var bb = d0 - 4; bb <= d0; bb += 4) {
-      if (bb < 0) continue;
+    // ----------------------------------------------------------- camera: punches on the beat, whips on the changes
+    var punch = 0, bNow = Math.floor(t / P + 1e-6);
+    for (var bb = Math.max(0, bNow - 3); bb <= bNow; bb++) {
       var dt = t - B(bb); if (dt < 0) continue;
-      var amp = bb >= 48 && bb < 60 ? 0.03 : bb >= 4 && bb < 48 ? 0.012 : 0.009;
-      punch += amp * Math.exp(-dt / 0.12);
+      var amp = bb >= 1 && bb < 4 ? 0.05 : bb >= 44 && bb < 48 ? 0.04 : bb % 4 !== 0 ? 0 : bb < 44 ? 0.018 : 0.012;
+      punch += amp * Math.exp(-dt / 0.13);
     }
-    var pay = win(t, B(48) + 0.05, B(60), 0.35, 0.3), hook = t < B(4) ? 1 : 0, full = Math.max(pay, hook);
-    var push = 0.05 * eIO((t - B(48.2)) / B(11.6)) * (1 - eIO((t - B(60)) / 0.35)) + 0.025 * eIO((t - B(28.3)) / B(11.5)) * (1 - eIO((t - B(44)) / 0.3));
+    for (var kw = 0; kw < KW.length; kw++) punch += 0.03 * decay(t, W(0, KW[kw].rel), 0.12) * (t < KW_OUT ? 1 : 0);
+    var pay = win(t, B(44) + 0.05, B(48), 0.3, 0.3), hook = t < B(4) ? 1 : 0, full = Math.max(pay, hook);
+    var l1 = win(t, B(4), KW_OUT, 0.25, 0.3), l1p = eIO((t - B(4.2)) / (KW_OUT - B(4.2)));
+    var push = 0.04 * eIO((t - B(44.2)) / B(3.6)) * (1 - eIO((t - B(48)) / 0.3)) + 0.025 * eIO((t - B(27)) / B(13)) * (1 - eIO((t - B(40.25)) / 0.3)) + 0.05 * l1p * l1;
     var cz = cZ(t) * (1 + punch) * (1 + push);
+    var cdx = 0, cdy = 0, crz = (-2.2 + 4 * l1p) * l1 + 1.2 * Math.sin(6.2832 * t / 3.06) * hook;
+    for (var ck = 0; ck < CAMK.length; ck++) { var ci0 = impulse(t - CAMK[ck][0], 10.5, 0.62); cdx += CAMK[ck][1] * ci0; cdy += CAMK[ck][2] * ci0; crz += CAMK[ck][3] * ci0; }
+    var th = W(0, 1.48), sh = decay(t, th, 0.1) * (t < KW_OUT ? 1 : 0);   // HAND? lands: a short shake
+    cdx += 16 * Math.sin((t - th) * 90) * sh; cdy += 10 * Math.cos((t - th) * 77) * sh;
     var cry = cRY(t) + 1.0 * Math.sin(6.2832 * t / 11) * (1 - full), crx = cRX(t) + 0.6 * Math.sin(6.2832 * t / 13 + 1) * (1 - full);
-    $.world.style.transform = "translate3d(540px,960px,0) scale(" + cz.toFixed(4) + ") rotateX(" + crx.toFixed(3) + "deg) rotateY(" + cry.toFixed(3) + "deg) translate3d(-540px,-960px,0)";
+    $.world.style.transform = "translate3d(" + px(540 + cdx) + "," + px(960 + cdy) + ",0) scale(" + cz.toFixed(4) + ") rotateZ(" + crz.toFixed(3) + "deg) rotateX(" + crx.toFixed(3) + "deg) rotateY(" + cry.toFixed(3) + "deg) translate3d(-540px,-960px,0)";
     drawSnow(t, cry, full);
 
     // ----------------------------------------------------------- the shape
-    var W = sW(t), H = sH(t), R = Math.max(0, sR(t)), X = sX(t), Y = sY(t), Z = sZ(t);
-    var RX = 0, RY = sSpin(t);
+    var W_ = sW(t), H = sH(t), R = Math.max(0, sR(t)), X = sX(t), Y = sY(t), Z = sZ(t);
+    var RX = -5 * (1 - spr(t, 10, 0.6)), RY = sSpin(t) + 10 * (1 - spr(t, 10, 0.6));   // the snippet slams in, tilted
     for (var kq = 0; kq < KICKS.length; kq++) { var ik = impulse(t - KICKS[kq][0], 10.5, 0.62); RX += KICKS[kq][1] * ik; RY += KICKS[kq][2] * ik; }
-    var fl8 = sat((t - B(69.5)) / 1.2);   // the icon floats once it has landed
-    RY += 4 * Math.sin(6.2832 * (t - B(69.5)) / 5.5) * fl8; RX += 2 * Math.sin(6.2832 * (t - B(69.5)) / 6.5 + 1) * fl8;
-    var sc = 1 + 0.035 * eIO(t / B(4)) * (1 - eIO((t - B(4)) / 0.3));   // slow push on the snippet
+    var fl8 = sat((t - B(57.5)) / 1.2);   // the icon floats once it has landed
+    RY += 4 * Math.sin(6.2832 * (t - B(57.5)) / 5.5) * fl8; RX += 2 * Math.sin(6.2832 * (t - B(57.5)) / 6.5 + 1) * fl8;
+    var sc = 1 + 0.28 * (1 - spr(t, 13, 0.55));
     for (var p = 0; p < PRESS.length; p++) sc -= PRESS[p][1] * bump((t - PRESS[p][0]) / 0.24);
-    sc -= 0.05 * bump((t - B(47.5)) / (B(48) - B(47.5)) * 0.5);
-    $.shape.style.width = px(W); $.shape.style.height = px(H);
-    $.shape.style.transform = "translate3d(" + px(X - W / 2) + "," + px(Y - H / 2) + "," + px(Z) + ") rotateX(" + RX.toFixed(3) + "deg) rotateY(" + RY.toFixed(3) + "deg) scale(" + sc.toFixed(4) + ")";
+    sc -= 0.05 * bump((t - B(43.5)) / (B(44) - B(43.5)) * 0.5);
+    $.shape.style.width = px(W_); $.shape.style.height = px(H);
+    $.shape.style.transform = "translate3d(" + px(X - W_ / 2) + "," + px(Y - H / 2) + "," + px(Z) + ") rotateX(" + RX.toFixed(3) + "deg) rotateY(" + RY.toFixed(3) + "deg) scale(" + sc.toFixed(4) + ")";
     var rr = px(R);
     $.face.style.borderRadius = rr; $.face.style.background = sFace(t);
-    $.face.style.borderWidth = t > B(68) + 0.12 ? "0px" : "6px";
+    $.face.style.borderWidth = t > B(56.25) + 0.12 ? "0px" : "6px";
     for (var li = 0; li < $.layers.length; li++) $.layers[li].style.borderRadius = rr;
-    // light: the face darkens as it turns from the light (upper left), a shine band sweeps it while it tilts
     var aRX = RX * Math.PI / 180, aRY = RY * Math.PI / 180;
     var nX = Math.sin(aRY) * Math.cos(aRX), nY = -Math.sin(aRX), nZ = Math.cos(aRY) * Math.cos(aRX);
     var nl = -0.42 * nX - 0.42 * nY + 0.8 * nZ;
@@ -342,57 +380,70 @@
     $.sheen.style.opacity = (tilt * 0.6 * (1 - full)).toFixed(3);
     $.sheen.style.backgroundPosition = (50 - ryw * 3.2 - RX * 1.6).toFixed(1) + "% 0";
     $.rim.style.opacity = (1 - full).toFixed(3);
-    // floor shadow
     var shO = (1 - full) * (1 - win(t, B(19.9), B(24), 0.3, 0.3) * 0.6);
-    $.fshadow.style.width = px(W * 0.92); $.fshadow.style.height = px(Math.max(60, H * 0.08));
-    $.fshadow.style.transform = "translate3d(" + px(X - W * 0.46) + "," + px(Y + H / 2 + 30) + "," + px(Z - 40) + ")";
+    $.fshadow.style.width = px(W_ * 0.92); $.fshadow.style.height = px(Math.max(60, H * 0.08));
+    $.fshadow.style.transform = "translate3d(" + px(X - W_ * 0.46) + "," + px(Y + H / 2 + 30) + "," + px(Z - 40) + ")";
     $.fshadow.style.opacity = shO.toFixed(3);
-    // icicles under the buttons, fringe on the cards
-    var gB = Math.max(win(t, B(12) + 0.35, B(16) - 0.05, 0.5, 0.1), win(t, B(44) + 0.3, B(47.5), 0.5, 0.1), win(t, B(60) + 0.35, B(64.6), 0.5, 0.1));
-    $.icb.setAttribute("width", W.toFixed(0)); $.icb.setAttribute("height", "100");
+    var gB = Math.max(win(t, B(11.25) + 0.35, B(17) - 0.05, 0.5, 0.1), win(t, B(40.25) + 0.3, B(43.5), 0.5, 0.1), win(t, B(48) + 0.35, B(52.6), 0.5, 0.1));
+    $.icb.setAttribute("width", W_.toFixed(0)); $.icb.setAttribute("height", "100");
     $.icb.style.transform = "translate3d(0," + px(H - 5) + ",0.5px)";
-    $.icb.innerHTML = gB > 0.01 ? '<g transform="translate(' + (W / 2).toFixed(1) + ',0)"><path d="' + iciclesPath(W, R, eOut(gB), 0) + '" fill="#d6ecff" stroke="#0a0d14" stroke-width="4" stroke-linejoin="round"/></g>' : "";
-    var gF = Math.max(win(t, B(16) + 0.28, B(20) - 0.02, 0.45, 0.1), win(t, B(24.25) + 0.3, B(28) - 0.02, 0.45, 0.1), win(t, B(28) + 0.3, B(44) - 0.02, 0.45, 0.1));
-    $.fringe.setAttribute("width", (W - 12).toFixed(0)); $.fringe.setAttribute("height", "70");
-    $.fringe.innerHTML = gF > 0.01 ? '<g transform="translate(' + ((W - 12) / 2).toFixed(1) + ',-2)"><path d="' + fringePath(W - 12, R, eOut(gF)) + '" fill="#ffffff" stroke="#0a0d14" stroke-width="4" stroke-linejoin="round"/></g>' : "";
+    $.icb.innerHTML = gB > 0.01 ? '<g transform="translate(' + (W_ / 2).toFixed(1) + ',0)"><path d="' + iciclesPath(W_, R, eOut(gB), 0) + '" fill="#d6ecff" stroke="#0a0d14" stroke-width="4" stroke-linejoin="round"/></g>' : "";
+    var gF = Math.max(win(t, B(17) + 0.28, B(20) - 0.02, 0.45, 0.1), win(t, B(24.25) + 0.3, B(26.75) - 0.02, 0.45, 0.1), win(t, B(26.75) + 0.3, B(40.25) - 0.02, 0.45, 0.1));
+    $.fringe.setAttribute("width", (W_ - 12).toFixed(0)); $.fringe.setAttribute("height", "70");
+    $.fringe.innerHTML = gF > 0.01 ? '<g transform="translate(' + ((W_ - 12) / 2).toFixed(1) + ',-2)"><path d="' + fringePath(W_ - 12, R, eOut(gF)) + '" fill="#ffffff" stroke="#0a0d14" stroke-width="4" stroke-linejoin="round"/></g>' : "";
 
-    // ----------------------------------------------------------- m0 the snippet, then the frame he scrubs by hand
-    show($["c-hook"], t < B(8) + 0.06 ? 1 : 1 - eIn((t - B(8) - 0.06) / 0.14), 12);
-    var sp = scrub(t), fi = Math.round(sp * 23);
+    // ----------------------------------------------------------- m0 the snippet, then frozen, its frames scrubbed back and forth
+    show($["c-hook"], t < B(9.75) + 0.06 ? 1 : 1 - eIn((t - B(9.75) - 0.06) / 0.14), 12);
+    var fi = Math.round(sat(scrubK(t)) * 23);
     $["h-sprite"].style.left = (-(fi % 6) * 100) + "%"; $["h-sprite"].style.top = (-Math.floor(fi / 6) * 100) + "%";
-    show($["h-cap"], win(t, T.hookCap[0], B(3.95), 0.1, 0.08), 6);
     show($["h-wm"], t < B(4.05) ? 1 : 0, 0);
-    show($["h-strip"], win(t, B(4.25), B(8) + 0.02, 0.2, 0.14), 8, "translateY(" + px(30 * (1 - spr(t - B(4.25), 12, 0.7))) + ")");
-    $["h-ph"].style.left = px(sp * 476 - 3); $["h-knob"].style.left = px(sp * 476 - 15);
+    // ----------------------------------------------------------- L1: STILL / EDITING / SNIPPETS / BY / HAND?
+    var kOut = eIn((t - KW_OUT) / 0.2), kwOk = fitKW();
+    for (var wi2 = 0; kwOk && wi2 < $.kw.length; wi2++) {
+      var o = $.kw[wi2], q = t - o.t;
+      if (q < 0 || kOut >= 1) { o.el.style.visibility = "hidden"; continue; }
+      o.el.style.visibility = "visible";
+      var ks = spr(q, 15, 0.58), ox = 0, oy = 0, scl = 1, rot = o.rot;
+      if (o.d.kind === "top") oy = -420 * (1 - ks) - 520 * kOut;
+      else if (o.d.kind === "bottom") { ox = -760 * (1 - ks); oy = 520 * kOut; }
+      else if (o.d.kind === "left") { oy = 560 * (1 - ks); ox = -600 * kOut; }
+      else if (o.d.kind === "right") { ox = 480 * (1 - ks) + 600 * kOut; }
+      else { var kh = spr(q, 14, 0.5); scl = 1 + 1.6 * (1 - kh) + 0.7 * kOut; rot = o.rot - 15 * (1 - kh); }
+      o.el.style.opacity = (sat(q / 0.05) * (1 - kOut)).toFixed(3);
+      var bl = (1 - eOut(q / 0.16)) * 12 + kOut * 10;
+      o.el.style.filter = bl > 0.05 ? "blur(" + bl.toFixed(1) + "px)" : "none";
+      o.el.style.transform = "translate3d(" + px(o.cx - o.w / 2 + ox) + "," + px(o.cy - o.h / 2 + oy) + ",4px) rotate(" + rot.toFixed(2) + "deg) scale(" + scl.toFixed(4) + ")";
+      if (o.spans) for (var si = 0; si < o.spans.length; si++) {
+        var qs = q - 0.022 * si, kl = spr(qs, 16, 0.55);
+        o.spans[si].style.opacity = sat(qs / 0.04).toFixed(3);
+        o.spans[si].style.transform = o.d.kind === "top" ? "translateY(" + px(-140 * (1 - kl)) + ")" : "translateX(" + px(-90 * (1 - kl)) + ")";
+      }
+    }
     // ----------------------------------------------------------- m1 the zone
-    show($["c-zone"], win(t, B(8) + 0.2, B(10.4) + 0.02, 0.18, 0.1), 10, "translate(-50%,-50%)");
-    $["z-hover"].style.opacity = (win(t, B(9.6), B(10.4), 0.12, 0.1) * 0.9).toFixed(3);
-    if (t > B(8) && t < B(10.6)) $.zflakes.style.backgroundPosition = "0 " + px((t * 46) % 120) + ", 30px " + px((t * 28) % 90);
-    // ----------------------------------------------------------- m2 analyzing
-    show($["c-load"], win(t, B(10.4) + 0.12, B(12) + 0.02, 0.14, 0.1), 8, "translate(-50%,-50%)");
-    $["l-spin"].style.opacity = (1 - sat((t - B(11.3)) / 0.1)).toFixed(3);
-    $["l-spin"].style.transform = "rotate(" + ((t - B(10.4)) * 450).toFixed(1) + "deg)";
-    $["l-ck"].setAttribute("stroke-dashoffset", (1.1 - 1.1 * eOut((t - B(11.35)) / 0.22)).toFixed(3));
-    show($.st1, win(t, B(10.5), B(12.05), 0.14, 0.12), 8, "translateX(-50%) scale(" + (0.85 + 0.15 * spr(t - B(10.5), 14, 0.65)).toFixed(4) + ")");
+    show($["c-zone"], win(t, B(9.75) + 0.2, B(10.75) + 0.02, 0.16, 0.1), 10, "translate(-50%,-50%)");
+    $["z-hover"].style.opacity = (win(t, B(10.35), B(10.75), 0.1, 0.1) * 0.9).toFixed(3);
+    if (t > B(9.75) && t < B(11)) $.zflakes.style.backgroundPosition = "0 " + px((t * 46) % 120) + ", 30px " + px((t * 28) % 90);
+    // ----------------------------------------------------------- m2 it takes the file
+    show($["c-load"], win(t, B(10.75) + 0.1, B(11.25) + 0.02, 0.1, 0.08), 8, "translate(-50%,-50%)");
+    $["l-spin"].style.transform = "rotate(" + ((t - B(10.75)) * 620).toFixed(1) + "deg)";
     // ----------------------------------------------------------- m3 the song: its tempo found, its beats counted
-    show($["c-song"], win(t, B(12) + 0.16, B(16) + 0.02, 0.16, 0.1), 10, "translate(-50%,-50%)");
-    if (t > B(11.8) && t < B(16.4)) {
-      var bu = eOut((t - B(12.2)) / (B(13) - B(12.2)));
+    show($["c-song"], win(t, B(11.25) + 0.16, B(17) + 0.02, 0.16, 0.1), 10, "translate(-50%,-50%)");
+    if (t > B(11) && t < B(17.4)) {
+      var bu = eOut((t - B(11.5)) / (B(14.5) - B(11.5)));
       $["s-bpm"].textContent = (157 * bu).toFixed(1) + " BPM";
-      $["s-bpm"].style.transform = "scale(" + (1 + 0.1 * bump((t - B(13)) / 0.3)).toFixed(4) + ")";
+      $["s-bpm"].style.transform = "scale(" + (1 + 0.1 * bump((t - B(14.5)) / 0.3)).toFixed(4) + ")";
       for (var di = 0; di < 4; di++) {
-        var on = sat((t - B(12 + di)) / 0.05), fla = decay(t, B(12 + di), 0.22), dd = $.dots[di];
+        var on = sat((t - B(13 + di)) / 0.05), fla = decay(t, B(13 + di), 0.22), dd = $.dots[di];
         dd.style.background = "rgba(255," + Math.round(mix(255, 111, fla)) + "," + Math.round(mix(255, 174, fla)) + "," + on.toFixed(3) + ")";
         dd.style.borderColor = on > 0 ? "#ffffff" : "rgba(255,255,255,0.35)";
         dd.style.transform = "scale(" + (1 + 0.45 * fla).toFixed(3) + ")";
       }
     }
-    show($.st2, win(t, B(12.9), B(15.9), 0.16, 0.12), 8, "translateX(-50%) scale(" + (0.85 + 0.15 * spr(t - B(12.9), 14, 0.65)).toFixed(4) + ")");
     // ----------------------------------------------------------- m4 the takes (the card grows with each one)
-    show($["c-takes"], win(t, B(16) + 0.18, B(20) + 0.04, 0.16, 0.12), 10, "translateX(-50%)");
-    $["t-imp"].style.transform = "scale(" + (1 - 0.04 * bump((t - B(17.75)) / 0.22)).toFixed(4) + ")";
+    show($["c-takes"], win(t, B(17) + 0.18, B(20) + 0.04, 0.16, 0.12), 10, "translateX(-50%)");
+    $["t-imp"].style.transform = "scale(" + (1 - 0.04 * bump((t - B(18)) / 0.22)).toFixed(4) + ")";
     for (var ri = 0; ri < 3; ri++) {
-      var row = $.rows[ri], ta = B(18.25) + B(0.5) * ri, re = spr(t - ta, 13, 0.72);
+      var row = $.rows[ri], ta = B(18.5) + B(0.375) * ri, re = spr(t - ta, 14, 0.72);
       row.style.opacity = sat((t - ta) / 0.1).toFixed(3);
       row.style.transform = "translateX(" + px(80 * (1 - re)) + ") scale(" + (1.04 - 0.04 * re).toFixed(4) + ")";
       row.sp.style.transform = "rotate(" + (Math.max(0, t - ta) * 520).toFixed(1) + "deg)";
@@ -412,128 +463,128 @@
       tile.style.transform = "translate3d(" + px(x - 120) + "," + px(y - 213) + "," + px(z) + ") rotateY(" + ry2.toFixed(2) + "deg) scale(" + s2.toFixed(4) + ")";
       var okv = sat((t - B(22) - 0.05 * k) / 0.12);
       tile.ok.style.opacity = okv.toFixed(3); tile.ok.style.transform = "scale(" + (0.6 + 0.4 * spr(t - B(22) - 0.05 * k, 16, 0.6)).toFixed(3) + ")";
-      // its sound: the same waveform as the others, offset until the snap
       var off = T.OFFS[k] * (1 - spr(t - B(22), 13, 0.75)), tt = t + T.prevOff + off;
       for (var bi = 0; bi < 40; bi++) { var hh = 4 + 46 * envAt(tt + (bi - 20) * 0.06), bar = tile.bars[bi]; bar.style.height = px(hh); bar.style.top = px(29 - hh / 2); }
     }
     // ----------------------------------------------------------- m6 lyrics, pasted in one hit
-    show($["c-lyr"], win(t, B(24.25) + 0.2, B(28) + 0.02, 0.16, 0.1), 10, "translate(-50%,-50%)");
-    $["l-s1"].style.transform = "scale(" + (1 - 0.06 * bump((t - B(25.25)) / 0.2)).toFixed(4) + ")";
-    $["l-hint"].style.opacity = (1 - sat((t - B(25.5)) / 0.08)).toFixed(3);
+    show($["c-lyr"], win(t, B(24.25) + 0.2, B(26.75) + 0.02, 0.16, 0.1), 10, "translate(-50%,-50%)");
+    $["l-s1"].style.transform = "scale(" + (1 - 0.06 * bump((t - B(25)) / 0.2)).toFixed(4) + ")";
+    $["l-hint"].style.opacity = (1 - sat((t - B(25.25)) / 0.08)).toFixed(3);
     for (var lk = 0; lk < 2; lk++) {
-      var la = B(25.5) + 0.07 * lk, le = spr(t - la, 15, 0.7), lel = $["l-" + (lk + 1)];
+      var la = B(25.25) + 0.07 * lk, le = spr(t - la, 15, 0.7), lel = $["l-" + (lk + 1)];
       lel.style.opacity = sat((t - la) / 0.06).toFixed(3);
       lel.style.transform = "translateY(" + px(22 * (1 - le)) + ")";
     }
-    $["l-sel"].style.opacity = (sat((t - B(25.5)) / 0.05) * (1 - eIO((t - B(25.5) - 0.15) / 0.5))).toFixed(3);
+    $["l-sel"].style.opacity = (sat((t - B(25.25)) / 0.05) * (1 - eIO((t - B(25.25) - 0.12) / 0.4))).toFixed(3);
     // ----------------------------------------------------------- m7-m10 the edit, then its look, in the same preview
-    show($["c-edit"], win(t, B(28) + 0.2, B(44) + 0.02, 0.16, 0.1), 10, "translate(-50%,-50%)");
-    if (t > B(27.8) && t < B(44.3)) {
-      var eLow = 1 - eIO((t - B(40)) / 0.16);
+    show($["c-edit"], win(t, B(26.75) + 0.2, B(40.25) + 0.02, 0.16, 0.1), 10, "translate(-50%,-50%)");
+    if (t > B(26.5) && t < B(40.6)) {
+      var eLow = 1 - eIO((t - B(37.75)) / 0.14);
       $["e-low"].style.opacity = eLow.toFixed(3); $["e-low"].style.visibility = eLow < 0.002 ? "hidden" : "visible";
       $["e-low"].style.transform = "translateY(" + px(40 * (1 - eLow)) + ")";
-      var fLo = sat((t - B(40) - 0.12) / 0.14), fK = spr(t - B(40) - 0.12, 12, 0.75);
+      var fLo = sat((t - B(37.75) - 0.1) / 0.12), fK = spr(t - B(37.75) - 0.1, 14, 0.75);
       $["f-low"].style.opacity = fLo.toFixed(3); $["f-low"].style.visibility = fLo < 0.002 ? "hidden" : "visible";
       $["f-low"].style.transform = "translateY(" + px(50 * (1 - fK)) + ")";
       if (eLow > 0.002) {
         for (var ki = 0; ki < 21; ki++) {   // each shot lands on a sixteenth, then the shuffle makes them hop and change take
-          var bk = $.blocks[ki], tl = B(28.5) + B(0.25) * ki, e2 = spr(t - tl, 16, 0.62);
-          var ts = B(36.6) + 0.02 * ki, hp = bump((t - ts) / 0.36), tk = t > ts + 0.18 ? T.NEW[ki] : T.TAKES[ki];
-          bk.style.background = TCOL[tk];
-          bk.lab.textContent = (+bk.dataset.w > 18) ? String(tk) : ""; bk.style.color = tk === 3 ? INK : "#fff";
+          var bk = $.blocks[ki], tl = B(27.25) + B(0.25) * ki, e2 = spr(t - tl, 16, 0.62);
+          var ts = B(35.1) + 0.02 * ki, hp = bump((t - ts) / 0.36), tk = t > ts + 0.18 ? T.NEW[ki] : T.TAKES[ki];
+          bk.style.background = TCOL[tk]; bk.style.color = tk === 3 ? INK : "#fff";
+          bk.lab.textContent = (+bk.dataset.w > 18) ? String(tk) : "";
           bk.style.opacity = sat((t - tl) / 0.05).toFixed(3);
           bk.style.transform = "translateY(" + px(-46 * (1 - e2) - 64 * hp) + ") scale(" + (1.2 - 0.2 * e2).toFixed(4) + ")";
           bk.fl.style.opacity = Math.max(decay(t, tl, 0.12), decay(t, ts + 0.36, 0.12)).toFixed(3);
         }
-        var phx = 52 + 4 + (t + T.prevOff) / T.CUTS[21] * 788;
+        var phx = 52 + 4 + Math.max(0, t + T.prevOff) / T.CUTS[21] * 788;
         $["e-ph"].style.left = px(phx - 3); $["e-knob"].style.left = px(phx - 15);
-        var v2 = eOut((t - B(38)) / 0.22);
+        var v2 = eOut((t - B(36.25)) / 0.22);
         $["e-ver1"].style.transform = "translateY(" + px(-50 * v2) + ")"; $["e-ver2"].style.transform = "translateY(" + px(-50 * v2) + ")";
-        var shP = 1 - 0.07 * bump((t - B(36.5)) / 0.22);
+        var shP = 1 - 0.07 * bump((t - B(35)) / 0.22);
         $["e-shuf"].style.transform = "scale(" + shP.toFixed(4) + ")";
-        $["e-shufice"].style.transform = "scaleY(" + (eOut((t - B(28) - 0.35) / 0.45) * shP).toFixed(3) + ")";
+        $["e-shufice"].style.transform = "scaleY(" + (eOut((t - B(26.75) - 0.35) / 0.45) * shP).toFixed(3) + ")";
         $["e-shufice"].style.transformOrigin = "50% 0";
       }
       var rl = ringL(t), rR = ringR(t);
       $["f-ring"].style.left = px(rl); $["f-ring"].style.width = px(Math.max(40, rR - rl));
-      var wp = eIO((t - B(41.35)) / 0.45);   // Frost wipes across the preview
+      var wp = eIO((t - B(38.85)) / 0.42);   // Frost wipes across the preview
       $["f-frost"].style.clipPath = "inset(0 " + ((1 - wp) * 100).toFixed(2) + "% 0 0)";
       $["f-edge"].style.left = px(wp * 360); $["f-edge"].style.opacity = (wp > 0.001 && wp < 0.999 ? 1 : 0).toString();
     }
     // ----------------------------------------------------------- m11 export
-    show($["c-exp"], win(t, B(44) + 0.16, B(48) + 0.06, 0.14, 0.08), 10, "translate(-50%,-50%)");
-    var fw = 600 * eIO((t - B(45.1)) / (B(47.85) - B(45.1)));
+    show($["c-exp"], win(t, B(40.25) + 0.16, B(44) + 0.06, 0.14, 0.08), 10, "translate(-50%,-50%)");
+    var fw = 600 * eIO((t - B(41.5)) / (B(43.85) - B(41.5)));
     $["x-fill"].style.width = px(fw); $["x-lab2"].style.clipPath = "inset(0 " + px(600 - fw) + " 0 0)";
-    // ----------------------------------------------------------- m12-m14 the payoff (the video stays while it folds)
-    show($["c-pay"], win(t, B(48) + 0.01, B(60) + 0.12, 0.08, 0.12), 14, "translate(-50%,-50%)");
-    show($["p-cap"], win(t, T.payCap[0], T.payCap[1], 0.1, 0.12), 6);
-    // ----------------------------------------------------------- m15-m16 the time
-    show($["c-claim"], win(t, B(60) + 0.22, B(68) + 0.08, 0.16, 0.04), 10, "translate(-50%,-50%)");
-    if (t > B(59.9) && t < B(68.3)) {
-      var c0 = B(64.75) - 0.1, cnt = sat((t - c0) / 0.42), seq = [40, 37, 33, 28, 22, 16, 11, 7, 4, 3];
-      var up = eOut((t - B(60.4)) / (B(61.2) - B(60.4)));
+    // ----------------------------------------------------------- m12 the payoff (one bar; the video stays while it folds)
+    show($["c-pay"], win(t, B(44) + 0.01, B(48) + 0.12, 0.08, 0.12), 14, "translate(-50%,-50%)");
+    var pq = t - T.payCap[0];
+    show($["p-cap"], win(t, T.payCap[0], T.payCap[1], 0.06, 0.1), 6, "scale(" + (0.6 + 0.4 * spr(pq, 16, 0.55)).toFixed(4) + ")");
+    // ----------------------------------------------------------- m13-m14 the time
+    show($["c-claim"], win(t, B(48) + 0.22, B(56.25) + 0.08, 0.16, 0.04), 10, "translate(-50%,-50%)");
+    if (t > B(47.9) && t < B(56.6)) {
+      var c0 = B(52.75) - 0.1, cnt = sat((t - c0) / 0.42), seq = [40, 37, 33, 28, 22, 16, 11, 7, 4, 3];
+      var up = eOut((t - B(48.3)) / (B(49) - B(48.3)));
       var n = cnt <= 0 ? Math.max(1, Math.round(40 * up)) : seq[Math.min(seq.length - 1, Math.floor(cnt * (seq.length - 1) + 0.0001))];
       $["k-num"].textContent = n + " min";
-      $["k-num"].style.color = t >= B(64.75) ? "#1f6fd6" : "#ffffff";
+      $["k-num"].style.color = t >= B(52.75) ? "#1f6fd6" : "#ffffff";
       $["k-num"].style.filter = cnt > 0 && cnt < 1 ? "blur(2px)" : "none";
-      $["k-num"].style.transform = "scale(" + (1 + 0.08 * bump((t - B(61.2)) / 0.3) + 0.08 * bump((t - B(64.75)) / 0.3)).toFixed(4) + ")";
-      show($["k-sub1"], 1 - sat((t - B(64.75) + 0.05) / 0.12), 8);
-      show($["k-sub2"], sat((t - B(64.75) - 0.06) / 0.16), 8);
+      $["k-num"].style.transform = "scale(" + (1 + 0.08 * bump((t - B(49)) / 0.3) + 0.08 * bump((t - B(52.75)) / 0.3)).toFixed(4) + ")";
+      show($["k-sub1"], 1 - sat((t - B(52.75) + 0.05) / 0.12), 8);
+      show($["k-sub2"], sat((t - B(52.75) - 0.06) / 0.16), 8);
     }
-    // ----------------------------------------------------------- m17 the icon, the wordmark, the offer, the address
-    show($["c-icon"], t > B(68) + 0.1 ? 1 : 0, 0);
-    if (t >= B(68.6)) {
-      var lq = t - B(68.6), wr = eOut(lq / 0.32), ls = 1 + 0.16 * (1 - spr(lq, 9, 0.6)), lrx = 26 * (1 - spr(lq, 7.5, 0.72));
-      var dr = sat((t - B(70)) / 1.2), lry = 3.5 * Math.sin(6.2832 * (t - B(70)) / 6) * dr;
-      lrx += 1.6 * Math.sin(6.2832 * (t - B(70)) / 7 + 1) * dr;
+    // ----------------------------------------------------------- m15 the icon, the wordmark, the offer, the address
+    show($["c-icon"], t > B(56.25) + 0.1 ? 1 : 0, 0);
+    if (t >= B(57)) {
+      var lq = t - B(57), wr = eOut(lq / 0.32), ls = 1 + 0.16 * (1 - spr(lq, 9, 0.6)), lrx = 26 * (1 - spr(lq, 7.5, 0.72));
+      var dr = sat((t - B(58.5)) / 1.2), lry = 3.5 * Math.sin(6.2832 * (t - B(58.5)) / 6) * dr;
+      lrx += 1.6 * Math.sin(6.2832 * (t - B(58.5)) / 7 + 1) * dr;
       $.logo.style.visibility = "visible";
       $.logo.style.transform = "rotateX(" + lrx.toFixed(3) + "deg) rotateY(" + lry.toFixed(3) + "deg) scale(" + ls.toFixed(4) + ")";
       var cp = wr < 0.999 ? "inset(0 " + ((1 - wr) * 100).toFixed(2) + "% 0 0)" : "none";
       for (var gi = 0; gi < $.logoL.length; gi++) $.logoL[gi].style.clipPath = cp;
     } else $.logo.style.visibility = "hidden";
     for (var wi = 0; wi < $.tag1w.length; wi++) {
-      var kw = sat((t - TAGT[wi]) / 0.16), ke = spr(t - TAGT[wi], 14, 0.7), sw2 = $.tag1w[wi];
-      sw2.style.opacity = kw.toFixed(3); sw2.style.filter = kw > 0 && kw < 1 ? "blur(" + ((1 - kw) * 8).toFixed(1) + "px)" : "none";
+      var kw2 = sat((t - $.tagT[wi]) / 0.14), ke = spr(t - $.tagT[wi], 15, 0.65), sw2 = $.tag1w[wi];
+      sw2.style.opacity = kw2.toFixed(3); sw2.style.filter = kw2 > 0 && kw2 < 1 ? "blur(" + ((1 - kw2) * 8).toFixed(1) + "px)" : "none";
       sw2.style.transform = "translateY(" + px(18 * (1 - ke)) + ")";
     }
-    $.tag1.style.visibility = t > B(68.7) ? "visible" : "hidden";
-    var url = "stalak.app", nt = Math.floor(sat((t - B(71.75)) / 0.28) * url.length + 0.0001);
+    $.tag1.style.visibility = t > W(12, 0) - 0.05 ? "visible" : "hidden";
+    var url = "stalak.app", nt = Math.floor(sat((t - B(59.75)) / 0.28) * url.length + 0.0001);
     $.tag2.textContent = url.slice(0, nt);
-    $.tag2.style.transform = "scale(" + (1 + 0.07 * bump((t - B(72.5)) / 0.32)).toFixed(4) + ")";
-    // ----------------------------------------------------------- titles (screen space, never move once landed)
-    for (var ti = 0; ti < $.titles.length; ti++) {
-      var TI = $.titles[ti];
-      if (t < TI.a - 0.01 || t > TI.b + 0.16) { TI.el.style.visibility = "hidden"; continue; }
-      TI.el.style.visibility = "visible";
-      var out = eIn((t - TI.b) / 0.14);
-      TI.el.style.opacity = (1 - out).toFixed(3);
-      TI.el.style.filter = out > 0 ? "blur(" + (out * 9).toFixed(1) + "px)" : "none";
-      for (var si = 0; si < TI.spans.length; si++) {
-        var q = t - TI.st[si], spn = TI.spans[si];
-        if (q < 0) { spn.style.opacity = "0"; continue; }
-        if (TI.mode === "up") {
-          var ku = spr(q, 15, 0.66);
-          spn.style.opacity = sat(q / 0.06).toFixed(3); spn.style.filter = "none";
-          spn.style.transform = "translateY(" + px(56 * (1 - ku)) + ") rotate(" + (8 * (1 - ku)).toFixed(2) + "deg)";
-        } else {
-          var kp = eOut5(q / 0.22);
-          spn.style.opacity = sat(q / 0.1).toFixed(3);
-          spn.style.filter = kp < 1 ? "blur(" + ((1 - kp) * 8).toFixed(1) + "px)" : "none";
-          spn.style.transform = TI.mode === "drop" ? "translateY(" + px(-34 * (1 - kp)) + ")" : "scale(" + (1.28 - 0.28 * kp).toFixed(4) + ")";
-        }
+    $.tag2.style.transform = "scale(" + (1 + 0.07 * bump((t - W(13, 0)) / 0.32)).toFixed(4) + ")";
+    // ----------------------------------------------------------- the voice, word by word (screen space)
+    for (var cI = 0; cI < $.caps.length; cI++) {
+      var C = $.caps[cI];
+      if (t < C.a - 0.01 || t > C.b + 0.1) { C.el.style.visibility = "hidden"; continue; }
+      C.el.style.visibility = "visible";
+      var cout = eIn((t - C.b) / 0.09);
+      C.el.style.opacity = (1 - cout).toFixed(3);
+      C.el.style.filter = cout > 0 ? "blur(" + (cout * 8).toFixed(1) + "px)" : "none";
+      C.el.style.transform = "scale(" + (1 - 0.12 * cout).toFixed(4) + ")";
+      for (var sj = 0; sj < C.spans.length; sj++) {
+        var qw = t - C.ts[sj], sp2 = C.spans[sj];
+        if (qw < 0) { sp2.style.opacity = "0"; continue; }
+        var kc = spr(qw, 18, 0.55);
+        sp2.style.opacity = sat(qw / 0.05).toFixed(3);
+        sp2.style.transform = "translateY(" + px(36 * (1 - kc)) + ") scale(" + (0.35 + 0.65 * kc).toFixed(4) + ")" + (sp2.className.indexOf("pk") >= 0 ? " rotate(" + (-8 * (1 - kc)).toFixed(2) + "deg)" : "");
       }
     }
+    // "Stalak": the logo slams in on the word
+    var cl = $.caps[1], lgq = t - cl.logo;
+    if (lgq >= 0 && t <= cl.b + 0.1) {
+      var lk1 = spr(lgq, 13, 0.55), lk2 = spr(lgq, 10, 0.7), lout = eIn((t - cl.b) / 0.09);
+      $.caplogo.style.visibility = "visible"; $.caplogo.style.opacity = (sat(lgq / 0.05) * (1 - lout)).toFixed(3);
+      $.caplogo.style.transform = "rotateX(" + (55 * (1 - lk2)).toFixed(2) + "deg) scale(" + ((1 + 1.1 * (1 - lk1)) * (1 - 0.12 * lout)).toFixed(4) + ")";
+    } else $.caplogo.style.visibility = "hidden";
     // ----------------------------------------------------------- the cursor, and the file it carries
     var cu = cursorAt(t), cx = cu[0], cy = cu[1];
     var press = 0;
-    for (var ci = 0; ci < CLICKS.length; ci++) press = Math.max(press, bump((t - CLICKS[ci] + 0.06) / 0.2));
-    if (t > B(4.6) && t < B(7.75)) press = Math.max(press, sat((t - B(4.6)) / 0.06) * (1 - sat((t - B(7.7)) / 0.05)));
-    $.cursor.style.visibility = t > B(2.3) && t < B(46.6) ? "visible" : "hidden";
+    for (var cj = 0; cj < CLICKS.length; cj++) press = Math.max(press, bump((t - CLICKS[cj] + 0.06) / 0.2));
+    $.cursor.style.visibility = t > B(2.6) && t < B(42.6) ? "visible" : "hidden";
     var cq = unproj(cx, cy, 60);
     $.cursor.style.transform = "translate3d(" + px(cq[0] - 6) + "," + px(cq[1] - 4) + ",60px) scale(" + (1 - 0.16 * press).toFixed(4) + ")";
-    var chipV = win(t, B(8.3), B(10.4), 0.01, 0.16);
+    var chipV = win(t, B(9.75), B(10.75), 0.01, 0.16);
     if (chipV > 0) {
-      var cd = sat((t - B(10.4)) / 0.16), chs = 1 - 0.7 * eIn(cd), sw3 = Math.sin(6.2832 * (t - B(8.3)) / 1.9) * (1 - cd);
+      var cd = sat((t - B(10.75)) / 0.16), chs = 1 - 0.7 * eIn(cd), sw3 = Math.sin(6.2832 * (t - B(9.75)) / 1.9) * (1 - cd);
       var chq = unproj(mix(cx - 300, 540 - 150, eIn(cd)), mix(cy - 54, 1040 - 42, eIn(cd)), 30);
       $.chip.style.visibility = "visible"; $.chip.style.opacity = chipV.toFixed(3);
       $.chip.style.transform = "translate3d(" + px(chq[0]) + "," + px(chq[1]) + ",30px) scale(" + chs.toFixed(3) + ") rotate(" + (-5 * (1 - cd) + 3 * sw3).toFixed(2) + "deg)";
