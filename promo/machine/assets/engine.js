@@ -236,7 +236,7 @@
   var HS = 8, XG = -3.0;                     // half the island, the gantry's x
   var xD = function (i) { return -0.9 + 0.75 * i; }, ZD = -5.8, XB = 6.2, TT = [6.2, -5.8];
   var ZS = [-2.4, 0.2, 2.7, 4.6, 5.9];       // where the stack stops: after the blade, sync, stamp, cannon, dock
-  var Z_BLADE = -3.6, Z_ARCH = 0.2, Z_STAMP = 2.7, Z_CAN = 4.6, X_CAN = 4.75, PH = [4.85, 6.95], WT = [3.05, 6.45], BEND = 6.4;
+  var Z_BLADE = -3.6, Z_ARCH = 0.2, Z_STAMP = 2.7, Z_CAN = 4.6, X_CAN = 4.75, PH = [4.85, 6.95], WT = [7.35, 4.95], BEND = 6.4;
   var CDIR = [Math.cos(-25 * D2R), Math.sin(-25 * D2R)], CBASE = [X_CAN + 0.2, 3.05];   // the snow cannon, on its mast, aims down at the stack
   var BZ0 = TT[1] + 1.15, BLEN = BEND - (TT[1] + 1.15), SLEN = Z_BLADE - (TT[1] + 1.15), RX = (xD(0) + xD(7)) / 2;
   var CUT = []; for (var kc = 0; kc < 21; kc++) CUT.push(B(T.DROP + 0.5 * kc));
@@ -427,27 +427,24 @@
     var br = cylF(0.22, 1.0, 24, M.ICE, { top: [hx("#ffffff"), hx("#b9d9f6")] });
     key(br, "top").dec = function (wd, ht) { ctx.fillStyle = INK; ctx.beginPath(); ctx.arc(wd / 2, ht / 2, wd * 0.3, 0, 6.2832); ctx.fill(); };
     add("barrel", br, { pos: [CBASE[0], CBASE[1], Z_CAN], rz: -115 * D2R, sink: 65.2, hull: true });
-    // the stopwatch
-    add("wpost", boxF(0.18, 1.2, 0.18, M.ICE), { pos: [WT[0], 0, WT[1]], sink: 65.4 });
-    var wd_ = boxF(1.5, 0.82, 0.34, M.BLUE, { mats: { top: M.SNOW } });
-    key(wd_, "front").dec = function (wd, ht, t) {
-      lcd(wd, ht, function (x, y, w, h) {
-        var q = sat((t - B(46)) / (B(48) - B(46))), sec = Math.floor(180 * eIO(q)), mm = Math.floor(sec / 60), ss = sec % 60;
-        var stop = t >= B(48), blink = stop && Math.floor((t - B(48)) / 0.13) % 2 === 0 && t < B(49);
-        var col = stop ? (blink ? "#ffffff" : "#5ee6a0") : "#7fe4ff";
-        txt("0" + mm + ":" + (ss < 10 ? "0" : "") + ss, x + w * 0.5, y + h * 0.56, h * 0.82, col);
-      });
-    };
-    capOn(wd_, "right", 0.13, 61, true, 1.5);
-    add("watch", wd_, { pos: [WT[0], 1.2, WT[1]], sink: 65.4 });
     // the phone on its dock
     var dk = boxF(1.8, 0.42, 0.6, M.BLUE, { mats: { top: M.SNOW } });
     key(dk, "top").dec = function (wd, ht) { ctx.fillStyle = INK; rr2(wd * 0.12, ht * 0.1, wd * 0.76, ht * 0.25, 10); ctx.fill(); };
     add("dock", dk, { pos: [PH[0], 0, PH[1]], ry: Math.PI / 4, sink: 65.6 });
-    var ph = polyZ(rrect(1.62, 2.9, 0.26, 5, 0), 0.2, M.INK, { smooth: true, plane: [[-0.81, 2.9, 0.1], [1, 0, 0], [0, -1, 0]], W: 1.62, H: 2.9 });
+    var ph = polyZ(rrect(1.62, 2.9, 0.26, 5, 0), 0.2, [hx("#46536c"), hx("#141b29")], { smooth: true, plane: [[-0.81, 2.9, 0.1], [1, 0, 0], [0, -1, 0]], W: 1.62, H: 2.9 });
     key(ph, "front").dec = function (wd, ht, t) {
       var on = sat((t - B(49)) / 0.12);
-      ctx.fillStyle = rgb(mixc([14, 22, 38], [31, 111, 214], on)); rr2(wd * 0.0556, ht * 0.0586, wd * 0.8889, ht * 0.8828, 12); ctx.fill();
+      var gr = ctx.createLinearGradient(0, 0, wd, ht); gr.addColorStop(0, rgb(mixc([30, 46, 80], [64, 146, 240], on))); gr.addColorStop(1, rgb(mixc([12, 18, 34], [31, 111, 214], on)));
+      ctx.fillStyle = gr; rr2(wd * 0.0556, ht * 0.0586, wd * 0.8889, ht * 0.8828, 12); ctx.fill();
+      ctx.fillStyle = "rgba(255,255,255,0.10)"; ctx.beginPath(); ctx.moveTo(wd * 0.06, ht * 0.06); ctx.lineTo(wd * 0.62, ht * 0.06); ctx.lineTo(wd * 0.06, ht * 0.5); ctx.closePath(); ctx.fill();
+      if (on <= 0) {   // the lock screen is the machine's stopwatch: it counts to 03:00
+        var q = sat((t - B(46)) / (B(48) - B(46))), sec = Math.floor(180 * eIO(q)), mm = Math.floor(sec / 60), ss = sec % 60;
+        var stop = t >= B(48), blink = stop && Math.floor((t - B(48)) / 0.12) % 2 === 0, fl = decay(t, B(48), 0.2);
+        var col = stop ? (blink ? "#ffffff" : "#5ee6a0") : (t >= B(46) ? "#7fe4ff" : "rgba(127,228,255,0.45)");
+        txt("0" + mm + ":" + (ss < 10 ? "0" : "") + ss, wd * 0.5, ht * 0.4, ht * (0.125 + 0.015 * fl), col, { stroke: 9 });
+        txt(stop ? "DONE" : "EDITING", wd * 0.5, ht * 0.54, ht * 0.045, "rgba(255,255,255,0.7)", { w: "700", font: '"Rubik"' });
+        ctx.globalAlpha = 0.35; if ($.iconImg.complete && $.iconImg.naturalWidth) ctx.drawImage($.iconImg, wd * 0.4, ht * 0.75, wd * 0.2, wd * 0.2); ctx.globalAlpha = 1;
+      }
       ctx.fillStyle = INK; rr2(wd * 0.38, ht * 0.018, wd * 0.24, ht * 0.022, 6); ctx.fill();
       if (on > 0 && $.iconImg.complete && $.iconImg.naturalWidth) { ctx.globalAlpha = on; ctx.drawImage($.iconImg, wd * 0.3, ht * 0.4, wd * 0.4, wd * 0.4); ctx.globalAlpha = 1; }
     };
@@ -465,8 +462,8 @@
       [23.4, XB, 1.05, Z_BLADE + 0.2, 192, 45, ISO, 1090], [24, XB, 1.0, Z_BLADE + 0.45, 216, 45, ISO, 1080], [34, XB, 1.1, Z_BLADE + 0.7, 222, 45, ISO, 1080],
       [35.5, XB, 1.45, Z_ARCH, 210, 45, ISO, 1090], [38, XB, 1.45, Z_ARCH + 0.05, 214, 45, ISO, 1090],
       [38.8, XB, 1.65, Z_STAMP, 204, 45, ISO, 1100], [42, XB, 1.65, Z_STAMP + 0.05, 208, 45, ISO, 1100],
-      [42.8, XB - 0.45, 1.75, Z_CAN, 196, 45, ISO, 1100], [46, XB - 0.45, 1.75, Z_CAN + 0.1, 200, 45, ISO, 1100],
-      [46.8, PH[0] + 0.35, 1.55, PH[1] - 0.75, 168, 45, ISO, 1100], [50, PH[0] + 0.2, 1.65, PH[1] - 0.45, 176, 45, ISO, 1090],
+      [42.8, XB - 0.1, 1.75, Z_CAN - 0.2, 196, 45, ISO, 1100], [46, XB - 0.1, 1.75, Z_CAN - 0.1, 200, 45, ISO, 1100],
+      [46.8, 5.8, 1.55, 5.65, 164, 45, ISO, 1100], [50, 5.65, 1.65, 5.75, 170, 45, ISO, 1090],
       [52, c[0], c[1], c[2], 750, 45, 0, 960], [60, c[0], c[1], c[2], 750, 45, 0, 960],
       [63.6, 0, -HS, 0, 30, 45, ISO, 1010], [65.6, 0, -HS, 0.2, 31, 45, ISO, 1000],
       [67.4, 0, -HS, HS, 460 / 16, 0, 0, 560], [68, 0, -HS, HS, 460 / 16, 0, 0, 560]
@@ -681,9 +678,9 @@
   function domLayers(t) {
     // titles: each word slams in, the line flies off at its end
     $.tts.forEach(function (T_) {
-      if (t < T_.t0 - 0.02 || t > T_.t1 + 0.16) { vis(T_.el, false); return; }
+      if (t < T_.t0 - 0.02 || t > T_.t1 + 0.11) { vis(T_.el, false); return; }
       vis(T_.el, true);
-      var e = eIn((t - T_.t1) / 0.15);
+      var e = eIn((t - T_.t1) / 0.1);
       T_.el.style.opacity = (1 - e).toFixed(3); T_.el.style.transform = "translate3d(0," + px(-60 * e) + ",0) scale(" + (1 - 0.08 * e).toFixed(4) + ")";
       T_.el.style.filter = e > 0.02 ? "blur(" + (8 * e).toFixed(2) + "px)" : "none";
       T_.ws.forEach(function (w) {

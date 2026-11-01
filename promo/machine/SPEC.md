@@ -29,7 +29,8 @@ SCENES:  (en temps du beat)
          34-38   la pile avance sous l'arche : la forme d'onde de la chanson et celle de la prise se calent (37).
          38-42   le tampon frappe 3 fois sur la pile (39, 40, 41) : « I », « GOTTA », « BOUNCE » s'impriment dessus.
          42-46   le canon à neige, sur son mât, givre la pile (43) ; des stalactites poussent.
-         46-50   le chrono compte jusqu'à 03:00 (48) ; la pile vole dans l'écran du téléphone (48-49), qui s'allume.
+         46-50   l'écran verrouillé du téléphone est le chrono : 00:00 -> 03:00 (48, « DONE ») ; la pile vole dans
+                 l'écran (48-49), qui s'allume.
          50-52   la caméra plonge dans l'écran (elle se redresse face à lui).
          52-60   son vrai snippet en plein écran, sa chanson (mesures 6-7, « I gotta bounce »), filtre Frost, le
                  petit logo du filigrane comme dans la version gratuite.
