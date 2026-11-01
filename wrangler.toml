@@ -32,7 +32,7 @@ EMAIL_DAILY_MAX = "1000"
 # TURNSTILE_SECRET in the dashboard (BACKEND.md, step 3). Empty = off.
 TURNSTILE_SITE_KEY = "0x4AAAAAAFvuPkTiHqZ1Ti1b"
 # Alerts to the owner (server errors, code e-mails stopped, Resend failing…): this address (SUPPORT_EMAIL if empty).
-ALERT_EMAIL = ""
+ALERT_EMAIL = "stalak.alaska@gmail.com"
 ADMIN_HOST = "admin.stalak.app"   # the owner's dashboard (BACKEND.md, step 13); off until the secrets ACCESS_AUD and ADMIN_EMAILS are set
 ACCESS_TEAM_DOMAIN = "https://small-band-a6ef.cloudflareaccess.com"   # Cloudflare Zero Trust team (public); its keys sign the Access tokens
 GOOGLE_CLIENT_ID = "912353079416-aq4ljmd2n7ijcfl92025egde3r5nhnc9.apps.googleusercontent.com"   # public; the secret GOOGLE_CLIENT_SECRET is set in Cloudflare       # TikTok / Instagram posting: not implemented, keep "0"
