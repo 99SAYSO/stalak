@@ -1,4 +1,4 @@
-Statut : PRÊT (le film est fini et envoyé au propriétaire ; dans le dépôt, seulement les sources et les notes : rien à intégrer dans l'app ni le site)
+Statut : EN COURS (le film est en train d'être rendu et vérifié)
 Branche : marketing/promo-machine (partie de `marketing/promo-lesson`, qu'elle contient, elle-même partie de `marketing/promo-wyr` et `marketing/promo-one-shape` : l'intégrer après elles, ou à leur place)
 
 Résumé : promo v8 « The Snippet Machine », demandée par le propriétaire le 1/11 : une vidéo en motion design, en 3D isométrique, « pour montrer tes capacités », faite uniquement avec HyperFrames, sur un script original. Trois idées proposées, il a choisi la première (« 1 »).
