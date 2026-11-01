@@ -30,9 +30,21 @@ L'idée A choisie par le propriétaire le 1/11 : une seule forme 3D qui ne coupe
 ## Contrôles
 - `lint` : 0 erreur, 0 avertissement. `check` : réussi. Restent des avertissements de lecture sur des textes d'interface secondaires (voir plus bas).
 - Rendu final : voir la section « Rendu final ».
+- Test court avant le rendu : le balayage Frost dans l'aperçu rend correctement (l'outil d'aperçu rapide montrait un décalage qui n'existe pas dans le vrai rendu).
 
 ## Choix créatifs assumés
 - Le snippet du début garde le vrai montage de Stalak. Sa main passe devant son visage pendant une partie : c'est sa chorégraphie. La première image montre son visage.
 - Les sous-titres d'interface (« MP3, WAV, M4A… », « Film several lip-syncs… ») restent moins de 2 s : c'est la voix qui porte le message, ces textes sont là pour montrer la vraie app.
 - Les 3 prises côte à côte à la synchro sont le sujet (pas une rangée de cartes « avantages »).
 - Pas fait : la traînée derrière les prises qui volent (remarque mineure).
+
+## Rendu final (1/11)
+- Fichier : 1080 × 1920, 30 i/s, 895 images, 29,83 s, H.264 + AAC, 41,9 Mo, qualité « delivery » (25 min de rendu). Envoyé au propriétaire, pas dans le dépôt.
+- **Regardé** : une image par temps (78), une bande de 12 images autour de chacun des 17 changements d'état, la planche à la largeur d'un téléphone (360 px). Aucune image noire, aucun titre qui en chevauche un autre, l'interface est droite quand on la lit.
+- **Mesuré, pas écouté** (je ne peux pas entendre le son) : −14,4 LUFS au total, crête −1,3 dB. Passages avec la voix −16,0 LUFS, snippets (début et drop) −11,5 et −11,7 LUFS : le drop est 4,5 LU plus fort que les passages parlés, c'est voulu. Fin −15,5 LUFS. Aux 3 raccords de musique, aucun trou dans le volume mesuré par tranches de 10 ms.
+- Le flou de mouvement d'HyperFrames n'est pas utilisé : le rendu en parallèle le coupe, et sur un seul processus il aurait demandé plusieurs heures sur cette machine. Le flou pendant chaque transformation est fait par le moteur.
+
+## Les points les plus faibles
+- Au clic (1,55 s), l'image figée montre sa main devant son visage ; son visage revient dès que la tête de lecture recule (0,4 s plus tard).
+- La phase « pas encore synchro » des 3 prises est courte (0,6 s) : on voit le décalage des ondes, moins celui des gestes.
+- Au repli après le drop (23,1 s), la pilule reste vide une fraction de seconde avant « 40 min ».
