@@ -1,6 +1,6 @@
 # Compte rendu — branche `marketing/en-racine` (Marketing & croissance, 01/11/2026)
 
-Statut : PRÊT
+Statut : EN COURS (relecture indépendante en cours : ne pas intégrer encore)
 
 Branche partie de `main` (f87bdac). À mettre en ligne **en une fois avec les liens d'e-mails de Comptes** (point 5). Aucune migration SQL.
 
@@ -46,7 +46,8 @@ Aussi : plan du site à 16 adresses, **sans** les pages « noindex » (confident
 - `node tests/backend/run.mjs` : **78/78**.
 - Vérification du site construit (script Marketing) : 20 pages, 351 liens internes, **aucun lien cassé ni vers une adresse redirigée**, JSON-LD valides, canonical et `hreflang` cohérents, aucun concurrent cité hors des 2 pages Triller, aucune page ne lie la page Triller.
 - Playwright, **390 px et 1280 px, FR et EN, 20 pages** : bonne langue, pas de défilement horizontal, un seul titre H1, aucune erreur ; bandeau (affiché pour un téléphone français, × le ferme pour de bon, le lien ouvre `/fr/` et retient le français, rien pour en-US / de-DE ni sur `/fr/`, caché après le bouton FR) ; app installée (fr-FR → français, en-US → anglais, choix anglais gardé) ; liens Tarifs / Conditions de l'app dans la bonne langue : **54/54**.
-- `tests/ui/help_ui.py` : **42/42** (FR et EN, et la version claude.ai).
+- `tests/ui/help_ui.py` : **42/42** (FR et EN, et la version claude.ai) ; `tests/ui/plans_ui.py` : **35/35** ; `tests/ui/gallery_ui.py` : **49/49** ; `tests/ui/support_ui.py` : **39/39** sur un serveur de test neuf (ces quatre tests utilisent les nouveaux chemins `/` et `/fr/`).
+- `tests/ui/lyrics_ui.py` : FR 390 px entier et EN 1280 px jusqu'à « vocals of the same length » (51 réussis), puis arrêt sur le message « fichier de voix illisible » en anglais. **Exactement le même arrêt sur `main`** (51 réussis, même ligne 192) : préexistant, sans lien avec la bascule ; à regarder par App (la clé `lyr.vox.bad` n'a pas de version anglaise dans `I18N_EN`).
 - `tests/ui/animations_ui.py` : 42 à 43/44 selon les passages. Les échecs sont la mesure de fluidité « processeur 4 fois plus lent » (images de plus de 20 ms), qui varie d'un passage à l'autre sur cette machine : **le même test sur `main` donne aussi 43/44, avec le même échec** (« iPhone fr : fluide… »). Rien à voir avec ce changement ; toutes les autres règles d'animation passent, pages `/fr/…` et anglaises comprises.
 
 ## Pour la mise en ligne (Chef de projet)
@@ -59,7 +60,8 @@ Aussi : plan du site à 16 adresses, **sans** les pages « noindex » (confident
    - `functions/_lib/cloud.js` l. 433 : `https://stalak.app/#compte` → `https://stalak.app/fr/#compte` ; l. 439 : `https://stalak.app/en/#compte` → `https://stalak.app/#compte` ;
    - `functions/_lib/reminders.js` l. 19 : `${site}/#compte` → `${site}/fr/#compte` (fr), `${site}/en/#account` → `${site}/#account` (en) ;
    - `functions/_lib/oauth.js` l. 175 : langue par défaut `ret.startsWith('/en') ? 'en' : 'fr'` → `ret.startsWith('/fr') ? 'fr' : 'en'` (l'app envoie déjà `lang`, c'est un filet) ;
-   - commentaires `/en/` de `oauth.js` (l. 2, 133), `social.js` (l. 5, 239) et `reminders.js` l. 1 (`site_src/en/terms.html` → `site_src/terms.html`).
+   - commentaires `/en/` de `oauth.js` (l. 2, 133), `social.js` (l. 5, 239) et `reminders.js` l. 1 (`site_src/en/terms.html` → `site_src/terms.html`) ;
+   - facultatif : le lien « stalak.app » en bas des e-mails **français** (`email.js` l. 50, `cloud.js` l. 451, `support.js` l. 77, `reminders.js` l. 36) pourrait mener à `https://stalak.app/fr/` ; aujourd'hui il mène à l'accueil, qui devient anglais (avec le bandeau « Version française → » pour un téléphone en français).
 6. **App** : relire les liens des fichiers partagés (ci-dessus). Rien d'autre.
 7. **Juridique** : vérifier les adresses des pages légales citées dans les conditions et dans les e-mails Paddle.
 8. `STALAK_CONTEXTE.md` (connaissances du projet) dit encore pour le build « FR sur `/`, EN sur `/en/` » : à corriger.
