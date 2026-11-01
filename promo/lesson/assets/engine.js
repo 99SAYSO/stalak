@@ -65,7 +65,7 @@
   function card(el, tin, tout, t, o) {
     o = o || {};
     var q = t - tin;
-    if (q < -0.001 || t > tout + 0.24) { vis(el, false); return; }
+    if (q < -0.001 || t > tout + 0.24) { vis(el, false); el.style.opacity = "0"; return; }
     var k = spr(q, o.w || 10.5, 0.8), e = eIn((t - tout) / 0.22);
     var rx = (o.rx === undefined ? 30 : o.rx) * (1 - k) + 1.4 * Math.sin(6.2832 * t / 5.3), ry = (o.ry === undefined ? -26 : o.ry) * (1 - k) + 2.6 * Math.sin(6.2832 * t / 6.7 + 1);
     var tz = 340 * (1 - k), ty = 80 * (1 - k) - 70 * e;
@@ -291,7 +291,7 @@
         bk.fl.style.opacity = decay(t, tl, 0.1).toFixed(3);
       }
       $["e-ph"].style.left = px(46 + 4 + Math.max(0, t + T.tk0) / T.CUTS[21] * 788 - 3);
-    } else vis($["c-edit"], false);
+    } else { vis($["c-edit"], false); $["c-edit"].style.opacity = "0"; }   // opacity too: its video clips are visible on their own
     // ----------------------------------------------------------- s8 his snippet, out of the preview, full of life (his song)
     var pq = t - S.pay, pe = eIn((t - S.payEnd) / 0.22);
     if (pq >= 0 && pe < 1) {
@@ -302,7 +302,7 @@
       var cq = t - T.payCap;
       vis($["p-cap"], cq > 0 && pe < 0.5); $["p-cap"].style.opacity = sat(cq / 0.06).toFixed(3);
       $["p-cap"].style.transform = "scale(" + (0.6 + 0.4 * spr(cq, 16, 0.55)).toFixed(4) + ")";
-    } else { vis($["c-pay"], false); vis($["p-cap"], false); }
+    } else { vis($["c-pay"], false); $["c-pay"].style.opacity = "0"; vis($["p-cap"], false); }
     // ----------------------------------------------------------- s10 the logo and the address
     var lq = t - S.s10;
     if (lq > 0) {

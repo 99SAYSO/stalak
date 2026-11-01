@@ -93,7 +93,7 @@ for mid, fn, a, b, ms in MUS:
     elif mid == "m-end":
         pts = [p for p in duck(a, b, 0.5, 0.2) if p[0] < b - a - 1.2]
         pts += [(b - a - 1.2, pts[-1][1]), (b - a, 0.0)]
-    else: pts = [(0, 0.5), (b - a, 0.5)]
+    else: pts = [(0, 0.68), (b - a, 0.68)]          # his song: measured on the stereo render, it must stand above the voice
     xa = 0.012 if a > 0 else 0.0
     dur = (b - a) + xa + (0.012 if b < TOTAL else 0)
     pts = [(x + xa, v * MASTER) for x, v in pts]          # in the clip's own time
