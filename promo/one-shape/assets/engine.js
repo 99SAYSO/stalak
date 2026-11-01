@@ -84,18 +84,21 @@
   function col(i) { return S.map(function (s) { return [s[0], s[i], s[8] || 13, 0.8]; }); }
   var sW = K(col(1)), sH = K(col(2)), sR = K(col(3)), sX = K(col(4)), sY = K(col(5)), sRX = K(col(6)), sRY = K(col(7));
   var sZ = K([[0, 0], [B(19.9), -170, 7, 0.9], [B(24.05), 0, 9, 0.9], [B(47.55), -34, 18, 0.9], [B(48), 40, 10, 0.85], [B(60), 0, 10, 0.9], [B(68), -60, 12, 0.9]]);
-  var sFace = CE([[0, INK], [B(4) + 0.22, "#eef7ff"], [B(10.4) + 0.05, INK], [B(16) + 0.02, "#ffffff"], [B(44), INK], [B(64.75) + 0.04, "#ffffff"]], 0.2);
-  var sLight = E([[0, 0], [B(4) + 0.22, 1], [B(10.4) + 0.05, 0], [B(16) + 0.02, 1], [B(44), 0], [B(64.75) + 0.04, 1]], 0.2);
+  var sFace = CE([[0, INK], [B(4) + 0.08, "#eef7ff"], [B(10.4) + 0.05, INK], [B(16) + 0.02, "#ffffff"], [B(44), INK], [B(64.75) + 0.04, "#ffffff"]], 0.13);
+  var sLight = E([[0, 0], [B(4) + 0.08, 1], [B(10.4) + 0.05, 0], [B(16) + 0.02, 1], [B(44), 0], [B(64.75) + 0.04, 1]], 0.2);
   var sDim = E([[0, 0], [B(19.9), 0.62, 0.3], [B(24.05), 0, 0.25]], 0.3);
   var sOpa = E([[0, 1], [B(68) + 0.05, 0, 0.2]], 0.2);
   var PRESS = [[B(4), 0.035], [B(45), 0.05]];
+  // a 3D kick at each morph, while the content is blurred: [t, rotateX deg, rotateY deg]
+  var KICKS = [[B(10.4) + 0.04, 0, 0], [B(12), 0, -15], [B(16), 17, 0], [B(24.05), 0, 13], [B(28), -12, 0], [B(40), 0, -11], [B(44), 15, 0], [B(60), 0, 19]];
+  function impulse(t, w, z) { if (t <= 0) return 0; var wd = w * Math.sqrt(1 - z * z); return Math.exp(-z * w * t) * Math.sin(wd * t) / 0.384; }
   // camera
   var cZ = K([[0, 1], [B(19.8), 0.92, 5, 0.9], [B(22.6), 0.97, 5, 0.9], [B(24.1), 1.0, 6, 0.9]]);
   var cRY = K([[0, 0], [B(20), -17, 4.5, 0.85], [B(22.5), 8, 4, 0.85], [B(23.6), 0, 6, 0.9]]);
   var cRX = K([[0, 0], [B(20), 5, 5, 0.9], [B(23.6), 0, 6, 0.9]]);
   // cursor (world coordinates of its tip)
-  var CUR = [[0, 1170, 1560], [B(2.9), 690, 1050], [B(4.55), 1190, 1420], [B(7.3), 1270, 1180], [B(8.1), 860, 1010], [B(9.3), 600, 905],
-             [B(10.85), 1220, 1160], [B(16.9), 600, 760], [B(18.4), 1230, 1120], [B(35.5), 600, 1262], [B(37.4), 1230, 1300],
+  var CUR = [[0, 1170, 1560], [B(2.9), 690, 1050], [B(4.55), 1190, 1420], [B(5.6), 1270, 1300], [B(6.4), 900, 1180], [B(8.0), 700, 1010], [B(9.3), 600, 905],
+             [B(10.85), 1220, 1160], [B(16.9), 600, 760], [B(18.4), 1230, 1120], [B(35.5), 700, 1262], [B(37.4), 1230, 1300],
              [B(40.1), 478, 1162], [B(41.75), 1230, 1250], [B(44.1), 620, 925], [B(45.9), 1240, 1250]];
   var cuX = K(CUR.map(function (k) { return [k[0], k[1], 9.5, 0.93]; })), cuY = K(CUR.map(function (k) { return [k[0], k[2], 9.5, 0.93]; }));
   var CLICKS = [B(4), B(10.4), B(17.75), B(36.5), B(41), B(45)];
@@ -177,7 +180,7 @@
     R0 = root;
     ["snow", "world", "fshadow", "shape", "face", "sheen", "rim", "icb", "fringe", "c-hook", "c-zone", "c-load", "c-song", "c-takes", "c-lyr", "c-edit", "c-filt", "c-exp", "c-pay", "c-claim",
      "h-freeze", "h-cap", "h-wm", "z-hover", "z-dash", "l-spin", "l-check", "l-ck", "s-bars", "t-imp", "t-r1", "t-r2", "t-r3", "l-hint", "l-1", "l-2", "l-caret",
-     "e-pv", "e-ver1", "e-ver2", "e-ruler", "e-bar", "e-ph", "e-knob", "e-shuf", "e-shufice", "f-ring", "f-pv", "x-fill", "p-cap", "p-wm", "k-num", "k-sub1", "k-sub2",
+     "e-pv", "e-ver1", "e-ver2", "e-ruler", "e-bar", "e-ph", "e-knob", "e-play", "e-shuf", "e-shufice", "f-ring", "f-pv", "x-fill", "p-cap", "p-wm", "k-num", "k-sub1", "k-sub2",
      "tile1", "tile2", "tile3", "st1", "st2", "st3", "chip", "logo", "tag1", "tag2", "cursor"].forEach(function (id) { $[id] = root.querySelector("#" + id); });
     ctx = $.snow.getContext("2d"); initSnow();
     $.fvids = root.querySelectorAll("#f-pv video");
@@ -189,6 +192,9 @@
       L.style.background = cc; L.dataset.z = String(-k * 1.65);
       $.shape.insertBefore(L, $.shape.firstChild); $.layers.push(L);
     }
+    $.zflakes = document.createElement("div"); $.zflakes.className = "abs";
+    $.zflakes.style.cssText = "inset:24px;border-radius:30px;opacity:0.9;background-image:radial-gradient(circle at 20px 20px, #a9d3ff 3.2px, transparent 4px),radial-gradient(circle at 15px 15px, #d6ecff 2.4px, transparent 3px);background-size:120px 120px, 90px 90px;";
+    $["c-zone"].insertBefore($.zflakes, $["c-zone"].firstChild);
     $.dim = document.createElement("div"); $.dim.className = "abs"; $.dim.style.cssText = "inset:0;background:#1f6fd6;opacity:0;z-index:28;pointer-events:none"; $.face.appendChild($.dim);
     // tiles: thickness
     [$.tile1, $.tile2, $.tile3].forEach(function (tile) {
@@ -215,7 +221,7 @@
       tk.style.cssText = "position:absolute;bottom:0;border-radius:2px;background:#0a0d14;left:" + px(4 + tx / TOTE * IW) + ";width:" + (down ? 3 : 2) + "px;height:" + (down ? 22 : 11) + "px;opacity:" + (down ? 0.85 : 0.45);
       ruler.appendChild(tk);
     }
-    $["e-shufice"].innerHTML = '<g transform="translate(165,0)"><path d="' + iciclesPath(330, 48, 1, 3, 30) + '" fill="#d6ecff" stroke="#0a0d14" stroke-width="4" stroke-linejoin="round"/></g>';
+    $["e-shufice"].innerHTML = '<g transform="translate(155,0)"><path d="' + iciclesPath(310, 48, 1, 3, 30) + '" fill="#d6ecff" stroke="#0a0d14" stroke-width="4" stroke-linejoin="round"/></g>';
     // the logo: the official wordmark, extruded in ink
     for (k = 22; k >= 0; k--) {
       var im = document.createElement("img"); im.src = "assets/brand/wordmark.svg"; im.alt = "";
@@ -254,6 +260,7 @@
     // ----------------------------------------------------------- the shape
     var W = sW(t), H = sH(t), R = Math.max(0, sR(t)), X = sX(t), Y = sY(t);
     var RX = sRX(t), RY = sRY(t) + 5 * eIO(t / B(4)), Z = sZ(t);
+    for (var kq = 0; kq < KICKS.length; kq++) { var im = impulse(t - KICKS[kq][0], 10.5, 0.62); RX += KICKS[kq][1] * im; RY += KICKS[kq][2] * im; }
     var sc = 1;
     for (var p = 0; p < PRESS.length; p++) sc -= PRESS[p][1] * bump((t - PRESS[p][0]) / 0.24);
     sc -= 0.05 * bump((t - B(47.5)) / (B(48) - B(47.5)) * 0.5);
@@ -296,6 +303,9 @@
     show($["c-zone"], win(t, B(4) + 0.24, B(10.4) + 0.02, 0.18, 0.1), 10, "translate(-50%,-50%)");
     var hov = win(t, B(9.55), B(10.4), 0.12, 0.1);
     $["z-hover"].style.opacity = (hov * 0.9).toFixed(3);
+    if (t > B(4) && t < B(10.6)) {
+      $.zflakes.style.backgroundPosition = "0 " + px((t * 46) % 120) + ", 30px " + px((t * 28) % 90);
+    }
     // m2 loader
     show($["c-load"], win(t, B(10.4) + 0.12, B(12) + 0.02, 0.14, 0.1), 8, "translate(-50%,-50%)");
     $["l-spin"].style.opacity = (1 - sat((t - B(11.3)) / 0.1)).toFixed(3);
@@ -339,11 +349,12 @@
     show($.st3, win(t, B(23.5) + 0.04, B(24.4), 0.14, 0.14), 8, "translateY(" + px(1172) + ")");
     // the file, carried by the cursor, dropped into the zone
     var cx = cuX(t), cy = cuY(t);
-    var chipV = win(t, B(7.3), B(10.4), 0.01, 0.16);
+    var chipV = win(t, B(5.6), B(10.4), 0.01, 0.16);
     if (chipV > 0) {
       var cd = sat((t - B(10.4)) / 0.16), chs = 1 - 0.7 * eIn(cd);
       $.chip.style.visibility = "visible"; $.chip.style.opacity = chipV.toFixed(3);
-      $.chip.style.transform = "translate3d(" + px(mix(cx - 300, 540 - 150, eIn(cd))) + "," + px(mix(cy - 54, 880 - 42, eIn(cd))) + ",30px) scale(" + chs.toFixed(3) + ") rotate(" + (-4 * (1 - cd)).toFixed(2) + "deg)";
+      var sway = Math.sin(6.2832 * (t - B(5.6)) / 1.9) * (1 - cd);
+      $.chip.style.transform = "translate3d(" + px(mix(cx - 300, 540 - 150, eIn(cd))) + "," + px(mix(cy - 54, 880 - 42, eIn(cd))) + ",30px) scale(" + chs.toFixed(3) + ") rotate(" + (-5 * (1 - cd) + 3 * sway).toFixed(2) + "deg)";
     } else { $.chip.style.visibility = "hidden"; }
     // m6 lyrics
     show($["c-lyr"], win(t, B(24.05) + 0.2, B(28) + 0.02, 0.16, 0.1), 10, "translate(-50%,-50%)");
@@ -372,10 +383,9 @@
       $["e-ph"].style.left = px(phx - 3); $["e-knob"].style.left = px(phx - 15);
       var v2 = eOut((t - B(38)) / 0.22);
       $["e-ver1"].style.transform = "translateY(" + px(-50 * v2) + ")"; $["e-ver2"].style.transform = "translateY(" + px(-50 * v2) + ")";
-      var shV = sat((t - B(35.4)) / 0.12), shS = 0.7 + 0.3 * spr(t - B(35.4), 14, 0.7);
       var shP = 1 - 0.07 * bump((t - B(36.5)) / 0.22);
-      $["e-shuf"].style.opacity = shV.toFixed(3); $["e-shuf"].style.transform = "scale(" + (shS * shP).toFixed(4) + ")";
-      $["e-shufice"].style.opacity = shV.toFixed(3); $["e-shufice"].style.transform = "scaleY(" + eOut((t - B(35.6)) / 0.4).toFixed(3) + ")";
+      $["e-shuf"].style.transform = "scale(" + shP.toFixed(4) + ")";
+      $["e-shufice"].style.transform = "scaleY(" + (eOut((t - B(28) - 0.35) / 0.45) * shP).toFixed(3) + ")";
       $["e-shufice"].style.transformOrigin = "50% 0";
     }
     // m10 filter
@@ -396,7 +406,8 @@
     show($["c-claim"], win(t, B(60) + 0.2, B(68) + 0.04, 0.16, 0.1), 10, "translate(-50%,-50%)");
     if (t > B(59.9) && t < B(68.3)) {
       var c0 = B(64.75) - 0.1, cnt = sat((t - c0) / 0.42), seq = [40, 37, 33, 28, 22, 16, 11, 7, 4, 3];
-      var n = cnt <= 0 ? 40 : seq[Math.min(seq.length - 1, Math.floor(cnt * (seq.length - 1) + 0.0001))];
+      var up = eOut((t - B(60) - 0.25) / 0.85);
+      var n = cnt <= 0 ? Math.max(1, Math.round(40 * up)) : seq[Math.min(seq.length - 1, Math.floor(cnt * (seq.length - 1) + 0.0001))];
       $["k-num"].textContent = n + " min";
       $["k-num"].style.color = t >= B(64.75) ? "#1f6fd6" : "#ffffff";
       $["k-num"].style.filter = cnt > 0 && cnt < 1 ? "blur(2px)" : "none";

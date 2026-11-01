@@ -66,7 +66,7 @@ offs = [0.42, -0.31, 0.23]
 for i, tk in enumerate([1, 2, 3]):
     V["SYNC%d" % (i + 1)] = one("vs%da" % (i + 1), tk, SY_A, SY_S, take_prev(SY_A) + offs[i]) + "\n" + one("vs%db" % (i + 1), tk, SY_S, SY_E, take_prev(SY_S))
 # the edit preview (b28 -> b40) and the filter preview (b40 -> b44, plain + Frost on top)
-V["EDIT"] = edl("ve", B(28), B(40), take_prev)
+V["EDIT"] = edl("ve", B(28), B(40.45), take_prev)
 V["FILT"] = edl("vf", B(40), B(44.3), take_prev, extra=GRADE_FROST)   # Frost faded in with --hf-color-grading-intensity
 # the payoff: his finished snippet, full screen, Frost, with his voice
 V["PAY"] = edl("vp", B(48), B(60.4), take_pay, extra=GRADE_FROST)
@@ -92,7 +92,12 @@ for a, b in zip(vo_spans, vo_spans[1:]):
 # music: ducked under the voice (lanes in clip-local seconds)
 def duck(a, b, base, low):
     """volume lane: base, ducked to low under every voice line (0.08 s attack before it, 0.2 s release after it)"""
-    wins = [(max(s0 - 0.18, a) - a, s0 - 0.1 - a, e0 + 0.18 - a, e0 + 0.38 - a) for s0, e0 in vo_spans if not (e0 < a or s0 > b)]
+    spans = []
+    for s0, e0 in vo_spans:                       # lines closer than 0.9 s stay under one duck (no pumping between them)
+        if e0 < a or s0 > b: continue
+        if spans and s0 - spans[-1][1] < 0.9: spans[-1][1] = e0
+        else: spans.append([s0, e0])
+    wins = [(max(s0 - 0.18, a) - a, s0 - 0.1 - a, e0 + 0.18 - a, e0 + 0.38 - a) for s0, e0 in spans]
     def g(x):
         v = 0.0
         for p0, p1, p2, p3 in wins:
@@ -117,8 +122,8 @@ for mid, fn, a, b, ms in MUS:
     elif mid == "m-end":
         pts = [p for p in duck(a, b, 0.6, 0.32) if p[0] < b - a - 1.0]
         pts += [(b - a - 1.0, pts[-1][1]), (b - a, 0.0)]   # fade out under the end card, after the last word
-    elif mid == "m-hook": pts = [(0, 0.95), (b - a, 0.95)]
-    else: pts = [(0, 1.0), (b - a, 1.0)]
+    elif mid == "m-hook": pts = [(0, 0.8), (b - a, 0.8)]
+    else: pts = [(0, 0.78), (b - a, 0.78)]   # the payoff: his song, a little under full so the drop is big but not a jump
     auto = json.dumps({"version": 1, "lanes": [{"target": "volume", "points": [{"t": round(t, 3), "v": v} for t, v in pts]}]}, separators=(",", ":"))
     xa = 0.012 if a > 0 else 0.0   # tiny overlap so the seams never drop out
     mus_rows.append('<audio id="%s" class="clip" src="assets/audio/%s" data-start="%.3f" data-duration="%.3f" data-media-start="%.3f" data-track-index="%d" data-timeline-role="music" data-volume="1" data-automation=\'%s\'></audio>'
