@@ -192,7 +192,8 @@
 - À décider : la publication directe est-elle réservée à Stalak Pro ou ouverte à tous ? Meta risque de demander une vérification d'entreprise (lien avec la LLC).
 
 ### Marketing & croissance
-- **Prêt (branche `marketing/en-racine`, 1/11) — décisions du 31/10, 20 h 15 (référencement)** :
+- **Prêt (branche `marketing/annuaires`, 1/11, documents seulement)** : décisions du propriétaire du 1/11 (22 h 40) appliquées au plan des annuaires (`docs/marketing/ANNUAIRES.md` et document claude.ai « Stalak — annuaires d'outils et Bing ») : Stalak présenté comme « alternative à Triller » sur AlternativeTo et SaaSHub (champ des alternatives : Triller seulement, plus une phrase neutre en fin de description) ; Twelve Tools et Fazier retirés (ils exigent un lien vers eux en bas de stalak.app) ; tableau renuméroté (16 sites) ; Bing : la bascule est en ligne, le propriétaire peut le faire maintenant ; Google noté comme fait (Search Console, 1/11). Ensuite : Marketing aide le propriétaire à remplir les annuaires un par un, à sa demande. Pour Comptes (affichage des visites par `ref`) : ajouter `seo-triller` aux valeurs prévues (bouton de la page Triller). Détail : `docs/handoff/marketing-annuaires.md`.
+- **En ligne depuis le 1/11, 22 h 30 (branche `marketing/en-racine`, fusionnée) — décisions du 31/10, 20 h 15 (référencement)** :
   - **L'anglais à l'adresse principale, le français dans `/fr/`** (plan `docs/marketing/US_FIRST.md` partie A) : accueil anglais sur `/`, français sur `/fr/` ; `/pricing`, `/terms`, `/refunds`, `/privacy`, `/legal-notice` et `/fr/tarifs`, `/fr/conditions`… ; `hreflang` (fr → `/fr/`, en et x-default → `/`) ; **redirections 301 directes** de chaque ancienne adresse (`/en/…`, `/tarifs`…, anciennes pages Triller) dans `site_src/_redirects` ; un manifest par langue (`/manifest.webmanifest` anglais, `/fr/manifest.webmanifest` français) ; bandeau « Version française → » sur l'accueil anglais pour un téléphone en français (fermable, choix retenu, sans redirection automatique, sans décalage de la page) ; les apps déjà installées gardent le français sur un téléphone en français ; liens Tarifs / Conditions / Remboursement / Confidentialité de l'app mis à jour (fichiers partagés, minimum : `src/markup.html`, `I18N_EN` de `src/app.js`) ; chemins des tests `tests/ui/` mis à jour.
   - Textes corrigés partout (accueil anglais, `llms.txt`, guides, page Triller, annuaires) : les coupes suivent la musique phrase par phrase, « On the words » coupe au début des lignes et sur les rimes, « Every bar » à chaque mesure (plus de « every beat, every word »).
   - **Les 6 guides anglais publiés** (`/lip-sync-video-editor`, `/music-video-maker-for-rappers`, `/rap-snippet-video`, `/lip-sync-videos-for-singers`, `/how-to-make-a-lip-sync-video`, `/edit-video-to-the-beat`), liés depuis le pied de page de l'accueil anglais.
@@ -238,7 +239,7 @@
     2. afficher les visites par jour et par `ref` dans le tableau de bord ;
     3. au paiement, passer `sessionStorage.getItem('stalak:ref')` dans le `customData` Paddle, puis compter les achats par `ref` ;
     4. si possible, compter aussi les exports par `ref`.
-  - Valeurs prévues : tiktok, ig, yt, x, reddit, discord, beat, seo, wm, google, bing, other.
+  - Valeurs prévues : tiktok, ig, yt, x, reddit, discord, beat, seo, seo-triller (page `/triller-alternative`, 1/11), wm, google, bing, other.
 - **Pour App** :
   - les packs passent à 2 prises : les textes `pack.need3`, `acct.why.pack` et `pl.f.packs` disent encore « 3 takes », comme le code (`readyTakes().length < 3`), à changer en même temps ;
   - vérifier la place de la phrase d'accueil (`#heroPitch`) et le bouton « Essayer avec un exemple ».

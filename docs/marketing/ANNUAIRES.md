@@ -4,9 +4,11 @@ Marketing & croissance. Décision du propriétaire du 31/10 : « Annuaires d'out
 Version à cocher pour le propriétaire (colonne Statut) : document claude.ai « Stalak — annuaires d'outils et Bing » (https://claude.ai/artifact/EbcSbWg4zfAhNLrN6XWDn9). Il remplace le tableau des annuaires du document « Stalak — passer premier sur Google ».
 
 Skills utilisés : `directory-submissions`, `copywriting`, `ai-seo`.
+
+**Décisions du propriétaire (1/11, 22 h 40)** : Stalak est présenté comme « alternative à Triller » sur AlternativeTo et SaaSHub (sur leurs sites) ; **aucun lien vers un autre site en bas de stalak.app**, donc Twelve Tools et Fazier sont sautés (leur offre gratuite l'exige).
 Logo carré et 5 vraies captures de Stalak (anglais) : `docs/marketing/annuaires/`.
 
-**Quand :** juste après la mise en ligne de la bascule « anglais à la racine » (branche `marketing/en-racine`), pas avant : les fiches doivent pointer vers les adresses définitives.
+**Quand :** maintenant. La bascule « anglais à la racine » est en ligne depuis le 1/11 au soir : les fiches pointent vers les adresses définitives.
 
 ## 1. Bing Webmaster Tools (le propriétaire, environ 10 minutes)
 
@@ -17,14 +19,14 @@ Logo carré et 5 vraies captures de Stalak (anglais) : `docs/marketing/annuaires
 5. Cloudflare → stalak.app → Caching → Configuration → **Crawler Hints** : gratuit, prévient IndexNow (Bing…) quand une page change. Fonctionnement avec Cloudflare Pages non vérifié.
 6. Si l'import échoue : « Add a site » + vérification par enregistrement DNS TXT dans Cloudflare (aucun code).
 
-Google : le Chef de projet renvoie `sitemap.xml` et `sitemap-old.xml` dans Search Console après la bascule, et demande l'indexation de `/` et `/fr/`.
+Google : fait par le Chef de projet le 1/11 (`sitemap.xml` et `sitemap-old.xml` soumis dans Search Console, indexation demandée pour `/`, `/fr/` et `/triller-alternative`). `sitemap-old.xml` est à retirer vers le 15/12, sur Google comme sur Bing.
 
 ## 2. Annuaires, dans l'ordre (vérifiés le 01/11/2026)
 
 | N° | Quand | Site (inscription) | Prix | À savoir | Texte |
 |---|---|---|---|---|---|
-| 1 | Semaine 1 | AlternativeTo (https://alternativeto.net/software/_/add/) | Gratuit | Compte ; validation en quelques jours à une semaine ; « alternative à Triller » = décision du propriétaire | B |
-| 2 | Semaine 1 | SaaSHub (https://www.saashub.com/submit-software) | Gratuit (IdeaProof, août 2026 ; site non lisible par robot) | Compte ; Video Editing | B |
+| 1 | Semaine 1 | AlternativeTo (https://alternativeto.net/software/_/add/) | Gratuit | Compte ; validation en quelques jours à une semaine ; « Alternative to » : **Triller** (décidé le 1/11) | B + phrase Triller |
+| 2 | Semaine 1 | SaaSHub (https://www.saashub.com/submit-software) | Gratuit (IdeaProof, août 2026 ; site non lisible par robot) | Compte ; Video Editing ; alternatives : **Triller** (décidé le 1/11) | B + phrase Triller |
 | 3 | Semaine 1 | Buzzsonic (https://buzzsonic.com/submit-music-industry-resource/) | Non indiqué | 500 caractères max, image 1280 × 960 ; Video & YouTube | C courte |
 | 4 | Semaine 1 | The Music Industry Toolkit (https://the-music-industry-toolkit.super.site/request-something-1) | Non indiqué | Formulaire créateurs d'outils ; Design / Content Creation | C |
 | 5 | Semaine 1 | contentcreators.com (https://contentcreators.com/submit) | Non indiqué | Video Creation & Editing ; 3 mots-clés max | C |
@@ -34,15 +36,13 @@ Google : le Chef de projet renvoie `sitemap.xml` et `sitemap-old.xml` dans Searc
 | 9 | Semaine 2 | Tinyshelf (https://www.tinyshelf.co/submit) | Non indiqué | Relu à la main ; Photo, Video & Audio ; tinyshelf.co, pas .com | A |
 | 10 | Semaine 2 | Launching Next (https://launchingnext.com) | Gratuit (IdeaProof, août 2026) | Sélection éditoriale | A |
 | 11 | Semaine 2 | Peerlist Launchpad (https://peerlist.io/launchpad) | Aucun frais indiqué | Profil vérifié, projet rempli à 100 %, lancement le lundi | A |
-| 12 | À décider | Twelve Tools (https://twelve.tools/submit) | Gratuit contre un lien vers eux sur stalak.app ; 36 $ une fois sans lien | Video Editing ou Music | A |
-| 13 | À décider | Fazier (https://fazier.com/submit) | Gratuit contre un lien vers eux sur stalak.app ; 29 $ à 139 $ | Publié sous 30 jours | A |
-| 14 | Plus tard | Product Hunt | Gratuit | Compte personnel ; un dimanche (décision A8), 3 semaines de préparation | A + premier commentaire |
-| 15 | Plus tard | Show HN (https://news.ycombinator.com/showhn.html) | Gratuit | Seulement avec un angle technique | à écrire |
-| 16 | Plus tard | Crunchbase | Gratuit | Compte vérifié (LinkedIn, Facebook ou Twitter) | B |
-| 17 | Plus tard | awesome-music-production (GitHub) | Gratuit | Section Webapps ; ajout lent | phrase B |
-| 18 | Plus tard | Creator Economy Tools | Gratuit | E-mail hello@creatoreconomytools.com | C |
+| 12 | Plus tard | Product Hunt | Gratuit | Compte personnel ; un dimanche (décision A8), 3 semaines de préparation | A + premier commentaire |
+| 13 | Plus tard | Show HN (https://news.ycombinator.com/showhn.html) | Gratuit | Seulement avec un angle technique | à écrire |
+| 14 | Plus tard | Crunchbase | Gratuit | Compte vérifié (LinkedIn, Facebook ou Twitter) | B |
+| 15 | Plus tard | awesome-music-production (GitHub) | Gratuit | Section Webapps ; ajout lent | phrase B |
+| 16 | Plus tard | Creator Economy Tools | Gratuit | E-mail hello@creatoreconomytools.com | C |
 
-Écartés : BetaList et Microlaunch (payants), OpenHunts (~60 semaines d'attente en gratuit), annuaires d'outils d'IA (Stalak n'est pas un générateur), G2 / Capterra (sans avis, inutiles), Slant (interdit d'ajouter son produit), sites qui exigent leur badge.
+Écartés : Twelve Tools et Fazier (leur offre gratuite exige un lien vers eux en bas de stalak.app : non, décision du 1/11), BetaList et Microlaunch (payants), OpenHunts (~60 semaines d'attente en gratuit), annuaires d'outils d'IA (Stalak n'est pas un générateur), G2 / Capterra (sans avis, inutiles), Slant (interdit d'ajouter son produit), sites qui exigent leur badge.
 Le type de lien (dofollow ou non) n'est connu qu'une fois la fiche en ligne : le vérifier dans le code de la page (pas seulement les en-têtes).
 
 ## 3. Textes prêts à coller (anglais)
@@ -79,6 +79,11 @@ Premier commentaire Product Hunt :
 > - Runs in the browser; editing stays on your device
 >
 > Pricing: free, with a small watermark that a ~30-second ad removes from a video. Stalak Pro $7.99/month or $49.99/year. Creator Plus $14.99/month or $99.99/year.
+
+**Phrase Triller** (seulement AlternativeTo et SaaSHub, à la fin de la description B ; décision du 1/11) :
+> Coming from Triller? Like Triller's original editor, Stalak turns several takes of your song into one video cut to the music, right in your browser.
+
+Dans le champ des alternatives, choisir **Triller** (rien d'autre : la règle « aucun autre concurrent cité » reste). Si on te demande une page de comparaison, donner https://stalak.app/triller-alternative.
 
 **C — listes pour musiciens et créateurs.** Accroche : `Built by a rapper for artists who post daily` · Texte :
 > If you release music, you need a steady stream of short videos: snippets, teasers, performance clips. Stalak turns one filming session into many posts. Film a few takes of your song on your phone, drop them in with the track, and Stalak cuts them on the beat with your lyrics on screen. With Creator Plus, one song becomes 5 to 30 differently cut videos, so you can post every day of a rollout without re-editing.
