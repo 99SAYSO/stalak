@@ -112,4 +112,5 @@
 | **3. Comptes, paiements & serveur** | Connexion, Pro, Paddle, sauvegarde en ligne, paroles auto, sécurité | `functions/`, `migrations/`, `src/account.js`, bloc compte de `app.js`, `BACKEND.md` |
 | **4. Réseaux sociaux** | Publication directe TikTok et Instagram, dossiers de validation TikTok/Meta, vidéo de démo | `functions/_lib/social.js`, nouveaux fichiers, interface « Publier » |
 | **5. Marketing & croissance** | Textes, page tarifs, SEO, réseaux de Stalak, lancement, e-mails | `site_src/`, textes, plans (peu de code) |
-| **6. Juridique & business** (optionnel) | LLC, Paddle en réel, mentions légales, conditions, conformité | `site_src/` pages légales, documents (pas un avis juridique) |
+| **6. Juridique & business** (optionnel) | Micro-entreprise, Paddle en réel, mentions légales, conditions, conformité | `site_src/` pages légales, documents (pas un avis juridique) |
+| **7. Mails** (depuis le 1/11) | Boîte stalak.alaska@gmail.com (connecteur Gmail) : tri, résumé de ce qui est important, brouillons sur demande ; n'envoie rien, ne supprime rien sans accord | aucun fichier du dépôt ; signale au propriétaire quelle conversation est concernée |
