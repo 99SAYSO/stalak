@@ -30,7 +30,7 @@ SOCIAL_CONNECT_ENABLED = "0"
 EMAIL_DAILY_MAX = "1000"
 # Cloudflare Turnstile (anti-robot) on « Créer un compte » and « Mot de passe oublié »: the public site key here, the secret
 # TURNSTILE_SECRET in the dashboard (BACKEND.md, step 3). Empty = off.
-TURNSTILE_SITE_KEY = ""
+TURNSTILE_SITE_KEY = "0x4AAAAAAFvuPkTiHqZ1Ti1b"
 # Alerts to the owner (server errors, code e-mails stopped, Resend failing…): this address (SUPPORT_EMAIL if empty).
 ALERT_EMAIL = ""
 ADMIN_HOST = "admin.stalak.app"   # the owner's dashboard (BACKEND.md, step 13); off until the secrets ACCESS_AUD and ADMIN_EMAILS are set
