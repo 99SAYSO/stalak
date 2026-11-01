@@ -11,7 +11,8 @@
 // "automatically aborted after 7 days by default" (https://developers.cloudflare.com/r2/objects/multipart-objects/).
 // The binding is env.MEDIA (wrangler.toml [[r2_buckets]]). Without it, everything here answers 503 cloud_unavailable and
 // the app hides the feature: the rest of the site keeps working.
-import { HttpError, json, readJson, isDev } from './http.js';
+import { HttpError, json, readJson, isDev, appOrigin } from './http.js';
+import { mail, homeOf } from './mail-layout.js';
 import { requirePlan, LIMITS } from './entitlements.js';
 import { limit, hit } from './ratelimit.js';
 import { sniffImage } from './profile.js';
@@ -428,31 +429,34 @@ export async function readyFiles(env, userId, projectId) {
 const WARN_TEXTS = {
   fr: {
     subject: 'Tes projets Stalak vont être supprimés',
+    title: 'Tes projets vont être supprimés',
     intro: 'Tu n’as pas ouvert ces projets sauvegardés en ligne depuis bientôt 6 mois :',
     when: (d) => `Ils seront supprimés le ${d}, avec leurs vidéos et leur son.`,
-    keep: 'Pour en garder un, ouvre-le simplement depuis Compte → Mes projets sur https://stalak.app/#compte',
+    keep: 'Pour en garder un, ouvre-le simplement dans ta Galerie (menu du compte, en haut à droite) : il reste alors 6 mois de plus.',
+    btn: 'Ouvrir ma Galerie', hash: '#galerie',
+    reason: 'Tu as des projets sauvegardés en ligne avec Stalak Creator Plus.',
   },
   en: {
     subject: 'Your Stalak projects will be deleted',
+    title: 'Your projects will be deleted',
     intro: 'You haven’t opened these projects saved online for almost 6 months:',
     when: (d) => `They will be deleted on ${d}, with their videos and sound.`,
-    keep: 'To keep one, just open it from Account → My projects at https://stalak.app/en/#compte',
+    keep: 'To keep one, just open it from your Gallery (account menu, top right): it then stays 6 more months.',
+    btn: 'Open my Gallery', hash: '#gallery',
+    reason: 'You have projects saved online with Stalak Creator Plus.',
   },
 };
-const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-export function warningEmail(lang, names, deleteAt) {
-  const t = WARN_TEXTS[lang] || WARN_TEXTS.en;
-  const d = new Date(deleteAt).toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Paris' });
-  const list = names.map((n) => '• ' + (n || 'Stalak')).join('\n');
-  const text = `${t.intro}\n\n${list}\n\n${t.when(d)}\n${t.keep}\n\nStalak — stalak.app`;
-  const html = `<!doctype html><html lang="${lang === 'fr' ? 'fr' : 'en'}"><body style="font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#111;padding:24px">
-<p>${esc(t.intro)}</p><ul>${names.map((n) => `<li>${esc(n || 'Stalak')}</li>`).join('')}</ul>
-<p>${esc(t.when(d))}<br>${esc(t.keep)}</p>
-<p style="color:#888;font-size:12px">Stalak — <a href="https://stalak.app" style="color:#888">stalak.app</a></p></body></html>`;
-  return { subject: t.subject, text, html };
+export function warningEmail(lang, names, deleteAt, site) {
+  const fr = lang === 'fr', t = fr ? WARN_TEXTS.fr : WARN_TEXTS.en;
+  const d = new Date(deleteAt).toLocaleDateString(fr ? 'fr-FR' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Paris' });
+  return mail({
+    lang: fr ? 'fr' : 'en', site, subject: t.subject, preheader: t.when(d), title: t.title, mascot: 'shock', reason: t.reason,
+    blocks: [{ p: t.intro }, { list: names.map((n) => n || 'Stalak') }, { p: t.when(d) },
+      { button: { href: homeOf(site, lang) + t.hash, label: t.btn } }, { small: t.keep }],
+  });
 }
 async function sendWarning(env, to, lang, names, deleteAt) {
-  const msg = warningEmail(lang, names, deleteAt);
+  const msg = warningEmail(lang, names, deleteAt, appOrigin(env));
   if (!env.RESEND_API_KEY) {
     if (isDev(env)) { console.log(`[stalak dev] cloud warning for ${to}: ${names.join(', ')}`); return true; }
     return false;

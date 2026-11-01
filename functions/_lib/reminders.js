@@ -3,6 +3,7 @@
 // renewal e-mail.) Run once a day with the 6-month rule: Worker workers/cloud-cleanup, POST /api/cron/cloud-cleanup, or
 // lazily from the site (at most every 6 hours).
 import { isDev, appOrigin } from './http.js';
+import { mail, homeOf } from './mail-layout.js';
 import { intervalOf, planOfSub, salePrices, payEnv } from './entitlements.js';
 
 export const YEAR_MS = 365 * 864e5;
@@ -16,25 +17,24 @@ export function reminderEmail(env, lang, plan, amount, startedAt) {
   const since = new Date(startedAt).toLocaleDateString(fr ? 'fr-FR' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
   const price = amount ? (fr ? `${amount.replace('.', ',')} $ par mois (plus les taxes de ton pays)` : `$${amount} a month (plus your local tax)`)
     : (fr ? 'au prix de ton abonnement, chaque mois' : 'at your subscription price, every month');
-  const manage = fr ? `${site}/#compte` : `${site}/en/#account`;
-  const lines = fr ? [
-    'Bonjour,',
-    `Petit rappel annuel : ton abonnement ${name} est actif depuis le ${since}. Il se renouvelle automatiquement chaque mois, ${price}, jusqu’à ce que tu l’arrêtes.`,
-    `Pour le garder, tu n’as rien à faire. Pour l’arrêter ou changer de formule : Stalak → menu du compte → Gérer mon abonnement (${manage}). L’arrêt prend effet à la fin du mois déjà payé.`,
-    'Une question ? Réponds simplement à cet e-mail ou écris à contact@stalak.app.',
-    'On t’envoie ce rappel une fois par an.',
+  const manage = homeOf(site, lang) + (fr ? '#compte' : '#account');
+  const blocks = fr ? [
+    { p: `Petit rappel annuel : ton abonnement ${name} est actif depuis le ${since}. Il se renouvelle automatiquement chaque mois, ${price}, jusqu’à ce que tu l’arrêtes.` },
+    { p: 'Pour le garder, tu n’as rien à faire. Pour l’arrêter ou changer de formule : Stalak → menu du compte → Gérer mon abonnement. L’arrêt prend effet à la fin du mois déjà payé.' },
+    { button: { href: manage, label: 'Gérer mon abonnement' } },
+    { small: 'Une question ? Réponds simplement à cet e-mail ou écris à contact@stalak.app.' },
   ] : [
-    'Hi,',
-    `A yearly reminder: your ${name} subscription has been active since ${since}. It renews automatically every month, ${price}, until you cancel it.`,
-    `To keep it, there is nothing to do. To cancel or change plans: Stalak → account menu → Manage my subscription (${manage}). Canceling takes effect at the end of the month you already paid for.`,
-    'Questions? Just reply to this email or write to contact@stalak.app.',
-    'We send this reminder once a year.',
+    { p: `A yearly reminder: your ${name} subscription has been active since ${since}. It renews automatically every month, ${price}, until you cancel it.` },
+    { p: 'To keep it, there is nothing to do. To cancel or change plans: Stalak → account menu → Manage my subscription. Canceling takes effect at the end of the month you already paid for.' },
+    { button: { href: manage, label: 'Manage my subscription' } },
+    { small: 'Questions? Just reply to this email or write to contact@stalak.app.' },
   ];
-  const subject = fr ? `Rappel : ton abonnement ${name}` : `Reminder: your ${name} subscription`;
-  const html = `<!doctype html><html lang="${fr ? 'fr' : 'en'}"><body style="font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#111;padding:24px;max-width:600px">` +
-    lines.map((l) => `<p>${esc(l).replace(esc(manage), `<a href="${esc(manage)}">${esc(manage)}</a>`)}</p>`).join('') +
-    `<p style="color:#888;font-size:12px">Stalak — <a href="${esc(site)}" style="color:#888">stalak.app</a></p></body></html>`;
-  return { subject, text: lines.join('\n\n') + '\n\nStalak — stalak.app', html };
+  return mail({
+    lang: fr ? 'fr' : 'en', site, subject: fr ? `Rappel : ton abonnement ${name}` : `Reminder: your ${name} subscription`,
+    preheader: fr ? `Il se renouvelle chaque mois, ${price}.` : `It renews every month, ${price}.`,
+    title: fr ? 'Ton abonnement Stalak' : 'Your Stalak subscription', mascot: 'coffee', blocks,
+    reason: fr ? 'Tu as un abonnement mensuel à Stalak. Ce rappel part une fois par an.' : 'You have a monthly Stalak subscription. We send this reminder once a year.',
+  });
 }
 
 async function send(env, to, msg) {
