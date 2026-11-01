@@ -71,7 +71,7 @@
   - **R2 `stalak-media`** : vidéos des projets sauvegardés, privé.
   - **Workers AI** : Whisper large-v3-turbo pour les paroles automatiques.
   - **Resend** : e-mails envoyés depuis login@stalak.app.
-  - **Email Routing** : contact@stalak.app arrive sur le Gmail du propriétaire.
+  - **Email Routing** : contact@stalak.app arrive sur **stalak.alaska@gmail.com** (depuis le 2/11 ; avant : soundslikesayso).
   - **Paddle sandbox**, **Google OAuth** (projet Google Cloud « Stalak »), Web Analytics, Search Console et Bing.
 - **Langues** :
   - textes en français dans le markup, avec `data-i18n` ;
