@@ -24,7 +24,7 @@ Aucun fichier de l'app ni du site n'est touché. Aucune vidéo, aucun son, aucun
 
 Migration SQL : aucune.
 
-Tests : `hyperframes lint` (0 erreur, 0 avertissement) et `hyperframes check` (réussi) ; deux rendus regardés (une image par temps sur tout le film, 10 images de suite autour de chacun des 18 changements, la planche à la largeur d'un téléphone) : le 1er rendu montrait 6 images d'une prise sans sa carte avant le montage, corrigé dans le 2e ; aucune image noire ; son mesuré (détail dans `promo/lesson/REVIEW.md`).
+Tests : `hyperframes lint` (0 erreur, 0 avertissement) et `hyperframes check` (réussi) ; deux rendus regardés (une image par temps sur tout le film, 10 images de suite autour de chacun des 18 changements, la planche à la largeur d'un téléphone) : le 1er rendu montrait une prise sans sa carte pendant 6 images avant le montage et 2 images après le snippet, corrigé dans le 2e (seules ces 8 images changent) ; aucune image noire ; son mesuré : −15,0 LUFS, crête −1,9 dB, son snippet 3 LU au-dessus de la voix (détail dans `promo/lesson/REVIEW.md`).
 
 Reste au propriétaire :
 - Regarder le film et dire s'il le valide.
