@@ -1,6 +1,18 @@
 # Compte rendu — branche `marketing/promo-youtube` (Marketing & croissance)
 
-Statut : PRÊT, v4 du 2/11 (documents et sources des vidéos seulement ; rien à intégrer dans l'app ni le site)
+Statut : PRÊT, v4 du 2/11 + miniature YouTube (documents et sources des vidéos et de la miniature seulement ; rien à intégrer dans l'app ni le site)
+
+## Miniature YouTube (sa demande du 2/11, 13 h 48 et 14 h 14)
+
+- **Sa demande.** À 13 h 48 : « une miniature captivante, qui marche avec les codes d'aujourd'hui ». À 14 h 14, avec 3 exemples (Apple « Introducing Apple Creator Studio », Google « Introducing Google Vids », Lovio « an idea ») : « je veux une miniature dans ce style là ». C'est un style de lancement de produit : fond sobre, marque ou deux mots en très grand, l'app en vedette, pas de visage en gros plan.
+- **3 versions faites**, une par exemple, en 1280 × 720 (JPG de 44 à 129 Ko). Elles ont été envoyées au propriétaire et ne sont pas dans le dépôt, car elles contiennent des images de ses prises.
+  - **Version 3 (conseillée, 9/10).** « on beat. » en très grand sur la vraie carte « Your edit » du film (aperçu de sa prise, barre coupée sur les temps, Play / Shuffle / Export), en perspective, sur un dégradé bleu.
+  - **Version 1 (7/10).** Le logo Stalak au-dessus d'un éventail de 7 vraies images de ses 3 prises, sur bleu nuit.
+  - **Version 2 (5/10).** Le vrai bouton « ↻ Shuffle » en verre glacé, avec un pointeur, sur fond très clair.
+- **Vérifiées** dans un faux fil YouTube, sur ordinateur (168 × 94) et sur téléphone (recherche et accueil), en clair et en sombre : le texte se lit partout, et rien d'important n'est sous la durée « 1:03 ».
+- **Titre conseillé**, dans le même esprit : « Introducing Stalak: the edit nobody sees ».
+- **Le test.** Avec l'outil « Tester et comparer » de YouTube Studio : la 3 et la 1. Sinon, passer à la 1 si le taux de clics est sous 4 % après 1 000 impressions.
+- **Sources :** `promo/youtube/thumbnail/` (`BRIEF.md` : les 3 idées, leurs notes, le test ; `make_media.py`, `thumb.html`, `render.py`, `feed.html`).
 
 ## La demande
 
@@ -50,4 +62,5 @@ Aucun (pas de code du site ni de l'app). Contrôles HyperFrames : `lint` 0 erreu
 ## Pour le propriétaire
 
 - **Avant de publier sur YouTube : vérifier que la licence de l'instru de « neva die » autorise YouTube** (sinon réclamation Content ID possible).
-- Titre, description, miniature et publication sur la chaîne YouTube Stalak (quand elle existe) : Marketing peut les préparer à sa demande.
+- **Miniature** : choisir parmi les 3 (la 3 est conseillée). Pour mettre une miniature perso, YouTube demande une chaîne vérifiée (par téléphone). Pour l'outil « Tester et comparer », il faut les fonctions avancées (vérification d'identité), sur ordinateur.
+- Titre conseillé : « Introducing Stalak: the edit nobody sees ». Description et publication sur la chaîne @stalak_app : Marketing peut les préparer à sa demande.

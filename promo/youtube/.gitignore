@@ -15,3 +15,5 @@ node_modules/
 snapshots/
 assets/thumbs/
 assets/clip/
+thumbnail/media/
+thumbnail/out/

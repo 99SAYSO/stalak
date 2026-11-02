@@ -14,5 +14,7 @@ Aucun fichier vidéo ou audio n'est dans le dépôt (demande du propriétaire) :
 | `sfx/*.mp3`, `sfx/CREDITS.md` | Bruitages de la bibliothèque HyperFrames (licence Pixabay, voir `CREDITS.md`). |
 | `sfx/slice.wav`, `thud.wav`, `scatter.wav` | Faits par `build.py` (synthèse) : le cutter, une fiche qui tombe, des morceaux qui s'éparpillent. `tick.wav`, `tock.wav`, `shatter*.wav` : faits par `../wyr/build.py`. |
 | `brand/icon.svg`, `brand/wordmark.svg`, `brand/grain.png`, `fonts/` | La marque Stalak et ses polices (Lilita One, Rubik), reprises de `promo/lesson`. |
+| `../thumbnail/media/t*.jpg` | Les images de la miniature (2/11) : 7 vraies images de ses 3 prises, tirées de ses fichiers .MOV d'origine par `thumbnail/make_media.py` (à 30 images/s : prise 1, images 64 et 380 ; prise 2, images 62 et 448 ; prise 3, images 50, 85 et 470). Hors du dépôt. |
+| pointeur de `thumbnail/thumb.html` (version 2) | L'icône « cursor-pointer » de Material Design Icons (Pictogrammers, licence Apache 2.0, usage commercial permis), recopiée dans la page. |
 
 Le Short (`short/`) utilise les mêmes fichiers : ses dossiers de médias sont des liens vers `../assets/`.

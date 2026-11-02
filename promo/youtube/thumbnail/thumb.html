@@ -1,0 +1,154 @@
+<!doctype html>
+<!-- The YouTube thumbnail of the Stalak film (1280 x 720), in the "product launch" style the owner showed on 2/11 at 14 h 14
+     (Apple Creator Studio, Google Vids, Lovio): a sober background, the brand or two words very big, the product as the hero.
+     render.py shoots each variant at 2x:
+       thumb.html?v=1  the logo over a fan of his clips (the 7 cards are real frames of his 3 takes, media/)
+       thumb.html?v=2  one big ice-glass button, the app's real "↻ Shuffle" (a new edit in one tap), and a pointer
+       thumb.html?v=3  "on beat." very big over the app's real "Your edit" card (the same card as in the film, 0:26-0:36) -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Stalak thumbnail</title>
+<style>
+  @font-face { font-family: "Lilita One"; src: url("../assets/fonts/lilitaone.ttf"); }
+  @font-face { font-family: "Rubik"; src: url("../assets/fonts/rubik.ttf"); font-weight: 300 900; }
+  :root { --ink: #0a0d14; --blue: #1f6fd6; --ice: #d6ecff; }
+  html, body { margin: 0; width: 1280px; height: 720px; overflow: hidden; background: #04070f; font-family: "Rubik", sans-serif; }
+  #t { position: relative; width: 1280px; height: 720px; overflow: hidden; }
+  .abs { position: absolute; }
+  #snow i { position: absolute; display: block; border-radius: 50%; background: #fff; }
+
+  /* 1. the logo over a fan of his clips (Apple Creator Studio) */
+  .v1 { background: radial-gradient(64% 62% at 50% 80%, #16397a 0%, #0d214c 44%, #0a1838 76%, #0a1634 100%); }
+  .v1 #lock { position: absolute; left: 0; right: 0; top: 50px; display: flex; justify-content: center; align-items: flex-start; gap: 26px; }
+  .v1 #lock .ic { width: 104px; height: 104px; margin-top: 4px; }
+  .v1 #lock .wm { height: 146px; }
+  .clipc { position: absolute; border-radius: 28px; background: #0b1020 center 28% / cover no-repeat; overflow: hidden;
+           box-shadow: 0 26px 54px rgba(0, 0, 0, 0.6), 0 0 0 3px #0b1020, inset 0 0 0 2px rgba(255, 255, 255, 0.28); }
+  .clipc::before { content: ""; position: absolute; inset: 0; border-radius: inherit;
+                   background: linear-gradient(180deg, rgba(255, 255, 255, 0.20) 0%, rgba(255, 255, 255, 0) 30%, rgba(0, 0, 0, 0) 70%, rgba(0, 0, 0, 0.28) 100%); }
+  .clipc::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: #050912; opacity: var(--dim, 0); }
+  #glow1 { position: absolute; left: 300px; top: 250px; width: 680px; height: 480px; border-radius: 50%;
+           background: radial-gradient(closest-side, rgba(62, 142, 234, 0.45), rgba(62, 142, 234, 0)); }
+
+  /* 2. one ice-glass button (Google Vids) */
+  .v2 { background: radial-gradient(48% 60% at 78% 88%, #c7defe 0%, rgba(199, 222, 254, 0) 100%),
+                    radial-gradient(36% 46% at 14% 12%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0) 100%),
+                    linear-gradient(140deg, #eef5ff 0%, #e0ecfd 50%, #cbdefa 100%); }
+  #pill { position: absolute; left: 226px; top: 196px; width: 828px; height: 288px; border-radius: 144px;
+          background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(240, 247, 255, 0.86) 52%, rgba(220, 235, 255, 0.82) 100%);
+          box-shadow: 0 40px 70px rgba(31, 111, 214, 0.17), 0 10px 22px rgba(31, 111, 214, 0.10), inset 0 3px 0 rgba(255, 255, 255, 1), inset 0 -16px 40px rgba(31, 111, 214, 0.10); }
+  #pill::before { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 3px;
+                  background: linear-gradient(120deg, rgba(31, 111, 214, 0) 30%, rgba(31, 111, 214, 0.55) 62%, rgba(31, 111, 214, 0.95) 85%, rgba(31, 111, 214, 0.6) 100%);
+                  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+  #pill .in { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 44px; }
+  #pill .in b { font-weight: 500; font-size: 158px; line-height: 1; color: #39414f; letter-spacing: -0.01em; margin-top: -10px; }
+  #cursor { position: absolute; left: 742px; top: 404px; width: 150px; height: 150px; filter: drop-shadow(0 10px 14px rgba(10, 13, 20, 0.22)); }
+
+  /* 3. "on beat." over the app (Lovio) */
+  .v3 { background: radial-gradient(48% 46% at 50% 0%, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0) 100%),
+                    radial-gradient(55% 75% at 104% 96%, rgba(122, 108, 255, 0.85) 0%, rgba(122, 108, 255, 0) 100%),
+                    radial-gradient(55% 75% at -4% 96%, rgba(40, 90, 230, 0.9) 0%, rgba(40, 90, 230, 0) 100%),
+                    linear-gradient(180deg, #4a97f2 0%, #2d73e2 46%, #2453c8 100%); }
+  #big { position: absolute; left: 0; right: 0; top: -14px; text-align: center; font-weight: 700; font-size: 292px; line-height: 1; letter-spacing: -0.05em;
+         background: linear-gradient(180deg, #ffffff 10%, #f4f9ff 46%, #d3e9ff 78%, #b4d8ff 100%); -webkit-background-clip: text; background-clip: text; color: transparent;
+         filter: drop-shadow(0 0 34px rgba(255, 255, 255, 0.35)) drop-shadow(0 14px 28px rgba(16, 40, 120, 0.25)); }
+  #glow3 { position: absolute; left: 150px; top: 270px; width: 980px; height: 520px; border-radius: 50%;
+           background: radial-gradient(closest-side, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0)); }
+  #ui { position: absolute; left: 190px; top: 290px; width: 1500px; height: 880px; transform-origin: 0 0;
+        transform: perspective(2000px) rotateX(17deg) scale(0.6); }
+  /* the film's card (compositions/film.html), in film px */
+  .card { position: absolute; left: 0; top: 0; width: 1500px; height: 880px; background: #ffffff; border: 6px solid var(--ink); border-radius: 46px;
+          box-shadow: 14px 14px 0 var(--ink), 0 60px 120px rgba(10, 20, 70, 0.45); box-sizing: border-box; }
+  .ttl { position: absolute; font-family: "Lilita One", sans-serif; font-weight: 400; font-size: 70px; line-height: 1; color: var(--ink); white-space: nowrap; }
+  .lbl { position: absolute; font-weight: 600; font-size: 38px; color: #3f5170; white-space: nowrap; }
+  .seg { position: absolute; display: flex; height: 76px; border: 5px solid var(--ink); border-radius: 38px; background: #eef5ff; overflow: hidden; box-sizing: border-box; }
+  .seg b { display: flex; align-items: center; padding: 0 30px; font-weight: 700; font-size: 36px; white-space: nowrap; color: var(--ink); }
+  .seg b.on { background: var(--blue); color: #ffffff; }
+  .btn { position: absolute; display: flex; align-items: center; justify-content: center; gap: 14px; border: 5px solid var(--ink); border-radius: 48px;
+         background: #ffffff; box-shadow: 0 8px 0 var(--ink); font-weight: 700; font-size: 40px; white-space: nowrap; color: var(--ink); box-sizing: border-box; }
+  .btn.ink { background: var(--ink); color: #ffffff; }
+  .btn.blue { background: var(--blue); color: #ffffff; }
+  .pv { position: absolute; overflow: hidden; border: 6px solid var(--ink); background: var(--ink) center 30% / cover no-repeat; border-radius: 30px; box-sizing: border-box; }
+  #bar { position: absolute; height: 100px; border: 5px solid var(--ink); border-radius: 22px; background: #eef5ff; overflow: hidden; }
+  .bk { position: absolute; top: 0; height: 100%; display: flex; align-items: center; justify-content: center; color: #ffffff; font-weight: 800; font-size: 36px;
+        box-shadow: inset -4px 0 0 var(--ink); }
+  #ruler { position: absolute; height: 30px; }
+  #ph { position: absolute; width: 8px; height: 132px; border-radius: 4px; background: var(--ink); }
+</style>
+</head>
+<body>
+<div id="t"></div>
+<script>
+  var V = (location.search.match(/v=(\d)/) || [0, "1"])[1];
+  var t = document.getElementById("t");
+  t.className = "v" + V;
+  var M = "media/", B = "../assets/brand/";
+  function snow(n, op, seed) {      // fixed flakes (seeded): the Stalak sky
+    var rnd = function () { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }, h = "";
+    for (var i = 0; i < n; i++) {
+      var d = 2 + Math.round(rnd() * 5), x = Math.round(rnd() * 1272), y = Math.round(rnd() * 712), o = (op[0] + rnd() * (op[1] - op[0])).toFixed(2);
+      h += '<i style="left:' + x + 'px;top:' + y + 'px;width:' + d + 'px;height:' + d + 'px;opacity:' + o + '"></i>';
+    }
+    return '<div id="snow">' + h + '</div>';
+  }
+
+  if (V === "1") {
+    // the fan: the centre card in front, each step out 0.86 smaller, further back and darker (as Apple's icons)
+    var CARDS = ["t3_050", "t1_064", "t2_062", "t3_470", "t2_448", "t1_380", "t3_085"], W0 = 236, CY = 470, h = "";
+    var xs = [0], ws = [W0];
+    for (var s = 1; s <= 3; s++) { ws[s] = ws[s - 1] * 0.86; xs[s] = xs[s - 1] + ws[s - 1] / 2 + ws[s] / 2 - ws[s] * 0.24; }
+    CARDS.forEach(function (c, i) {
+      var s = Math.abs(i - 3), w = ws[s], hh = w * 16 / 9, x = 640 + (i < 3 ? -xs[s] : xs[s]) - w / 2;
+      h += '<div class="clipc" style="left:' + x.toFixed(1) + 'px;top:' + (CY - hh / 2).toFixed(1) + 'px;width:' + w.toFixed(1) + 'px;height:' + hh.toFixed(1) +
+           'px;z-index:' + (10 - s) + ';border-radius:' + (28 * w / W0).toFixed(1) + 'px;--dim:' + [0, 0.2, 0.38, 0.54][s] + ';background-image:url(' + M + c + '.jpg)"></div>';
+    });
+    t.innerHTML = snow(46, [0.12, 0.4], 11) + '<div id="glow1"></div>' + h +
+      '<div id="lock"><img class="ic" src="' + B + 'icon.svg" alt=""><img class="wm" src="' + B + 'wordmark.svg" alt="Stalak"></div>';
+  }
+
+  if (V === "2") {
+    // the app's real button: "↻ Shuffle" (src/app.js: "Makes a new random edit"); the pointer: Material Design Icons
+    // "cursor-pointer" (Apache 2.0), white with an ink outline, finger lines added
+    var arrow = '<svg width="150" height="150" viewBox="0 0 48 48" style="margin-top:-6px"><path d="M39 24a15 15 0 1 1-4.4-10.6" fill="none" stroke="#39414f" stroke-width="4.2" stroke-linecap="round"/>' +
+                '<path d="M36.5 5.5v9h-9" fill="none" stroke="#39414f" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    var hand = '<svg id="cursor" viewBox="0 0 24 24"><path d="m13.75 10.19.63.13 4.17 2.08c.7.23 1.16.92 1.1 1.66v.26l-.9 6.12c-.06.43-.25.83-.6 1.11-.31.3-.72.45-1.15.45h-6.88c-.49 0-.94-.18-1.27-.53L2.86 15.5l.9-1c.24-.25.62-.39.98-.37h.29L9 15V4.5a2 2 0 0 1 2-2 2 2 0 0 1 2 2v5.69z" ' +
+               'fill="#ffffff" stroke="#0a0d14" stroke-width="1.15" stroke-linejoin="round" paint-order="stroke"/>' +
+               '<path d="M13 10.3v4.2M15.6 11.4v3.4M18 12.6v2.6" stroke="#0a0d14" stroke-width="0.9" stroke-linecap="round"/></svg>';
+    t.innerHTML = '<div id="pill"><div class="in">' + arrow + '<b>Shuffle</b></div></div>' + hand;
+  }
+
+  if (V === "3") {
+    // the "Your edit" card: the film's, frozen on the Punchy cut (times.js LAY.punchy), the playhead mid-bar
+    var TK = { 1: "#d6336c", 2: "#3a6fe0", 3: "#e0952c" };
+    var LAY = [[0, 3], [2, 1], [4, 2], [5, 3], [6, 1], [8, 2], [10, 3], [11, 1], [12, 2], [14, 3], [16, 1], [18, 2], [19, 3], [20, 1], [22, 2], [24, 3], [26, 1], [27, 2], [28, 3], [30, 1]];
+    var BW = 940, bks = "", ticks = "";
+    LAY.forEach(function (b, j) {
+      var l = b[0] / 32 * BW, r = (j + 1 < LAY.length ? LAY[j + 1][0] : 32) / 32 * BW;
+      bks += '<div class="bk" style="left:' + l.toFixed(1) + 'px;width:' + (r - l + 0.6).toFixed(1) + 'px;background:' + TK[b[1]] + ';color:' + (b[1] === 3 ? "#0a0d14" : "#fff") + '">' + (r - l > 34 ? b[1] : "") + '</div>';
+    });
+    for (var bb = 0; bb <= 32; bb++) ticks += '<i style="position:absolute;bottom:0;border-radius:2px;background:#0a0d14;left:' + (bb / 32 * 940 + 5) + 'px;width:' + (bb % 4 ? 3 : 4) + 'px;height:' + (bb % 4 ? 12 : 26) + 'px;opacity:' + (bb % 4 ? 0.45 : 0.85) + '"></i>';
+    var card =
+      '<div class="card">' +
+        '<div class="pv" style="left:40px;top:40px;width:420px;height:747px;background-image:url(' + M + 't3_470.jpg)"></div>' +
+        '<div class="ttl" style="left:510px;top:40px">Your edit</div>' +
+        '<div class="lbl" style="left:510px;top:160px">Cuts</div>' +
+        '<div class="seg" style="left:660px;top:142px"><b class="on">Auto</b><b>On the words</b><b>Every bar</b></div>' +
+        '<div class="lbl" style="left:510px;top:262px">Pace</div>' +
+        '<div class="seg" style="left:660px;top:244px"><b>Chill</b><b>Normal</b><b class="on">Punchy</b></div>' +
+        '<div id="ruler" style="left:510px;top:372px;width:950px">' + ticks + '</div>' +
+        '<div id="bar" style="left:510px;top:404px;width:950px">' + bks + '</div>' +
+        '<div id="ph" style="left:' + (510 + 5 + 0.43 * BW - 4) + 'px;top:388px"></div>' +
+        '<div class="btn" style="left:510px;top:580px;width:290px;height:100px">▶ Play</div>' +
+        '<div class="btn ink" style="left:826px;top:580px;width:310px;height:100px">↻ Shuffle</div>' +
+        '<div class="btn blue" style="left:1162px;top:580px;width:298px;height:100px">Export</div>' +
+      '</div>';
+    t.innerHTML = snow(40, [0.25, 0.6], 5) + '<div id="glow3"></div><div id="big">on beat.</div><div id="ui">' + card + '</div>';
+  }
+
+  document.fonts.ready.then(function () {
+    return Promise.all(Array.from(document.images).map(function (i) { return i.decode().catch(function () {}); }));
+  }).then(function () { document.body.setAttribute("data-ready", "1"); });
+</script>
+</body>
+</html>

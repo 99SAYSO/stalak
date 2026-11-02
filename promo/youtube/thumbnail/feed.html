@@ -1,0 +1,54 @@
+<!doctype html>
+<!-- The check of the thumbnails where YouTube shows them (render.py --feed): the side list of a computer (168 x 94), the search
+     list of a phone (160 x 90) and the home feed of a phone (390 px wide), in light and dark mode, with the duration badge
+     (1:03) in its corner. A mock for checking only: no view counts or other numbers. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  body { margin: 0; font-family: Roboto, Arial, sans-serif; background: #888; }
+  .pane { display: inline-block; vertical-align: top; width: 430px; padding: 16px 20px 22px; }
+  .meta b { max-width: 230px; }
+  .light { background: #ffffff; color: #0f0f0f; }
+  .dark { background: #0f0f0f; color: #f1f1f1; }
+  h6 { margin: 0 0 10px; font-size: 11px; font-weight: 500; opacity: 0.55; letter-spacing: 0.05em; text-transform: uppercase; }
+  .row { display: flex; gap: 8px; margin-bottom: 10px; }
+  .th { position: relative; flex: none; border-radius: 8px; overflow: hidden; }
+  .th img { display: block; width: 100%; height: 100%; }
+  .th .d { position: absolute; right: 4px; bottom: 4px; padding: 1px 4px; border-radius: 4px; background: rgba(0, 0, 0, 0.8); color: #fff;
+           font-size: 12px; font-weight: 500; line-height: 16px; }
+  .meta { font-size: 14px; line-height: 20px; }
+  .meta b { display: block; font-weight: 500; }
+  .meta span { font-size: 12px; opacity: 0.65; }
+  .home .th { width: 390px; height: 219px; border-radius: 12px; }
+  .home .meta { display: flex; gap: 12px; margin: 10px 0 18px; }
+  .av { width: 36px; height: 36px; border-radius: 50%; flex: none; background: url(../assets/brand/icon.svg) center/116% no-repeat #1f6fd6; }
+</style>
+</head>
+<body>
+<div id="all"></div>
+<script>
+  var V = (location.search.match(/v=([\w,]+)/) || [0, "1,2,3"])[1].split(",");
+  var T = "Introducing Stalak: the edit nobody sees";
+  function item(v, w, h) {
+    return '<div class="row"><div class="th" style="width:' + w + 'px;height:' + h + 'px"><img src="out/Stalak_thumbnail_' + v + '.jpg"><div class="d">1:03</div></div>' +
+           '<div class="meta"><b>' + T + '</b><span>Stalak · ' + v + '</span></div></div>';
+  }
+  var out = "";
+  ["light", "dark"].forEach(function (m) {
+    out += '<div class="pane ' + m + '"><h6>Computer · side list (168 × 94)</h6>';
+    V.forEach(function (v) { out += item(v, 168, 94); });
+    out += '<h6 style="margin-top:14px">Phone · search (160 × 90)</h6>';
+    V.forEach(function (v) { out += item(v, 160, 90); });
+    out += '<h6 style="margin-top:14px">Phone · home (390 wide)</h6><div class="home">';
+    V.forEach(function (v) {
+      out += '<div class="th"><img src="out/Stalak_thumbnail_' + v + '.jpg"><div class="d">1:03</div></div>' +
+             '<div class="meta"><div class="av"></div><div><b>' + T + '</b><span>Stalak · ' + v + '</span></div></div>';
+    });
+    out += '</div></div>';
+  });
+  document.getElementById("all").innerHTML = out;
+  Promise.all(Array.from(document.images).map(function (i) { return i.decode(); })).then(function () { document.body.setAttribute("data-ready", "1"); });
+</script>
+</body>
+</html>
