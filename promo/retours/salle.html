@@ -80,6 +80,10 @@ button { cursor: pointer; }
 .primary:hover { filter: brightness(1.06); }
 .primary[disabled] { opacity: 0.45; cursor: default; filter: none; }
 .primary svg { width: 18px; height: 18px; fill: currentColor; }
+.gbtn { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px; border-radius: 9px; border: 1px solid color-mix(in srgb, var(--ice) 55%, var(--line)); background: color-mix(in srgb, var(--ice) 10%, transparent); color: var(--fg); font-weight: 500; }
+.gbtn:hover { background: color-mix(in srgb, var(--ice) 18%, transparent); }
+.gbtn[disabled] { opacity: 0.45; cursor: default; }
+.gbtn svg { width: 18px; height: 18px; fill: none; stroke: var(--ice); stroke-width: 1.9; stroke-linejoin: round; }
 
 /* timeline */
 .tl { position: relative; height: 122px; margin-top: 12px; border-radius: 9px; background: var(--panel); border: 1px solid var(--line); touch-action: none; user-select: none; -webkit-user-select: none; cursor: pointer; overflow: hidden; }
@@ -103,6 +107,8 @@ button { cursor: pointer; }
 .composer { padding: 14px; border-color: color-mix(in srgb, var(--pen) 55%, var(--line)); }
 .composer h3 { margin: 0; font-size: 16px; font-weight: 600; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
 .composer h3 .tc { padding: 0; font-size: 15px; color: var(--pen-2); }
+.composer.global { border-color: color-mix(in srgb, var(--ice) 60%, var(--line)); }
+.composer.global .tools, .composer.global .range-row { display: none; }
 .composer .sub { margin: 4px 0 12px; color: var(--muted); font-size: 13.5px; }
 .tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 12px; }
 .sw { width: 30px; height: 30px; border-radius: 15px; border: 2px solid var(--line); background: var(--c); }
@@ -131,6 +137,8 @@ textarea::placeholder { color: #6f7b88; }
 .n .th { position: relative; width: 112px; aspect-ratio: 16 / 9; border-radius: 6px; overflow: hidden; background: #000; border: 0; padding: 0; }
 .n .th img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .n .th b { position: absolute; left: 4px; top: 4px; min-width: 20px; height: 18px; padding: 0 4px; border-radius: 9px; background: var(--pc, var(--pen)); color: #0b0d11; font: 700 11px/18px var(--ui); text-align: center; }
+.n .th.whole { display: grid; place-items: center; align-content: center; gap: 3px; background: radial-gradient(120% 120% at 50% 0%, #1d3a55, #0f1823); color: var(--fg); font-size: 11.5px; font-weight: 600; line-height: 1.15; text-align: center; }
+.n .th.whole svg { width: 20px; height: 20px; fill: none; stroke: var(--ice); stroke-width: 1.9; stroke-linejoin: round; }
 .n .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-size: 12.5px; color: var(--muted); }
 .n .meta .tc { padding: 0; font-size: 13px; color: var(--fg); background: none; border: 0; }
 .n .meta .tc:hover { text-decoration: underline; }
@@ -180,8 +188,8 @@ textarea::placeholder { color: #6f7b88; }
         <div id="stageMsg" class="stage-msg">
           <div>
             <h2>Les vidéos que Claude te fait arrivent ici</h2>
-            <p>Mets en pause là où quelque chose ne va pas, entoure-le sur l'image, écris ce que tu veux changer. Quand tu as tout dit, envoie : Claude reprend seulement ces points.</p>
-            <ul class="steps"><li><i>1</i>Pause au bon moment</li><li><i>2</i>« Remarque ici »</li><li><i>3</i>Entoure et écris</li><li><i>4</i>« J'ai fini »</li></ul>
+            <p>Mets en pause là où quelque chose ne va pas, entoure-le sur l'image, écris ce que tu veux changer. Un avis sur l'ensemble : « Remarque sur toute la vidéo ». Quand tu as tout dit, clique « J'ai fini », puis écris « c'est bon » à Claude dans la conversation : il reprend seulement ces points.</p>
+            <ul class="steps"><li><i>1</i>Pause au bon moment</li><li><i>2</i>« Remarque ici »</li><li><i>3</i>Entoure et écris</li><li><i>4</i>« J'ai fini », puis « c'est bon » à Claude</li></ul>
           </div>
         </div>
       </div>
@@ -192,6 +200,7 @@ textarea::placeholder { color: #6f7b88; }
         <button id="bNext" class="tbtn" type="button" aria-label="Image suivante" title="Image suivante"><svg viewBox="0 0 24 24"><path d="M16 5.5h2v13h-2zM5 5.5v13L14.5 12z"/></svg></button>
         <span class="tc" id="tc">0:00,00<small id="tcFrame">image 0</small></span>
         <span class="spacer"></span>
+        <button id="bGlobal" class="gbtn" type="button" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 5.5h15a1.5 1.5 0 0 1 1.5 1.5v8.5a1.5 1.5 0 0 1-1.5 1.5H11l-4.5 3.5V17h-2A1.5 1.5 0 0 1 3 15.5V7a1.5 1.5 0 0 1 1.5-1.5z"/></svg>Remarque sur toute la vidéo</button>
         <button id="bMark" class="primary" type="button" disabled><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75zM20.7 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z"/></svg>Remarque ici</button>
       </div>
 
@@ -201,12 +210,12 @@ textarea::placeholder { color: #6f7b88; }
         <div id="ph" class="ph"></div>
         <div id="hoverTc" class="hover-tc"></div>
       </div>
-      <p class="keys"><kbd>Espace</kbd> lecture · <kbd>←</kbd> <kbd>→</kbd> une image · <kbd>Maj</kbd> + <kbd>←</kbd> <kbd>→</kbd> une seconde · <kbd>R</kbd> remarque · <kbd>Échap</kbd> annuler</p>
+      <p class="keys"><kbd>Espace</kbd> lecture · <kbd>←</kbd> <kbd>→</kbd> une image · <kbd>Maj</kbd> + <kbd>←</kbd> <kbd>→</kbd> une seconde · <kbd>R</kbd> remarque ici · <kbd>G</kbd> remarque sur toute la vidéo · <kbd>Échap</kbd> annuler</p>
     </section>
 
     <aside class="col-side" aria-label="Tes remarques">
       <div id="composer" class="card composer" hidden>
-        <h3>Remarque à <span class="tc" id="cTc">0:00,00</span><span id="cRange" class="tc" hidden></span></h3>
+        <h3><span id="cHead">Remarque à</span> <span class="tc" id="cTc">0:00,00</span><span id="cRange" class="tc" hidden></span></h3>
         <p class="sub" id="cSub">Entoure sur l'image ce dont tu parles (facultatif), puis écris ce que tu veux changer.</p>
         <div class="tools" role="group" aria-label="Crayon">
           <button class="sw" type="button" data-c="#ff453a" style="--c:#ff453a" aria-label="Crayon rouge" aria-pressed="true"></button>
@@ -244,8 +253,8 @@ textarea::placeholder { color: #6f7b88; }
       </div>
 
       <div class="card send">
-        <button id="bSend" class="primary" type="button" disabled>J'ai fini : envoyer à Claude</button>
-        <p id="sendMsg" class="idle">Envoie quand tu as fait toutes tes remarques sur cette vidéo.</p>
+        <button id="bSend" class="primary" type="button" disabled>J'ai fini mes remarques</button>
+        <p id="sendMsg" class="idle">Quand tu as tout dit sur cette vidéo, clique ici, puis écris « c'est bon » à Claude dans la conversation.</p>
       </div>
     </aside>
   </main>
@@ -256,8 +265,10 @@ textarea::placeholder { color: #6f7b88; }
   "use strict";
   var $ = function (s) { return document.querySelector(s); };
   var KIND = { image: "Image", texte: "Texte", son: "Son", rythme: "Rythme", autre: "Autre" };
-  var STATE = { "ouverte": ["À envoyer", "p-open"], "envoyée": ["Envoyée à Claude", "p-sent"], "traitée": ["Corrigée", "p-done"] };
-  var S = { db: null, assets: null, comments: null, videos: [], cur: null, remarks: [], unsubR: null, unsubV: null, draft: null,
+  var STATE = { "ouverte": ["Nouvelle", "p-open"], "envoyée": ["Pour Claude", "p-sent"], "traitée": ["Corrigée", "p-done"] };
+  var WHOLE_ICO = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 5.5h15a1.5 1.5 0 0 1 1.5 1.5v8.5a1.5 1.5 0 0 1-1.5 1.5H11l-4.5 3.5V17h-2A1.5 1.5 0 0 1 3 15.5V7a1.5 1.5 0 0 1 1.5-1.5z"/></svg>';
+  function isWhole(r) { return !!r && r.scope === "global"; }
+  var S = { db: null, assets: null, videos: [], cur: null, remarks: [], unsubR: null, unsubV: null, draft: null,
             sel: null, color: "#ff453a", local: {}, sprite: null, spriteFor: null, pendingDel: null, loadTimer: null, boot: {} };
   var V = $("#vid"), INK = $("#ink"), STAGE = $("#stage"), TL = $("#tl"), TLC = $("#tlc");
 
@@ -313,13 +324,13 @@ textarea::placeholder { color: #6f7b88; }
     var ctx = INK.getContext("2d"), W = INK.width, H = INK.height;
     ctx.clearRect(0, 0, W, H);
     var f = curFrame();
-    if (S.draft) {
+    if (S.draft && !isWhole(S.draft)) {
       if (f === S.draft.frame) S.draft.strokes.forEach(function (s) { strokePath(ctx, s, W, H, 1); });
       return;
     }
     if (!V.paused) return;
     S.remarks.forEach(function (r) {
-      if (r.strokes && r.strokes.length && Math.abs(r.frame - f) <= 1) r.strokes.forEach(function (s) { strokePath(ctx, s, W, H, r.id === S.sel ? 1 : 0.85); });
+      if (!isWhole(r) && r.strokes && r.strokes.length && Math.abs(r.frame - f) <= 1) r.strokes.forEach(function (s) { strokePath(ctx, s, W, H, r.id === S.sel ? 1 : 0.85); });
     });
   }
   var curStroke = null;
@@ -329,7 +340,7 @@ textarea::placeholder { color: #6f7b88; }
             Math.round(Math.min(1, Math.max(0, (e.clientY - r.top) / r.height)) * 10000) / 10000];
   }
   INK.addEventListener("pointerdown", function (e) {
-    if (!S.draft) return;
+    if (!S.draft || isWhole(S.draft)) return;
     e.preventDefault();
     if (curFrame() !== S.draft.frame) { seekFrame(S.draft.frame); }
     try { INK.setPointerCapture(e.pointerId); } catch (x) {}
@@ -412,13 +423,13 @@ textarea::placeholder { color: #6f7b88; }
     $("#tcFrame").textContent = "image " + f;
     TL.setAttribute("aria-valuenow", String(Math.round(t * 100) / 100));
     TL.setAttribute("aria-valuetext", fmt(t));
-    $("#bBack").hidden = !(S.draft && f !== S.draft.frame);
+    $("#bBack").hidden = !(S.draft && !isWhole(S.draft) && f !== S.draft.frame);
     drawInk();
   }
   function renderPins() {
     var box = $("#pins"); box.textContent = "";
-    var list = S.remarks.slice();
-    if (S.draft && !S.draft.id) list.push(Object.assign({ _draft: true, num: "+" }, S.draft));
+    var list = S.remarks.filter(function (r) { return !isWhole(r); });
+    if (S.draft && !S.draft.id && !isWhole(S.draft)) list.push(Object.assign({ _draft: true, num: "+" }, S.draft));
     list.forEach(function (r) {
       var p = document.createElement("div");
       var st = r._draft ? "p-draft" : (STATE[r.status] || STATE["ouverte"])[1];
@@ -457,7 +468,7 @@ textarea::placeholder { color: #6f7b88; }
 
   // ------------------------------------------------------------------ playback
   function setPlayIcon() { $("#playIco").setAttribute("d", V.paused ? "M8 5.5v13l10.5-6.5z" : "M7 5.5h3.5v13H7zM13.5 5.5H17v13h-3.5z"); $("#bPlay").setAttribute("aria-label", V.paused ? "Lecture" : "Pause"); }
-  function togglePlay() { if (!V.src) return; if (V.paused) { if (S.draft) return; V.play().catch(function () {}); } else V.pause(); }
+  function togglePlay() { if (!V.src) return; if (V.paused) { if (S.draft && !isWhole(S.draft)) return; V.play().catch(function () {}); } else V.pause(); }
   function step(dir, big) { if (!V.src) return; if (!V.paused) V.pause(); seekFrame(curFrame() + dir * (big ? Math.round(fps()) : 1)); }
   var raf = 0;
   function tick() { paintPlayhead(); if (!V.paused) raf = requestAnimationFrame(tick); }
@@ -477,25 +488,35 @@ textarea::placeholder { color: #6f7b88; }
     if (e.key === " ") { e.preventDefault(); togglePlay(); }
     else if (e.key === "ArrowLeft" || e.key === "ArrowRight") { e.preventDefault(); step(e.key === "ArrowLeft" ? -1 : 1, e.shiftKey); }
     else if ((e.key === "r" || e.key === "R") && !e.metaKey && !e.ctrlKey) { if (!S.draft && V.src) { e.preventDefault(); startDraft(); } }
+    else if ((e.key === "g" || e.key === "G") && !e.metaKey && !e.ctrlKey) { if (!S.draft && S.cur) { e.preventDefault(); startDraft(null, true); } }
     else if (e.key === "Escape" && S.draft) cancelDraft();
     else if ((e.key === "z" || e.key === "Z") && (e.metaKey || e.ctrlKey) && S.draft) { e.preventDefault(); undoStroke(); }
   });
 
   // ------------------------------------------------------------------ the composer
   function pressGroup(sel, attr, val) { document.querySelectorAll(sel).forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute(attr) === val)); }); }
-  function startDraft(existing) {
-    if (!V.paused) V.pause();
-    if (existing) {
+  var PH_FRAME = $("#cText").getAttribute("placeholder"),
+      PH_WHOLE = "Ton avis sur l'ensemble… (ex. : « les transitions sont trop sèches », « la musique est trop forte partout », « le style me plaît »)";
+  function startDraft(existing, whole) {
+    whole = existing ? isWhole(existing) : !!whole;
+    if (!whole && !V.paused) V.pause();
+    if (existing && whole) {
+      S.draft = { id: existing.id, scope: "global", frame: null, t: null, t1: null, text: existing.text || "", kind: existing.kind || "autre", strokes: [], status: existing.status };
+    } else if (existing) {
       S.draft = { id: existing.id, frame: existing.frame, t: existing.t, t1: existing.t1 || null, text: existing.text || "", kind: existing.kind || "image",
                   strokes: JSON.parse(JSON.stringify(existing.strokes || [])), status: existing.status, wasStrokes: JSON.stringify(existing.strokes || []) };
       seekFrame(existing.frame);
+    } else if (whole) {
+      S.draft = { id: null, scope: "global", frame: null, t: null, t1: null, text: "", kind: "autre", strokes: [] };
     } else {
       var f = curFrame();
       S.draft = { id: null, frame: f, t: Math.round(f / fps() * 1000) / 1000, t1: null, text: "", kind: "image", strokes: [] };
     }
     S.sel = existing ? existing.id : null;
-    $("#composer").hidden = false; STAGE.classList.add("drawing");
-    $("#cText").value = S.draft.text; pressGroup(".kind", "data-k", S.draft.kind); $("#cErr").hidden = true;
+    $("#composer").hidden = false; $("#composer").classList.toggle("global", whole);
+    STAGE.classList.toggle("drawing", !whole);
+    $("#cText").value = S.draft.text; $("#cText").setAttribute("placeholder", whole ? PH_WHOLE : PH_FRAME);
+    pressGroup(".kind", "data-k", S.draft.kind); $("#cErr").hidden = true;
     $("#bSave").textContent = existing ? "Enregistrer les changements" : "Enregistrer la remarque";
     paintComposer(); renderPins(); drawInk(); renderList();
     if (window.matchMedia("(hover: hover)").matches) setTimeout(function () { $("#cText").focus(); }, 30);
@@ -503,6 +524,12 @@ textarea::placeholder { color: #6f7b88; }
   }
   function paintComposer() {
     if (!S.draft) return;
+    var whole = isWhole(S.draft);
+    $("#cHead").textContent = whole ? "Remarque sur toute la vidéo" : "Remarque à";
+    $("#cTc").hidden = whole;
+    $("#cSub").textContent = whole ? "Ce que tu penses de l'ensemble : le rythme, les transitions, le son, le style… Tu peux continuer à regarder la vidéo pendant que tu écris."
+                                   : "Entoure sur l'image ce dont tu parles (facultatif), puis écris ce que tu veux changer.";
+    if (whole) { $("#cRange").hidden = true; return; }
     $("#cTc").textContent = fmt(S.draft.t);
     var hasEnd = S.draft.t1 && S.draft.t1 > S.draft.t;
     $("#cRange").hidden = !hasEnd; if (hasEnd) $("#cRange").textContent = "→ " + fmt(S.draft.t1);
@@ -511,16 +538,16 @@ textarea::placeholder { color: #6f7b88; }
     $("#bEnd").textContent = hasEnd ? "Déplacer la fin ici" : "Fin du passage ici";
   }
   function closeDraft() {
-    S.draft = null; $("#composer").hidden = true; STAGE.classList.remove("drawing"); curStroke = null;
+    S.draft = null; $("#composer").hidden = true; $("#composer").classList.remove("global"); STAGE.classList.remove("drawing"); curStroke = null;
     renderPins(); drawInk(); renderList(); paintPlayhead();
   }
-  function cancelDraft() { if (S.draft && S.draft.id) seekFrame(S.draft.frame); closeDraft(); }
+  function cancelDraft() { if (S.draft && S.draft.id && !isWhole(S.draft)) seekFrame(S.draft.frame); closeDraft(); }
   function undoStroke() { if (S.draft && S.draft.strokes.length) { S.draft.strokes.pop(); drawInk(); } }
   document.querySelectorAll(".sw").forEach(function (b) { b.addEventListener("click", function () { S.color = b.getAttribute("data-c"); pressGroup(".sw", "data-c", S.color); }); });
   document.querySelectorAll(".kind").forEach(function (b) { b.addEventListener("click", function () { if (S.draft) { S.draft.kind = b.getAttribute("data-k"); pressGroup(".kind", "data-k", S.draft.kind); } }); });
   $("#bUndo").addEventListener("click", undoStroke);
   $("#bClear").addEventListener("click", function () { if (S.draft) { S.draft.strokes = []; drawInk(); } });
-  $("#cText").addEventListener("input", function () { if (S.draft) S.draft.text = this.value; });
+  $("#cText").addEventListener("input", function () { if (S.draft) S.draft.text = this.value; $("#cErr").hidden = true; });
   $("#cText").addEventListener("keydown", function (e) { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); saveDraft(); } });
   $("#bEnd").addEventListener("click", function () {
     if (!S.draft) return; var t = Math.round(curFrame() / fps() * 1000) / 1000;
@@ -532,6 +559,7 @@ textarea::placeholder { color: #6f7b88; }
   $("#bCancel").addEventListener("click", cancelDraft);
   $("#bSave").addEventListener("click", saveDraft);
   $("#bMark").addEventListener("click", function () { if (!S.draft) startDraft(); });
+  $("#bGlobal").addEventListener("click", function () { if (!S.draft) startDraft(null, true); });
   function say(t, cls) { var m = $("#sendMsg"); m.className = cls || ""; m.textContent = t; }
   function showErr(m) { var e = $("#cErr"); e.textContent = m; e.hidden = false; }
 
@@ -547,15 +575,22 @@ textarea::placeholder { color: #6f7b88; }
   function rid() { return "r" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
   async function saveDraft() {
     var d = S.draft; if (!d) return;
+    var whole = isWhole(d);
     d.text = $("#cText").value.trim();
+    if (whole && !d.text) { showErr("Écris ton avis sur l'ensemble de la vidéo."); return; }
     if (!d.text && !d.strokes.length) { showErr("Écris ce que tu veux changer, ou entoure-le sur l'image."); return; }
     if (!S.db) { showErr("Ta remarque ne peut pas être gardée ici : ouvre cette page dans Claude, connecté à ton compte."); return; }
-    if (curFrame() !== d.frame) { seekFrame(d.frame); }
-    await waitSeek();
-    var now = new Date().toISOString(), body = {
-      video: S.cur.id, t: d.t, frame: d.frame, t1: d.t1 || null, text: d.text, kind: d.kind, strokes: d.strokes.map(function (s) { return { c: s.c, w: s.w, p: s.p }; }),
-      thumb: thumb(d.strokes), updatedAt: now
-    };
+    var now = new Date().toISOString(), body;
+    if (whole) {
+      body = { video: S.cur.id, scope: "global", t: null, frame: null, t1: null, text: d.text, kind: d.kind, strokes: [], thumb: null, updatedAt: now };
+    } else {
+      if (curFrame() !== d.frame) { seekFrame(d.frame); }
+      await waitSeek();
+      body = {
+        video: S.cur.id, t: d.t, frame: d.frame, t1: d.t1 || null, text: d.text, kind: d.kind, strokes: d.strokes.map(function (s) { return { c: s.c, w: s.w, p: s.p }; }),
+        thumb: thumb(d.strokes), updatedAt: now
+      };
+    }
     var btn = $("#bSave"); btn.disabled = true;
     try {
       if (d.id) {
@@ -576,12 +611,19 @@ textarea::placeholder { color: #6f7b88; }
 
   // ------------------------------------------------------------------ the list
   function numberRemarks() {
-    S.remarks.sort(function (a, b) { return a.t - b.t || String(a.createdAt).localeCompare(String(b.createdAt)); });
-    S.remarks.forEach(function (r, i) { r.num = i + 1; });
+    // the remarks on the whole video come first; the others follow the timeline and are numbered 1, 2, 3…
+    S.remarks.sort(function (a, b) {
+      var ga = isWhole(a) ? 0 : 1, gb = isWhole(b) ? 0 : 1;
+      return ga - gb || (ga ? a.t - b.t : 0) || String(a.createdAt).localeCompare(String(b.createdAt));
+    });
+    var n = 0;
+    S.remarks.forEach(function (r) { r.num = isWhole(r) ? null : ++n; });
   }
   function selectRemark(id, seek) {
     var r = S.remarks.filter(function (x) { return x.id === id; })[0]; if (!r) return;
-    S.sel = id; if (!V.paused) V.pause();
+    S.sel = id;
+    if (isWhole(r)) { renderPins(); renderList(); drawInk(); return; }
+    if (!V.paused) V.pause();
     if (seek) seekFrame(r.frame);
     renderPins(); renderList(); drawInk();
   }
@@ -592,14 +634,21 @@ textarea::placeholder { color: #6f7b88; }
     $("#count").textContent = S.remarks.length ? S.remarks.length + (S.remarks.length > 1 ? " remarques" : " remarque") : "";
     S.remarks.forEach(function (r) {
       var st = STATE[r.status] || STATE["ouverte"];
+      var whole = isWhole(r);
       var li = document.createElement("li"); li.className = "n " + st[1] + (r.id === S.sel ? " sel" : "");
-      var th = document.createElement("button"); th.type = "button"; th.className = "th"; th.setAttribute("aria-label", "Voir la remarque " + r.num + " sur l'image");
-      if (r.thumb) { var im = document.createElement("img"); im.alt = ""; im.src = r.thumb; th.appendChild(im); }
-      var nb = document.createElement("b"); nb.textContent = r.num; th.appendChild(nb);
+      var th = document.createElement("button"); th.type = "button"; th.className = "th" + (whole ? " whole" : "");
+      th.setAttribute("aria-label", whole ? "Remarque sur toute la vidéo" : "Voir la remarque " + r.num + " sur l'image");
+      if (whole) { th.innerHTML = WHOLE_ICO; var lb = document.createElement("span"); lb.textContent = "Toute la vidéo"; th.appendChild(lb); }
+      else {
+        if (r.thumb) { var im = document.createElement("img"); im.alt = ""; im.src = r.thumb; th.appendChild(im); }
+        var nb = document.createElement("b"); nb.textContent = r.num; th.appendChild(nb);
+      }
       th.addEventListener("click", function () { selectRemark(r.id, true); });
       var body = document.createElement("div");
       var meta = document.createElement("div"); meta.className = "meta";
-      var tcb = document.createElement("button"); tcb.type = "button"; tcb.className = "tc"; tcb.textContent = fmt(r.t) + (r.t1 ? " → " + fmt(r.t1) : "");
+      var tcb = document.createElement("button"); tcb.type = "button"; tcb.className = "tc";
+      tcb.textContent = whole ? "Toute la vidéo" : fmt(r.t) + (r.t1 ? " → " + fmt(r.t1) : "");
+      if (whole) tcb.style.fontFamily = "var(--ui)";
       tcb.addEventListener("click", function () { selectRemark(r.id, true); });
       var kd = document.createElement("span"); kd.textContent = KIND[r.kind] || "Autre";
       var sd = document.createElement("span"); sd.className = "st"; sd.textContent = st[0];
@@ -628,7 +677,7 @@ textarea::placeholder { color: #6f7b88; }
     });
     var sb = $("#bSend");
     sb.disabled = !open || !!S.draft;
-    sb.textContent = open ? "J'ai fini : envoyer " + open + (open > 1 ? " remarques" : " remarque") + " à Claude" : "J'ai fini : envoyer à Claude";
+    sb.textContent = open ? "J'ai fini mes remarques (" + open + (open > 1 ? " nouvelles)" : " nouvelle)") : "J'ai fini mes remarques";
     paintVideoState();
   }
   async function delRemark(id) {
@@ -645,33 +694,43 @@ textarea::placeholder { color: #6f7b88; }
     do {
       txt = head + "\n" + list.map(function (r) {
         var s = r.text || "(dessin seulement)"; if (s.length > cut) s = s.slice(0, cut - 1) + "…";
+        if (isWhole(r)) return "• Toute la vidéo · " + (KIND[r.kind] || "Autre") + " : " + s;
         return r.num + ". " + fmt(r.t) + (r.t1 ? "→" + fmt(r.t1) : "") + " · " + (KIND[r.kind] || "Autre") + (r.strokes && r.strokes.length ? " · entouré" : "") + " : " + s;
       }).join("\n") + "\n" + tail;
       cut -= 40;
     } while (new TextEncoder().encode(txt).length > 3800 && cut > 40);
     return txt;
   }
+  // The page cannot write into the conversation itself (a message from here would open a new conversation): it marks the
+  // remarks as ready, copies their summary, and asks him to write « c'est bon » to Claude in the conversation he came from.
+  function copyText(t) {
+    var viaApi = null;
+    try { if (navigator.clipboard && navigator.clipboard.writeText) viaApi = navigator.clipboard.writeText(t); } catch (e) { viaApi = null; }
+    if (viaApi) return viaApi.then(function () { return true; }, function () { return legacyCopy(t); });
+    return Promise.resolve(legacyCopy(t));
+  }
+  function legacyCopy(t) {
+    try {
+      var ta = document.createElement("textarea"); ta.value = t; ta.setAttribute("readonly", ""); ta.style.cssText = "position:fixed;left:-9999px;top:0;opacity:0";
+      document.body.appendChild(ta); ta.select(); var ok = document.execCommand("copy"); ta.remove(); return !!ok;
+    } catch (e) { return false; }
+  }
   $("#bSend").addEventListener("click", async function () {
     var btn = this, msg = $("#sendMsg");
     var open = S.remarks.filter(function (r) { return r.status === "ouverte"; });
     if (!open.length || !S.db) return;
-    btn.disabled = true; msg.className = ""; msg.textContent = "Envoi…";
-    var text = summary(open), toClaude = false;
-    if (S.comments) {
-      try {
-        var can = await S.comments.canSendToClaude();
-        if (can === "available") { var anchor = await S.comments.anchorFor(btn); await S.comments.sendToClaude({ anchor: anchor, text: text }); toClaude = true; }
-      } catch (err) { toClaude = false; }
-    }
+    btn.disabled = true; msg.className = ""; msg.textContent = "J'enregistre…";
+    var text = summary(open), copying = copyText(text);   // started inside the click, as the clipboard requires
     try {
       var round = 1 + S.remarks.reduce(function (m, r) { return Math.max(m, r.round || 0); }, 0), now = new Date().toISOString();
       for (var i = 0; i < open.length; i++) await S.db.doc("remarks/" + open[i].id).update({ status: "envoyée", round: round, sentAt: now });
-      await S.db.doc("rounds/" + S.cur.id + "-" + round).set({ video: S.cur.id, n: round, sentAt: now, ids: open.map(function (r) { return r.id; }), count: open.length, toClaude: toClaude, text: text });
+      await S.db.doc("rounds/" + S.cur.id + "-" + round).set({ video: S.cur.id, n: round, sentAt: now, ids: open.map(function (r) { return r.id; }), count: open.length, toClaude: false, text: text });
+      var copied = await copying;
       msg.className = "ok";
-      msg.textContent = toClaude ? "Envoyé ✓ Claude a reçu tes " + open.length + " remarques dans la conversation et s'y met."
-                                 : "Tes " + open.length + " remarques sont enregistrées ✓ Écris « c'est bon » à Claude dans la conversation pour qu'il s'y mette.";
+      msg.textContent = "C'est prêt ✓ Retourne dans la conversation avec Claude et écris « c'est bon » : il lit tes " + open.length + (open.length > 1 ? " remarques" : " remarque") + " et s'y met."
+                        + (copied ? " (Le résumé est aussi copié : tu peux le coller à la place.)" : "");
     } catch (err) {
-      msg.textContent = toClaude ? "Claude a reçu ton message, mais l'état des remarques n'a pas été mis à jour ici." : "L'envoi n'a pas marché (" + (err && err.code || "erreur") + "). Réessaie dans un instant.";
+      msg.textContent = "Ça n'a pas été enregistré (" + (err && err.code || "erreur") + "). Réessaie dans un instant.";
     } finally { renderList(); }
   });
 
@@ -695,7 +754,7 @@ textarea::placeholder { color: #6f7b88; }
         done = S.remarks.filter(function (r) { return r.status === "traitée"; }).length;
     c.hidden = false;
     if (open) { c.className = "chip c-open"; c.textContent = open + " à envoyer"; }
-    else if (sent) { c.className = "chip c-sent"; c.textContent = "Chez Claude"; }
+    else if (sent) { c.className = "chip c-sent"; c.textContent = "Pour Claude"; }
     else if (done) { c.className = "chip c-done"; c.textContent = "Corrigée"; }
     else { c.className = "chip"; c.textContent = "À regarder"; }
   }
@@ -705,7 +764,7 @@ textarea::placeholder { color: #6f7b88; }
     var note = $("#claudeNote");
     if (v.note) { note.textContent = ""; var b = document.createElement("b"); b.textContent = "Claude : "; note.appendChild(b); note.appendChild(document.createTextNode(v.note)); note.hidden = false; } else note.hidden = true;
     var src = v.asset ? "/_blob/" + v.asset : (S.local[v.id] || "");
-    $("#bMark").disabled = true;
+    $("#bMark").disabled = true; $("#bGlobal").disabled = false;
     if (src) {
       $("#stageMsg").hidden = true;
       if (V.getAttribute("src") !== src) { V.src = src; V.load(); }
@@ -771,7 +830,6 @@ textarea::placeholder { color: #6f7b88; }
       }, function () { clearTimeout(S.loadTimer); say("Les vidéos ne se chargent plus. Recharge la page."); });
     });
     window.claude.use("assets").then(function (a) { S.assets = a; });
-    window.claude.use("comments").then(function (c) { S.comments = c; });
   }
   var hot = window.claude && window.claude.hot;
   if (hot && hot.ready) hot.ready(start); else start((hot && hot.data) || {});

@@ -12,14 +12,21 @@ from PIL import Image, ImageDraw, ImageFont
 src, video, out = sys.argv[1], sys.argv[2], sys.argv[3]
 os.makedirs(out, exist_ok=True)
 files = sorted(glob.glob(os.path.join(src, "**", "*.json"), recursive=True))
-rems = []
+rems, whole = [], []
 for f in files:
     d = json.load(open(f))
     d = d.get("data", d)
-    if "frame" in d:
-        d["_id"] = os.path.splitext(os.path.basename(f))[0]
+    if "video" not in d and "frame" not in d:
+        continue
+    d["_id"] = os.path.splitext(os.path.basename(f))[0]
+    if d.get("scope") == "global" or d.get("frame") is None:
+        whole.append(d)                      # a remark on the whole video: no frame, no drawing
+    else:
         rems.append(d)
 rems.sort(key=lambda r: (r["t"], r.get("createdAt", "")))
+whole.sort(key=lambda r: r.get("createdAt", ""))
+for r in whole:
+    print("Toute la vidéo · %s · %s : %s" % (r.get("kind"), r.get("status"), (r.get("text") or "").replace("\n", " ")))
 
 
 def frame(n, path):
@@ -68,13 +75,33 @@ for i, r in enumerate(rems, 1):
                                              (r.get("text") or "(dessin seulement)").replace("\n", " "), name))
 if os.path.exists(os.path.join(out, "_f.png")):
     os.remove(os.path.join(out, "_f.png"))
-# one sheet: every remark, its frame (and end frame), its words
-if cards:
-    tw = 640; th = int(tw * cards[0][2].size[1] / cards[0][2].size[0]); pad = 16; txt_h = 120
-    sheet = Image.new("RGB", (pad + 2 * (tw + pad), pad + len(cards) * (th + txt_h + pad)), (14, 17, 22))
+# one sheet: the remarks on the whole video first (words only), then every remark, its frame (and end frame), its words
+def wrap(d, text, fnt, width):
+    words, line, lines = (text or "").split(), "", []
+    for w_ in words:
+        if d.textlength(line + " " + w_, font=fnt) > width:
+            lines.append(line); line = w_
+        else:
+            line = (line + " " + w_).strip()
+    lines.append(line)
+    return lines
+
+
+if cards or whole:
+    tw = 640; th = int(tw * cards[0][2].size[1] / cards[0][2].size[0]) if cards else 360; pad = 16; txt_h = 120
+    probe_d = ImageDraw.Draw(Image.new("RGB", (8, 8)))
+    whole_lines = [(r, wrap(probe_d, r.get("text"), small, 2 * tw)) for r in whole]
+    top = sum(44 + 24 * len(ls) + pad for _, ls in whole_lines)
+    sheet = Image.new("RGB", (pad + 2 * (tw + pad), pad + top + len(cards) * (th + txt_h + pad)), (14, 17, 22))
     d = ImageDraw.Draw(sheet)
+    y = pad
+    for r, ls in whole_lines:
+        d.text((pad, y), "Toute la vidéo  ·  %s  ·  %s" % (r.get("kind", ""), r.get("status", "")), fill=(143, 208, 255), font=font)
+        for j, ln in enumerate(ls):
+            d.text((pad, y + 36 + j * 24), ln, fill=(233, 238, 244), font=small)
+        y += 44 + 24 * len(ls) + pad
     for k, (i, r, im, end) in enumerate(cards):
-        y = pad + k * (th + txt_h + pad)
+        y = pad + top + k * (th + txt_h + pad)
         sheet.paste(im.resize((tw, th)), (pad, y))
         if end is not None:
             sheet.paste(end.resize((tw, th)), (pad * 2 + tw, y))
