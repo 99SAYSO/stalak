@@ -38,6 +38,20 @@ window.LV = (function () {
   function box(e, x, y, w, h) { e.style.left = px(x); e.style.top = px(y); if (w !== undefined) { e.style.width = px(w); e.style.height = px(h); } }
   function img(src, css, parent) { var i = el("img", "abs", css, parent); i.src = src; i.alt = ""; return i; }
   function ui(name) { return "assets/ui/" + name + ".png"; }
+  // ---------------------------------------------------------------- v2: the transitions (owner's remark, 2/11: "trop sec",
+  // transitions that melt into the set). A camera maps the local point P to the screen point Q with the zoom Z (origin 0 0);
+  // zooms are interpolated in log space, so that they look steady.
+  function cam(e, P, Q, Z) { e.style.transformOrigin = "0 0"; tf(e, "translate(" + px(Q[0] - P[0] * Z) + "," + px(Q[1] - P[1] * Z) + ") scale(" + Z.toFixed(5) + ")"); }
+  function lz(a, b, q) { return Math.exp(lerp(Math.log(a), Math.log(b), q)); }
+  function dio3(q) { return q <= 0 || q >= 1 ? 0 : (q < 0.5 ? 12 * q * q : 12 * (1 - q) * (1 - q)); }   // the slope of io3
+  // motion blur along the move only (x for a pan, y for a swipe): an SVG filter whose deviation follows the speed
+  function mblur(e, id, sd) {
+    var on = sd > 0.4;
+    if (on) $[id].setAttribute("stdDeviation", id === "mbx" ? sd.toFixed(1) + " 0" : "0 " + sd.toFixed(1));
+    e.style.filter = on ? "url(#" + id + ")" : "none";     // set every frame: blur() may have used the same element
+  }
+  function mbSpeed(dist, dur, q) { return Math.min(60, dio3(q) * dist / dur / T.FPS * 0.3); }   // 30 % of the move per frame
+  function gmask(e, css) { var v = css || ""; if (e.__gm !== v) { e.style.webkitMaskImage = v; e.style.maskImage = v; e.__gm = v; } }
   // words of a line, each its own span (blur-in, letters…)
   function words(parent, text, cls) {
     return text.split(" ").map(function (w, i, a) { var s = el("span", "w " + (cls || ""), "", parent, w); if (i < a.length - 1) parent.appendChild(document.createTextNode(" ")); return s; });
@@ -170,6 +184,14 @@ window.LV = (function () {
     ["w-night", "w-blue", "w-studio", "skywrap", "skycam", "w-sky", "ssnow", "sbokeh", "s0", "spark", "s1", "s1b", "s2", "s3", "s3a", "s3b", "s3c", "phone",
      "tablet", "s4", "live", "s4ui", "s4prev", "s5", "bento", "f0", "f1", "f1a", "f1b", "f1c", "f2", "f2v", "f3", "s6", "lap6", "lap6s", "s7", "s7cam", "prev7",
      "s8", "s9", "car", "car0", "car1", "car2", "car3", "s10", "s11", "s12", "cursor", "aurora", "nsnow", "bsnow"].forEach(function (id) { $[id] = root.querySelector("#" + id); });
+    $.sun = root.querySelector("#w-studio .sun");
+    // the motion blurs of the pans (x) and of the swipe (y)
+    var fs = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    fs.setAttribute("width", "0"); fs.setAttribute("height", "0"); fs.style.cssText = "position:absolute;left:0;top:0;width:0;height:0";
+    fs.innerHTML = '<filter id="mbx" x="-25%" y="-5%" width="150%" height="110%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="0 0"/></filter>' +
+                   '<filter id="mby" x="-5%" y="-25%" width="110%" height="150%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="0 0"/></filter>';
+    root.appendChild(fs);
+    $.mbx = fs.querySelector("#mbx feGaussianBlur"); $.mby = fs.querySelector("#mby feGaussianBlur");
     // ---- worlds
     $.nfl = snow($.nsnow, 60, 3, false, 0.5);
     $.bfl = snow($.bsnow, 50, 5, false, 0.55);
@@ -194,7 +216,11 @@ window.LV = (function () {
     // ---- S1b: inside the composer, "I have a song."
     $.s1bBox = el("div", "glass", "left:150px;top:250px;width:2200px;height:1100px;border-radius:120px", $.s1b);
     $.s1bTxt = el("div", "abs", "left:290px;top:452px;font-weight:400;font-size:150px;white-space:nowrap;line-height:1", $.s1b);
-    $.s1bT = el("span", "", "", $.s1bTxt); $.s1bC = el("span", "caret", "height:138px;width:8px", $.s1bTxt);
+    $.s1bT = el("span", "", "", $.s1bTxt); $.s1bW = el("span", "", "", $.s1bTxt); $.s1bE = el("span", "", "", $.s1bTxt);   // "I have a " · "song" · "."
+    $.s1bC = el("span", "caret", "height:138px;width:8px", $.s1bTxt);
+    // the whole line, unseen, to know where "song" will be while it is still being typed
+    $.s1bG = el("div", "abs", "left:290px;top:452px;font-weight:400;font-size:150px;white-space:nowrap;line-height:1;visibility:hidden", $.s1b);
+    $.s1bG.appendChild(document.createTextNode("I have a ")); $.s1bGw = el("span", "", "", $.s1bG, "song"); $.s1bG.appendChild(document.createTextNode("."));
     // ---- S2: "song" → the icon → the name
     $.song2 = el("div", "big ice", "top:400px;font-weight:600;font-size:270px", $.s2, "song");
     $.ic2 = img("assets/brand/icon.svg", "left:850px;top:430px;width:220px;height:220px", $.s2);
@@ -207,7 +233,8 @@ window.LV = (function () {
     $.lap3 = el("div", "abs", "left:342px;top:96px;width:1236px;height:822px", $.s3a);
     el("div", "bezel", "left:0;top:0;width:1236px;height:784px;border-radius:30px", $.lap3);
     var sc3 = el("div", "screen", "left:20px;top:18px;width:1196px;height:748px;border-radius:12px", $.lap3); img(ui("screen_home"), "left:0;top:0;width:100%;height:100%", sc3);
-    el("div", "abs", "left:-96px;top:780px;width:1428px;height:36px;border-radius:0 0 26px 26px;background:linear-gradient(180deg,#e3e9f2 0%,#c3ccd9 55%,#9aa6b8 100%);box-shadow:0 34px 50px rgba(30,60,110,0.28)", $.lap3);
+    // its base as wide as the lid (v2, owner's remark 4: the base's ends went far past the screen)
+    el("div", "abs", "left:-12px;top:780px;width:1260px;height:34px;border-radius:0 0 26px 26px;background:linear-gradient(180deg,#e3e9f2 0%,#c3ccd9 55%,#9aa6b8 100%);box-shadow:0 34px 50px rgba(30,60,110,0.28)", $.lap3);
     el("div", "abs", "left:520px;top:780px;width:196px;height:12px;border-radius:0 0 12px 12px;background:#a9b3c3", $.lap3);
     // the phone with the real edit step (his take in its preview)
     var ph = $.phone; ph.style.cssText = "left:0;top:0;width:436px;height:900px";
@@ -217,12 +244,18 @@ window.LV = (function () {
     el("div", "abs", "left:160px;top:32px;width:116px;height:34px;border-radius:17px;background:#05070c", ph);
     // the tablet with the real edit step
     var tb = $.tablet; tb.style.cssText = "left:0;top:0;width:1300px;height:906px";
-    tb.insertBefore(el("div", "bezel", "left:0;top:0;width:1300px;height:906px;border-radius:52px"), tb.firstChild);
-    var tsc = el("div", "screen", "left:22px;top:22px;width:1256px;height:862px;border-radius:30px", null); tb.insertBefore(tsc, tb.children[1]);
+    $.tbBezel = el("div", "bezel", "left:0;top:0;width:1300px;height:906px;border-radius:52px"); tb.insertBefore($.tbBezel, tb.firstChild);
+    var tsc = $.tbScreen = el("div", "screen", "left:22px;top:22px;width:1256px;height:862px;border-radius:30px", null); tb.insertBefore(tsc, tb.children[1]);
     img(ui("screen_tablet_edit"), "left:0;top:0;width:100%;height:100%", tsc);
     // the videos sit on the screens' previews
     place(T.UI.screen_phone_edit, "view", ph, 18, 18, 400 / 390, ["v3b"]);
-    place(T.UI.screen_tablet_edit, "view", tb, 22, 22, 1256 / 1180, ["v3c"]);
+    $.tbPrev = place(T.UI.screen_tablet_edit, "view", tb, 22, 22, 1256 / 1180, ["v3c"]);
+    // v2: the tablet's preview becomes his 9:16 card of S4 (the same take, the same instant): where it lands
+    var tk = 1256 / 1180, vb = T.UI.screen_tablet_edit.boxes.view;
+    $.tbV = [22 + vb[0] * tk, 22 + vb[1] * tk, vb[2] * tk, vb[3] * tk];
+    CARD.h = 960; CARD.w = CARD.h * vb[2] / vb[3]; CARD.x = 960 - CARD.w / 2; CARD.y = 60;
+    CARD.s = CARD.w / $.tbV[2]; CARD.r = 14 * tk * CARD.s;
+    CARD.x2 = BOX4.x0 + BOX4.w + 160;                               // beside the glass box, once the import starts
     // ---- S4
     var s4 = $.s4ui;
     $.ibox = el("div", "glass", "", s4);
@@ -274,10 +307,11 @@ window.LV = (function () {
     var lp = $.lap6; lp.style.cssText = "left:410px;top:150px;width:1100px;height:690px;transform-style:preserve-3d";
     lp.insertBefore(el("div", "bezel", "left:-18px;top:-18px;width:1136px;height:726px;border-radius:28px"), lp.firstChild);
     $.lap6s.style.cssText = "left:0;top:0;width:1100px;height:690px;border-radius:10px";
-    $.lap6b = el("div", "abs", "left:-90px;top:708px;width:1280px;height:760px;transform-origin:50% 0;transform:rotateX(84deg);border-radius:0 0 40px 40px;" +
+    // its base: as wide as the lid and less deep (v2, owner's remark 4: its ends went far past the screen)
+    $.lap6b = el("div", "abs", "left:-18px;top:708px;width:1136px;height:540px;transform-origin:50% 0;transform:rotateX(75deg);border-radius:0 0 34px 34px;" +
       "background:linear-gradient(180deg,#cfd7e3,#9aa6b8);box-shadow:inset 0 0 0 2px #e8eef6", lp);
-    el("div", "abs", "left:90px;top:60px;width:1100px;height:420px;border-radius:18px;background:repeating-linear-gradient(90deg,#3a4354 0 62px,#2b3241 62px 70px),#2b3241;opacity:0.9", $.lap6b);
-    el("div", "abs", "left:440px;top:520px;width:400px;height:200px;border-radius:18px;background:#b9c3d2;box-shadow:inset 0 0 0 2px #d9e0ea", $.lap6b);
+    el("div", "abs", "left:78px;top:44px;width:980px;height:290px;border-radius:16px;background:repeating-linear-gradient(90deg,#3a4354 0 56px,#2b3241 56px 63px),#2b3241;opacity:0.9", $.lap6b);
+    el("div", "abs", "left:388px;top:362px;width:360px;height:146px;border-radius:16px;background:#b9c3d2;box-shadow:inset 0 0 0 2px #d9e0ea", $.lap6b);
     $.wBeau = el("div", "abs", "top:486px;font-weight:500;font-size:104px;white-space:nowrap;line-height:1", $.s6, "Beautifully");
     $.wEdit = el("div", "abs", "top:486px;font-weight:500;font-size:104px;white-space:nowrap;line-height:1", $.s6, "edited");
     $.readyA = el("div", "abs", "top:486px;width:800px;font-weight:500;font-size:104px;white-space:nowrap;line-height:1;text-align:right", $.s6);
@@ -319,7 +353,7 @@ window.LV = (function () {
     $.sc8cam = el("div", "abs", "left:0;top:0;width:1276px;height:796px;transform-origin:0 0", $.sc8);
     $.sc8sky = mkSky($.sc8cam, 61);
     $.ex8 = img(ui("export"), "", $.sc8cam);
-    el("div", "abs", "left:-110px;top:832px;width:1540px;height:34px;border-radius:0 0 26px 26px;background:linear-gradient(180deg,#e3e9f2 0%,#c3ccd9 55%,#9aa6b8 100%)", $.lap8);
+    el("div", "abs", "left:-12px;top:832px;width:1344px;height:32px;border-radius:0 0 26px 26px;background:linear-gradient(180deg,#e3e9f2 0%,#c3ccd9 55%,#9aa6b8 100%)", $.lap8);
     $.days = []; var DN = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"], DS = ["t2_06", "t3_04", "t1_07", "t2_10", "t3_09", "t1_11", "t2_02"];
     DN.forEach(function (n, i) {
       var d = el("div", "abs", "width:212px;height:420px", s8);
@@ -334,9 +368,9 @@ window.LV = (function () {
     var CL = [["TikTok", 315, 560], ["Reels", 315, 560], ["Shorts", 315, 560], ["YouTube", 747, 420]];
     $.cards = CL.map(function (c, i) {
       var e = $["car" + i]; e.style.width = px(c[1]); e.style.height = px(c[2]); e.style.borderRadius = "26px";
-      el("div", "abs", "left:0;right:0;top:" + px(c[2] + 22) + ";text-align:center;font-weight:600;font-size:34px;white-space:nowrap", e, c[0] + (i === 3 ? ' <span class="pro" style="vertical-align:4px">PRO</span>' : ""));
+      var lb = el("div", "abs", "left:0;right:0;top:" + px(c[2] + 22) + ";text-align:center;font-weight:600;font-size:34px;white-space:nowrap", e, c[0] + (i === 3 ? ' <span class="pro" style="vertical-align:4px">PRO</span>' : ""));
       e.style.overflow = "visible"; [].forEach.call(e.querySelectorAll("video"), function (v) { v.style.borderRadius = "26px"; });
-      return { e: e, w: c[1], h: c[2] };
+      return { e: e, w: c[1], h: c[2], lb: lb };
     });
     $.br = [el("div", "abs", "font-weight:300;font-size:250px;line-height:1;color:#fff;top:0", $.s9, "{"), el("div", "abs", "font-weight:300;font-size:250px;line-height:1;color:#fff;top:0", $.s9, "}")];
     // ---- S10: guides and the glass panel, typed
@@ -382,12 +416,20 @@ window.LV = (function () {
   function render(t) {
     var S = T.S;
     // the worlds: which one is on
-    var night = (t < S.s1) || (t >= S.s2 && t < S.s3a) || (t >= S.s12);
-    var blue = (t >= S.s3c && t < S.s5) || (t >= S.s6 && t < S.s7 + 1.2) || (t >= S.s8 - 0.32 && t < S.s9) || (t >= S.s11 && t < S.s12);
-    var studio = (t >= S.s3a && t < S.s3c);
+    // v2: the worlds overlap where a transition melts one into the next (the night comes in under "I have a song.", the
+    // studio holds the three devices and gives way to the blue under the tablet's push, the blue rides the S8 → S9 swipe,
+    // waits under S10's streak and fades into the night under the crystal)
+    var night = (t < S.s1) || (t >= S.s2 - 0.45 && t < S.s3a) || (t >= S.s12);
+    var blue = (t >= S.s4 - 0.4 && t < S.s5 + 0.05) || (t >= S.s6 - 0.1 && t < S.s7 + 1.2) || (t >= S.s8 - 0.32 && t < S.s9 + 0.2) || (t >= S.s11 - 0.3 && t < S.s12 + 0.3);
+    var studio = (t >= S.s3a && t < S.s4);
     vis($["w-night"], night); vis($["w-blue"], blue); vis($["w-studio"], studio);
     if (night) { auroraAt(t); snowAt($.nfl, t); }
-    if (blue) snowAt($.bfl, t);
+    if (blue) {
+      snowAt($.bfl, t); op($["w-blue"], 1 - E.io2(seg(t, S.s12, S.s12 + 0.3)));
+      var sw = seg(t, S.s9 - 0.2, S.s9 + 0.2);
+      tf($["w-blue"], sw > 0 && sw < 1 ? "translateY(" + px(-H * E.io3(sw)) + ")" : "none"); mblur($["w-blue"], "mby", mbSpeed(H, 0.4, sw));
+    }
+    if (studio) op($["w-studio"], 1 - E.io2(seg(t, S.s4 - 0.4, S.s4)));
     r0(t, S); r1(t, S); r2(t, S); r3(t, S); r4(t, S); r5(t, S); r6(t, S); r7(t, S); r8(t, S); r9(t, S); r10(t, S); r11(t, S); r12(t, S);
     cursorAt(t, curPath(t, S), [K.go, K.toggle6, K.punchy, K.shuffle, K.pack, K.export]);
   }
@@ -414,6 +456,7 @@ window.LV = (function () {
     $.skycam.style.transformOrigin = "0 0";
     tf($.skycam, "translate(" + px(960 - cx * s * inner) + "," + px(540 - cy * s * inner) + ") scale(" + (s * inner).toFixed(4) + ")");
     blur($.skycam, t >= S.s1b ? lerp(6, 12, seg(t, S.s1b, S.s1b + 0.4)) : 8 * push);
+    op($.skywrap, 1 - E.io2(seg(t, S.s2 - 0.45, S.s2)));            // v2: the sky goes out to the night as the camera nears "song"
     // × turns into +
     tf($.gx, "rotate(" + (45 * E.io3(seg(r, 0.15, 0.75))).toFixed(2) + "deg)");
     // the pill grows out of the + button
@@ -428,21 +471,27 @@ window.LV = (function () {
   }
   // ---- S1b: "I have a song." (typed while the voice says "a song?"), then S2: "song" → the icon → "Stalak"
   function r2(t, S) {
-    var onb = layer($.s1b, t, S.s1b, S.s2);
+    var onb = layer($.s1b, t, S.s1b, S.s2 + 0.12);
     if (onb) {
       var rb = t - S.s1b, full = "I have a song.", n = Math.floor(seg(t, K.type1[0], K.type1[1]) * full.length + 0.0001);
-      $.s1bT.textContent = full.slice(0, n);
-      vis($.s1bC, caretOn(t, t < K.type1[1]));
+      $.s1bT.textContent = full.slice(0, Math.min(n, 9)); $.s1bW.textContent = full.slice(9, Math.min(n, 13)); $.s1bE.textContent = full.slice(13, n);
+      var push = E.io3(seg(t, S.s2 - 0.45, S.s2));
+      vis($.s1bC, push === 0 && caretOn(t, t < K.type1[1]));
       var z = 1 + 0.05 * E.io2(seg(rb, 0, S.s2 - S.s1b));
       $.s1bTxt.style.transformOrigin = "0 75px"; tf($.s1bTxt, "scale(" + z.toFixed(4) + ")");
-      op($.s1bBox, seg(rb, 0, 0.2));
+      op($.s1bBox, seg(rb, 0, 0.2) * (1 - E.o2(seg(push, 0, 0.7))));
+      // v2: the camera pushes into "song" until it is the next shot's "song" (in the middle, 270 px); the other words go
+      var g = $.s1bGw, wx = 290 + (g.offsetLeft + g.offsetWidth / 2) * z, wy = 452 + 75;
+      cam($.s1b, [wx, wy], [lerp(wx, 960, push), lerp(wy, 535, push)], lz(1, 270 / (150 * z), push));
+      var rest = seg(push, 0.1, 0.7); op($.s1bT, 1 - rest); op($.s1bE, 1 - rest); blur($.s1bT, rest * 12); blur($.s1bE, rest * 12);
+      op($.s1bW, 1 - seg(t, S.s2 - 0.08, S.s2 + 0.1)); blur($.s1bW, 3 * push);
     }
-    var on = layer($.s2, t, S.s2, S.s3a); if (!on) return;
+    var on = layer($.s2, t, S.s2 - 0.1, S.s3a); if (!on) return;
     var r = t - S.s2;
-    // "song": floating toward the camera, blurred, then melting into the icon
+    // "song": floating toward the camera, blurred, then melting into the icon (v2: it takes over from the typed "song")
     var sq = seg(r, 0, 1.0), melt = E.io2(seg(r, 0.75, 1.15));
-    op($.song2, (1 - melt) * E.o3(seg(r, 0, 0.18)));
-    blur($.song2, lerp(9, 4, sq) + 22 * melt);
+    op($.song2, (1 - melt) * E.o3(seg(r, -0.08, 0.1)));
+    blur($.song2, lerp(3, 4, sq) + 22 * melt);
     tf($.song2, "scale(" + (lerp(1.0, 1.1, E.o2(sq)) * lerp(1, 0.55, melt)).toFixed(4) + ")");
     // the icon: appears from the blur, shines, shrinks, slides left; the name wipes in beside it on "Stalak"
     var iq = E.o3(seg(r, 0.85, 1.3)), shrink = E.io2(seg(r, 1.3, 1.75)), slide = E.o4(seg(r, 1.85, 2.35));
@@ -453,27 +502,55 @@ window.LV = (function () {
     $.shine2.style.backgroundPosition = lerp(100, 0, E.io2(seg(r, 1.2, 1.8))).toFixed(1) + "% 0";
     var wx = x + 168 + 30, wy = 540 - 75 - 6;
     box($.wm2w, wx, wy); $.wm2w.style.width = px(340 * E.o3(seg(r, 1.95, 2.5))); op($.wm2w, seg(r, 1.9, 2.0));
+    // v2: the camera dives into the icon's blue, right of its "S": the frame is all Stalak blue (#1f6fd6) just before the cut,
+    // and the next shot comes out of the same blue, on the laptop's screen
+    var dive = E.i3(seg(t, S.s3a - 0.5, S.s3a - 0.04)), P = [x + size * 106 / 128, y + size * 88 / 128];
+    cam($.s2, P, [lerp(P[0], 960, dive), lerp(P[1], 540, dive)], lz(1, 70, dive));
+    blur($.s2, 1.2 * dive);
   }
   // ---- S3: the devices
   function r3(t, S) {
     var on = layer($.s3, t, S.s3a, S.s4); if (!on) return;
-    vis($.s3a, t < S.s3b); vis($.s3b, t >= S.s3b && t < S.s3c); vis($.s3c, t >= S.s3c);
-    if (t < S.s3b) {                                   // the laptop: a slow push
-      var q = E.io2(seg(t, S.s3a, S.s3b)), s = lerp(0.97, 1.05, q);
+    // v2: the three devices stand on the same studio set; the camera pans from one to the next (12.0, 13.6), fast, with a
+    // motion blur along the pan, and the set's light drifts behind (parallax)
+    var HW = 0.2, q1 = seg(t, S.s3b - HW, S.s3b + HW), q2 = seg(t, S.s3c - HW, S.s3c + HW);
+    var camX = (E.io3(q1) + E.io3(q2)) * W, sd = mbSpeed(W, 2 * HW, q1) + mbSpeed(W, 2 * HW, q2);
+    var A = t < S.s3b + HW, B = t >= S.s3b - HW && t < S.s3c + HW, C = t >= S.s3c - HW;
+    vis($.s3a, A); vis($.s3b, B); vis($.s3c, C);
+    tf($.sun, "translateX(" + px(-0.35 * camX) + ")");
+    if (A) {                                           // the laptop: a slow push
+      var q = E.io2(seg(t, S.s3a, S.s3b)), s = lerp(0.97, 1.05, q), tx = 960 - 960 * s, ty = lerp(20, 0, q) + 500 - 500 * s;
       $.lap3.style.transformOrigin = "618px 404px";
-      tf($.lap3, "translate(" + px(960 - 960 * s) + "," + px(lerp(20, 0, q) + 500 - 500 * s) + ") scale(" + s.toFixed(4) + ")");
-    } else if (t < S.s3c) {                            // the phone: turning toward us
-      var q2 = E.io2(seg(t, S.s3b, S.s3c));
+      tf($.lap3, "translate(" + px(tx) + "," + px(ty) + ") scale(" + s.toFixed(4) + ")");
+      // v2: the shot starts inside its screen, in the home page's sky left of its card (the same blue as the icon), and
+      // pulls back out of it
+      var out = E.o3(seg(t, S.s3a, S.s3a + 0.85)), P = [960 + tx + s * (157.5 - 618), 500 + ty + s * (429.4 - 404)];
+      if (out < 1) { cam($.s3a, P, [lerp(960, P[0], out), lerp(540, P[1], out)], lz(9, 1, out)); blur($.s3a, 1.4 * (1 - seg(t, S.s3a, S.s3a + 0.45))); }
+      else { tf($.s3a, "translate(" + px(-camX) + ",0)"); mblur($.s3a, "mbx", sd); }
+    }
+    if (B) {                                           // the phone: turning toward us
+      var qb = E.io2(seg(t, S.s3b - HW, S.s3c));
       $.phone.style.transformOrigin = "218px 450px";
-      tf($.phone, "translate(" + px(742) + "," + px(lerp(110, 90, q2)) + ") perspective(2200px) rotateY(" + lerp(-24, -10, q2).toFixed(2) + "deg) rotateZ(" + lerp(-7, -4, q2).toFixed(2) + "deg) scale(" + lerp(0.96, 1.0, q2).toFixed(4) + ")");
-    } else {                                           // the tablet on its table: the camera rises
-      var q3 = E.io2(seg(t, S.s3c, S.s4));
+      tf($.phone, "translate(" + px(742) + "," + px(lerp(110, 90, qb)) + ") perspective(2200px) rotateY(" + lerp(-24, -10, qb).toFixed(2) + "deg) rotateZ(" + lerp(-7, -4, qb).toFixed(2) + "deg) scale(" + lerp(0.96, 1.0, qb).toFixed(4) + ")");
+      tf($.s3b, "translate(" + px(W - camX) + ",0)"); mblur($.s3b, "mbx", sd);
+    }
+    if (C) {                                           // the tablet on its table: the camera rises…
+      var a1 = E.io2(seg(t, S.s3c - HW, S.s4 - 1.0)), b1 = E.io3(seg(t, S.s4 - 1.0, S.s4));
+      // … then (v2) it straightens up and comes to us until its preview is his 9:16 card of S4, the same take going on
+      var V = $.tbV, txE = CARD.x - 650 - CARD.s * (V[0] - 650), tyE = CARD.y - 600 - CARD.s * (V[1] - 600);
+      var tx3 = lerp(310, txE, b1), ty3 = lerp(lerp(170, 120, a1), tyE, b1), rx3 = lerp(lerp(34, 22, a1), 0, b1), s3 = lz(lerp(1.1, 1.0, a1), CARD.s, b1);
       $.tablet.style.transformOrigin = "650px 600px";
-      tf($.tablet, "translate(" + px(310) + "," + px(lerp(170, 110, q3)) + ") perspective(2400px) rotateX(" + lerp(34, 22, q3).toFixed(2) + "deg) scale(" + lerp(1.1, 0.98, q3).toFixed(4) + ")");
+      tf($.tablet, "translate(" + px(tx3) + "," + px(ty3) + ") perspective(2400px) rotateX(" + rx3.toFixed(3) + "deg) scale(" + s3.toFixed(5) + ")");
+      var fade = E.io2(seg(t, S.s4 - 0.38, S.s4 - 0.03));            // the rest of the tablet goes; the preview stays
+      op($.tbBezel, 1 - fade); op($.tbScreen, 1 - fade);
+      $.tbPrev.style.borderRadius = px(14 * (1256 / 1180));           // × the push = the card's corners at 16.0
+      $.tbPrev.style.boxShadow = "0 " + px(30 / s3) + " " + px(60 / s3) + " rgba(5,20,60," + (0.32 * fade).toFixed(3) + ")";   // = the card's shadow
+      tf($.s3c, "translate(" + px(2 * W - camX) + ",0)"); mblur($.s3c, "mbx", sd);
     }
   }
   // ---- S4: him; the import (song and takes on the words); the sync; the real edit
-  var BOX4 = { x0: 140, x1: 520, y: 390, w: 880, h: 300 };
+  var BOX4 = { x0: 170, x1: 520, y: 390, w: 880, h: 300 };
+  var CARD = {};                    // v2: his 9:16 card (init: where the tablet's preview lands)
   function bx4(t) { return lerp(BOX4.x0, BOX4.x1, E.io3(seg(t, K.slide4, K.slide4 + 0.35))); }
   function edit4(t, S) {        // the edit step's layout and the camera that moves along the cut bar
     var I = T.UI, sw = I.stage_normal.w, ew = I.edit_normal.w, g = 30, x0 = (W - sw - g - ew) / 2;
@@ -484,12 +561,17 @@ window.LV = (function () {
     L.es = es; return L;
   }
   function r4(t, S) {
-    var on = layer($.s4, t, S.s4, S.s5); if (!on) return;
-    // him, full frame (a slow push), then a tall panel on the right while the box fills, then gone
+    var on = layer($.s4, t, S.s4, S.s5 + 0.05); if (!on) return;
+    // v2 (owner's remark 1: no more close-up of his face): him in his 9:16 card, the tablet's preview that came to us; it
+    // goes beside the glass box while the box fills, then leaves
     var split = E.o4(seg(t, K.split, K.split + 0.45)), gone = E.i3(seg(t, K.slide4, K.slide4 + 0.35));
-    var lx = lerp(0, 1180, split) + 760 * gone;
-    box($.live, lx, 0, W - lerp(0, 1180, split), H); vis($.live, t < K.slide4 + 0.4); $.live.style.borderRadius = px(28 * split);
-    var lv = $.live.querySelector("video"); if (lv) tf(lv, "scale(" + lerp(1.0, 1.06, E.io2(seg(t, S.s4, K.split))).toFixed(4) + ")");
+    box($.live, lerp(CARD.x, CARD.x2, split) + 760 * gone, CARD.y, CARD.w, CARD.h); vis($.live, t < K.slide4 + 0.4);
+    $.live.style.borderRadius = px(CARD.r); $.live.style.boxShadow = "0 30px 60px rgba(5,20,60,0.32)";
+    var lv = $.live.querySelector("video"); if (lv) tf(lv, "scale(" + lerp(1.0, 1.05, E.io2(seg(t, S.s4, K.split))).toFixed(4) + ")");
+    // v2: the end of S4 flies on through the cut bar into the grid of S5
+    var thru = E.i2(seg(t, S.s5 - 0.26, S.s5 + 0.05));
+    $.s4.style.transformOrigin = "960px 640px"; tf($.s4, thru > 0 ? "scale(" + lerp(1, 1.5, thru).toFixed(4) + ")" : "none");
+    blur($.s4, 16 * thru); op($.s4, 1 - seg(t, S.s5 - 0.04, S.s5 + 0.05));
     // the glass box, its hint, the chips, the → button
     var bx = bx4(t), by = BOX4.y, bw = BOX4.w, bh = BOX4.h;
     var morph = E.io3(seg(t, K.go + 0.05, K.go + 0.45));             // → the loader card
@@ -528,8 +610,12 @@ window.LV = (function () {
   }
   // ---- S5: the grid, then four flashes on the beats
   function r5(t, S) {
-    var on = layer($.s5, t, S.s5, S.s6); if (!on) return;
+    var on = layer($.s5, t, S.s5 - 0.05, S.s6 + 0.05); if (!on) return;
     var r = t - S.s5, FL = T.FL;
+    // v2: coming out of the flight through the cut bar
+    var zin = E.o3(seg(t, S.s5 - 0.05, S.s5 + 0.35));
+    $.s5.style.transformOrigin = "960px 540px"; tf($.s5, zin < 1 ? "scale(" + lerp(1.2, 1, zin).toFixed(4) + ")" : "none");
+    blur($.s5, 14 * (1 - E.o3(seg(t, S.s5 - 0.05, S.s5 + 0.3)))); op($.s5, seg(t, S.s5 - 0.05, S.s5 + 0.04));
     var gridOn = t < S.s5f; vis($.bento, gridOn); vis($.s5sky.e, gridOn);
     if (gridOn) {
       skyAt($.s5sky, t);
@@ -537,12 +623,25 @@ window.LV = (function () {
         var q = E.expo(seg(r, 0.05 + i * 0.09, 0.55 + i * 0.09)); op(e, q); tf(e, "scale(" + lerp(0.9, 1, q).toFixed(4) + ")"); blur(e, (1 - q) * 8);
         var v = e.querySelector("video"); if (v) op(v, seg(r, 0.3 + i * 0.09, 0.55 + i * 0.09));
       });
-      $.bento.style.transformOrigin = "960px 540px"; tf($.bento, "scale(" + lerp(1, 1.06, E.io2(seg(r, 0.4, S.s5f - S.s5))).toFixed(4) + ")");
+      // the camera: a slow push, then (v2) into the YouTube tile, which fills the frame and IS his music video (flash 1)
+      var pu = E.io3(seg(t, S.s5f - 0.45, S.s5f - 0.03)), Z0 = lerp(1, 1.06, E.io2(seg(r, 0.4, S.s5f - S.s5)));
+      cam($.bento, [lerp(960, 584 + 380, pu), lerp(540, 90 + 214, pu)], [960, 540], lz(Z0, 1920 / 760, pu));
+      var yt = $.tiles[1]; yt.style.borderRadius = px(28 * (1 - pu)); op(yt.querySelector(".tag"), 1 - seg(pu, 0, 0.4));
+      yt.style.boxShadow = "0 24px 50px rgba(5,20,60," + (0.3 * (1 - pu)).toFixed(3) + "), inset 0 0 0 1.5px rgba(255,255,255," + (0.4 * (1 - pu)).toFixed(3) + ")";
       lyrAt($.t4ly, T.LY.t4, t);
     }
     var fi = -1; for (var i = 0; i < 4; i++) if (t >= FL[i] && t < FL[i + 1]) fi = i;
+    if (t >= FL[4]) fi = 3;                                       // the last one stays under the first frames of S6
     vis($.f0, fi === 0); vis($.f1, fi === 1); vis($.f2, fi === 2); vis($.f3, fi === 3);
-    if (fi === 0) tf($.f0, "scale(" + lerp(1.08, 1.0, E.o3(seg(t, FL[0], FL[0] + 0.4))).toFixed(4) + ")");
+    // v2: no dry flash cut: each one leaves pushing toward us and the next comes in still moving, on the beat; the last one
+    // flies on into S6
+    if (fi >= 0) {
+      var fe = [$.f0, $.f1, $.f2, $.f3][fi], fa = FL[fi], fb = FL[fi + 1], last = fi === 3;
+      var outq = E.i2(seg(t, fb - (last ? 0.24 : 0.1), fb)), sIn = fi === 0 ? lerp(1, 1.05, E.o2(seg(t, fa, fb))) : lerp(1.14, 1, E.o3(seg(t, fa, fa + 0.24)));
+      fe.style.transformOrigin = "960px 540px"; tf(fe, "scale(" + (sIn * lerp(1, last ? 1.45 : 1.14, outq)).toFixed(4) + ")");
+      blur(fe, (fi === 0 ? 0 : 9 * (1 - E.o3(seg(t, fa, fa + 0.18)))) + (last ? 18 : 8) * outq);
+      op(fe, last ? 1 - seg(t, fb - 0.03, fb + 0.05) : 1);
+    }
     if (fi === 1) { skyAt($.f1sky, t); var q1 = E.o3(seg(t, FL[1], FL[1] + 0.35)); [$.f1a, $.f1b, $.f1c].forEach(function (e, j) { tf(e, "translateY(" + px((1 - q1) * (j === 1 ? -40 : 40)) + ")"); }); }
     if (fi === 2) { skyAt($.f2sky, t); lyrAt($.f2ly, T.LY.f2, t); tf($.f2v, "scale(" + lerp(1.05, 1.0, E.o3(seg(t, FL[2], FL[2] + 0.4))).toFixed(4) + ")"); }
     if (fi === 3) {
@@ -555,10 +654,15 @@ window.LV = (function () {
   function r6(t, S) {
     var on = layer($.s6, t, S.s6, S.s7 + 0.3); if (!on) return;   // its toggle stays a moment into S7: the pills grow out of it
     var r = t - S.s6, after = t >= S.s7;
+    // v2: it arrives out of the flight through the last flash
+    var zin = E.o3(seg(t, S.s6, S.s6 + 0.34));
+    $.s6.style.transformOrigin = "960px 540px"; tf($.s6, zin < 1 ? "scale(" + lerp(1.3, 1, zin).toFixed(4) + ")" : "none");
+    blur($.s6, 14 * (1 - E.o3(seg(t, S.s6, S.s6 + 0.28))));
     vis($.readyA, !after); vis($.readyB, !after); vis($.lap6, !after);
     var flat = E.io3(seg(r, 1.0, 2.0)), orbit = E.io2(seg(r, 0, 1.3));
-    var ry = lerp(lerp(-26, -14, orbit), 0, flat), rx = lerp(12, 0, flat);
-    var ww = lerp(1100, 420, flat), wh = lerp(690, 236, flat), wy = lerp(150, 540 - 236 / 2 - 4, flat);
+    // v2: seen a little from above, the lid leaning back 15° on its base: the keyboard deck shows, as wide as the lid
+    var ry = lerp(lerp(-26, -14, orbit), 0, flat), rx = lerp(-10, 0, flat);
+    var ww = lerp(1100, 420, flat), wh = lerp(690, 236, flat), wy = lerp(96, 540 - 236 / 2 - 4, flat);
     var sh0 = K.ready6 - 0.1, shrink = E.io3(seg(t, sh0, sh0 + 0.55)), tw = lerp(ww, 150, shrink), th = lerp(wh, 78, shrink);
     var fx = 960 - tw / 2, fy = lerp(wy, 540 - 39 + 12, shrink);
     box($.lap6, fx, fy, tw, th);
@@ -566,8 +670,10 @@ window.LV = (function () {
     var bz = $.lap6.firstChild; bz.style.width = px(tw + 36 * (1 - flat)); bz.style.height = px(th + 36 * (1 - flat)); bz.style.left = px(-18 * (1 - flat)); bz.style.top = px(-18 * (1 - flat));
     bz.style.borderRadius = px(lerp(28, 39, shrink)); op(bz, 1 - flat * 0.85);
     op($.lap6b, 1 - E.o2(seg(r, 0.95, 1.35))); $.lap6b.style.top = px(th + 18);
+    tf($.lap6b, "rotateX(75deg) scaleX(" + (tw / 1100).toFixed(4) + ")");      // the hinge at 105°; as wide as the lid, always
     $.lap6.style.transformOrigin = "50% 50%";
-    tf($.lap6, "perspective(2200px) rotateX(" + rx.toFixed(2) + "deg) rotateY(" + ry.toFixed(2) + "deg)");
+    // a longer lens (v2): the base's near edge no longer looks much wider than the screen
+    tf($.lap6, "perspective(4000px) rotateX(" + rx.toFixed(2) + "deg) rotateY(" + ry.toFixed(2) + "deg)");
     op($.lap6, 1 - seg(t, sh0 + 0.5, sh0 + 0.65));
     // the words slide in beside the window, on "Beautifully"
     var wq = E.o4(seg(t, K.words6, K.words6 + 0.75)), gone = seg(t, sh0 - 0.05, sh0 + 0.2);
@@ -633,8 +739,11 @@ window.LV = (function () {
   }
   // ---- S8: "What starts as" → "a few takes" → the laptop with the real Export card → a week of videos
   function r8(t, S) {
-    var on = layer($.s8, t, S.s8, S.s9); if (!on) return;
+    var on = layer($.s8, t, S.s8, S.s9 + 0.2); if (!on) return;
     var r = t - S.s8;
+    // v2: a swipe up to the next screen (as in a feed of videos): S8 and its blue go up, S9 comes from below
+    var sw = seg(t, S.s9 - 0.2, S.s9 + 0.2);
+    tf($.s8, sw > 0 ? "translateY(" + px(-H * E.io3(sw)) + ")" : "none"); mblur($.s8, "mby", mbSpeed(H, 0.4, sw));
     // "What starts as" goes up when "a few takes" comes in under it; then both go up and away as the laptop rises
     var up1 = E.io3(seg(t, K.ft8[0] - 0.12, K.ft8[0] + 0.22)), rise = E.expo(seg(r, 2.0, 2.8)), wordsUp = E.io2(seg(r, 2.0, 2.5));
     wordsAt($.ws8W, t, K.ws8, 0.2, 10);
@@ -659,8 +768,11 @@ window.LV = (function () {
   }
   // ---- S9: the real Export button → the formats' carousel, picked one by one as the voice says them
   function r9(t, S) {
-    var on = layer($.s9, t, S.s9, S.s10); if (!on) return;
+    var on = layer($.s9, t, S.s9 - 0.2, S.s10 + 0.04); if (!on) return;
     skyAt($.s9sky, t);
+    var sw = seg(t, S.s9 - 0.2, S.s9 + 0.2);                        // v2: it comes up from below (the swipe of S8)
+    tf($.s9, sw < 1 ? "translateY(" + px(H * (1 - E.io3(sw))) + ")" : "none"); mblur($.s9, "mby", mbSpeed(H, 0.4, sw));
+    op($.s9, 1 - seg(t, S.s10 - 0.08, S.s10 + 0.04));
     var I = T.UI.export, eb = I.boxes.export, k = 2.0, ex = 960 - (eb[0] + eb[2] / 2) * k, ey = 540 - (eb[1] + eb[3] / 2) * k;
     var carry = E.io3(seg(t, K.export + 0.25, K.export + 0.75));
     var s = lerp(k, 0.55, carry), cx = lerp(ex, 960 - I.w * 0.55 / 2, carry), cy = lerp(ey, 540 - I.h * 0.55 / 2, carry);
@@ -672,9 +784,11 @@ window.LV = (function () {
     $.cards.forEach(function (c) { xs.push(x + c.w / 2); x += c.w + gap; });
     var pos = xs[0]; for (var j = 1; j < picks.length; j++) pos = lerp(pos, xs[j], E.io3(seg(t, picks[j] - 0.3, picks[j])));
     var cardsIn = E.o3(seg(t, K.export + 0.5, K.export + 0.9)), fwd = E.io2(seg(t, picks[3] + 0.15, S.s10 - 0.05));
+    var into = E.i3(seg(t, S.s10 - 0.4, S.s10 + 0.02));              // v2: then the camera flies into his music video
     $.cards.forEach(function (c, i) {
-      var cxx = 960 + xs[i] - pos, sc = i === 3 ? lerp(1, 1.35, fwd) : 1;
-      box(c.e, cxx - c.w / 2, 540 - c.h / 2 - 30); op(c.e, cardsIn * (i === 3 ? 1 : 1 - fwd)); tf(c.e, "scale(" + sc.toFixed(3) + ")");
+      var cxx = 960 + xs[i] - pos, sc = i === 3 ? lerp(1, 1.35, fwd) * lz(1, 2.2, into) : 1;
+      box(c.e, cxx - c.w / 2, 540 - c.h / 2 - 30); op(c.e, cardsIn * (i === 3 ? 1 : 1 - fwd)); tf(c.e, "scale(" + sc.toFixed(4) + ")");
+      if (i === 3) { blur(c.e, 14 * E.i2(seg(t, S.s10 - 0.3, S.s10))); op(c.lb, 1 - seg(t, S.s10 - 0.45, S.s10 - 0.25)); }
     });
     var cur = $.cards[idx];
     $.br[0].style.left = px(960 - cur.w / 2 - 98); $.br[1].style.left = px(960 + cur.w / 2 + 22);
@@ -683,8 +797,14 @@ window.LV = (function () {
   }
   // ---- S10: the glass panel: "Less time editing." typed, selected, replaced by "More time making music."
   function r10(t, S) {
-    var on = layer($.s10, t, S.s10, S.s11); if (!on) return;
+    var on = layer($.s10, t, S.s10 - 0.1, S.s11 + 0.45); if (!on) return;
     var r = t - S.s10; skyAt($.s10sky, t); blur($.s10sky.e, 14);
+    // v2: out of the flight into his music video (the same blurred sky), then wiped away by S11's light streak, from the top
+    var zin = E.o3(seg(t, S.s10 - 0.1, S.s10 + 0.32));
+    $.s10.style.transformOrigin = "960px 540px"; tf($.s10, zin < 1 ? "scale(" + lerp(1.15, 1, zin).toFixed(4) + ")" : "none");
+    op($.s10, seg(t, S.s10 - 0.1, S.s10 + 0.04));
+    var sk = seg(t, S.s11 - 0.2, S.s11 + 0.55), yc = lerp(-420, 1300, E.io2(sk)) + 150;   // the streak's middle (r11)
+    gmask($.s10, sk > 0 ? "linear-gradient(180deg, rgba(0,0,0,0) " + px(yc - 30) + ", #000 " + px(yc + 110) + ")" : null);
     var g = E.o3(seg(r, 0.0, 0.5)); $.g10.forEach(function (e) { op(e, g * 0.9); });
     op($.p10, E.o3(seg(r, 0.1, 0.4)));
     var A = "Less time editing.", B1 = "More time making ", B2 = "music.", typing = false;

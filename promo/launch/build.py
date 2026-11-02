@@ -106,11 +106,16 @@ LYRIC = [[21.24, [[["I", 21.26], ["put", 21.50], ["gold", 21.80]], [["on", 22.17
          [22.55, [[["scars", 22.56], ["worth", 22.98]], [["millions.", 23.12]]]]]
 LY = {}                            # lyric display -> [[film a, film b, take time at a]]
 
-clip("v3b", 3, S["s3b"] - 0.05, S["s3c"] + 0.05, 2.0, "phone")                 # the phone: take 3 in the app's preview
-clip("v3c", 2, S["s3c"] - 0.05, S["s4"] + 0.05, 8.4, "tablet")                 # the tablet: take 2
-clip("v4a", 3, S["s4"] - 0.05, K["slide4"] + 0.45, 5.4, "live")                # him, performing (full frame, then the panel)
+WHIP = 0.25                        # v2: the camera pans from device to device (S3): each one is seen 0.25 s before its scene
+clip("v3b", 3, S["s3b"] - WHIP, S["s3c"] + WHIP, 2.0 - (WHIP - 0.05), "phone")  # the phone: take 3 in the app's preview
+# v2 (owner's remark 1, 2/11: no more close-up of his face): the tablet's preview IS his card of S4. Take 2 runs on the
+# tablet at media time = film time, and goes on in the 9:16 card at 16.0 s: one continuous shot from the tablet to the card.
+clip("v3c", 2, S["s3c"] - WHIP, S["s4"] + 0.05, S["s3c"] - WHIP, "tablet")      # the tablet: take 2
+clip("v4a", 2, S["s4"] - 0.05, K["slide4"] + 0.45, S["s4"] - 0.05, "live")      # him, performing in his 9:16 card
 clip("v4d", 2, K["edit4"] - 0.05, S["s5"] + 0.05, 1.0, "s4prev")               # the edit card's preview
-TILES = [(3, 15.0), ("mv", 6.25), (1, 9.0), (2, 14.4), (2, 20.75)]              # TikTok (Frost), YouTube, Reels (B&W), Shorts (35 mm), lyrics
+# TikTok (Frost), YouTube, Reels (B&W), Shorts (35 mm), lyrics. v2: the YouTube tile reaches his video's own cut at 7.27 s
+# just as it fills the frame (flash 1); the 35 mm tile no longer repeats the moment the card has just shown (take 2, 14-16 s)
+TILES = [(3, 15.0), ("mv", 5.76), (1, 9.0), (2, 3.0), (2, 20.75)]
 for i, (k, m0) in enumerate(TILES):
     a = S["s5"] + i * 0.09                                                     # each tile's clip starts as the tile appears
     clip("v5t%d" % i, k, a, S["s5f"] + 0.05, m0, "t%d" % i)
@@ -191,7 +196,7 @@ fx("x-logo", "sparkle.mp3", S["s2"] + 1.0, 0.17 * G["spark"])
 whoosh("x-cut3", S["s3a"], 0.11, "C")
 whoosh("x-cut3b", S["s3b"], 0.09, "A")
 whoosh("x-cut3c", S["s3c"], 0.09, "B")
-whoosh("x-cut4", S["s4"], 0.1, "A")
+whoosh("x-cut4", S["s4"] - 0.45, 0.1, "B")                                    # v2: the tablet's push into his card (15.0 → 16.0)
 whoosh("x-split", K["split"] + 0.2, 0.07, "B")
 fx("x-chs", "pop.mp3", K["chSong"] + 0.14, 0.12 * G["pop"])
 for i, t in enumerate(K["chTk"]):

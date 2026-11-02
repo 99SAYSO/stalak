@@ -19,9 +19,10 @@ srv = subprocess.Popen([sys.executable, "-m", "http.server", str(PORT)], cwd=PUB
 time.sleep(1.2)
 URL = "http://127.0.0.1:%d/index.html" % PORT
 UI = {}
-# no page background (the film draws its own sky), and no full-page snow canvas
+# no page background (the film draws its own sky), no full-page snow canvas, and not the floating "Export ↓" button
+# (#expFab, fixed at the bottom of the window: it landed on the cards' "Lyrics: 4 lines…" row; owner's remarks 2, 3, 5, 2/11)
 CLEAR = """() => { if (!document.getElementById('cap')) { const s = document.createElement('style'); s.id = 'cap';
-  s.textContent = 'html,body{background:transparent!important;background-image:none!important} body::before,body::after{display:none!important}';
+  s.textContent = 'html,body{background:transparent!important;background-image:none!important} body::before,body::after{display:none!important} #expFab{display:none!important}';
   document.head.appendChild(s); }
   for (const c of document.querySelectorAll('canvas')) { const r = c.getBoundingClientRect(); if (r.width >= innerWidth * 0.9 && r.height >= innerHeight * 0.5) c.style.visibility = 'hidden'; } }"""
 
@@ -75,6 +76,7 @@ try:
             pg = ctx.new_page()
             if ex: example(pg)
             else: pg.goto(URL); pg.wait_for_timeout(2500)
+            pg.add_style_tag(content="#expFab{display:none!important}")    # (v2) not over the tablet's cut bar either
             pg.evaluate("window.scrollTo(0, 0)"); pg.wait_for_timeout(400)
             pg.screenshot(path=os.path.join(OUT, name + ".png"))
             view = pg.locator("#view").first

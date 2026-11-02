@@ -1,5 +1,15 @@
 # Relecture — film de lancement « façon Lovio » (YouTube 16:9, 60 s, 2/11/2026)
 
+## v2 (ses retours dans la Salle de visionnage, 2/11 à 17 h 03 et 17 h 06)
+
+- **Ce qui a changé** : seulement ses 6 points (le tableau est dans `SPEC.md`, « v2 »). Ce sont 5 remarques à l'image près et une remarque sur toute la vidéo (les transitions). Le reste du film est le même : temps, voix, musique, bruitages, mixage. Seul changement de son : le whoosh de 16 s est avancé à 15,4 s, sur la poussée de la tablette.
+- **Regardé image par image** :
+  - chaque nouvelle transition, avant, pendant et après ;
+  - les passages où rien ne doit se voir, image par image : « song » tapé → « song » de la nuit (6,33–6,50 s), le bleu de l'icône → le bleu de l'écran (9,53–9,63 s), l'aperçu de la tablette → sa carte (15,93–16,03 s), la case YouTube → son clip (25,57–25,60 s) ;
+  - ses 5 images remarquées, refaites.
+- **`hyperframes check`** : 0 erreur. Il reste 14 avertissements, les mêmes sortes que pour la v1 : des textes lus en même temps que la voix, et des badges « PRO » de 20 px. S'y ajoute l'étiquette « YouTube · Music video » (1,1 s), qui s'efface pendant que la caméra entre dans la case.
+- **Le plus fragile** : le panoramique filé entre les appareils dure 0,4 s avec un fort flou. S'il le trouve trop appuyé, il suffit de le raccourcir (`HW` dans `r3`, `engine.js`).
+
 ## Les choix
 
 - **La structure de Lovio, plan par plan** (sa demande : « en t'inspirant fortement de cette vidéo… libre arbitre ») : étincelle → logo-fenêtre → interface en verre → « I have a song. » tapé → nom → l'app sur 3 appareils → une vraie personne et l'import → grille + 4 flashs → ordinateur 3D et « Beautifully [fenêtre] edited » → « ready ○ to post » → pilules → « in any direction » → « What starts as » → carrousel entre accolades → panneau tapé → traînée → « What will you drop today » → cristal → logo. Pas de choix entre 3 histoires : il a laissé le choix libre.

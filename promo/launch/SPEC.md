@@ -121,7 +121,7 @@ La voix mène : chaque plan commence sur un temps de la musique (150 BPM, un tem
 | S1b | 5,2–6,4 | La caméra entre dans la boîte ; « I have a song. » se tape pendant « …having a song? ». | frappe |
 | S2 | 6,4–9,6 | Nuit et aurore. « song » flou, qui avance, fond dans l'icône ; l'icône brille, glisse ; « Stalak » se dévoile sur le mot « Stalak » (8,35 s). | whoosh, étincelle |
 | S3 | 9,6–16,0 | Studio glacé : l'ordinateur avec le vrai accueil (9,6), le téléphone avec une prise dans la vraie app (12,0), la tablette (13,6, sur « Cut on the beat, lips in sync »). | 3 whooshs différents |
-| S4 | 16,0–24,0 | Lui en plein écran (« No editing skills needed »), puis dans un panneau à droite ; la boîte de verre (avec la vraie phrase du site) reçoit « neva die.mp3 » sur « song », Take 1, 2, 3 sur « takes » ; clic sur → sur « Stalak » ; « Analyzing the takes… » puis « All the takes are synced. » pendant « syncs them to the music » ; la vraie carte « Your edit », sa barre de coupes se construit. | pops, clic |
+| S4 | 16,0–24,0 | Lui dans sa carte 9:16 (l'aperçu de la tablette venu vers nous, v2), au milieu (« No editing skills needed »), puis à droite de la boîte ; la boîte de verre (avec la vraie phrase du site) reçoit « neva die.mp3 » sur « song », Take 1, 2, 3 sur « takes » ; clic sur → sur « Stalak » ; « Analyzing the takes… » puis « All the takes are synced. » pendant « syncs them to the music » ; la vraie carte « Your edit », sa barre de coupes se construit. | pops, clic |
 | S5 | 24,0–28,8 | La grille de ses vidéos (TikTok avec Frost, son clip YouTube PRO, Black & white, 35 mm film, Lyrics on screen avec sa phrase sur sa voix), puis 4 flashs sur les temps : son clip plein écran (« a full music video »), ses 3 prises côte à côte au même instant de la chanson, un 9:16 avec « scars worth millions. » sur sa voix, la vraie barre de coupes en très gros (« on the beat »). | 4 whooshs alternés |
 | S6 | 28,8–33,6 | L'ordinateur en 3D joue son clip ; l'écran devient une fenêtre entre « Beautifully » et « edited » (sur la voix) ; les lettres de « ready to post » arrivent dans le désordre ; le curseur allume l'interrupteur après « post ». | 2 touches, clic |
 | S7 | 33,6–40,0 | Les pilules (les vraies commandes) sortent de l'interrupteur ; plongée dans « Punchy ». La vraie carte « Your edit » : clic sur Punchy (35,0), sa phrase sur l'aperçu, calée sur sa voix (35,75), clic sur ↻ Shuffle sur « shuffle » (36,45) : une autre prise, au même instant de la chanson, la phrase continue. « in any direction » en 3D mot par mot ; l'image se referme dans un flocon. | 2 clics, whooshs |
@@ -133,13 +133,40 @@ La voix mène : chaque plan commence sur un temps de la musique (150 BPM, un tem
 
 **Le mixage** : voix à 0,78 ; musique à 0,5 entre les phrases et 0,2 sous la voix (rampes de 0,25 s), 0,62 sur la fin ; chaque bruitage environ 9 dB sous la voix ; l'ensemble remis à −14 LUFS (crête −1,4 dBFS).
 
+## v2 : ses retours du 2/11 (Salle de visionnage, 17 h 03 et 17 h 06)
+
+**Ses 5 remarques à l'image près :**
+
+| Remarque | Ce qui change |
+| --- | --- |
+| 16,0 s : « le gros plan sur ma tête faut changer. » | Plus de gros plan sur son visage : il est dans une carte 9:16 au milieu (sa prise 2, plan taille), qui va à droite de la boîte de verre pendant l'import, puis sort. |
+| 23,07, 28,20 et 36,23 s : « le bouton export est sur le texte de derrière » | Le bouton flottant « Export ↓ » de l'app (`#expFab`, fixé en bas de la fenêtre) tombait sur la ligne « Lyrics: 4 lines… » des cartes capturées. `capture_ui.py` le cache maintenant sur toutes les captures (cartes et écrans), puis les captures ont été refaites. |
+| 29,70 s : « les bords de l'ordinateur sont trop longs par rapport à l'écran » | Le socle de l'ordinateur 3D était plus large que l'écran et la perspective l'élargissait encore : il fait maintenant la largeur de l'écran, vu un peu d'en haut avec un objectif plus long (le clavier se voit). Pareil pour les ordinateurs de S3 et S8. |
+
+**Sa remarque sur toute la vidéo :** « des transitions plus fluides, limite on ne les voit pas venir, ça se fond dans le décor ; c'est trop sec des fois ». Chaque coupe sèche devient un passage qui garde le mouvement ou un élément du décor :
+
+| Instant | Avant | Maintenant |
+| --- | --- | --- |
+| 6,4 s | coupe : ciel → nuit | la caméra entre dans le mot « song » tapé ; il devient le « song » du plan suivant ; le ciel s'éteint en nuit autour |
+| 9,6 s | coupe : logo → ordinateur | plongée dans le bleu de l'icône ; on ressort du même bleu, celui du ciel de la page d'accueil sur l'écran de l'ordinateur |
+| 12,0 et 13,6 s | coupes entre les 3 appareils | panoramiques filés : les 3 appareils sont dans le même studio, flou de mouvement horizontal, la lumière du studio glisse derrière |
+| 16,0 s | coupe : tablette → lui en gros plan | la tablette se redresse et vient vers nous ; son aperçu devient sa carte 9:16, la même prise continue ; le studio passe au bleu derrière |
+| 24,0 s | coupe : carte de montage → grille | la caméra file à travers la barre de coupes et ressort dans la grille |
+| 25,6 s | coupe : grille → son clip plein écran | la caméra entre dans la case YouTube, qui remplit l'image et devient son clip |
+| 26,4 / 27,2 / 28,0 s | flashs secs | chaque flash part en poussant vers nous et le suivant arrive encore en mouvement, sur le temps |
+| 28,8 s | coupe : barre → ordinateur 3D | la caméra file à travers le dernier flash jusqu'à l'ordinateur |
+| 44,8 s | coupe : la semaine → Export | glissé vers le haut, comme pour passer à la vidéo suivante d'un fil |
+| 49,6 s | coupe : carrousel → panneau tapé | la caméra file dans son clip YouTube et ressort dans le ciel flouté du panneau |
+| 53,6 s | coupe sous la traînée | la traînée de lumière efface le panneau de haut en bas |
+| 55,2 s | coupe bleu → nuit | la nuit arrive en fondu sous le cristal (0,3 s) |
+
 ## Interdit
 
 - Rebonds, secousses, pulsations sur les temps, titres qui bougent une fois posés.
 - Boutons inventés, faux chiffres, faux avis, concurrent cité (TikTok, Reels, Shorts et YouTube sont des plateformes, nommées seulement).
 - Le logo collé dans un coin, des anneaux de clic.
 - Un fond noir vide.
-- Un fondu enchaîné entre deux mondes.
+- Un simple fondu enchaîné à la place d'une transition. Depuis la v2 (sa demande), on passe d'un monde à l'autre caché par un mouvement ou un élément du décor : un mot, la couleur de l'icône, l'aperçu d'un appareil, une case, un panoramique, une traînée de lumière.
 
 ## À vérifier
 

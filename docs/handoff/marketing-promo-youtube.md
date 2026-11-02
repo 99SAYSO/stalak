@@ -1,11 +1,37 @@
 # Compte rendu — branche `marketing/promo-youtube` (Marketing & croissance)
 
-Statut : PRÊT, v4 du 2/11 + miniature YouTube + film de lancement « façon Lovio » + page de retours « Salle de visionnage » (documents et sources des vidéos et de la miniature seulement ; rien à intégrer dans l'app ni le site)
+Statut : PRÊT, v4 du 2/11 + miniature YouTube + film de lancement « façon Lovio » (v2, ses retours appliqués) + page de retours « Salle de visionnage » (v2) (documents et sources des vidéos et de la miniature seulement ; rien à intégrer dans l'app ni le site)
+
+## Film de lancement v2 : ses retours dans la Salle de visionnage (2/11, 17 h 03 et 17 h 06)
+
+- **Ses 5 remarques à l'image près**, toutes corrigées :
+  - 16,0 s, « le gros plan sur ma tête faut changer » : il est maintenant dans une carte 9:16 (sa prise 2, plan taille) ;
+  - 23,07 s, 28,20 s et 36,23 s, « le bouton export est sur le texte de derrière » : c'était le bouton flottant « Export ↓ » de l'app (`#expFab`), pris dans les captures. `capture_ui.py` le cache maintenant, et toutes les captures ont été refaites ;
+  - 29,70 s, « les bords de l'ordinateur sont trop longs par rapport à l'écran » : le socle fait la largeur de l'écran, vu un peu d'en haut. Pareil pour les ordinateurs de S3 et S8.
+- **Sa remarque sur toute la vidéo** : « des transitions plus fluides, limite on ne les voit pas venir, ça se fond dans le décor ; c'est trop sec des fois ». Les 13 coupes sèches sont devenues des passages qui gardent le mouvement ou un élément du décor (tableau dans `promo/launch/SPEC.md`, « v2 »). Par exemple :
+  - on entre dans le mot « song » ;
+  - on plonge dans le bleu du logo et on ressort de l'écran de l'ordinateur ;
+  - panoramiques filés entre les appareils ;
+  - l'aperçu de la tablette devient sa carte ;
+  - la case YouTube devient son clip ;
+  - un glissé vers le haut comme dans un fil ;
+  - la traînée de lumière efface le panneau.
+- **Une règle du 1er film est changée, à sa demande** : « pas de fondu entre deux mondes » devient « on passe d'un monde à l'autre caché par un mouvement ou par le décor ». Rien d'autre n'a changé : même voix, musique, bruitages et mixage. Seul le whoosh de 16 s est avancé sur la poussée de la tablette.
+- **Coût Flora : 0 $.**
 
 ## Salle de visionnage : ses retours sur nos vidéos (sa demande du 2/11, 16 h 43)
 
 - **Sa demande** : « une interface qui me permet de te faire des remarques sur les vidéos que tu me crées, avec une timeline […] une sorte de crayon qui me permet d'entourer ce dont je parle sur la frame en question […] et de retravailler seulement sur les points que j'ai parlé […] directement ici dès que tu m'envoies des vidéos ».
-- **Fait** : la page « Salle de visionnage » (artifact privé du propriétaire, https://claude.ai/artifact/JihUFRUHrYGrHnoRZyoVXo). La vidéo, une timeline avec les plans nommés, les images et le son ; une remarque à l'image près, au crayon sur l'image, sur un instant ou un passage ; la liste de ses remarques avec la réponse de Claude ; « J'ai fini : envoyer à Claude ». Le film de lancement y est déjà (copie de relecture 720p).
+- **Fait** : la page « Salle de visionnage » (artifact privé du propriétaire, https://claude.ai/artifact/JihUFRUHrYGrHnoRZyoVXo). Elle contient :
+  - la vidéo, avec une timeline où l'on voit les plans nommés, les images et le son ;
+  - une remarque à l'image près, au crayon sur l'image, sur un instant ou sur un passage ;
+  - la liste de ses remarques, avec la réponse de Claude sous chacune ;
+  - le bouton « J'ai fini mes remarques ».
+  
+  Le film de lancement y est, en v1 puis en v2 (copies de relecture en 720p).
+- **v2 de la page (ses demandes de 17 h 04 et 17 h 06)** :
+  - **« J'ai fini » n'ouvre plus de nouvelle conversation** : l'ancien envoi à Claude (`comments`, `sendToClaude`) en créait une, qu'il a supprimée. Maintenant, la page marque ses remarques « Pour Claude » et copie leur résumé. Elle lui dit d'écrire « c'est bon » (ou de coller ce résumé) dans la conversation où on lui a envoyé la vidéo. Capacités de la page : `db` et `assets`.
+  - **Bulle « Remarque sur toute la vidéo »**, pour un avis sur l'ensemble, sans instant ni crayon. Elle est en tête de liste.
 - **Côté Claude** : `promo/retours/` (`README.md` : la base de la page et la boucle ; `prepare.py` : préparer une vidéo pour la page ; `frames.py` : voir ses traits sur l'image exacte en pleine qualité ; `salle.html` : la source de la page ; `test_server.py` : serveur local pour la tester).
 - **À faire à chaque vidéo envoyée au propriétaire** : l'ajouter à la page (`promo/retours/README.md`, étape 1).
 
