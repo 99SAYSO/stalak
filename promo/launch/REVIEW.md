@@ -9,6 +9,14 @@
   - ses 5 images remarquées, refaites.
 - **`hyperframes check`** : 0 erreur. Il reste 14 avertissements, les mêmes sortes que pour la v1 : des textes lus en même temps que la voix, et des badges « PRO » de 20 px. S'y ajoute l'étiquette « YouTube · Music video » (1,1 s), qui s'efface pendant que la caméra entre dans la case.
 - **Le plus fragile** : le panoramique filé entre les appareils dure 0,4 s avec un fort flou. S'il le trouve trop appuyé, il suffit de le raccourcir (`HW` dans `r3`, `engine.js`).
+- **Le fichier livré** : `renders/Stalak_lancement_YouTube.mp4` (la v1 est gardée à côté, en `_v1`). Ses caractéristiques :
+  - 1920 × 1080, 30 i/s, 60,0 s, 50 Mo ;
+  - rendu en 10 min 25 s, puis `master.sh` ;
+  - mesuré : −14,1 LUFS, crête −1,2 dBFS ;
+  - aucune image noire, aucun silence, aucune saturation ;
+  - images du fichier rendu vérifiées à chaque transition : elles sont identiques aux images de contrôle.
+
+  Il a été envoyé au propriétaire et mis dans la Salle de visionnage (`stalak-lancement-v2`), avec une réponse sous chacune de ses 6 remarques.
 
 ## Les choix
 

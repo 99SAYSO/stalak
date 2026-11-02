@@ -18,6 +18,10 @@ Statut : PRÊT, v4 du 2/11 + miniature YouTube + film de lancement « façon Lov
   - la traînée de lumière efface le panneau.
 - **Une règle du 1er film est changée, à sa demande** : « pas de fondu entre deux mondes » devient « on passe d'un monde à l'autre caché par un mouvement ou par le décor ». Rien d'autre n'a changé : même voix, musique, bruitages et mixage. Seul le whoosh de 16 s est avancé sur la poussée de la tablette.
 - **Coût Flora : 0 $.**
+- **Livré** le 2/11 vers 18 h 10 :
+  - la vidéo est envoyée dans la conversation (60 s, −14,1 LUFS, aucune image noire, pas dans le dépôt) ;
+  - elle est ajoutée à la Salle de visionnage (`stalak-lancement-v2`) ;
+  - une réponse est écrite sous chacune de ses 6 remarques, qui sont passées à « traitée ».
 
 ## Salle de visionnage : ses retours sur nos vidéos (sa demande du 2/11, 16 h 43)
 
