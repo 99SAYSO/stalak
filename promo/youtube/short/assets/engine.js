@@ -670,8 +670,9 @@
     }
     [0, 1, 2].forEach(function (i) {
       var pp = $["pp" + i], pd = $["pd" + i];
-      // from the week's slot (on screen) to the panel
-      var sx = 960 + (5673 + i * 184 - 15 - 6300) * 1, sy = 540 + (-60 + 90) * 1, sw = 150, sh = 267;
+      // from the week's slot, where the camera shows it, to the panel
+      var cs = camW2(S.pay - 0.42);
+      var sx = CX + (5673 + i * 184 - 15 - cs.x) * cs.z, sy = CY + (-60 - cs.y) * cs.z, sw = 150 * cs.z;
       var fx = [150, 710, 1270][i], fy = 140, s0 = sw / 500;
       var x = mix(sx, fx, g), y = mix(sy, fy, g), sc = mix(s0, 1, g) * (1 + punch);
       var ox = (i - 1) * 900 * out, oy = 160 * out;

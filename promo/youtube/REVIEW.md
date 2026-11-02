@@ -16,4 +16,12 @@ Skills : `hyperframes` (contrat, `story.md`, `spec.md`, `review.md`), `saas-moti
   - le pack : 2 s de ciel vide avant les 30 vidéos : le badge « Creator Plus » et la bande du son arrivent, les vidéos en sortent ;
   - le résultat : deux des trois vidéos montraient parfois la même prise : maintenant, à chaque temps, les trois montrent trois prises différentes ;
   - l'icône Stalak repartait 0,3 s après le drop : elle reste jusqu'à la fin de « This is Stalak. ».
-- Son, mesuré sur un mixage refait hors ligne à partir de `index.html` (comme le fait le rendu), avant correction : voix −19,9 LUFS et musique −31,4 dans la partie « problème » (musique trop basse), voix −19,2 et musique −23,7 dans la partie Stalak (musique trop haute pour la voix). Corrigé : musique +4,4 dB sous la partie problème, −2,8 dB sous la partie Stalak, sa chanson −1,2 dB.
+- Son, **mesuré, pas écouté** (je ne peux pas entendre) : mixage refait hors ligne à partir de `index.html`, par groupes (voix, musique, bruitages), puis comparé au son du premier rendu (corrélation 0,98 ; le rendu met une voix mono à pleine puissance sur les deux côtés, +3 dB par rapport à mon premier calcul, corrigé). Au premier rendu, la musique était 14,5 LU sous la voix dans la partie « problème » (presque absente) : montée de 3 dB. Réglage final : voix 7,5 LU au-dessus de la musique partout (problème : voix −16,8 / musique −24,4 LUFS ; Stalak : −16,2 / −23,7 ; fin : −15,8 / −23,9), sa chanson au résultat −15,3 LUFS (un peu plus fort que les passages parlés, c'est voulu).
+- Le Short, même réglage : voix −16,4 / musique −24,2 (problème), −16,9 / −23,1 (Stalak), sa chanson −15,4.
+
+## Les fichiers livrés (2/11, envoyés au propriétaire, pas dans le dépôt)
+
+- `renders/Stalak_YouTube_The_edit_nobody_sees.mp4` : 1920 × 1080, 30 images/s, 61,17 s, H.264 + AAC. Aucune image noire, aucune image figée plus d'une seconde (la carte de fin avance doucement). Son : −14,0 LUFS intégrés, crête −1,4 dB, LRA 2,9 LU ; par partie : problème −14,5, Stalak −14,0, sa chanson −13,3, fin −14,1.
+- `short/renders/Stalak_Short_The_edit_nobody_sees.mp4` : 1080 × 1920, 30 images/s, 29,83 s. Aucune image noire ni figée. Son : −14,0 LUFS, crête −1,3 dB, LRA 2,3 LU ; problème −14,3, Stalak −14,4, sa chanson −13,3, fin −13,5.
+- Toutes les images des deux rendus regardées (2 par seconde) : rien de cassé ; le texte de lecture reste dans le cadre sûr.
+- Mastering : le son du rendu est monté au niveau voulu (gain), puis limité (`alimiter`, plafond −1,4 dB) ; l'image n'est pas réencodée.
