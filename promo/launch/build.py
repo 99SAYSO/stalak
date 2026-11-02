@@ -167,6 +167,8 @@ def fx(cid, f, hit, vol, dur=None, rate=1.0, lp=False, fade=0.0, pre=None):
 # levels (measured: whoosh -15 LUFS, cinematic -14, pop -21, typing -31, key -36 LUFS; click peak -5 dBFS): each effect
 # about 9 dB under the voice (-18 LUFS) and 3 dB over the ducked bed, the riser and the impact louder (sound.md)
 G = {"whoosh": 2.5, "click": 2.0, "pop": 3.4, "typing": 5.8, "key": 5.6, "spark": 1.0, "hit": 1.1, "rise": 1.2, "cine": 1.6}
+LIFT = {"whoosh": 1.85, "cine": 1.85, "click": 2.65, "typing": 2.65, "key": 2.1, "pop": 1.85, "spark": 1.6, "hit": 1.33, "rise": 1.7}
+G = {k: v * LIFT[k] for k, v in G.items()}       # measured with mix.py: each hit 2-4 dB over the bed around it (clicks, typing: peaks)
 
 
 def whoosh(cid, hit, vol, kind):
@@ -254,7 +256,7 @@ def build_bed():
 
 
 # the bed's level: up between the lines, down under the voice (hyperframes media-use mixing.md), then up for the end card
-OPEN, DUCK = 0.5, 0.2
+OPEN, DUCK, END = 0.75, 0.42, 0.8               # the music about 10 dB under the voice, as present as in the reference film
 
 
 def ducking():
@@ -267,7 +269,7 @@ def ducking():
             merged.append([a, b])
     pts = [(0.0, OPEN)]
     for a, b in merged:
-        pts += [(a - 0.3, OPEN), (a - 0.05, DUCK), (b + 0.15, DUCK), (b + 0.55, OPEN if b < TOTAL - 3 else 0.62)]
+        pts += [(a - 0.3, OPEN), (a - 0.05, DUCK), (b + 0.15, DUCK), (b + 0.55, OPEN if b < TOTAL - 3 else END)]
     pts.append((TOTAL, pts[-1][1]))
     out, last = [], -1
     for t, v in pts:

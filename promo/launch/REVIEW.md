@@ -34,4 +34,6 @@
 
 ## Le fichier livré
 
-Voir la section « Film de lancement » de `docs/handoff/marketing-promo-youtube.md` (rendu, niveau mesuré, crêtes).
+- `renders/Stalak_lancement_YouTube.mp4` (hors dépôt, envoyé au propriétaire) : 1920 × 1080, 30 i/s, 60,0 s, H.264 + AAC 48 kHz, 54 Mo. Rendu HyperFrames en qualité « delivery », puis son remis à −14 LUFS avec un limiteur (image recopiée sans réencodage, `master.sh`).
+- Mesuré sur ce fichier : −14,0 LUFS intégré, court terme max −12,2, crête −1,2 dBTP, aucune saturation, aucun silence ; aucune image noire ; les arrêts d'image de plus de 1 s sont les tenues voulues (le bouton au début, la carte d'analyse, « ready ○ to post », « What starts », le panneau tapé).
+- Les niveaux ont été réglés avec `mix.py` (le mixage d'`index.html` refait hors ligne ; sur le 1er rendu, 0,1 dB d'écart avec HyperFrames, fenêtre par fenêtre) : la voix environ 10 dB au-dessus de la musique quand elle parle, la musique 4 à 5 dB sous la voix entre les phrases (comme dans la vidéo de Lovio, mesurée : −18,9 LUFS sans voix contre −15,6 avec), chaque clic, whoosh et pop au niveau de la musique autour ou au-dessus.
