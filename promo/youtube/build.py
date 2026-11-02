@@ -9,6 +9,7 @@ Run: python3 vo_cut.py (once, after the voice file is downloaded), then python3 
 """
 import json, re, pathlib, subprocess, wave
 import numpy as np
+from caps import make_caps
 
 HERE = pathlib.Path(__file__).parent
 P = 60 / 157
@@ -20,11 +21,11 @@ def B(b): return b * P
 def inst_bar(k): return D0 + k * BAR
 def song_bar(j): return inst_bar(j + 2) - OFF
 
-K0 = -9                          # inst bar at film 0: the beat's intro, its bass from film bar 3
-DROP_B = 44                      # film bar 11 = inst bar 2, the beat's drop: "This is Stalak."
-PAY_B = 124                      # film bar 31 = inst bar 22, in the 8-bar phase of song bar 4: his song, 4 bars
-END_B = PAY_B + 16               # film bar 35: "You film. Stalak edits."
-TOTAL = round(B(160), 3)         # film bar 40
+K0 = -10                         # inst bar at film 0 (a 4-bar phrase of the beat's intro), its bass from film bar 4
+DROP_B = 48                      # film bar 12 = inst bar 2, the beat's drop: "This is Stalak."
+PAY_B = 128                      # film bar 32 = inst bar 22, in the 8-bar phase of song bar 4: his song, 4 bars
+END_B = PAY_B + 16               # film bar 36: "You film. Stalak edits."
+TOTAL = round(B(164), 3)         # film bar 41
 assert K0 + DROP_B // 4 == 2 and (K0 + PAY_B // 4 - 6) % 8 == 0
 
 # ------------------------------------------------------------------ the voice (vo_cut.py: 17 lines, the long silences cut)
@@ -37,12 +38,13 @@ def dur(lid): return VO[lid]["speech_dur"]
 MASTER = 0.68                    # the whole mix: the render sums the tracks with no limiter (mastered after)
 at = {}
 at["L07"] = B(DROP_B) - word("L07", "stalak") - 0.02             # "Stalak" lands on the drop
-A0, G7 = 0.10, 0.26
-g1 = (at["L07"] - G7 - A0 - sum(dur(l) for l in LIDS[:6])) / 5   # the problem: the six lines, evenly, tight
-assert 0.2 <= g1 <= 0.4, g1
+A0 = 0.10
+G = [0.30, 0.45, 0.30, 1.05, 0.50]   # the problem's gaps after L01..L05; after "…land on the beat.", time to read OFF BEAT (owner, 2/11)
 t = A0
-for l in LIDS[:6]:
-    at[l] = t; t += dur(l) + g1
+for l, g in zip(LIDS[:6], G + [0.0]):
+    at[l] = t; t += dur(l) + g
+g1 = at["L07"] - (at["L06"] + dur("L06"))                        # the breath before the drop
+assert 0.26 <= g1 <= 0.8, g1
 end7 = at["L07"] + dur("L07")
 LIM = B(PAY_B) - 0.75                                            # the last line ends before the payoff's riser
 g2 = (LIM - end7 - sum(dur(l) for l in LIDS[7:15])) / 8
@@ -109,7 +111,7 @@ def take_at(t, lay=None):
 
 # ------------------------------------------------------------------ the music
 MUS = [
-    ("m-walk", "inst.mp3", 0.0, B(PAY_B), inst_bar(K0)),           # the intro, its bass from bar 3, the drop on bar 11
+    ("m-walk", "inst.mp3", 0.0, B(PAY_B), inst_bar(K0)),           # the intro, its bass from bar 4, the drop on bar 12
     ("m-pay", "song.mp3", B(PAY_B), B(END_B), song_bar(4)),        # his song, his voice, 4 bars ("I gotta bounce")
     ("m-end", "inst.mp3", B(END_B), TOTAL, inst_bar(K0 + END_B // 4)),
 ]
@@ -255,7 +257,10 @@ def tau_loop(t):
 def take_edit(t): return 1 if t < S["sweep1"] else take_at(t)
 EDIT, edit_segs = clips("ve", S["toEdit"] - 0.5, S["s14"] + 0.9, take_edit, tau_loop)
 EXP, _ = clips("vx", S["s14"] + 0.1, S["s15"] + 0.7, lambda t: take_at(t, "punchy"), tau_loop)
-TV, _ = clips("vt", S["pro"] - 0.45, S["s15"] + 0.7, lambda t: 3, lambda t: 8.4 + (t - S["pro"] + 0.45), extra=' style="object-position:50% 14%"')
+# the YouTube music video (16:9): the owner's own clip (assets/clip/mv.mp4, sent 2/11), not a take of the vertical edit
+TV0, TV1, MV0 = S["pro"] - 0.45, S["s15"] + 0.7, 4.6    # from 4.6 s: after its title and white flash, his shots at the window
+assert MV0 + (TV1 - TV0) <= 9.3, TV1 - TV0
+TV = '<video id="vt00" class="clip v" data-hf-media-start-basis="local" src="assets/clip/mv.mp4" data-start="%.3f" data-duration="%.3f" data-media-start="%.3f" muted playsinline></video>' % (TV0, TV1 - TV0, MV0)
 # the close-up: take 3, his face close; at "and your lips…" the picture slips to another moment
 CU, _ = clips("vc", S["cu0"], S["s6"] + 0.05, lambda t: 3, lambda t: 5.62 + (t - S["cu0"]) if t < S["lips"] else 12.0 + (t - S["lips"]))
 # the payoff: three edits of the pack (MON, TUE, WED), each cut differently, all on his song (take = song - TAKE)
@@ -291,7 +296,8 @@ def env(path, a, b, n):
 SONG = HERE / "assets/audio/song.mp3"
 WAVES = {"tape": env(SONG, 0, 30, 600), "pick": env(SONG, 0, 30, 236), "part": env(SONG, song_bar(4), song_bar(4) + 8 * BAR, 280)}
 
-times = {"P": P, "TOTAL": TOTAL, "S": {k: round(v, 3) for k, v in S.items()}, "VO": vo_spans, "VW": [VO[l]["words"] for l in LIDS],
+CAPS2 = make_caps(LIDS, at, VO, dur, LIDS[:15], [B(PAY_B) - 0.42])   # every line but the claim and the end card (they show their own words)
+times = {"P": P, "TOTAL": TOTAL, "S": {k: round(v, 3) for k, v in S.items()}, "VO": vo_spans, "VW": [VO[l]["words"] for l in LIDS], "CAPS2": CAPS2,
          "LAY": LAY, "PART0": round(PART0, 4), "L8": round(L8, 4), "PAYL": PAYL, "WAVES": WAVES,
          "songBar0": round(song_bar(0), 4), "BAR": BAR}
 (HERE / "assets" / "times.js").write_text("/* generated by build.py: the film's clock (scenes, voice words, the edit, waveforms) */\nwindow.T = %s;\n" % json.dumps(times, separators=(",", ":")))

@@ -107,7 +107,9 @@
           .dname { position: absolute; width: 150px; text-align: center; font-family: "Lilita One", sans-serif; font-size: 44px; color: #ffffff; visibility: hidden;
             text-shadow: 0 4px 0 rgba(10, 13, 20, 0.35); }
           .ice { position: absolute; overflow: visible; }
-          #icon-land { position: absolute; left: 0; top: 0; width: 300px; height: 300px; visibility: hidden; }
+          #icon-wrap { position: absolute; left: 0; top: 0; width: 300px; height: 300px; visibility: hidden; transform-origin: 150px 150px; }
+          #icon-land { position: absolute; left: 0; top: 0; width: 300px; height: 300px; }
+          #icon-ice { position: absolute; left: 0; top: 284px; overflow: visible; }
           /* the payoff: three days of the pack, his song */
           #pay { position: absolute; inset: 0; visibility: hidden; opacity: 0; }
           .pp { position: absolute; top: 140px; width: 500px; height: 889px; border: 8px solid #0a0d14; border-radius: 34px; overflow: hidden; background: #0a0d14;
@@ -119,12 +121,22 @@
           .cl { position: absolute; font-family: "Lilita One", sans-serif; font-size: 150px; line-height: 1; color: #ffffff; white-space: nowrap;
             text-shadow: 0 10px 0 #0a0d14; -webkit-text-stroke: 7px #0a0d14; paint-order: stroke fill; }
           #end { position: absolute; inset: 0; visibility: hidden; }
+          #caps { position: absolute; inset: 0; pointer-events: none; }
+          .capk { position: absolute; left: 0; top: 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px 16px; visibility: hidden; }
+          .capk span { display: inline-block; white-space: nowrap; }
+          .capk .tw { padding: 8px 20px 6px; background: #efe3c2; color: #26303d; font-weight: 800; font-size: 50px; letter-spacing: 0.03em; text-transform: uppercase;
+            box-shadow: 0 8px 14px rgba(0, 0, 0, 0.35);
+            clip-path: polygon(0 7%, 4% 0, 9% 6%, 15% 1%, 22% 5%, 30% 0, 38% 6%, 46% 1%, 54% 5%, 62% 0, 70% 6%, 78% 1%, 86% 5%, 93% 0, 100% 4%, 100% 95%, 95% 100%, 88% 94%, 80% 100%, 72% 95%, 64% 100%, 56% 94%, 48% 100%, 40% 95%, 32% 100%, 24% 94%, 16% 100%, 8% 95%, 0 100%); }
+          .capk .tk { padding: 6px 24px 4px; background: #ff4d5e; color: #ffffff; font-family: "Lilita One", sans-serif; font-weight: 400; font-size: 62px; letter-spacing: 0.02em;
+            box-shadow: 0 8px 14px rgba(0, 0, 0, 0.35);
+            clip-path: polygon(0 6%, 5% 0, 12% 5%, 20% 0, 30% 6%, 40% 1%, 50% 6%, 60% 0, 70% 5%, 80% 0, 90% 6%, 100% 2%, 100% 96%, 92% 100%, 82% 94%, 72% 100%, 62% 95%, 52% 100%, 42% 94%, 32% 100%, 22% 95%, 12% 100%, 4% 94%, 0 100%); }
+          .capk .ow { color: #ffffff; font-weight: 800; font-size: 56px; -webkit-text-stroke: 8px #0a0d14; paint-order: stroke fill; text-shadow: 0 6px 0 #0a0d14; }
+          .capk .ck { padding: 4px 22px 6px; border-radius: 20px; background: #ffffff; color: #1f6fd6; border: 5px solid #0a0d14; box-shadow: 0 7px 0 #0a0d14;
+            font-family: "Lilita One", sans-serif; font-weight: 400; font-size: 60px; line-height: 1.05; }
           .cl { font-size: 116px; -webkit-text-stroke: 6px #0a0d14; }
           #pp0 { left: 115px; top: 250px; width: 850px; height: 1511px; border-radius: 48px; transform-origin: 50% 50%; }
-          #caps { position: absolute; inset: 0; pointer-events: none; }
-          .cap { position: absolute; left: 70px; right: 70px; top: 150px; text-align: center; font-weight: 800; font-size: 70px; line-height: 1.12; color: #ffffff;
-            -webkit-text-stroke: 10px #0a0d14; paint-order: stroke fill; text-shadow: 0 7px 0 #0a0d14; visibility: hidden; }
-          .cap .w { display: inline-block; }
+          .capk { gap: 12px 16px; }
+          .capk .tw { font-size: 60px; } .capk .tk { font-size: 74px; } .capk .ow { font-size: 68px; } .capk .ck { font-size: 72px; }
           #grain { position: absolute; inset: 0; background: url("assets/brand/grain.png"); opacity: 0.035; mix-blend-mode: multiply; pointer-events: none; }
         </style>
 
@@ -178,11 +190,11 @@
           <div class="card" id="c-edit" data-layout-allow-overlap style="left:2500px;top:-800px;width:1000px;height:1600px">
             <div class="pv" id="pv" style="left:244px;top:520px;width:500px;height:889px;border-radius:34px">
               <!--EDIT-->
-<video id="ve00" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="17.033" data-duration="0.067" data-media-start="11.599" muted playsinline></video>
-<video id="ve01" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="17.100" data-duration="1.733" data-media-start="8.609" muted playsinline></video>
-<video id="ve02" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="18.833" data-duration="0.300" data-media-start="10.342" muted playsinline></video>
-<video id="ve03" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="19.133" data-duration="0.767" data-media-start="10.642" muted playsinline></video>
-<video id="ve04" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="19.900" data-duration="0.067" data-media-start="11.409" muted playsinline></video>
+<video id="ve00" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="18.567" data-duration="0.067" data-media-start="11.604" muted playsinline></video>
+<video id="ve01" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="18.633" data-duration="1.733" data-media-start="8.613" muted playsinline></video>
+<video id="ve02" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="20.367" data-duration="0.300" data-media-start="10.347" muted playsinline></video>
+<video id="ve03" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="20.667" data-duration="0.767" data-media-start="10.647" muted playsinline></video>
+<video id="ve04" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="21.433" data-duration="0.067" data-media-start="11.413" muted playsinline></video>
 <!--/EDIT-->
               <div class="lyr" id="pv-lyr" style="top:620px;font-size:54px;visibility:hidden"></div>
               <svg id="pv-lock" class="abs" style="left:300px;top:24px;visibility:hidden" width="96" height="112" viewBox="0 0 96 112"><path id="pv-shackle" d="M24 52 V34 A24 24 0 0 1 72 34 V52" fill="none" stroke="#0a0d14" stroke-width="12" stroke-linecap="round"/><rect x="8" y="48" width="80" height="60" rx="14" fill="#ffffff" stroke="#0a0d14" stroke-width="8"/><circle cx="48" cy="74" r="8" fill="#0a0d14"/><path d="M48 78 V92" stroke="#0a0d14" stroke-width="8" stroke-linecap="round"/></svg>
@@ -210,7 +222,7 @@
           </div>
 
           <!-- 4. Export: vertical for TikTok, Reels and Shorts; the music video with Pro -->
-          <div class="dev" id="x-phone" style="left:4100px;top:-400px;width:420px;height:747px;border-radius:52px;visibility:hidden">
+          <div class="dev" id="x-phone" style="left:4100px;top:-300px;width:420px;height:747px;border-radius:52px;visibility:hidden">
             <div class="abs" style="inset:0;border-radius:44px;overflow:hidden">
               <!--EXP-->
 
@@ -218,31 +230,33 @@
               <div class="lyr" style="top:520px;font-size:46px"><span>I</span> <span>gotta</span> <span>bounce</span></div>
             </div>
           </div>
-          <div class="wl" id="x-pl" style="left:4100px;top:390px;width:420px;text-align:center;visibility:hidden">Vertical: TikTok, Reels, Shorts</div>
-          <div class="dev" id="x-tv" style="left:4640px;top:-280px;width:820px;height:461px;border-radius:30px;visibility:hidden">
+          <div class="wl" id="x-pl" style="left:3990px;top:-362px;width:640px;text-align:center;visibility:hidden">Vertical: TikTok, Reels, Shorts</div>
+          <div class="dev" id="x-tv" style="left:4640px;top:-180px;width:820px;height:461px;border-radius:30px;visibility:hidden">
             <div class="abs" style="inset:0;border-radius:22px;overflow:hidden">
               <!--TV-->
 
 <!--/TV-->
             </div>
           </div>
-          <div class="pro" id="x-pro" style="left:5320px;top:-330px;visibility:hidden">PRO</div>
-          <div class="wl" id="x-tl" style="left:4640px;top:230px;width:820px;text-align:center;visibility:hidden">Landscape: YouTube, music video</div>
+          <div class="pro" id="x-pro" style="left:5330px;top:-236px;visibility:hidden">PRO</div>
+          <div class="wl" id="x-tl" style="left:4640px;top:-250px;width:690px;text-align:left;visibility:hidden">Landscape: YouTube, music video</div>
 
           <!-- 5. The pack: 30 videos, all different, then one a day -->
-          <div class="card" id="c-pack" style="left:5700px;top:-490px;width:1200px;height:160px;border-radius:40px;visibility:hidden">
-            <div class="seg" id="pk-seg" style="left:34px;top:36px"><i id="pk-on"></i><b>5 videos</b><b>10 videos</b><b>30 videos</b></div>
-            <div class="btn blue" id="pk-btn" style="left:770px;top:30px;width:390px;height:90px;font-size:38px">Make the pack</div>
-            <div class="abs" id="pk-ok" style="left:0;top:0;width:1188px;height:148px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:44px;white-space:nowrap;visibility:hidden"><span style="color:#1f6fd6;margin-right:14px">✓</span>Pack ready: 30 videos, all different.</div>
+          <div class="card" id="c-pack" style="left:5560px;top:-490px;width:1480px;height:160px;border-radius:40px;visibility:hidden">
+            <div class="pro" id="pk-cp" style="left:30px;top:38px;font-size:40px;visibility:hidden">Creator Plus</div>
+            <div class="seg" id="pk-seg" style="left:362px;top:36px"><i id="pk-on"></i><b>5 videos</b><b>10 videos</b><b>30 videos</b></div>
+            <div class="btn blue" id="pk-btn" style="left:1050px;top:30px;width:390px;height:90px;font-size:38px">Make the pack</div>
+            <div class="abs" id="pk-ok" style="left:0;top:0;width:1468px;height:148px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:44px;white-space:nowrap;visibility:hidden"><span style="color:#1f6fd6;margin-right:14px">✓</span>Pack ready: 30 videos, all different.</div>
           </div>
-          <div class="pro" id="pk-cp" style="left:5640px;top:-578px;visibility:hidden;z-index:3">Creator Plus</div>
           <div class="abs" id="pk-tape" style="left:5920px;top:-8px;width:760px;height:100px;background:#f4f1e8;border-radius:6px;box-shadow:0 12px 0 rgba(10,13,20,0.3);visibility:hidden">
             <svg id="pk-tsvg" class="abs" style="left:0;top:0" width="760" height="100" viewBox="0 0 600 80" preserveAspectRatio="none"></svg>
           </div>
           <div id="pk-grid"></div>
         </div>
-        <img id="icon-land" src="assets/brand/icon.svg?land" alt="" />
-        <svg id="icon-ice" class="ice" width="300" height="140" viewBox="0 0 300 140" style="left:0;top:0;visibility:hidden"><path id="icon-icp" fill="#d6ecff" stroke="#0a0d14" stroke-width="5" stroke-linejoin="round"/></svg>
+        <div id="icon-wrap">
+          <svg id="icon-ice" width="300" height="120" viewBox="0 0 300 120"><path id="icon-icp" fill="#ffffff" stroke="#0a0d14" stroke-width="8" stroke-linejoin="round"/></svg>
+          <img id="icon-land" src="assets/brand/icon.svg?land" alt="" />
+        </div>
 
         <!-- ================= the old world: the cutting mat ================= -->
         <div id="w1" data-layout-allow-overflow>
@@ -283,8 +297,8 @@
         <div id="cu">
           <div id="cu-panel">
             <!--CU-->
-<video id="vc00" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="5.067" data-duration="0.733" data-media-start="5.636" muted playsinline></video>
-<video id="vc01" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="5.800" data-duration="1.933" data-media-start="12.009" muted playsinline></video>
+<video id="vc00" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="5.967" data-duration="0.767" data-media-start="5.622" muted playsinline></video>
+<video id="vc01" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="6.733" data-duration="2.100" data-media-start="12.028" muted playsinline></video>
 <!--/CU-->
           </div>
           <div class="chip" id="cu-word" style="left:0;top:0;font-size:84px">bounce</div>
@@ -301,12 +315,12 @@
         <div id="pay">
           <div class="pp" id="pp0">
             <!--PAY0-->
-<video id="vp000" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="19.533" data-duration="1.133" data-media-start="7.985" muted playsinline></video>
-<video id="vp001" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="20.667" data-duration="0.767" data-media-start="9.118" muted playsinline></video>
-<video id="vp002" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="21.433" data-duration="0.367" data-media-start="9.885" muted playsinline></video>
-<video id="vp003" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="21.800" data-duration="0.367" data-media-start="10.251" muted playsinline></video>
-<video id="vp004" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="22.167" data-duration="0.400" data-media-start="10.618" muted playsinline></video>
-<video id="vp005" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="22.567" data-duration="0.400" data-media-start="11.018" muted playsinline></video>
+<video id="vp000" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="21.067" data-duration="1.100" data-media-start="7.989" muted playsinline></video>
+<video id="vp001" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="22.167" data-duration="0.767" data-media-start="9.089" muted playsinline></video>
+<video id="vp002" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="22.933" data-duration="0.400" data-media-start="9.856" muted playsinline></video>
+<video id="vp003" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="23.333" data-duration="0.367" data-media-start="10.256" muted playsinline></video>
+<video id="vp004" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="23.700" data-duration="0.400" data-media-start="10.623" muted playsinline></video>
+<video id="vp005" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="24.100" data-duration="0.400" data-media-start="11.023" muted playsinline></video>
 <!--/PAY0-->
             <div class="lyr pl" style="top:1060px;font-size:84px"><span>I</span> <span>gotta</span> <span>bounce</span></div>
           </div>

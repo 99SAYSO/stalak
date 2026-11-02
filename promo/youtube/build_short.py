@@ -3,10 +3,11 @@
 short/compositions/film.html. Same world, same engine (assets/engine.js, portrait mode), same voice read, re-cut:
 "Now comes the part nobody sees: the edit." -> the beat -> lips out of sync -> a new pile every day -> "This is Stalak." on the drop
 -> the song -> the takes -> lined up and cut on the beat -> 2 bars of his song ("I gotta bounce") -> "You film. Stalak edits." -> the end.
-Captions on screen (many watch Shorts without sound). Run: python3 build_short.py (after build.py and vo_cut.py)
+Captions on screen, as in the film (caps.py; many watch Shorts without sound). Run: python3 build_short.py (after build.py and vo_cut.py)
 """
 import json, re, pathlib
 import numpy as np
+from caps import make_caps
 
 HERE = pathlib.Path(__file__).parent
 OUT = HERE / "short"
@@ -19,10 +20,10 @@ def B(b): return b * P
 def inst_bar(k): return D0 + k * BAR
 def song_bar(j): return inst_bar(j + 2) - OFF
 
-DROP_B = 30                      # the drop (inst bar 2) on film beat 30: film 0 is on beat 3 of a bar (downbeats: beats 2, 6, 10…)
+DROP_B = 34                      # the drop (inst bar 2) on film beat 34: film 0 is on beat 3 of a bar (downbeats: beats 2, 6, 10…)
 DB = DROP_B % 4
 INST0 = inst_bar(2) - B(DROP_B)  # inst time at film 0
-PAY_B = 52                       # his song from beat 3 of song bar 5 (phase-matched: song bar j = inst bar j + 2), 2 bars
+PAY_B = 56                       # his song from beat 3 of song bar 5 (phase-matched: song bar j = inst bar j + 2), 2 bars
 END_B = PAY_B + 8
 SONG0 = song_bar(5) + 2 * P
 assert abs((INST0 + B(PAY_B)) - (song_bar(5) + 2 * P + OFF)) < 1e-6
@@ -35,11 +36,12 @@ def word(lid, w, n=1):
 def dur(lid): return VO[lid]["speech_dur"]
 MASTER = 0.68
 at = {"L07": B(DROP_B) - word("L07", "stalak") - 0.02}
-A0, G7 = 0.14, 0.26
-g1 = (at["L07"] - G7 - A0 - sum(dur(l) for l in LIDS[:4])) / 3
-assert 0.2 <= g1 <= 0.4, g1
+A0 = 0.14
+G = [0.40, 1.05, 0.45]           # after L02, L04 (time to read OFF BEAT, owner 2/11), L05
 t = A0
-for l in LIDS[:4]: at[l] = t; t += dur(l) + g1
+for l, g in zip(LIDS[:4], G + [0.0]): at[l] = t; t += dur(l) + g
+g1 = at["L07"] - (at["L06"] + dur("L06"))
+assert 0.26 <= g1 <= 0.8, g1
 prev = at["L07"] + dur("L07")
 for l, g in (("L08", 0.3), ("S09", 0.3), ("L10", 0.3)): at[l] = prev + g; prev = at[l] + dur(l)
 assert B(PAY_B) - prev > 0.4, (prev, B(PAY_B))
@@ -82,15 +84,7 @@ for i, lid in enumerate(LIDS):
 for a, b2 in zip(vo_spans, vo_spans[1:]): assert b2[0] - a[1] > 0.15, (a, b2)
 
 # captions: the problem and Stalak lines, a few words at a time (the claim and the end card show their own words)
-CH = [("L02", [(0, 5), (6, 7)]), ("L04", [(0, 3), (4, 7)]), ("L05", [(0, 2), (3, 6), (7, 9)]), ("L06", [(0, 1), (2, 5), (6, 10)]),
-      ("L07", [(0, 2)]), ("L08", [(0, 3)]), ("S09", [(0, 3)]), ("L10", [(0, 3), (4, 7), (8, 11), (12, 14)])]
-CAPS = []
-for lid, chunks in CH:
-    li = LIDS.index(lid)
-    for ci, (a, b2) in enumerate(chunks):
-        end = (at[lid] + VO[lid]["words"][chunks[ci + 1][0]][1] - 0.02) if ci + 1 < len(chunks) else at[lid] + dur(lid) + 0.22
-        CAPS.append({"line": li, "from": a, "to": b2, "end": round(end, 3)})
-assert all(len(VO[lid]["words"]) - 1 == ch[-1][1] for lid, ch in CH)
+CAPS2 = make_caps(LIDS, at, VO, dur, LIDS[:8], [B(PAY_B) - 0.42])
 
 # the music: the beat (the drop on "Stalak"), 2 bars of his song, the beat to the end
 LO1, LO2, HI = 0.40, 0.22, 0.46
@@ -173,10 +167,8 @@ def portrait_html():
     R('#snow { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }', '#snow { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }')
     R('          #grain { position: absolute; inset: 0;', """          .cl { font-size: 116px; -webkit-text-stroke: 6px #0a0d14; }
           #pp0 { left: 115px; top: 250px; width: 850px; height: 1511px; border-radius: 48px; transform-origin: 50% 50%; }
-          #caps { position: absolute; inset: 0; pointer-events: none; }
-          .cap { position: absolute; left: 70px; right: 70px; top: 150px; text-align: center; font-weight: 800; font-size: 70px; line-height: 1.12; color: #ffffff;
-            -webkit-text-stroke: 10px #0a0d14; paint-order: stroke fill; text-shadow: 0 7px 0 #0a0d14; visibility: hidden; }
-          .cap .w { display: inline-block; }
+          .capk { gap: 12px 16px; }
+          .capk .tw { font-size: 60px; } .capk .tk { font-size: 74px; } .capk .ow { font-size: 68px; } .capk .ck { font-size: 72px; }
           #grain { position: absolute; inset: 0;""")
     a0 = s.index('        <div id="pay">'); a1 = s.index('        <!-- you film, Stalak edits -->')
     s = s[:a0] + """        <div id="pay">
@@ -279,7 +271,7 @@ film.write_text(s_)
 LONG = json.loads(re.search(r"window\.T = (.*);\s*$", (HERE / "assets/times.js").read_text(), re.S).group(1))
 LAY = dict(LONG["LAY"]); LAY["normal"] = LAYN
 times = {"P": P, "TOTAL": TOTAL, "W": 1080, "H": 1920, "DB": DB, "LYR": round(10.952 - SONG0, 3),
-         "S": {k: round(v, 3) for k, v in S.items()}, "VO": vo_spans, "VW": [VO[l]["words"] for l in LIDS], "CAPS": CAPS,
+         "S": {k: round(v, 3) for k, v in S.items()}, "VO": vo_spans, "VW": [VO[l]["words"] for l in LIDS], "CAPS2": CAPS2,
          "LAY": LAY, "PART0": round(PART0, 4), "L8": round(L8, 4), "WAVES": LONG["WAVES"], "songBar0": LONG["songBar0"], "BAR": BAR}
 (OUT / "assets" / "times.js").write_text("/* generated by build_short.py: the Short's clock */\nwindow.T = %s;\n" % json.dumps(times, separators=(",", ":")))
 

@@ -21,6 +21,7 @@
   function p3i(x) { x = sat(x); return x * x * x; }
   function eio(x) { x = sat(x); return x === 0 ? 0 : x === 1 ? 1 : x < 0.5 ? Math.pow(2, 20 * x - 10) / 2 : (2 - Math.pow(2, -20 * x + 10)) / 2; }
   function bko(x) { x = sat(x); var c1 = 1.4, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); }
+  function sm(q, d) { return q <= 0 ? 0 : p3o(q / d); }
   function bump(x) { return x <= 0 || x >= 1 ? 0 : Math.sin(Math.PI * x); }
   function spr(t, w, z) {
     if (t <= 0) return 0;
@@ -197,8 +198,8 @@
     // the week: MON … SUN
     $.dnames = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"].map(function (n, i) { return el("div", "dname", "left:" + (5673 + i * 184) + "px;top:-150px", $["pk-grid"], n); });
     // the camera's stations
-    CAM2 = PORT ? { c1in: [0, -60], c1: [0, -60], c2: [1500, -80], c3: [3000, -100], bar: [3000, -100], pv: [3000, 0], pace: [3000, -400], expPhone: [4310, 0], exp: [4780, 0], packCtl: [6300, -410], pack: [6300, 0] }
-                : { c1in: [0, 0], c1: [0, 0], c2: [1500, 10], c3: [3000, 0], bar: [3236, -10], pv: [2500, -27], pace: [3236, -70], expPhone: [4310, -30], exp: [4780, -20], packCtl: [6300, -410], pack: [6300, -90] };
+    CAM2 = PORT ? { c1in: [0, -60], c1: [0, -60], c2: [1500, -80], c3: [3000, -130], bar: [3000, -100], pv: [3000, 0], pace: [3000, -400], expPhone: [4310, 0], exp: [4780, 0], packCtl: [6300, -410], pack: [6300, 0] }
+                : { c1in: [0, 80], c1: [0, 80], c2: [1500, 100], c3: [3000, 100], bar: [3236, -10], pv: [2500, 70], pace: [3236, 150], expPhone: [4310, 95], exp: [4780, 95], packCtl: [6300, -410], pack: [6300, 55] };
   }
 
   // the payoff panels and the claim, sized once the fonts are there
@@ -227,7 +228,7 @@
      "c-edit", "pv", "pv-lyr", "pv-lock", "pv-shackle", "pace", "pace-on", "ruler", "bar", "ph", "e-exp",
      "c-lyr", "ly-paste", "ly-box", "ly-tapsync", "tapb",
      "x-phone", "x-pl", "x-tv", "x-pro", "x-tl", "c-pack", "pk-seg", "pk-on", "pk-btn", "pk-grid", "pk-ok", "pk-cp", "pk-tape", "pk-tsvg",
-     "icon-land", "icon-ice", "icon-icp", "pay", "pd0", "pd1", "pd2", "pp0", "pp1", "pp2",
+     "icon-wrap", "icon-land", "icon-ice", "icon-icp", "pay", "pd0", "pd1", "pd2", "pp0", "pp1", "pp2",
      "claim", "cl-cam", "cl-t1", "cl-icon", "cl-t2", "end", "end-icon", "end-wm", "end-url", "end-sub"].forEach(function (id) { $[id] = root.querySelector("#" + id); });
     $.ctx = $.snow.getContext("2d");
     $.days0 = $.days; $.piecesBox = $.pieces;
@@ -252,13 +253,21 @@
     // snow
     var rs = rng(5); $.fl = [];
     for (var i = 0; i < 90; i++) $.fl.push({ x: rs() * (VW + 180), y: rs() * (VH + 120), r: 1.2 + rs() * 2.4, v: 60 + rs() * 80, a: 0.45 + rs() * 0.45, amp: 8 + rs() * 20, w: 0.4 + rs() * 0.6, ph: rs() * 6.28, d: 0.4 + rs() * 0.8 });
-    // captions (the Short): T.CAPS = [{line, from, to, end}]: the words of a voice line, shown as they are said
-    if (T.CAPS && root.querySelector("#caps")) {
-      $.caps2 = T.CAPS.map(function (c) {
-        var d = el("div", "cap", "", root.querySelector("#caps")), ts = [], html = [];
-        for (var k = c.from; k <= c.to; k++) { html.push('<span class="w">' + T.VW[c.line][k][0] + "</span>"); ts.push(T.VO[c.line][0] + T.VW[c.line][k][1]); }
-        d.innerHTML = html.join(" ");
-        return { el: d, spans: d.querySelectorAll(".w"), ts: ts, a: ts[0], b: c.end };
+    // captions: T.CAPS2 = [{line, from, to, key: [word indexes], end}]; on the mat: masking tape (key words: red tape, Lilita One);
+    // in the sky: white words outlined in ink (key words: Stalak chips, Lilita One)
+    if (T.CAPS2 && root.querySelector("#caps")) {
+      $.caps2 = T.CAPS2.map(function (c, ci) {
+        var d = el("div", "capk", "", root.querySelector("#caps")), ws = [];
+        var t0 = T.VO[c.line][0], tape = t0 + T.VW[c.line][c.to][1] < S.drop - 0.05;      // the chunk's material: the world its last word is in
+        for (var k = c.from; k <= c.to; k++) {
+          var key = c.key.indexOf(k) >= 0, sp = el("span", tape ? (key ? "tk" : "tw") : (key ? "ck" : "ow"), "", d, "");
+          sp.textContent = T.VW[c.line][k][0].replace(/[.,:]+$/, "");
+          ws.push({ el: sp, t: t0 + T.VW[c.line][k][1] - CAP_LEAD, tape: tape, key: key, r: tape ? (hash(ci * 7.1 + k * 3.3) - 0.5) * (key ? 9 : 6) : 0 });
+        }
+        var cu = ws[0].t >= S.s5 && ws[0].t < S.s6;                                         // the close-up: under the voice/lips tracks
+        var W0 = PORT ? 900 : (cu ? 940 : 1600), X0 = PORT ? 540 : (cu ? 1395 : 960), Y0 = PORT ? 196 : (cu ? 862 : 878);
+        d.style.width = px(W0);
+        return { el: d, w: ws, a: ws[0].t, end: c.end, out: c.out, x: X0 - W0 / 2, y: Y0 };
       });
     }
     // the payoff's lyric words
@@ -303,6 +312,7 @@
     var sk = p3i((t - S.s7 - 0.1) / (S.drop - S.s7 - 0.1));
     $.objs.style.transformOrigin = SUCK[0] + "px " + SUCK[1] + "px";
     $.objs.style.transform = sk > 0 ? "rotate(" + (120 * sk).toFixed(2) + "deg) scale(" + Math.max(0.001, 1 - sk).toFixed(4) + ")" : "none";
+    $.objs.style.visibility = sk >= 0.97 ? "hidden" : "visible"; $.objs.style.opacity = sk >= 0.97 ? "0" : "1";
     var opn = p2i((t - S.drop + 0.02) / 0.4) * 115;
     $["mat-l"].style.transform = "rotateY(" + opn.toFixed(2) + "deg)";
     $["mat-r"].style.transform = "rotateY(" + (-opn).toFixed(2) + "deg)";
@@ -351,7 +361,7 @@
     vis($.tag3, settled);
     place($.tag3, XM + off / 2 - 170, 0, 6, -3, 1 + 0.15 * Math.exp(-Math.max(0, tq) / 0.08));
     // shot 4: the beats light up one by one; the blade lands just off one
-    var in4 = t > S.s4 - 0.01 && t < S.s5 + 0.05;
+    var in4 = t > S.s4 - 0.01 && t < S.cu0;
     var lit = Math.floor((t - S.s4) / P + 1e-6);
     for (var i = 0; i < $.ticks.length; i++) {
       var on4 = in4 && i >= K4 && i <= K4 + 3 && (i - K4) <= lit;
@@ -362,7 +372,7 @@
     vis($.cut4, cut4); $.cut4.style.left = px(x4c - 4);
     vis($.gap4, cut4 && t > S.blade + 0.12); $.gap4.style.left = px(tickX(K4 + 3)); $.gap4.style.width = px(20);
     var tq4 = t - S.blade - 0.16;
-    vis($.tag4, cut4 && tq4 > 0); place($.tag4, x4c - 110, 0, 6, 4, 0.6 + 0.4 * spr(tq4, 18, 0.5));
+    vis($.tag4, cut4 && tq4 > 0); $.tag4.style.opacity = sat(tq4 / 0.06).toFixed(3); place($.tag4, x4c - 120, 0, 6, 4 + 6 * (1 - sm(tq4, 0.2)), 1 + 0.3 * (1 - sm(tq4, 0.2)));
     // shot 6: a new day, a new pile
     $.days.forEach(function (d) {
       var q6 = t - d.t0;
@@ -407,16 +417,16 @@
     vis($["cu-tag"], tq > 0);
     $["cu-tag"].style.transform = "scale(" + (0.6 + 0.4 * spr(tq, 18, 0.5)).toFixed(4) + ") rotate(-3deg)";
     $["cu-tag"].textContent = lips && t > S.words - 0.1 ? "out of sync" : "1 frame off";
-    if ($["cu-tag2"]) {                           // portrait: the tag sits on the frame's corner
+    if ($["cu-tag2"]) {                           // portrait: the tag sits in the frame's lower corner (the captions are above the frame)
       vis($["cu-tag2"], tq > 0);
-      $["cu-tag2"].style.transform = "translate3d(" + px(fx + fw - 330) + "," + px(fy - 46) + ",0) scale(" + (0.6 + 0.4 * spr(tq, 18, 0.5)).toFixed(4) + ") rotate(-3deg)";
+      $["cu-tag2"].style.transform = "translate3d(" + px(fx + fw - 350) + "," + px(fy + fh - 130) + ",0) scale(" + (0.6 + 0.4 * spr(tq, 18, 0.5)).toFixed(4) + ") rotate(-3deg)";
       if ($["cu-tag2"].textContent !== $["cu-tag"].textContent) $["cu-tag2"].textContent = $["cu-tag"].textContent;
     }
   }
 
   // ------------------------------------------------------------------------ the Stalak world
-  var ZOOM = PORT ? { c1in: 0.7, c1: 1.0, c2: 0.9, c3: 0.86, bar: 0.86, pv: 1.2, pace: 1.0, expPhone: 1.0, exp: 0.86, packCtl: 0.9, pack: 0.76 }
-                  : { c1in: 0.8, c1: 1.26, c2: 1.12, c3: 1.05, bar: 1.05, pv: 1.36, pace: 1.22, expPhone: 1.12, exp: 1, packCtl: 1.3, pack: 1 };
+  var ZOOM = PORT ? { c1in: 0.7, c1: 1.0, c2: 0.9, c3: 0.8, bar: 0.86, pv: 1.2, pace: 1.0, expPhone: 1.0, exp: 0.86, packCtl: 0.9, pack: 0.76 }
+                  : { c1in: 0.72, c1: 1.08, c2: 0.92, c3: 0.86, bar: 0.86, pv: 1.1, pace: 1.08, expPhone: 0.95, exp: 0.95, packCtl: 1.1, pack: 0.84 };
   var CAMK = null;
   function camW2(t) {
     if (!CAMK) {
@@ -435,25 +445,25 @@
         var a = K2[i - 1], b = K2[i], q = sat((t - a[0]) / Math.max(1e-6, b[0] - a[0])), e = (b[2] || sio)(q);
         var A = CAM2[a[1]], Bp = CAM2[b[1]];
         var pan = Math.abs(Bp[0] - A[0]) > 300 ? bump(q) : 0;
-        return { x: mix(A[0], Bp[0], e), y: mix(A[1], Bp[1], e), z: mix(a[3], b[3], b[1] === a[1] ? lin(q) : e) * (1 - 0.07 * pan), r: 1.6 * pan * (Bp[0] > A[0] ? 1 : -1) };
+        return { x: mix(A[0], Bp[0], e), y: mix(A[1], Bp[1], e), z: mix(a[3], b[3], b[1] === a[1] ? lin(q) : e) * (1 - 0.07 * pan), r: 0 };
       }
     }
   }
-  function press(e, t0, t, base) {          // a button pressed at t0
-    var q = t - t0, k = q >= 0 && q < 0.22 ? bump(q / 0.22) : 0;
-    e.style.transform = (base || "") + " translateY(" + px(6 * k) + ")";
-    e.style.boxShadow = "0 " + (8 - 6 * k).toFixed(1) + "px 0 #0a0d14";
+  function press(e, t0, t, base) {          // a button pressed at t0: down, then up, smoothly
+    var q = t - t0, k = q >= 0 && q < 0.3 ? sio(q / 0.15) * (1 - sio((q - 0.15) / 0.15)) : 0;
+    e.style.transform = (base || "") + " translateY(" + px(5 * k) + ")";
+    e.style.boxShadow = "0 " + (8 - 5 * k).toFixed(1) + "px 0 #0a0d14";
   }
   function popIn(e, t0, t, base, w, z) {    // pops in place, returns the spring
     var q = t - t0;
     if (q < 0) { vis(e, false); return 0; }
-    var k = spr(q, w || 16, z || 0.6);
-    vis(e, true); e.style.opacity = sat(q / 0.06).toFixed(3);
-    e.style.transform = (base || "") + " scale(" + (0.4 + 0.6 * k).toFixed(4) + ")";
+    var k = sm(q, 0.3);
+    vis(e, true); e.style.opacity = sat(q / 0.1).toFixed(3);
+    e.style.transform = (base || "") + " scale(" + (0.85 + 0.15 * k).toFixed(4) + ")";
     return k;
   }
-  function icicles(w, g, seed) {
-    var d = "", half = w / 2 - 34;
+  function icicles(w, g, seed, hw) {
+    var d = "", half = hw || w / 2 - 34;
     if (g <= 0.01) return "";
     for (var i = -20; i <= 20; i++) {
       var x = i * 30 + (hash(i * 1.9 + seed) - 0.5) * 10;
@@ -508,47 +518,45 @@
   function renderW2(t) {
     var on = t > S.drop - 0.05;
     op($.sky, on ? 1 : 0);
-    if (!on) { op($.board, 0); vis($["icon-land"], false); vis($["icon-ice"], false); return; }
+    if (!on) { op($.board, 0); vis($["icon-wrap"], false); return; }
     var c = camW2(t);
     drawSnow(t, c.x);
-    var punch = 0, bn = Math.floor(t / P + 1e-6);
-    for (var bb = bn - 2; bb <= bn; bb++) { var dtb = t - B(bb); if (dtb >= 0 && B(bb) >= S.drop - 1e-6) punch += (((bb - DB) % 4 + 4) % 4 === 0 ? 0.016 : 0.008) * Math.exp(-dtb / 0.1); }
+    var punch = 0;
     var bon = t > S.s8 - 0.1 && t < S.pay + 0.05;
-    op($.board, bon ? sat((t - S.s8 + 0.1) / 0.2) : 0);
+    op($.board, bon ? sat((t - S.s8 + 0.1) / 0.2) * (1 - sat((t - S.pay + 0.36) / 0.3)) : 0);   // the board gives way to the payoff
     var z = c.z * (1 + punch);
     $.board.style.transform = "translate3d(" + CX + "px," + CY + "px,0) rotate(" + c.r.toFixed(3) + "deg) scale(" + z.toFixed(4) + ") translate3d(" + px(-c.x) + "," + px(-c.y) + ",0)";
     // the icon lands on the drop, its icicles grow; it hands over to the app
     var iq = t - S.drop, iout = p2i((t - S.s8 + 0.15) / 0.25);
     if (iq > 0 && iout < 1) {
-      var ik = spr(iq, 13, 0.5), sc = (0.25 + 0.75 * ik) * (1 + 2.2 * punch) * (1 - 0.5 * iout);
-      vis($["icon-land"], true); $["icon-land"].style.opacity = (1 - iout).toFixed(3);
-      $["icon-land"].style.transform = "translate3d(" + px(CX - 150) + "," + px(CY - 150 - 60 * (1 - ik) - (CY + 280) * iout) + ",0) rotate(" + (-16 * (1 - ik) + 20 * iout).toFixed(2) + "deg) scale(" + sc.toFixed(4) + ")";
-      vis($["icon-ice"], iout < 0.2); $["icon-ice"].style.transform = "translate3d(" + px(CX - 150) + "," + px(CY + 128) + ",0)";
-      $["icon-icp"].setAttribute("d", icicles(300, p3o((iq - 0.12) / 0.5), 3));
-    } else { vis($["icon-land"], false); vis($["icon-ice"], false); }
+      var ik = sm(iq, 0.45), sc = (0.3 + 0.7 * ik) * (1 - 0.5 * iout);
+      vis($["icon-wrap"], true); $["icon-wrap"].style.opacity = (sat(iq / 0.06) * (1 - iout)).toFixed(3);
+      $["icon-wrap"].style.transform = "translate3d(" + px(CX - 150) + "," + px(CY - 150 - 50 * (1 - ik) - (CY + 280) * iout) + ",0) rotate(" + (-12 * (1 - ik)).toFixed(2) + "deg) scale(" + sc.toFixed(4) + ")";
+      $["icon-icp"].setAttribute("d", icicles(300, p3o((iq - 0.2) / 0.45), 3, 70));
+    } else vis($["icon-wrap"], false);
     if (!bon) return;
     // 1. the song falls into "Import your music"; its waveform and tempo
     var fq = t - S.songDrop, fl = sat(fq / (S.land + 0.1 - S.songDrop));
     if (fq > 0 && t < S.land + 0.32) {
       vis($["s-tape"], true);
-      var sq = t > S.land + 0.1 ? spr(t - S.land - 0.1, 22, 0.4) : 0;
+      var sq = 0;
       $["s-tape"].style.opacity = (1 - sat((t - S.land - 0.14) / 0.16)).toFixed(3);
       var dc = $.dropC || [0, 25];
       $["s-tape"].style.transform = "translate3d(" + px(dc[0] - 450) + "," + px(mix(dc[1] - 790, dc[1] - 55, p2i(fl))) + ",0) rotate(" + (mix(-9, 0, fl)).toFixed(2) + "deg) scale(" + (1 - 0.05 * Math.sin(sq * Math.PI)).toFixed(4) + ")";
     } else vis($["s-tape"], false);
     var wq = t - S.land - 0.12;
     vis($["s-drop"], wq < 0.05);
-    if (wq > 0) { vis($["s-wave"], true); $["s-wave"].style.transform = "scale(" + (0.94 + 0.06 * spr(wq, 18, 0.6)).toFixed(4) + ")"; } else vis($["s-wave"], false);
+    if (wq > 0) { vis($["s-wave"], true); $["s-wave"].style.transform = "scale(" + (0.96 + 0.04 * sm(wq, 0.25)).toFixed(4) + ")"; } else vis($["s-wave"], false);
     popIn($["s-bpm"], S.land + 0.08, t, "", 18, 0.6);
     vis($["s-next"], true);
     // 2. the takes drop in, the buttons, then their sound lines up with the song's
-    $.thumbs.forEach(function (th) { var k = popIn(th.th, th.t0, t, "translateY(" + px(-40 * (1 - Math.min(1, spr(t - th.t0, 16, 0.7)))) + ")", 16, 0.62); popIn(th.nm, th.t0 + 0.06, t, "", 18, 0.7); });
+    $.thumbs.forEach(function (th) { var k = popIn(th.th, th.t0, t, "translateY(" + px(-40 * (1 - sm(t - th.t0, 0.35))) + ")", 16, 0.62); popIn(th.nm, th.t0 + 0.06, t, "", 18, 0.7); });
     press($["t-imp"], S.imp, t); press($["t-rec"], S.rec, t);
     $["t-recdot"].setAttribute("opacity", t > S.rec && Math.floor((t - S.rec) / 0.25) % 2 === 0 ? "0.25" : "1");
     var aq = p2io((t - S.align - 0.05) / (S.synced - S.align - 0.35));
     $.wrows.forEach(function (w, i) {
       var lk = (t - (S.synced - 0.45 + 0.12 * i));
-      var o = w.off * (1 - aq) + (lk < 0 && aq > 0.98 ? 3 * Math.sin(t * 50) : 0);
+      var o = w.off * (1 - aq);
       w.g.setAttribute("transform", "translate(" + o.toFixed(1) + ",0)");
     });
     popIn($["t-ok"], S.synced - 0.12, t, "", 18, 0.7);
@@ -562,18 +570,18 @@
     if (lq > 0 && t < S.s12 + 0.4) {
       vis($["pv-lock"], true);
       $["pv-lock"].style.opacity = (sat(lq / 0.08) * (1 - sat((t - S.s12 - 0.1) / 0.3))).toFixed(3);
-      $["pv-lock"].style.transform = "scale(" + (0.5 + 0.5 * spr(lq, 16, 0.55)).toFixed(4) + ")";
+      $["pv-lock"].style.transform = "scale(" + (0.8 + 0.2 * sm(lq, 0.3)).toFixed(4) + ")";
       var cl = p3i((t - S.lock + 0.08) / 0.1);
       $["pv-shackle"].setAttribute("transform", "translate(0," + (-16 * (1 - cl)).toFixed(1) + ")");
     } else vis($["pv-lock"], false);
     // the lyric on the preview, right on time
     var lyOn = t > S.show && t < S.s14 + 0.9;
     vis($["pv-lyr"], lyOn);
-    $.pvw.forEach(function (w, i) { var q = t - (S.show + 0.1 + i * P / 2); w.style.opacity = q > 0 ? "1" : "0"; w.style.transform = "scale(" + (q > 0 ? 0.7 + 0.3 * spr(q, 20, 0.55) : 0.7).toFixed(4) + ")"; });
+    $.pvw.forEach(function (w, i) { var q = t - (S.show + 0.1 + i * P / 2); w.style.opacity = q > 0 ? "1" : "0"; w.style.transform = "translateY(" + px(q > 0 ? 14 * (1 - sm(q, 0.25)) : 14) + ")"; });
     // 3b. lyrics: paste, then tap along
     var ly = t - S.s12, lyo = p2i((t - S.show + 0.14) / 0.3);
     if (ly > 0 && lyo < 1) {
-      var lk = spr(ly, 13, 0.75);
+      var lk = sm(ly, 0.45);
       vis($["c-lyr"], true); $["c-lyr"].style.opacity = (sat(ly / 0.08) * (1 - lyo)).toFixed(3);
       $["c-lyr"].style.transform = "translate3d(" + px(420 * (1 - lk) + 700 * lyo) + "," + px(30 * (1 - lk)) + ",0) rotate(" + (5 * (1 - lk) + 4 * lyo).toFixed(2) + "deg)";
       $.lns.forEach(function (l, i) {
@@ -585,14 +593,13 @@
         l.st.style.background = ok ? BLUE : "#e7edf5"; l.st.style.borderColor = ok ? INK : "#c8d3e2"; l.st.style.color = ok ? "#ffffff" : "#9aa8bb";
         var lab = ok ? "✓ synced" : "—";
         if (l.st.textContent !== lab) l.st.textContent = lab;
-        l.st.style.transform = "scale(" + (ok ? 1 + 0.15 * Math.exp(-(t - tp) / 0.08) : 1).toFixed(3) + ")";
+        l.st.style.transform = "none";
       });
       press($["ly-tapsync"], S.tap - 0.12, t);
       var tb = t - S.tap + 0.05, pulse = 0;
       for (var j = 0; j < 4; j++) { var dq = t - (S.tap + 0.12 + j * P / 2); if (dq >= 0) pulse = Math.max(pulse, Math.exp(-dq / 0.07)); }
-      popIn($.tapb, S.tap - 0.05, t, "translateY(" + px(5 * pulse) + ")", 16, 0.6);
+      popIn($.tapb, S.tap - 0.05, t, "", 16, 0.6);
       $.tapb.style.background = pulse > 0.3 ? BLUE : INK;
-      $.tapb.style.transform += " scale(" + (1 - 0.06 * pulse).toFixed(3) + ")";
     } else op($["c-lyr"], 0);
     // the pace: Normal -> Chill -> Punchy
     if (fit()) {
@@ -608,25 +615,25 @@
     var xq = t - S.tik + 0.35, xgone = t > S.s15 + 0.7;
     if (xgone) { ["x-pl", "x-pro", "x-tl"].forEach(function (id) { vis($[id], false); }); op($["x-phone"], 0); op($["x-tv"], 0); }
     else if (xq > 0) {
-      var xk = spr(xq, 12, 0.72);
+      var xk = sm(xq, 0.5);
       vis($["x-phone"], true); $["x-phone"].style.opacity = "1";
       $["x-phone"].style.transform = "translate3d(0," + px(700 * (1 - xk)) + ",0) rotate(" + (-6 * (1 - xk)).toFixed(2) + "deg)";
     } else { vis($["x-phone"], false); $["x-phone"].style.opacity = "0"; }
     if (!xgone) popIn($["x-pl"], S.tik + 0.15, t, "", 18, 0.7);
     var vq = t - S.pro + 0.2;
     if (xgone) {} else if (vq > 0) {
-      var vk = spr(vq, 12, 0.72);
+      var vk = sm(vq, 0.5);
       vis($["x-tv"], true); $["x-tv"].style.opacity = "1";
       $["x-tv"].style.transform = "translate3d(" + px(1200 * (1 - vk)) + ",0,0) rotate(" + (5 * (1 - vk)).toFixed(2) + "deg)";
     } else { vis($["x-tv"], false); $["x-tv"].style.opacity = "0"; }
     if (!xgone) { popIn($["x-pro"], S.pro + 0.25, t, "rotate(6deg)", 16, 0.5); popIn($["x-tl"], S.pro + 0.35, t, "", 18, 0.7); }
     // 5. the pack: 30 videos fan out; then one a day
     var pq0 = t - S.s15 - 0.1;
-    if (pq0 > 0) { op($["c-pack"], 1); $["c-pack"].style.transform = "translateY(" + px(-260 * (1 - spr(pq0, 13, 0.75))) + ")"; } else op($["c-pack"], 0);
+    if (pq0 > 0) { op($["c-pack"], 1); $["c-pack"].style.transform = "translateY(" + px(-260 * (1 - sm(pq0, 0.45))) + ")"; } else op($["c-pack"], 0);
     press($["pk-btn"], S.one15, t, "");
     popIn($["pk-cp"], S.cplus + 0.05, t, "rotate(-5deg)", 15, 0.5);
     var tq0 = t - S.one15 - 0.1, tout = p2i((t - S.turns - 0.25) / 0.3);
-    if (tq0 > 0 && tout < 1) { vis($["pk-tape"], true); $["pk-tape"].style.opacity = (1 - tout).toFixed(3); $["pk-tape"].style.transform = "scale(" + ((0.4 + 0.6 * spr(tq0, 15, 0.55)) * (1 + 0.08 * bump(sat((t - S.turns) / 0.3)))).toFixed(4) + ")"; }
+    if (tq0 > 0 && tout < 1) { vis($["pk-tape"], true); $["pk-tape"].style.opacity = (1 - tout).toFixed(3); $["pk-tape"].style.transform = "scale(" + (0.85 + 0.15 * sm(tq0, 0.35)).toFixed(4) + ")"; }
     else vis($["pk-tape"], false);
     var rdy = sat((t - S.edits - 0.3) / 0.15);
     $["pk-seg"].style.opacity = (1 - rdy).toFixed(3); $["pk-btn"].style.opacity = (1 - rdy).toFixed(3);
@@ -634,7 +641,7 @@
     $.pks.forEach(function (p, i) {
       var q = t - p.t0;
       if (q < 0) { vis(p.el, false); return; }
-      var k = spr(q, 14, 0.72);
+      var k = sm(q, 0.45);
       var x = mix(6300 - 60, p.gx, k), y = mix(-66, p.gy, k), r = mix(-30 + 60 * hash(i), 0, k), sc = 0.3 + 0.7 * k;
       if (wk > 0) {
         var wq2 = p3o((wk - 0.012 * i) / 0.42), sx = 5673 + p.slot * 184 - 15, sy = -60;
@@ -657,15 +664,14 @@
     op($.pay, a ? 1 : 0);
     if (!a) return;
     var g = p3o((t - S.pay + 0.42) / 0.42), out = p2i((t - S.payEnd + 0.26) / 0.26);
-    var punch = 0, bn = Math.floor(t / P + 1e-6);
-    for (var bb = bn - 1; bb <= bn; bb++) { var dtb = t - B(bb); if (dtb >= 0 && B(bb) >= S.pay - 1e-6) punch += (((bb - DB) % 4 + 4) % 4 === 0 ? 0.03 : 0.014) * Math.exp(-dtb / 0.1); }
+    var punch = 0;
     var LYR = T.LYR === undefined ? 3.469 : T.LYR;
     if (PORT) {
-      var pk0 = spr(t - S.pay + 0.3, 12, 0.7), o2 = p2i((t - S.payEnd + 0.26) / 0.26);
+      var pk0 = sm(t - S.pay + 0.3, 0.45), o2 = p2i((t - S.payEnd + 0.26) / 0.26);
       $.pp0.style.transform = "translate3d(0," + px(120 * (1 - pk0) - 200 * o2) + ",0) scale(" + ((0.6 + 0.4 * pk0) * (1 + punch) * (1 - 0.2 * o2)).toFixed(4) + ")";
       $.pp0.style.opacity = (sat((t - S.pay + 0.3) / 0.1) * (1 - o2)).toFixed(3);
       var w0 = $.pls[0];
-      for (var w9 = 0; w9 < w0.length; w9++) { var q9 = t - (S.pay + LYR + w9 * P / 2); w0[w9].style.opacity = q9 > 0 ? "1" : "0"; w0[w9].style.transform = "scale(" + (q9 > 0 ? 0.7 + 0.3 * spr(q9, 20, 0.55) : 0.7).toFixed(4) + ")"; }
+      for (var w9 = 0; w9 < w0.length; w9++) { var q9 = t - (S.pay + LYR + w9 * P / 2); w0[w9].style.opacity = q9 > 0 ? "1" : "0"; w0[w9].style.transform = "translateY(" + px(q9 > 0 ? 14 * (1 - sm(q9, 0.25)) : 14) + ")"; }
       return;
     }
     [0, 1, 2].forEach(function (i) {
@@ -682,7 +688,7 @@
       pd.style.opacity = (sat((g - 0.6) / 0.4) * (1 - out)).toFixed(3);
       pd.style.transform = "translateY(" + px(30 * (1 - g) + oy) + ") translateX(" + px(ox) + ")";
       var ws = $.pls[i];
-      for (var w = 0; w < ws.length; w++) { var q = t - (S.pay + LYR + w * P / 2); ws[w].style.opacity = q > 0 ? "1" : "0"; ws[w].style.transform = "scale(" + (q > 0 ? 0.7 + 0.3 * spr(q, 20, 0.55) : 0.7).toFixed(4) + ")"; }
+      for (var w = 0; w < ws.length; w++) { var q = t - (S.pay + LYR + w * P / 2); ws[w].style.opacity = q > 0 ? "1" : "0"; ws[w].style.transform = "translateY(" + px(q > 0 ? 14 * (1 - sm(q, 0.25)) : 14) + ")"; }
     });
   }
 
@@ -692,10 +698,10 @@
     op($.claim, a ? 1 : 0);
     if (a && fit()) {
       var out = p2i((t - S.s18 + 0.2) / 0.2);
-      var q1 = t - S.film17, k1 = q1 > 0 ? spr(q1, 15, 0.55) : 0, q2 = t - S.stalak17, k2 = q2 > 0 ? spr(q2, 15, 0.55) : 0;
+      var q1 = t - S.film17, k1 = sm(q1, 0.35), q2 = t - S.stalak17, k2 = sm(q2, 0.35);
       var w1 = 230 + 40 + $.cl1w, x1 = CX - w1 / 2, w2 = 200 + 40 + $.cl2w, x2 = CX - w2 / 2;
       var y1 = PORT ? 700 : 250, y2 = PORT ? 1000 : 560;
-      function put(e, x, y, k, q, rot) { vis(e, q > 0); e.style.opacity = (sat(q / 0.05) * (1 - out)).toFixed(3); e.style.transform = "translate3d(" + px(x) + "," + px(y - 60 * out) + ",0) rotate(" + (rot * (1 - k)).toFixed(2) + "deg) scale(" + (0.3 + 0.7 * k).toFixed(4) + ")"; }
+      function put(e, x, y, k, q, rot) { vis(e, q > 0); e.style.opacity = (sat(q / 0.05) * (1 - out)).toFixed(3); e.style.transform = "translate3d(" + px(x) + "," + px(y - 60 * out + 30 * (1 - k)) + ",0) rotate(" + (0.4 * rot * (1 - k)).toFixed(2) + "deg) scale(" + (0.8 + 0.2 * k).toFixed(4) + ")"; }
       put($["cl-cam"], x1, y1 - 20, k1, q1, -14); put($["cl-t1"], x1 + 270, y1, k1, q1 - 0.04, 6);
       put($["cl-icon"], x2, y2 - 20, k2, q2, 14); put($["cl-t2"], x2 + 240, y2, k2, q2 - 0.04, -6);
     }
@@ -705,11 +711,11 @@
     if (e > 0) {
       $.end.style.transformOrigin = CX + "px " + CY + "px";
       $.end.style.transform = "scale(" + (1 + 0.045 * sio(e / Math.max(1, TOTAL - S.s18))).toFixed(4) + ")";
-      var ik = spr(e, 12, 0.55), wk = spr(e - 0.15, 11, 0.7);
+      var ik = sm(e, 0.5), wk = sm(e - 0.15, 0.5);
       $["end-icon"].style.opacity = sat(e / 0.06).toFixed(3);
-      $["end-icon"].style.transform = "translateY(" + px(-40 * (1 - ik) + 8 * Math.sin(t * 1.6)) + ") rotate(" + (-12 * (1 - ik)).toFixed(2) + "deg) scale(" + (0.3 + 0.7 * ik).toFixed(4) + ")";
+      $["end-icon"].style.transform = "translateY(" + px(-40 * (1 - ik)) + ") scale(" + (0.75 + 0.25 * ik).toFixed(4) + ")";
       $["end-wm"].style.opacity = sat((e - 0.15) / 0.08).toFixed(3);
-      $["end-wm"].style.transform = "translateY(" + px(40 * (1 - wk)) + ") scale(" + (0.85 + 0.15 * wk).toFixed(4) + ")";
+      $["end-wm"].style.transform = "translateY(" + px(40 * (1 - wk)) + ") scale(" + (0.9 + 0.1 * wk).toFixed(4) + ")";
       var parts = [["Free", S.free], ["  ·  No download", S.nodl], ["  ·  No sign-up", S.nosu]], sub = "";
       parts.forEach(function (p) { if (t > p[1] - 0.02) sub += p[0]; });
       if ($["end-sub"].textContent !== sub) $["end-sub"].textContent = sub;
@@ -719,15 +725,21 @@
     }
   }
 
+  var CAP_LEAD = 0.04;                        // as in caps.py: a word shows 0.04 s before it is heard
   function renderCaps(t) {
     if (!$.caps2) return;
     $.caps2.forEach(function (C) {
-      if (t < C.a - 0.02 || t >= C.b) { vis(C.el, false); return; }
-      vis(C.el, true); C.el.style.opacity = "1";
-      for (var k = 0; k < C.spans.length; k++) {
-        var q = t - C.ts[k], sp = C.spans[k];
-        sp.style.opacity = q > 0 ? "1" : "0";
-        sp.style.transform = "translateY(" + px(q > 0 ? 18 * (1 - spr(q, 18, 0.62)) : 18) + ")";
+      if (t < C.a - 0.05 || t >= C.end + C.out) { vis(C.el, false); return; }
+      var out = sat((t - C.end) / C.out);
+      vis(C.el, true); C.el.style.opacity = (1 - out).toFixed(3);
+      C.el.style.transform = "translate3d(" + px(C.x) + "," + px(C.y - 26 * p2o(out)) + ",0)";
+      for (var k = 0; k < C.w.length; k++) {
+        var w = C.w[k], q = t - w.t;
+        if (q < 0) { w.el.style.opacity = "0"; continue; }
+        var e = sm(q, w.tape ? 0.2 : 0.24);
+        w.el.style.opacity = sat(q / 0.08).toFixed(3);
+        w.el.style.transform = w.tape ? "translateY(" + px(-16 * (1 - e)) + ") rotate(" + (w.r + 7 * (1 - e) * (w.r < 0 ? -1 : 1)).toFixed(2) + "deg) scale(" + (1 + 0.14 * (1 - e)).toFixed(4) + ")"
+                                     : "translateY(" + px(22 * (1 - e)) + ")" + (w.key ? " scale(" + (0.88 + 0.12 * e).toFixed(4) + ")" : "");
       }
     });
   }

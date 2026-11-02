@@ -62,3 +62,21 @@ QA (images à vérifier) : 0 s (vignette : le tapis et les bandes, lisible), mil
 - **Plan 15** : le badge « Creator Plus », la bande du son au milieu, les 30 vidéos en sortent, « Pack ready: 30 videos, all different. » dans la carte, puis la semaine MON → SUN.
 - **Plan 16 (le résultat)** : au lieu d'un 16:9 plein cadre (le recadrage coupait sa tête dans certaines prises), trois vidéos du pack (MON, TUE, WED) en 9:16, sur sa chanson : chacune coupée à son rythme, et à chaque temps les trois montrent trois prises différentes. « I gotta bounce » s'affiche en même temps sur les trois.
 - **Taille du texte** : le plancher est 28 px (contrôle HyperFrames) ; le texte de lecture fait 34 px ou plus à l'écran, sauf les chiffres de la règle et du tapis (décor).
+
+## v3 — les remarques du propriétaire (2/11, 2 h 28)
+
+Ses mots : des sous-titres en motion design (« satisfaisant, qui bouge et qui s'implante bien dans le décor », une autre typo sur les mots importants) ; l'étiquette « OFF BEAT » partait trop vite (0:10) ; à 0:17 les stalactites sous le logo étaient mal placées et une petite image passait sur le logo ; à partir de 0:19, plus aucune secousse ni rebond ; au format clip (0:39), son vrai clip, pas la vidéo du format 9:16.
+
+- **Sous-titres** (`caps.py`, dessinés par `renderCaps` dans `assets/engine.js`) : la voix, quelques mots à la fois, chaque mot qui arrive quand il est dit (0,04 s avant). Ils prennent la matière du décor :
+  - sur le tapis (le problème) : des bouts de **ruban de masquage** (Rubik 800, majuscules) posés un peu de travers, qui se plaquent (échelle 1,14 → 1, inclinaison qui se pose) ; les mots importants sur du **ruban rouge**, en Lilita One ;
+  - dans le ciel de Stalak : des mots **blancs cernés d'encre** (Rubik 800) qui montent de 22 px ; les mots importants dans une **pastille blanche, en Lilita One bleu** (comme les boutons de l'app).
+  - Les groupes de mots s'arrêtent sur les pauses de la voix (jamais au milieu d'un « up with… » rapide) ; un groupe part en 0,07 s juste avant le suivant (jamais deux groupes à la fois) ; le dernier d'une phrase part en 0,15 s, avant la phrase suivante et avant le résultat.
+  - Place : en bas (haut du texte à 878 px) en 16:9 ; pendant le gros plan, sous les pistes VOICE / LIPS ; dans le Short, en haut (196 px), plus gros (60 à 74 px), et l'étiquette « 1 frame off » passe en bas de l'image.
+  - Pas sur « You film. Stalak edits. » ni sur l'écran de fin : ils montrent déjà leurs mots.
+  - Les cadrages de la partie Stalak ont été reculés ou décalés pour laisser la bande du bas libre (Pick your song, Add your takes, Your edit, l'aperçu, Pace, le pack).
+- **OFF BEAT** : le drop passe une mesure plus loin (mesure 12, 18,34 s ; Short : temps 34, 12,99 s), et 1,05 s de pause après « …land on the beat. ». L'étiquette claque sur la bande (échelle 1,3 → 1) au moment de la coupe et reste jusqu'à l'arrivée du gros plan : environ 1,4 s, dont 0,8 s immobile.
+- **Le logo au drop** : l'icône et ses stalactites forment un seul bloc ; stalactites blanches cernées d'encre, sous le bord plat du bas de l'icône (±70 px), qui poussent. La « petite image » était le tas de morceaux aspirés, grossi par la plongée de la caméra : il disparaît à la fin de l'aspiration.
+- **À partir du drop, plus de rebond ni de secousse** : chaque entrée se pose en power3.out sans dépasser ; plus de pulsation sur les temps (tableau, résultat), plus d'inclinaison de la caméra dans les travellings, plus de flottement de l'écran de fin ; le bouton TAP change de couleur sans bouger ; les boutons pressés descendent et remontent en douceur (5 px). Le problème (avant le drop) garde sa vie à la main et ses petits rebonds d'objets.
+- **Format clip** : l'écran 16:9 « Landscape: YouTube, music video » montre **son clip** (`assets/clip/mv.mp4`, à partir de 4,6 s), plus une prise du 9:16.
+- En route : la carte du pack (1480 px) a « Creator Plus » à l'intérieur et « Make the pack » ne chevauche plus « 30 videos » ; le tableau s'efface pendant que les trois vidéos du résultat grandissent.
+- Durées : film 62,68 s (41 mesures), Short 31,34 s.

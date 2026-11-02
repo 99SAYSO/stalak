@@ -107,7 +107,9 @@
           .dname { position: absolute; width: 150px; text-align: center; font-family: "Lilita One", sans-serif; font-size: 44px; color: #ffffff; visibility: hidden;
             text-shadow: 0 4px 0 rgba(10, 13, 20, 0.35); }
           .ice { position: absolute; overflow: visible; }
-          #icon-land { position: absolute; left: 0; top: 0; width: 300px; height: 300px; visibility: hidden; }
+          #icon-wrap { position: absolute; left: 0; top: 0; width: 300px; height: 300px; visibility: hidden; transform-origin: 150px 150px; }
+          #icon-land { position: absolute; left: 0; top: 0; width: 300px; height: 300px; }
+          #icon-ice { position: absolute; left: 0; top: 284px; overflow: visible; }
           /* the payoff: three days of the pack, his song */
           #pay { position: absolute; inset: 0; visibility: hidden; opacity: 0; }
           .pp { position: absolute; top: 140px; width: 500px; height: 889px; border: 8px solid #0a0d14; border-radius: 34px; overflow: hidden; background: #0a0d14;
@@ -119,6 +121,18 @@
           .cl { position: absolute; font-family: "Lilita One", sans-serif; font-size: 150px; line-height: 1; color: #ffffff; white-space: nowrap;
             text-shadow: 0 10px 0 #0a0d14; -webkit-text-stroke: 7px #0a0d14; paint-order: stroke fill; }
           #end { position: absolute; inset: 0; visibility: hidden; }
+          #caps { position: absolute; inset: 0; pointer-events: none; }
+          .capk { position: absolute; left: 0; top: 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px 16px; visibility: hidden; }
+          .capk span { display: inline-block; white-space: nowrap; }
+          .capk .tw { padding: 8px 20px 6px; background: #efe3c2; color: #26303d; font-weight: 800; font-size: 50px; letter-spacing: 0.03em; text-transform: uppercase;
+            box-shadow: 0 8px 14px rgba(0, 0, 0, 0.35);
+            clip-path: polygon(0 7%, 4% 0, 9% 6%, 15% 1%, 22% 5%, 30% 0, 38% 6%, 46% 1%, 54% 5%, 62% 0, 70% 6%, 78% 1%, 86% 5%, 93% 0, 100% 4%, 100% 95%, 95% 100%, 88% 94%, 80% 100%, 72% 95%, 64% 100%, 56% 94%, 48% 100%, 40% 95%, 32% 100%, 24% 94%, 16% 100%, 8% 95%, 0 100%); }
+          .capk .tk { padding: 6px 24px 4px; background: #ff4d5e; color: #ffffff; font-family: "Lilita One", sans-serif; font-weight: 400; font-size: 62px; letter-spacing: 0.02em;
+            box-shadow: 0 8px 14px rgba(0, 0, 0, 0.35);
+            clip-path: polygon(0 6%, 5% 0, 12% 5%, 20% 0, 30% 6%, 40% 1%, 50% 6%, 60% 0, 70% 5%, 80% 0, 90% 6%, 100% 2%, 100% 96%, 92% 100%, 82% 94%, 72% 100%, 62% 95%, 52% 100%, 42% 94%, 32% 100%, 22% 95%, 12% 100%, 4% 94%, 0 100%); }
+          .capk .ow { color: #ffffff; font-weight: 800; font-size: 56px; -webkit-text-stroke: 8px #0a0d14; paint-order: stroke fill; text-shadow: 0 6px 0 #0a0d14; }
+          .capk .ck { padding: 4px 22px 6px; border-radius: 20px; background: #ffffff; color: #1f6fd6; border: 5px solid #0a0d14; box-shadow: 0 7px 0 #0a0d14;
+            font-family: "Lilita One", sans-serif; font-weight: 400; font-size: 60px; line-height: 1.05; }
           #grain { position: absolute; inset: 0; background: url("assets/brand/grain.png"); opacity: 0.035; mix-blend-mode: multiply; pointer-events: none; }
         </style>
 
@@ -172,21 +186,21 @@
           <div class="card" id="c-edit" data-layout-allow-overlap style="left:2250px;top:-440px;width:1500px;height:880px">
             <div class="pv" id="pv" style="left:40px;top:40px;width:420px;height:747px;border-radius:30px">
               <!--EDIT-->
-<video id="ve00" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="24.533" data-duration="0.967" data-media-start="10.692" muted playsinline></video>
-<video id="ve01" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="25.500" data-duration="0.867" data-media-start="8.601" muted playsinline></video>
-<video id="ve02" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="26.367" data-duration="1.167" data-media-start="9.468" muted playsinline></video>
-<video id="ve03" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="27.533" data-duration="1.033" data-media-start="10.634" muted playsinline></video>
-<video id="ve04" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="28.567" data-duration="2.033" data-media-start="8.610" muted playsinline></video>
-<video id="ve05" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="30.600" data-duration="1.033" data-media-start="10.644" muted playsinline></video>
-<video id="ve06" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="31.633" data-duration="0.500" data-media-start="8.620" muted playsinline></video>
-<video id="ve07" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="32.133" data-duration="0.567" data-media-start="9.120" muted playsinline></video>
-<video id="ve08" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="32.700" data-duration="0.500" data-media-start="9.686" muted playsinline></video>
-<video id="ve09" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="33.200" data-duration="0.067" data-media-start="10.186" muted playsinline></video>
-<video id="ve10" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="33.267" data-duration="0.367" data-media-start="10.253" muted playsinline></video>
-<video id="ve11" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="33.633" data-duration="0.767" data-media-start="10.620" muted playsinline></video>
-<video id="ve12" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="34.400" data-duration="0.300" data-media-start="11.386" muted playsinline></video>
-<video id="ve13" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="34.700" data-duration="0.467" data-media-start="8.629" muted playsinline></video>
-<video id="ve14" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="35.167" data-duration="0.633" data-media-start="9.096" muted playsinline></video>
+<video id="ve00" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="26.067" data-duration="0.967" data-media-start="10.696" muted playsinline></video>
+<video id="ve01" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="27.033" data-duration="0.833" data-media-start="8.606" muted playsinline></video>
+<video id="ve02" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="27.867" data-duration="1.200" data-media-start="9.439" muted playsinline></video>
+<video id="ve03" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="29.067" data-duration="1.033" data-media-start="10.639" muted playsinline></video>
+<video id="ve04" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="30.100" data-duration="2.033" data-media-start="8.615" muted playsinline></video>
+<video id="ve05" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="32.133" data-duration="1.033" data-media-start="10.648" muted playsinline></video>
+<video id="ve06" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="33.167" data-duration="0.467" data-media-start="8.624" muted playsinline></video>
+<video id="ve07" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="33.633" data-duration="0.600" data-media-start="9.091" muted playsinline></video>
+<video id="ve08" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="34.233" data-duration="0.467" data-media-start="9.691" muted playsinline></video>
+<video id="ve09" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="34.700" data-duration="0.100" data-media-start="10.158" muted playsinline></video>
+<video id="ve10" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="34.800" data-duration="0.367" data-media-start="10.258" muted playsinline></video>
+<video id="ve11" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="35.167" data-duration="0.767" data-media-start="10.624" muted playsinline></video>
+<video id="ve12" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="35.933" data-duration="0.267" data-media-start="11.391" muted playsinline></video>
+<video id="ve13" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="36.200" data-duration="0.500" data-media-start="8.600" muted playsinline></video>
+<video id="ve14" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="36.700" data-duration="0.633" data-media-start="9.100" muted playsinline></video>
 <!--/EDIT-->
               <div class="lyr" id="pv-lyr" style="top:520px;font-size:46px;visibility:hidden"></div>
               <svg id="pv-lock" class="abs" style="left:300px;top:24px;visibility:hidden" width="96" height="112" viewBox="0 0 96 112"><path id="pv-shackle" d="M24 52 V34 A24 24 0 0 1 72 34 V52" fill="none" stroke="#0a0d14" stroke-width="12" stroke-linecap="round"/><rect x="8" y="48" width="80" height="60" rx="14" fill="#ffffff" stroke="#0a0d14" stroke-width="8"/><circle cx="48" cy="74" r="8" fill="#0a0d14"/><path d="M48 78 V92" stroke="#0a0d14" stroke-width="8" stroke-linecap="round"/></svg>
@@ -214,52 +228,54 @@
           </div>
 
           <!-- 4. Export: vertical for TikTok, Reels and Shorts; the music video with Pro -->
-          <div class="dev" id="x-phone" style="left:4100px;top:-400px;width:420px;height:747px;border-radius:52px;visibility:hidden">
+          <div class="dev" id="x-phone" style="left:4100px;top:-300px;width:420px;height:747px;border-radius:52px;visibility:hidden">
             <div class="abs" style="inset:0;border-radius:44px;overflow:hidden">
               <!--EXP-->
-<video id="vx00" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="35.000" data-duration="0.167" data-media-start="8.929" muted playsinline></video>
-<video id="vx01" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="35.167" data-duration="0.767" data-media-start="9.096" muted playsinline></video>
-<video id="vx02" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="35.933" data-duration="0.400" data-media-start="9.862" muted playsinline></video>
-<video id="vx03" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="36.333" data-duration="0.367" data-media-start="10.262" muted playsinline></video>
-<video id="vx04" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="36.700" data-duration="0.767" data-media-start="10.629" muted playsinline></video>
-<video id="vx05" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="37.467" data-duration="0.267" data-media-start="11.396" muted playsinline></video>
-<video id="vx06" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="37.733" data-duration="0.500" data-media-start="8.605" muted playsinline></video>
-<video id="vx07" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="38.233" data-duration="0.767" data-media-start="9.105" muted playsinline></video>
-<video id="vx08" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="39.000" data-duration="0.367" data-media-start="9.872" muted playsinline></video>
-<video id="vx09" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="39.367" data-duration="0.400" data-media-start="10.238" muted playsinline></video>
-<video id="vx10" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="39.767" data-duration="0.767" data-media-start="10.638" muted playsinline></video>
-<video id="vx11" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="40.533" data-duration="0.267" data-media-start="11.405" muted playsinline></video>
-<video id="vx12" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="40.800" data-duration="0.500" data-media-start="8.614" muted playsinline></video>
-<video id="vx13" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="41.300" data-duration="0.267" data-media-start="9.114" muted playsinline></video>
+<video id="vx00" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="36.533" data-duration="0.167" data-media-start="8.934" muted playsinline></video>
+<video id="vx01" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="36.700" data-duration="0.767" data-media-start="9.100" muted playsinline></video>
+<video id="vx02" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="37.467" data-duration="0.400" data-media-start="9.867" muted playsinline></video>
+<video id="vx03" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="37.867" data-duration="0.367" data-media-start="10.267" muted playsinline></video>
+<video id="vx04" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="38.233" data-duration="0.767" data-media-start="10.634" muted playsinline></video>
+<video id="vx05" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="39.000" data-duration="0.267" data-media-start="11.400" muted playsinline></video>
+<video id="vx06" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="39.267" data-duration="0.500" data-media-start="8.610" muted playsinline></video>
+<video id="vx07" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="39.767" data-duration="0.767" data-media-start="9.110" muted playsinline></video>
+<video id="vx08" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="40.533" data-duration="0.367" data-media-start="9.876" muted playsinline></video>
+<video id="vx09" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="40.900" data-duration="0.400" data-media-start="10.243" muted playsinline></video>
+<video id="vx10" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="41.300" data-duration="0.767" data-media-start="10.643" muted playsinline></video>
+<video id="vx11" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="42.067" data-duration="0.267" data-media-start="11.410" muted playsinline></video>
+<video id="vx12" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="42.333" data-duration="0.500" data-media-start="8.619" muted playsinline></video>
+<video id="vx13" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="42.833" data-duration="0.267" data-media-start="9.119" muted playsinline></video>
 <!--/EXP-->
               <div class="lyr" style="top:520px;font-size:46px"><span>I</span> <span>gotta</span> <span>bounce</span></div>
             </div>
           </div>
-          <div class="wl" id="x-pl" style="left:4100px;top:390px;width:420px;text-align:center;visibility:hidden">Vertical: TikTok, Reels, Shorts</div>
-          <div class="dev" id="x-tv" style="left:4640px;top:-280px;width:820px;height:461px;border-radius:30px;visibility:hidden">
+          <div class="wl" id="x-pl" style="left:3990px;top:-362px;width:640px;text-align:center;visibility:hidden">Vertical: TikTok, Reels, Shorts</div>
+          <div class="dev" id="x-tv" style="left:4640px;top:-180px;width:820px;height:461px;border-radius:30px;visibility:hidden">
             <div class="abs" style="inset:0;border-radius:22px;overflow:hidden">
               <!--TV-->
-<video id="vt00" class="clip v" style="object-position:50% 14%" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="37.233" data-duration="4.333" data-media-start="8.386" muted playsinline></video>
+<video id="vt00" class="clip v" data-hf-media-start-basis="local" src="assets/clip/mv.mp4" data-start="38.776" data-duration="4.336" data-media-start="4.600" muted playsinline></video>
 <!--/TV-->
             </div>
           </div>
-          <div class="pro" id="x-pro" style="left:5320px;top:-330px;visibility:hidden">PRO</div>
-          <div class="wl" id="x-tl" style="left:4640px;top:230px;width:820px;text-align:center;visibility:hidden">Landscape: YouTube, music video</div>
+          <div class="pro" id="x-pro" style="left:5330px;top:-236px;visibility:hidden">PRO</div>
+          <div class="wl" id="x-tl" style="left:4640px;top:-250px;width:690px;text-align:left;visibility:hidden">Landscape: YouTube, music video</div>
 
           <!-- 5. The pack: 30 videos, all different, then one a day -->
-          <div class="card" id="c-pack" style="left:5700px;top:-490px;width:1200px;height:160px;border-radius:40px;visibility:hidden">
-            <div class="seg" id="pk-seg" style="left:34px;top:36px"><i id="pk-on"></i><b>5 videos</b><b>10 videos</b><b>30 videos</b></div>
-            <div class="btn blue" id="pk-btn" style="left:770px;top:30px;width:390px;height:90px;font-size:38px">Make the pack</div>
-            <div class="abs" id="pk-ok" style="left:0;top:0;width:1188px;height:148px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:44px;white-space:nowrap;visibility:hidden"><span style="color:#1f6fd6;margin-right:14px">✓</span>Pack ready: 30 videos, all different.</div>
+          <div class="card" id="c-pack" style="left:5560px;top:-490px;width:1480px;height:160px;border-radius:40px;visibility:hidden">
+            <div class="pro" id="pk-cp" style="left:30px;top:38px;font-size:40px;visibility:hidden">Creator Plus</div>
+            <div class="seg" id="pk-seg" style="left:362px;top:36px"><i id="pk-on"></i><b>5 videos</b><b>10 videos</b><b>30 videos</b></div>
+            <div class="btn blue" id="pk-btn" style="left:1050px;top:30px;width:390px;height:90px;font-size:38px">Make the pack</div>
+            <div class="abs" id="pk-ok" style="left:0;top:0;width:1468px;height:148px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:44px;white-space:nowrap;visibility:hidden"><span style="color:#1f6fd6;margin-right:14px">✓</span>Pack ready: 30 videos, all different.</div>
           </div>
-          <div class="pro" id="pk-cp" style="left:5640px;top:-578px;visibility:hidden;z-index:3">Creator Plus</div>
           <div class="abs" id="pk-tape" style="left:5920px;top:-8px;width:760px;height:100px;background:#f4f1e8;border-radius:6px;box-shadow:0 12px 0 rgba(10,13,20,0.3);visibility:hidden">
             <svg id="pk-tsvg" class="abs" style="left:0;top:0" width="760" height="100" viewBox="0 0 600 80" preserveAspectRatio="none"></svg>
           </div>
           <div id="pk-grid"></div>
         </div>
-        <img id="icon-land" src="assets/brand/icon.svg?land" alt="" />
-        <svg id="icon-ice" class="ice" width="300" height="140" viewBox="0 0 300 140" style="left:0;top:0;visibility:hidden"><path id="icon-icp" fill="#d6ecff" stroke="#0a0d14" stroke-width="5" stroke-linejoin="round"/></svg>
+        <div id="icon-wrap">
+          <svg id="icon-ice" width="300" height="120" viewBox="0 0 300 120"><path id="icon-icp" fill="#ffffff" stroke="#0a0d14" stroke-width="8" stroke-linejoin="round"/></svg>
+          <img id="icon-land" src="assets/brand/icon.svg?land" alt="" />
+        </div>
 
         <!-- ================= the old world: the cutting mat ================= -->
         <div id="w1" data-layout-allow-overflow>
@@ -300,8 +316,8 @@
         <div id="cu">
           <div id="cu-panel">
             <!--CU-->
-<video id="vc00" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="10.400" data-duration="0.767" data-media-start="5.620" muted playsinline></video>
-<video id="vc01" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="11.167" data-duration="1.900" data-media-start="12.026" muted playsinline></video>
+<video id="vc00" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="11.433" data-duration="0.733" data-media-start="5.628" muted playsinline></video>
+<video id="vc01" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="12.167" data-duration="2.167" data-media-start="12.002" muted playsinline></video>
 <!--/CU-->
           </div>
           <div class="chip" id="cu-word" style="left:0;top:0">bounce</div>
@@ -320,45 +336,45 @@
           <div class="pday" id="pd2" style="left:1270px">WED</div>
           <div class="pp" id="pp0" style="left:150px">
             <!--PAY0-->
-<video id="vp000" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="47.000" data-duration="1.567" data-media-start="5.642" muted playsinline></video>
-<video id="vp001" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="48.567" data-duration="0.733" data-media-start="7.209" muted playsinline></video>
-<video id="vp002" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="49.300" data-duration="0.767" data-media-start="7.942" muted playsinline></video>
-<video id="vp003" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="50.067" data-duration="0.767" data-media-start="8.709" muted playsinline></video>
-<video id="vp004" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="50.833" data-duration="0.767" data-media-start="9.476" muted playsinline></video>
-<video id="vp005" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="51.600" data-duration="0.767" data-media-start="10.242" muted playsinline></video>
-<video id="vp006" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="52.367" data-duration="0.767" data-media-start="11.009" muted playsinline></video>
-<video id="vp007" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="53.133" data-duration="0.867" data-media-start="11.776" muted playsinline></video>
+<video id="vp000" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="48.533" data-duration="1.533" data-media-start="5.647" muted playsinline></video>
+<video id="vp001" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="50.067" data-duration="0.767" data-media-start="7.180" muted playsinline></video>
+<video id="vp002" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="50.833" data-duration="0.767" data-media-start="7.947" muted playsinline></video>
+<video id="vp003" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="51.600" data-duration="0.767" data-media-start="8.714" muted playsinline></video>
+<video id="vp004" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="52.367" data-duration="0.767" data-media-start="9.480" muted playsinline></video>
+<video id="vp005" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="53.133" data-duration="0.767" data-media-start="10.247" muted playsinline></video>
+<video id="vp006" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="53.900" data-duration="0.767" data-media-start="11.014" muted playsinline></video>
+<video id="vp007" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="54.667" data-duration="0.867" data-media-start="11.780" muted playsinline></video>
 <!--/PAY0-->
             <div class="lyr pl" style="top:600px;font-size:56px"><span>I</span> <span>gotta</span> <span>bounce</span></div>
           </div>
           <div class="pp" id="pp1" style="left:710px">
             <!--PAY1-->
-<video id="vp100" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="47.000" data-duration="1.167" data-media-start="5.642" muted playsinline></video>
-<video id="vp101" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="48.167" data-duration="0.767" data-media-start="6.809" muted playsinline></video>
-<video id="vp102" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="48.933" data-duration="1.133" data-media-start="7.576" muted playsinline></video>
-<video id="vp103" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="50.067" data-duration="0.767" data-media-start="8.709" muted playsinline></video>
-<video id="vp104" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="50.833" data-duration="0.400" data-media-start="9.476" muted playsinline></video>
-<video id="vp105" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="51.233" data-duration="0.767" data-media-start="9.876" muted playsinline></video>
-<video id="vp106" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="52.000" data-duration="0.767" data-media-start="10.642" muted playsinline></video>
-<video id="vp107" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="52.767" data-duration="1.233" data-media-start="11.409" muted playsinline></video>
+<video id="vp100" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="48.533" data-duration="1.167" data-media-start="5.647" muted playsinline></video>
+<video id="vp101" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="49.700" data-duration="0.767" data-media-start="6.814" muted playsinline></video>
+<video id="vp102" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="50.467" data-duration="1.133" data-media-start="7.580" muted playsinline></video>
+<video id="vp103" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="51.600" data-duration="0.767" data-media-start="8.714" muted playsinline></video>
+<video id="vp104" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="52.367" data-duration="0.400" data-media-start="9.480" muted playsinline></video>
+<video id="vp105" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="52.767" data-duration="0.767" data-media-start="9.880" muted playsinline></video>
+<video id="vp106" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="53.533" data-duration="0.767" data-media-start="10.647" muted playsinline></video>
+<video id="vp107" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="54.300" data-duration="1.233" data-media-start="11.414" muted playsinline></video>
 <!--/PAY1-->
             <div class="lyr pl" style="top:600px;font-size:56px"><span>I</span> <span>gotta</span> <span>bounce</span></div>
           </div>
           <div class="pp" id="pp2" style="left:1270px">
             <!--PAY2-->
-<video id="vp200" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="47.000" data-duration="1.167" data-media-start="5.642" muted playsinline></video>
-<video id="vp201" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="48.167" data-duration="0.400" data-media-start="6.809" muted playsinline></video>
-<video id="vp202" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="48.567" data-duration="0.367" data-media-start="7.209" muted playsinline></video>
-<video id="vp203" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="48.933" data-duration="0.367" data-media-start="7.576" muted playsinline></video>
-<video id="vp204" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="49.300" data-duration="0.767" data-media-start="7.942" muted playsinline></video>
-<video id="vp205" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="50.067" data-duration="0.767" data-media-start="8.709" muted playsinline></video>
-<video id="vp206" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="50.833" data-duration="0.400" data-media-start="9.476" muted playsinline></video>
-<video id="vp207" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="51.233" data-duration="0.367" data-media-start="9.876" muted playsinline></video>
-<video id="vp208" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="51.600" data-duration="0.400" data-media-start="10.242" muted playsinline></video>
-<video id="vp209" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="52.000" data-duration="0.367" data-media-start="10.642" muted playsinline></video>
-<video id="vp210" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="52.367" data-duration="0.400" data-media-start="11.009" muted playsinline></video>
-<video id="vp211" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="52.767" data-duration="0.367" data-media-start="11.409" muted playsinline></video>
-<video id="vp212" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="53.133" data-duration="0.867" data-media-start="11.776" muted playsinline></video>
+<video id="vp200" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="48.533" data-duration="1.167" data-media-start="5.647" muted playsinline></video>
+<video id="vp201" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="49.700" data-duration="0.367" data-media-start="6.814" muted playsinline></video>
+<video id="vp202" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="50.067" data-duration="0.400" data-media-start="7.180" muted playsinline></video>
+<video id="vp203" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="50.467" data-duration="0.367" data-media-start="7.580" muted playsinline></video>
+<video id="vp204" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="50.833" data-duration="0.767" data-media-start="7.947" muted playsinline></video>
+<video id="vp205" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="51.600" data-duration="0.767" data-media-start="8.714" muted playsinline></video>
+<video id="vp206" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="52.367" data-duration="0.400" data-media-start="9.480" muted playsinline></video>
+<video id="vp207" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="52.767" data-duration="0.367" data-media-start="9.880" muted playsinline></video>
+<video id="vp208" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="53.133" data-duration="0.400" data-media-start="10.247" muted playsinline></video>
+<video id="vp209" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="53.533" data-duration="0.367" data-media-start="10.647" muted playsinline></video>
+<video id="vp210" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="53.900" data-duration="0.400" data-media-start="11.014" muted playsinline></video>
+<video id="vp211" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="54.300" data-duration="0.367" data-media-start="11.414" muted playsinline></video>
+<video id="vp212" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="54.667" data-duration="0.867" data-media-start="11.780" muted playsinline></video>
 <!--/PAY2-->
             <div class="lyr pl" style="top:600px;font-size:56px"><span>I</span> <span>gotta</span> <span>bounce</span></div>
           </div>
@@ -378,6 +394,7 @@
           <div class="abs lil" id="end-url" style="left:0;width:1920px;top:770px;text-align:center;font-size:96px;color:#ffffff;text-shadow:0 7px 0 #0a0d14;white-space:pre"></div>
           <div class="abs" id="end-sub" style="left:0;width:1920px;top:900px;text-align:center;font-weight:700;font-size:46px;color:#ffffff;white-space:pre"></div>
         </div>
+        <div id="caps"></div>
         <div id="grain"></div>
 
         <script>
