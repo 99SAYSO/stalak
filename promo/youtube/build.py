@@ -283,8 +283,8 @@ def take_pay(lay):
         p = max(0.0, (t - B(PAY_B)) / P)
         return lay[max(i for i, (b0, _) in enumerate(lay) if b0 <= p + 1e-6)][1]
     return f
-PAYH = [clips("vp%d" % i, B(PAY_B) - 0.4, B(END_B) + 0.5, take_pay(l), tau_pay)[0] for i, l in enumerate(PAYL)]
-assert tau_pay(B(PAY_B) - 0.4) > 0 and tau_pay(B(END_B) + 0.5) < 25.5 and all(k != 1 for l in PAYL for _, k in l)
+PAYH = [clips("vp%d" % i, B(PAY_B) - 0.45, B(END_B) + 0.5, take_pay(l), tau_pay)[0] for i, l in enumerate(PAYL)]   # the panels show from pay - 0.42
+assert tau_pay(B(PAY_B) - 0.45) > 0 and tau_pay(B(END_B) + 0.5) < 25.5 and all(k != 1 for l in PAYL for _, k in l)
 film = HERE / "compositions" / "film.html"
 s_ = film.read_text()
 for k, html in {"EDIT": EDIT, "EXP": EXP, "TV": TV, "CU": CU, "PAY0": PAYH[0], "PAY1": PAYH[1], "PAY2": PAYH[2]}.items():

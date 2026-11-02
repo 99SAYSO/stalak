@@ -679,8 +679,8 @@
     function lyr(parts) {                    // each part comes word by word, then gives way to the next
       var r = t - S.pay;
       parts.forEach(function (p) {
-        if (r < p.t0 - 0.02 || r >= p.t1 + 0.1) { p.el.style.opacity = "0"; return; }
-        p.el.style.opacity = (1 - sat((r - p.t1) / 0.1)).toFixed(3);
+        if (r < p.t0 - 0.02 || r >= p.t1) { p.el.style.opacity = "0"; return; }
+        p.el.style.opacity = (1 - sat((r - p.t1 + 0.08) / 0.08)).toFixed(3);   // gone before the next part's first word
         p.w.forEach(function (w) { var q = r - w.t; w.el.style.opacity = q > 0 ? "1" : "0"; w.el.style.transform = "translateY(" + px(q > 0 ? 14 * (1 - sm(q, 0.25)) : 14) + ")"; });
       });
     }
