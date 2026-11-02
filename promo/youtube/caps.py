@@ -48,3 +48,20 @@ def make_caps(lids, at, VO, dur, captioned, barriers=()):
             assert hold >= 0.25, (lid, a, b, round(hold, 3))
         res.append({"line": li, "from": a, "to": b, "key": keys, "end": round(end, 3), "out": out})
     return res
+
+
+# The payoff's lyric (the owner, 2/11 11 h 27: « j'ai mis de l'or sur mes plaies, cicatrices valent des millions », shown in
+# everyday US English). Word times are take times (the takes' own sound, assets/audio/takes_song.wav), read from its vocal
+# phrases and from his lips ("j'ai" 21.26, the m of "mis" 21.50, "sur" 22.17, the comma 22.50-22.54, "cicatrices" 22.56).
+LYRIC = [(21.24, [[("I", 21.26), ("put", 21.50), ("gold", 21.80)], [("on", 22.17), ("my", 22.40), ("wounds,", 22.47)]]),
+         (22.55, [[("scars", 22.56), ("worth", 22.98)], [("millions.", 23.12)]])]
+
+
+def payoff_lyric(tau0, t_end):
+    """-> [{t0, t1, lines: [[[word, t]]]}], times from the payoff's start (take time tau0); the last part stays until t_end"""
+    out = []
+    for i, (a, lines) in enumerate(LYRIC):
+        b = LYRIC[i + 1][0] if i + 1 < len(LYRIC) else tau0 + t_end
+        out.append({"t0": round(a - tau0, 3), "t1": round(b - tau0, 3), "lines": [[[w, round(t - tau0, 3)] for w, t in ln] for ln in lines]})
+    assert out[0]["t0"] >= 0 and out[-1]["t1"] > out[-1]["lines"][-1][-1][1] + 0.4, out
+    return out

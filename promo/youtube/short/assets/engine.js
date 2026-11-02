@@ -271,7 +271,18 @@
       });
     }
     // the payoff's lyric words
-    $.pls = Array.prototype.slice.call(root.querySelectorAll(".pl")).map(function (e) { return e.querySelectorAll("span"); });
+    // the payoff's lyric: T.PLYR = [{t0, t1, lines: [[[word, t]]]}] (seconds from the payoff's start), the same in every panel
+    $.pls = Array.prototype.slice.call(root.querySelectorAll(".pl")).map(function (e) {
+      e.innerHTML = "";
+      return (T.PLYR || []).map(function (part) {
+        var d = el("div", "", "position:absolute;left:0;right:0;top:0;opacity:0", e), words = [];
+        part.lines.forEach(function (line) {
+          var ln = el("div", "", "", d);
+          line.forEach(function (w, i) { var sp = el("span", "", "", ln, ""); sp.textContent = w[0]; words.push({ el: sp, t: w[1] }); if (i < line.length - 1) ln.appendChild(document.createTextNode(" ")); });
+        });
+        return { el: d, t0: part.t0, t1: part.t1, w: words };
+      });
+    });
     $.pvw = []; ["I", "gotta", "bounce"].forEach(function (w) { $.pvw.push(el("span", "", "", $["pv-lyr"], w)); $["pv-lyr"].appendChild(document.createTextNode(" ")); });
   }
 
@@ -665,13 +676,19 @@
     if (!a) return;
     var g = p3o((t - S.pay + 0.42) / 0.42), out = p2i((t - S.payEnd + 0.26) / 0.26);
     var punch = 0;
-    var LYR = T.LYR === undefined ? 3.469 : T.LYR;
+    function lyr(parts) {                    // each part comes word by word, then gives way to the next
+      var r = t - S.pay;
+      parts.forEach(function (p) {
+        if (r < p.t0 - 0.02 || r >= p.t1 + 0.1) { p.el.style.opacity = "0"; return; }
+        p.el.style.opacity = (1 - sat((r - p.t1) / 0.1)).toFixed(3);
+        p.w.forEach(function (w) { var q = r - w.t; w.el.style.opacity = q > 0 ? "1" : "0"; w.el.style.transform = "translateY(" + px(q > 0 ? 14 * (1 - sm(q, 0.25)) : 14) + ")"; });
+      });
+    }
     if (PORT) {
       var pk0 = sm(t - S.pay + 0.3, 0.45), o2 = p2i((t - S.payEnd + 0.26) / 0.26);
       $.pp0.style.transform = "translate3d(0," + px(120 * (1 - pk0) - 200 * o2) + ",0) scale(" + ((0.6 + 0.4 * pk0) * (1 + punch) * (1 - 0.2 * o2)).toFixed(4) + ")";
       $.pp0.style.opacity = (sat((t - S.pay + 0.3) / 0.1) * (1 - o2)).toFixed(3);
-      var w0 = $.pls[0];
-      for (var w9 = 0; w9 < w0.length; w9++) { var q9 = t - (S.pay + LYR + w9 * P / 2); w0[w9].style.opacity = q9 > 0 ? "1" : "0"; w0[w9].style.transform = "translateY(" + px(q9 > 0 ? 14 * (1 - sm(q9, 0.25)) : 14) + ")"; }
+      lyr($.pls[0]);
       return;
     }
     [0, 1, 2].forEach(function (i) {
@@ -687,8 +704,7 @@
       pp.style.opacity = (1 - out).toFixed(3);
       pd.style.opacity = (sat((g - 0.6) / 0.4) * (1 - out)).toFixed(3);
       pd.style.transform = "translateY(" + px(30 * (1 - g) + oy) + ") translateX(" + px(ox) + ")";
-      var ws = $.pls[i];
-      for (var w = 0; w < ws.length; w++) { var q = t - (S.pay + LYR + w * P / 2); ws[w].style.opacity = q > 0 ? "1" : "0"; ws[w].style.transform = "translateY(" + px(q > 0 ? 14 * (1 - sm(q, 0.25)) : 14) + ")"; }
+      lyr($.pls[i]);
     });
   }
 

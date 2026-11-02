@@ -80,3 +80,15 @@ Ses mots : des sous-titres en motion design (« satisfaisant, qui bouge et qui s
 - **Format clip** : l'écran 16:9 « Landscape: YouTube, music video » montre **son clip** (`assets/clip/mv.mp4`, à partir de 4,6 s), plus une prise du 9:16.
 - En route : la carte du pack (1480 px) a « Creator Plus » à l'intérieur et « Make the pack » ne chevauche plus « 30 videos » ; le tableau s'efface pendant que les trois vidéos du résultat grandissent.
 - Durées : film 62,68 s (41 mesures), Short 31,34 s.
+
+## v4 — les 3 vidéos du résultat, synchro (2/11, 3 h 52 → 11 h 27)
+
+Sa remarque : à 0:49, les 3 vidéos (MON, TUE, WED) ne sont pas synchro avec la musique, « alors que c'est concrètement ce pour quoi on existe ».
+
+- **La cause** : ses prises portent leur propre son, une version de « neva die » dont la voix est différente de `song.mp3` (même beat et même basse, d'où un calage qui tombait juste sur la basse et faux sur la voix). Ses lèvres suivent ce son-là. En plus, le passage choisi le montrait surtout de dos ou la main devant la bouche. Un test avec trois calages sur `song.mp3` (−0,3 s, actuel, +0,15 s) : « aucune ne colle » ; le test avec le son des prises : « oui c'est synchro ».
+- **Le résultat joue le son des prises** (`assets/audio/takes_song.wav`), au même endroit de la grille du beat, 8 mesures plus loin que avant (mesures 12 à 16 du morceau, temps de prise 18,26 → 24,37 s) : là, son visage se voit dans les prises 2 et 3. La prise 1 (15 s) s'arrête avant. Image et son viennent des mêmes fichiers : synchro par construction. Le passage de l'instru au son des prises et le retour restent sur la même phase du beat (boucle de 8 mesures).
+- **Les 3 vidéos** : prises 2 et 3, choisies temps par temps (visages regardés deux fois par temps) : à chaque instant, si l'une des deux montre sa bouche, au moins un panneau la montre ; les trois panneaux diffèrent sur 14 temps sur 16 ; chacun a son propre rythme de coupe.
+- **Les paroles à l'écran** : sa phrase « j'ai mis de l'or sur mes plaies, cicatrices valent des millions », en anglais américain courant à sa demande : « I put gold / on my wounds, » puis « scars worth / millions. », mot par mot sur sa voix (repères : « j'ai » 21,26 s, le m de « mis » 21,50, « sur » 22,17, la virgule 22,50, « cicatrices » 22,56). Dans `caps.py` (`LYRIC`, `payoff_lyric`).
+- **Le Short** : même chose sur ses 2 mesures (temps de prise 20,55 → 23,61 s), prises 2 et 3 ; « millions. » part avec le panneau.
+- Volume : le son des prises est 0,6 à 0,7 LU plus bas que `song.mp3` à ces endroits ; compensé (0,51 et 0,52 au lieu de 0,48).
+- Rien d'autre ne change (sa demande).

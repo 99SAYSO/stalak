@@ -9,7 +9,7 @@ Run: python3 vo_cut.py (once, after the voice file is downloaded), then python3 
 """
 import json, re, pathlib, subprocess, wave
 import numpy as np
-from caps import make_caps
+from caps import make_caps, payoff_lyric
 
 HERE = pathlib.Path(__file__).parent
 P = 60 / 157
@@ -110,9 +110,13 @@ def take_at(t, lay=None):
     return blocks[k][1]
 
 # ------------------------------------------------------------------ the music
+# The payoff (owner, 2/11 3 h 52 and 11 h 27): the takes are lip-synced to their OWN sound, a version of « neva die » whose voice
+# differs from song.mp3 (same beat, same bass: take time + 1.452 s = song time, so the grid and the 8-bar phase are the same).
+# Its 4 bars are the next pass of song bars 12-16 (take time 18.26-24.37), where his face shows in takes 2 and 3.
+TAU0 = round(song_bar(12) - TAKE, 4)
 MUS = [
     ("m-walk", "inst.mp3", 0.0, B(PAY_B), inst_bar(K0)),           # the intro, its bass from bar 4, the drop on bar 12
-    ("m-pay", "song.mp3", B(PAY_B), B(END_B), song_bar(4)),        # his song, his voice, 4 bars ("I gotta bounce")
+    ("m-pay", "takes_song.wav", B(PAY_B), B(END_B), TAU0),         # the song his takes were filmed on (their own sound), 4 bars
     ("m-end", "inst.mp3", B(END_B), TOTAL, inst_bar(K0 + END_B // 4)),
 ]
 LO1, LO2, HI = 0.40, 0.22, 0.46                     # under the voice (problem, Stalak), between (measured, see REVIEW.md)
@@ -121,7 +125,7 @@ def autos(mid, a, b):
     if mid == "m-walk":
         return [(0.0, LO1), (S["drop"] - 0.3, LO1), (S["drop"] + 0.02, LO2), (end15 + 0.05, LO2), (end15 + 0.45, HI), (b - a, HI)]
     if mid == "m-pay":
-        return [(0.0, 0.48), (b - a, 0.48)]
+        return [(0.0, 0.51), (b - a, 0.51)]         # the takes' sound is 0.6 LU quieter than song.mp3 here
     e17 = at["L17"] + dur("L17") - a
     return [(0.0, LO2), (e17 + 0.05, LO2), (e17 + 0.45, 0.4), (b - a - 1.3, 0.4), (b - a, 0.0)]
 mus_rows = []
@@ -232,6 +236,7 @@ rows.append('<audio id="x-riser2" class="clip" src="assets/sfx/riser.mp3" data-s
 
 # ------------------------------------------------------------------ the videos
 FPS = 30
+TLEN = {1: 15.0, 2: 25.56, 3: 25.56}                    # the takes' lengths (s)
 def clips(prefix, t0, t1, take_fn, tau_fn, extra=""):
     """film [t0, t1) -> <video> clips: a new clip whenever the take changes or its time jumps"""
     out, seg = [], None
@@ -246,7 +251,7 @@ def clips(prefix, t0, t1, take_fn, tau_fn, extra=""):
     if seg: out.append(seg)
     html = []
     for i, s_ in enumerate(out):
-        assert 0.0 <= s_["tau0"] and s_["tau0"] + (s_["t1"] - s_["t0"]) <= 15.0, (prefix, s_)
+        assert 0.0 <= s_["tau0"] and s_["tau0"] + (s_["t1"] - s_["t0"]) <= TLEN[s_["k"]], (prefix, s_)
         html.append('<video id="%s%02d" class="clip v"%s data-hf-media-start-basis="local" src="assets/takes/take%d.mp4" data-start="%.3f" data-duration="%.3f" data-media-start="%.3f" muted playsinline></video>'
                     % (prefix, i, extra, s_["k"], s_["t0"], s_["t1"] - s_["t0"], s_["tau0"]))
     return "\n".join(html), out
@@ -264,20 +269,19 @@ TV = '<video id="vt00" class="clip v" data-hf-media-start-basis="local" src="ass
 # the close-up: take 3, his face close; at "and your lips…" the picture slips to another moment
 CU, _ = clips("vc", S["cu0"], S["s6"] + 0.05, lambda t: 3, lambda t: 5.62 + (t - S["cu0"]) if t < S["lips"] else 12.0 + (t - S["lips"]))
 # the payoff: three edits of the pack (MON, TUE, WED), each cut differently, all on his song (take = song - TAKE)
-PAYL = [[(0, 3), (3, 2), (5, 1), (7, 3), (9, 2), (11, 1), (13, 3), (15, 2)],
-        [(0, 2), (2, 1), (4, 3), (7, 2), (9, 1), (10, 3), (12, 2), (14, 1)],
-        [(0, 1), (2, 2), (3, 3), (4, 1), (5, 2), (7, 1), (9, 3), (10, 1), (11, 2), (12, 3), (13, 1), (14, 2), (15, 3)]]
-for b_ in range(16):                                   # the three panels never show the same take at the same time
-    ks = [[k for b0, k in l if b0 <= b_][-1] for l in PAYL]
-    assert sorted(ks) == [1, 2, 3], (b_, ks)
-def tau_pay(t): return song_bar(4) + (t - B(PAY_B)) - TAKE
+# take 1 (15 s) ends before this passage: takes 2 and 3 only, chosen beat by beat so that his mouth shows in at least one panel
+# whenever one of them shows it, and the three panels differ on 14 of the 16 beats (2/11: faces checked twice a beat)
+PAYL = [[(0, 2), (4, 3), (6, 2), (8, 3), (10, 2), (12, 3), (14, 2)],
+        [(0, 3), (6, 2), (11, 3), (14, 2)],
+        [(0, 3), (1, 2), (2, 3), (4, 2), (6, 3), (8, 2), (10, 3), (12, 2), (13, 3), (14, 2), (15, 3)]]
+def tau_pay(t): return TAU0 + (t - B(PAY_B))          # picture and sound from the same files: in sync by construction
 def take_pay(lay):
     def f(t):
         p = max(0.0, (t - B(PAY_B)) / P)
         return lay[max(i for i, (b0, _) in enumerate(lay) if b0 <= p + 1e-6)][1]
     return f
 PAYH = [clips("vp%d" % i, B(PAY_B) - 0.4, B(END_B) + 0.5, take_pay(l), tau_pay)[0] for i, l in enumerate(PAYL)]
-assert tau_pay(B(PAY_B) - 0.4) > 0 and tau_pay(B(END_B) + 0.5) < 15
+assert tau_pay(B(PAY_B) - 0.4) > 0 and tau_pay(B(END_B) + 0.5) < 25.5 and all(k != 1 for l in PAYL for _, k in l)
 film = HERE / "compositions" / "film.html"
 s_ = film.read_text()
 for k, html in {"EDIT": EDIT, "EXP": EXP, "TV": TV, "CU": CU, "PAY0": PAYH[0], "PAY1": PAYH[1], "PAY2": PAYH[2]}.items():
@@ -298,7 +302,7 @@ WAVES = {"tape": env(SONG, 0, 30, 600), "pick": env(SONG, 0, 30, 236), "part": e
 
 CAPS2 = make_caps(LIDS, at, VO, dur, LIDS[:15], [B(PAY_B) - 0.42])   # every line but the claim and the end card (they show their own words)
 times = {"P": P, "TOTAL": TOTAL, "S": {k: round(v, 3) for k, v in S.items()}, "VO": vo_spans, "VW": [VO[l]["words"] for l in LIDS], "CAPS2": CAPS2,
-         "LAY": LAY, "PART0": round(PART0, 4), "L8": round(L8, 4), "PAYL": PAYL, "WAVES": WAVES,
+         "LAY": LAY, "PART0": round(PART0, 4), "L8": round(L8, 4), "PAYL": PAYL, "WAVES": WAVES, "PLYR": payoff_lyric(TAU0, B(END_B) - B(PAY_B) - 0.26),
          "songBar0": round(song_bar(0), 4), "BAR": BAR}
 (HERE / "assets" / "times.js").write_text("/* generated by build.py: the film's clock (scenes, voice words, the edit, waveforms) */\nwindow.T = %s;\n" % json.dumps(times, separators=(",", ":")))
 
