@@ -18,6 +18,14 @@
 - **`hyperframes check`** : 0 erreur. Les avertissements sont les mêmes que pour la v2, plus des nouveaux, voulus :
   - les cristaux « tournent sans rester en place » : ils tournent en descendant ;
   - les gros flocons sortent de l'image : ils passent devant et reviennent de l'autre côté.
+- **Le fichier livré** : `renders/Stalak_lancement_YouTube.mp4` (la v1 et la v2 sont gardées à côté). Ses caractéristiques :
+  - 1920 × 1080, **60 i/s**, 60,0 s, 60 Mo ;
+  - rendu en 21 min 53 s, puis `master.sh` ;
+  - mesuré : −14,1 LUFS, crête −1,1 dBFS ;
+  - aucune image noire, aucun silence, aucune image figée plus de 1 s ;
+  - son du rendu identique au mixage hors ligne à 1,3 dB près, partout (marge de HyperFrames, rattrapée par `master.sh`).
+
+  Il a été envoyé au propriétaire et mis dans la Salle de visionnage (`stalak-lancement-v3`), avec une réponse sous ses 2 remarques.
 
 ## v2 (ses retours dans la Salle de visionnage, 2/11 à 17 h 03 et 17 h 06)
 

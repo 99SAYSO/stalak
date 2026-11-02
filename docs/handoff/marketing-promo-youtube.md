@@ -26,6 +26,10 @@ Statut : PRÊT, v4 du 2/11 + miniature YouTube + film de lancement « façon Lov
     - les stalactites de l'app sur la boîte de verre, sous le panneau tapé et en haut de l'écran de fin ;
     - un éclat de neige qui part du logo sur le drop.
 - **Coût Flora : 0 $.**
+- **Livré** le 2/11 vers 20 h :
+  - la vidéo est envoyée dans la conversation (60 s, 60 i/s, −14,1 LUFS, aucune image noire, pas dans le dépôt) ;
+  - elle est ajoutée à la Salle de visionnage (`stalak-lancement-v3`) ;
+  - une réponse est écrite sous ses 2 remarques, passées à « traitée ».
 
 ## Film de lancement v2 : ses retours dans la Salle de visionnage (2/11, 17 h 03 et 17 h 06)
 
