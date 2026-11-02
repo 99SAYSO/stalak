@@ -128,7 +128,7 @@ def run(b, base, lang, iphone):
     pg.evaluate("() => history.replaceState(null, '', location.pathname)")
     # ---- footer: « Gérer les cookies » and « Your Privacy Choices » ----
     ck, pc = pg.locator('#siteFoot a[data-ck]'), pg.locator('#siteFoot a[data-pc]')
-    ck_txt, pc_txt = ('Cookie settings', 'Your Privacy Choices') if lang == 'en' else ('Gérer les cookies', 'Vos choix de confidentialité')
+    ck_txt, pc_txt = ('Cookie settings', 'Your Privacy Choices') if lang == 'en' else ('Gérer les cookies', 'Your Privacy Choices')
     check(tag + ' : pied de page : « %s » et « %s »' % (ck_txt, pc_txt), ck.count() == 1 and pc.count() == 1 and ck.inner_text() == ck_txt and pc.inner_text() == pc_txt)
     cookies_href = '/privacy#cookies' if lang == 'en' else '/fr/confidentialite#cookies'
     prevented = pg.evaluate("() => { const a = document.querySelector('#siteFoot a[data-ck]'); const e = new MouseEvent('click', { bubbles: true, cancelable: true }); a.addEventListener('click', ev => ev.preventDefault(), { once: true }); const r = !a.dispatchEvent(e); return [a.getAttribute('href'), window.__revoked || 0]; }")
