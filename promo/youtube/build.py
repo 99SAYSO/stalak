@@ -252,8 +252,11 @@ def clips(prefix, t0, t1, take_fn, tau_fn, extra=""):
     html = []
     for i, s_ in enumerate(out):
         assert 0.0 <= s_["tau0"] and s_["tau0"] + (s_["t1"] - s_["t0"]) <= TLEN[s_["k"]], (prefix, s_)
-        html.append('<video id="%s%02d" class="clip v"%s data-hf-media-start-basis="local" src="assets/takes/take%d.mp4" data-start="%.3f" data-duration="%.3f" data-media-start="%.3f" muted playsinline></video>'
-                    % (prefix, i, extra, s_["k"], s_["t0"], s_["t1"] - s_["t0"], s_["tau0"]))
+        # each clip starts half a frame early (and its media with it): rounded to the millisecond, back-to-back clips left a frame
+        # time in neither clip, which rendered as one black frame at some cuts (2/11)
+        e = min(0.5 / FPS, s_["tau0"])
+        html.append('<video id="%s%02d" class="clip v"%s data-hf-media-start-basis="local" src="assets/takes/take%d.mp4" data-start="%.4f" data-duration="%.4f" data-media-start="%.4f" muted playsinline></video>'
+                    % (prefix, i, extra, s_["k"], s_["t0"] - e, s_["t1"] - s_["t0"], s_["tau0"] - e))
     return "\n".join(html), out
 W0 = 8.6                                               # the preview's takes loop through 2 bars where he faces the camera
 def tau_loop(t):
