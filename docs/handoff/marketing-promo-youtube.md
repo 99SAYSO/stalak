@@ -1,6 +1,13 @@
 # Compte rendu — branche `marketing/promo-youtube` (Marketing & croissance)
 
-Statut : PRÊT, v4 du 2/11 + miniature YouTube + film de lancement « façon Lovio » (documents et sources des vidéos et de la miniature seulement ; rien à intégrer dans l'app ni le site)
+Statut : PRÊT, v4 du 2/11 + miniature YouTube + film de lancement « façon Lovio » + page de retours « Salle de visionnage » (documents et sources des vidéos et de la miniature seulement ; rien à intégrer dans l'app ni le site)
+
+## Salle de visionnage : ses retours sur nos vidéos (sa demande du 2/11, 16 h 43)
+
+- **Sa demande** : « une interface qui me permet de te faire des remarques sur les vidéos que tu me crées, avec une timeline […] une sorte de crayon qui me permet d'entourer ce dont je parle sur la frame en question […] et de retravailler seulement sur les points que j'ai parlé […] directement ici dès que tu m'envoies des vidéos ».
+- **Fait** : la page « Salle de visionnage » (artifact privé du propriétaire, https://claude.ai/artifact/JihUFRUHrYGrHnoRZyoVXo). La vidéo, une timeline avec les plans nommés, les images et le son ; une remarque à l'image près, au crayon sur l'image, sur un instant ou un passage ; la liste de ses remarques avec la réponse de Claude ; « J'ai fini : envoyer à Claude ». Le film de lancement y est déjà (copie de relecture 720p).
+- **Côté Claude** : `promo/retours/` (`README.md` : la base de la page et la boucle ; `prepare.py` : préparer une vidéo pour la page ; `frames.py` : voir ses traits sur l'image exacte en pleine qualité ; `salle.html` : la source de la page ; `test_server.py` : serveur local pour la tester).
+- **À faire à chaque vidéo envoyée au propriétaire** : l'ajouter à la page (`promo/retours/README.md`, étape 1).
 
 ## Film de lancement « façon Lovio » (sa demande du 2/11, 14 h 41)
 
