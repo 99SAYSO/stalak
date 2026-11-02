@@ -582,7 +582,7 @@ window.LV = (function () {
     cam($.s2, P, [lerp(P[0], 960, dive), lerp(P[1], 540, dive)], lz(1, 70, dive));
     blur($.s2, 1.2 * dive);
     // v3: the beat drops on "Meet Stalak." (8.8 s): a burst of snow and ice out of the logo, and its light
-    var D = K.drop, cx = x + (168 + 30 + 340) / 2, cy = y + size / 2;
+    var D = K.beatDrop, cx = x + (168 + 30 + 340) / 2, cy = y + size / 2;
     op($.glow2, 0.6 * seg(t, D - 0.02, D + 0.04) * (1 - E.o2(seg(t, D + 0.04, D + 0.6))));
     $.burst.forEach(function (p) {
       var a0 = D + p.dl, q = E.expo(seg(t, a0, a0 + 1.1)), on = t >= a0 && t < a0 + 1.2; vis(p.e, on); if (!on) return;

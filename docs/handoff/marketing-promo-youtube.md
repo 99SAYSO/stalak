@@ -1,6 +1,11 @@
 # Compte rendu — branche `marketing/promo-youtube` (Marketing & croissance)
 
-Statut : PRÊT, v4 du 2/11 + miniature YouTube + film de lancement « façon Lovio » (v3, ses retours appliqués) + page de retours « Salle de visionnage » (v2) (documents et sources des vidéos et de la miniature seulement ; rien à intégrer dans l'app ni le site)
+Statut : PRÊT, v4 du 2/11 + miniature YouTube + film de lancement « façon Lovio » (v4, ses retours appliqués) + page de retours « Salle de visionnage » (v2) (documents et sources des vidéos et de la miniature seulement ; rien à intégrer dans l'app ni le site)
+
+## Film de lancement v4 : sa remarque de 20 h 28
+
+- **À 53,27 s, « le mot "drop" arrive trop tôt, il est donc sur le texte »** : corrigé. C'était une erreur de la v3 : le mot utilisait le réglage de temps du drop de la musique (8,8 s). Il arrive maintenant à 54,6 s, sur la voix.
+- Seul ce passage (52 → 56 s) a été refait, puis recollé dans la v3. Livré dans la conversation et dans la Salle de visionnage (`stalak-lancement-v4`), avec une réponse sous sa remarque.
 
 ## Film de lancement v3 : ses retours dans la Salle de visionnage (2/11, 19 h 13)
 

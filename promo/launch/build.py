@@ -100,8 +100,8 @@ K["wwy"] = [w("V11", x) - 0.08 for x in ("what", "will", "you")]
 K["drop"] = w("V11", "drop") - 0.11
 K["today"] = w("V11", "today") - 0.13
 K["mark"] = w("V12", "stalak") - 0.1                                  # the name wipes in on "Stalak"
-K["drop"] = BED_PLAN[2][0]                                           # v3: the beat drops (the snow burst)
-K["back"] = BED_PLAN[5][0]                                           # v3: the beat comes back after the break
+K["beatDrop"] = BED_PLAN[2][0]                                       # v3: the beat drops (the snow burst); K["drop"] is the word
+K["beatBack"] = BED_PLAN[5][0]                                       # v3: the beat comes back after the break
 
 # ---------------------------------------------------------------- the video clips (his takes and his music video)
 TAKE = {1: "assets/takes/take1.mp4", 2: "assets/takes/take2.mp4", 3: "assets/takes/take3.mp4", "mv": "assets/clip/mv.mp4"}

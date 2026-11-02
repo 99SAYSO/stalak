@@ -1,5 +1,14 @@
 # Relecture — film de lancement « façon Lovio » (YouTube 16:9, 60 s, 2/11/2026)
 
+## v4 (sa remarque du 2/11 à 20 h 28 : à 53,27 s, « le mot "drop" arrive trop tôt, il est donc sur le texte »)
+
+- **La cause, une erreur de la v3** : j'avais donné au drop de la musique (8,8 s) le nom déjà pris par le mot « drop » de S11 (`K["drop"]`). Le mot s'affichait donc dès que S11 arrivait, sous le panneau tapé. Le drop de la musique s'appelle maintenant `K["beatDrop"]` (`K["beatBack"]` pour le retour du beat), et le mot arrive à 54,6 s, sur la voix.
+- **Le fichier** :
+  - seul le passage 52 → 56 s a été refait (`render --start 52 --end 56`), puis recollé à l'image près dans la v3, et le son a été gardé ;
+  - aux deux raccords, les images sont identiques à celles de la v3 (seul le bruit de compression diffère) ;
+  - 60 i/s, 3600 images, 60,0 s, −14,1 LUFS, aucune image noire.
+- **Livré** : envoyé au propriétaire, mis dans la Salle de visionnage (`stalak-lancement-v4`), avec une réponse sous sa remarque.
+
 ## v3 (ses retours dans la Salle de visionnage, 2/11 à 19 h 13)
 
 - **Ce qui a changé** : ses 2 remarques (le tableau est dans `SPEC.md`, « v3 »).
