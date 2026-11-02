@@ -1,5 +1,24 @@
 # Relecture — film de lancement « façon Lovio » (YouTube 16:9, 60 s, 2/11/2026)
 
+## v3 (ses retours dans la Salle de visionnage, 2/11 à 19 h 13)
+
+- **Ce qui a changé** : ses 2 remarques (le tableau est dans `SPEC.md`, « v3 »).
+  - Le « g » coupé.
+  - La remarque sur toute la vidéo : fluidité, musique, éléments de Stalak. Pour ça :
+    - la musique est l'instru de « neva die » ;
+    - le film passe en 60 i/s, sans zooms lents ;
+    - il y a des cristaux, des flocons, des stalactites et un éclat de neige sur le drop.
+  
+  Les temps, la voix, les bruitages et les écrans n'ont pas changé.
+- **Le son, mesuré avec `mix.py`** (pas écouté) :
+  - la musique est à −25,3 LUFS sous la voix, qui est à −15,0 : 10 dB dessous ;
+  - entre les phrases, elle est à −19,7 : 4,7 dB sous la voix ;
+  - chaque raccord de l'instru tombe sur une barre : le drop à 8,8 s (+7,5 dB), la coupure à 50,4 s, le retour à 53,6 s (+15 dB), la fin à 55,2 s.
+- **Regardé image par image** : chaque élément nouveau, à l'endroit où il apparaît (2,9 à 58,5 s), et le « g » de « song » à 7,1 s en pleine taille.
+- **`hyperframes check`** : 0 erreur. Les avertissements sont les mêmes que pour la v2, plus des nouveaux, voulus :
+  - les cristaux « tournent sans rester en place » : ils tournent en descendant ;
+  - les gros flocons sortent de l'image : ils passent devant et reviennent de l'autre côté.
+
 ## v2 (ses retours dans la Salle de visionnage, 2/11 à 17 h 03 et 17 h 06)
 
 - **Ce qui a changé** : seulement ses 6 points (le tableau est dans `SPEC.md`, « v2 »). Ce sont 5 remarques à l'image près et une remarque sur toute la vidéo (les transitions). Le reste du film est le même : temps, voix, musique, bruitages, mixage. Seul changement de son : le whoosh de 16 s est avancé à 15,4 s, sur la poussée de la tablette.

@@ -47,10 +47,11 @@ window.LV = (function () {
   // motion blur along the move only (x for a pan, y for a swipe): an SVG filter whose deviation follows the speed
   function mblur(e, id, sd) {
     var on = sd > 0.4;
-    if (on) $[id].setAttribute("stdDeviation", id === "mbx" ? sd.toFixed(1) + " 0" : "0 " + sd.toFixed(1));
+    if (on) $[id].setAttribute("stdDeviation", id === "mby" ? "0 " + sd.toFixed(1) : sd.toFixed(1) + " 0");
     e.style.filter = on ? "url(#" + id + ")" : "none";     // set every frame: blur() may have used the same element
   }
   function mbSpeed(dist, dur, q) { return Math.min(60, dio3(q) * dist / dur / T.FPS * 0.3); }   // 30 % of the move per frame
+  function mbFrame(dpx) { return Math.min(60, Math.abs(dpx) * 0.3); }                          // the same, from the move of one frame
   function gmask(e, css) { var v = css || ""; if (e.__gm !== v) { e.style.webkitMaskImage = v; e.style.maskImage = v; e.__gm = v; } }
   // words of a line, each its own span (blur-in, letters…)
   function words(parent, text, cls) {
@@ -92,13 +93,60 @@ window.LV = (function () {
   function bokehAt(bk, t) {
     bk.forEach(function (b) { var x = b.x + b.vx * t, y = ((b.y + b.vy * t) % (H + 200)) - 100; b.e.style.transform = "translate(" + px(x - b.d / 2) + "," + px(y - b.d / 2) + ")"; b.e.style.opacity = b.o.toFixed(2); });
   }
+  // v3 (owner's remark, 2/11: "utilise plus d'éléments liés à Stalak, genre des flocons en fond"): big ice crystals (the
+  // 6-arm flake of the brand), far behind, turning slowly (3-6° a second) and drifting down
+  function crystals(parent, n, seed, o) {
+    var r = rng(seed), out = [];
+    for (var i = 0; i < n; i++) {
+      var sz = lerp(o.s[0], o.s[1], r()), e = el("div", "abs", "left:0;top:0;width:" + px(sz) + ";height:" + px(sz), parent,
+        '<svg viewBox="-52 -52 104 104" style="width:100%;height:100%;overflow:visible"><path d="' + FLAKE_PATH + '" fill="' + (o.c || "#ffffff") + '" fill-opacity="0.5" stroke="' + (o.k || "#ffffff") +
+        '" stroke-width="1.6" stroke-opacity="0.95"/><circle r="7" fill="' + (o.k || "#ffffff") + '" fill-opacity="0.75"/></svg>');
+      var b = lerp(o.blur[0], o.blur[1], r()); if (b > 0.3) e.style.filter = "blur(" + px(b) + ")";
+      out.push({ e: e, x: (i + 0.15 + r() * 0.7) / n * (W + 160) - 80, y: r() * (H + 400), sz: sz, a: lerp(o.a[0], o.a[1], r()), rot: r() * 60,
+                 vr: (i % 2 ? -1 : 1) * lerp(3, 6, r()), vx: lerp(-5, 5, r()), vy: lerp(5, 16, r()) });
+    }
+    return out;
+  }
+  function crystalsAt(cs, t, dx) {
+    cs.forEach(function (c) {
+      var span = H + c.sz + 300, y = ((c.y + c.vy * t) % span + span) % span - c.sz - 150;
+      c.e.style.transform = "translate(" + px(c.x + c.vx * t + (dx || 0) - c.sz / 2) + "," + px(y) + ") rotate(" + (c.rot + c.vr * t).toFixed(2) + "deg)";
+      c.e.style.opacity = c.a.toFixed(3);
+    });
+  }
+  // big soft flakes in front of everything, passing faster than the snow behind (depth)
+  function fgFlakes(parent, n, seed) {
+    var r = rng(seed), out = [];
+    for (var i = 0; i < n; i++) {
+      var d = 30 + r() * 70, b = el("div", "bokeh", "width:" + px(d) + ";height:" + px(d) + ";filter:blur(" + px(6 + r() * 10) + ")", parent);
+      out.push({ e: b, x: (i + r()) / n * W, y: r() * H, vx: 14 + r() * 30, vy: 46 + r() * 64, o: 0.3 + r() * 0.3, d: d, w: 0.35 + r() * 0.5, p: r() * 6.3 });
+    }
+    return out;
+  }
+  function fgAt(fl, t, a) {
+    fl.forEach(function (f) {
+      var y = ((f.y + f.vy * t) % (H + 260)) - 130, x = ((f.x + f.vx * t + Math.sin(t * f.w + f.p) * 34) % (W + 260)) - 130;
+      f.e.style.transform = "translate(" + px(x - f.d / 2) + "," + px(y - f.d / 2) + ")"; f.e.style.opacity = (f.o * a).toFixed(3);
+    });
+  }
+  // a fringe of icicles (the app's stalactites: ice #d6ecff, ink outline), pointing down from y = 0
+  function icicles(w, n, seed, lmin, lmax) {
+    var r = rng(seed), d = "M0 0", step = w / n;
+    for (var i = 0; i < n; i++) {
+      var a = i * step, b = a + step, m = a + step * (0.38 + r() * 0.24), l = lerp(lmin, lmax, Math.pow(r(), 1.4));
+      d += " L" + a.toFixed(1) + " 0 L" + m.toFixed(1) + " " + l.toFixed(1) + " L" + b.toFixed(1) + " 0";
+    }
+    return '<svg width="' + w.toFixed(0) + '" height="' + (lmax + 8).toFixed(0) + '" viewBox="0 -4 ' + w.toFixed(0) + " " + (lmax + 8).toFixed(0) + '" style="position:absolute;left:0;top:0;overflow:visible">' +
+      '<path d="' + d + ' Z" fill="#d6ecff" stroke="#0a0d14" stroke-width="3.2" stroke-linejoin="round"/></svg>';
+  }
   function mkSky(parent, seed) {
     var w = el("div", "full", "", parent);
     w.style.background = "radial-gradient(80% 70% at 22% 8%, #8cc6fa 0%, #4d9cf0 30%, #2b7de0 55%, #1f6fd6 72%, #1552a6 100%)";
     el("div", "", "position:absolute;left:-260px;top:-320px;width:1300px;height:1000px;background:radial-gradient(closest-side, rgba(255,255,255,0.5), rgba(255,255,255,0))", w);
-    return { e: w, fl: snow(w, 70, seed, true, 0.85), bk: bokeh(w, 7, seed + 7) };
+    var cr = crystals(w, 5, seed + 3, { a: [0.1, 0.2], s: [150, 380], blur: [0, 4] });
+    return { e: w, cr: cr, fl: snow(w, 70, seed, true, 0.85), bk: bokeh(w, 7, seed + 7) };
   }
-  function skyAt(s, t) { snowAt(s.fl, t); bokehAt(s.bk, t); }
+  function skyAt(s, t) { crystalsAt(s.cr, t); snowAt(s.fl, t); bokehAt(s.bk, t); }
   // the aurora of the night world: three ribbons of ice light, drifting slowly
   function auroraAt(t) {
     var p = [
@@ -189,14 +237,22 @@ window.LV = (function () {
     var fs = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     fs.setAttribute("width", "0"); fs.setAttribute("height", "0"); fs.style.cssText = "position:absolute;left:0;top:0;width:0;height:0";
     fs.innerHTML = '<filter id="mbx" x="-25%" y="-5%" width="150%" height="110%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="0 0"/></filter>' +
-                   '<filter id="mby" x="-5%" y="-25%" width="110%" height="150%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="0 0"/></filter>';
+                   '<filter id="mby" x="-5%" y="-25%" width="110%" height="150%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="0 0"/></filter>' +
+                   '<filter id="mbx2" x="-25%" y="-5%" width="150%" height="110%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="0 0"/></filter>' +
+                   '<filter id="mbx3" x="-25%" y="-5%" width="150%" height="110%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="0 0"/></filter>';
     root.appendChild(fs);
     $.mbx = fs.querySelector("#mbx feGaussianBlur"); $.mby = fs.querySelector("#mby feGaussianBlur");
+    $.mbx2 = fs.querySelector("#mbx2 feGaussianBlur"); $.mbx3 = fs.querySelector("#mbx3 feGaussianBlur");
     // ---- worlds
     $.nfl = snow($.nsnow, 60, 3, false, 0.5);
     $.bfl = snow($.bsnow, 50, 5, false, 0.55);
     $.sfl = snow($.ssnow, 80, 9, true, 0.9);
     $.sbk = bokeh($.sbokeh, 8, 17);
+    $.scr1 = crystals($.ssnow, 5, 23, { a: [0.1, 0.2], s: [160, 400], blur: [0, 4] });                 // S1's sky
+    $.ncr = crystals($["w-night"], 7, 31, { a: [0.07, 0.15], s: [150, 440], blur: [0, 6], c: "#9fdcff" });
+    $.bcr = crystals($["w-blue"], 7, 37, { a: [0.07, 0.15], s: [130, 400], blur: [0, 5], c: "#bfe6ff" });
+    $.stcr = crystals($["w-studio"], 6, 43, { a: [0.22, 0.34], s: [120, 300], blur: [0, 3], c: "#d6ecff", k: "#8fc3f2" });
+    $.fg = root.querySelector("#fg"); $.fgf = fgFlakes($.fg, 7, 53);
     // ---- S0: the spark (6 arms of ice)
     $.spark.innerHTML = '<defs><radialGradient id="sg"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#d6ecff"/></radialGradient></defs>' +
       '<path d="' + (function () { var d = ""; for (var k = 0; k < 12; k++) { var a = k * Math.PI / 6 - Math.PI / 2, r = k % 2 ? 7 : 48; d += (k ? "L" : "M") + (Math.cos(a) * r).toFixed(2) + " " + (Math.sin(a) * r).toFixed(2); } return d + "Z"; })() + '" fill="url(#sg)"/>';
@@ -206,6 +262,7 @@ window.LV = (function () {
     $.hero = el("div", "big", "top:236px;font-weight:600;font-size:92px", s1); $.heroW = words($.hero, "Your takes, cut on the beat.");
     $.sub = el("div", "big", "top:362px;font-weight:400;font-size:34px;color:rgba(255,255,255,0.86)", s1); $.subW = words($.sub, "Drop your song and a few takes of you performing it.");
     $.gbox = el("div", "glass", "left:330px;top:452px;width:1260px;height:312px;border-radius:44px", s1);
+    $.gice = el("div", "abs", "left:374px;top:451px;width:1172px;height:70px;transform-origin:50% 0", s1, icicles(1172, 34, 61, 14, 52));
     $.gplus = el("div", "glass round", "left:374px;top:646px;width:92px;height:92px;border-radius:46px", s1,
       '<svg viewBox="-50 -50 100 100" style="position:absolute;inset:0"><g id="gx" stroke="#fff" stroke-width="7" stroke-linecap="round"><path d="M-17 -17 L17 17"/><path d="M17 -17 L-17 17"/></g></svg>');
     $.gx = $.gplus.querySelector("#gx");
@@ -226,6 +283,16 @@ window.LV = (function () {
     $.ic2 = img("assets/brand/icon.svg", "left:850px;top:430px;width:220px;height:220px", $.s2);
     $.wm2w = el("div", "abs", "left:0;top:0;height:150px;overflow:hidden", $.s2);
     $.wm2 = img("assets/brand/wordmark.svg", "left:0;top:0;height:150px;width:340px", $.wm2w);
+    $.glow2 = el("div", "abs", "left:360px;top:-70px;width:1200px;height:1200px;border-radius:50%;background:radial-gradient(closest-side, rgba(214,236,255,0.75), rgba(159,220,255,0.25) 45%, rgba(159,220,255,0))", $.s2);
+    $.s2.insertBefore($.glow2, $.s2.firstChild);
+    $.burst = []; var brr = rng(91);
+    for (var bi = 0; bi < 34; bi++) {
+      var crys = bi % 3 === 0, bsz = crys ? 26 + brr() * 38 : 6 + brr() * 12;
+      var be = crys ? el("div", "abs", "left:0;top:0;width:" + px(bsz) + ";height:" + px(bsz), $.s2, '<svg viewBox="-52 -52 104 104" style="width:100%;height:100%;overflow:visible"><path d="' + FLAKE_PATH + '" fill="#ffffff"/><circle r="9" fill="#ffffff"/></svg>')
+                    : el("div", "flake", "width:" + px(bsz) + ";height:" + px(bsz), $.s2);
+      if (brr() < 0.35) be.style.filter = "blur(" + px(1 + brr() * 3) + ")";
+      $.burst.push({ e: be, a: (bi / 34) * Math.PI * 2 + brr() * 0.5, d: 280 + brr() * 700, sz: bsz, rot: brr() * 360, vr: (brr() < 0.5 ? -1 : 1) * (60 + brr() * 140), dl: brr() * 0.07 });
+    }
     $.shine2 = el("div", "abs", "left:850px;top:430px;width:220px;height:220px;-webkit-mask-image:url(assets/brand/icon.svg);mask-image:url(assets/brand/icon.svg);-webkit-mask-size:100% 100%;mask-size:100% 100%;" +
       "background:linear-gradient(115deg, rgba(255,255,255,0) 35%, rgba(255,255,255,0.85) 50%, rgba(255,255,255,0) 65%);background-size:300% 100%", $.s2);
     // ---- S3: the devices
@@ -378,6 +445,7 @@ window.LV = (function () {
     $.g10 = [];
     [[0, 432, 1920, 2], [0, 650, 1920, 2], [470, 0, 2, 1080], [1448, 0, 2, 1080]].forEach(function (g) { $.g10.push(el("div", "abs", "left:" + g[0] + "px;top:" + g[1] + "px;width:" + g[2] + "px;height:" + g[3] + "px;background:rgba(255,255,255,0.4)", $.s10)); });
     $.p10 = el("div", "glass", "left:472px;top:434px;width:976px;height:216px;border-radius:0", $.s10);
+    $.p10ice = el("div", "abs", "left:472px;top:649px;width:976px;height:80px;transform-origin:50% 0", $.s10, icicles(976, 26, 67, 16, 64));
     $.p10t = el("div", "abs", "left:536px;top:506px;font-weight:500;font-size:70px;white-space:nowrap;line-height:1", $.s10);
     $.p10sel = el("span", "", "border-radius:6px", $.p10t);
     $.p10a = el("span", "", "", $.p10t); $.p10b = el("span", "ice", "", $.p10t); $.p10c = el("span", "caret", "height:66px", $.p10t);
@@ -388,6 +456,7 @@ window.LV = (function () {
     $.wwy = el("span", "", "font-weight:500;font-size:68px;margin-right:34px", $.line11); $.wwyW = words($.wwy, "What will you");
     $.dropA = el("span", "w ice", "", $.line11, "drop"); $.line11.appendChild(document.createTextNode(" ")); $.dropB = el("span", "w", "", $.line11, "today");
     // ---- S12: the crystal, the mark, the call to action
+    $.ice12 = el("div", "abs", "left:-20px;top:-4px;width:1960px;height:170px;transform-origin:50% 0", $.s12, icicles(1960, 46, 71, 26, 150));
     $.cr3 = el("div", "abs", "left:0;top:0;width:1920px;height:1080px;perspective:1600px", $.s12);
     $.cr = el("div", "abs", "left:560px;top:140px;width:800px;height:800px;transform-style:preserve-3d", $.cr3);
     var CRL = [["#ffffff", 0.9, 1.0, 0], ["#cfe8ff", 0.75, 0.86, 30], ["#7cc0ff", 0.55, 0.66, 0]];
@@ -423,14 +492,18 @@ window.LV = (function () {
     var blue = (t >= S.s4 - 0.4 && t < S.s5 + 0.05) || (t >= S.s6 - 0.1 && t < S.s7 + 1.2) || (t >= S.s8 - 0.32 && t < S.s9 + 0.2) || (t >= S.s11 - 0.3 && t < S.s12 + 0.3);
     var studio = (t >= S.s3a && t < S.s4);
     vis($["w-night"], night); vis($["w-blue"], blue); vis($["w-studio"], studio);
-    if (night) { auroraAt(t); snowAt($.nfl, t); }
+    if (night) { auroraAt(t); snowAt($.nfl, t); crystalsAt($.ncr, t); }
     if (blue) {
-      snowAt($.bfl, t); op($["w-blue"], 1 - E.io2(seg(t, S.s12, S.s12 + 0.3)));
+      snowAt($.bfl, t); crystalsAt($.bcr, t); op($["w-blue"], 1 - E.io2(seg(t, S.s12, S.s12 + 0.3)));
       var sw = seg(t, S.s9 - 0.2, S.s9 + 0.2);
       tf($["w-blue"], sw > 0 && sw < 1 ? "translateY(" + px(-H * E.io3(sw)) + ")" : "none"); mblur($["w-blue"], "mby", mbSpeed(H, 0.4, sw));
     }
     if (studio) op($["w-studio"], 1 - E.io2(seg(t, S.s4 - 0.4, S.s4)));
     r0(t, S); r1(t, S); r2(t, S); r3(t, S); r4(t, S); r5(t, S); r6(t, S); r7(t, S); r8(t, S); r9(t, S); r10(t, S); r11(t, S); r12(t, S);
+    // v3: big soft flakes pass in front, in the open shots (not over the app's close-ups)
+    var fa = 0, FW = [[1.7, 5.1], [9.75, 22.3], [29.0, 31.5], [40.1, 44.5], [53.7, 60.5]];
+    FW.forEach(function (w) { fa = Math.max(fa, seg(t, w[0], w[0] + 0.5) * (1 - seg(t, w[1] - 0.5, w[1]))); });
+    vis($.fg, fa > 0.001); if (fa > 0.001) fgAt($.fgf, t, fa);
     cursorAt(t, curPath(t, S), [K.go, K.toggle6, K.punchy, K.shuffle, K.pack, K.export]);
   }
   // ---- S0 + S1: the spark, the icon's window, the glass composer
@@ -446,7 +519,7 @@ window.LV = (function () {
     // the icon's window grows (S0), then the sky is plain
     if (m < 1.55) maskAt($.skywrap, ICON_MASK, m < 0.72 ? 110 * E.expo(seg(m, 0.52, 0.72)) : lerp(110, 4800, E.i3(seg(m, 0.72, 1.55))), 960, 540 + 20, 142 / 112);
     else maskAt($.skywrap, null);
-    snowAt($.sfl, t); bokehAt($.sbk, t);
+    snowAt($.sfl, t); bokehAt($.sbk, t); crystalsAt($.scr1, t);
     // the camera: zoomed on the + button, pulls back, then pushes into the box
     var ZX = 420, ZY = 692, s, cx, cy;
     var back = E.io2(seg(r, 1.45, 2.75)), push = E.i2(seg(t, S.s1b - 0.5, S.s1b));
@@ -467,6 +540,7 @@ window.LV = (function () {
     // the title and the box come in as the camera pulls back
     wordsIn($.heroW, t, S.s1 + 1.55, 0.08, 0.18, 8); wordsIn($.subW, t, S.s1 + 1.95, 0.05, 0.16, 6);
     op($.gbox, seg(r, 1.4, 1.9)); op($.gsend, seg(r, 1.6, 2.0));
+    op($.gice, seg(r, 1.65, 1.85)); tf($.gice, "scaleY(" + Math.max(0.001, E.expo(seg(r, 1.65, 2.25))).toFixed(4) + ")");   // v3: its icicles grow
     vis($.gcaret, r > 2.2 && caretOn(t - S.s1, false));
   }
   // ---- S1b: "I have a song." (typed while the voice says "a song?"), then S2: "song" → the icon → "Stalak"
@@ -477,7 +551,7 @@ window.LV = (function () {
       $.s1bT.textContent = full.slice(0, Math.min(n, 9)); $.s1bW.textContent = full.slice(9, Math.min(n, 13)); $.s1bE.textContent = full.slice(13, n);
       var push = E.io3(seg(t, S.s2 - 0.45, S.s2));
       vis($.s1bC, push === 0 && caretOn(t, t < K.type1[1]));
-      var z = 1 + 0.05 * E.io2(seg(rb, 0, S.s2 - S.s1b));
+      var z = 1;                                                   // v3: no creeping zoom on the typed line (it read as "linear")
       $.s1bTxt.style.transformOrigin = "0 75px"; tf($.s1bTxt, "scale(" + z.toFixed(4) + ")");
       op($.s1bBox, seg(rb, 0, 0.2) * (1 - E.o2(seg(push, 0, 0.7))));
       // v2: the camera pushes into "song" until it is the next shot's "song" (in the middle, 270 px); the other words go
@@ -492,7 +566,7 @@ window.LV = (function () {
     var sq = seg(r, 0, 1.0), melt = E.io2(seg(r, 0.75, 1.15));
     op($.song2, (1 - melt) * E.o3(seg(r, -0.08, 0.1)));
     blur($.song2, lerp(3, 4, sq) + 22 * melt);
-    tf($.song2, "scale(" + (lerp(1.0, 1.1, E.o2(sq)) * lerp(1, 0.55, melt)).toFixed(4) + ")");
+    tf($.song2, "scale(" + (lerp(1.0, 1.06, E.o3(sq)) * lerp(1, 0.55, melt)).toFixed(4) + ")");
     // the icon: appears from the blur, shines, shrinks, slides left; the name wipes in beside it on "Stalak"
     var iq = E.o3(seg(r, 0.85, 1.3)), shrink = E.io2(seg(r, 1.3, 1.75)), slide = E.o4(seg(r, 1.85, 2.35));
     var size = lerp(220, 168, shrink);
@@ -507,6 +581,15 @@ window.LV = (function () {
     var dive = E.i3(seg(t, S.s3a - 0.5, S.s3a - 0.04)), P = [x + size * 106 / 128, y + size * 88 / 128];
     cam($.s2, P, [lerp(P[0], 960, dive), lerp(P[1], 540, dive)], lz(1, 70, dive));
     blur($.s2, 1.2 * dive);
+    // v3: the beat drops on "Meet Stalak." (8.8 s): a burst of snow and ice out of the logo, and its light
+    var D = K.drop, cx = x + (168 + 30 + 340) / 2, cy = y + size / 2;
+    op($.glow2, 0.6 * seg(t, D - 0.02, D + 0.04) * (1 - E.o2(seg(t, D + 0.04, D + 0.6))));
+    $.burst.forEach(function (p) {
+      var a0 = D + p.dl, q = E.expo(seg(t, a0, a0 + 1.1)), on = t >= a0 && t < a0 + 1.2; vis(p.e, on); if (!on) return;
+      var dd = p.d * q, px_ = cx + Math.cos(p.a) * dd - p.sz / 2, py_ = cy + Math.sin(p.a) * dd * 0.78 - p.sz / 2 + 60 * E.i2(seg(t, a0, a0 + 1.1));
+      tf(p.e, "translate(" + px(px_) + "," + px(py_) + ") rotate(" + (p.rot + p.vr * (t - a0)).toFixed(1) + "deg) scale(" + lerp(0.4, 1, E.o3(seg(t, a0, a0 + 0.25))).toFixed(3) + ")");
+      op(p.e, seg(t, a0, a0 + 0.04) * (1 - E.i2(seg(t, a0 + 0.35, a0 + 1.15))));
+    });
   }
   // ---- S3: the devices
   function r3(t, S) {
@@ -517,25 +600,25 @@ window.LV = (function () {
     var camX = (E.io3(q1) + E.io3(q2)) * W, sd = mbSpeed(W, 2 * HW, q1) + mbSpeed(W, 2 * HW, q2);
     var A = t < S.s3b + HW, B = t >= S.s3b - HW && t < S.s3c + HW, C = t >= S.s3c - HW;
     vis($.s3a, A); vis($.s3b, B); vis($.s3c, C);
-    tf($.sun, "translateX(" + px(-0.35 * camX) + ")");
+    tf($.sun, "translateX(" + px(-0.35 * camX) + ")"); crystalsAt($.stcr, t, -0.55 * camX);
     if (A) {                                           // the laptop: a slow push
-      var q = E.io2(seg(t, S.s3a, S.s3b)), s = lerp(0.97, 1.05, q), tx = 960 - 960 * s, ty = lerp(20, 0, q) + 500 - 500 * s;
+      var s = 1.0, tx = 0, ty = 10;                                 // v3: still once landed (the pull back carries the shot)
       $.lap3.style.transformOrigin = "618px 404px";
       tf($.lap3, "translate(" + px(tx) + "," + px(ty) + ") scale(" + s.toFixed(4) + ")");
       // v2: the shot starts inside its screen, in the home page's sky left of its card (the same blue as the icon), and
       // pulls back out of it
-      var out = E.o3(seg(t, S.s3a, S.s3a + 0.85)), P = [960 + tx + s * (157.5 - 618), 500 + ty + s * (429.4 - 404)];
+      var out = E.expo(seg(t, S.s3a, S.s3a + 1.7)), P = [960 + tx + s * (157.5 - 618), 500 + ty + s * (429.4 - 404)];
       if (out < 1) { cam($.s3a, P, [lerp(960, P[0], out), lerp(540, P[1], out)], lz(9, 1, out)); blur($.s3a, 1.4 * (1 - seg(t, S.s3a, S.s3a + 0.45))); }
       else { tf($.s3a, "translate(" + px(-camX) + ",0)"); mblur($.s3a, "mbx", sd); }
     }
     if (B) {                                           // the phone: turning toward us
-      var qb = E.io2(seg(t, S.s3b - HW, S.s3c));
+      var qb = E.o3(seg(t, S.s3b - HW, S.s3c));
       $.phone.style.transformOrigin = "218px 450px";
       tf($.phone, "translate(" + px(742) + "," + px(lerp(110, 90, qb)) + ") perspective(2200px) rotateY(" + lerp(-24, -10, qb).toFixed(2) + "deg) rotateZ(" + lerp(-7, -4, qb).toFixed(2) + "deg) scale(" + lerp(0.96, 1.0, qb).toFixed(4) + ")");
       tf($.s3b, "translate(" + px(W - camX) + ",0)"); mblur($.s3b, "mbx", sd);
     }
     if (C) {                                           // the tablet on its table: the camera rises…
-      var a1 = E.io2(seg(t, S.s3c - HW, S.s4 - 1.0)), b1 = E.io3(seg(t, S.s4 - 1.0, S.s4));
+      var a1 = E.o3(seg(t, S.s3c - HW, S.s4 - 1.0)), b1 = E.io3(seg(t, S.s4 - 1.25, S.s4));     // the two moves overlap
       // … then (v2) it straightens up and comes to us until its preview is his 9:16 card of S4, the same take going on
       var V = $.tbV, txE = CARD.x - 650 - CARD.s * (V[0] - 650), tyE = CARD.y - 600 - CARD.s * (V[1] - 600);
       var tx3 = lerp(310, txE, b1), ty3 = lerp(lerp(170, 120, a1), tyE, b1), rx3 = lerp(lerp(34, 22, a1), 0, b1), s3 = lz(lerp(1.1, 1.0, a1), CARD.s, b1);
@@ -567,19 +650,23 @@ window.LV = (function () {
     var split = E.o4(seg(t, K.split, K.split + 0.45)), gone = E.i3(seg(t, K.slide4, K.slide4 + 0.35));
     box($.live, lerp(CARD.x, CARD.x2, split) + 760 * gone, CARD.y, CARD.w, CARD.h); vis($.live, t < K.slide4 + 0.4);
     $.live.style.borderRadius = px(CARD.r); $.live.style.boxShadow = "0 30px 60px rgba(5,20,60,0.32)";
-    var lv = $.live.querySelector("video"); if (lv) tf(lv, "scale(" + lerp(1.0, 1.05, E.io2(seg(t, S.s4, K.split))).toFixed(4) + ")");
+    var lv = $.live.querySelector("video"); if (lv) tf(lv, "none");
+    var cxp = function (tt) { return lerp(CARD.x, CARD.x2, E.o4(seg(tt, K.split, K.split + 0.45))) + 760 * E.i3(seg(tt, K.slide4, K.slide4 + 0.35)); };
+    mblur($.live, "mbx2", mbFrame(cxp(t) - cxp(t - 1 / T.FPS)));
     // v2: the end of S4 flies on through the cut bar into the grid of S5
     var thru = E.i2(seg(t, S.s5 - 0.26, S.s5 + 0.05));
     $.s4.style.transformOrigin = "960px 640px"; tf($.s4, thru > 0 ? "scale(" + lerp(1, 1.5, thru).toFixed(4) + ")" : "none");
     blur($.s4, 16 * thru); op($.s4, 1 - seg(t, S.s5 - 0.04, S.s5 + 0.05));
     // the glass box, its hint, the chips, the → button
-    var bx = bx4(t), by = BOX4.y, bw = BOX4.w, bh = BOX4.h;
+    var bin = function (tt) { return bx4(tt) - 170 * (1 - E.expo(seg(tt, K.split, K.split + 0.75))); };
+    var bx = bin(t), by = BOX4.y, bw = BOX4.w, bh = BOX4.h;      // v3: the box comes in from the left, on a long tail
     var morph = E.io3(seg(t, K.go + 0.05, K.go + 0.45));             // → the loader card
     var lw = 760, lh = 240, lx2 = 960 - lw / 2, ly2 = 420;
     var fx = lerp(bx, lx2, morph), fy = lerp(by, ly2, morph), fw = lerp(bw, lw, morph), fh = lerp(bh, lh, morph);
     var boxIn = E.o3(seg(t, K.split, K.split + 0.35)), boxOut = E.i2(seg(t, K.edit4 - 0.1, K.edit4 + 0.2));
     $.ibox.style.transformOrigin = "50% 50%";
     box($.ibox, fx, fy, fw, fh); op($.ibox, boxIn * (1 - boxOut)); tf($.ibox, "scale(" + lerp(1, 1.25, boxOut).toFixed(4) + ")"); blur($.ibox, 8 * boxOut);
+    mblur($.s4ui, "mbx3", t < K.go ? mbFrame(bin(t) - bin(t - 1 / T.FPS)) : 0);
     var chipOut = seg(t, K.go + 0.05, K.go + 0.25);
     var hint = boxIn * (1 - seg(t, K.chSong - 0.05, K.chSong + 0.1));
     box($.ihint, bx + 48, by + 62); op($.ihint, hint);
@@ -595,7 +682,7 @@ window.LV = (function () {
     op($.ldTx, 1 - ok); blur($.ldTx, ok * 6); op($.ldOk, ok); blur($.ldOk, (1 - ok) * 6);
     $.ldFill.style.width = (100 * E.io2(seg(t, K.go + 0.4, K.synced - 0.05))).toFixed(1) + "%";
     // the real edit step: preview + card; the camera goes along the cut bar while its cuts are built
-    var I = T.UI, L = edit4(t, S), eq = E.o3(seg(t, K.edit4, K.edit4 + 0.4)), es = lerp(1.06, 1.0, eq) * L.es;
+    var I = T.UI, L = edit4(t, S), eq = E.expo(seg(t, K.edit4, K.edit4 + 0.75)), es = lerp(1.08, 1.0, eq) * L.es;
     var edOn = t >= K.edit4 - 0.05; vis($.s4cam, edOn);
     if (edOn) {
       tf($.s4cam, "translate(" + px(L.ox + 960 * (1 - es)) + "," + px(L.oy + 540 * (1 - es)) + ") scale(" + es.toFixed(4) + ")"); op($.s4cam, eq);
@@ -624,7 +711,7 @@ window.LV = (function () {
         var v = e.querySelector("video"); if (v) op(v, seg(r, 0.3 + i * 0.09, 0.55 + i * 0.09));
       });
       // the camera: a slow push, then (v2) into the YouTube tile, which fills the frame and IS his music video (flash 1)
-      var pu = E.io3(seg(t, S.s5f - 0.45, S.s5f - 0.03)), Z0 = lerp(1, 1.06, E.io2(seg(r, 0.4, S.s5f - S.s5)));
+      var pu = E.io3(seg(t, S.s5f - 0.5, S.s5f - 0.03)), Z0 = 1;
       cam($.bento, [lerp(960, 584 + 380, pu), lerp(540, 90 + 214, pu)], [960, 540], lz(Z0, 1920 / 760, pu));
       var yt = $.tiles[1]; yt.style.borderRadius = px(28 * (1 - pu)); op(yt.querySelector(".tag"), 1 - seg(pu, 0, 0.4));
       yt.style.boxShadow = "0 24px 50px rgba(5,20,60," + (0.3 * (1 - pu)).toFixed(3) + "), inset 0 0 0 1.5px rgba(255,255,255," + (0.4 * (1 - pu)).toFixed(3) + ")";
@@ -659,7 +746,7 @@ window.LV = (function () {
     $.s6.style.transformOrigin = "960px 540px"; tf($.s6, zin < 1 ? "scale(" + lerp(1.3, 1, zin).toFixed(4) + ")" : "none");
     blur($.s6, 14 * (1 - E.o3(seg(t, S.s6, S.s6 + 0.28))));
     vis($.readyA, !after); vis($.readyB, !after); vis($.lap6, !after);
-    var flat = E.io3(seg(r, 1.0, 2.0)), orbit = E.io2(seg(r, 0, 1.3));
+    var flat = E.io3(seg(r, 0.95, 2.0)), orbit = E.o3(seg(r, 0, 1.4));
     // v2: seen a little from above, the lid leaning back 15° on its base: the keyboard deck shows, as wide as the lid
     var ry = lerp(lerp(-26, -14, orbit), 0, flat), rx = lerp(-10, 0, flat);
     var ww = lerp(1100, 420, flat), wh = lerp(690, 236, flat), wy = lerp(96, 540 - 236 / 2 - 4, flat);
@@ -729,7 +816,7 @@ window.LV = (function () {
     // "in any direction", in 3D over the edit, word by word on the voice
     var dOn = t >= K.dir[0] - 0.1; vis($.dir3, dOn);
     if (dOn) {
-      var dd = E.io2(seg(t, K.dir[0] - 0.1, S.s8));
+      var dd = E.expo(seg(t, K.dir[0] - 0.1, K.dir[0] + 1.0));
       tf($.dir, "rotateY(" + lerp(26, 12, dd).toFixed(2) + "deg) rotateX(" + lerp(8, 3, dd).toFixed(2) + "deg) translateZ(" + lerp(-80, 40, dd).toFixed(1) + "px)");
       wordsAt($.dirW, t, K.dir, 0.2, 14);
     }
@@ -782,8 +869,9 @@ window.LV = (function () {
     for (var i = 0; i < picks.length; i++) if (t >= picks[i] - 0.15) idx = i;
     var gap = 170, xs = [], x = 0;                                  // room for the braces between two cards
     $.cards.forEach(function (c) { xs.push(x + c.w / 2); x += c.w + gap; });
-    var pos = xs[0]; for (var j = 1; j < picks.length; j++) pos = lerp(pos, xs[j], E.io3(seg(t, picks[j] - 0.3, picks[j])));
-    var cardsIn = E.o3(seg(t, K.export + 0.5, K.export + 0.9)), fwd = E.io2(seg(t, picks[3] + 0.15, S.s10 - 0.05));
+    var posAt = function (tt) { var p_ = xs[0]; for (var j = 1; j < picks.length; j++) p_ = lerp(p_, xs[j], E.io3(seg(tt, picks[j] - 0.3, picks[j]))); return p_; };
+    var pos = posAt(t); mblur($.car, "mbx2", mbFrame(pos - posAt(t - 1 / T.FPS)));
+    var cardsIn = E.o3(seg(t, K.export + 0.5, K.export + 0.9)), fwd = E.expo(seg(t, picks[3] + 0.2, picks[3] + 1.0));
     var into = E.i3(seg(t, S.s10 - 0.4, S.s10 + 0.02));              // v2: then the camera flies into his music video
     $.cards.forEach(function (c, i) {
       var cxx = 960 + xs[i] - pos, sc = i === 3 ? lerp(1, 1.35, fwd) * lz(1, 2.2, into) : 1;
@@ -807,6 +895,7 @@ window.LV = (function () {
     gmask($.s10, sk > 0 ? "linear-gradient(180deg, rgba(0,0,0,0) " + px(yc - 30) + ", #000 " + px(yc + 110) + ")" : null);
     var g = E.o3(seg(r, 0.0, 0.5)); $.g10.forEach(function (e) { op(e, g * 0.9); });
     op($.p10, E.o3(seg(r, 0.1, 0.4)));
+    op($.p10ice, seg(r, 0.3, 0.45)); tf($.p10ice, "scaleY(" + Math.max(0.001, E.expo(seg(r, 0.3, 0.95))).toFixed(4) + ")");
     var A = "Less time editing.", B1 = "More time making ", B2 = "music.", typing = false;
     if (t < K.del[1]) {
       var n = Math.floor(seg(t, K.less[0], K.less[1]) * A.length + 0.0001); typing = t >= K.less[0] && t < K.less[1];
@@ -838,6 +927,7 @@ window.LV = (function () {
   function r12(t, S) {
     var on = layer($.s12, t, S.s12, S.end + 1); if (!on) return;
     var r = t - S.s12;
+    op($.ice12, seg(r, 0.25, 0.4)); tf($.ice12, "scaleY(" + Math.max(0.001, E.expo(seg(r, 0.25, 1.1))).toFixed(4) + ")");   // v3: frost from the top
     var open = E.expo(seg(r, 0, 0.5)), close = E.io3(seg(r, 1.0, 1.45));
     var cs = lerp(0.05, 1.0, open) * lerp(1, 0.25, close);
     vis($.cr3, r < 1.5);

@@ -1,6 +1,31 @@
 # Compte rendu — branche `marketing/promo-youtube` (Marketing & croissance)
 
-Statut : PRÊT, v4 du 2/11 + miniature YouTube + film de lancement « façon Lovio » (v2, ses retours appliqués) + page de retours « Salle de visionnage » (v2) (documents et sources des vidéos et de la miniature seulement ; rien à intégrer dans l'app ni le site)
+Statut : PRÊT, v4 du 2/11 + miniature YouTube + film de lancement « façon Lovio » (v3, ses retours appliqués) + page de retours « Salle de visionnage » (v2) (documents et sources des vidéos et de la miniature seulement ; rien à intégrer dans l'app ni le site)
+
+## Film de lancement v3 : ses retours dans la Salle de visionnage (2/11, 19 h 13)
+
+- **À 7,1 s, « la lettre "g" est coupée en bas »** : corrigé. Le dégradé de glace des mots forts s'arrêtait au-dessus du jambage. C'est réparé partout, aussi sur le « p » de « drop ».
+- **Sur toute la vidéo** : « toujours pas assez fluide, mouvements trop linéaires ; la musique beaucoup trop calme et mignonne, il faut quelque chose plus comme la musique qu'on utilisait avant ; plus d'éléments liés à Stalak, genre des flocons en fond ».
+  - **Musique** : l'instru de son « neva die », celle de nos vidéos d'avant, ralentie de 157 à 150 BPM pour rester sur les coupes. Elle est découpée sur ses mesures :
+    - son intro au début ;
+    - **son drop sur « Meet Stalak. »** ;
+    - une coupure sous « more time making music » ;
+    - le beat qui revient sur « What will you drop today » ;
+    - ses dernières mesures sur le logo.
+    
+    **À vérifier par le propriétaire avant de publier : la licence de l'instru pour YouTube.**
+  - **Fluidité** :
+    - 60 images par seconde ;
+    - plus de zooms lents et réguliers ;
+    - des arrivées qui ralentissent doucement ;
+    - des mouvements qui se chevauchent ;
+    - du flou de mouvement sur les gestes rapides.
+  - **Plus de Stalak** :
+    - de grands cristaux de neige qui tournent lentement en fond ;
+    - de gros flocons flous qui passent devant ;
+    - les stalactites de l'app sur la boîte de verre, sous le panneau tapé et en haut de l'écran de fin ;
+    - un éclat de neige qui part du logo sur le drop.
+- **Coût Flora : 0 $.**
 
 ## Film de lancement v2 : ses retours dans la Salle de visionnage (2/11, 17 h 03 et 17 h 06)
 

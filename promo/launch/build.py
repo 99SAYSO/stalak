@@ -9,7 +9,7 @@ usage: python3 build.py            (python3 build.py --no-bed: keep the existing
 import json, os, re, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-FPS = 30
+FPS = 60                           # v3: 60 images a second (his remark: "pas assez fluide"), YouTube plays it
 FRAME = 1.0 / FPS
 OUT_TIMES = os.path.join(HERE, "assets", "times.js")
 FILM = os.path.join(HERE, "compositions", "film.html")
@@ -36,16 +36,32 @@ def speech(line):
     return a, a + v["speech_dur"]
 
 
-# ---------------------------------------------------------------- the music: his choice (Lyria 3.5 in Flora), 150 BPM
-TRACK = os.path.join(HERE, "assets", "audio", "music", "lyria_raw.mp3")
+# ---------------------------------------------------------------- the music
+# v3 (his remark of 2/11, 19 h 13: the Lyria track is "beaucoup trop calme et mignon", he wants "la musique qu'on utilisait
+# avant"): the instrumental of his "neva die" (157 BPM, as in promo/youtube and promo/one-shape), slowed to the film's
+# 150 BPM with rubberband (pitch kept; 1 bar = 1.6 s), so every cut and flash stays on its beat. Its grid, measured in
+# promo/one-shape: a downbeat at D0 = 20.2946 + 3 × 60/157 s, bars every 4 × 60/157 s, chords looping every 8 bars.
+# Stretched: bar k at INST_D0 + 1.6 k (checked on the file: onsets on that grid, 3 ms off the expected map, corr. 0.99).
+# The instrumental's parts (bar loudness): intro −14..−7 (soft), pre −6..1 (808 in), drop 2..17, break 18-19, 20..33,
+# soft 34..41, pre 42..49, 50..65, outro 66..73.
+TRACK = os.path.join(HERE, "assets", "audio", "music", "nevadie_inst.mp3")        # = promo/youtube/assets/audio/inst.mp3
+TRACK150 = os.path.join(HERE, "assets", "audio", "music", "nevadie_150.wav")
 BED = os.path.join(HERE, "assets", "audio", "music", "bed.wav")
 BPM = 150.0
-BEAT = 60.0 / BPM                  # 0.4 s; a bar = 1.6 s
-TRACK_BEAT0 = 12.9165              # the track's first downbeat (s)
-MUSIC_IN = 23.3165                 # track time at film 0: its groove (beat 32, track 25.7165) lands at film 2.4
-SPLICE = 55.2                      # film time of the cut to the track's outro (a downbeat on both sides)
-OUTRO = 153.7165                   # track time of the outro (beat 352)
-BEAT0 = TRACK_BEAT0 - MUSIC_IN     # the film time of the track's beat 0 (negative): beats fall every 0.4 s of film time
+BEAT = 60.0 / BPM                  # 0.4 s; a bar = 1.6 s; the film's downbeats fall at 0.8 + 1.6 k
+STRETCH = 150.0 / 157.0
+INST_D0 = (20.2946 + 3 * 60 / 157) / STRETCH - 0.0029
+BEAT0 = 0.8 - 2 * 1.6              # a film downbeat (times.js)
+# the bed: (film time, instrumental bar there). Each seam keeps the 8-bar loop in phase (next bar ≡ last + 1, mod 8),
+# except into the outro, which comes under the impact.
+BED_PLAN = [(0.0, -11.5),          # its intro (soft) under the opening; film 0.8 is a downbeat
+            (2.4, -2),             # the 808 comes in as the glass UI builds (the last 4 bars of its pre)
+            (8.8, 2),              # its drop, on "Meet Stalak." (the logo), then 16 bars
+            (34.4, 50),            # 10 more bars of the full beat (same loop phase)
+            (50.4, 36),            # a 2-bar break (its soft part) under "less time editing / more time making music"
+            (53.6, 22),            # the beat back on "So, what will you drop today?" (S11)
+            (55.2, 71, 6.0)]       # its last 3 bars, under the crystal and the logo: it ends at 60.0 with the track
+                                   # (+6 dB: its outro is ~14 dB under its full beat)
 
 # ---------------------------------------------------------------- the scenes (s), each on a beat (multiples of 0.4)
 S = {"s0": 0.0, "s1": 1.6, "s1b": 5.2, "s2": 6.4, "s3a": 9.6, "s3b": 12.0, "s3c": 13.6, "s4": 16.0, "s5": 24.0, "s5f": 25.6,
@@ -84,6 +100,8 @@ K["wwy"] = [w("V11", x) - 0.08 for x in ("what", "will", "you")]
 K["drop"] = w("V11", "drop") - 0.11
 K["today"] = w("V11", "today") - 0.13
 K["mark"] = w("V12", "stalak") - 0.1                                  # the name wipes in on "Stalak"
+K["drop"] = BED_PLAN[2][0]                                           # v3: the beat drops (the snow burst)
+K["back"] = BED_PLAN[5][0]                                           # v3: the beat comes back after the break
 
 # ---------------------------------------------------------------- the video clips (his takes and his music video)
 TAKE = {1: "assets/takes/take1.mp4", 2: "assets/takes/take2.mp4", 3: "assets/takes/take3.mp4", "mv": "assets/clip/mv.mp4"}
@@ -242,15 +260,39 @@ def run(cmd):
 
 
 def build_bed():
-    xf = 0.04
-    a0, a1 = MUSIC_IN, MUSIC_IN + SPLICE + xf / 2          # film 0 → 55.22
-    b0, b1 = OUTRO - xf / 2, OUTRO + (TOTAL - SPLICE) + 0.3
+    import numpy as np, soundfile as sf
+    if not os.path.exists(TRACK150):
+        run(["ffmpeg", "-v", "error", "-y", "-i", TRACK, "-af", "rubberband=tempo=%.10f:transients=crisp:detector=percussive:pitchq=quality:channels=together" % STRETCH,
+             "-ar", "48000", "-ac", "2", "-c:a", "pcm_s16le", TRACK150])
+    x, sr = sf.read(TRACK150, dtype="float64")
+    n = int(round((TOTAL + 0.3) * sr))
+    t = np.arange(n) / sr
+    seams = [p[0] for p in BED_PLAN] + [TOTAL + 1.0]
+    xf, lead = 0.03, 0.012             # equal-power crossfades of 30 ms, centred 12 ms before each bar line (whole downbeats)
+
+    def src(i, tt):                    # the instrumental under film time tt, for part i
+        return BED_PLAN[i][1] * 1.6 + INST_D0 + (tt - BED_PLAN[i][0])
+
+    def read(s):
+        j = np.clip(np.round(s * sr).astype(int), 0, len(x) - 1)
+        return x[j]
+    out = np.zeros((n, 2))
+    for i in range(len(BED_PLAN)):
+        a = seams[i] - lead - xf / 2 if i else 0.0
+        b = min(TOTAL + 0.3, seams[i + 1] - lead + xf / 2)
+        m = (t >= a) & (t < b)
+        g = np.ones(m.sum())
+        tt = t[m]
+        if i:                          # fade in over the seam
+            q = np.clip((tt - (seams[i] - lead - xf / 2)) / xf, 0, 1); g *= np.sin(q * np.pi / 2)
+        if i < len(BED_PLAN) - 1:      # fade out over the next seam
+            q = np.clip((tt - (seams[i + 1] - lead - xf / 2)) / xf, 0, 1); g *= np.cos(q * np.pi / 2)
+        gain = 10 ** ((BED_PLAN[i][2] if len(BED_PLAN[i]) > 2 else 0.0) / 20)
+        out[m] += read(src(i, tt)) * (g * gain)[:, None]
+    out *= np.clip(t / 0.35, 0, 1)[:, None]                               # in from silence
+    out *= np.clip((TOTAL - t) / 1.4, 0, 1)[:, None]                      # out with the track's own ending
     tmp = BED + ".tmp.wav"
-    flt = ("[0:a]atrim=%.4f:%.4f,asetpts=PTS-STARTPTS,afade=t=in:d=0.35[a];"
-           "[0:a]atrim=%.4f:%.4f,asetpts=PTS-STARTPTS[b];"
-           "[a][b]acrossfade=d=%.3f:c1=qsin:c2=qsin,atrim=0:%.3f,afade=t=out:st=%.3f:d=%.3f[o]"
-           % (a0, a1, b0, b1, xf, TOTAL, TOTAL - 1.4, 1.4))
-    run(["ffmpeg", "-v", "error", "-y", "-i", TRACK, "-filter_complex", flt, "-map", "[o]", "-ar", "48000", "-ac", "2", "-c:a", "pcm_s16le", tmp])
+    sf.write(tmp, out.astype(np.float32), sr, subtype="FLOAT")
     out = run(["ffmpeg", "-hide_banner", "-i", tmp, "-af", "loudnorm=I=-16:TP=-1.5:LRA=11:print_format=json", "-f", "null", "-"]).stderr
     m = json.loads(out[out.rindex("{"):out.rindex("}") + 1])
     ln = ("loudnorm=I=-16:TP=-1.5:LRA=11:measured_I=%s:measured_TP=%s:measured_LRA=%s:measured_thresh=%s:offset=%s:linear=true"
@@ -261,7 +303,8 @@ def build_bed():
 
 
 # the bed's level: up between the lines, down under the voice (hyperframes media-use mixing.md), then up for the end card
-OPEN, DUCK, END = 0.75, 0.42, 0.8               # the music about 10 dB under the voice, as present as in the reference film
+OPEN, DUCK, END = 0.95, 0.33, 0.8               # the music about 10 dB under the voice, 4 dB under it between the lines
+                                                # (v3, measured on the new beat: under the voice −25.2 LUFS vs −15.0)
 
 
 def ducking():

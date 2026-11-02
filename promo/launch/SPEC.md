@@ -36,7 +36,7 @@ Il a laissé le choix libre (« libre arbitre »). La structure suit donc celle 
 
 **But.** À la fin, un rappeur se dit : « je filme mes prises, Stalak fait le clip, sur le temps, les lèvres calées », et il retient stalak.app.
 
-**Format.** HyperFrames 0.8.223, 1920 × 1080, 30 i/s, 60 s. Pas de Short.
+**Format.** HyperFrames 0.8.223, 1920 × 1080, 30 i/s (60 i/s depuis la v3), 60 s. Pas de Short.
 
 **Le vrai produit.** Les écrans sont de vraies captures de l'app : `capture_ui.py` construit le site depuis le dépôt, charge « Try with an example » et photographie chaque carte, en 2× :
 - Pick your song ;
@@ -78,7 +78,7 @@ Seul l'aperçu est remplacé par ses vraies prises, avec sa phrase dans le style
 
 **Le son :**
 - la voix : Achird (Gemini 3.1 Flash TTS dans Flora), 12 phrases, chacune posée à sa place ;
-- la musique : une musique générée « façon Lovio » (3 essais : Stable Audio 3 ×2, Lyria 3.5), choisie par le propriétaire, montée sur ses mesures et baissée sous la voix ;
+- la musique : v1 et v2, une musique générée « façon Lovio » (3 essais : Stable Audio 3 ×2, Lyria 3.5), choisie par le propriétaire ; **depuis la v3, l'instru de son « neva die »** (voir « v3 »), montée sur ses mesures et baissée sous la voix ;
 - les bruitages de la bibliothèque HyperFrames (licence Pixabay), chacun sur son geste :
   - étincelle ;
   - whoosh sur les coupes, en alternant 3 versions ;
@@ -131,7 +131,7 @@ La voix mène : chaque plan commence sur un temps de la musique (150 BPM, un tem
 | S11 | 53,6–55,2 | Une traînée de lumière glacée (la musique repart) ; « What will you drop today » sur une ligne, mot par mot sur la voix. | whoosh |
 | S12 | 55,2–60,0 | La musique saute à sa fin (sur une mesure). Un cristal de glace éclot, tourne, se referme dans l'icône ; « Stalak » se dévoile sur le mot « Stalak » (57,05) ; « stalak.app » et « Free · No download · No sign-up », tenus 2 s. | montée → impact, étincelle, pop |
 
-**Le mixage** : voix à 0,78 ; musique à 0,5 entre les phrases et 0,2 sous la voix (rampes de 0,25 s), 0,62 sur la fin ; chaque bruitage environ 9 dB sous la voix ; l'ensemble remis à −14 LUFS (crête −1,4 dBFS).
+**Le mixage** : voix à 0,78 ; musique (normalisée à −16 LUFS) à 0,75 entre les phrases et 0,42 sous la voix en v1 et v2, **0,95 et 0,33 depuis la v3** (le beat de « neva die » est plus dense) ; rampes de 0,25 s, 0,8 sur la fin ; chaque bruitage environ 9 dB sous la voix ; l'ensemble remis à −14 LUFS (crête −1,4 dBFS).
 
 ## v2 : ses retours du 2/11 (Salle de visionnage, 17 h 03 et 17 h 06)
 
@@ -159,6 +159,40 @@ La voix mène : chaque plan commence sur un temps de la musique (150 BPM, un tem
 | 49,6 s | coupe : carrousel → panneau tapé | la caméra file dans son clip YouTube et ressort dans le ciel flouté du panneau |
 | 53,6 s | coupe sous la traînée | la traînée de lumière efface le panneau de haut en bas |
 | 55,2 s | coupe bleu → nuit | la nuit arrive en fondu sous le cristal (0,3 s) |
+
+## v3 : ses retours du 2/11 (Salle de visionnage, 19 h 13)
+
+**Sa remarque à 7,1 s** : « la lettre "g" est coupée en bas ». Le dégradé de glace des mots forts (`.ice`) est découpé sur le texte, et la boîte du mot s'arrêtait au-dessus du jambage. Elle descend maintenant plus bas (`padding-bottom: 0.26em`). C'est corrigé partout : « song », « drop », « takes », « direction », « music ».
+
+**Sa remarque sur toute la vidéo** : « toujours pas assez fluide, les mouvements un peu trop linéaires ; la musique beaucoup trop calme et mignonne, il faut quelque chose plus comme la musique qu'on utilisait avant ; plus d'éléments liés à Stalak, genre des flocons en fond ».
+
+- **La musique** : l'instru de « neva die », celle de nos vidéos d'avant (`promo/youtube`, `promo/one-shape`). Elle passe de 157 à 150 BPM avec rubberband (même hauteur), pour que chaque coupe reste sur son temps. Le montage suit ses parties, à chaque raccord sur une barre, dans la même phase de sa boucle de 8 mesures :
+
+  | Film | L'instru | Ce que ça fait |
+  | --- | --- | --- |
+  | 0 → 2,4 s | son intro | l'ouverture, calme |
+  | 2,4 → 8,8 s | les 4 dernières mesures avant son drop | la basse 808 entre pendant que l'interface se construit |
+  | 8,8 s | **son drop** | sur « Meet Stalak. », avec un éclat de neige et de glace qui part du logo |
+  | 8,8 → 50,4 s | 26 mesures du beat plein | sous la voix |
+  | 50,4 → 53,6 s | 2 mesures de sa partie calme | une coupure sous « less time editing, more time making music » |
+  | 53,6 s | le beat revient | sur « So, what will you drop today? » et la traînée de lumière |
+  | 55,2 → 60 s | ses 3 dernières mesures | sous le cristal et le logo ; elle finit avec le film |
+
+  La musique est à 10 dB sous la voix quand elle parle, et à 4 à 5 dB sous elle entre les phrases (mesuré avec `mix.py`).
+
+  **À vérifier par le propriétaire avant de publier** : la licence de l'instru doit permettre YouTube (même point que pour `promo/youtube`).
+- **Fluidité** :
+  - **60 images par seconde** ;
+  - plus aucun zoom lent et régulier. Les poussées lentes (le texte tapé, l'ordinateur, sa carte, la grille, la carte YouTube) donnaient l'effet « linéaire » ;
+  - les arrivées finissent sur une longue fin douce (`expo`) puis se tiennent ;
+  - les mouvements se chevauchent (la tablette monte et vient vers nous en même temps) ;
+  - les mouvements rapides ont un flou de mouvement dans leur sens : sa carte qui part, la boîte qui arrive, le carrousel ;
+  - « in any direction » se pose en 3D puis ne bouge plus.
+- **Plus de Stalak** :
+  - de grands cristaux de neige (le flocon à 6 branches de la marque) tournent lentement en fond, dans tous les mondes et tous les ciels ;
+  - de gros flocons flous passent devant, dans les plans larges ;
+  - les stalactites de l'app (glace #d6ecff, contour encre) sont sur la boîte de verre, sous le panneau tapé et en haut de l'écran de fin ;
+  - l'éclat de neige part du logo sur le drop.
 
 ## Interdit
 
