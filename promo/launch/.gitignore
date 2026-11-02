@@ -1,0 +1,18 @@
+# Media stay out of the repo (owner's request): footage, audio, frames, screenshots, renders.
+# assets/takes, stills, clip, sfx, fonts, brand, vendor are links to ../youtube/assets (see MEDIA.md).
+assets/audio/
+assets/takes
+assets/stills
+assets/clip
+assets/sfx
+assets/ui/
+renders/
+*.mp4
+*.mov
+*.webm
+*.wav
+*.mp3
+*.m4a
+.hyperframes/
+node_modules/
+snapshots/

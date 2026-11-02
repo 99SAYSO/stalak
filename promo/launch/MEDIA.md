@@ -1,0 +1,19 @@
+# Médias du film de lancement « façon Lovio » (YouTube 16:9, 2/11/2026)
+
+Aucun fichier vidéo, audio ou image tiré de ses vidéos n'est dans le dépôt (demande du propriétaire) : ils sont listés ici, avec leur origine, pour pouvoir les remettre. `assets/takes`, `stills`, `clip`, `sfx`, `fonts`, `brand` et `vendor` sont des liens vers `../youtube/assets/` (voir `../youtube/MEDIA.md`).
+
+| Fichier (dans `assets/`) | D'où il vient |
+| --- | --- |
+| `audio/vo/vo_raw.wav` | La voix : Gemini 3.1 Flash TTS dans Flora, voix **Achird**, une lecture des 12 phrases de `SPEC.md` (run `run_m17cfsg4mpapmkrae1kgsambgx8hf8tg`, 0,013 $), envoyée par le propriétaire le 2/11 à 15 h 21 (`8f79de25-Creative_App_Launch.wav`). |
+| `audio/vo/pieces.json`, `vo_norm.wav`, `V01.wav` à `V12.wav`, `lines.json` | Faits par `vo_align.py` (les 33 morceaux de parole et leurs mots, alignement pocketsphinx) puis `vo_cut.py` (limitée, normalisée à −16 LUFS, coupée en 12 phrases, silences de la synthèse ramenés à 0,06–0,34 s). |
+| `audio/music/lyria_raw.mp3` | La musique **choisie par le propriétaire** parmi 3 essais faits dans Flora (Lyria 3.5, 0,105 $), envoyée le 2/11 à 15 h 21 (`005541bc-Electronic_Launch_Soundtrack.mp3`, 175,8 s, 150 BPM mesurés). |
+| `audio/music/bed.wav` | Fait par `build.py` : la musique depuis son temps 23,32 s (son groove tombe à 2,4 s du film), coupée sur une mesure à 55,2 s du film vers sa fin (temps 153,72 s), fondu de 1,4 s à la fin, normalisée à −16 LUFS. |
+| `ui/*.png`, `ui/ui.json` | Les vrais écrans de Stalak : `capture_ui.py` sert le site construit depuis ce dépôt (`public/`), charge « Try with an example » et photographie les cartes en 2× (Pick your song, Your edit en Normal / Punchy / après Shuffle, l'aperçu avec Play et Shuffle, Export avec le pack Creator+), plus l'accueil sur ordinateur et l'étape montage sur téléphone et tablette. |
+| `takes/take1.mp4` à `take3.mp4` (liens) | Ses 3 prises de « neva die » (voir `../youtube/MEDIA.md`). Moments montrés (temps de prise) : téléphone 2,0 s ; tablette 8,4 s ; lui en plein écran 5,4 → 10,3 s (prise 3) ; grille 15,0 / 9,0 / 14,4 / 20,75 s ; flash « les 3 prises » 12,2 s dans les trois ; flash paroles 22,69 s ; aperçu de S7 20,21 s (prise 3) puis 21,96 s (prise 2, même instant de la chanson après Shuffle) ; carrousel 11,0 / 4,0 / 17,0 s. |
+| `clip/mv.mp4` (lien) | **Son clip** YouTube (voir `../youtube/MEDIA.md`). Seules ses parties sans titre ni effet glitch sont montrées : 2,35 → 3,5 s et 4,5 → 7,95 s (ses propres flashs de montage restent). |
+| `stills/*.jpg` (liens) | Images de ses prises : vignettes des pastilles Take 1, 2, 3 et les 7 jours MON → SUN. |
+| `sfx/*.mp3` (liens) | Bruitages de la bibliothèque HyperFrames (licence Pixabay, voir `sfx/CREDITS.md`) : whoosh (2 versions + une plus sombre), clic, pop, frappe, touche, étincelle, une montée et un impact. |
+| `brand/icon.svg`, `brand/wordmark.svg`, `fonts/` | La marque Stalak et ses polices (Rubik, Lilita One). |
+| Pointeur (main) de `compositions/film.html` | L'icône « cursor-pointer » de Material Design Icons (Pictogrammers, licence Apache 2.0), recopiée dans la page. |
+
+Les filtres de la grille (Frost, Black & white, 35 mm film) sont des traitements HyperFrames (`media-treatment`) qui imitent ceux de l'app (`src/app.js`, `FILT_FRAG`) ; le voile de givre sur les bords de la case Frost est un dégradé dessiné, comme dans le filtre de l'app.
