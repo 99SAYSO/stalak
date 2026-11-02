@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><title>film — the edit nobody sees</title></head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="film" data-width="1920" data-height="1080">
+        <style>
+          @font-face { font-family: "Rubik"; src: url("assets/fonts/rubik.ttf"); font-weight: 300 900; }
+          @font-face { font-family: "Lilita One"; src: url("assets/fonts/lilitaone.ttf"); }
+          #root { position: absolute; inset: 0; overflow: hidden; font-family: "Rubik", sans-serif; color: #0a0d14; background: #12161c; }
+          #root * { box-sizing: border-box; }
+          .abs { position: absolute; }
+          .lil { font-family: "Lilita One", sans-serif; font-weight: 400; }
+          .hide { visibility: hidden; }
+
+          /* ============ the old world: a cutting mat on a desk, seen in 3D ============ */
+          #w1 { position: absolute; inset: 0; perspective: 1800px; perspective-origin: 960px 540px;
+            background: radial-gradient(90% 70% at 30% 20%, #2a2f36 0%, #171b21 55%, #0f1216 100%); }
+          #cam, #mat { position: absolute; left: 0; top: 0; width: 0; height: 0; transform-style: preserve-3d; transform-origin: 0 0; }
+          .half { position: absolute; top: 0; width: 2200px; height: 2600px; background-color: #2f6a55;
+            background-image:
+              linear-gradient(rgba(140, 200, 172, 0.55) 3px, transparent 3px), linear-gradient(90deg, rgba(140, 200, 172, 0.55) 3px, transparent 3px),
+              linear-gradient(rgba(79, 138, 115, 0.6) 2px, transparent 2px), linear-gradient(90deg, rgba(79, 138, 115, 0.6) 2px, transparent 2px);
+            background-size: 250px 250px, 250px 250px, 50px 50px, 50px 50px; }
+          #mat-l { left: 0; transform-origin: 0 50%; border-radius: 40px 0 0 40px; }
+          #mat-r { left: 2200px; transform-origin: 100% 50%; border-radius: 0 40px 40px 0; background-position: -2200px 0, -2200px 0, 0 0, 0 0; }
+          .lamp { position: absolute; inset: 0; pointer-events: none; }
+          #mat-l .lamp { background: radial-gradient(1500px 1100px at 1300px 1050px, rgba(255, 243, 214, 0.2), rgba(255, 243, 214, 0) 70%), linear-gradient(90deg, rgba(0,0,0,0.18), rgba(0,0,0,0) 30%); }
+          #mat-r .lamp { background: radial-gradient(1500px 1100px at -900px 1050px, rgba(255, 243, 214, 0.2), rgba(255, 243, 214, 0) 70%), linear-gradient(270deg, rgba(0,0,0,0.18), rgba(0,0,0,0) 30%); }
+          .mnum { position: absolute; font-weight: 600; font-size: 34px; color: #d9efe5; opacity: 0.8; }
+          .tape { position: absolute; background: #f4f1e8; box-shadow: 0 14px 22px rgba(0, 0, 0, 0.38); border-radius: 6px; }
+          .strip { position: absolute; height: 208px; background: #14181f; box-shadow: 0 16px 24px rgba(0, 0, 0, 0.42); border-radius: 4px; transform-style: preserve-3d; }
+          .perf { position: absolute; left: 0; right: 0; height: 12px;
+            background: repeating-linear-gradient(90deg, rgba(0,0,0,0) 0 9px, #2f6a55 9px 23px, rgba(0,0,0,0) 23px 34px); }
+          .frm { position: absolute; top: 16px; width: 100px; height: 168px; object-fit: cover; border-radius: 3px; }
+          .leader { position: absolute; left: 0; top: 0; width: 168px; height: 208px; border-radius: 4px 0 0 4px; }
+          .lab { position: absolute; padding: 6px 22px 4px; background: rgba(239, 227, 194, 0.95); color: #26303d; font-weight: 800; font-size: 56px;
+            letter-spacing: 0.04em; white-space: nowrap; box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25);
+            clip-path: polygon(0 6%, 3% 0, 7% 5%, 12% 1%, 18% 4%, 25% 0, 33% 5%, 41% 1%, 50% 4%, 58% 0, 66% 5%, 74% 1%, 82% 4%, 90% 0, 96% 5%, 100% 2%, 100% 96%, 96% 100%, 89% 95%, 82% 100%, 74% 96%, 66% 100%, 58% 95%, 50% 100%, 42% 96%, 34% 100%, 26% 95%, 18% 100%, 10% 96%, 4% 100%, 0 95%); }
+          .red { background: #ff4d5e; color: #fff; }
+          .piece { position: absolute; left: 0; top: 0; height: 208px; background: #14181f; border-radius: 3px; box-shadow: 0 10px 16px rgba(0, 0, 0, 0.45); visibility: hidden; }
+          .day { position: absolute; left: 0; top: 0; width: 520px; height: 330px; background: #fbfaf5; border-radius: 8px; box-shadow: 0 18px 30px rgba(0, 0, 0, 0.45);
+            background-image: linear-gradient(#ff4d5e 0 0), repeating-linear-gradient(#fbfaf5 0 38px, #c9d8ea 38px 40px);
+            background-size: 100% 4px, 100% 100%; background-position: 0 104px, 0 130px; background-repeat: no-repeat, no-repeat; visibility: hidden; }
+          .day b { position: absolute; left: 36px; top: 4px; font-family: "Lilita One", sans-serif; font-weight: 400; font-size: 96px; color: #26303d; }
+          .tick { position: absolute; bottom: 8px; width: 4px; height: 26px; border-radius: 2px; background: #26303d; opacity: 0.55; }
+          .tick.down { height: 40px; width: 5px; opacity: 0.8; }
+          #w1-vig { position: absolute; inset: 0; pointer-events: none;
+            background: radial-gradient(85% 80% at 50% 45%, rgba(0, 0, 0, 0) 55%, rgba(4, 6, 10, 0.55) 100%); }
+
+          /* the close-up: inside one frame of the film */
+          #cu { position: absolute; inset: 0; visibility: hidden; opacity: 0; }
+          #cu-panel { position: absolute; left: 330px; top: 60px; width: 540px; height: 960px; overflow: hidden; background: #000; }
+          .v { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+          .chip { position: absolute; padding: 8px 26px 12px; border-radius: 18px; background: #ffffff; border: 5px solid #0a0d14; box-shadow: 0 7px 0 #0a0d14;
+            font-weight: 800; font-size: 60px; line-height: 1; white-space: nowrap; }
+          #cu-side { position: absolute; left: 0; top: 0; width: 760px; height: 520px; }
+
+          /* ============ the Stalak world: the sky ============ */
+          #sky { position: absolute; inset: 0; visibility: hidden; background: radial-gradient(120% 95% at 50% 25%, #3e8eea 0%, #1f6fd6 50%, #1659b4 100%); }
+          #snow { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+          #board { position: absolute; left: 0; top: 0; width: 0; height: 0; transform-origin: 0 0; visibility: hidden; }
+          .card { position: absolute; z-index: 0; background: #ffffff; border: 6px solid #0a0d14; border-radius: 46px; box-shadow: 14px 14px 0 #0a0d14; }
+          .ttl { position: absolute; font-family: "Lilita One", sans-serif; font-weight: 400; font-size: 70px; line-height: 1; color: #0a0d14; white-space: nowrap; }
+          .lbl { position: absolute; font-weight: 600; font-size: 38px; color: #3f5170; white-space: nowrap; }
+          .seg { position: absolute; display: flex; height: 76px; border: 5px solid #0a0d14; border-radius: 38px; background: #eef5ff; overflow: hidden; }
+          .seg b { position: relative; z-index: 1; display: flex; align-items: center; padding: 0 30px; font-weight: 700; font-size: 36px; white-space: nowrap; }
+          .seg b.on { background: #1f6fd6; color: #ffffff; }
+          .seg i { position: absolute; left: 0; top: 0; height: 100%; background: #1f6fd6; z-index: 0; }
+          .btn { position: absolute; display: flex; align-items: center; justify-content: center; gap: 14px; border: 5px solid #0a0d14; border-radius: 48px;
+            background: #ffffff; box-shadow: 0 8px 0 #0a0d14; font-weight: 700; font-size: 40px; white-space: nowrap; }
+          .btn.ink { background: #0a0d14; color: #ffffff; }
+          .btn.blue { background: #1f6fd6; color: #ffffff; }
+          .big { position: absolute; border: 5px solid #0a0d14; border-radius: 34px; background: #ffffff; box-shadow: 0 8px 0 #0a0d14; }
+          .big .t { position: absolute; left: 118px; top: 22px; font-weight: 800; font-size: 42px; white-space: nowrap; }
+          .big .s { position: absolute; left: 118px; top: 76px; font-weight: 500; font-size: 34px; color: #4c5b73; white-space: nowrap; }
+          .big svg { position: absolute; left: 26px; top: 30px; }
+          .drop { position: absolute; border: 5px dashed #0a0d14; border-radius: 34px; background: #eef5ff; }
+          .thumb { position: absolute; width: 150px; height: 267px; border: 5px solid #0a0d14; border-radius: 22px; overflow: hidden; background: #0a0d14; visibility: hidden; }
+          .thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+          .tname { position: absolute; font-weight: 700; font-size: 36px; white-space: nowrap; visibility: hidden; }
+          .tname i { display: inline-block; width: 26px; height: 26px; border-radius: 50%; margin-right: 10px; vertical-align: -3px; box-shadow: 0 0 0 4px #0a0d14; }
+          .row { position: absolute; left: 0; height: 52px; border-radius: 14px; }
+          #bar { position: absolute; height: 100px; border: 5px solid #0a0d14; border-radius: 22px; background: #eef5ff; overflow: hidden; }
+          .bk { position: absolute; top: 0; height: 100%; display: flex; align-items: center; justify-content: center; color: #ffffff; font-weight: 800; font-size: 36px;
+            box-shadow: inset -4px 0 0 #0a0d14; }
+          #ruler { position: absolute; height: 30px; }
+          #ph { position: absolute; width: 8px; height: 132px; border-radius: 4px; background: #0a0d14; }
+          .pv { position: absolute; overflow: hidden; border: 6px solid #0a0d14; background: #0a0d14; }
+          .lyr { position: absolute; left: 0; right: 0; text-align: center; color: #ffffff; font-weight: 800; line-height: 1.05; white-space: nowrap;
+            text-shadow: 0 5px 0 rgba(10, 13, 20, 0.95), 0 0 3px rgba(10, 13, 20, 0.9); }
+          .lyr span { display: inline-block; margin: 0 0.12em; }
+          .ln { position: absolute; left: 0; height: 64px; display: flex; align-items: center; }
+          .ln .st { width: 150px; height: 52px; border-radius: 26px; background: #e7edf5; border: 4px solid #c8d3e2; display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 30px; color: #0a0d14; }
+          .ln .tx { margin-left: 26px; font-weight: 700; font-size: 40px; white-space: nowrap; }
+          .ln .sk { margin-left: 26px; height: 22px; border-radius: 11px; background: #d5deea; }
+          #tapb { position: absolute; width: 190px; height: 190px; border-radius: 50%; background: #0a0d14; color: #ffffff; display: grid; place-items: center;
+            font-family: "Lilita One", sans-serif; font-size: 58px; box-shadow: 0 9px 0 #3f5170; }
+          .dev { position: absolute; border: 8px solid #0a0d14; background: #0a0d14; overflow: hidden; box-shadow: 14px 14px 0 #0a0d14; }
+          .wl { position: absolute; color: #ffffff; font-weight: 700; font-size: 40px; white-space: nowrap; text-shadow: 0 4px 0 rgba(10, 13, 20, 0.35); }
+          .pro { position: absolute; padding: 6px 22px; border-radius: 22px; background: #ffffff; color: #1f6fd6; border: 5px solid #0a0d14; font-family: "Lilita One", sans-serif; font-size: 46px; box-shadow: 0 6px 0 #0a0d14; }
+          .pk { position: absolute; left: 0; top: 0; width: 120px; height: 213px; border: 4px solid #0a0d14; border-radius: 16px; overflow: hidden; background: #0a0d14; visibility: hidden; }
+          .pk img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; }
+          .pk u { position: absolute; left: 6px; right: 6px; bottom: 6px; height: 14px; border-radius: 7px; overflow: hidden; display: flex; text-decoration: none; }
+          .pk u s { display: block; height: 100%; text-decoration: none; }
+          .dname { position: absolute; width: 150px; text-align: center; font-family: "Lilita One", sans-serif; font-size: 44px; color: #ffffff; visibility: hidden;
+            text-shadow: 0 4px 0 rgba(10, 13, 20, 0.35); }
+          .ice { position: absolute; overflow: visible; }
+          #icon-land { position: absolute; left: 0; top: 0; width: 300px; height: 300px; visibility: hidden; }
+          /* the payoff: three days of the pack, his song */
+          #pay { position: absolute; inset: 0; visibility: hidden; opacity: 0; }
+          .pp { position: absolute; top: 140px; width: 500px; height: 889px; border: 8px solid #0a0d14; border-radius: 34px; overflow: hidden; background: #0a0d14;
+            box-shadow: 14px 14px 0 #0a0d14; }
+          .pday { position: absolute; top: 40px; width: 500px; text-align: center; font-family: "Lilita One", sans-serif; font-size: 62px; color: #ffffff;
+            text-shadow: 0 5px 0 rgba(10, 13, 20, 0.4); }
+          /* the claim and the end */
+          #claim { position: absolute; inset: 0; visibility: hidden; }
+          .cl { position: absolute; font-family: "Lilita One", sans-serif; font-size: 150px; line-height: 1; color: #ffffff; white-space: nowrap;
+            text-shadow: 0 10px 0 #0a0d14; -webkit-text-stroke: 7px #0a0d14; paint-order: stroke fill; }
+          #end { position: absolute; inset: 0; visibility: hidden; }
+          #grain { position: absolute; inset: 0; background: url("assets/brand/grain.png"); opacity: 0.035; mix-blend-mode: multiply; pointer-events: none; }
+        </style>
+
+        <div class="abs" style="left:0;top:0;width:1px;height:1px;overflow:hidden;opacity:0" aria-hidden="true"><span class="lil">Stalak</span><span style="font-weight:800">Take</span><span style="font-weight:600">Pace</span></div>
+
+        <!-- ================= the Stalak world (under the mat until the drop) ================= -->
+        <div id="sky"><canvas id="snow" data-layout-allow-overflow width="1920" height="1080"></canvas></div>
+        <div id="board" data-layout-allow-overflow>
+          <!-- 1. Pick your song -->
+          <div class="card" id="c-song" style="left:-540px;top:-350px;width:1080px;height:700px">
+            <div class="ttl" style="left:56px;top:40px">Pick your song</div>
+            <div class="lbl" style="left:56px;top:154px">I’m making</div>
+            <div class="seg" style="left:290px;top:136px"><b class="on">TikTok / Reels</b><b>Music video</b></div>
+            <div class="drop" id="s-drop" style="left:56px;top:250px;width:956px;height:250px">
+              <svg class="abs" style="left:56px;top:62px" width="110" height="120" viewBox="0 0 110 120"><path d="M55 92 V18 M24 48 L55 18 L86 48" fill="none" stroke="#1f6fd6" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 86 V106 H96 V86" fill="none" stroke="#0a0d14" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <div class="abs" style="left:200px;top:62px;font-weight:800;font-size:50px;white-space:nowrap">Import your music</div>
+              <div class="abs" data-layout-ignore style="left:200px;top:130px;font-weight:500;font-size:34px;color:#4c5b73;white-space:nowrap">MP3, WAV, M4A, or a video: we use its sound</div>
+            </div>
+            <div class="abs hide" id="s-wave" style="left:56px;top:250px;width:956px;height:250px;border:5px solid #0a0d14;border-radius:34px;background:#ffffff;overflow:hidden">
+              <div class="abs" style="left:34px;top:20px;font-weight:800;font-size:40px;white-space:nowrap">neva die</div>
+              <div class="abs" style="right:34px;top:24px;font-weight:600;font-size:34px;color:#4c5b73">▶ Listen</div>
+              <svg id="s-wsvg" class="abs" style="left:0;top:78px" width="946" height="150" viewBox="0 0 946 150"></svg>
+            </div>
+            <div class="abs hide" id="s-bpm" style="left:56px;top:540px;font-weight:700;font-size:40px;white-space:nowrap"><span style="color:#1f6fd6">✓</span> Tempo detected: 157 BPM.</div>
+            <div class="btn ink hide" id="s-next" style="left:740px;top:556px;width:272px;height:96px">Continue</div>
+          </div>
+          <div class="abs hide" id="s-tape" style="left:0;top:0;width:900px;height:110px;background:#f4f1e8;border-radius:6px;box-shadow:0 14px 0 rgba(10,13,20,0.35)">
+            <svg id="s-tsvg" class="abs" style="left:0;top:0" width="900" height="110" viewBox="0 0 900 110"></svg>
+            <div class="lab" style="left:24px;top:-34px;font-size:40px;transform:rotate(-4deg)">SONG</div>
+          </div>
+
+          <!-- 2. Add your takes, then they get lined up with the music -->
+          <div class="card" id="c-takes" style="left:880px;top:-400px;width:1240px;height:820px">
+            <div class="ttl" style="left:56px;top:40px">Add your takes</div>
+            <div class="big" id="t-imp" style="left:56px;top:150px;width:650px;height:136px">
+              <svg width="70" height="76" viewBox="0 0 70 76"><path d="M35 54 V8 M14 28 L35 8 L56 28" fill="none" stroke="#1f6fd6" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 52 V68 H64 V52" fill="none" stroke="#0a0d14" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <div class="t">Import my videos</div><div class="s">Filmed with the song playing</div>
+            </div>
+            <div class="big" id="t-rec" style="left:56px;top:312px;width:650px;height:136px">
+              <svg width="76" height="76" viewBox="0 0 76 76"><rect x="4" y="18" width="50" height="42" rx="10" fill="none" stroke="#0a0d14" stroke-width="8"/><path d="M54 32 L72 22 V56 L54 46 Z" fill="#0a0d14"/><circle id="t-recdot" cx="29" cy="39" r="9" fill="#ff4d5e"/></svg>
+              <div class="t">Film now</div><div class="s">Your song plays while you film</div>
+            </div>
+            <div id="t-thumbs"></div>
+            <div class="abs" id="t-panel" style="left:56px;top:480px;width:1128px;height:236px;border-radius:26px;background:#f2f6fb;border:4px solid #d5deea;overflow:hidden">
+              <svg id="t-rows" class="abs" style="left:0;top:0" width="1120" height="228" viewBox="0 0 1120 228"></svg>
+            </div>
+            <div class="abs hide" id="t-ok" style="left:60px;top:732px;font-weight:700;font-size:40px;white-space:nowrap"><span style="color:#1f6fd6">✓</span> All the takes are synced.</div>
+          </div>
+
+          <!-- 3. Your edit: the cuts, on the beat -->
+          <div class="card" id="c-edit" data-layout-allow-overlap style="left:2250px;top:-440px;width:1500px;height:880px">
+            <div class="pv" id="pv" style="left:40px;top:40px;width:420px;height:747px;border-radius:30px">
+              <!--EDIT-->
+<video id="ve00" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="24.533" data-duration="0.967" data-media-start="10.692" muted playsinline></video>
+<video id="ve01" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="25.500" data-duration="0.867" data-media-start="8.601" muted playsinline></video>
+<video id="ve02" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="26.367" data-duration="1.167" data-media-start="9.468" muted playsinline></video>
+<video id="ve03" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="27.533" data-duration="1.033" data-media-start="10.634" muted playsinline></video>
+<video id="ve04" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="28.567" data-duration="2.033" data-media-start="8.610" muted playsinline></video>
+<video id="ve05" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="30.600" data-duration="1.033" data-media-start="10.644" muted playsinline></video>
+<video id="ve06" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="31.633" data-duration="0.500" data-media-start="8.620" muted playsinline></video>
+<video id="ve07" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="32.133" data-duration="0.567" data-media-start="9.120" muted playsinline></video>
+<video id="ve08" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="32.700" data-duration="0.500" data-media-start="9.686" muted playsinline></video>
+<video id="ve09" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="33.200" data-duration="0.067" data-media-start="10.186" muted playsinline></video>
+<video id="ve10" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="33.267" data-duration="0.367" data-media-start="10.253" muted playsinline></video>
+<video id="ve11" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="33.633" data-duration="0.767" data-media-start="10.620" muted playsinline></video>
+<video id="ve12" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="34.400" data-duration="0.300" data-media-start="11.386" muted playsinline></video>
+<video id="ve13" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="34.700" data-duration="0.467" data-media-start="8.629" muted playsinline></video>
+<video id="ve14" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="35.167" data-duration="0.633" data-media-start="9.096" muted playsinline></video>
+<!--/EDIT-->
+              <div class="lyr" id="pv-lyr" style="top:520px;font-size:46px;visibility:hidden"></div>
+              <svg id="pv-lock" class="abs" style="left:300px;top:24px;visibility:hidden" width="96" height="112" viewBox="0 0 96 112"><path id="pv-shackle" d="M24 52 V34 A24 24 0 0 1 72 34 V52" fill="none" stroke="#0a0d14" stroke-width="12" stroke-linecap="round"/><rect x="8" y="48" width="80" height="60" rx="14" fill="#ffffff" stroke="#0a0d14" stroke-width="8"/><circle cx="48" cy="74" r="8" fill="#0a0d14"/><path d="M48 78 V92" stroke="#0a0d14" stroke-width="8" stroke-linecap="round"/></svg>
+            </div>
+            <div class="ttl" style="left:510px;top:40px">Your edit</div>
+            <div class="lbl" style="left:510px;top:160px">Cuts</div>
+            <div class="seg" style="left:660px;top:142px"><b class="on">Auto</b><b>On the words</b><b>Every bar</b></div>
+            <div class="lbl" style="left:510px;top:262px">Pace</div>
+            <div class="seg" id="pace" style="left:660px;top:244px"><i id="pace-on"></i><b>Chill</b><b>Normal</b><b>Punchy</b></div>
+            <div id="ruler" style="left:510px;top:372px;width:950px"></div>
+            <div id="bar" data-layout-ignore style="left:510px;top:404px;width:950px"></div>
+            <div id="ph" style="left:510px;top:388px"></div>
+            <div class="btn" style="left:510px;top:580px;width:290px;height:100px">▶ Play</div>
+            <div class="btn ink" style="left:826px;top:580px;width:310px;height:100px">↻ Shuffle</div>
+            <div class="btn blue" id="e-exp" style="left:1162px;top:580px;width:298px;height:100px">Export</div>
+          </div>
+          <!-- 3b. Lyrics on screen: paste, then tap along -->
+          <div class="card" id="c-lyr" data-layout-allow-overlap style="left:2730px;top:-410px;width:1000px;height:800px;visibility:hidden;z-index:2">
+            <div class="ttl" style="left:56px;top:40px">Lyrics on screen</div>
+            <div class="seg" style="left:56px;top:146px"><b class="on" id="ly-paste">Paste my lyrics</b><b>Auto transcription</b><b>No lyrics</b></div>
+            <div class="abs" id="ly-box" style="left:56px;top:260px;width:880px;height:330px;border:4px solid #c8d3e2;border-radius:26px;background:#f8fbff"></div>
+            <div class="btn" style="left:56px;top:640px;width:400px;height:96px;font-size:34px">Sync automatically</div>
+            <div class="btn ink" id="ly-tapsync" style="left:480px;top:640px;width:340px;height:96px;font-size:34px">Sync by tapping</div>
+            <div id="tapb" style="left:770px;top:440px;visibility:hidden">TAP</div>
+          </div>
+
+          <!-- 4. Export: vertical for TikTok, Reels and Shorts; the music video with Pro -->
+          <div class="dev" id="x-phone" style="left:4100px;top:-400px;width:420px;height:747px;border-radius:52px;visibility:hidden">
+            <div class="abs" style="inset:0;border-radius:44px;overflow:hidden">
+              <!--EXP-->
+<video id="vx00" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="35.000" data-duration="0.167" data-media-start="8.929" muted playsinline></video>
+<video id="vx01" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="35.167" data-duration="0.767" data-media-start="9.096" muted playsinline></video>
+<video id="vx02" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="35.933" data-duration="0.400" data-media-start="9.862" muted playsinline></video>
+<video id="vx03" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="36.333" data-duration="0.367" data-media-start="10.262" muted playsinline></video>
+<video id="vx04" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="36.700" data-duration="0.767" data-media-start="10.629" muted playsinline></video>
+<video id="vx05" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="37.467" data-duration="0.267" data-media-start="11.396" muted playsinline></video>
+<video id="vx06" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="37.733" data-duration="0.500" data-media-start="8.605" muted playsinline></video>
+<video id="vx07" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="38.233" data-duration="0.767" data-media-start="9.105" muted playsinline></video>
+<video id="vx08" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="39.000" data-duration="0.367" data-media-start="9.872" muted playsinline></video>
+<video id="vx09" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="39.367" data-duration="0.400" data-media-start="10.238" muted playsinline></video>
+<video id="vx10" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="39.767" data-duration="0.767" data-media-start="10.638" muted playsinline></video>
+<video id="vx11" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="40.533" data-duration="0.267" data-media-start="11.405" muted playsinline></video>
+<video id="vx12" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="40.800" data-duration="0.500" data-media-start="8.614" muted playsinline></video>
+<video id="vx13" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="41.300" data-duration="0.267" data-media-start="9.114" muted playsinline></video>
+<!--/EXP-->
+              <div class="lyr" style="top:520px;font-size:46px"><span>I</span> <span>gotta</span> <span>bounce</span></div>
+            </div>
+          </div>
+          <div class="wl" id="x-pl" style="left:4100px;top:390px;width:420px;text-align:center;visibility:hidden">Vertical: TikTok, Reels, Shorts</div>
+          <div class="dev" id="x-tv" style="left:4640px;top:-280px;width:820px;height:461px;border-radius:30px;visibility:hidden">
+            <div class="abs" style="inset:0;border-radius:22px;overflow:hidden">
+              <!--TV-->
+<video id="vt00" class="clip v" style="object-position:50% 14%" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="37.233" data-duration="4.333" data-media-start="8.386" muted playsinline></video>
+<!--/TV-->
+            </div>
+          </div>
+          <div class="pro" id="x-pro" style="left:5320px;top:-330px;visibility:hidden">PRO</div>
+          <div class="wl" id="x-tl" style="left:4640px;top:230px;width:820px;text-align:center;visibility:hidden">Landscape: YouTube, music video</div>
+
+          <!-- 5. The pack: 30 videos, all different, then one a day -->
+          <div class="card" id="c-pack" style="left:5700px;top:-490px;width:1200px;height:160px;border-radius:40px;visibility:hidden">
+            <div class="seg" id="pk-seg" style="left:34px;top:36px"><i id="pk-on"></i><b>5 videos</b><b>10 videos</b><b>30 videos</b></div>
+            <div class="btn blue" id="pk-btn" style="left:770px;top:30px;width:390px;height:90px;font-size:38px">Make the pack</div>
+            <div class="abs" id="pk-ok" style="left:0;top:0;width:1188px;height:148px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:44px;white-space:nowrap;visibility:hidden"><span style="color:#1f6fd6;margin-right:14px">✓</span>Pack ready: 30 videos, all different.</div>
+          </div>
+          <div class="pro" id="pk-cp" style="left:5640px;top:-578px;visibility:hidden;z-index:3">Creator Plus</div>
+          <div class="abs" id="pk-tape" style="left:5920px;top:-8px;width:760px;height:100px;background:#f4f1e8;border-radius:6px;box-shadow:0 12px 0 rgba(10,13,20,0.3);visibility:hidden">
+            <svg id="pk-tsvg" class="abs" style="left:0;top:0" width="760" height="100" viewBox="0 0 600 80" preserveAspectRatio="none"></svg>
+          </div>
+          <div id="pk-grid"></div>
+        </div>
+        <img id="icon-land" src="assets/brand/icon.svg?land" alt="" />
+        <svg id="icon-ice" class="ice" width="300" height="140" viewBox="0 0 300 140" style="left:0;top:0;visibility:hidden"><path id="icon-icp" fill="#d6ecff" stroke="#0a0d14" stroke-width="5" stroke-linejoin="round"/></svg>
+
+        <!-- ================= the old world: the cutting mat ================= -->
+        <div id="w1" data-layout-allow-overflow>
+          <div id="cam">
+            <div id="mat">
+              <div class="half" id="mat-l"><div class="lamp"></div></div>
+              <div class="half" id="mat-r"><div class="lamp"></div></div>
+              <div id="objs" style="position:absolute;left:0;top:0;transform-style:preserve-3d">
+                <svg id="mat-lines" data-layout-ignore class="abs" style="left:0;top:0" width="4400" height="2600" viewBox="0 0 4400 2600"></svg>
+                <div id="mnums" data-layout-ignore></div>
+                <svg id="ruler3" data-layout-ignore class="abs" style="left:900px;top:640px;transform:rotate(-3deg)" width="2300" height="120" viewBox="0 0 2300 120"></svg>
+                <div class="tape" id="tape" style="left:400px;top:990px;width:3600px;height:150px">
+                  <svg id="tape-wave" class="abs" style="left:0;top:0" width="3600" height="150" viewBox="0 0 3600 150"></svg>
+                  <div id="tape-ticks"></div>
+                </div>
+                <div class="lab" id="lab-song" style="left:440px;top:930px;transform:rotate(-4deg)">SONG</div>
+                <div class="strip" id="st0" style="left:400px;top:1190px;width:3600px"></div>
+                <div class="strip" id="st1" style="left:400px;top:1430px;width:3600px"></div>
+                <div class="strip" id="st2" style="left:400px;top:1670px;width:3600px"></div>
+                <svg id="mk-tape" class="abs" style="left:0;top:1106px" width="90" height="66" viewBox="0 0 90 66"><path d="M6 6 H84 L45 60 Z" fill="#ff4d5e" stroke="#0a0d14" stroke-width="7" stroke-linejoin="round"/></svg>
+                <svg id="mk-strip" class="abs" style="left:0;top:1164px" width="90" height="66" viewBox="0 0 90 66"><path d="M6 60 H84 L45 6 Z" fill="#ffd34d" stroke="#0a0d14" stroke-width="7" stroke-linejoin="round"/></svg>
+                <div class="abs" id="gap3" style="left:0;top:1161px;height:14px;background:#ff4d5e;border-radius:7px;visibility:hidden"></div>
+                <div class="lab red" id="tag3" style="left:0;top:1030px;font-size:54px;visibility:hidden">+27 frames</div>
+                <div class="abs" id="cut4" style="left:0;top:1176px;width:8px;height:238px;background:#0d1014;visibility:hidden"></div>
+                <div class="abs" id="gap4" style="left:0;top:1120px;height:14px;background:#ff4d5e;border-radius:7px;visibility:hidden"></div>
+                <div class="lab red" id="tag4" style="left:0;top:1040px;font-size:50px;visibility:hidden">OFF BEAT</div>
+                <div class="abs" id="cut2" style="left:2050px;top:1176px;width:10px;height:700px;background:#0d1014;visibility:hidden"></div>
+                <div id="pieces" style="position:absolute;left:0;top:0;transform-style:preserve-3d"></div>
+                <div id="days" style="position:absolute;left:0;top:0;transform-style:preserve-3d"></div>
+                <svg id="cutter" class="abs" style="left:0;top:0" width="560" height="140" viewBox="0 0 560 140"></svg>
+              </div>
+            </div>
+          </div>
+          <div id="w1-vig"></div>
+        </div>
+
+        <!-- the close-up: one frame off -->
+        <div id="cu">
+          <div id="cu-panel">
+            <!--CU-->
+<video id="vc00" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="10.400" data-duration="0.767" data-media-start="5.620" muted playsinline></video>
+<video id="vc01" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="11.167" data-duration="1.900" data-media-start="12.026" muted playsinline></video>
+<!--/CU-->
+          </div>
+          <div class="chip" id="cu-word" style="left:0;top:0">bounce</div>
+          <div id="cu-side">
+            <svg id="cu-tracks" class="abs" style="left:0;top:0" width="760" height="520" viewBox="0 0 760 520"></svg>
+            <div class="lab" style="left:-20px;top:40px;font-size:48px;transform:rotate(-2deg)">VOICE</div>
+            <div class="lab" style="left:-20px;top:270px;font-size:48px;transform:rotate(1.5deg)">LIPS</div>
+            <div class="lab red" id="cu-tag" style="left:400px;top:440px;font-size:50px;visibility:hidden">1 frame off</div>
+          </div>
+        </div>
+
+        <!-- the payoff: his song, three days of the pack -->
+        <div id="pay">
+          <div class="pday" id="pd0" style="left:150px">MON</div>
+          <div class="pday" id="pd1" style="left:710px">TUE</div>
+          <div class="pday" id="pd2" style="left:1270px">WED</div>
+          <div class="pp" id="pp0" style="left:150px">
+            <!--PAY0-->
+<video id="vp000" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="47.000" data-duration="1.567" data-media-start="5.642" muted playsinline></video>
+<video id="vp001" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="48.567" data-duration="0.733" data-media-start="7.209" muted playsinline></video>
+<video id="vp002" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="49.300" data-duration="0.767" data-media-start="7.942" muted playsinline></video>
+<video id="vp003" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="50.067" data-duration="0.767" data-media-start="8.709" muted playsinline></video>
+<video id="vp004" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="50.833" data-duration="0.767" data-media-start="9.476" muted playsinline></video>
+<video id="vp005" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="51.600" data-duration="0.767" data-media-start="10.242" muted playsinline></video>
+<video id="vp006" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="52.367" data-duration="0.767" data-media-start="11.009" muted playsinline></video>
+<video id="vp007" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="53.133" data-duration="0.867" data-media-start="11.776" muted playsinline></video>
+<!--/PAY0-->
+            <div class="lyr pl" style="top:600px;font-size:56px"><span>I</span> <span>gotta</span> <span>bounce</span></div>
+          </div>
+          <div class="pp" id="pp1" style="left:710px">
+            <!--PAY1-->
+<video id="vp100" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="47.000" data-duration="1.167" data-media-start="5.642" muted playsinline></video>
+<video id="vp101" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="48.167" data-duration="0.767" data-media-start="6.809" muted playsinline></video>
+<video id="vp102" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="48.933" data-duration="1.133" data-media-start="7.576" muted playsinline></video>
+<video id="vp103" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="50.067" data-duration="0.767" data-media-start="8.709" muted playsinline></video>
+<video id="vp104" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="50.833" data-duration="0.400" data-media-start="9.476" muted playsinline></video>
+<video id="vp105" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="51.233" data-duration="0.767" data-media-start="9.876" muted playsinline></video>
+<video id="vp106" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="52.000" data-duration="0.767" data-media-start="10.642" muted playsinline></video>
+<video id="vp107" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="52.767" data-duration="1.233" data-media-start="11.409" muted playsinline></video>
+<!--/PAY1-->
+            <div class="lyr pl" style="top:600px;font-size:56px"><span>I</span> <span>gotta</span> <span>bounce</span></div>
+          </div>
+          <div class="pp" id="pp2" style="left:1270px">
+            <!--PAY2-->
+<video id="vp200" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="47.000" data-duration="1.167" data-media-start="5.642" muted playsinline></video>
+<video id="vp201" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="48.167" data-duration="0.400" data-media-start="6.809" muted playsinline></video>
+<video id="vp202" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="48.567" data-duration="0.367" data-media-start="7.209" muted playsinline></video>
+<video id="vp203" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="48.933" data-duration="0.367" data-media-start="7.576" muted playsinline></video>
+<video id="vp204" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="49.300" data-duration="0.767" data-media-start="7.942" muted playsinline></video>
+<video id="vp205" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="50.067" data-duration="0.767" data-media-start="8.709" muted playsinline></video>
+<video id="vp206" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="50.833" data-duration="0.400" data-media-start="9.476" muted playsinline></video>
+<video id="vp207" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="51.233" data-duration="0.367" data-media-start="9.876" muted playsinline></video>
+<video id="vp208" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="51.600" data-duration="0.400" data-media-start="10.242" muted playsinline></video>
+<video id="vp209" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="52.000" data-duration="0.367" data-media-start="10.642" muted playsinline></video>
+<video id="vp210" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="52.367" data-duration="0.400" data-media-start="11.009" muted playsinline></video>
+<video id="vp211" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="52.767" data-duration="0.367" data-media-start="11.409" muted playsinline></video>
+<video id="vp212" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="53.133" data-duration="0.867" data-media-start="11.776" muted playsinline></video>
+<!--/PAY2-->
+            <div class="lyr pl" style="top:600px;font-size:56px"><span>I</span> <span>gotta</span> <span>bounce</span></div>
+          </div>
+        </div>
+
+        <!-- you film, Stalak edits -->
+        <div id="claim">
+          <svg id="cl-cam" class="abs" style="left:0;top:0" width="230" height="200" viewBox="0 0 230 200"><rect x="10" y="44" width="150" height="120" rx="26" fill="#ffffff" stroke="#0a0d14" stroke-width="12"/><path d="M160 86 L218 54 V154 L160 122 Z" fill="#ffffff" stroke="#0a0d14" stroke-width="12" stroke-linejoin="round"/><circle cx="56" cy="88" r="14" fill="#ff4d5e"/></svg>
+          <div class="cl" id="cl-t1" style="left:0;top:0">You film.</div>
+          <img id="cl-icon" class="abs" src="assets/brand/icon.svg?claim" alt="" style="left:0;top:0;width:200px;height:200px" />
+          <div class="cl" id="cl-t2" style="left:0;top:0">Stalak edits.</div>
+        </div>
+        <!-- the end -->
+        <div id="end">
+          <img id="end-icon" class="abs" src="assets/brand/icon.svg" alt="" style="left:810px;top:150px;width:300px;height:300px" />
+          <img id="end-wm" class="abs" src="assets/brand/wordmark.svg" alt="Stalak" style="left:620px;top:450px;width:680px;height:300px" />
+          <div class="abs lil" id="end-url" style="left:0;width:1920px;top:770px;text-align:center;font-size:96px;color:#ffffff;text-shadow:0 7px 0 #0a0d14;white-space:pre"></div>
+          <div class="abs" id="end-sub" style="left:0;width:1920px;top:900px;text-align:center;font-weight:700;font-size:46px;color:#ffffff;white-space:pre"></div>
+        </div>
+        <div id="grain"></div>
+
+        <script>
+          (function () {
+            var root = document.getElementById("root");
+            window.YT.init(root);
+            var tl = gsap.timeline({ paused: true });
+            var clock = { t: 0 };
+            tl.to(clock, { t: window.T.TOTAL, duration: window.T.TOTAL, ease: "none", onUpdate: function () { window.YT.render(clock.t); } }, 0);
+            window.addEventListener("hf-seek", function (e) { if (e && e.detail && typeof e.detail.time === "number") window.YT.render(e.detail.time); });
+            window.YT.render(0);
+            window.__timelines = window.__timelines || {};
+            window.__timelines["film"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>
