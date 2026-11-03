@@ -59,7 +59,7 @@ h2{font-size:21px;margin-bottom:4px}h3{font-size:17px;margin-bottom:6px}
 .seg button{border:0;background:transparent;padding:6px 12px;cursor:pointer;color:var(--text)}
 .seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
 @media (prefers-color-scheme:dark){.seg button[aria-pressed="true"]{background:var(--series);color:#04101f}}
-.test{display:inline-flex;align-items:center;gap:6px;background:var(--test-bg);color:var(--test);border-radius:8px;padding:2px 8px;font-size:12px;font-weight:800;letter-spacing:.06em}
+.test[hidden]{display:none}.test{display:inline-flex;align-items:center;gap:6px;background:var(--test-bg);color:var(--test);border-radius:8px;padding:2px 8px;font-size:12px;font-weight:800;letter-spacing:.06em}
 .testnote{display:none;background:var(--test-bg);color:var(--test);border-radius:14px;padding:10px 14px;margin-bottom:12px;font-size:14px}
 .testnote.show{display:block}
 .banner{display:none;background:var(--bad-bg);color:var(--bad);border:2px solid var(--bad);border-radius:14px;padding:10px 14px;margin-bottom:14px}
