@@ -49,4 +49,11 @@ Tests (2/11, iPhone 15 Pro émulé + ordinateur, FR + EN) :
   - « Your Privacy Choices » ouvre sa fenêtre ;
   - aucune erreur.
 - **`liens_cmp_ui.py`** : adapté au libellé « Your Privacy Choices ».
-- RÉSULTATS_SUITES
+- Les autres suites :
+  - `liens_cmp_ui.py` 98/98, `formules_ui.py` 169/169, `son_passage.py` 86/86, `filtres_ui.py` 106/106 ;
+  - `audit_ui.py` 158/158, `projet_local_ui.py` 48/48, `export_pub_ui.py` 22/22, `animations_ui.py` 44/44 ;
+  - `remux_frag.py` 10/10, `paroles_suppr.py` 44/44, `plans_ui.py` 35/35, `gallery_ui.py` 49/49, `help_ui.py` 42/42 ;
+  - `tests/backend/run.mjs` 80/80.
+- `support_ui.py` et `lyrics_ui.py` s'arrêtent au même endroit que sur `main` (délai dépassé en attendant la page), sans lien avec le pied de page.
+
+À tester par le propriétaire : en bas de `/` et de `/fr/` sur ton iPhone, toucher « English » ou « Français » (tout le pied de page change de langue), puis ouvrir Tarifs et une page légale : même pied de page.
