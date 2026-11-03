@@ -4,15 +4,26 @@
 > Le contenu suit le plan de Marketing : `docs/marketing/US_FIRST.md` (partie B) et le document « Stalak — plan de lancement et réseaux ».
 > Comptes publiés : TikTok et Instagram **@stalak_app**, par **Zernio**.
 
+## Qui fait quoi (décision du propriétaire, 3/11, 23 h 50)
+
+- **Marketing & croissance (conversation 5)** crée les vidéos, avec les skills que le propriétaire lui a appris et l'expérience des promos précédentes. Il reçoit ton « ok », puis programme lui-même les vidéos dans Zernio en suivant ce document. Tout se passe dans une seule conversation, avec une seule validation.
+- **Réseaux sociaux (conversation 4)** :
+  - la mise en place de Zernio ;
+  - les règles de TikTok et d'Instagram, à tenir à jour ;
+  - le plan de tests : heures et modèles ;
+  - le relevé des chiffres chaque samedi soir, dans le journal (branche `social/promo-journal`), avec un bilan court que Marketing lit le dimanche.
+- **Toi** : tu valides les vidéos et tu crées les comptes.
+
 ## Comment ça marche
 
-1. **Chaque dimanche après-midi (heure de Paris)**, une tâche programmée :
-   - relève les chiffres des vidéos de la semaine passée et les note dans le journal ;
-   - fabrique **7 vidéos** à partir des modèles validés (voir « Les modèles ») ;
-   - écrit pour chacune : légende, hashtags, jour et heure prévus, réglages TikTok ;
-   - te les envoie sur ton téléphone, et les dépose dans la **Salle de visionnage**.
-2. **Toi** : tu regardes. Pour une remarque, utilise la Salle de visionnage, puis écris « c'est bon » : seuls ces points sont repris. Quand tout te va, écris **« ok »** dans la conversation de la tâche.
-3. **Après ton « ok » seulement**, la tâche programme les 7 vidéos dans Zernio : une par jour, du lundi au dimanche suivants.
+1. **Samedi soir** : Réseaux sociaux relève les chiffres des vidéos des 2 semaines passées dans Zernio. Il les note dans le journal et écrit le bilan de la semaine : `docs/social/bilan/semaine-<n>.md` sur `social/promo-journal`.
+2. **Dimanche après-midi (heure de Paris)**, dans la conversation de Marketing (rappel qu'il se programme lui-même, consigne : `docs/social/TACHE_DIMANCHE.md`) :
+   - il lit le bilan ;
+   - il fabrique **7 vidéos** à partir des modèles (voir « Les modèles ») ;
+   - il écrit pour chacune la légende, les hashtags, le jour et l'heure prévus, et les réglages TikTok ;
+   - il te les envoie sur ton téléphone, et les dépose dans la **Salle de visionnage**.
+3. **Toi** : tu regardes. Pour une remarque, utilise la Salle de visionnage, puis écris « c'est bon » : seuls ces points sont repris. Quand tout te va, écris **« ok »** dans la conversation de Marketing.
+4. **Après ton « ok » seulement**, Marketing programme les vidéos validées dans Zernio : une par jour, du lundi au dimanche suivants.
 
 **Rien n'est publié sans ton « ok ».** Pas d'« ok » = rien n'est programmé, même si la semaine commence.
 Un « ok » sur une partie seulement (« ok sauf la 4 ») ne programme que les vidéos validées.
