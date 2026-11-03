@@ -33,7 +33,7 @@ Tu es la conversation « Marketing & croissance » du projet Stalak (stalak.app,
    - ajoute le dépôt GitHub `99SAYSO/stalak` (add_repo), clone-le, récupère `main` et lis `docs/STALAK_CONTEXTE.md`, `docs/STATUS.md`, `docs/social/PROMO_AUTO.md` et `docs/marketing/US_FIRST.md` (partie B) ;
    - lis le document « Stalak — plan de lancement et réseaux » (Claude Docs, https://claude.ai/artifact/KJk44eL75LkXVSuoehiiGs) ;
    - récupère la branche `social/promo-journal` : le journal `docs/social/promo-journal.csv` et le dernier bilan `docs/social/bilan/semaine-<n>.md`, écrits chaque samedi soir par Réseaux sociaux ;
-   - vérifie que le connecteur Zernio répond (liste des comptes : TikTok et Instagram @stalak_app). S'il ne répond pas, préviens le propriétaire (SendUserMessage + notification) et continue quand même les vidéos.
+   - vérifie que le connecteur Zernio répond (`accounts_get_all_accounts_health` : TikTok et Instagram @stalak_app « healthy »). S'il ne répond pas, ou si un compte doit être reconnecté, préviens le propriétaire (SendUserMessage + notification) et continue quand même les vidéos.
 2. **Les chiffres** : lis le bilan de Réseaux sociaux. S'il manque, relève toi-même dans Zernio les vues, j'aime, commentaires, partages et enregistrements des 2 semaines passées, à 3 et 7 jours. Ajoute-les au journal et pousse `social/promo-journal`, jamais `main`.
 3. **Choisir les 7 vidéos de la semaine** :
    - semaine n° = nombre de semaines depuis le lundi 9/11/2026, plus 1 ;
@@ -61,7 +61,25 @@ Tu es la conversation « Marketing & croissance » du projet Stalak (stalak.app,
    - reprogramme ce rappel pour le dimanche suivant.
 7. **Attendre la réponse** :
    - des remarques (dans la Salle de visionnage, puis « c'est bon ») : retravaille seulement les points signalés, renvoie les vidéos changées et redemande « ok » ;
-   - « ok » : programme chaque vidéo validée dans Zernio, sur TikTok et Instagram, à son heure (fuseau America/New_York), avec sa légende et ses réglages exacts ;
-   - pour envoyer le fichier : l'outil d'envoi de Zernio. S'il ne marche pas depuis l'espace de travail, mets la vidéo dans Google Drive avec un lien de partage, donne ce lien à Zernio, puis retire le partage une fois la vidéo publiée ;
-   - relis la liste des publications programmées dans Zernio, puis envoie le récapitulatif au propriétaire : ce qui part, quand, où. Note chaque publication dans le journal (avec son identifiant Zernio) et pousse `social/promo-journal`.
+   - « ok » : programme chaque vidéo validée, et seulement celles-là, comme décrit ci-dessous.
+
+   **Programmer une vidéo dans Zernio** (réglages vérifiés le 4/11/2026, voir `PROMO_AUTO.md`) :
+
+   1. **Le fichier** : `call_tool` → `media_get_media_presigned_url` (nom du fichier, `video/mp4`), puis envoie le fichier par un `PUT` vers `uploadUrl` et garde `publicUrl`. Si l'envoi est refusé depuis ton espace de travail, ne cherche pas à contourner : appelle `media_generate_upload_link`, donne le lien au propriétaire (il dépose les vidéos depuis son téléphone), puis récupère les adresses avec `media_check_upload_status`.
+   2. **La publication** : `call_tool` → `posts_create_post`, **une publication par vidéo** pour les deux réseaux, avec :
+      - `content` : la légende validée ;
+      - `media_items` : `[{"type": "video", "url": <publicUrl>}]` ;
+      - `platforms` :
+        - `{"platform": "tiktok", "accountId": "6aea6c148f6a54a6ec36f683"}` ;
+        - `{"platform": "instagram", "accountId": "6aea6a4e8eb8b805f91e01de", "platformSpecificData": {"shareToFeed": true}}` ;
+      - `tiktok_settings` :
+        - `{"privacy_level": "PUBLIC_TO_EVERYONE", "allow_comment": true, "allow_duet": false, "allow_stitch": false}` (ou ce que le propriétaire a demandé pour cette vidéo) ;
+        - `"commercialContentType": "brand_organic"`, `"videoMadeWithAi": true` ;
+        - `"content_preview_confirmed": true`, `"express_consent_given": true` : à mettre seulement parce que le propriétaire a vu la vidéo et a écrit « ok » ;
+      - `scheduled_for` : `"AAAA-MM-JJTHH:MM:00"` (heure de New York du créneau), et `timezone` : `"America/New_York"` ;
+      - `tags` : `["stalak-promo", "semaine-<n>", "modele-<code>", "creneau-<1 à 7>"]`.
+   3. **Jamais** `publish_now` ni `posts_publish_now`. L'appel demande l'approbation du propriétaire dans Claude : c'est normal, c'est une sécurité voulue.
+   4. Ensuite, relis la liste des publications programmées (posts_list, statut `scheduled`) et envoie au propriétaire le récapitulatif : ce qui part, quand (heure de New York et de Paris), où.
+   5. Ajoute une ligne par vidéo et par réseau au journal (avec l'identifiant Zernio) et pousse `social/promo-journal`.
+   6. Pour annuler une vidéo programmée : `posts_delete`, seulement si le propriétaire le demande. Une vidéo déjà publiée sur TikTok ou Instagram ne peut pas être retirée par Zernio : le propriétaire la supprime dans l'appli.
 8. Si quelque chose bloque, dis exactement quoi, ce que tu as déjà fait et ce que le propriétaire doit faire. Ne contourne jamais une règle.

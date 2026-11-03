@@ -16,7 +16,7 @@
 
 ## Comment ça marche
 
-1. **Samedi soir** : Réseaux sociaux relève les chiffres des vidéos des 2 semaines passées dans Zernio. Il les note dans le journal et écrit le bilan de la semaine : `docs/social/bilan/semaine-<n>.md` sur `social/promo-journal`.
+1. **Samedi soir (20 h 31, heure de Paris)**, tâche programmée `docs/social/TACHE_SAMEDI.md` : Réseaux sociaux relève les chiffres des vidéos des 2 semaines passées dans Zernio. Il les note dans le journal et écrit le bilan de la semaine : `docs/social/bilan/semaine-<n>.md` sur `social/promo-journal`.
 2. **Dimanche après-midi (heure de Paris)**, dans la conversation de Marketing (rappel qu'il se programme lui-même, consigne : `docs/social/TACHE_DIMANCHE.md`) :
    - il lit le bilan ;
    - il fabrique **7 vidéos** à partir des modèles (voir « Les modèles ») ;
@@ -36,7 +36,10 @@ Un « ok » sur une partie seulement (« ok sauf la 4 ») ne programme que les v
   - adresse : `https://mcp.zernio.com/mcp` ;
   - puis « Se connecter » avec ton compte Zernio.
   - Si une clé est demandée, tu la tapes **à cet endroit seulement**, jamais dans une conversation.
-- Dans les réglages des outils du connecteur Zernio, mets **`posts_publish_now` sur « Bloqué »**. C'est une deuxième sécurité : rien ne peut partir tout de suite, même par erreur.
+- Dans les réglages des outils du connecteur Zernio (fait le 4/11) :
+  - « Publish a post immediately » sur **« Bloqué »** ;
+  - « Create a social media post » sur **« Nécessite une approbation »** ;
+  - à faire : **`call_tool`** sur « Nécessite une approbation » (voir plus bas).
 - Bio Instagram : `stalak.app/?ref=ig`. Bio TikTok : `stalak.app/?ref=tiktok`, une fois les 1 000 abonnés atteints (avant, le lien de la bio n'est pas cliquable).
 - Pour les formats qui montrent de vraies prises : déposer tes prises dans un dossier Google Drive « Stalak promo — prises ». Pour celles d'autres artistes, il faut leur accord écrit.
 
@@ -48,7 +51,7 @@ Un « ok » sur une partie seulement (« ok sauf la 4 ») ne programme que les v
 | Limite | 15 vidéos par jour et par compte (Zernio met le reste en attente) | 100 publications par 24 h |
 | Ton accord avant envoi | **Obligatoire** : voir la vidéo, choisir soi-même la visibilité et les options, puis accepter | Pas exigé, mais on garde la même règle |
 | Pub pour ton propre produit | Mention **« Ta marque »** obligatoire : la vidéo affiche « Contenu promotionnel » | « Partenariat rémunéré » réservé aux marques tierces : pas pour nous |
-| Voix off IA (ton choix du 3/11) | Étiquette **« contenu généré par IA »**, ou mention claire dans la vidéo ou la légende | Étiquette IA obligatoire pour une voix réaliste faite par IA (Meta peut sanctionner sinon) |
+| Voix off IA (ton choix du 3/11) | Étiquette **« contenu généré par IA »** (cochée par Zernio), ou mention claire dans la vidéo ou la légende | Étiquette IA obligatoire pour une voix réaliste faite par IA (Meta peut sanctionner sinon). L'API ne permet pas de la cocher : mention « AI voiceover » dans la vidéo et la légende |
 | Interdit | Contenu recopié ou répétitif (exclu du fil « Pour toi »), comptes gérés en masse par des robots, contenu commercial en très grand nombre | Faux avis, faux chiffres, comportement inauthentique |
 | Musique | Tes sons ou une musique libre de droits, jamais un son connu | Pareil |
 
@@ -120,11 +123,20 @@ Les visites du site par réseau (`ref=tiktok`, `ref=ig`) se lisent dans ton tabl
 - Il faut au moins 3 vidéos par cas comparé.
 - Ensuite : **70 %** des vidéos sur ce qui marche le mieux, **30 %** pour continuer à tester. Le rapport du dimanche le propose ; c'est toi qui décides.
 
-## Points à vérifier au premier essai
+## Vérifié le 4/11/2026 avec le connecteur Zernio
 
-- L'envoi du fichier vidéo vers Zernio depuis l'espace de travail de Claude. Si ça bloque, solution de secours : un lien de partage Google Drive que Zernio va chercher.
-- Les noms exacts des réglages TikTok et de l'étiquette IA dans les outils de Zernio : ils seront visibles une fois le connecteur relié.
-- La voix off IA : voix de Google Flora, comme les promos précédentes, avec le prix en dollars indiqué dans le rapport.
+- **Comptes** : Instagram `stalak_app` (identifiant Zernio `6aea6a4e8eb8b805f91e01de`) et TikTok `stalak_app` (`6aea6c148f6a54a6ec36f683`), tous les deux « en bonne santé ». Le YouTube relié un moment est déconnecté : c'est normal, Zernio est gratuit pour 2 comptes.
+- **TikTok** (infos du compte fournies par TikTok) :
+  - visibilité possible : **« Tout le monde » seulement**. Le compte passe par l'appli TikTok for Business, qui publie les vidéos en public uniquement. C'est ce qu'on voulait ;
+  - commentaires, Duo et Collage : à choisir à chaque fois, rien n'est coché par défaut ;
+  - mentions commerciales possibles : « Ta marque » (`brand_organic`) et « Contenu de marque » : on utilise **« Ta marque »** ;
+  - étiquette IA : `videoMadeWithAi`, disponible ;
+  - durée maximale : 60 minutes.
+- **Réglages testés** (vérification à blanc dans Zernio, sans rien créer) : TikTok public, commentaires oui, Duo non, Collage non, « Ta marque », étiquette IA, plus le Reel Instagram partagé dans le fil. **Résultat : aucun problème.**
+- **Instagram** : Zernio ne propose pas de case « étiquette IA » pour Instagram (Meta ne l'ouvre pas à l'API). Solution retenue : « AI voiceover » écrit dans la vidéo et dans la légende. Si Meta ajoute son étiquette lui-même, tant mieux.
+- **Envoi du fichier** : Zernio fournit une adresse d'envoi (jusqu'à 5 Go). Si l'espace de travail de Claude ne peut pas l'atteindre, Zernio donne un lien où tu déposes les vidéos depuis ton téléphone (une minute). Ce sera testé au premier essai.
+- **Une sécurité de plus à régler** : l'outil **`call_tool`** du connecteur Zernio peut lancer n'importe quel outil de Zernio, y compris une publication immédiate. Mets-le sur **« Nécessite une approbation »**, comme « Create a social media post ». Ainsi, chaque programmation te demandera ton accord dans Claude.
+- **Voix off IA** : la voix de Google Flora des promos précédentes. Le prix en dollars sera indiqué dans le rapport.
 
 ## Sources (consultées le 3/11/2026)
 
