@@ -134,28 +134,37 @@ clip("v4d", 2, K["edit4"] - 0.05, S["s5"] + 0.05, 1.0, "s4prev")               #
 # TikTok (Frost), YouTube, Reels (B&W), Shorts (35 mm), lyrics. v2: the YouTube tile reaches his video's own cut at 7.27 s
 # just as it fills the frame (flash 1); the 35 mm tile no longer repeats the moment the card has just shown (take 2, 14-16 s)
 TILES = [(3, 15.0), ("mv", 5.76), (1, 9.0), (2, 3.0), (2, 20.75)]
+# v5 (owner's remark on v4): the tiles are five cuts of the edit card's bar flying off it, one after the other (engine.js r5)
+K["tiles5"] = [round(S["s5"] - 0.28 + d, 3) for d in (0.0, 0.10, 0.05, 0.15, 0.20)]
 for i, (k, m0) in enumerate(TILES):
-    a = S["s5"] + i * 0.09                                                     # each tile's clip starts as the tile appears
+    a = K["tiles5"][i] + 0.2                                                   # each tile's clip starts as its colour gives way
+    if k == "mv":
+        m0 = 7.27 - (S["s5f"] - a)                                             # his video's own cut at 7.27 s lands on flash 1
     clip("v5t%d" % i, k, a, S["s5f"] + 0.05, m0, "t%d" % i)
     if i == 4:
         LY["t4"] = [[a, S["s5f"] + 0.05, m0]]
-clip("v5f0", "mv", FL[0] - 0.05, FL[1] + 0.05, 2.35, "f0")                     # flash 1: his music video, full frame
+# v5: the flash chain is one move from card to card (engine.js FLX): flash 1 shrinks into the middle card until FL1 + 0.26,
+# the cards fan out, take 3's card grows from FL2 - 0.25, it widens to the full frame from FL3 - 0.22: S6's laptop
+clip("v5f0", "mv", FL[0] - 0.05, FL[1] + 0.26, 2.35, "f0")                     # flash 1: his music video, full frame, then a card
 for i, k in enumerate((1, 2, 3)):                                              # flash 2: the 3 takes, the same instant of the song
-    clip("v5f1%d" % i, k, FL[1] - 0.05, FL[2] + 0.05, 12.2, "f1" + "abc"[i])
-M5 = 23.12 - (FL[3] - 0.42 - (FL[2] - 0.05))                                   # "millions." sung 0.42 s before the cut
-clip("v5f2", 3, FL[2] - 0.05, FL[3] + 0.05, M5, "f2")                          # flash 3: "scars worth millions." on his voice
-LY["f2"] = [[FL[2] - 0.05, FL[3] + 0.05, M5]]
-clip("v6", "mv", S["s6"] - 0.05, K["toggle6"] - 0.1, 4.5, "lap6")              # the laptop, then the window between the words
-A7 = S["s7"] + 1.1                                                             # the preview of S7 starts as the edit lands
+    clip("v5f1%d" % i, k, FL[1] - 0.28, FL[2] + 0.32, 12.2 - 0.23, "f1" + "abc"[i])
+A5 = FL[2] - 0.15                                                              # take 3's big card, under the moving one
+M5 = 23.12 - (FL[3] - 0.42 - A5)                                               # "millions." sung 0.42 s before the cut
+clip("v5f2", 3, A5, FL[3] + 0.35, M5, "f2")                                    # flash 3: "scars worth millions." on his voice
+LY["f2"] = [[A5, FL[3] + 0.35, M5]]
+W6 = FL[3] - 0.08                                                              # his music video on the laptop's screen, from the last flash
+clip("v6", "mv", W6, W6 + 3.5, 4.47, "lap6")                                   # the laptop, then the window between the words
+clip("v6b", "mv", W6 + 3.5, K["toggle6"] - 0.1, 8.47, "lap6")                  # (his video's next clean part)
+A7 = S["s7"] + 0.85                                                            # the preview of S7 starts as the edit lands (v5: earlier)
 M7 = 21.26 - (K["lyr7"] - A7)                                                  # so that "I" is sung at K.lyr7
 clip("v7a", 3, A7 - 0.05, K["shuffle"] + 0.02, M7 - 0.05, "prev7")             # take 3, before Shuffle
 clip("v7b", 2, K["shuffle"], S["s8"] + 0.04, M7 + (K["shuffle"] - A7), "prev7")  # after Shuffle: take 2, the same instant of the song
 LY["p7"] = [[A7 - 0.05, K["shuffle"], M7 - 0.05], [K["shuffle"], S["s8"] + 0.04, M7 + (K["shuffle"] - A7)]]
-C9 = S["s9"] + 0.95                                                            # the carousel's videos
+C9 = S["s9"] + 0.85                                                            # the carousel's videos (v5: as the Export button opens)
 for i, (k, m0) in enumerate([(2, 11.0), (1, 4.0), (3, 17.0)]):
     clip("v9c%d" % i, k, C9, S["s10"] + 0.05, m0, "car%d" % i)                 # TikTok, Reels, Shorts
 clip("v9c3", "mv", C9, C9 + 1.15, 2.35, "car3")                                # YouTube: his music video, its two clean parts
-clip("v9c4", "mv", C9 + 1.15, S["s10"] + 0.05, 4.5, "car3")
+clip("v9c4", "mv", C9 + 1.15, S["s10"] + 0.3, 4.5, "car3")                    # (v5: until it is the glass panel)
 
 # the free filters of the app on the grid (src/app.js FILT_FRAG: Givre, Noir & blanc, Film 35 mm), as media treatments
 TREAT = {"v5t0": {"adjust": {"temperature": -0.45, "saturation": -0.28, "contrast": 0.12, "whites": 0.15, "highlights": 0.08}},
@@ -216,6 +225,7 @@ whoosh("x-cut3b", S["s3b"], 0.09, "A")
 whoosh("x-cut3c", S["s3c"], 0.09, "B")
 whoosh("x-cut4", S["s4"] - 0.45, 0.1, "B")                                    # v2: the tablet's push into his card (15.0 → 16.0)
 whoosh("x-split", K["split"] + 0.2, 0.07, "B")
+whoosh("x-fly4", 19.87, 0.055, "A")                                           # v5: his card flies into the "Take 2" chip
 fx("x-chs", "pop.mp3", K["chSong"] + 0.14, 0.12 * G["pop"])
 for i, t in enumerate(K["chTk"]):
     fx("x-ch%d" % i, "pop.mp3", t + 0.14, (0.1 - 0.012 * i) * G["pop"])

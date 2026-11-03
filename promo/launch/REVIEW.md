@@ -1,5 +1,30 @@
 # Relecture — film de lancement « façon Lovio » (YouTube 16:9, 60 s, 2/11/2026)
 
+## v5 (ses retours dans la Salle de visionnage, 3/11 à 0 h 30)
+
+- **Ce qui a changé** : ses 2 remarques (le tableau est dans `SPEC.md`, « v5 »).
+  - À 15,7 s, sa vidéo débordait du cadre de l'aperçu. Elle est maintenant posée dans la bordure de l'app, avec son arrondi : sur le téléphone, la tablette et les deux étapes de montage. Les captures ne sont plus étirées.
+  - La remarque sur toute la vidéo : 14 transitions sont refaites, chacune avec un élément à l'écran, sur le modèle des transitions de Lovio (revues image par image).
+
+  Les temps des scènes, la voix, la musique et le mixage n'ont pas changé. Un whoosh léger est ajouté à 19,87 s. Le 4e flash (le gros plan de la barre) est remplacé par la carte qui s'élargit jusqu'à l'ordinateur 3D.
+- **Regardé image par image** :
+  - chaque transition refaite, avant, pendant et après : 11,7 → 16,0 s, 17,8 → 20,5 s, 22,4 → 24,8 s, 25,6 → 29,8 s, 34,2 → 35,3 s, 39,8 → 46,4 s, 48,5 → 50,6 s ;
+  - le cadre de l'aperçu à 15,7 s, en pleine taille : bordure encre, cadre crème, ombre du bas, sa vidéo dedans avec le même arrondi ;
+  - les raccords qui doivent être invisibles : 16,0 s (la tablette → sa carte : même image, à 1 px près) et 44,75 s (la carte Export de l'ordinateur et celle de S9 au même endroit, plus de texte en double).
+- **`hyperframes check`** : 0 erreur. Les avertissements :
+  - les mêmes sortes que pour la v4 : des textes lus avec la voix, les cristaux qui tournent en descendant ;
+  - nouveaux, voulus : les étiquettes des cases de la grille (0,8 s), « Take 1 / 2 / 3 » (0,45 s) et « On the words » (1,0 s). Ce sont des étiquettes qui passent avec le mouvement.
+- **Le son, mesuré avec `mix.py`** (pas écouté) : la même chose que pour la v3 et la v4, la voix vers −15 LUFS et la musique 9 à 11 dB dessous quand elle parle.
+- **Le plus fragile** :
+  - le passage de l'ordinateur au téléphone (11,7 → 12,4 s) : la page d'accueil se resserre et se floute pendant que l'écran change de forme. S'il le trouve trop rapide, il suffit d'allonger `qaw` / `qah` dans `r3` (`engine.js`) ;
+  - les pilules qui volent vers l'étape de montage (34,35 → 34,95 s) se croisent un instant.
+- **Le fichier livré** : `renders/Stalak_lancement_YouTube.mp4` (la v4 est gardée à côté, en `_v4`) : 1920 × 1080, **60 i/s**, 3600 images, 60,0 s, 62 Mo ; rendu en 20 min 9 s, puis `master.sh`.
+  - Mesuré : −14,1 LUFS, crête −1,1 dBFS ; aucune image noire, aucun silence ; les images figées plus de 1 s sont les deux tenues voulues (« ready ○ to post » à 32,6 s, le panneau tapé à 52,3 s).
+  - Son du rendu identique au mixage hors ligne à 1,3–1,4 dB près, dans chaque fenêtre de 4 s (marge de HyperFrames, rattrapée par `master.sh`).
+  - Images du fichier rendu vérifiées à 18 instants des transitions : identiques aux images de contrôle.
+
+  Il a été envoyé au propriétaire et mis dans la Salle de visionnage (`stalak-lancement-v5`), avec une réponse sous ses 2 remarques.
+
 ## v4 (sa remarque du 2/11 à 20 h 28 : à 53,27 s, « le mot "drop" arrive trop tôt, il est donc sur le texte »)
 
 - **La cause, une erreur de la v3** : j'avais donné au drop de la musique (8,8 s) le nom déjà pris par le mot « drop » de S11 (`K["drop"]`). Le mot s'affichait donc dès que S11 arrivait, sous le panneau tapé. Le drop de la musique s'appelle maintenant `K["beatDrop"]` (`K["beatBack"]` pour le retour du beat), et le mot arrive à 54,6 s, sur la voix.

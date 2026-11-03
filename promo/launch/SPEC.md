@@ -194,13 +194,48 @@ La voix mène : chaque plan commence sur un temps de la musique (150 BPM, un tem
   - les stalactites de l'app (glace #d6ecff, contour encre) sont sur la boîte de verre, sous le panneau tapé et en haut de l'écran de fin ;
   - l'éclat de neige part du logo sur le drop.
 
+## v5 : ses retours du 3/11 (Salle de visionnage, 0 h 30)
+
+**Sa remarque à 15,7 s** : « la vidéo sort du cadre de Stalak, les contours de la vidéo sont visibles ». Deux causes :
+
+- la capture de l'écran de la tablette (1180 × 820) était étirée dans l'écran de la tablette (1256 × 862), un peu plus en hauteur qu'en largeur, alors que la vidéo était posée avec la seule échelle de la largeur : en bas, elle débordait sur le cadre crème ;
+- la boîte mesurée par `capture_ui.py` est celle de `<canvas id="view">` avec sa bordure (`src/theme.css` : 4 px et un arrondi de 28 px ; sur téléphone 3 px et 20 px), et la vidéo la couvrait avec un autre arrondi.
+
+Maintenant, chaque capture garde ses proportions, et chaque vidéo est posée **dans** la bordure, avec l'arrondi intérieur de l'app (24 px, 17 px sur téléphone). C'est le cas partout où sa vidéo est dans l'aperçu de l'app : le téléphone, la tablette, l'étape de montage de S4 et celle de S7. La carte 9:16 de S4 (`CARD`) est calculée depuis cet intérieur.
+
+**Sa remarque sur toute la vidéo** : « des transitions trop simples, juste vers le côté ou autre ; je veux que toutes les transitions soient avec un élément de ce qu'il y a à l'écran, qu'elles se fondent dans le décor, comme dans la vidéo de référence ; tout doit être plus fluide, souple ». Les transitions de Lovio ont été revues image par image : les lignes surlignées du code deviennent les cases de la grille, la page plein écran rétrécit dans une case, la page se rabat dans l'écran de l'ordinateur 3D, la caméra entre dans l'écran, la barre d'outils devient l'interface, la carte devient le panneau de verre. Chaque transition simple a été refaite ainsi :
+
+| Instant | v4 | v5 |
+| --- | --- | --- |
+| 12,0 s | panoramique de l'ordinateur au téléphone | **un seul appareil change de forme** : l'écran de l'ordinateur devient le téléphone (la largeur d'abord, la hauteur juste après), son socle tombe, la page d'accueil laisse place à l'étape de montage |
+| 13,6 s | panoramique du téléphone à la tablette | le téléphone devient la tablette, de face ; **son aperçu glisse jusqu'à celui de la tablette** (prise 3 → prise 2 au même endroit) |
+| 17,8 s | la boîte de verre arrive de la gauche | elle **sort de derrière sa carte**, vers la gauche, pendant que la carte se pousse |
+| 19,6 → 20,1 s | sa carte part vers la droite | sa carte **vole dans la boîte et devient la pastille « Take 2 »**, sur « and your takes » |
+| 22,4 → 23,0 s | la carte de chargement grossit et s'efface | **la barre de chargement s'envole et devient la barre de montage** de l'étape suivante, qui est ensuite découpée |
+| 23,7 → 24,7 s | vol à travers la barre, cases qui apparaissent | **cinq plans colorés de la barre s'envolent et s'ouvrent en cases** ; leur couleur laisse place à ses vidéos |
+| 26,4 s | flash 1 → flash 2 (coupe) | son clip **rétrécit en carte** (celle du milieu) ; les deux autres prises **sortent de derrière elle** |
+| 27,2 s | flash 2 → flash 3 (coupe) | la carte de la prise 3 **vient au milieu et grandit** jusqu'à toute la hauteur, avec sa phrase ; les deux autres reculent |
+| 28,0 → 29,25 s | flash 4 (gros plan de la barre) puis vol vers l'ordinateur | la carte **s'élargit en plein écran** pendant que son clip revient dessus, puis l'image **se rabat dans l'écran de l'ordinateur 3D** (couvercle et socle apparaissent). Le gros plan de la barre est retiré. |
+| 34,35 → 34,95 s | plongée floue dans « Punchy » | **les pilules sont les réglages de l'app** : chacune vole à sa place dans la vraie étape de montage qui apparaît autour (Pace, Cuts, Lyrics, Shuffle ; Export s'en va) |
+| 42,0 → 42,85 s | l'ordinateur monte du bas, les mots partent vers le haut | **les mots sont sur l'écran de l'ordinateur**, vu de très près ; la caméra recule et l'ordinateur apparaît autour |
+| 44,3 → 44,95 s | glissé vers le haut (comme un fil de vidéos) | les vidéos de la semaine **passent devant la caméra**, qui **entre dans l'écran jusqu'à la carte Export** : S9 est cette carte, au même endroit |
+| 45,5 → 46,05 s | la carte Export rétrécit et s'efface | **le bouton Export s'ouvre en carte TikTok** ; les autres formats sortent de derrière elle |
+| 49,25 → 49,85 s | vol dans la carte YouTube | **la carte YouTube devient le panneau de verre** de S10 : sa vidéo se fond dans le verre givré, le ciel se floute |
+
+Les transitions qui étaient déjà faites d'un élément sont gardées : la fenêtre de l'icône, l'entrée dans la boîte, « song », le bleu de l'icône, l'aperçu de la tablette qui devient sa carte, la case YouTube, la fenêtre entre les mots, l'interrupteur, le cristal, la traînée de lumière.
+
+**Souplesse** : les nouveaux mouvements durent de 0,5 à 0,9 s, avec des courbes douces aux deux bouts (`io3`), se chevauchent (la largeur puis la hauteur de l'appareil, les cases l'une après l'autre), et rien ne rebondit.
+
+**Le son et les temps** : la voix, la musique, le mixage et les bruitages ne changent pas (les whooshs tombent déjà sur ces transitions). Un seul ajout : un whoosh léger sous le vol de sa carte vers la pastille (19,87 s). Les clips commencent plus tôt là où leur vidéo apparaît plus tôt ; son clip sur l'ordinateur 3D passe à ses parties propres 4,47–7,97 s puis 8,47–9,30 s.
+
 ## Interdit
 
 - Rebonds, secousses, pulsations sur les temps, titres qui bougent une fois posés.
 - Boutons inventés, faux chiffres, faux avis, concurrent cité (TikTok, Reels, Shorts et YouTube sont des plateformes, nommées seulement).
 - Le logo collé dans un coin, des anneaux de clic.
 - Un fond noir vide.
-- Un simple fondu enchaîné à la place d'une transition. Depuis la v2 (sa demande), on passe d'un monde à l'autre caché par un mouvement ou un élément du décor : un mot, la couleur de l'icône, l'aperçu d'un appareil, une case, un panoramique, une traînée de lumière.
+- Un simple fondu enchaîné à la place d'une transition. Depuis la v2 (sa demande), on passe d'un monde à l'autre caché par un mouvement ou un élément du décor. Depuis la v5 (sa demande) : **chaque transition est faite d'un élément à l'écran** (un mot, un appareil qui change de forme, un aperçu, une carte, une barre, un bouton, une case, l'écran de l'ordinateur, une traînée de lumière) ; plus de panoramique ni de glissé vers le côté.
+- Une vidéo qui déborde du cadre de l'aperçu de l'app (v5).
 
 ## À vérifier
 

@@ -1,6 +1,25 @@
 # Compte rendu — branche `marketing/promo-youtube` (Marketing & croissance)
 
-Statut : PRÊT, v4 du 2/11 + miniature YouTube + film de lancement « façon Lovio » (v4, ses retours appliqués) + page de retours « Salle de visionnage » (v2) (documents et sources des vidéos et de la miniature seulement ; rien à intégrer dans l'app ni le site)
+Statut : PRÊT, v4 du 2/11 + miniature YouTube + film de lancement « façon Lovio » (v5, ses retours appliqués) + page de retours « Salle de visionnage » (v2) (documents et sources des vidéos et de la miniature seulement ; rien à intégrer dans l'app ni le site)
+
+## Film de lancement v5 : ses retours dans la Salle de visionnage (3/11, 0 h 30)
+
+- **À 15,7 s, « la vidéo sort du cadre de Stalak, les contours de la vidéo sont visibles »** : corrigé. La capture de l'écran de la tablette était un peu étirée en hauteur, et la vidéo couvrait la bordure de l'aperçu de l'app. Maintenant, les captures gardent leurs proportions et ses vidéos sont posées dans la bordure, avec l'arrondi de l'app : sur le téléphone, la tablette et les étapes de montage (vers 23 s et 35 s).
+- **Sur toute la vidéo** : « des transitions trop simples, juste vers le côté ; je veux que toutes les transitions soient avec un élément de ce qu'il y a à l'écran, qu'elles se fondent dans le décor, comme dans la vidéo de référence ; tout doit être plus fluide, souple ». 14 transitions sont refaites (le tableau est dans `promo/launch/SPEC.md`, « v5 ») :
+  - l'ordinateur devient le téléphone, puis le téléphone devient la tablette : un seul appareil qui change de forme ;
+  - la boîte de verre sort de derrière sa carte, puis sa carte vole dans la boîte et devient la pastille « Take 2 » ;
+  - la barre de chargement devient la barre de montage, et cinq plans de cette barre deviennent les cases de la grille ;
+  - les flashs passent de carte en carte, et la dernière se rabat dans l'écran de l'ordinateur 3D ;
+  - les pilules volent à leur place dans l'écran de montage ;
+  - la caméra sort de l'écran de l'ordinateur, puis y rentre jusqu'au bouton Export, qui devient la carte TikTok ;
+  - la carte YouTube devient le panneau de verre.
+
+  Les mouvements sont plus longs, avec des débuts et des fins doux, et se chevauchent. La voix, la musique et le mixage ne changent pas (un whoosh léger en plus, sous le vol de sa carte).
+- **Coût Flora : 0 $.**
+- **Livré** le 3/11 :
+  - la vidéo est envoyée dans la conversation (60 s, 60 i/s, −14,1 LUFS, aucune image noire, pas dans le dépôt) ;
+  - elle est ajoutée à la Salle de visionnage (`stalak-lancement-v5`) ;
+  - une réponse est écrite sous ses 2 remarques, passées à « traitée ».
 
 ## Film de lancement v4 : sa remarque de 20 h 28
 
