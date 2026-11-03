@@ -232,7 +232,8 @@
 ### Réseaux sociaux
 - **En cours (branche `social/promo-auto`, 3/11, documents seulement)** : vidéos promo de Stalak créées chaque dimanche et publiées par **Zernio** sur TikTok et Instagram @stalak_app, **seulement après l'« ok » du propriétaire**. Mode d'emploi et règles des réseaux : `docs/social/PROMO_AUTO.md`. Consigne de la tâche : `docs/social/TACHE_DIMANCHE.md`. Journal des tests (heures, modèles, accroches) : branche `social/promo-journal`, jamais fusionnée.
   - Décisions du propriétaire (3/11) : modèles validés une fois puis variés ; voix off IA (étiquette IA sur les deux réseaux) ; heures et types qui tournent pour trouver ce qui marche ; `?ref=ig` pour Instagram.
-  - Reste : le propriétaire relie Zernio à Claude ; création des modèles avec lui ; création de la tâche du dimanche.
+  - Qui fait quoi (3/11, 23 h 50) : **Marketing crée les vidéos**, reçoit l'« ok » et programme dans Zernio ; **Réseaux sociaux** : mise en place de Zernio, règles des réseaux, plan de tests, relevé des chiffres le samedi soir.
+  - Reste : le propriétaire relie Zernio à Claude ; **Marketing** crée les modèles avec lui et se programme le rappel du dimanche (`docs/social/TACHE_DIMANCHE.md`) ; Réseaux sociaux crée la tâche du samedi (chiffres) une fois Zernio relié.
 - **Fait et en ligne (éteint)** : connexion des comptes TikTok et Instagram côté serveur.
   - `functions/_lib/social.js` : relier / délier un compte, jetons chiffrés en base, renouvellement automatique, appels de suppression de Meta.
   - Migration `0005_social_accounts.sql` appliquée le 27/10.
