@@ -1,0 +1,837 @@
+<title>Salle de visionnage</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: a screening desk. The picture on top with its timeline under it, as in an edit bay;
+   the remarks run down the side (under the picture on a phone). One dark look: colours are judged on a neutral dark surround. */
+:root {
+  --bg: #0d1015;
+  --panel: #151a21;
+  --panel-2: #1c222b;
+  --line: #2a323d;
+  --fg: #e9eef4;
+  --muted: #98a4b2;
+  --ice: #8fd0ff;
+  --ice-ink: #062238;
+  --pen: #ff453a;
+  --pen-2: #ffd60a;
+  --ok: #5fd38f;
+  --sent: #8fd0ff;
+  --scene-a: #1e3149;
+  --scene-b: #22303c;
+  --wave: #4f7fae;
+  --ui: "Rubik", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+html, body { background: var(--bg); color: var(--fg); }
+body { font: 15px/1.45 var(--ui); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+button, select, textarea, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--ice); outline-offset: 2px; }
+.app { max-width: 1520px; margin: 0 auto; padding-block: 14px 32px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+/* top bar */
+.top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding-bottom: 12px; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+.brand { font-weight: 700; font-size: 18px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 9px; }
+.brand svg { width: 22px; height: 22px; }
+.pick { flex: 1 1 260px; min-width: 0; display: flex; align-items: center; gap: 8px; }
+.pick select { flex: 1; min-width: 0; background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border-radius: 13px; font-size: 12.5px; font-weight: 600; letter-spacing: 0.02em; background: var(--panel-2); color: var(--muted); border: 1px solid var(--line); white-space: nowrap; }
+.chip.c-open { color: var(--pen); border-color: color-mix(in srgb, var(--pen) 45%, var(--line)); }
+.chip.c-sent { color: var(--sent); border-color: color-mix(in srgb, var(--sent) 45%, var(--line)); }
+.chip.c-done { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 45%, var(--line)); }
+.ghost { background: transparent; border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; color: var(--fg); }
+.ghost:hover { background: var(--panel-2); }
+.note-claude { margin: -4px 0 14px; color: var(--muted); font-size: 14px; max-width: 75ch; }
+.note-claude b { color: var(--fg); font-weight: 500; }
+
+/* desk */
+.desk { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
+@media (min-width: 1020px) { .desk { grid-template-columns: minmax(0, 1fr) 372px; align-items: start; } }
+.col-stage { min-width: 0; }
+.stage { position: relative; margin: 0 auto; background: #000; border-radius: 10px; overflow: hidden; width: 100%; aspect-ratio: 16 / 9; max-width: 100%; }
+.stage video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #000; }
+.stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; touch-action: none; }
+.stage.drawing canvas { pointer-events: auto; cursor: crosshair; }
+.stage.drawing { box-shadow: 0 0 0 2px var(--pen); }
+.stage-msg { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; text-align: center; background: radial-gradient(120% 90% at 50% 0%, #17202b, #0b0e12); }
+.stage-msg h2 { margin: 0 0 6px; font-size: 20px; font-weight: 600; text-wrap: balance; }
+.stage-msg p { margin: 0 auto; color: var(--muted); max-width: 46ch; }
+.steps { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 18px; margin: 16px 0 0; padding: 0; list-style: none; font-size: 13.5px; color: var(--fg); }
+.steps li { display: flex; align-items: center; gap: 7px; }
+.steps i { font-style: normal; display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 11px; background: var(--panel-2); border: 1px solid var(--line); font-weight: 600; font-size: 12px; }
+.badge-draw { position: absolute; left: 12px; top: 12px; display: none; align-items: center; gap: 8px; padding: 6px 11px; border-radius: 8px; font-size: 13px; font-weight: 500; background: rgba(10, 12, 16, 0.78); }
+.stage.drawing .badge-draw { display: inline-flex; }
+.badge-draw::before { content: ""; width: 9px; height: 9px; border-radius: 5px; background: var(--pen); }
+
+/* transport */
+.transport { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
+.tbtn { display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 9px; background: var(--panel-2); border: 1px solid var(--line); }
+.tbtn:hover { background: #242b35; }
+.tbtn svg { width: 20px; height: 20px; fill: currentColor; }
+.tc { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 15px; font-weight: 600; padding: 0 6px; white-space: nowrap; }
+.tc small { color: var(--muted); font-weight: 500; font-size: 12.5px; margin-left: 6px; }
+.spacer { flex: 1 1 auto; }
+.primary { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 16px; border-radius: 9px; border: 0; background: var(--ice); color: var(--ice-ink); font-weight: 600; }
+.primary:hover { filter: brightness(1.06); }
+.primary[disabled] { opacity: 0.45; cursor: default; filter: none; }
+.primary svg { width: 18px; height: 18px; fill: currentColor; }
+.gbtn { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px; border-radius: 9px; border: 1px solid color-mix(in srgb, var(--ice) 55%, var(--line)); background: color-mix(in srgb, var(--ice) 10%, transparent); color: var(--fg); font-weight: 500; }
+.gbtn:hover { background: color-mix(in srgb, var(--ice) 18%, transparent); }
+.gbtn[disabled] { opacity: 0.45; cursor: default; }
+.gbtn svg { width: 18px; height: 18px; fill: none; stroke: var(--ice); stroke-width: 1.9; stroke-linejoin: round; }
+
+/* timeline */
+.tl { position: relative; height: 122px; margin-top: 12px; border-radius: 9px; background: var(--panel); border: 1px solid var(--line); touch-action: none; user-select: none; -webkit-user-select: none; cursor: pointer; overflow: hidden; }
+.tl canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.ph { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: #fff; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5); pointer-events: none; }
+.ph::before { content: ""; position: absolute; top: -1px; left: -5px; border: 6px solid transparent; border-top: 8px solid #fff; }
+.hover-tc { position: absolute; top: 4px; transform: translateX(-50%); padding: 2px 6px; border-radius: 5px; background: rgba(8, 10, 14, 0.85); font: 600 11.5px var(--mono); pointer-events: none; white-space: nowrap; display: none; }
+.pin { position: absolute; top: 22px; bottom: 18px; width: 0; pointer-events: none; }
+.pin::after { content: ""; position: absolute; top: 0; bottom: 0; left: -1px; width: 2px; background: var(--pc, var(--pen)); opacity: 0.9; }
+.pin button { pointer-events: auto; position: absolute; top: -20px; left: 0; transform: translateX(-50%); min-width: 22px; height: 20px; padding: 0 5px; border-radius: 10px; border: 0; background: var(--pc, var(--pen)); color: #0b0d11; font: 700 11.5px var(--ui); }
+.pin.sel button { box-shadow: 0 0 0 2px #fff; }
+.pin .range { position: absolute; top: 0; height: 6px; left: 0; background: var(--pc, var(--pen)); opacity: 0.45; border-radius: 0 3px 3px 0; }
+.p-open { --pc: var(--pen); } .p-sent { --pc: var(--sent); } .p-done { --pc: var(--ok); } .p-draft { --pc: var(--pen-2); }
+.keys { margin: 8px 2px 0; color: var(--muted); font-size: 12.5px; }
+.keys kbd { font: 600 11.5px var(--mono); padding: 1px 5px; border-radius: 4px; background: var(--panel-2); border: 1px solid var(--line); color: var(--fg); }
+@media (hover: none) { .keys { display: none; } }
+
+/* side column */
+.col-side { min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+.composer { padding: 14px; border-color: color-mix(in srgb, var(--pen) 55%, var(--line)); }
+.composer h3 { margin: 0; font-size: 16px; font-weight: 600; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.composer h3 .tc { padding: 0; font-size: 15px; color: var(--pen-2); }
+.composer.global { border-color: color-mix(in srgb, var(--ice) 60%, var(--line)); }
+.composer.global .tools, .composer.global .range-row { display: none; }
+.composer .sub { margin: 4px 0 12px; color: var(--muted); font-size: 13.5px; }
+.tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 12px; }
+.sw { width: 30px; height: 30px; border-radius: 15px; border: 2px solid var(--line); background: var(--c); }
+.sw[aria-pressed="true"] { border-color: #fff; box-shadow: 0 0 0 2px var(--bg) inset; }
+.small { height: 30px; padding: 0 10px; border-radius: 7px; background: var(--panel-2); border: 1px solid var(--line); font-size: 13px; }
+.small:hover { background: #242b35; }
+textarea { width: 100%; min-height: 92px; resize: vertical; padding: 10px 12px; border-radius: 9px; border: 1px solid var(--line); background: var(--bg); line-height: 1.45; box-sizing: border-box; }
+textarea::placeholder { color: #6f7b88; }
+.kinds { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 2px; }
+.kind { height: 30px; padding: 0 12px; border-radius: 15px; border: 1px solid var(--line); background: transparent; font-size: 13px; }
+.kind[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); font-weight: 600; }
+.range-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; font-size: 13.5px; color: var(--muted); }
+.range-row .tc { padding: 0; font-size: 13.5px; color: var(--fg); }
+.c-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; align-items: center; }
+.err { color: var(--pen); font-size: 13.5px; margin: 8px 0 0; }
+.back-frame { color: var(--pen-2); background: none; border: 0; padding: 0; text-decoration: underline; font-size: 13.5px; }
+
+.list { padding: 12px 12px 4px; }
+.list-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding: 2px 2px 10px; }
+.list-head h3 { margin: 0; font-size: 15px; font-weight: 600; }
+.list-head span { color: var(--muted); font-size: 13px; }
+.notes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; max-height: 58vh; overflow: auto; }
+@media (max-width: 1019px) { .notes { max-height: none; } }
+.n { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 10px; padding: 8px; border-radius: 9px; background: var(--panel-2); border: 1px solid transparent; }
+.n.sel { border-color: var(--fg); }
+.n .th { position: relative; width: 112px; aspect-ratio: 16 / 9; border-radius: 6px; overflow: hidden; background: #000; border: 0; padding: 0; }
+.n .th img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.n .th b { position: absolute; left: 4px; top: 4px; min-width: 20px; height: 18px; padding: 0 4px; border-radius: 9px; background: var(--pc, var(--pen)); color: #0b0d11; font: 700 11px/18px var(--ui); text-align: center; }
+.n .th.whole { display: grid; place-items: center; align-content: center; gap: 3px; background: radial-gradient(120% 120% at 50% 0%, #1d3a55, #0f1823); color: var(--fg); font-size: 11.5px; font-weight: 600; line-height: 1.15; text-align: center; }
+.n .th.whole svg { width: 20px; height: 20px; fill: none; stroke: var(--ice); stroke-width: 1.9; stroke-linejoin: round; }
+.n .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-size: 12.5px; color: var(--muted); }
+.n .meta .tc { padding: 0; font-size: 13px; color: var(--fg); background: none; border: 0; }
+.n .meta .tc:hover { text-decoration: underline; }
+.n .st { font-weight: 600; color: var(--pc, var(--pen)); }
+.n p { margin: 4px 0 0; font-size: 14px; overflow-wrap: anywhere; white-space: pre-wrap; }
+.n .reply { margin-top: 6px; padding: 6px 8px; border-radius: 7px; background: color-mix(in srgb, var(--ok) 12%, transparent); color: var(--fg); font-size: 13.5px; }
+.n .reply b { color: var(--ok); font-weight: 600; }
+.n .acts { display: flex; gap: 6px; margin-top: 6px; }
+.n .acts button { height: 26px; padding: 0 9px; border-radius: 6px; border: 1px solid var(--line); background: transparent; font-size: 12.5px; color: var(--muted); }
+.n .acts button:hover { color: var(--fg); }
+.n .acts .danger { color: var(--pen); border-color: color-mix(in srgb, var(--pen) 50%, var(--line)); }
+.empty-list { padding: 14px 6px 16px; color: var(--muted); font-size: 14px; }
+
+.send { padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+.send .primary { justify-content: center; height: 46px; font-size: 15.5px; }
+.send p { margin: 0; font-size: 13.5px; color: var(--muted); }
+.send p.ok { color: var(--ok); }
+@media (max-width: 1019px) {
+  .send { position: sticky; bottom: 0; z-index: 5; padding: 10px 12px max(10px, env(safe-area-inset-bottom, 0px)); border-radius: 12px 12px 0 0; box-shadow: 0 -10px 24px rgba(0, 0, 0, 0.45); }
+  .send p.idle { display: none; }
+}
+.loading { color: var(--muted); font-size: 13.5px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 16.5c2.2-4.6 5.6-6.8 9.5-7.2" fill="none" stroke="#ff453a" stroke-width="2" stroke-linecap="round"/></svg>
+      Salle de visionnage
+    </div>
+    <label class="pick" for="videoSel"><span class="sr" hidden>Vidéo</span>
+      <select id="videoSel" aria-label="Choisir la vidéo"><option>Chargement des vidéos…</option></select>
+    </label>
+    <span id="vstate" class="chip" hidden></span>
+    <button id="openLocal" class="ghost" type="button">Ouvrir une vidéo de mon ordinateur</button>
+    <input id="fileIn" type="file" accept="video/mp4,video/webm,video/quicktime,video/*" hidden>
+  </header>
+  <p id="claudeNote" class="note-claude" hidden></p>
+
+  <main class="desk">
+    <section class="col-stage" aria-label="La vidéo">
+      <div id="stage" class="stage">
+        <video id="vid" playsinline preload="auto"></video>
+        <canvas id="ink" aria-label="Zone de dessin"></canvas>
+        <span class="badge-draw">Entoure ce dont tu parles</span>
+        <div id="stageMsg" class="stage-msg">
+          <div>
+            <h2>Les vidéos que Claude te fait arrivent ici</h2>
+            <p>Mets en pause là où quelque chose ne va pas, entoure-le sur l'image, écris ce que tu veux changer. Un avis sur l'ensemble : « Remarque sur toute la vidéo ». Quand tu as tout dit, clique « J'ai fini », puis écris « c'est bon » à Claude dans la conversation : il reprend seulement ces points.</p>
+            <ul class="steps"><li><i>1</i>Pause au bon moment</li><li><i>2</i>« Remarque ici »</li><li><i>3</i>Entoure et écris</li><li><i>4</i>« J'ai fini », puis « c'est bon » à Claude</li></ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="transport">
+        <button id="bPlay" class="tbtn" type="button" aria-label="Lecture"><svg viewBox="0 0 24 24"><path id="playIco" d="M8 5.5v13l10.5-6.5z"/></svg></button>
+        <button id="bPrev" class="tbtn" type="button" aria-label="Image précédente" title="Image précédente"><svg viewBox="0 0 24 24"><path d="M6 5.5h2v13H6zM19 5.5v13L9.5 12z"/></svg></button>
+        <button id="bNext" class="tbtn" type="button" aria-label="Image suivante" title="Image suivante"><svg viewBox="0 0 24 24"><path d="M16 5.5h2v13h-2zM5 5.5v13L14.5 12z"/></svg></button>
+        <span class="tc" id="tc">0:00,00<small id="tcFrame">image 0</small></span>
+        <span class="spacer"></span>
+        <button id="bGlobal" class="gbtn" type="button" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 5.5h15a1.5 1.5 0 0 1 1.5 1.5v8.5a1.5 1.5 0 0 1-1.5 1.5H11l-4.5 3.5V17h-2A1.5 1.5 0 0 1 3 15.5V7a1.5 1.5 0 0 1 1.5-1.5z"/></svg>Remarque sur toute la vidéo</button>
+        <button id="bMark" class="primary" type="button" disabled><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75zM20.7 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z"/></svg>Remarque ici</button>
+      </div>
+
+      <div id="tl" class="tl" role="slider" aria-label="Timeline de la vidéo" aria-valuemin="0" aria-valuenow="0" tabindex="0">
+        <canvas id="tlc"></canvas>
+        <div id="pins"></div>
+        <div id="ph" class="ph"></div>
+        <div id="hoverTc" class="hover-tc"></div>
+      </div>
+      <p class="keys"><kbd>Espace</kbd> lecture · <kbd>←</kbd> <kbd>→</kbd> une image · <kbd>Maj</kbd> + <kbd>←</kbd> <kbd>→</kbd> une seconde · <kbd>R</kbd> remarque ici · <kbd>G</kbd> remarque sur toute la vidéo · <kbd>Échap</kbd> annuler</p>
+    </section>
+
+    <aside class="col-side" aria-label="Tes remarques">
+      <div id="composer" class="card composer" hidden>
+        <h3><span id="cHead">Remarque à</span> <span class="tc" id="cTc">0:00,00</span><span id="cRange" class="tc" hidden></span></h3>
+        <p class="sub" id="cSub">Entoure sur l'image ce dont tu parles (facultatif), puis écris ce que tu veux changer.</p>
+        <div class="tools" role="group" aria-label="Crayon">
+          <button class="sw" type="button" data-c="#ff453a" style="--c:#ff453a" aria-label="Crayon rouge" aria-pressed="true"></button>
+          <button class="sw" type="button" data-c="#ffd60a" style="--c:#ffd60a" aria-label="Crayon jaune" aria-pressed="false"></button>
+          <button class="sw" type="button" data-c="#ffffff" style="--c:#ffffff" aria-label="Crayon blanc" aria-pressed="false"></button>
+          <button id="bUndo" class="small" type="button">Annuler le trait</button>
+          <button id="bClear" class="small" type="button">Effacer le dessin</button>
+        </div>
+        <label for="cText" hidden>Ta remarque</label>
+        <textarea id="cText" maxlength="1500" placeholder="Ce que tu veux changer… (ex. : « le texte passe trop vite », « ce flash est trop fort », « mets mon visage plus haut »)"></textarea>
+        <div class="kinds" role="group" aria-label="Ça concerne">
+          <button class="kind" type="button" data-k="image" aria-pressed="true">Image</button>
+          <button class="kind" type="button" data-k="texte" aria-pressed="false">Texte</button>
+          <button class="kind" type="button" data-k="son" aria-pressed="false">Son</button>
+          <button class="kind" type="button" data-k="rythme" aria-pressed="false">Rythme</button>
+          <button class="kind" type="button" data-k="autre" aria-pressed="false">Autre</button>
+        </div>
+        <div class="range-row">
+          <span id="rangeHint">Ça dure plus longtemps ? Avance la vidéo, puis</span>
+          <button id="bEnd" class="small" type="button">Fin du passage ici</button>
+          <button id="bEndClear" class="small" type="button" hidden>Retirer la fin</button>
+          <button id="bBack" class="back-frame" type="button" hidden>Revenir à l'image de la remarque</button>
+        </div>
+        <p id="cErr" class="err" hidden></p>
+        <div class="c-actions">
+          <button id="bSave" class="primary" type="button">Enregistrer la remarque</button>
+          <button id="bCancel" class="ghost" type="button">Annuler</button>
+        </div>
+      </div>
+
+      <div class="card list">
+        <div class="list-head"><h3>Tes remarques</h3><span id="count"></span></div>
+        <ol id="notes" class="notes"></ol>
+        <p id="emptyList" class="empty-list">Aucune remarque sur cette vidéo pour l'instant. Mets en pause et clique « Remarque ici ».</p>
+      </div>
+
+      <div class="card send">
+        <button id="bSend" class="primary" type="button" disabled>J'ai fini mes remarques</button>
+        <p id="sendMsg" class="idle">Quand tu as tout dit sur cette vidéo, clique ici, puis écris « c'est bon » à Claude dans la conversation.</p>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (s) { return document.querySelector(s); };
+  var KIND = { image: "Image", texte: "Texte", son: "Son", rythme: "Rythme", autre: "Autre" };
+  var STATE = { "ouverte": ["Nouvelle", "p-open"], "envoyée": ["Pour Claude", "p-sent"], "traitée": ["Corrigée", "p-done"] };
+  var WHOLE_ICO = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 5.5h15a1.5 1.5 0 0 1 1.5 1.5v8.5a1.5 1.5 0 0 1-1.5 1.5H11l-4.5 3.5V17h-2A1.5 1.5 0 0 1 3 15.5V7a1.5 1.5 0 0 1 1.5-1.5z"/></svg>';
+  function isWhole(r) { return !!r && r.scope === "global"; }
+  var S = { db: null, assets: null, videos: [], cur: null, remarks: [], unsubR: null, unsubV: null, draft: null,
+            sel: null, color: "#ff453a", local: {}, sprite: null, spriteFor: null, pendingDel: null, loadTimer: null, boot: {} };
+  var V = $("#vid"), INK = $("#ink"), STAGE = $("#stage"), TL = $("#tl"), TLC = $("#tlc");
+
+  // ------------------------------------------------------------------ time
+  function fps() { return (S.cur && S.cur.fps) || 30; }
+  function dur() { return (V.duration && isFinite(V.duration)) ? V.duration : ((S.cur && S.cur.duration) || 0); }
+  function frameOf(t) { return Math.max(0, Math.floor(t * fps() + 1e-4)); }
+  function lastFrame() { return Math.max(0, Math.floor(dur() * fps()) - 1); }
+  function fmt(t) {
+    if (!(t >= 0)) t = 0;
+    var m = Math.floor(t / 60), s = t - m * 60, cs = Math.floor((s - Math.floor(s)) * 100 + 1e-6);
+    return m + ":" + String(Math.floor(s)).padStart(2, "0") + "," + String(cs).padStart(2, "0");
+  }
+  function seekFrame(f) {
+    f = Math.max(0, Math.min(lastFrame(), f));
+    V.currentTime = (f + 0.5) / fps();
+    paintPlayhead();
+  }
+  function curFrame() { return frameOf(V.currentTime || 0); }
+
+  // ------------------------------------------------------------------ layout of the stage
+  function aspect() { return (V.videoWidth && V.videoHeight) ? V.videoWidth / V.videoHeight : ((S.cur && S.cur.w && S.cur.h) ? S.cur.w / S.cur.h : 16 / 9); }
+  function layout() {
+    var col = STAGE.parentElement, avail = col.clientWidth, ar = aspect();
+    var maxH = Math.max(220, window.innerHeight * (window.innerWidth < 700 ? 0.56 : 0.64));
+    var w = Math.min(avail, maxH * ar);
+    STAGE.style.aspectRatio = ar;
+    STAGE.style.width = Math.round(w) + "px";
+    var dpr = Math.min(2, window.devicePixelRatio || 1);
+    var r = STAGE.getBoundingClientRect();
+    INK.width = Math.max(1, Math.round(r.width * dpr)); INK.height = Math.max(1, Math.round(r.height * dpr));
+    var tr = TL.getBoundingClientRect();
+    TLC.width = Math.max(1, Math.round(tr.width * dpr)); TLC.height = Math.max(1, Math.round(tr.height * dpr));
+    drawInk(); drawTimeline(); renderPins(); paintPlayhead();
+  }
+
+  // ------------------------------------------------------------------ ink
+  function strokePath(ctx, s, W, H, alpha) {
+    var p = s.p; if (!p || !p.length) return;
+    ctx.save();
+    ctx.globalAlpha = alpha; ctx.strokeStyle = s.c; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    ctx.lineWidth = Math.max(2, s.w * W);
+    ctx.shadowColor = "rgba(0,0,0,0.55)"; ctx.shadowBlur = Math.max(2, s.w * W * 0.7);
+    ctx.beginPath(); ctx.moveTo(p[0][0] * W, p[0][1] * H);
+    if (p.length === 1) ctx.lineTo(p[0][0] * W + 0.2, p[0][1] * H);
+    for (var i = 1; i < p.length - 1; i++) {
+      ctx.quadraticCurveTo(p[i][0] * W, p[i][1] * H, (p[i][0] + p[i + 1][0]) / 2 * W, (p[i][1] + p[i + 1][1]) / 2 * H);
+    }
+    if (p.length > 1) ctx.lineTo(p[p.length - 1][0] * W, p[p.length - 1][1] * H);
+    ctx.stroke(); ctx.restore();
+  }
+  function drawInk() {
+    var ctx = INK.getContext("2d"), W = INK.width, H = INK.height;
+    ctx.clearRect(0, 0, W, H);
+    var f = curFrame();
+    if (S.draft && !isWhole(S.draft)) {
+      if (f === S.draft.frame) S.draft.strokes.forEach(function (s) { strokePath(ctx, s, W, H, 1); });
+      return;
+    }
+    if (!V.paused) return;
+    S.remarks.forEach(function (r) {
+      if (!isWhole(r) && r.strokes && r.strokes.length && Math.abs(r.frame - f) <= 1) r.strokes.forEach(function (s) { strokePath(ctx, s, W, H, r.id === S.sel ? 1 : 0.85); });
+    });
+  }
+  var curStroke = null;
+  function norm(e) {
+    var r = INK.getBoundingClientRect();
+    return [Math.round(Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)) * 10000) / 10000,
+            Math.round(Math.min(1, Math.max(0, (e.clientY - r.top) / r.height)) * 10000) / 10000];
+  }
+  INK.addEventListener("pointerdown", function (e) {
+    if (!S.draft || isWhole(S.draft)) return;
+    e.preventDefault();
+    if (curFrame() !== S.draft.frame) { seekFrame(S.draft.frame); }
+    try { INK.setPointerCapture(e.pointerId); } catch (x) {}
+    curStroke = { c: S.color, w: 0.0065, p: [norm(e)] };
+    S.draft.strokes.push(curStroke); drawInk();
+  });
+  INK.addEventListener("pointermove", function (e) {
+    if (!curStroke) return;
+    var q = norm(e), l = curStroke.p[curStroke.p.length - 1], ar = aspect();
+    if (Math.hypot(q[0] - l[0], (q[1] - l[1]) / ar) > 0.0025 && curStroke.p.length < 700) { curStroke.p.push(q); drawInk(); }
+  });
+  function endStroke() { curStroke = null; }
+  INK.addEventListener("pointerup", endStroke); INK.addEventListener("pointercancel", endStroke);
+
+  // ------------------------------------------------------------------ timeline
+  var TLR = { scene: [0, 20], strip: [22, 82], wave: [85, 104], ruler: [105, 122] };
+  function loadSprite() {
+    var fs = S.cur && S.cur.filmstrip;
+    if (!fs || !fs.asset) { S.sprite = null; S.spriteFor = null; return; }
+    if (S.spriteFor === fs.asset) return;
+    S.spriteFor = fs.asset;
+    var img = new Image();
+    img.onload = function () { if (S.spriteFor === fs.asset) { S.sprite = img; drawTimeline(); } };
+    img.src = "/_blob/" + fs.asset;
+  }
+  function drawTimeline() {
+    var ctx = TLC.getContext("2d"), W = TLC.width, H = TLC.height, k = H / 122, d = dur();
+    ctx.clearRect(0, 0, W, H);
+    function css(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+    // strip
+    var sy = TLR.strip[0] * k, sh = (TLR.strip[1] - TLR.strip[0]) * k;
+    ctx.fillStyle = "#0b0e12"; ctx.fillRect(0, sy, W, sh);
+    var fs = S.cur && S.cur.filmstrip;
+    if (d > 0 && S.sprite && fs) {
+      var tw = sh * (fs.tw / fs.th), n = Math.max(1, Math.ceil(W / tw));
+      for (var i = 0; i < n; i++) {
+        var t = (i + 0.5) * (tw / W) * d, c = Math.max(0, Math.min(fs.n - 1, Math.round(t / fs.step - 0.5)));
+        ctx.drawImage(S.sprite, (c % fs.cols) * fs.tw, Math.floor(c / fs.cols) * fs.th, fs.tw, fs.th, i * tw, sy, tw, sh);
+      }
+      ctx.fillStyle = "rgba(0,0,0,0.18)"; ctx.fillRect(0, sy, W, sh);
+    }
+    // scenes
+    var scenes = (S.cur && S.cur.scenes) || [];
+    ctx.font = "600 " + Math.round(11 * k) + "px Rubik, system-ui, sans-serif"; ctx.textBaseline = "middle";
+    scenes.forEach(function (s, i) {
+      if (!(d > 0)) return;
+      var x0 = s.t0 / d * W, x1 = Math.min(W, s.t1 / d * W);
+      ctx.fillStyle = i % 2 ? css("--scene-b") : css("--scene-a"); ctx.fillRect(x0, TLR.scene[0] * k, Math.max(1, x1 - x0 - 1 * k), (TLR.scene[1] - TLR.scene[0]) * k);
+      ctx.save(); ctx.beginPath(); ctx.rect(x0, 0, Math.max(0, x1 - x0 - 4 * k), TLR.scene[1] * k); ctx.clip();
+      ctx.fillStyle = css("--muted"); ctx.fillText(s.label || "", x0 + 5 * k, (TLR.scene[0] + TLR.scene[1]) / 2 * k); ctx.restore();
+    });
+    // waveform
+    var wv = (S.cur && S.cur.wave) || [];
+    if (wv.length && d > 0) {
+      var wy0 = TLR.wave[0] * k, wh = (TLR.wave[1] - TLR.wave[0]) * k, mid = wy0 + wh / 2;
+      ctx.fillStyle = css("--wave");
+      var span = (S.cur.waveSpan || d);
+      for (var x = 0; x < W; x += 2 * k) {
+        var tt = x / W * d, j = Math.min(wv.length - 1, Math.floor(tt / span * wv.length));
+        var a = Math.max(0.04, wv[j] || 0) * wh / 2;
+        ctx.fillRect(x, mid - a, 1.4 * k, a * 2);
+      }
+    }
+    // ruler
+    if (d > 0) {
+      ctx.fillStyle = css("--muted"); ctx.font = "500 " + Math.round(10.5 * k) + "px 'JetBrains Mono', monospace"; ctx.textBaseline = "alphabetic";
+      var step = d > 240 ? 30 : d > 90 ? 10 : 5;
+      for (var s2 = 0; s2 <= d + 1e-6; s2 += 1) {
+        var xx = s2 / d * W, big = Math.abs(s2 % step) < 1e-6;
+        ctx.fillRect(xx, TLR.ruler[0] * k, 1 * k, (big ? 6 : 3) * k);
+        if (big && s2 > 0 && xx < W - 30 * k) ctx.fillText(fmt(s2).replace(/,00$/, ""), xx + 3 * k, (TLR.ruler[1] - 3) * k);
+      }
+    }
+  }
+  function xOfT(t) { var d = dur(); return d > 0 ? (t / d) * TL.clientWidth : 0; }
+  function paintPlayhead() {
+    $("#ph").style.left = xOfT(V.currentTime || 0) + "px";
+    var t = V.currentTime || 0, f = curFrame();
+    $("#tc").firstChild.nodeValue = fmt(f / fps());
+    $("#tcFrame").textContent = "image " + f;
+    TL.setAttribute("aria-valuenow", String(Math.round(t * 100) / 100));
+    TL.setAttribute("aria-valuetext", fmt(t));
+    $("#bBack").hidden = !(S.draft && !isWhole(S.draft) && f !== S.draft.frame);
+    drawInk();
+  }
+  function renderPins() {
+    var box = $("#pins"); box.textContent = "";
+    var list = S.remarks.filter(function (r) { return !isWhole(r); });
+    if (S.draft && !S.draft.id && !isWhole(S.draft)) list.push(Object.assign({ _draft: true, num: "+" }, S.draft));
+    list.forEach(function (r) {
+      var p = document.createElement("div");
+      var st = r._draft ? "p-draft" : (STATE[r.status] || STATE["ouverte"])[1];
+      p.className = "pin " + st + (r.id && r.id === S.sel ? " sel" : "");
+      p.style.left = xOfT(r.t) + "px";
+      if (r.t1 && r.t1 > r.t) { var rg = document.createElement("span"); rg.className = "range"; rg.style.width = Math.max(2, xOfT(r.t1) - xOfT(r.t)) + "px"; p.appendChild(rg); }
+      var b = document.createElement("button"); b.type = "button"; b.textContent = r.num || "?";
+      b.setAttribute("aria-label", "Remarque " + (r.num || "") + " à " + fmt(r.t));
+      b.addEventListener("pointerdown", function (e) { e.stopPropagation(); });
+      b.addEventListener("click", function (e) { e.stopPropagation(); if (r._draft) seekFrame(S.draft.frame); else selectRemark(r.id, true); });
+      p.appendChild(b); box.appendChild(p);
+    });
+  }
+  var scrubbing = false;
+  function tAtX(clientX) { var r = TL.getBoundingClientRect(); return Math.min(1, Math.max(0, (clientX - r.left) / r.width)) * dur(); }
+  TL.addEventListener("pointerdown", function (e) {
+    if (!(dur() > 0)) return;
+    scrubbing = true; try { TL.setPointerCapture(e.pointerId); } catch (x) {}
+    if (!V.paused) V.pause();
+    seekFrame(frameOf(tAtX(e.clientX)));
+  });
+  TL.addEventListener("pointermove", function (e) {
+    var hv = $("#hoverTc");
+    if (e.pointerType === "mouse" && dur() > 0) {
+      var r = TL.getBoundingClientRect(), t = tAtX(e.clientX), sc = ((S.cur && S.cur.scenes) || []).filter(function (s) { return t >= s.t0 && t < s.t1; })[0];
+      hv.style.display = "block"; hv.style.left = Math.min(r.width - 60, Math.max(60, e.clientX - r.left)) + "px"; hv.textContent = fmt(t) + (sc && sc.label ? " · " + sc.label : "");
+    }
+    if (scrubbing) seekFrame(frameOf(tAtX(e.clientX)));
+  });
+  TL.addEventListener("pointerleave", function () { $("#hoverTc").style.display = "none"; });
+  function endScrub() { scrubbing = false; }
+  TL.addEventListener("pointerup", endScrub); TL.addEventListener("pointercancel", endScrub);
+  TL.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowLeft" || e.key === "ArrowRight") { e.preventDefault(); e.stopPropagation(); step(e.key === "ArrowLeft" ? -1 : 1, e.shiftKey); }
+  });
+
+  // ------------------------------------------------------------------ playback
+  function setPlayIcon() { $("#playIco").setAttribute("d", V.paused ? "M8 5.5v13l10.5-6.5z" : "M7 5.5h3.5v13H7zM13.5 5.5H17v13h-3.5z"); $("#bPlay").setAttribute("aria-label", V.paused ? "Lecture" : "Pause"); }
+  function togglePlay() { if (!V.src) return; if (V.paused) { if (S.draft && !isWhole(S.draft)) return; V.play().catch(function () {}); } else V.pause(); }
+  function step(dir, big) { if (!V.src) return; if (!V.paused) V.pause(); seekFrame(curFrame() + dir * (big ? Math.round(fps()) : 1)); }
+  var raf = 0;
+  function tick() { paintPlayhead(); if (!V.paused) raf = requestAnimationFrame(tick); }
+  V.addEventListener("play", function () { setPlayIcon(); cancelAnimationFrame(raf); raf = requestAnimationFrame(tick); drawInk(); });
+  V.addEventListener("pause", function () { setPlayIcon(); paintPlayhead(); });
+  V.addEventListener("seeked", paintPlayhead);
+  V.addEventListener("timeupdate", function () { if (V.paused) paintPlayhead(); });
+  V.addEventListener("loadedmetadata", function () { layout(); if (S.boot.frame != null) { seekFrame(S.boot.frame); S.boot.frame = null; } else seekFrame(0); $("#bMark").disabled = false; });
+  V.addEventListener("ended", setPlayIcon);
+  $("#bPlay").addEventListener("click", togglePlay);
+  $("#bPrev").addEventListener("click", function () { step(-1, false); });
+  $("#bNext").addEventListener("click", function () { step(1, false); });
+
+  document.addEventListener("keydown", function (e) {
+    var tg = e.target && e.target.tagName;
+    if (tg === "TEXTAREA" || tg === "INPUT" || tg === "SELECT") { if (e.key === "Escape" && S.draft) cancelDraft(); return; }
+    if (e.key === " ") { e.preventDefault(); togglePlay(); }
+    else if (e.key === "ArrowLeft" || e.key === "ArrowRight") { e.preventDefault(); step(e.key === "ArrowLeft" ? -1 : 1, e.shiftKey); }
+    else if ((e.key === "r" || e.key === "R") && !e.metaKey && !e.ctrlKey) { if (!S.draft && V.src) { e.preventDefault(); startDraft(); } }
+    else if ((e.key === "g" || e.key === "G") && !e.metaKey && !e.ctrlKey) { if (!S.draft && S.cur) { e.preventDefault(); startDraft(null, true); } }
+    else if (e.key === "Escape" && S.draft) cancelDraft();
+    else if ((e.key === "z" || e.key === "Z") && (e.metaKey || e.ctrlKey) && S.draft) { e.preventDefault(); undoStroke(); }
+  });
+
+  // ------------------------------------------------------------------ the composer
+  function pressGroup(sel, attr, val) { document.querySelectorAll(sel).forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute(attr) === val)); }); }
+  var PH_FRAME = $("#cText").getAttribute("placeholder"),
+      PH_WHOLE = "Ton avis sur l'ensemble… (ex. : « les transitions sont trop sèches », « la musique est trop forte partout », « le style me plaît »)";
+  function startDraft(existing, whole) {
+    whole = existing ? isWhole(existing) : !!whole;
+    if (!whole && !V.paused) V.pause();
+    if (existing && whole) {
+      S.draft = { id: existing.id, scope: "global", frame: null, t: null, t1: null, text: existing.text || "", kind: existing.kind || "autre", strokes: [], status: existing.status };
+    } else if (existing) {
+      S.draft = { id: existing.id, frame: existing.frame, t: existing.t, t1: existing.t1 || null, text: existing.text || "", kind: existing.kind || "image",
+                  strokes: JSON.parse(JSON.stringify(existing.strokes || [])), status: existing.status, wasStrokes: JSON.stringify(existing.strokes || []) };
+      seekFrame(existing.frame);
+    } else if (whole) {
+      S.draft = { id: null, scope: "global", frame: null, t: null, t1: null, text: "", kind: "autre", strokes: [] };
+    } else {
+      var f = curFrame();
+      S.draft = { id: null, frame: f, t: Math.round(f / fps() * 1000) / 1000, t1: null, text: "", kind: "image", strokes: [] };
+    }
+    S.sel = existing ? existing.id : null;
+    $("#composer").hidden = false; $("#composer").classList.toggle("global", whole);
+    STAGE.classList.toggle("drawing", !whole);
+    $("#cText").value = S.draft.text; $("#cText").setAttribute("placeholder", whole ? PH_WHOLE : PH_FRAME);
+    pressGroup(".kind", "data-k", S.draft.kind); $("#cErr").hidden = true;
+    $("#bSave").textContent = existing ? "Enregistrer les changements" : "Enregistrer la remarque";
+    paintComposer(); renderPins(); drawInk(); renderList();
+    if (window.matchMedia("(hover: hover)").matches) setTimeout(function () { $("#cText").focus(); }, 30);
+    else $("#composer").scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+  function paintComposer() {
+    if (!S.draft) return;
+    var whole = isWhole(S.draft);
+    $("#cHead").textContent = whole ? "Remarque sur toute la vidéo" : "Remarque à";
+    $("#cTc").hidden = whole;
+    $("#cSub").textContent = whole ? "Ce que tu penses de l'ensemble : le rythme, les transitions, le son, le style… Tu peux continuer à regarder la vidéo pendant que tu écris."
+                                   : "Entoure sur l'image ce dont tu parles (facultatif), puis écris ce que tu veux changer.";
+    if (whole) { $("#cRange").hidden = true; return; }
+    $("#cTc").textContent = fmt(S.draft.t);
+    var hasEnd = S.draft.t1 && S.draft.t1 > S.draft.t;
+    $("#cRange").hidden = !hasEnd; if (hasEnd) $("#cRange").textContent = "→ " + fmt(S.draft.t1);
+    $("#bEndClear").hidden = !hasEnd;
+    $("#rangeHint").textContent = hasEnd ? "Passage de " + fmt(S.draft.t) + " à " + fmt(S.draft.t1) + "." : "Ça dure plus longtemps ? Avance la vidéo, puis";
+    $("#bEnd").textContent = hasEnd ? "Déplacer la fin ici" : "Fin du passage ici";
+  }
+  function closeDraft() {
+    S.draft = null; $("#composer").hidden = true; $("#composer").classList.remove("global"); STAGE.classList.remove("drawing"); curStroke = null;
+    renderPins(); drawInk(); renderList(); paintPlayhead();
+  }
+  function cancelDraft() { if (S.draft && S.draft.id && !isWhole(S.draft)) seekFrame(S.draft.frame); closeDraft(); }
+  function undoStroke() { if (S.draft && S.draft.strokes.length) { S.draft.strokes.pop(); drawInk(); } }
+  document.querySelectorAll(".sw").forEach(function (b) { b.addEventListener("click", function () { S.color = b.getAttribute("data-c"); pressGroup(".sw", "data-c", S.color); }); });
+  document.querySelectorAll(".kind").forEach(function (b) { b.addEventListener("click", function () { if (S.draft) { S.draft.kind = b.getAttribute("data-k"); pressGroup(".kind", "data-k", S.draft.kind); } }); });
+  $("#bUndo").addEventListener("click", undoStroke);
+  $("#bClear").addEventListener("click", function () { if (S.draft) { S.draft.strokes = []; drawInk(); } });
+  $("#cText").addEventListener("input", function () { if (S.draft) S.draft.text = this.value; $("#cErr").hidden = true; });
+  $("#cText").addEventListener("keydown", function (e) { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); saveDraft(); } });
+  $("#bEnd").addEventListener("click", function () {
+    if (!S.draft) return; var t = Math.round(curFrame() / fps() * 1000) / 1000;
+    if (t <= S.draft.t) { showErr("Avance d'abord la vidéo jusqu'à la fin du passage, puis clique « Fin du passage ici »."); return; }
+    S.draft.t1 = t; $("#cErr").hidden = true; paintComposer(); renderPins();
+  });
+  $("#bEndClear").addEventListener("click", function () { if (S.draft) { S.draft.t1 = null; paintComposer(); renderPins(); } });
+  $("#bBack").addEventListener("click", function () { if (S.draft) seekFrame(S.draft.frame); });
+  $("#bCancel").addEventListener("click", cancelDraft);
+  $("#bSave").addEventListener("click", saveDraft);
+  $("#bMark").addEventListener("click", function () { if (!S.draft) startDraft(); });
+  $("#bGlobal").addEventListener("click", function () { if (!S.draft) startDraft(null, true); });
+  function say(t, cls) { var m = $("#sendMsg"); m.className = cls || ""; m.textContent = t; }
+  function showErr(m) { var e = $("#cErr"); e.textContent = m; e.hidden = false; }
+
+  function waitSeek() { return new Promise(function (res) { if (!V.seeking) return res(); var done = function () { V.removeEventListener("seeked", done); res(); }; V.addEventListener("seeked", done); setTimeout(done, 1500); }); }
+  function thumb(strokes) {
+    try {
+      var w = 320, h = Math.round(w / aspect()); var c = document.createElement("canvas"); c.width = w; c.height = h;
+      var x = c.getContext("2d"); x.drawImage(V, 0, 0, w, h);
+      (strokes || []).forEach(function (s) { strokePath(x, s, w, h, 1); });
+      return c.toDataURL("image/jpeg", 0.72);
+    } catch (err) { return null; }
+  }
+  function rid() { return "r" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+  async function saveDraft() {
+    var d = S.draft; if (!d) return;
+    var whole = isWhole(d);
+    d.text = $("#cText").value.trim();
+    if (whole && !d.text) { showErr("Écris ton avis sur l'ensemble de la vidéo."); return; }
+    if (!d.text && !d.strokes.length) { showErr("Écris ce que tu veux changer, ou entoure-le sur l'image."); return; }
+    if (!S.db) { showErr("Ta remarque ne peut pas être gardée ici : ouvre cette page dans Claude, connecté à ton compte."); return; }
+    var now = new Date().toISOString(), body;
+    if (whole) {
+      body = { video: S.cur.id, scope: "global", t: null, frame: null, t1: null, text: d.text, kind: d.kind, strokes: [], thumb: null, updatedAt: now };
+    } else {
+      if (curFrame() !== d.frame) { seekFrame(d.frame); }
+      await waitSeek();
+      body = {
+        video: S.cur.id, t: d.t, frame: d.frame, t1: d.t1 || null, text: d.text, kind: d.kind, strokes: d.strokes.map(function (s) { return { c: s.c, w: s.w, p: s.p }; }),
+        thumb: thumb(d.strokes), updatedAt: now
+      };
+    }
+    var btn = $("#bSave"); btn.disabled = true;
+    try {
+      if (d.id) {
+        var old = S.remarks.filter(function (r) { return r.id === d.id; })[0];
+        if (old && old.status !== "ouverte") body.status = "ouverte";
+        await S.db.doc("remarks/" + d.id).update(body);
+        S.sel = d.id;
+      } else {
+        var id = rid(); body.status = "ouverte"; body.createdAt = now; body.round = null;
+        await S.db.doc("remarks/" + id).set(body);
+        S.sel = id;
+      }
+      closeDraft();
+    } catch (err) {
+      showErr(err && err.code === "quota_exceeded" ? "La page est pleine : supprime d'anciennes remarques, puis réessaie." : "La remarque n'a pas été enregistrée (" + (err && err.code || "erreur") + "). Réessaie dans un instant.");
+    } finally { btn.disabled = false; }
+  }
+
+  // ------------------------------------------------------------------ the list
+  function numberRemarks() {
+    // the remarks on the whole video come first; the others follow the timeline and are numbered 1, 2, 3…
+    S.remarks.sort(function (a, b) {
+      var ga = isWhole(a) ? 0 : 1, gb = isWhole(b) ? 0 : 1;
+      return ga - gb || (ga ? a.t - b.t : 0) || String(a.createdAt).localeCompare(String(b.createdAt));
+    });
+    var n = 0;
+    S.remarks.forEach(function (r) { r.num = isWhole(r) ? null : ++n; });
+  }
+  function selectRemark(id, seek) {
+    var r = S.remarks.filter(function (x) { return x.id === id; })[0]; if (!r) return;
+    S.sel = id;
+    if (isWhole(r)) { renderPins(); renderList(); drawInk(); return; }
+    if (!V.paused) V.pause();
+    if (seek) seekFrame(r.frame);
+    renderPins(); renderList(); drawInk();
+  }
+  function renderList() {
+    var ol = $("#notes"); ol.textContent = "";
+    var open = S.remarks.filter(function (r) { return r.status === "ouverte"; }).length;
+    $("#emptyList").hidden = S.remarks.length > 0;
+    $("#count").textContent = S.remarks.length ? S.remarks.length + (S.remarks.length > 1 ? " remarques" : " remarque") : "";
+    S.remarks.forEach(function (r) {
+      var st = STATE[r.status] || STATE["ouverte"];
+      var whole = isWhole(r);
+      var li = document.createElement("li"); li.className = "n " + st[1] + (r.id === S.sel ? " sel" : "");
+      var th = document.createElement("button"); th.type = "button"; th.className = "th" + (whole ? " whole" : "");
+      th.setAttribute("aria-label", whole ? "Remarque sur toute la vidéo" : "Voir la remarque " + r.num + " sur l'image");
+      if (whole) { th.innerHTML = WHOLE_ICO; var lb = document.createElement("span"); lb.textContent = "Toute la vidéo"; th.appendChild(lb); }
+      else {
+        if (r.thumb) { var im = document.createElement("img"); im.alt = ""; im.src = r.thumb; th.appendChild(im); }
+        var nb = document.createElement("b"); nb.textContent = r.num; th.appendChild(nb);
+      }
+      th.addEventListener("click", function () { selectRemark(r.id, true); });
+      var body = document.createElement("div");
+      var meta = document.createElement("div"); meta.className = "meta";
+      var tcb = document.createElement("button"); tcb.type = "button"; tcb.className = "tc";
+      tcb.textContent = whole ? "Toute la vidéo" : fmt(r.t) + (r.t1 ? " → " + fmt(r.t1) : "");
+      if (whole) tcb.style.fontFamily = "var(--ui)";
+      tcb.addEventListener("click", function () { selectRemark(r.id, true); });
+      var kd = document.createElement("span"); kd.textContent = KIND[r.kind] || "Autre";
+      var sd = document.createElement("span"); sd.className = "st"; sd.textContent = st[0];
+      meta.appendChild(tcb); meta.appendChild(kd); meta.appendChild(sd);
+      body.appendChild(meta);
+      if (r.text) { var p = document.createElement("p"); p.textContent = r.text; body.appendChild(p); }
+      else if (r.strokes && r.strokes.length) { var p2 = document.createElement("p"); p2.textContent = "(dessin sur l'image)"; p2.style.color = "var(--muted)"; body.appendChild(p2); }
+      if (r.reply) { var rp = document.createElement("div"); rp.className = "reply"; var rb = document.createElement("b"); rb.textContent = "Claude : "; rp.appendChild(rb); rp.appendChild(document.createTextNode(r.reply)); body.appendChild(rp); }
+      var acts = document.createElement("div"); acts.className = "acts";
+      if (S.pendingDel === r.id) {
+        var q = document.createElement("span"); q.textContent = "Supprimer ?"; q.style.cssText = "font-size:12.5px;color:var(--muted);align-self:center";
+        var yes = document.createElement("button"); yes.type = "button"; yes.className = "danger"; yes.textContent = "Oui, supprimer";
+        yes.addEventListener("click", function () { delRemark(r.id); });
+        var no = document.createElement("button"); no.type = "button"; no.textContent = "Non";
+        no.addEventListener("click", function () { S.pendingDel = null; renderList(); });
+        acts.appendChild(q); acts.appendChild(yes); acts.appendChild(no);
+      } else {
+        var ed = document.createElement("button"); ed.type = "button"; ed.textContent = "Modifier";
+        ed.addEventListener("click", function () { if (!S.draft) startDraft(r); });
+        var dl = document.createElement("button"); dl.type = "button"; dl.textContent = "Supprimer";
+        dl.addEventListener("click", function () { S.pendingDel = r.id; renderList(); });
+        acts.appendChild(ed); acts.appendChild(dl);
+      }
+      body.appendChild(acts);
+      li.appendChild(th); li.appendChild(body); ol.appendChild(li);
+    });
+    var sb = $("#bSend");
+    sb.disabled = !open || !!S.draft;
+    sb.textContent = open ? "J'ai fini mes remarques (" + open + (open > 1 ? " nouvelles)" : " nouvelle)") : "J'ai fini mes remarques";
+    paintVideoState();
+  }
+  async function delRemark(id) {
+    S.pendingDel = null;
+    try { await S.db.doc("remarks/" + id).delete(); if (S.sel === id) S.sel = null; }
+    catch (err) { say("La remarque n'a pas été supprimée. Réessaie."); }
+  }
+
+  // ------------------------------------------------------------------ sending
+  function summary(list) {
+    var head = "Retours de la Salle de visionnage sur « " + (S.cur.title || S.cur.id) + " » (" + S.cur.id + ") : " + list.length + (list.length > 1 ? " remarques." : " remarque.");
+    var tail = "Détails et dessins dans la page (base : remarks, video = " + S.cur.id + ").";
+    var cut = 260, txt;
+    do {
+      txt = head + "\n" + list.map(function (r) {
+        var s = r.text || "(dessin seulement)"; if (s.length > cut) s = s.slice(0, cut - 1) + "…";
+        if (isWhole(r)) return "• Toute la vidéo · " + (KIND[r.kind] || "Autre") + " : " + s;
+        return r.num + ". " + fmt(r.t) + (r.t1 ? "→" + fmt(r.t1) : "") + " · " + (KIND[r.kind] || "Autre") + (r.strokes && r.strokes.length ? " · entouré" : "") + " : " + s;
+      }).join("\n") + "\n" + tail;
+      cut -= 40;
+    } while (new TextEncoder().encode(txt).length > 3800 && cut > 40);
+    return txt;
+  }
+  // The page cannot write into the conversation itself (a message from here would open a new conversation): it marks the
+  // remarks as ready, copies their summary, and asks him to write « c'est bon » to Claude in the conversation he came from.
+  function copyText(t) {
+    var viaApi = null;
+    try { if (navigator.clipboard && navigator.clipboard.writeText) viaApi = navigator.clipboard.writeText(t); } catch (e) { viaApi = null; }
+    if (viaApi) return viaApi.then(function () { return true; }, function () { return legacyCopy(t); });
+    return Promise.resolve(legacyCopy(t));
+  }
+  function legacyCopy(t) {
+    try {
+      var ta = document.createElement("textarea"); ta.value = t; ta.setAttribute("readonly", ""); ta.style.cssText = "position:fixed;left:-9999px;top:0;opacity:0";
+      document.body.appendChild(ta); ta.select(); var ok = document.execCommand("copy"); ta.remove(); return !!ok;
+    } catch (e) { return false; }
+  }
+  $("#bSend").addEventListener("click", async function () {
+    var btn = this, msg = $("#sendMsg");
+    var open = S.remarks.filter(function (r) { return r.status === "ouverte"; });
+    if (!open.length || !S.db) return;
+    btn.disabled = true; msg.className = ""; msg.textContent = "J'enregistre…";
+    var text = summary(open), copying = copyText(text);   // started inside the click, as the clipboard requires
+    try {
+      var round = 1 + S.remarks.reduce(function (m, r) { return Math.max(m, r.round || 0); }, 0), now = new Date().toISOString();
+      for (var i = 0; i < open.length; i++) await S.db.doc("remarks/" + open[i].id).update({ status: "envoyée", round: round, sentAt: now });
+      await S.db.doc("rounds/" + S.cur.id + "-" + round).set({ video: S.cur.id, n: round, sentAt: now, ids: open.map(function (r) { return r.id; }), count: open.length, toClaude: false, text: text });
+      var copied = await copying;
+      msg.className = "ok";
+      msg.textContent = "C'est prêt ✓ Retourne dans la conversation avec Claude et écris « c'est bon » : il lit tes " + open.length + (open.length > 1 ? " remarques" : " remarque") + " et s'y met."
+                        + (copied ? " (Le résumé est aussi copié : tu peux le coller à la place.)" : "");
+    } catch (err) {
+      msg.textContent = "Ça n'a pas été enregistré (" + (err && err.code || "erreur") + "). Réessaie dans un instant.";
+    } finally { renderList(); }
+  });
+
+  // ------------------------------------------------------------------ the videos
+  function videoLabel(v) {
+    var d = v.createdAt ? new Date(v.createdAt) : null;
+    return (v.title || v.id) + (v.version ? " · v" + v.version : "") + (d && !isNaN(d) ? " · " + d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" }) : "");
+  }
+  function renderPicker() {
+    var sel = $("#videoSel"); sel.textContent = "";
+    if (!S.videos.length) { var o = document.createElement("option"); o.textContent = S.db ? "Aucune vidéo pour l'instant" : "Vidéos indisponibles ici"; sel.appendChild(o); sel.disabled = true; return; }
+    sel.disabled = false;
+    S.videos.forEach(function (v) { var o = document.createElement("option"); o.value = v.id; o.textContent = videoLabel(v); sel.appendChild(o); });
+    if (S.cur) sel.value = S.cur.id;
+  }
+  $("#videoSel").addEventListener("change", function () { var v = S.videos.filter(function (x) { return x.id === $("#videoSel").value; })[0]; if (v) setVideo(v); });
+  function paintVideoState() {
+    var c = $("#vstate");
+    if (!S.cur) { c.hidden = true; return; }
+    var open = S.remarks.filter(function (r) { return r.status === "ouverte"; }).length, sent = S.remarks.filter(function (r) { return r.status === "envoyée"; }).length,
+        done = S.remarks.filter(function (r) { return r.status === "traitée"; }).length;
+    c.hidden = false;
+    if (open) { c.className = "chip c-open"; c.textContent = open + " à envoyer"; }
+    else if (sent) { c.className = "chip c-sent"; c.textContent = "Pour Claude"; }
+    else if (done) { c.className = "chip c-done"; c.textContent = "Corrigée"; }
+    else { c.className = "chip"; c.textContent = "À regarder"; }
+  }
+  function setVideo(v) {
+    if (S.draft) closeDraft();
+    S.cur = v; S.sel = null; S.remarks = []; renderList(); renderPins();
+    var note = $("#claudeNote");
+    if (v.note) { note.textContent = ""; var b = document.createElement("b"); b.textContent = "Claude : "; note.appendChild(b); note.appendChild(document.createTextNode(v.note)); note.hidden = false; } else note.hidden = true;
+    var src = v.asset ? "/_blob/" + v.asset : (S.local[v.id] || "");
+    $("#bMark").disabled = true; $("#bGlobal").disabled = false;
+    if (src) {
+      $("#stageMsg").hidden = true;
+      if (V.getAttribute("src") !== src) { V.src = src; V.load(); }
+    } else {
+      V.removeAttribute("src"); V.load();
+      var m = $("#stageMsg"); m.hidden = false;
+      m.innerHTML = "<div><h2>Cette vidéo est restée sur ton ordinateur</h2><p>Rouvre le même fichier pour la revoir et continuer tes remarques.</p></div>";
+    }
+    loadSprite(); layout();
+    if (S.unsubR) { S.unsubR(); S.unsubR = null; }
+    if (S.db) {
+      S.unsubR = S.db.collection("remarks").where("video", "==", v.id).onSnapshot(function (snap) {
+        S.remarks = snap.docs.map(function (d) { var o = Object.assign({}, d.data()); o.id = d.id; return o; });
+        numberRemarks(); renderList(); renderPins(); drawInk();
+      }, function () { say("Les remarques ne se chargent plus. Recharge la page."); });
+    }
+    try { localStorage.setItem("salle.cur", v.id); } catch (e) {}
+  }
+
+  // a video from his computer: kept here when it is small enough, else played from the file only
+  $("#openLocal").addEventListener("click", function () { $("#fileIn").click(); });
+  $("#fileIn").addEventListener("change", async function () {
+    var f = this.files && this.files[0]; this.value = ""; if (!f) return;
+    var msg = $("#sendMsg"); msg.className = "";
+    var id = "toi-" + f.name.replace(/[^A-Za-z0-9_.-]+/g, "-").slice(0, 60) + "-" + f.size;
+    var existing = S.videos.filter(function (v) { return v.id === id; })[0];
+    S.local[id] = URL.createObjectURL(f);
+    if (existing) { setVideo(existing); return; }
+    var doc = { title: f.name, version: null, fps: 30, createdAt: new Date().toISOString(), source: "toi", asset: null, size: f.size };
+    if (S.assets && f.size <= 20 * 1024 * 1024) {
+      try { msg.textContent = "J'ajoute ta vidéo à la page…"; var up = await S.assets.upload(f, { type: f.type === "video/webm" ? "video/webm" : "video/mp4" }); doc.asset = up.id; msg.textContent = "Ta vidéo est dans la page ✓"; }
+      catch (err) { msg.textContent = "Ta vidéo n'a pas pu être gardée ici (" + (err && err.code || "erreur") + ") : tes remarques le seront quand même. Envoie aussi la vidéo à Claude dans la conversation."; }
+    } else if (f.size > 20 * 1024 * 1024) {
+      msg.textContent = "Ta vidéo est trop lourde pour être gardée ici (20 Mo au plus) : tes remarques le seront quand même. Envoie aussi la vidéo à Claude dans la conversation.";
+    }
+    if (S.db) { try { await S.db.doc("videos/" + id).set(doc); } catch (err) {} }
+    var v = Object.assign({ id: id }, doc);
+    if (!S.videos.some(function (x) { return x.id === id; })) { S.videos.unshift(v); renderPicker(); }
+    setVideo(v);
+  });
+
+  // ------------------------------------------------------------------ start
+  function start(data) {
+    S.boot = data || {};
+    if (window.claude && window.claude.hot && window.claude.hot.snapshot) {
+      try { window.claude.hot.snapshot(function () { return { cur: S.cur && S.cur.id, frame: V.src ? curFrame() : null }; }); } catch (e) {}
+    }
+    layout(); setPlayIcon();
+    window.addEventListener("resize", layout);
+    if (!window.claude || !window.claude.use) { S.db = null; renderPicker(); return; }
+    S.loadTimer = setTimeout(function () { if (!S.videos.length) { var o = $("#videoSel"); o.textContent = ""; var x = document.createElement("option"); x.textContent = "Les vidéos ne répondent pas encore…"; o.appendChild(x); } }, 10000);
+    window.claude.use("db").then(function (db) {
+      S.db = db;
+      if (!db) { clearTimeout(S.loadTimer); renderPicker(); say("Ouvre cette page dans Claude, connecté à ton compte, pour garder tes remarques."); return; }
+      S.unsubV = db.collection("videos").orderBy("createdAt", "desc").onSnapshot(function (snap) {
+        if (!snap.metadata.fromCache) clearTimeout(S.loadTimer);
+        S.videos = snap.docs.map(function (d) { var o = Object.assign({}, d.data()); o.id = d.id; return o; });
+        var want = S.cur ? S.cur.id : (S.boot.cur || (function () { try { return localStorage.getItem("salle.cur"); } catch (e) { return null; } })());
+        var v = S.videos.filter(function (x) { return x.id === want; })[0] || S.videos[0];
+        renderPicker();
+        if (v && (!S.cur || S.cur.id !== v.id)) setVideo(v);
+        else if (v && S.cur) { S.cur = v; renderPicker(); loadSprite(); drawTimeline(); paintVideoState(); }
+      }, function () { clearTimeout(S.loadTimer); say("Les vidéos ne se chargent plus. Recharge la page."); });
+    });
+    window.claude.use("assets").then(function (a) { S.assets = a; });
+  }
+  var hot = window.claude && window.claude.hot;
+  if (hot && hot.ready) hot.ready(start); else start((hot && hot.data) || {});
+})();
+</script>

@@ -1,0 +1,14 @@
+# Media stay out of the repo (owner's request). The media folders here are links to ../assets.
+assets/takes
+assets/audio
+assets/sfx
+assets/stills
+renders/
+*.mp4
+*.mov
+*.webm
+*.wav
+*.mp3
+.hyperframes/
+node_modules/
+snapshots/

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head><meta charset="UTF-8"><title>film — Stalak launch</title></head>
+  <body>
+    <template>
+      <div data-hf-id="hf-3hct" id="root" data-composition-id="film" data-width="1920" data-height="1080">
+        <style>
+          @font-face { font-family: "Rubik"; src: url("assets/fonts/rubik.ttf"); font-weight: 300 900; }
+          @font-face { font-family: "Lilita One"; src: url("assets/fonts/lilitaone.ttf"); }
+          #root { position: absolute; inset: 0; overflow: hidden; font-family: "Rubik", sans-serif; color: #ffffff; background: #050c1f; }
+          #root * { box-sizing: border-box; }
+          .abs { position: absolute; }
+          .full { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+          .lay { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; visibility: hidden; }
+          .v { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+          .img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+          .flake { position: absolute; border-radius: 50%; background: #ffffff; }
+
+          /* ===== the worlds ===== */
+          #w-night { background: radial-gradient(90% 80% at 50% 110%, #0f2a66 0%, #0a1a44 45%, #050c1f 100%); }
+          #w-night svg { position: absolute; left: -200px; top: -150px; width: 2320px; height: 1380px; filter: blur(46px); }
+          #w-blue { background: radial-gradient(70% 55% at 50% 118%, rgba(191, 233, 255, 0.95) 0%, rgba(120, 190, 255, 0.55) 30%, rgba(31, 111, 214, 0) 70%),
+                                linear-gradient(180deg, #0b2463 0%, #134aa8 55%, #1f6fd6 100%); }
+          #w-studio { background: linear-gradient(180deg, #f3f8ff 0%, #e2eefc 62%, #cfe1f7 62.1%, #bcd4f2 100%); }
+          #w-studio .sun { position: absolute; left: -300px; top: -400px; width: 1500px; height: 1300px;
+                           background: radial-gradient(closest-side, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0)); }
+          #w-sky { background: radial-gradient(80% 70% at 22% 8%, #8cc6fa 0%, #4d9cf0 30%, #2b7de0 55%, #1f6fd6 72%, #1552a6 100%); }
+          #w-sky .glare { position: absolute; left: -260px; top: -320px; width: 1300px; height: 1000px;
+                          background: radial-gradient(closest-side, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0)); }
+          .bokeh { position: absolute; border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.15) 70%, rgba(255, 255, 255, 0)); }
+
+          /* ===== ice glass ===== */
+          .glass { position: absolute; border-radius: 36px; background: linear-gradient(160deg, rgba(255, 255, 255, 0.30) 0%, rgba(255, 255, 255, 0.12) 45%, rgba(255, 255, 255, 0.16) 100%);
+                   -webkit-backdrop-filter: blur(18px) saturate(140%); backdrop-filter: blur(18px) saturate(140%);
+                   box-shadow: 0 30px 60px rgba(5, 20, 60, 0.25), inset 0 1.5px 0 rgba(255, 255, 255, 0.75), inset 0 0 0 1.5px rgba(255, 255, 255, 0.42); }
+          .pill { position: absolute; display: flex; align-items: center; justify-content: center; gap: 14px; height: 76px; padding: 0 34px; border-radius: 38px;
+                  font-weight: 500; font-size: 32px; color: #ffffff; white-space: nowrap;
+                  background: linear-gradient(160deg, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0.08)), rgba(10, 40, 110, 0.16);
+                  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+                  box-shadow: 0 16px 34px rgba(5, 20, 60, 0.22), inset 0 1.5px 0 rgba(255, 255, 255, 0.8), inset 0 0 0 1.5px rgba(255, 255, 255, 0.45); }
+          .pill.on { background: linear-gradient(160deg, #4b95f0, #1f6fd6); }
+          .round { position: absolute; width: 110px; height: 110px; border-radius: 55px; }
+
+          /* ===== type ===== */
+          .big { position: absolute; left: 0; width: 1920px; text-align: center; font-weight: 500; letter-spacing: -0.01em; white-space: nowrap; line-height: 1; }
+          /* v3 (owner's remark at 7.1 s, 2/11: the "g" was cut): the gradient is clipped to the text, so the box must reach below the descenders */
+          .ice { background: linear-gradient(180deg, #ffffff 8%, #e6f4ff 40%, #a9d6ff 68%, #7cc0ff 84%); -webkit-background-clip: text; background-clip: text; color: transparent; padding-bottom: 0.26em; }
+          .w { display: inline-block; }
+          .caret { display: inline-block; width: 6px; margin-left: 6px; background: #ffffff; border-radius: 3px; vertical-align: -0.08em; }
+
+          /* ===== devices ===== */
+          .bezel { position: absolute; background: #0d121d; box-shadow: inset 0 0 0 2px #2a3242, 0 50px 90px rgba(20, 50, 110, 0.32), 0 14px 26px rgba(20, 50, 110, 0.22); }
+          .screen { position: absolute; overflow: hidden; background: #1f6fd6; }
+          .prev { position: absolute; overflow: hidden; background: #0b1020; }
+          .lyr { position: absolute; left: 0; right: 0; text-align: center; font-weight: 800; color: #ffffff; line-height: 1.12;
+                 -webkit-text-stroke: 0; text-shadow: 0 0 2px #0a0d14, 0 0 2px #0a0d14, 0 3px 0 #0a0d14, 2px 0 0 #0a0d14, -2px 0 0 #0a0d14, 0 -2px 0 #0a0d14; }
+          .chip { position: absolute; display: flex; align-items: center; gap: 14px; height: 64px; padding: 0 26px 0 10px; border-radius: 32px; font-weight: 500; font-size: 28px;
+                  color: #ffffff; white-space: nowrap; background: linear-gradient(160deg, rgba(255, 255, 255, 0.36), rgba(255, 255, 255, 0.16));
+                  box-shadow: 0 12px 26px rgba(5, 20, 60, 0.22), inset 0 1.5px 0 rgba(255, 255, 255, 0.8), inset 0 0 0 1.5px rgba(255, 255, 255, 0.45); }
+          .chip .th { width: 44px; height: 44px; border-radius: 22px; background: #0b1020 center 25% / cover no-repeat; }
+          .chip .dot { width: 44px; height: 44px; border-radius: 22px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+          .tile { position: absolute; overflow: hidden; border-radius: 28px; background: rgba(255, 255, 255, 0.14);
+                  box-shadow: 0 24px 50px rgba(5, 20, 60, 0.3), inset 0 0 0 1.5px rgba(255, 255, 255, 0.4); }
+          .tag { position: absolute; left: 20px; bottom: 20px; height: 50px; padding: 0 20px; border-radius: 25px; display: flex; align-items: center; gap: 10px;
+                 font-weight: 600; font-size: 28px; color: #ffffff; background: rgba(10, 13, 20, 0.55); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+          .pro { display: inline-flex; align-items: center; height: 30px; padding: 0 9px; border-radius: 8px; background: #0a0d14; color: #fff; font-weight: 800; font-size: 20px; letter-spacing: 0.04em; }
+          .cp { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+          #cursor { position: absolute; left: 0; top: 0; width: 76px; height: 76px; z-index: 50; filter: drop-shadow(0 8px 10px rgba(5, 15, 40, 0.35)); }
+          #root .off { opacity: 0 !important; }
+          #live { background: #0b1020; }
+        </style>
+
+        <!-- the worlds -->
+        <div data-hf-id="hf-u53i" class="lay" id="w-night"><svg data-hf-id="hf-od42" id="aurora" viewBox="0 0 2320 1380" /><div data-hf-id="hf-m1zo" class="full" id="nsnow"></div></div>
+        <div data-hf-id="hf-5ji8" class="lay" id="w-blue"><div data-hf-id="hf-srkg" class="full" id="bsnow"></div></div>
+        <div data-hf-id="hf-fdim" class="lay" id="w-studio"><div data-hf-id="hf-64ru" class="sun"></div></div>
+
+        <!-- S0 + S1: the sky, seen through the icon, then the glass UI -->
+        <div data-hf-id="hf-ysuz" class="lay" id="skywrap">
+          <div data-hf-id="hf-3031" class="full" id="skycam">
+            <div data-hf-id="hf-lltk" class="full" id="w-sky"><div data-hf-id="hf-62pl" class="glare"></div><div data-hf-id="hf-m67d" class="full" id="ssnow"></div><div data-hf-id="hf-drlb" class="full" id="sbokeh"></div></div>
+            <div data-hf-id="hf-zla9" class="full" id="s1"></div>
+          </div>
+        </div>
+        <div data-hf-id="hf-chrh" class="lay" id="s0"><svg data-hf-id="hf-3f0o" id="spark" class="abs" viewBox="-50 -50 100 100" style="left:910px;top:490px;width:100px;height:100px" /></div>
+        <div data-hf-id="hf-3j8e" class="lay" id="s1b"></div>
+        <div data-hf-id="hf-kdzj" class="lay" id="s2"></div>
+
+        <!-- S3: the devices -->
+        <div data-hf-id="hf-gfvi" class="lay" id="s3">
+          <div data-hf-id="hf-sep4" class="full" id="s3a"></div>
+          <div data-hf-id="hf-12kz" class="full" id="s3b"><div data-hf-id="hf-8xdq" class="abs" id="phone"><!--C:phone--><video data-hf-id="hf-on5m" id="v3b" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="11.7417" data-duration="2.1083" data-media-start="1.7917" muted playsinline></video><!--/C:phone--></div></div>
+          <div data-hf-id="hf-x4gy" class="full" id="s3c"><div data-hf-id="hf-8ate" class="abs" id="tablet"><!--C:tablet--><video data-hf-id="hf-j12k" id="v3c" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="13.3417" data-duration="2.7083" data-media-start="13.3417" muted playsinline></video><!--/C:tablet--></div></div>
+        </div>
+
+        <!-- S4: him, the import, the sync, the edit -->
+        <div data-hf-id="hf-p3rd" class="lay" id="s4">
+          <div data-hf-id="hf-a16k" class="abs" id="live" style="overflow:hidden"><!--C:live--><video data-hf-id="hf-0yjg" id="v4a" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="15.9417" data-duration="4.8683" data-media-start="15.9417" muted playsinline></video><!--/C:live--></div>
+          <div data-hf-id="hf-qj6q" class="full" id="s4ui"></div>
+          <div data-hf-id="hf-w61v" class="abs prev" id="s4prev"><!--C:s4prev--><video data-hf-id="hf-hgki" id="v4d" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="22.5497" data-duration="1.5003" data-media-start="0.9917" muted playsinline></video><!--/C:s4prev--></div>
+        </div>
+
+        <!-- S5: the grid, then the flashes -->
+        <div data-hf-id="hf-oc3k" class="lay" id="s5">
+          <div data-hf-id="hf-x22n" class="full" id="bento">
+            <div data-hf-id="hf-6yam" class="tile" id="t0"><!--C:t0--><video data-color-grading="{&quot;preset&quot;:null,&quot;intensity&quot;:1,&quot;adjust&quot;:{&quot;exposure&quot;:0,&quot;contrast&quot;:0.12,&quot;highlights&quot;:0.08,&quot;shadows&quot;:0,&quot;whites&quot;:0.15,&quot;blacks&quot;:0,&quot;temperature&quot;:-0.45,&quot;tint&quot;:0,&quot;vibrance&quot;:0,&quot;saturation&quot;:-0.28},&quot;details&quot;:{&quot;vignette&quot;:0,&quot;vignetteMidpoint&quot;:0.5,&quot;vignetteRoundness&quot;:0,&quot;vignetteFeather&quot;:0.65,&quot;grain&quot;:0,&quot;grainSize&quot;:0.25,&quot;grainRoughness&quot;:0.5},&quot;effects&quot;:{&quot;blur&quot;:0,&quot;pixelate&quot;:0,&quot;chromaBleed&quot;:0,&quot;tapeDamage&quot;:0,&quot;tapeTracking&quot;:0,&quot;tapeNoise&quot;:1,&quot;tapeSpeed&quot;:0.5,&quot;filmArtifacts&quot;:0,&quot;halftone&quot;:0,&quot;halftoneSize&quot;:0,&quot;twoInkPrint&quot;:0,&quot;twoInkPrintSize&quot;:0,&quot;ascii&quot;:0,&quot;asciiSize&quot;:0.06578947368421052,&quot;asciiInvert&quot;:0,&quot;asciiStyle&quot;:0,&quot;asciiColor&quot;:1,&quot;asciiRotation&quot;:0,&quot;dither&quot;:0,&quot;ditherSize&quot;:0,&quot;bloom&quot;:0,&quot;bloomRadius&quot;:8,&quot;monoScreen&quot;:0,&quot;monoScreenSize&quot;:0,&quot;monoScreenAngle&quot;:0,&quot;monoScreenSpread&quot;:0,&quot;monoScreenShape&quot;:0,&quot;monoScreenInvert&quot;:0,&quot;scanlines&quot;:0,&quot;scanlineCount&quot;:0,&quot;scanlineSoftness&quot;:0,&quot;chromaticAberration&quot;:0,&quot;chromaticAngle&quot;:0,&quot;crtCurvature&quot;:0,&quot;digitalGlitch&quot;:0,&quot;digitalGlitchColorSplit&quot;:0,&quot;digitalGlitchLineTear&quot;:0,&quot;digitalGlitchPixelate&quot;:0,&quot;digitalGlitchBlockAmount&quot;:0,&quot;digitalGlitchBlockDisplacement&quot;:0,&quot;digitalGlitchBlockOpacity&quot;:0,&quot;digitalGlitchSpeed&quot;:0,&quot;engraving&quot;:0,&quot;engravingSpacing&quot;:0.4117647058823529,&quot;engravingMinThickness&quot;:0.2,&quot;engravingMaxThickness&quot;:0.4571428571428572,&quot;engravingAngle&quot;:0.25,&quot;engravingContrast&quot;:0.4666666666666667,&quot;engravingSharpness&quot;:0.59,&quot;engravingWave&quot;:0.2,&quot;engravingWaveFrequency&quot;:0.2222222222222222,&quot;crosshatch&quot;:0,&quot;crosshatchSpacing&quot;:0.28,&quot;crosshatchThickness&quot;:0.25,&quot;crosshatchAngle&quot;:0.25,&quot;crosshatchContrast&quot;:0.3333333333333333,&quot;crosshatchEdges&quot;:0.5,&quot;crosshatchLineWeight&quot;:0,&quot;crosshatchWave&quot;:0.33,&quot;crosshatchWaveFrequency&quot;:0.2222222222222222,&quot;kuwahara&quot;:0,&quot;kuwaharaRadius&quot;:0.14285714285714285,&quot;kuwaharaSharpness&quot;:0.3125,&quot;kuwaharaSaturation&quot;:0.5},&quot;lut&quot;:null,&quot;colorSpace&quot;:&quot;rec709&quot;}" data-hf-id="hf-e6c2" id="v5t0" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="23.9117" data-duration="1.7383" data-media-start="14.9917" muted playsinline></video><!--/C:t0--></div><div data-hf-id="hf-awen" class="tile" id="t1"><!--C:t1--><video data-hf-id="hf-d3ol" id="v5t1" class="clip v" data-hf-media-start-basis="local" src="assets/clip/mv.mp4" data-start="24.0117" data-duration="1.6383" data-media-start="5.6817" muted playsinline></video><!--/C:t1--></div>
+            <div data-hf-id="hf-28is" class="tile" id="t2"><!--C:t2--><video data-color-grading="{&quot;preset&quot;:null,&quot;intensity&quot;:1,&quot;adjust&quot;:{&quot;exposure&quot;:0,&quot;contrast&quot;:0.3,&quot;highlights&quot;:0,&quot;shadows&quot;:0,&quot;whites&quot;:0,&quot;blacks&quot;:0,&quot;temperature&quot;:0,&quot;tint&quot;:0,&quot;vibrance&quot;:0,&quot;saturation&quot;:-1},&quot;details&quot;:{&quot;vignette&quot;:0.25,&quot;vignetteMidpoint&quot;:0.5,&quot;vignetteRoundness&quot;:0,&quot;vignetteFeather&quot;:0.65,&quot;grain&quot;:0.3,&quot;grainSize&quot;:0.3,&quot;grainRoughness&quot;:0.5},&quot;effects&quot;:{&quot;blur&quot;:0,&quot;pixelate&quot;:0,&quot;chromaBleed&quot;:0,&quot;tapeDamage&quot;:0,&quot;tapeTracking&quot;:0,&quot;tapeNoise&quot;:1,&quot;tapeSpeed&quot;:0.5,&quot;filmArtifacts&quot;:0,&quot;halftone&quot;:0,&quot;halftoneSize&quot;:0,&quot;twoInkPrint&quot;:0,&quot;twoInkPrintSize&quot;:0,&quot;ascii&quot;:0,&quot;asciiSize&quot;:0.06578947368421052,&quot;asciiInvert&quot;:0,&quot;asciiStyle&quot;:0,&quot;asciiColor&quot;:1,&quot;asciiRotation&quot;:0,&quot;dither&quot;:0,&quot;ditherSize&quot;:0,&quot;bloom&quot;:0,&quot;bloomRadius&quot;:8,&quot;monoScreen&quot;:0,&quot;monoScreenSize&quot;:0,&quot;monoScreenAngle&quot;:0,&quot;monoScreenSpread&quot;:0,&quot;monoScreenShape&quot;:0,&quot;monoScreenInvert&quot;:0,&quot;scanlines&quot;:0,&quot;scanlineCount&quot;:0,&quot;scanlineSoftness&quot;:0,&quot;chromaticAberration&quot;:0,&quot;chromaticAngle&quot;:0,&quot;crtCurvature&quot;:0,&quot;digitalGlitch&quot;:0,&quot;digitalGlitchColorSplit&quot;:0,&quot;digitalGlitchLineTear&quot;:0,&quot;digitalGlitchPixelate&quot;:0,&quot;digitalGlitchBlockAmount&quot;:0,&quot;digitalGlitchBlockDisplacement&quot;:0,&quot;digitalGlitchBlockOpacity&quot;:0,&quot;digitalGlitchSpeed&quot;:0,&quot;engraving&quot;:0,&quot;engravingSpacing&quot;:0.4117647058823529,&quot;engravingMinThickness&quot;:0.2,&quot;engravingMaxThickness&quot;:0.4571428571428572,&quot;engravingAngle&quot;:0.25,&quot;engravingContrast&quot;:0.4666666666666667,&quot;engravingSharpness&quot;:0.59,&quot;engravingWave&quot;:0.2,&quot;engravingWaveFrequency&quot;:0.2222222222222222,&quot;crosshatch&quot;:0,&quot;crosshatchSpacing&quot;:0.28,&quot;crosshatchThickness&quot;:0.25,&quot;crosshatchAngle&quot;:0.25,&quot;crosshatchContrast&quot;:0.3333333333333333,&quot;crosshatchEdges&quot;:0.5,&quot;crosshatchLineWeight&quot;:0,&quot;crosshatchWave&quot;:0.33,&quot;crosshatchWaveFrequency&quot;:0.2222222222222222,&quot;kuwahara&quot;:0,&quot;kuwaharaRadius&quot;:0.14285714285714285,&quot;kuwaharaSharpness&quot;:0.3125,&quot;kuwaharaSaturation&quot;:0.5},&quot;lut&quot;:null,&quot;colorSpace&quot;:&quot;rec709&quot;}" data-hf-id="hf-0o0c" id="v5t2" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="23.9617" data-duration="1.6883" data-media-start="8.9917" muted playsinline></video><!--/C:t2--></div><div data-hf-id="hf-306l" class="tile" id="t3"><!--C:t3--><video data-color-grading="{&quot;preset&quot;:null,&quot;intensity&quot;:1,&quot;adjust&quot;:{&quot;exposure&quot;:0,&quot;contrast&quot;:0.18,&quot;highlights&quot;:0,&quot;shadows&quot;:0,&quot;whites&quot;:0,&quot;blacks&quot;:0,&quot;temperature&quot;:0.16,&quot;tint&quot;:0,&quot;vibrance&quot;:0,&quot;saturation&quot;:0},&quot;details&quot;:{&quot;vignette&quot;:0.22,&quot;vignetteMidpoint&quot;:0.5,&quot;vignetteRoundness&quot;:0,&quot;vignetteFeather&quot;:0.65,&quot;grain&quot;:0.28,&quot;grainSize&quot;:0.28,&quot;grainRoughness&quot;:0.5},&quot;effects&quot;:{&quot;blur&quot;:0,&quot;pixelate&quot;:0,&quot;chromaBleed&quot;:0,&quot;tapeDamage&quot;:0,&quot;tapeTracking&quot;:0,&quot;tapeNoise&quot;:1,&quot;tapeSpeed&quot;:0.5,&quot;filmArtifacts&quot;:0,&quot;halftone&quot;:0,&quot;halftoneSize&quot;:0,&quot;twoInkPrint&quot;:0,&quot;twoInkPrintSize&quot;:0,&quot;ascii&quot;:0,&quot;asciiSize&quot;:0.06578947368421052,&quot;asciiInvert&quot;:0,&quot;asciiStyle&quot;:0,&quot;asciiColor&quot;:1,&quot;asciiRotation&quot;:0,&quot;dither&quot;:0,&quot;ditherSize&quot;:0,&quot;bloom&quot;:0,&quot;bloomRadius&quot;:8,&quot;monoScreen&quot;:0,&quot;monoScreenSize&quot;:0,&quot;monoScreenAngle&quot;:0,&quot;monoScreenSpread&quot;:0,&quot;monoScreenShape&quot;:0,&quot;monoScreenInvert&quot;:0,&quot;scanlines&quot;:0,&quot;scanlineCount&quot;:0,&quot;scanlineSoftness&quot;:0,&quot;chromaticAberration&quot;:0,&quot;chromaticAngle&quot;:0,&quot;crtCurvature&quot;:0,&quot;digitalGlitch&quot;:0,&quot;digitalGlitchColorSplit&quot;:0,&quot;digitalGlitchLineTear&quot;:0,&quot;digitalGlitchPixelate&quot;:0,&quot;digitalGlitchBlockAmount&quot;:0,&quot;digitalGlitchBlockDisplacement&quot;:0,&quot;digitalGlitchBlockOpacity&quot;:0,&quot;digitalGlitchSpeed&quot;:0,&quot;engraving&quot;:0,&quot;engravingSpacing&quot;:0.4117647058823529,&quot;engravingMinThickness&quot;:0.2,&quot;engravingMaxThickness&quot;:0.4571428571428572,&quot;engravingAngle&quot;:0.25,&quot;engravingContrast&quot;:0.4666666666666667,&quot;engravingSharpness&quot;:0.59,&quot;engravingWave&quot;:0.2,&quot;engravingWaveFrequency&quot;:0.2222222222222222,&quot;crosshatch&quot;:0,&quot;crosshatchSpacing&quot;:0.28,&quot;crosshatchThickness&quot;:0.25,&quot;crosshatchAngle&quot;:0.25,&quot;crosshatchContrast&quot;:0.3333333333333333,&quot;crosshatchEdges&quot;:0.5,&quot;crosshatchLineWeight&quot;:0,&quot;crosshatchWave&quot;:0.33,&quot;crosshatchWaveFrequency&quot;:0.2222222222222222,&quot;kuwahara&quot;:0,&quot;kuwaharaRadius&quot;:0.14285714285714285,&quot;kuwaharaSharpness&quot;:0.3125,&quot;kuwaharaSaturation&quot;:0.5},&quot;lut&quot;:null,&quot;colorSpace&quot;:&quot;rec709&quot;}" data-hf-id="hf-zkip" id="v5t3" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="24.0617" data-duration="1.5883" data-media-start="2.9917" muted playsinline></video><!--/C:t3--></div>
+            <div data-hf-id="hf-lrwa" class="tile" id="t4"><!--C:t4--><video data-hf-id="hf-dlry" id="v5t4" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="24.1117" data-duration="1.5383" data-media-start="20.7417" muted playsinline></video><!--/C:t4--></div>
+          </div>
+          <div data-hf-id="hf-4snz" class="full" id="f0" style="overflow:hidden"><!--C:f0--><video data-hf-id="hf-hy2q" id="v5f0" class="clip v" data-hf-media-start-basis="local" src="assets/clip/mv.mp4" data-start="25.5417" data-duration="1.1183" data-media-start="2.3417" muted playsinline></video><!--/C:f0--></div>
+          <div data-hf-id="hf-d5jy" class="full" id="f1">
+            <div data-hf-id="hf-10n7" class="abs prev" id="f1a"><!--C:f1a--><video data-hf-id="hf-4l5e" id="v5f10" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="26.1117" data-duration="1.4083" data-media-start="11.9617" muted playsinline></video><!--/C:f1a--></div><div data-hf-id="hf-q55k" class="abs prev" id="f1b"><!--C:f1b--><video data-hf-id="hf-6n8a" id="v5f11" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="26.1117" data-duration="1.4083" data-media-start="11.9617" muted playsinline></video><!--/C:f1b--></div>
+            <div data-hf-id="hf-t4f5" class="abs prev" id="f1c"><!--C:f1c--><video data-hf-id="hf-ghie" id="v5f12" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="26.1117" data-duration="1.4083" data-media-start="11.9617" muted playsinline></video><!--/C:f1c--></div>
+          </div>
+          <div data-hf-id="hf-97fx" class="full" id="f2"><div data-hf-id="hf-z40x" class="abs prev" id="f2v"><!--C:f2--><video data-hf-id="hf-np55" id="v5f2" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="27.0417" data-duration="1.3083" data-media-start="22.5817" muted playsinline></video><!--/C:f2--></div></div>
+          <div data-hf-id="hf-686c" class="full" id="f3"></div>
+        </div>
+
+        <!-- S6: the laptop, the words, the toggle -->
+        <div data-hf-id="hf-wzzf" class="lay" id="s6"><div data-hf-id="hf-653h" class="abs" id="lap6"><div data-hf-id="hf-9yjs" class="abs screen" id="lap6s"><!--C:lap6--><video data-hf-id="hf-gc32" id="v6" class="clip v" data-hf-media-start-basis="local" src="assets/clip/mv.mp4" data-start="27.9117" data-duration="3.5083" data-media-start="4.4617" muted playsinline></video><video data-hf-id="hf-9wfa" id="v6b" class="clip v" data-hf-media-start-basis="local" src="assets/clip/mv.mp4" data-start="31.4117" data-duration="0.8373" data-media-start="8.4617" muted playsinline></video><!--/C:lap6--></div></div></div>
+
+        <!-- S7: the pills, the edit, "in any direction" -->
+        <div data-hf-id="hf-t1ve" class="lay" id="s7"><div data-hf-id="hf-m3vw" class="full" id="s7cam"><div data-hf-id="hf-d0c1" class="abs prev" id="prev7"><!--C:prev7--><video data-hf-id="hf-lg1e" id="v7a" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="34.3917" data-duration="2.0763" data-media-start="19.9067" muted playsinline></video><video data-hf-id="hf-5mz7" id="v7b" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="36.4397" data-duration="3.6003" data-media-start="21.9547" muted playsinline></video><!--/C:prev7--></div></div></div>
+
+        <!-- S8, S9, S10, S11, S12 -->
+        <div data-hf-id="hf-3xd1" class="lay" id="s8"></div>
+        <div data-hf-id="hf-35p8" class="lay" id="s9">
+          <div data-hf-id="hf-g7hl" class="full" id="car">
+            <div data-hf-id="hf-m2qg" class="tile" id="car0"><!--C:car0--><video data-hf-id="hf-drc7" id="v9c0" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take2.mp4" data-start="45.6417" data-duration="4.0083" data-media-start="10.9917" muted playsinline></video><!--/C:car0--></div><div data-hf-id="hf-mue9" class="tile" id="car1"><!--C:car1--><video data-hf-id="hf-7zvv" id="v9c1" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take1.mp4" data-start="45.6417" data-duration="4.0083" data-media-start="3.9917" muted playsinline></video><!--/C:car1--></div>
+            <div data-hf-id="hf-qsia" class="tile" id="car2"><!--C:car2--><video data-hf-id="hf-irte" id="v9c2" class="clip v" data-hf-media-start-basis="local" src="assets/takes/take3.mp4" data-start="45.6417" data-duration="4.0083" data-media-start="16.9917" muted playsinline></video><!--/C:car2--></div><div data-hf-id="hf-uqmb" class="tile" id="car3"><!--C:car3--><video data-hf-id="hf-uzob" id="v9c3" class="clip v" data-hf-media-start-basis="local" src="assets/clip/mv.mp4" data-start="45.6417" data-duration="1.1583" data-media-start="2.3417" muted playsinline></video><video data-hf-id="hf-dlq2" id="v9c4" class="clip v" data-hf-media-start-basis="local" src="assets/clip/mv.mp4" data-start="46.7917" data-duration="3.1083" data-media-start="4.4917" muted playsinline></video><!--/C:car3--></div>
+          </div>
+        </div>
+        <div data-hf-id="hf-lmno" class="lay" id="s10"></div>
+        <div data-hf-id="hf-mebh" class="lay" id="s11"></div>
+        <div data-hf-id="hf-qcfi" class="lay" id="s12"></div>
+        <div data-hf-id="hf-nw3v" class="lay" id="fg" data-layout-allow-overlap="" data-layout-allow-overflow=""></div>
+        <svg data-hf-id="hf-wsq9" id="cursor" viewBox="0 0 24 24"><path data-hf-id="hf-sdy2" d="m13.75 10.19.63.13 4.17 2.08c.7.23 1.16.92 1.1 1.66v.26l-.9 6.12c-.06.43-.25.83-.6 1.11-.31.3-.72.45-1.15.45h-6.88c-.49 0-.94-.18-1.27-.53L2.86 15.5l.9-1c.24-.25.62-.39.98-.37h.29L9 15V4.5a2 2 0 0 1 2-2 2 2 0 0 1 2 2v5.69z" fill="#ffffff" stroke="#0a0d14" stroke-width="1.15" stroke-linejoin="round" paint-order="stroke" /><path data-hf-id="hf-26f9" d="M13 10.3v4.2M15.6 11.4v3.4M18 12.6v2.6" stroke="#0a0d14" stroke-width="0.9" stroke-linecap="round" /></svg>
+
+        <script>
+          (function () {
+            window.LV.init(document.querySelector('[data-composition-id="film"]'));
+            var clock = { t: 0 };
+            var tl = gsap.timeline({ paused: true });
+            tl.to(clock, { t: window.T.TOTAL, duration: window.T.TOTAL, ease: "none", onUpdate: function () { window.LV.render(clock.t); } }, 0);
+            window.LV.render(0);
+            window.__timelines = window.__timelines || {};
+            window.__timelines["film"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>
