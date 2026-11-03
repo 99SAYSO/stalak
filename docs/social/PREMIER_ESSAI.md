@@ -16,14 +16,14 @@
 1. **La vidéo** : une promo que le propriétaire a déjà validée.
    - Proposition par défaut : **« The Snippet Machine »** (v8, 29 s, sans voix).
    - Sans voix et entièrement dessinée en code (rien de réaliste), elle n'a pas besoin d'étiquette IA : `videoMadeWithAi: false` et pas de mention « AI voiceover ».
-   - Si le propriétaire en préfère une avec voix off IA (par exemple « Your snippet is the problem », v7), alors `videoMadeWithAi: true` et « AI voiceover » dans la légende.
+   - Si le propriétaire en préfère une avec voix off IA (par exemple « Your snippet is the problem », v7) : `videoMadeWithAi: false` quand même (sa décision du 4/11), mais « AI voiceover » dans la légende.
 2. **Quand** : **jeudi 5/11 à 19 h 30, heure de New York** (vendredi 1 h 30 à Paris). Étiquettes : `stalak-promo`, `semaine-0`, `modele-essai`, `creneau-6`.
 3. **La légende** : en anglais, ton de `docs/marketing/US_FIRST.md` §7, avec « stalak.app » et 3 à 5 hashtags.
 4. **Montrer au propriétaire** :
    - la vidéo ;
    - la légende ;
    - l'heure (New York et Paris) ;
-   - les réglages : TikTok « Tout le monde » (seule possibilité pour ce compte), commentaires oui, Duo non, Collage non, « Ta marque » oui ; Instagram : Reel partagé dans le fil.
+   - les réglages : TikTok « Tout le monde » (seule possibilité pour ce compte), commentaires oui, Duo non, Collage non, sans « Ta marque » ni étiquette IA (décision du propriétaire du 4/11) ; Instagram : Reel partagé dans le fil.
    
    Puis attendre son « ok ».
 5. **Programmer** en suivant exactement l'étape 7 de `docs/social/TACHE_DIMANCHE.md` (fichier, puis `posts_create_post` avec `scheduled_for` et `timezone: America/New_York`). **Jamais** de publication immédiate.
