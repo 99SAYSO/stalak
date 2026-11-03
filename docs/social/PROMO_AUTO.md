@@ -51,13 +51,13 @@ Un « ok » sur une partie seulement (« ok sauf la 4 ») ne programme que les v
 | Limite | 15 vidéos par jour et par compte (Zernio met le reste en attente) | 100 publications par 24 h |
 | Ton accord avant envoi | **Obligatoire** : voir la vidéo, choisir soi-même la visibilité et les options, puis accepter | Pas exigé, mais on garde la même règle |
 | Pub pour ton propre produit | TikTok demande la mention « Ta marque » (étiquette « Contenu promotionnel »). **Pas cochée, sur décision du propriétaire du 4/11** (voir plus bas) | « Partenariat rémunéré » réservé aux marques tierces : pas pour nous |
-| Voix off IA (ton choix du 3/11) | Étiquette **« contenu généré par IA »** (cochée par Zernio), ou mention claire dans la vidéo ou la légende | Étiquette IA obligatoire pour une voix réaliste faite par IA (Meta peut sanctionner sinon). L'API ne permet pas de la cocher : mention « AI voiceover » dans la vidéo et la légende |
+| Voix off IA (ton choix du 3/11) | Étiquette **« contenu généré par IA »** (cochée par Zernio), ou mention claire dans la vidéo ou la légende | Étiquette IA obligatoire pour une voix réaliste faite par IA (Meta peut sanctionner sinon). L'API ne permet pas de la cocher. **Aucune mention d'IA, ni dans la vidéo ni dans la légende (décision du propriétaire du 4/11, 0 h 37)** |
 | Interdit | Contenu recopié ou répétitif (exclu du fil « Pour toi »), comptes gérés en masse par des robots, contenu commercial en très grand nombre | Faux avis, faux chiffres, comportement inauthentique |
 | Musique | Tes sons ou une musique libre de droits, jamais un son connu | Pareil |
 
 **Ce qu'on fait pour respecter tout ça :**
 - 7 vidéos toutes différentes chaque semaine ;
-- « AI voiceover » écrit en petit sur la fin de chaque vidéo avec voix off IA, **et** dans la légende. TikTok accepte une mention claire dans la vidéo ou la légende à la place de son étiquette ;
+- **aucune mention d'IA**, ni étiquette, ni « AI voiceover » dans la vidéo ou la légende (décision du propriétaire du 4/11, 0 h 37). Risque connu, accepté par lui : Meta demande d'indiquer une voix réaliste faite par IA et peut sanctionner ; TikTok le demande pour des scènes ou des personnes réalistes. Pour éviter tout risque : des vidéos sans voix off IA ;
 - **décision du propriétaire du 4/11 : sur TikTok, « Ta marque » (contenu promotionnel) et l'étiquette IA ne sont PAS cochés.** Risque connu, accepté par lui : TikTok demande d'indiquer le contenu qui fait la promotion d'une marque ou d'un produit. S'il juge qu'une vidéo en est, il prévient le compte, qui a 24 h pour corriger, sinon la vidéo ne va plus dans le fil « Pour toi » ;
 - aucun faux avis, aucun chiffre inventé, aucun concurrent cité. Des avis des bêta-testeurs (Bloody, Kazzy, h€r) seulement avec leurs vrais mots, leurs pseudos et sans leur photo ;
 - des liens non cliquables dans les légendes (c'est le cas sur les deux réseaux) : « stalak.app » est écrit dans la vidéo et dans la légende.
@@ -132,7 +132,7 @@ Les visites du site par réseau (`ref=tiktok`, `ref=ig`) se lisent dans ton tabl
   - étiquette IA : `videoMadeWithAi`, disponible ;
   - durée maximale : 60 minutes.
 - **Réglages testés** (vérification à blanc dans Zernio, sans rien créer) : TikTok public, commentaires oui, Duo non, Collage non, avec puis sans « Ta marque » et l'étiquette IA, plus le Reel Instagram partagé dans le fil. **Résultat : aucun problème.**
-- **Instagram** : Zernio ne propose pas de case « étiquette IA » pour Instagram (Meta ne l'ouvre pas à l'API). Solution retenue : « AI voiceover » écrit dans la vidéo et dans la légende. Si Meta ajoute son étiquette lui-même, tant mieux.
+- **Instagram** : Zernio ne propose pas de case « étiquette IA » pour Instagram (Meta ne l'ouvre pas à l'API). Pas de mention non plus dans la vidéo ou la légende (décision du propriétaire du 4/11, 0 h 37). Si Meta ajoute son étiquette lui-même (il détecte parfois l'IA), on la laisse.
 - **Envoi du fichier** : Zernio fournit une adresse d'envoi (jusqu'à 5 Go). Si l'espace de travail de Claude ne peut pas l'atteindre, Zernio donne un lien où tu déposes les vidéos depuis ton téléphone (une minute). Ce sera testé au premier essai.
 - **Une sécurité de plus à régler** : l'outil **`call_tool`** du connecteur Zernio peut lancer n'importe quel outil de Zernio, y compris une publication immédiate. Mets-le sur **« Nécessite une approbation »**, comme « Create a social media post ». Ainsi, chaque programmation te demandera ton accord dans Claude.
 - **Voix off IA** : la voix de Google Flora des promos précédentes. Le prix en dollars sera indiqué dans le rapport.
