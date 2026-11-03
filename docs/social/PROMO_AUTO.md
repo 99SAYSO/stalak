@@ -50,15 +50,15 @@ Un « ok » sur une partie seulement (« ok sauf la 4 ») ne programme que les v
 | Programmer par un outil officiel (Zernio) | Oui, par l'API officielle (Content Posting API) | Oui, par l'API officielle (Content Publishing) |
 | Limite | 15 vidéos par jour et par compte (Zernio met le reste en attente) | 100 publications par 24 h |
 | Ton accord avant envoi | **Obligatoire** : voir la vidéo, choisir soi-même la visibilité et les options, puis accepter | Pas exigé, mais on garde la même règle |
-| Pub pour ton propre produit | Mention **« Ta marque »** obligatoire : la vidéo affiche « Contenu promotionnel » | « Partenariat rémunéré » réservé aux marques tierces : pas pour nous |
+| Pub pour ton propre produit | TikTok demande la mention « Ta marque » (étiquette « Contenu promotionnel »). **Pas cochée, sur décision du propriétaire du 4/11** (voir plus bas) | « Partenariat rémunéré » réservé aux marques tierces : pas pour nous |
 | Voix off IA (ton choix du 3/11) | Étiquette **« contenu généré par IA »** (cochée par Zernio), ou mention claire dans la vidéo ou la légende | Étiquette IA obligatoire pour une voix réaliste faite par IA (Meta peut sanctionner sinon). L'API ne permet pas de la cocher : mention « AI voiceover » dans la vidéo et la légende |
 | Interdit | Contenu recopié ou répétitif (exclu du fil « Pour toi »), comptes gérés en masse par des robots, contenu commercial en très grand nombre | Faux avis, faux chiffres, comportement inauthentique |
 | Musique | Tes sons ou une musique libre de droits, jamais un son connu | Pareil |
 
 **Ce qu'on fait pour respecter tout ça :**
 - 7 vidéos toutes différentes chaque semaine ;
-- « AI voiceover » écrit en petit sur la fin de chaque vidéo **et** dans la légende, en plus de l'étiquette IA quand Zernio permet de la cocher ;
-- « Ta marque » toujours activé sur TikTok ;
+- « AI voiceover » écrit en petit sur la fin de chaque vidéo avec voix off IA, **et** dans la légende. TikTok accepte une mention claire dans la vidéo ou la légende à la place de son étiquette ;
+- **décision du propriétaire du 4/11 : sur TikTok, « Ta marque » (contenu promotionnel) et l'étiquette IA ne sont PAS cochés.** Risque connu, accepté par lui : TikTok demande d'indiquer le contenu qui fait la promotion d'une marque ou d'un produit. S'il juge qu'une vidéo en est, il prévient le compte, qui a 24 h pour corriger, sinon la vidéo ne va plus dans le fil « Pour toi » ;
 - aucun faux avis, aucun chiffre inventé, aucun concurrent cité. Des avis des bêta-testeurs (Bloody, Kazzy, h€r) seulement avec leurs vrais mots, leurs pseudos et sans leur photo ;
 - des liens non cliquables dans les légendes (c'est le cas sur les deux réseaux) : « stalak.app » est écrit dans la vidéo et dans la légende.
 
@@ -67,8 +67,7 @@ Un « ok » sur une partie seulement (« ok sauf la 4 ») ne programme que les v
 - **TikTok** :
   - visibilité « Tout le monde » ;
   - commentaires oui, Duo non, Collage non ;
-  - « Ta marque » oui ;
-  - étiquette IA oui.
+  - « Ta marque » non, étiquette IA non (décision du 4/11).
 - **Instagram** : Reel partagé aussi dans le fil, étiquette IA si Zernio le permet.
 
 Tu peux changer n'importe quel réglage pour une vidéo (« la 3 : Duo oui »).
@@ -129,10 +128,10 @@ Les visites du site par réseau (`ref=tiktok`, `ref=ig`) se lisent dans ton tabl
 - **TikTok** (infos du compte fournies par TikTok) :
   - visibilité possible : **« Tout le monde » seulement**. Le compte passe par l'appli TikTok for Business, qui publie les vidéos en public uniquement. C'est ce qu'on voulait ;
   - commentaires, Duo et Collage : à choisir à chaque fois, rien n'est coché par défaut ;
-  - mentions commerciales possibles : « Ta marque » (`brand_organic`) et « Contenu de marque » : on utilise **« Ta marque »** ;
+  - mentions commerciales possibles : « Ta marque » (`brand_organic`) et « Contenu de marque » : on n'en coche aucune (décision du 4/11) ;
   - étiquette IA : `videoMadeWithAi`, disponible ;
   - durée maximale : 60 minutes.
-- **Réglages testés** (vérification à blanc dans Zernio, sans rien créer) : TikTok public, commentaires oui, Duo non, Collage non, « Ta marque », étiquette IA, plus le Reel Instagram partagé dans le fil. **Résultat : aucun problème.**
+- **Réglages testés** (vérification à blanc dans Zernio, sans rien créer) : TikTok public, commentaires oui, Duo non, Collage non, avec puis sans « Ta marque » et l'étiquette IA, plus le Reel Instagram partagé dans le fil. **Résultat : aucun problème.**
 - **Instagram** : Zernio ne propose pas de case « étiquette IA » pour Instagram (Meta ne l'ouvre pas à l'API). Solution retenue : « AI voiceover » écrit dans la vidéo et dans la légende. Si Meta ajoute son étiquette lui-même, tant mieux.
 - **Envoi du fichier** : Zernio fournit une adresse d'envoi (jusqu'à 5 Go). Si l'espace de travail de Claude ne peut pas l'atteindre, Zernio donne un lien où tu déposes les vidéos depuis ton téléphone (une minute). Ce sera testé au premier essai.
 - **Une sécurité de plus à régler** : l'outil **`call_tool`** du connecteur Zernio peut lancer n'importe quel outil de Zernio, y compris une publication immédiate. Mets-le sur **« Nécessite une approbation »**, comme « Create a social media post ». Ainsi, chaque programmation te demandera ton accord dans Claude.
