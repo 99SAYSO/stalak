@@ -169,9 +169,9 @@ def run(b, base, lang, iphone):
     check(tag + ' : « Copier la légende » copie le texte', ('copied' in note if lang == 'en' else 'copiée' in note) and (clip is None or clip == cap), (note, clip))
     sb, sv = pg.locator('#shareBtn'), pg.locator('#saveBtn')
     if iphone:
-        first = pg.evaluate("() => document.querySelector('#saveBtn').previousElementSibling === document.querySelector('#shareBtn')")
-        check(tag + ' : « Enregistrer dans Photos / Partager » en bouton principal, le téléchargement en petit lien', first and 'primary' in sb.get_attribute('class') and 'linkbtn' in sv.get_attribute('class')
-              and ('Save to Photos' in sb.inner_text() if lang == 'en' else 'Enregistrer dans Photos' in sb.inner_text()), (sb.inner_text(), sv.inner_text()))
+        first = pg.evaluate("() => document.querySelector('#shareBox').firstElementChild === document.querySelector('#shareBtn') && !document.querySelector('#shareBox').hidden")
+        check(tag + ' : « Partager » en bouton principal, le téléchargement en petit lien (05/11)', first and 'primary' in sb.get_attribute('class') and 'linkbtn' in sv.get_attribute('class')
+              and sb.inner_text().strip() == ('Share' if lang == 'en' else 'Partager'), (sb.inner_text(), sv.inner_text()))
         sb.click(); pg.wait_for_timeout(200)
         check(tag + ' : le bouton ouvre le partage d’iOS', pg.evaluate('window.__shared === true'))
     else:

@@ -393,14 +393,16 @@
           <p class="note cover-note" id="coverNote" hidden></p>
           <div class="result" id="result" hidden>
             <video id="resultVideo" controls playsinline hidden></video>
-            <div class="row">
+            <!-- phones (owner 05/11): « Partager » first, the caption to copy right under it (app.js postShow moves them here) -->
+            <div class="sharebox" id="shareBox" hidden></div>
+            <div class="row" id="saveRow">
               <button class="btn primary" id="saveBtn" type="button" data-i18n="save.btn">Enregistrer sur l'appareil</button>
               <span class="note" id="saveNote"></span>
             </div>
             <div class="post" id="postBox">
               <p class="label" data-i18n="post.title">Poster ta vidéo</p>
               <div class="row">
-                <button class="btn" id="shareBtn" type="button" hidden data-i18n="post.share">Partager vers TikTok, Insta, YouTube…</button>
+                <button class="btn" id="shareBtn" type="button" hidden data-i18n="post.share">Partager</button>
                 <a class="btn sm" href="https://www.tiktok.com/upload" target="_blank" rel="noopener">TikTok</a>
                 <a class="btn sm" href="https://www.instagram.com/" target="_blank" rel="noopener">Instagram</a>
                 <a class="btn sm" href="https://www.youtube.com/upload" target="_blank" rel="noopener">YouTube Shorts</a>

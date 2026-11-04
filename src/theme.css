@@ -1020,6 +1020,17 @@ header .stepper{margin-left:auto}
 .capbox textarea{width:100%;box-sizing:border-box;font:500 14px/1.45 var(--body);padding:10px 12px;border:2px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink);resize:vertical}
 .result .sharemain{width:100%;justify-content:center}
 .result .savefile{font-size:14px}
+/* phones (05/11): « Partager » first, its hint, then the caption to copy; the download as a small link under them */
+.sharebox{display:flex;flex-direction:column;gap:10px;margin:14px 0 6px}
+.sharebox[hidden]{display:none}
+.sharebox .sharemain{min-height:56px;font-size:19px;order:1;margin-bottom:8px}
+.sharebox .hint{margin:0;order:3}
+/* the caption box opens up inside: « Copier la légende » right under « Partager », the text to edit further down */
+.sharebox .capbox{display:contents}
+.sharebox .capbox .row{order:2}
+.sharebox .capbox .label{order:4;margin-top:4px}
+.sharebox .capbox textarea{order:5}
+.sharebox + #saveRow{justify-content:center}
 .fa-row{flex-wrap:wrap;gap:10px}
 /* fewer PRO tags at once (audit 30/10): Pro filters behind one tile, one tag per theme; text sizes and appearances show a
    small padlock instead of a PRO pill on every button */
