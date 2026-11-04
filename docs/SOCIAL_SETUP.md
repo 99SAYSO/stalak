@@ -9,8 +9,8 @@
 | À quoi ça sert | Adresse |
 |---|---|
 | Site | `https://stalak.app` |
-| Confidentialité | `https://stalak.app/confidentialite` |
-| Conditions | `https://stalak.app/conditions` |
+| Confidentialité | `https://stalak.app/privacy` (adresse anglaise depuis le 1/11) |
+| Conditions | `https://stalak.app/terms` |
 | Retour TikTok (« Redirect URI ») | `https://stalak.app/api/connect/tiktok/callback` |
 | Retour Instagram (« OAuth redirect URI ») | `https://stalak.app/api/connect/instagram/callback` |
 | Instagram : « Deauthorize callback URL » | `https://stalak.app/api/connect/instagram/deauthorize` |
