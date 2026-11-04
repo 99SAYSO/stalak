@@ -106,6 +106,7 @@
    - La conversation donne ce lien au propriétaire à la fin de sa tâche (après avoir vérifié qu'il s'ouvre), dans le compte rendu (`Maquette : <lien>`) et dans sa réponse.
    - Le Chef de projet ne fusionne dans `main` (le vrai site stalak.app) qu'après le **« ok » du propriétaire sur la maquette**. Seuls les changements invisibles (documents, tests, corrections urgentes de sécurité ou de paiement) peuvent passer sans maquette, en le disant.
    - Attention : la maquette utilise pour l'instant la même base de données que le vrai site. Le serveur y bloque ce qui touche à l'argent et aux vrais comptes (paiements, webhook Paddle, changement de formule, suppression de compte). Ne pas y créer de faux comptes en masse.
+10. **Planche contact avant chaque export vidéo (décision du propriétaire du 5/11)** : toute vidéo créée (Marketing surtout) passe par le skill `planche-contact` : une image toutes les 0,5 s (`python3 tools/contact_sheet.py VIDEO.mp4`), relue image par image (textes coupés, chevauchements, zones masquées par TikTok / Instagram, fautes), corrigée, puis refaite jusqu'à zéro problème, **avant** l'export final et avant d'envoyer la vidéo au propriétaire. Le rapport dit ce qui a été trouvé et corrigé.
 
 ## 5. Les rôles
 
