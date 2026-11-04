@@ -229,6 +229,8 @@
   
   **v4 (sa remarque de 20 h 28)** : le mot « drop » n'arrive plus trop tôt sur le panneau tapé.
   
+  **v6 (5/11, planche contact, règle 10)** : la v5 relue image par image (121 images) ; 12 problèmes corrigés (textes coupés au bord de l'image, mots cachés par la fenêtre de son clip, étiquettes trop courtes) ; planche du fichier final : 0 problème restant.
+  
   **v5 (ses retours du 3/11 à 0 h 30)** :
   - sa vidéo ne déborde plus du cadre de l'aperçu de l'app (téléphone, tablette, étapes de montage) ;
   - toutes les transitions simples (panoramiques, glissés, coupes) sont refaites avec un élément à l'écran, comme dans la vidéo de référence : l'ordinateur qui devient le téléphone puis la tablette, sa carte qui devient la pastille « Take 2 », la barre de montage dont les plans deviennent les cases, les cartes qui s'emboîtent jusqu'à l'ordinateur 3D, la caméra qui entre dans l'écran jusqu'au bouton Export, la carte YouTube qui devient le panneau de verre.

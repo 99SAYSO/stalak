@@ -219,7 +219,7 @@ Maintenant, chaque capture garde ses proportions, et chaque vidéo est posée **
 | 34,35 → 34,95 s | plongée floue dans « Punchy » | **les pilules sont les réglages de l'app** : chacune vole à sa place dans la vraie étape de montage qui apparaît autour (Pace, Cuts, Lyrics, Shuffle ; Export s'en va) |
 | 42,0 → 42,85 s | l'ordinateur monte du bas, les mots partent vers le haut | **les mots sont sur l'écran de l'ordinateur**, vu de très près ; la caméra recule et l'ordinateur apparaît autour |
 | 44,3 → 44,95 s | glissé vers le haut (comme un fil de vidéos) | les vidéos de la semaine **passent devant la caméra**, qui **entre dans l'écran jusqu'à la carte Export** : S9 est cette carte, au même endroit |
-| 45,5 → 46,05 s | la carte Export rétrécit et s'efface | **le bouton Export s'ouvre en carte TikTok** ; les autres formats sortent de derrière elle |
+| 45,5 → 46,05 s | la carte Export rétrécit et s'efface | **le bouton Export s'ouvre en carte TikTok** ; les autres formats arrivent à côté |
 | 49,25 → 49,85 s | vol dans la carte YouTube | **la carte YouTube devient le panneau de verre** de S10 : sa vidéo se fond dans le verre givré, le ciel se floute |
 
 Les transitions qui étaient déjà faites d'un élément sont gardées : la fenêtre de l'icône, l'entrée dans la boîte, « song », le bleu de l'icône, l'aperçu de la tablette qui devient sa carte, la case YouTube, la fenêtre entre les mots, l'interrupteur, le cristal, la traînée de lumière.
@@ -236,6 +236,7 @@ Les transitions qui étaient déjà faites d'un élément sont gardées : la fen
 - Un fond noir vide.
 - Un simple fondu enchaîné à la place d'une transition. Depuis la v2 (sa demande), on passe d'un monde à l'autre caché par un mouvement ou un élément du décor. Depuis la v5 (sa demande) : **chaque transition est faite d'un élément à l'écran** (un mot, un appareil qui change de forme, un aperçu, une carte, une barre, un bouton, une case, l'écran de l'ordinateur, une traînée de lumière) ; plus de panoramique ni de glissé vers le côté.
 - Une vidéo qui déborde du cadre de l'aperçu de l'app (v5).
+- Un texte coupé par le bord de l'image ou d'un écran, ou caché par un autre élément, hors mouvement rapide de moins de 0,5 s (v6, planche contact, règle 10).
 
 ## À vérifier
 

@@ -1,5 +1,42 @@
 # Relecture — film de lancement « façon Lovio » (YouTube 16:9, 60 s, 2/11/2026)
 
+## v6 : planche contact (règle 10 du contexte, 5/11)
+
+Aucune remarque du propriétaire sur la v5 : cette version vient de la nouvelle règle (skill `planche-contact`). Le reste du film ne change pas (temps, voix, musique, mixage, transitions de la v5).
+
+**Planche contact** :
+- **Planche de la v5** : `tools/contact_sheet.py`, une image toutes les 0,5 s, 121 images relues une par une. Les moments douteux ont été revus de plus près, une image toutes les 0,1 à 0,15 s, en pleine taille.
+- **Problèmes trouvés, et corrections** (temps précis, relevés sur la vidéo) :
+  - **30,7 → 31,5 s** : la fenêtre de son clip cachait le « y » de « Beautifully » et le « e » de « edited ». Les mots étaient placés pour 236 px (la hauteur de la fenêtre) au lieu de ses 420 px de large. Ils suivent maintenant les bords de la fenêtre.
+  - **31,8 → 32,2 s** : même défaut, la fenêtre passait sur « ready » et « to post ». Les lettres arrivent maintenant à côté d'elle.
+  - **43,0 → 44,3 s** : la poussée vers « Make the pack » (×2) coupait les lignes de la carte Export au bord de l'écran de l'ordinateur. La poussée est plus douce (×1,2), la carte reste entière et le curseur suit.
+  - **45,0 → 45,5 s** : la carte Export de S9, centrée sur son bouton, coupait « Watch an ad (30 s) » à droite et ses dernières lignes en bas. Elle est maintenant entière et centrée ; l'entrée dans l'écran de l'ordinateur vise son milieu.
+  - **46,0 → 48,5 s** : dans le carrousel, les noms des formats étaient coupés au bord de l'image (« Short », « ok »). Un nom s'efface maintenant avant d'atteindre le bord.
+  - **46,05 s** : les autres formats sortaient de derrière TikTok en passant sous son accolade. Ils arrivent maintenant à côté.
+  - **26,5 s** : « Take 3 » était à moitié caché derrière la carte du milieu, et les trois étiquettes duraient trop peu pour être lues (0,45 s). Elles sont retirées de ce flash.
+  - **23,5 → 23,9 s** : la caméra sur la barre de montage (×1,5) coupait les rangées du haut de la carte. Elle pousse maintenant sur toute l'étape (×1,3) et rien n'est coupé.
+  - **2,8 → 3,2 s** : « Import your music » sortait par le bord droit. La caméra suit maintenant la pilule pendant qu'elle s'allonge.
+  - **3,7 → 3,95 s** : le titre « Your takes, cut on the beat. » apparaissait coupé en haut, pendant le recul de la caméra. Il arrive maintenant une fois entier dans l'image.
+  - **15,35 → 15,8 s** : pendant la poussée dans la tablette, ses textes passaient coupés aux bords. Le reste de la tablette s'efface maintenant plus tôt.
+  - **44,4 → 44,6 s** : les noms des jours passaient sur les textes de l'écran qui revenaient. Ils s'effacent maintenant quand les vidéos s'envolent, et l'écran revient après.
+- **Vérifié et gardé exprès** (des mouvements de moins de 0,5 s, lisibles avant et après) :
+  - les textes qui sortent pendant les mouvements rapides de caméra (9,5 s, 15,4 s) ;
+  - les vidéos de la semaine qui passent devant la caméra (44,65 s) ;
+  - le cristal qui éclate du mot « drop » sur le temps de la musique (55,25 s) ;
+  - le nom « Stalak » qui se dévoile de gauche à droite (57,1 s) ;
+  - le ciel seul entre le cristal et « What », calé sur la voix (40,0 → 40,4 s).
+- **Planche du fichier final** : 121 images relues, **0 problème restant**.
+- **Remarque sur l'outil** : chaque image de `tools/contact_sheet.py` est la dernière image avant son horodatage + 0,25 s. Par exemple, l'image « 0:55.0 » montre 55,23 s (filtre `fps` d'ffmpeg, arrondi au plus proche). Les temps ci-dessus ont été relevés image par image.
+
+**`hyperframes check`** : 0 erreur. Les avertissements sont les mêmes sortes que pour la v5 ; « Take 1/2/3 » a disparu.
+
+**Le fichier livré** : `renders/Stalak_lancement_YouTube.mp4` (la v5 est gardée à côté, en `_v5`) :
+- 1920 × 1080, 60 i/s, 3600 images, 60,0 s, 62 Mo ; rendu en 15 min 17 s, puis `master.sh` ;
+- −14,1 LUFS, crête −1,1 dBFS ;
+- aucune image noire, aucun silence ; images figées plus de 1 s : seulement les deux tenues voulues (32,6 s et 52,3 s).
+
+Il a été envoyé au propriétaire et mis dans la Salle de visionnage (`stalak-lancement-v6`).
+
 ## v5 (ses retours dans la Salle de visionnage, 3/11 à 0 h 30)
 
 - **Ce qui a changé** : ses 2 remarques (le tableau est dans `SPEC.md`, « v5 »).

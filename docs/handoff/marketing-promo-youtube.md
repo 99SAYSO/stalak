@@ -1,6 +1,21 @@
 # Compte rendu — branche `marketing/promo-youtube` (Marketing & croissance)
 
-Statut : PRÊT, v4 du 2/11 + miniature YouTube + film de lancement « façon Lovio » (v5, ses retours appliqués) + page de retours « Salle de visionnage » (v2) (documents et sources des vidéos et de la miniature seulement ; rien à intégrer dans l'app ni le site)
+Statut : PRÊT, v4 du 2/11 + miniature YouTube + film de lancement « façon Lovio » (v6 : ses retours appliqués + planche contact) + page de retours « Salle de visionnage » (v2) (documents et sources des vidéos et de la miniature seulement ; rien à intégrer dans l'app ni le site)
+
+## Film de lancement v6 : planche contact (règle 10, 5/11)
+
+- **Pourquoi** : la nouvelle règle 10 du contexte (skill `planche-contact`), appliquée tout de suite à la dernière vidéo livrée (la v5). Le propriétaire n'avait pas fait de remarque sur la v5.
+- **Planche contact** : 121 images de la v5 relues (une toutes les 0,5 s, `tools/contact_sheet.py`), puis les moments douteux revus de plus près. 12 problèmes trouvés et corrigés :
+  - textes coupés au bord de l'image ou de l'écran : « Import your music », le titre du début, les textes de la tablette, la carte de montage, la carte Export (deux fois), les noms des formats du carrousel ;
+  - mots cachés par la fenêtre de son clip : « Beautifully … edited », « ready … to post » (une erreur de placement depuis la v1) ;
+  - « Take 3 » à moitié caché (les étiquettes de ce flash sont retirées) ;
+  - les noms des jours passaient sur l'écran ;
+  - les formats passaient sous l'accolade.
+
+  Planche du fichier final : 121 images, **0 problème restant**. Le détail, avec les temps, est dans `promo/launch/REVIEW.md` (« v6 »).
+- **Remarque pour le Chef de projet** : chaque image de `tools/contact_sheet.py` montre la vidéo environ 0,23 s après son horodatage (filtre `fps` d'ffmpeg, arrondi au plus proche). Ce n'est pas gênant pour relire, mais les temps donnés dans un rapport sont un peu en avance. Je n'ai pas touché au script.
+- **Coût Flora : 0 $.**
+- **Livré** le 5/11 : envoyé dans la conversation (60 s, 60 i/s, −14,1 LUFS, pas dans le dépôt) et ajouté à la Salle de visionnage (`stalak-lancement-v6`).
 
 ## Film de lancement v5 : ses retours dans la Salle de visionnage (3/11, 0 h 30)
 

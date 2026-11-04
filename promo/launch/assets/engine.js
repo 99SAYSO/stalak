@@ -537,7 +537,8 @@ window.LV = (function () {
     else maskAt($.skywrap, null);
     snowAt($.sfl, t); bokehAt($.sbk, t); crystalsAt($.scr1, t);
     // the camera: zoomed on the + button, pulls back, then pushes into the box
-    var ZX = 420, ZY = 692, s, cx, cy;
+    // (v5, contact sheet: the camera follows the pill as it grows, so that "Import your music" stays in the frame)
+    var ZX = lerp(420, 625, E.io3(seg(r, 0.8, 1.45))), ZY = 692, s, cx, cy;
     var back = E.io2(seg(r, 1.45, 2.75)), push = E.i2(seg(t, S.s1b - 0.5, S.s1b));
     s = lerp(2.4, 1.0, back); cx = lerp(ZX, 960, back); cy = lerp(ZY, 560, back);
     if (push > 0) { s = lerp(1.0, 2.9, push); cx = lerp(960, 560, push); cy = 560; }
@@ -554,7 +555,7 @@ window.LV = (function () {
     $.gpill.style.clipPath = "inset(0 round 38px)";
     var lab = $.gpill.children; op(lab[1], seg(r, 1.05, 1.3)); blur(lab[1], (1 - seg(r, 1.05, 1.3)) * 6);
     // the title and the box come in as the camera pulls back
-    wordsIn($.heroW, t, S.s1 + 1.55, 0.08, 0.18, 8); wordsIn($.subW, t, S.s1 + 1.95, 0.05, 0.16, 6);
+    wordsIn($.heroW, t, S.s1 + 2.3, 0.06, 0.18, 8); wordsIn($.subW, t, S.s1 + 2.5, 0.04, 0.16, 6);   // (v5: once whole in the frame)
     op($.gbox, seg(r, 1.4, 1.9)); op($.gsend, seg(r, 1.6, 2.0));
     op($.gice, seg(r, 1.65, 1.85)); tf($.gice, "scaleY(" + Math.max(0.001, E.expo(seg(r, 1.65, 2.25))).toFixed(4) + ")");   // v3: its icicles grow
     vis($.gcaret, r > 2.2 && caretOn(t - S.s1, false));
@@ -667,7 +668,7 @@ window.LV = (function () {
     var b1 = E.io3(seg(t, S.s4 - 1.25, S.s4)), Z = lz(1, CARD.s, b1);
     var Pc = [DEV.tab.s[0] + tb[0] + tb[2] / 2, DEV.tab.s[1] + tb[1] + tb[3] / 2], Qc = [lerp(Pc[0], CARD.x + CARD.w / 2, b1), lerp(Pc[1], CARD.y + CARD.h / 2, b1)];
     tf($.dev, (b1 > 0 ? "translate(" + px(Qc[0] - Pc[0] * Z) + "," + px(Qc[1] - Pc[1] * Z) + ") scale(" + Z.toFixed(5) + ")" : "") + rot || "none");
-    var fade = E.io2(seg(t, S.s4 - 0.38, S.s4 - 0.03));
+    var fade = E.io2(seg(t, S.s4 - 0.85, S.s4 - 0.25));          // (v5, contact sheet: earlier, before its texts are cut by the frame)
     op($.devBezel, 1 - fade); op($.cTabImg, 1 - fade); op($.devBg, 1 - fade);
     $.tbPrev.style.boxShadow = fade > 0 ? "0 " + px(30 / Z) + " " + px(60 / Z) + " rgba(5,20,60," + (0.32 * fade).toFixed(3) + ")" : "none";   // = the card's shadow
     // v2: the shot starts inside the laptop's screen, in the home page's sky left of its card (the same blue as the icon),
@@ -680,6 +681,10 @@ window.LV = (function () {
   var BOX4 = { x0: 170, x1: 520, y: 390, w: 880, h: 300 };
   var CARD = {};                    // v2: his 9:16 card (init: where the tablet's preview lands)
   function bx4(t) { return lerp(BOX4.x0, BOX4.x1, E.io3(seg(t, K.slide4, K.slide4 + 0.35))); }
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  function textW(e) {           // the width of an element's text itself (a label is as wide as its card)
+    var rg = document.createRange(); rg.selectNodeContents(e); return rg.getBoundingClientRect().width;
+  }
   function cam4(t, S) {         // v5: the edit step's camera on screen (its offset and scale): where its bar is
     var L = edit4(t, S), eq = E.io2(seg(t, BAR4[0] + 0.2, BAR4[1] + 0.1)), es = lerp(1.03, 1.0, eq) * L.es;
     return { L: L, eq: eq, es: es, ox: L.ox + 960 * (1 - es), oy: L.oy + 540 * (1 - es) };
@@ -688,9 +693,9 @@ window.LV = (function () {
   function edit4(t, S) {        // the edit step's layout and the camera that moves along the cut bar
     var I = T.UI, sw = I.stage_normal.w, ew = I.edit_normal.w, g = 30, x0 = (W - sw - g - ew) / 2;
     var L = { stx: x0, sty: (H - I.stage_normal.h) / 2, edx: x0 + sw + g, edy: (H - I.edit_normal.h) / 2 };
-    var cam = E.io2(seg(t, K.edit4 + 0.35, S.s5 - 0.05)), es = lerp(1, 1.5, cam);
-    var bcx = L.edx + 370, bcy = L.edy + 624;                      // the bar's middle (css px of the card)
-    L.ox = lerp(0, 960 - 960 * (1 - 1.5) - bcx * 1.5, cam) ; L.oy = lerp(0, 640 - 540 * (1 - 1.5) - bcy * 1.5, cam);
+    // (v5, contact sheet: at 1.5× on the bar, the frame's top cut the card's rows; now 1.3× on the whole step, nothing cut)
+    var cam = E.io2(seg(t, K.edit4 + 0.35, S.s5 - 0.05)), es = lerp(1, 1.3, cam);
+    L.ox = 0; L.oy = 0;
     L.es = es; return L;
   }
   // v5: S4's moments, all made of what is on screen (owner's remark on v4)
@@ -820,7 +825,8 @@ window.LV = (function () {
         // the two others step back while take 3 comes to the middle
         [$.f1a, $.f1b].forEach(function (e) { e.style.transformOrigin = "50% 50%"; tf(e, recede > 0 ? "translateX(" + px(-60 * recede) + ") scale(" + lerp(1, 0.9, recede).toFixed(4) + ")" : "none"); blur(e, 8 * recede); });
         $.f1b.style.zIndex = q2 > 0 ? "1" : "2"; $.f1a.style.zIndex = "1"; $.f1c.style.zIndex = q2 > 0 ? "2" : "1";
-        [$.f1a, $.f1b, $.f1c].forEach(function (e) { op(e.querySelector(".tag"), seg(t, F.fan[0] + 0.15, F.fan[0] + 0.3) * (1 - seg(t, F.f2[0], F.f2[0] + 0.15))); });
+        // (v5, contact sheet: no "Take 1/2/3" labels here; half hidden while the cards fan out, and too short to read)
+        [$.f1a, $.f1b, $.f1c].forEach(function (e) { op(e.querySelector(".tag"), 0); });
       }
     }
     if (f2On) {
@@ -869,12 +875,14 @@ window.LV = (function () {
     // the words slide in beside the window, on "Beautifully"
     var wq = E.o4(seg(t, K.words6, K.words6 + 0.75)), gone = seg(t, sh0 - 0.05, sh0 + 0.2);
     var bw = 600;
-    box($.wBeau, 960 - 236 / 2 - 44 - bw + lerp(-420, 0, wq), 486); $.wBeau.style.width = px(bw); $.wBeau.style.textAlign = "right";
-    box($.wEdit, 960 + 236 / 2 + 44 + lerp(420, 0, wq), 486);
+    // (v5, contact sheet: they were placed for a 236 px window, its height; the window is 420 px wide, so it covered the
+    // "y" and the "e". Now they stay beside its edges, whatever its width)
+    box($.wBeau, 960 - tw / 2 - 44 - bw + lerp(-420, 0, wq), 486); $.wBeau.style.width = px(bw); $.wBeau.style.textAlign = "right";
+    box($.wEdit, 960 + tw / 2 + 44 + lerp(420, 0, wq), 486);
     op($.wBeau, wq * (1 - gone)); op($.wEdit, wq * (1 - gone)); blur($.wBeau, (1 - wq) * 10 + gone * 10); blur($.wEdit, (1 - wq) * 10 + gone * 10);
     // "ready ○ to post": letters landing out of order on "ready", then the toggle, switched on after "post"
-    var open = E.io3(seg(t, sh0 + 0.55, sh0 + 0.85)), g = lerp(24, 190, open);
-    box($.readyA, 960 - g / 2 - 20 - 800, 486); box($.readyB, 960 + g / 2 + 20, 486);
+    var open = E.io3(seg(t, sh0 + 0.55, sh0 + 0.85)), hg = lerp(tw / 2 + 24, 115, open);   // v5: beside the window as it shrinks
+    box($.readyA, 960 - hg - 800, 486); box($.readyB, 960 + hg, 486);
     $.readyL.forEach(function (l, i) { var a = K.ready6 + 0.05 + $.readyO[i] * 0.45, q = seg(t, a, a + 0.15); op(l, q); blur(l, (1 - q) * 8); });
     var tq = E.o3(seg(t, sh0 + 0.55, sh0 + 0.8)), tout = seg(t, S.s7 + 0.04, S.s7 + 0.28);
     box($.tog, 960 - 75, 486 + 8 + 4); op($.tog, tq * (1 - tout)); blur($.tog, 8 * tout);
@@ -950,7 +958,7 @@ window.LV = (function () {
     // to its Export button: S9 is that button (no more swipe up)
     var I = T.UI.export, k = 1.25, exx = (1276 - I.w * k) / 2, exy = 70, eb = I.boxes.export;
     var pb = E.io3(seg(t, A8.back[0], A8.back[1])), ps = E.io3(seg(t, A8.push[0], A8.push[1]));
-    var Bx = 22 + exx + (eb[0] + eb[2] / 2) * k, By = 20 + exy + (eb[1] + eb[3] / 2) * k;          // the Export button, in the laptop
+    var Bx = 22 + exx + I.w * k / 2, By = 20 + exy + I.h * k / 2;          // v5: the export card's middle, in the laptop
     var Zl, Q, P;
     if (ps > 0) { Zl = lz(1, 2.0 / k, ps); P = [Bx, By]; Q = [lerp(300 + Bx, 960, ps), lerp(140 + By, 540, ps)]; }
     else { Zl = lz(A8.Z0, 1, pb); P = [660, 418]; Q = [960, lerp(540, 558, pb)]; }
@@ -965,17 +973,20 @@ window.LV = (function () {
     // the laptop, its screen: the real export card on the sky; the camera pushes to the pack row, then back
     var push = E.io3(seg(t, K.pack - 0.55, K.pack - 0.05)) * (1 - E.io3(seg(t, A8.unz[0], A8.unz[1])));
     vis($.lap8, true); box($.ex8, exx, exy, I.w * k, I.h * k); op($.ex8, seg(t, A8.back[0] + 0.3, A8.back[0] + 0.7));
-    var pk = I.boxes.pack, px0 = exx + (pk[0] + pk[2] / 2) * k, py0 = exy + (pk[1] + pk[3] / 2) * k, zs = lerp(1, 2.0, push);
-    tf($.sc8cam, "translate(" + px(lerp(0, 638 - px0 * zs, push)) + "," + px(lerp(0, 398 - py0 * zs, push)) + ") scale(" + zs.toFixed(4) + ")");
+    // (v5, contact sheet: at 2× on the pack row, the card's lines were cut by the screen's edge; now a gentler push, the
+    // whole card on the screen)
+    var Z8 = 1.2, zs = lerp(1, Z8, push), tx8 = (1276 - I.w * k * Z8) / 2 - Z8 * exx, ty8 = (796 - I.h * k * Z8) / 2 - Z8 * exy;
+    tf($.sc8cam, "translate(" + px(lerp(0, tx8, push)) + "," + px(lerp(0, ty8, push)) + ") scale(" + zs.toFixed(4) + ")");
     skyAt($.sc8sky, t);
     // the week: seven videos out of the screen, MON → SUN; at the push into the screen they fly on past us
-    var dOut = E.io2(seg(t, K.pack + 0.1, K.pack + 0.6)) * (1 - E.io2(seg(t, A8.push[0] - 0.05, A8.push[0] + 0.3)));
+    var dOut = E.io2(seg(t, K.pack + 0.1, K.pack + 0.6)) * (1 - E.io2(seg(t, A8.push[0] + 0.15, A8.push[0] + 0.45)));   // (v5: once they have passed)
     op($.lap8, 1 - dOut * 0.85); blur($.lap8, dOut * 8);
     [].forEach.call($.lap8.children, function (c) { if (c !== $.sc8) op(c, 1 - seg(t, A8.push[0] + 0.25, A8.push[1] - 0.05)); });   // its lid and base go
     var fly = E.i2(seg(t, A8.push[0], A8.push[0] + 0.5));
     $.days.forEach(function (d, i) {
       var q = E.expo(seg(t, K.pack + 0.1 + i * 0.07, K.pack + 0.6 + i * 0.07)), x = 960 - (7 * 212 + 6 * 26) / 2 + i * 238, dx = x + 106 - 960;
       box(d, x + dx * 1.6 * fly, lerp(560, 300, q) + 260 * fly * (i % 2 ? 1 : -0.4)); op(d, q * (1 - seg(fly, 0.4, 1))); blur(d, 10 * fly);
+      var dl = d.lastElementChild; if (dl) op(dl, 1 - seg(fly, 0, 0.25));    // (v5, contact sheet: MON… SUN never over the screen's text)
       tf(d, "scale(" + (lerp(0.6, 1, q) * lerp(1, 2.6, fly)).toFixed(3) + ")");
     });
   }
@@ -985,10 +996,12 @@ window.LV = (function () {
     skyAt($.s9sky, t); blur($.s9sky.e, 14 * E.io2(seg(t, PM[0], PM[1])));
     // v5 (owner's remark on v4): it comes out of the push into the laptop's screen (r8), on its Export button
     tf($.s9, "none"); $.s9.style.filter = "none"; op($.s9, seg(t, A8.push[1] - 0.23, A8.push[1]));
-    var I = T.UI.export, eb = I.boxes.export, k = 2.0, ex = 960 - (eb[0] + eb[2] / 2) * k, ey = 540 - (eb[1] + eb[3] / 2) * k;
+    // (v5, contact sheet: the whole card in the frame, its middle in the middle; it was centred on its Export button, which
+    // cut "Watch an ad (30 s)" and the last lines)
+    var I = T.UI.export, eb = I.boxes.export, k = 2.0, ex = 960 - I.w * k / 2, ey = 540 - I.h * k / 2;
     var gq = E.io2(seg(t, K.export + 0.22, K.export + 0.62)), s = lerp(k, 1.9, gq);
     if (t < A8.push[1] && $.ex8R) box($.ex9, $.ex8R[0], $.ex8R[1], I.w * $.ex8R[2], I.h * $.ex8R[2]);   // still on the laptop's card
-    else box($.ex9, 960 - (eb[0] + eb[2] / 2) * s, 540 - (eb[1] + eb[3] / 2) * s, I.w * s, I.h * s);
+    else box($.ex9, 960 - I.w * s / 2, 540 - I.h * s / 2, I.w * s, I.h * s);
     op($.ex9, 1 - gq); blur($.ex9, gq * 6);
     // the cards slide so that the one being said sits in the braces
     var picks = K.pick, idx = 0;
@@ -1006,15 +1019,16 @@ window.LV = (function () {
     $.cards.forEach(function (c, i) {
       var cxx = 960 + xs[i] - pos, sc = i === 3 ? lerp(1, 1.35, fwd) : 1, R4 = [cxx - c.w * sc / 2, 540 - 30 - c.h * sc / 2, c.w * sc, c.h * sc], rad = 26 * sc;
       if (i === 0 && mq < 1) { R4 = [lerp(B0[0], R4[0], mq), lerp(B0[1], R4[1], mq), lerp(B0[2], R4[2], mq), lerp(B0[3], R4[3], mq)]; rad = lerp(56, 26, mq); }
-      if (i > 0 && oq < 1) { var Rt = [960 - $.cards[0].w / 2, 540 - 30 - $.cards[0].h / 2]; R4[0] = lerp(Rt[0] + (c.w < 400 ? 0 : -216), R4[0], oq); R4[1] = lerp(Rt[1] + (c.h - $.cards[0].h) / -2, R4[1], oq); }
+      if (i > 0 && oq < 1) R4[0] -= 80 * (1 - oq);                     // (v5, contact sheet: beside TikTok, no longer under its brace)
       if (i === 3 && pm > 0) { R4 = [lerp(R4[0], P10[0], pm), lerp(R4[1], P10[1], pm), lerp(R4[2], P10[2], pm), lerp(R4[3], P10[3], pm)]; rad = lerp(rad, 0, pm); }
       if (i === 3) { $.p10R = R4; $.p10r = rad; }                      // (r10 lays its glass panel on it)
       box(c.e, R4[0], R4[1], R4[2], R4[3]); tf(c.e, "none"); c.e.style.borderRadius = px(rad);
       c.lb.style.top = px(R4[3] + 22 * sc);
       [].forEach.call(c.e.querySelectorAll("video"), function (v) { v.style.borderRadius = px(rad); op(v, i === 0 ? seg(mq, 0.35, 0.85) : i === 3 ? 1 - seg(pm, 0.35, 0.9) : 1); });
       c.e.style.background = i === 0 && mq < 1 ? INK : "";
-      op(c.e, i === 0 ? seg(t, K.export + 0.2, K.export + 0.3) * (1 - fwd) : i === 3 ? seg(oq, 0, 0.3) : seg(oq, 0, 0.3) * (1 - fwd));
-      op(c.lb, cardsIn * (i > 0 ? seg(oq, 0.7, 1) : 1) * (i === 3 ? 1 - seg(t, PM[0] - 0.2, PM[0]) : 1)); blur(c.e, 0);
+      op(c.e, i === 0 ? seg(t, K.export + 0.2, K.export + 0.3) * (1 - fwd) : i === 3 ? seg(oq, 0, 0.6) : seg(oq, 0, 0.6) * (1 - fwd));
+      var lw = textW(c.lb) || 220, lc = R4[0] + R4[2] / 2, edge = clamp((Math.min(lc - lw / 2, 1920 - (lc + lw / 2)) - 40) / 70, 0, 1);   // (v5: never cut by the edge)
+      op(c.lb, cardsIn * edge * (i > 0 ? seg(oq, 0.7, 1) : 1) * (i === 3 ? 1 - seg(t, PM[0] - 0.2, PM[0]) : 1)); blur(c.e, 0);
     });
     var cur = $.cards[idx];
     $.br[0].style.left = px(960 - cur.w / 2 - 98); $.br[1].style.left = px(960 + cur.w / 2 + 22);
@@ -1099,10 +1113,10 @@ window.LV = (function () {
       return [[K.punchy - 0.5, 1990, 1150], [K.punchy - 0.08, px1, py1], [K.punchy + 0.25, px1, py1], [K.shuffle - 0.1, px2, py2], [K.shuffle + 0.25, px2, py2], [K.shuffle + 0.7, px2 + 300, 1200]];
     }
     if (t >= K.pack - 0.5 && t <= K.pack + 0.4) {                 // Make the pack (CREATOR+), on the laptop's screen
-      return [[K.pack - 0.5, 1700, 1150], [K.pack - 0.08, 975, 560], [K.pack + 0.1, 975, 560], [K.pack + 0.4, 1200, 1200]];
+      return [[K.pack - 0.5, 1700, 1150], [K.pack - 0.08, 876, 767], [K.pack + 0.1, 876, 767], [K.pack + 0.4, 1200, 1200]];   // v5: the gentler push
     }
     if (t >= K.export - 0.5 && t <= K.export + 0.45) {            // Export
-      return [[K.export - 0.5, 1500, 1150], [K.export - 0.08, 960, 540], [K.export + 0.12, 960, 540], [K.export + 0.45, 1250, 1180]];
+      return [[K.export - 0.5, 1500, 1150], [K.export - 0.08, 618, 303], [K.export + 0.12, 618, 303], [K.export + 0.45, 1250, 1180]];   // v5: the whole card in the frame
     }
     return null;
   }
