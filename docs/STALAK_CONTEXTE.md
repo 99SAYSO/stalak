@@ -102,6 +102,10 @@
 6. **Le propriétaire** crée lui-même les comptes, tape les mots de passe et les codes, accepte les conditions et fait les paiements. Claude peut faire le reste dans Chrome une fois le propriétaire connecté.
 7. **Utiliser les skills disponibles** pour chaque tâche : vérification des docs (`context7`), revue de sécurité (`appsec-review`), tests web (`webapp-testing`), textes de vente (`copywriting`), SEO (`seo-audit`), etc. Dire lesquels ont servi.
 8. **Avant chaque mise en ligne** : tests serveur + vérification sur téléphone (390 px) et ordinateur (1280 px), en FR et EN, sans défilement horizontal, sans erreur. La version claude.ai doit toujours se charger.
+9. **Maquette avant le vrai site (décision du propriétaire du 5/11)** : tout changement visible (site, app, textes, prix) est d'abord montré sur la **maquette** de sa branche. Cloudflare la crée tout seul à chaque `git push` : `https://<nom-de-branche-avec-des-tirets>.stalak-site.pages.dev` (ex. `app/partager` → `https://app-partager.stalak-site.pages.dev`).
+   - La conversation donne ce lien au propriétaire à la fin de sa tâche (après avoir vérifié qu'il s'ouvre), dans le compte rendu (`Maquette : <lien>`) et dans sa réponse.
+   - Le Chef de projet ne fusionne dans `main` (le vrai site stalak.app) qu'après le **« ok » du propriétaire sur la maquette**. Seuls les changements invisibles (documents, tests, corrections urgentes de sécurité ou de paiement) peuvent passer sans maquette, en le disant.
+   - Attention : la maquette utilise pour l'instant la même base de données que le vrai site. Le serveur y bloque ce qui touche à l'argent et aux vrais comptes (paiements, webhook Paddle, changement de formule, suppression de compte). Ne pas y créer de faux comptes en masse.
 
 ## 5. Les rôles
 
