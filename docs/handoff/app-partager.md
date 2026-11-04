@@ -1,4 +1,4 @@
-Statut : EN COURS (tests en cours)
+Statut : PRÊT
 Branche : app/partager (créée depuis `main` du 5/11 : 2779364).
 Maquette : https://app-partager.stalak-site.pages.dev (à faire valider par le propriétaire sur son téléphone avant la fusion, règle 9).
 
@@ -38,7 +38,7 @@ Fichiers touchés :
 - Pas de migration, rien côté serveur.
 
 Tests (5/11, iPhone 12 de 390 px et Pixel 7 Android émulés, ordinateur de 1280 px, FR et EN) :
-- **Nouveau `partager_ui.py`** : RÉSULTAT_PARTAGER. Il vérifie :
+- **Nouveau `partager_ui.py`** : 78/78. Il vérifie :
   - « Partager » en grand, en premier, et visible à l'écran quand la vidéo est prête ;
   - l'explication et la légende juste dessous, le petit lien de téléchargement, plus de liens vers les réseaux ;
   - la légende courte avec « made with stalak.app », et « Copier la légende » qui la copie ;
@@ -49,7 +49,13 @@ Tests (5/11, iPhone 12 de 390 px et Pixel 7 Android émulés, ordinateur de 1280
   - un téléphone sans partage de fichier, et l'ordinateur (gratuit et Pro), gardent « Enregistrer sur l'appareil » ;
   - pas de défilement de côté, aucune erreur.
 - Le vrai menu de partage du téléphone ne peut pas s'ouvrir dans un test : il est remplacé par une imitation qui note ce que Stalak lui donne. **À vérifier par le propriétaire sur la maquette.**
-- RÉSULTATS_SUITES
+- Les autres suites :
+  - `audit_ui.py` 158/158, `formules_ui.py` 169/169, `son_passage.py` 86/86, `filtres_ui.py` 106/106 ;
+  - `projet_local_ui.py` 48/48, `export_pub_ui.py` 22/22, `animations_ui.py` 44/44, `liens_cmp_ui.py` 98/98, `pied_de_page_ui.py` 402/402 ;
+  - `remux_frag.py` 10/10, `paroles_suppr.py` 44/44, `plans_ui.py` 35/35, `gallery_ui.py` 49/49, `help_ui.py` 42/42 ;
+  - `tests/backend/run.mjs` 80/80.
+- `support_ui.py` et `lyrics_ui.py` s'arrêtent au même endroit que sur `main` (délai dépassé en attendant la page), sans lien avec ce changement.
+- La maquette s'ouvre (vérifié le 5/11 : page de Stalak avec son pied de page). Le bouton « Partager » n'apparaît qu'après un export : c'est au propriétaire de le tester sur son téléphone.
 
 À tester par le propriétaire, sur la maquette, avec son téléphone :
 1. Ouvrir https://app-partager.stalak-site.pages.dev, faire une vidéo (l'exemple suffit) et l'exporter.
