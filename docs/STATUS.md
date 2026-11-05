@@ -408,6 +408,20 @@
 Ces montants sont avant TVA et frais. Réaliste : 10 000 € par mois en avril 2027.
 
 ### Juridique & business
+- **Fait (branche `legal/provenance`, 05/11)** : relecture de la phrase « provenance de la première visite » et règles sur les traceurs (CNIL, article 82 de la loi Informatique et Libertés).
+  - **Constat** : `stalak:src` est écrit dans le navigateur de **tous** les visiteurs, n'expire jamais, puis il est **rattaché au compte**, où le tableau de bord le croise avec la formule payée. La CNIL dispense de consentement la mesure d'audience seulement si elle produit des **statistiques anonymes**, sans **recoupement avec d'autres traitements** (ici le compte) ; elle recommande aussi 13 mois maximum, sans prolongation. Tel qu'il est fait, ce stockage **demande donc un consentement en Europe** ; « intérêt légitime » ne suffit pas pour l'écriture et la lecture dans le navigateur. Aux États-Unis, pas de problème (statistiques de première main, pas de vente).
+  - **Correction proposée (écrite dans les pages FR/EN, section « D'où tu viens » / « Where you came from »)** : inscription depuis l'Europe = total anonyme par provenance et par jour, jamais rattaché au compte ; ailleurs = gardé avec le compte comme aujourd'hui ; 13 mois maximum ; bouton « Ne pas enregistrer d'où je viens » (déjà en place sur les pages, il met `stalak:src` à `none`). Le paragraphe des visites mentionne aussi `stalak:ref` (onglet) et `stalak:lastDay` (retour), qui restent anonymes et donc dispensés.
+- **À faire par Comptes (avec App pour `src/app.js`), à fusionner avec `legal/provenance`** :
+  - `FIRST_SRC` : garder la date d'écriture avec la valeur (par exemple `{"s":"ref:tiktok","t":1762300000000}`). Au-delà de 13 mois, effacer et repartir comme une première visite. Ne jamais réécrire la date à une visite suivante.
+  - Valeurs `none` (refus) et `-` (déjà envoyée) : ne jamais rien envoyer.
+  - `sendSource` : après l'envoi, remplacer la valeur par `-` (plus aucune information).
+  - `POST account/source` : si `request.cf.country` (ou le pays d'inscription) est dans l'UE, l'EEE (IS, LI, NO), au Royaume-Uni (GB) ou en Suisse (CH), ajouter 1 à un total `(jour, provenance)` sans écrire `users.signup_source` ; sinon, comme aujourd'hui. Ignorer `none` et `-`.
+  - Tableau de bord : les provenances = totaux anonymes (Europe) + comptes hors Europe ; dans la liste des comptes, provenance vide pour l'Europe.
+  - Comptes européens déjà enregistrés avec une provenance : remettre `signup_source` à vide (`UPDATE users SET signup_source = NULL WHERE country IN (…)`), en gardant si besoin le total par jour.
+  - Facultatif : `stalak:lastDay` ignoré s'il a plus de 13 mois.
+- **À décider (propriétaire)**, si la correction ne convient pas :
+  - total anonyme pour **tout le monde** (le plus simple et le plus sûr, mais plus de provenance par compte nulle part) ;
+  - ou garder la provenance par compte en Europe aussi, mais avec un **bandeau de consentement** pour tous les visiteurs européens dès la première visite (à éviter).
 - **Fait (branche `legal/adresses-vendeur`, 01/11)** : détail dans `docs/juridique/PADDLE.md`.
   - **Adresses vérifiées** après la bascule :
     - pages légales, app, e-mails et liens externes : tout répond ; anciennes adresses en 301 ;
