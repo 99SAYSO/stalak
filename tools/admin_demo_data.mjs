@@ -7,7 +7,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createD1 } from '../tests/backend/fake-d1.mjs';
 import { seedDashboard } from '../tests/fixtures/dashboard-seed.mjs';
-import { stats, home, signupList, hourly } from '../functions/_lib/admin.js';
+import { stats, home, signupList, hourly, videosPerPerson } from '../functions/_lib/admin.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const env = { DB: createD1(join(root, 'migrations')), PADDLE_ENV: 'production', APP_ORIGIN: 'https://stalak.app', EMAIL_DAILY_MAX: '1000',
@@ -18,6 +18,7 @@ env.DB.raw.prepare("INSERT INTO admin_state (key, value, updated_at) VALUES ('te
 const scrub = (o) => JSON.parse(JSON.stringify(o).replace(/fan\d+_\d+@example\.com/g, (m) => m.replace('@example.com', '@demo.stalak')));
 const out = { generatedAt: new Date(now).toISOString(), stats: {}, home: scrub(await home(env, now)), signups: [] };
 for (const [k, d] of [['7', 7], ['30', 30], ['90', 90], ['all', 45]]) out.stats[k] = scrub(await stats(env, d, now));
+out.videos = { 7: await videosPerPerson(env, '7', now), 30: await videosPerPerson(env, '30', now) };
 out.hours = {};
 for (const per of ['today', '7', '30']) for (const tz of ['paris', 'ny']) out.hours[per + '_' + tz] = await hourly(env, per, tz, now);
 let before = null;

@@ -14,6 +14,7 @@ export function seedDashboard(env, { now = Date.now() } = {}) {
   // made-up pseudos (a few accounts have none: shown « — »); not from rnd(), so the other figures stay the same
   const NAMES = ['lilnova', 'beatsbyjay', 'Mira K', 'drill.fr', 'kaïa', 'yungwave', 'Sami', 'noctis', 'Lou B', 'prodbymax', 'zoé', 'blkcherry'];
   const setName = db.prepare('UPDATE users SET display_name = ? WHERE id = ?');
+  const insVc = db.prepare('INSERT INTO video_counts (day, vid, name, n, ios) VALUES (?, ?, ?, ?, ?)');
   const bump = db.prepare('INSERT INTO daily_counts (day, name, n) VALUES (?, ?, ?) ON CONFLICT(day, name) DO UPDATE SET n = n + excluded.n');
   // the hour of the day (UTC) people come: evenings in the US (0–4 h UTC) and in France (17–21 h UTC); r in [0, 1) → a time
   const W = [9, 10, 9, 7, 5, 3, 2, 1, 1, 1, 2, 2, 3, 3, 4, 4, 5, 6, 7, 7, 7, 6, 7, 8], WT = W.reduce((a, b) => a + b, 0);
@@ -40,6 +41,14 @@ export function seedDashboard(env, { now = Date.now() } = {}) {
       if (i > 3 && rnd() < 0.3) db.prepare("INSERT OR IGNORE INTO sessions (token_hash, user_id, created_at, expires_at, method) VALUES (?, ?, ?, ?, 'password')").run('seedsess' + i + '_' + k, 'u_seed' + i + '_' + k, t + 3 * 864e5, t + 60 * 864e5);
     }
     const ex = Math.round(nv * 0.42), fail = Math.round(ex * 0.06);
+    // videos per person (vid, no account): most make 1, some 2, a few 3 to 5; about 45 % on an iPhone; the same for the ad
+    for (const [name, total] of [['export_ok', ex], ['ad_ok', Math.round(ex * 0.2)]]) {
+      for (let left = total, p = 0; left > 0; p++) {
+        const m = (i * 7 + p * 13) % 20, n = Math.min(left, m < 12 ? 1 : m < 17 ? 2 : 3 + (m % 3));
+        insVc.run(d, (name === 'ad_ok' ? 'a' : 'e') + String(i).padStart(3, '0') + String(p).padStart(20, '0').slice(-20), name, n, (i + p * 3) % 20 < 9 ? 1 : 0);
+        left -= n;
+      }
+    }
     // the exports by hour (the same shape as the visits)
     for (let h = 0; h < 24; h++) { const ms = Math.floor(t / 864e5) * 864e5 + h * 3600e3, n = Math.round(ex * W[h] / WT); if (n && ms <= now) bumpH.run(Math.floor(ms / 3600e3), n); }
     [['ev_export_start', ex + fail], ['ev_export_ok', ex], ['ev_export_fail', fail], ['ev_export_fail_memory', Math.ceil(fail / 2)], ['ev_export_fail_hidden', Math.floor(fail / 2)],

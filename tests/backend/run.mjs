@@ -16,7 +16,7 @@ import { resetJwksCache } from '../../functions/_lib/oauth.js';
 import { cleanPrompt, songPrompt, PROMPT_MAX } from '../../functions/_lib/lyrics.js';
 import { HELP_GUIDE_FR, HELP_GUIDE_EN } from '../../functions/_lib/help-guide.js';
 import { codeEmail } from '../../functions/_lib/email.js';
-import { nextPayout, hourly } from '../../functions/_lib/admin.js';
+import { nextPayout, hourly, videosPerPerson } from '../../functions/_lib/admin.js';
 import { thanksEmail, THANKS_DELAY_MS } from '../../functions/_lib/thanks.js';
 import { onRequest as adminDemo } from '../../functions/admin-demo/[[path]].js';
 import { DEMO_DATA } from '../../functions/_lib/admin-demo-data.js';
@@ -3425,6 +3425,63 @@ test('hour by hour: each hour in Paris or New York time, today or the average of
   assert.notEqual(a.status, 200, 'owner only');
   const { DEMO_DATA: D } = await import('../../functions/_lib/admin-demo-data.js');
   assert.ok(D.hours && D.hours['7_ny'].average && D.hours.today_paris.hours.length === 24, 'the demo has the hours');
+});
+
+// ---- « Combien de vidéos par personne » (5/11) ----
+test('videos per person: the visit number goes with the finished videos only, no account; the owner and test accounts left out', async () => {
+  const env = makeEnv({ ...ADMIN_ENV, STATS_EXCLUDE_EMAILS: 'agent@example.com' }), db = env.DB.raw;
+  const V1 = 'a'.repeat(24), V2 = 'b'.repeat(24), ev = (body, cookie) => call(env, 'POST', '/api/event', { body, cookie });
+  for (let k = 0; k < 3; k++) assert.equal((await ev({ name: 'export_ok', vid: V1, ios: true })).status, 200);
+  await ev({ name: 'ad_ok', vid: V1, ios: true });
+  await ev({ name: 'export_ok', vid: V2 });
+  await ev({ name: 'export_start', vid: V2 }); await ev({ name: 'export_ok' }); await ev({ name: 'export_ok', vid: 'not-a-visit' });
+  const rows = db.prepare('SELECT day, vid, name, n, ios FROM video_counts ORDER BY vid, name').all().map((r) => ({ ...r }));
+  const d = new Date().toISOString().slice(0, 10);
+  assert.deepEqual(rows, [{ day: d, vid: V1, name: 'ad_ok', n: 1, ios: 1 }, { day: d, vid: V1, name: 'export_ok', n: 3, ios: 1 }, { day: d, vid: V2, name: 'export_ok', n: 1, ios: 0 }]);
+  assert.deepEqual(Object.keys(db.prepare('SELECT * FROM video_counts LIMIT 1').get()).sort(), ['day', 'ios', 'n', 'name', 'vid'], 'nothing about the person');
+  // the owner (ADMIN_EMAILS) and a test agent (STATS_EXCLUDE_EMAILS), signed in: not counted (the global counters still are)
+  const before = db.prepare("SELECT n FROM daily_counts WHERE name = 'ev_export_ok'").get().n;
+  for (const mail of ['owner@example.com', 'agent@example.com']) {
+    const u = await login(env, mail, 'fr');
+    assert.equal((await ev({ name: 'export_ok', vid: 'c'.repeat(24) }, u.cookie)).status, 200);
+  }
+  const fan = await login(env, 'fan@example.com', 'fr');
+  await ev({ name: 'export_ok', vid: 'd'.repeat(24) }, fan.cookie);
+  assert.equal(db.prepare("SELECT COUNT(*) AS n FROM video_counts WHERE vid = ?").get('c'.repeat(24)).n, 0, 'owner and agent left out');
+  assert.equal(db.prepare("SELECT n FROM video_counts WHERE vid = ?").get('d'.repeat(24)).n, 1);
+  assert.equal(db.prepare("SELECT n FROM daily_counts WHERE name = 'ev_export_ok'").get().n, before + 3);
+  // kept 90 days, like the visits
+  db.prepare("INSERT INTO video_counts (day, vid, name, n, ios) VALUES ('2020-01-01', ?, 'export_ok', 1, 0)").run('e'.repeat(24));
+  const rnd = Math.random; Math.random = () => 0;
+  try { await call(env, 'POST', '/api/presence', { body: { vid: 'v_cleanup_videos_000001', lang: 'en' } }); } finally { Math.random = rnd; }
+  assert.equal(db.prepare("SELECT COUNT(*) AS n FROM video_counts WHERE day = '2020-01-01'").get().n, 0);
+});
+
+test('videos per person: shares of 1, 2, 3 or more a day, the clean videos through the ad, iPhones, and the sentence', async () => {
+  const env = makeEnv({ ...ADMIN_ENV }), db = env.DB.raw, now = Date.parse('2026-11-05T12:00:00Z');
+  const ins = db.prepare('INSERT INTO video_counts (day, vid, name, n, ios) VALUES (?, ?, ?, ?, ?)');
+  let k = 0; const add = (day, name, n, ios) => ins.run(day, String(++k).padStart(24, '0'), name, n, ios);
+  // 7 days: 6 people made 1, 3 made 2, 1 made 5; 4 on an iPhone. 20 days ago: 10 people made 3.
+  for (let i = 0; i < 6; i++) add('2026-11-04', 'export_ok', 1, i < 2 ? 1 : 0);
+  for (let i = 0; i < 3; i++) add('2026-11-05', 'export_ok', 2, i < 1 ? 1 : 0);
+  add('2026-10-30', 'export_ok', 5, 1); add('2026-11-05', 'ad_ok', 1, 0); add('2026-11-05', 'ad_ok', 2, 0);
+  for (let i = 0; i < 10; i++) add('2026-10-16', 'export_ok', 3, 0);
+  let r = await videosPerPerson(env, '7', now);
+  assert.deepEqual(r.exports, { people: 10, one: 6, two: 3, three: 1, ios: 4 });
+  assert.deepEqual(r.ads, { people: 2, one: 1, two: 1, three: 0, ios: 0 });
+  assert.equal(r.summary, 'La plupart des gens font 1 vidéo par jour (60 %) ; 40 % en font 2 ou plus. Encore peu de monde (10) : à revoir plus tard.');
+  r = await videosPerPerson(env, '30', now);
+  assert.deepEqual(r.exports, { people: 20, one: 6, two: 3, three: 11, ios: 4 });
+  assert.equal(r.summary, '70 % des gens font 2 vidéos ou plus par jour. Encore peu de monde (20) : à revoir plus tard.');
+  for (let i = 0; i < 40; i++) add('2026-11-03', 'export_ok', 1, 0);
+  assert.equal((await videosPerPerson(env, '30', now)).summary, 'La plupart des gens font 1 vidéo par jour (77 %) ; 23 % en font 2 ou plus.');
+  assert.equal((await videosPerPerson(makeEnv(), '7', now)).summary, 'Pas encore de vidéo comptée sur cette période.');
+  let a = await adminCall(env, 'GET', '/api/admin/videos?period=30', { token: await accessToken() });
+  assert.equal(a.status, 200); assert.equal(a.data.period, '30');
+  a = await adminCall(env, 'GET', '/api/admin/videos', {});
+  assert.notEqual(a.status, 200, 'owner only');
+  const { DEMO_DATA: D } = await import('../../functions/_lib/admin-demo-data.js');
+  assert.ok(D.videos && D.videos['7'].exports.people > 0 && D.videos['30'].summary, 'the demo has it');
 });
 
 // ---- runner --------------------------------------------------------------------------

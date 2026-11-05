@@ -155,8 +155,10 @@
   function event(name, extra) {
     try {
       var b = { name: String(name) }; if (IOS) b.ios = true;
-      if (extra && typeof extra === 'object') { if (extra.cat) b.cat = String(extra.cat); if (extra.why) b.why = String(extra.why); }
-      fetch('/api/event', { method: 'POST', credentials: 'omit', keepalive: true, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b) })
+      if (extra && typeof extra === 'object') { if (extra.cat) b.cat = String(extra.cat); if (extra.why) b.why = String(extra.why); if (extra.vid) b.vid = String(extra.vid); }
+      // a finished video (with the visit number): the session goes along so that the owner's and the test accounts are left out
+      // of « vidéos par personne » (the server keeps nothing about the account); the other steps stay without it
+      fetch('/api/event', { method: 'POST', credentials: b.vid ? 'same-origin' : 'omit', keepalive: true, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b) })
         .catch(function () {});
     } catch (e) {}
   }

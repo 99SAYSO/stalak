@@ -371,7 +371,13 @@ async function dispatch(request, env, ctx) {
       case 'event':
         // a step of the funnel (export, ad, plans page, payment window): anonymous counters for the dashboard
         if (method !== 'POST') break;
-        return event(request, env);
+        // left out of « vidéos par personne »: the owner (ADMIN_EMAILS) and the test agents (STATS_EXCLUDE_EMAILS), by the session
+        return event(request, env, async () => {
+          const list = `${env.ADMIN_EMAILS || ''},${env.STATS_EXCLUDE_EMAILS || ''}`.split(',').map((e) => e.trim().toLowerCase()).filter(Boolean);
+          if (!list.length) return false;
+          const u = await currentUser(request, env).catch(() => null);
+          return !!(u && list.includes(String(u.email).toLowerCase()));
+        });
       case 'help/chat':
         // the help assistant of the ice cube (functions/_lib/help.js): open to everyone, signed in or not
         if (method !== 'POST') break;

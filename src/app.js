@@ -9344,8 +9344,10 @@ const VISIT_REF = (() => {
 const VISIT_BACK = (() => { try { const d = new Date().toISOString().slice(0, 10), p = localStorage.getItem('stalak:lastDay'); localStorage.setItem('stalak:lastDay', d); return p ? p !== d : false; } catch(e){ return null; } })();
 /* visits for the dashboard: a random number made now (no cookie, nothing stored), sent every 5 minutes while the page is shown
    (the server says how often: `every`), and when the page comes back after a minute or more */
+/* the same random number goes with the finished videos (export_ok, ad_ok: acctEvent), for « vidéos par personne » (5/11) */
+const VISIT_ID = HELP_SITE ? Array.from(crypto.getRandomValues(new Uint8Array(12)), b => b.toString(16).padStart(2, '0')).join('') : null;
 if (HELP_SITE){
-  const vid = Array.from(crypto.getRandomValues(new Uint8Array(12)), b => b.toString(16).padStart(2, '0')).join('');
+  const vid = VISIT_ID;
   let every = 300e3, last = 0, timer = 0;
   const ping = () => { if (document.hidden) return; last = Date.now();
     fetch('/api/presence', { method: 'POST', credentials: 'same-origin', keepalive: true, headers: { 'Content-Type': 'application/json' },
@@ -9541,7 +9543,9 @@ const WHY_FEATURE = { lyrics: 'lyrics', pack: 'pack5', pack5: 'pack5', pack10: '
    acctEvent('export_ok'), acctEvent('export_fail', {cat: 'memory'|'decoder'|'hidden'|'cancel'|'other'}), acctEvent('pro_offer') (the Pro
    offer after the 1st video, App), acctEvent('ad_offer'), acctEvent('ad_shown') (the ad really on screen, App), acctEvent('ad_ok')…
    Nothing about the person or the video; never fails, works signed out (account.js event()). */
-function acctEvent(name, extra){ try { if (ACCT && ACCT.event) ACCT.event(name, extra); } catch(e){} }
+function acctEvent(name, extra){ try {
+  if (VISIT_ID && (name === 'export_ok' || name === 'ad_ok')) extra = Object.assign({}, extra, { vid: VISIT_ID });
+  if (ACCT && ACCT.event) ACCT.event(name, extra); } catch(e){} }
 function acctWhyCat(k){
   const w = String(k || '').replace('acct.why.', '');
   if (/^pack/.test(w)) return 'pack';

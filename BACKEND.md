@@ -496,6 +496,7 @@ Pour le nouveau tableau de bord (1/11) : colle de même **tout** `migrations/001
 Pour la version 3 (5/11) : colle de même **tout** `migrations/0011_signup_source.sql` (1 colonne vide) **avant** de publier.
 Pour l'e-mail de remerciement (5/11) : colle de même **tout** `migrations/0012_thanks_mail.sql` (1 colonne, et les clients déjà abonnés marqués) **avant** de publier.
 Pour « Heure par heure » (5/11) : colle de même **tout** `migrations/0013_hourly_counts.sql` (1 petite table) **avant** de publier.
+Pour « Combien de vidéos par personne » (5/11) : colle de même **tout** `migrations/0015_video_counts.sql` (1 petite table) **avant** de publier.
 
 ### 13.2 L'adresse admin.stalak.app
 **Workers & Pages → stalak-site → Custom domains → Set up a custom domain** → `admin.stalak.app` → **Continue** → **Activate domain**.
@@ -575,6 +576,16 @@ Période : Aujourd'hui (depuis minuit dans la ville choisie) / 7 j / 30 j (la **
 Les visites, les comptes et les abonnements avaient déjà leur heure. Les **exports** n'avaient qu'un total par jour : ils sont
 maintenant aussi comptés par heure (table `hourly_counts`, migration 0013, anonyme, effacée après 90 jours), donc seulement
 **à partir de la mise en ligne** (la page le dit).
+
+### 13.6 quinquies « Combien de vidéos par personne » (5/11)
+Tableau de bord → Du visiteur à l'abonné → carte **🎬 Combien de vidéos par personne** (7 j / 30 j) : la part des gens qui font
+1, 2, 3 vidéos ou plus dans la journée, la même chose pour les vidéos propres via la pub, la part d'iPhone, et une phrase de
+conclusion. « Personne » = le numéro au hasard que la page crée à chaque ouverture (`vid`, déjà envoyé pour les visites) : il est
+maintenant joint aux évènements `export_ok` et `ad_ok` (table `video_counts`, migration 0015 : jour, numéro, nombre, iPhone oui/non ;
+ni compte, ni e-mail, ni IP ; effacé après 90 jours). Si la personne recharge la page, elle compte pour deux.
+Ton compte (`ADMIN_EMAILS`) et ceux des agents de test ne sont pas comptés : mets leurs adresses, séparées par des virgules, dans la
+variable **`STATS_EXCLUDE_EMAILS`** (Cloudflare → Settings → Variables, pas secrète). Pour ça, la page envoie sa session avec ces
+deux évènements ; le serveur la lit seulement pour cette vérification et ne la garde pas.
 
 ### 13.7 Vérifier
 - `https://admin.stalak.app/admin/` : Cloudflare demande ton e-mail, envoie un code, puis le tableau de bord s'affiche.

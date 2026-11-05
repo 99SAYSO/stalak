@@ -63,7 +63,7 @@ export const SOURCE = /^[a-z0-9_-]{1,24}$/;
 
 // POST /api/event {name, cat?, ios?, why?}: one step of the funnel. Unknown names are refused (400), so the table holds
 // only the names above. Limited per connection (hashed, like the visits).
-export async function event(request, env) {
+export async function event(request, env, excluded = null) {
   const body = await readJson(request, 512);
   const name = typeof body.name === 'string' && EVENTS.includes(body.name) ? body.name : null;
   if (!name) throw new HttpError(400, 'invalid_event', 'Unknown event name.');
@@ -72,6 +72,14 @@ export async function event(request, env) {
   await bump(env, 'ev_' + name);
   if (name === 'export_ok') await bumpHour(env, 'export_ok');   // the hour of the export (« Heure par heure »)
   if (body.ios === true) await bump(env, 'ios_' + name);   // the same step on an iPhone / iPad
+  // « Combien de vidéos par personne » (5/11): the page's random visit number (vid) with the finished videos, per day; never
+  // the account. The owner's and the test agents' accounts are left out (excluded(): read from the session, nothing kept).
+  if ((name === 'export_ok' || name === 'ad_ok') && typeof body.vid === 'string' && VID.test(body.vid) && !(excluded && await excluded())) {
+    await env.DB.prepare(
+      'INSERT INTO video_counts (day, vid, name, n, ios) VALUES (?1, ?2, ?3, 1, ?4) ON CONFLICT(day, vid, name) DO UPDATE SET n = n + 1'
+    ).bind(today(), body.vid, name, body.ios === true || deviceOf(request) === 'ios' ? 1 : 0).run()
+      .catch((e) => console.error('[stalak] video count', e && e.message ? String(e.message).slice(0, 120) : 'error'));
+  }
   if (name === 'export_fail') await bump(env, 'ev_export_fail_' + (EXPORT_FAIL.includes(body.cat) ? body.cat : 'other'));
   if (name === 'plans_open' && typeof body.why === 'string') await bump(env, 'ev_plans_why_' + (EVENT_REASONS.includes(body.why) ? body.why : 'other'));
   return json({ ok: true });
@@ -103,6 +111,7 @@ export async function presence(request, env) {
     if (Math.random() < 0.01) {
       const old = today(now - VISITS_KEEP_DAYS * 864e5);
       await env.DB.prepare('DELETE FROM visits WHERE day < ?1').bind(old).run().catch(() => {});
+      await env.DB.prepare('DELETE FROM video_counts WHERE day < ?1').bind(old).run().catch(() => {});
       await env.DB.prepare('DELETE FROM hourly_counts WHERE hour < ?1').bind(Math.floor((now - VISITS_KEEP_DAYS * 864e5) / 3600e3)).run().catch(() => {});
     }
   }

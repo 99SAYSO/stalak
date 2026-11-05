@@ -195,6 +195,9 @@ th{color:var(--text2);font-weight:600}
 @media (prefers-color-scheme:dark){.hc{box-shadow:none}}
 .hc.wide{grid-column:1 / -1}
 .hctl{gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.vsum{font-size:17px;font-weight:700;margin:12px 0}.vcols{display:grid;grid-template-columns:1fr 1fr;gap:18px}.vcols h3{margin:0 0 8px}
+#vppCard{margin-top:16px}#vppCard .hbest{flex-wrap:wrap}
+@media (max-width:760px){.vcols{grid-template-columns:1fr}}
 .hq .he{display:none;font-size:13.5px;color:var(--muted);margin:6px 0 0}.hq.help .he{display:block}
 .hbest{display:flex;align-items:center;gap:8px;font-weight:700;font-size:18px}.hbest .sp{flex:1}
 .hlist{list-style:none;margin:10px 0 0;padding:0}
@@ -430,6 +433,18 @@ __DEMO_BANNER__<header class="top"><div class="in">
       <div class="card"><h3>Pubs</h3><p class="note">Demandées (bouton touché), vraiment affichées, puis regardées jusqu’au bout (filigrane enlevé).</p><ul class="blist" id="bAds"></ul></div>
       <div class="card"><h3>Ce qui ouvre la page des formules</h3><p class="note">La fonction payante qui a donné envie (cadenas touché).</p><ul class="blist" id="bWhy"></ul></div>
     </div>
+    <div class="card hq" id="vppCard">
+      <div class="hbest"><span>🎬 Combien de vidéos par personne</span><span class="sp"></span>
+        <div class="seg" role="group" aria-label="Période" id="vPer"><button type="button" data-p="7" aria-pressed="true">7 j</button><button type="button" data-p="30" aria-pressed="false">30 j</button></div>
+        <button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
+      <p class="he">Pour chaque personne et chaque jour, combien de vidéos elle a faites : 1, 2, 3 ou plus. « Personne » = une page de Stalak ouverte (un numéro au hasard, sans compte) : si elle recharge la page, elle compte pour deux. Ton compte et ceux des tests ne sont pas comptés.</p>
+      <p class="vsum" id="vSum">…</p>
+      <div class="vcols">
+        <div><h3>Vidéos exportées</h3><ul class="blist" id="vExp"></ul></div>
+        <div><h3>Vidéos propres via la pub</h3><ul class="blist" id="vAds"></ul></div>
+      </div>
+      <p class="note" id="vIos"></p>
+    </div>
     <div class="charts" id="funnelCharts" data-mt></div>
   </section>
 
@@ -541,6 +556,7 @@ __DEMO_BANNER__<header class="top"><div class="in">
     if (name === 'home') home();
     if (name === 'signups' && !S.signupsLoaded) signups();
     if (name === 'hours') hours();
+    if (name === 'funnel') vpp();
     if (name === 'users') globeStart(); else globeStop();
     if (!/^#t=/.test(location.hash)) try { history.replaceState(null, '', '#' + name); } catch (e) {}
     window.scrollTo(0, 0);
@@ -613,6 +629,27 @@ __DEMO_BANNER__<header class="top"><div class="in">
     try { localStorage.setItem('stalak:admin:tz', S.hTz); } catch (er) {}
     hours();
   });
+  // ---- « Combien de vidéos par personne » (5/11): 1 / 2 / 3 or more videos a day, exports and clean videos through the ad ----
+  S.vPer = '7';
+  function vpp() {
+    $$('#vPer button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.p === S.vPer ? 'true' : 'false'); });
+    return api('GET', 'videos?period=' + S.vPer).then(function (d) {
+      set('#vSum', d.summary);
+      [['#vExp', d.exports], ['#vAds', d.ads]].forEach(function (x) {
+        var ul = $(x[0]), g = x[1]; ul.textContent = '';
+        if (!g.people) { ul.append(el('li', { class: 'note' }, 'Rien encore.')); return; }
+        [['1 vidéo', g.one], ['2 vidéos', g.two], ['3 ou plus', g.three]].forEach(function (r) {
+          var pc = Math.round(r[1] / g.people * 100), li = el('li'), tr = el('span', { class: 'tr' }), bar = el('i');
+          bar.style.width = pc + '%'; tr.append(bar);
+          var n = el('span', { class: 'n' }); n.append(el('b', null, pc + ' %'), document.createTextNode(' (' + r[1] + ')'));
+          li.append(el('span', { class: 'nm' }, r[0]), tr, n); ul.append(li);
+        });
+      });
+      var e = d.exports, since = d.since ? ' Compté depuis le ' + new Date(d.since + 'T12:00:00Z').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' }) + '.' : '';
+      set('#vIos', (e.people ? '📱 iPhone : ' + Math.round(e.ios / e.people * 100) + ' % des gens qui ont exporté une vidéo.' : '') + since);
+    }).catch(function (er) { set('#vSum', 'Impossible de charger : ' + er.message); });
+  }
+  $('#vPer').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; S.vPer = b.dataset.p; vpp(); });
   // ---- Accueil: the few figures that matter, with an arrow against yesterday / last week ----
   function trend(node, cur, prev, what) {
     var e = $(node); if (!e) return;
@@ -1200,6 +1237,7 @@ const DEMO_JS = String.raw`var DD = __DEMO_DATA__, DS = { avail: false, tickets:
       tickets: { open: DS.tickets.filter(function (t) { return t.status === 'open'; }).length, unread: DS.tickets.filter(function (t) { return row(t).unread; }).length } };
     else if (p === 'home') r = DD.home;
     else if (p === 'stats') r = DD.stats[q.get('days') || '30'] || DD.stats['30'];
+    else if (p === 'videos') r = DD.videos[q.get('period') === '30' ? '30' : '7'];
     else if (p === 'hours') r = DD.hours[(q.get('period') || 'today') + '_' + (q.get('tz') || 'paris')] || DD.hours.today_paris;
     else if (p === 'signups') { var b = q.get('before'), i = 0; if (b) { DD.signups.forEach(function (pg, k) { if (String(pg.more) === b) i = k + 1; }); } r = DD.signups[i] || { signups: [], more: null }; }
     else if (p === 'tickets') { var st = q.get('status') || 'open'; r = { tickets: DS.tickets.filter(function (t) { return st === 'all' || t.status === st; }).map(row) }; }

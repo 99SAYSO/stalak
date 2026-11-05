@@ -368,6 +368,31 @@ export async function hourly(env, period, tz, now = Date.now()) {
     exportsSince: f ? f * 3600e3 : null, test: pe !== 'production' };
 }
 
+// « Combien de vidéos par personne » (5/11): over 7 or 30 days, for each person and day (the page's random visit number, never
+// the account), how many videos: 1, 2, 3 or more; the same for the clean videos through the ad; the share of iPhones.
+// And one sentence that says it simply. The owner's and the test accounts are not counted (router.js, event).
+export async function videosPerPerson(env, period, now = Date.now()) {
+  const days = String(period) === '30' ? 30 : 7, from = today(now - (days - 1) * 864e5);
+  const [g, first] = await env.DB.batch([
+    env.DB.prepare('SELECT name, CASE WHEN n >= 3 THEN 3 ELSE n END AS g, COUNT(*) AS c, SUM(ios) AS i FROM video_counts WHERE day >= ?1 GROUP BY name, g').bind(from),
+    env.DB.prepare('SELECT MIN(day) AS d FROM video_counts'),
+  ]);
+  const out = {};
+  for (const name of ['export_ok', 'ad_ok']) {
+    const rows = (g.results || []).filter((r) => r.name === name), by = (k) => (rows.find((r) => r.g === k) || { c: 0 }).c;
+    const people = rows.reduce((a, r) => a + r.c, 0), ios = rows.reduce((a, r) => a + (r.i || 0), 0);
+    out[name === 'export_ok' ? 'exports' : 'ads'] = { people, one: by(1), two: by(2), three: by(3), ios };
+  }
+  const e = out.exports, pct = (x) => Math.round((x / e.people) * 100);
+  let summary;
+  if (e.people === 0) summary = 'Pas encore de vidéo comptée sur cette période.';
+  else if (e.one / e.people >= 0.5) summary = `La plupart des gens font 1 vidéo par jour (${pct(e.one)} %) ; ${pct(e.two + e.three)} % en font 2 ou plus.`;
+  else summary = `${pct(e.two + e.three)} % des gens font 2 vidéos ou plus par jour.`;
+  if (e.people > 0 && e.people < 30) summary += ` Encore peu de monde (${e.people}) : à revoir plus tard.`;
+  const f = first.results && first.results[0] && first.results[0].d;
+  return { period: String(days), since: f || null, ...out, summary };
+}
+
 export async function signupList(env, before, limitN = 50, now = Date.now()) {
   const n = Math.min(100, Math.max(1, limitN | 0)), pe = payEnv(env);
   const { results } = await env.DB.prepare(
@@ -455,6 +480,7 @@ export async function admin(request, env, method, rest) {
     return json(await stats(env, Math.min(730, Math.max(7, Number.isFinite(d) ? d : 30))));
   }
   if (route === 'home' && method === 'GET') return json(await home(env));
+  if (route === 'videos' && method === 'GET') return json(await videosPerPerson(env, url.searchParams.get('period') || '7'));
   if (route === 'hours' && method === 'GET') return json(await hourly(env, url.searchParams.get('period') || 'today', url.searchParams.get('tz') || 'paris'));
   if (route === 'signups' && method === 'GET') {
     const b = Number.parseInt(url.searchParams.get('before') || '', 10);
