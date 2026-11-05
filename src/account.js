@@ -98,7 +98,18 @@
   }
 
   function me() {
-    return api('GET', 'me').then(setState);
+    return api('GET', 'me').then(setState).then(function (st) { sendSource(st); return st; });
+  }
+  // a new account (made less than an hour ago): where this browser first came from (src/app.js FIRST_SRC), sent once
+  var sourceSent = false;
+  function sendSource(st) {
+    try {
+      if (sourceSent || !st.user || !st.user.createdAt || Date.now() - Date.parse(st.user.createdAt) > 3600e3) return;
+      var src = localStorage.getItem('stalak:src');
+      if (!src) return;
+      sourceSent = true;
+      api('POST', 'account/source', { source: src }).catch(function () {});
+    } catch (e) {}
   }
 
   function config() {
@@ -336,7 +347,7 @@
         return api('POST', 'auth/signup', b);
       });
     },
-    signupVerify: function (email, code) { return api('POST', 'auth/signup/verify', { email: email, code: code, lang: lang() }).then(setState); },
+    signupVerify: function (email, code) { return api('POST', 'auth/signup/verify', { email: email, code: code, lang: lang() }).then(setState).then(function (st) { sendSource(st); return st; }); },
     login: function (email, password) {
       return api('POST', 'auth/login', { email: email, password: password, lang: lang() }).then(function (d) { return d.needCode ? d : setState(d); });
     },

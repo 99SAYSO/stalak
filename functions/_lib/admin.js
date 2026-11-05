@@ -210,7 +210,7 @@ export async function insights(env, list, fromMs, now = Date.now()) {
   const from = list[0], pe = payEnv(env), q = (sql, ...b) => env.DB.prepare(sql).bind(...b);
   // how an account was made: the column (from 1/11), else Google / Apple / Microsoft when its identity came with it, else e-mail
   const method = `COALESCE(u.signup_method, (SELECT i.provider FROM identities i WHERE i.user_id = u.id AND i.created_at <= u.created_at + 120000 ORDER BY i.created_at LIMIT 1), 'email')`;
-  const [uMethod, uLang, uDevice, uCountry, uCountryAll, vCountry, vSource, vDevice, vLang, vBack, back, subsEnd, canceled, firstPay, refunds, storage] = await env.DB.batch([
+  const [uMethod, uLang, uDevice, uCountry, uCountryAll, vCountry, vSource, vDevice, vLang, vBack, back, subsEnd, canceled, firstPay, refunds, storage, sCountry] = await env.DB.batch([
     q(`SELECT ${method} AS k, COUNT(*) AS n FROM users u WHERE u.created_at >= ?1 GROUP BY k`, fromMs),
     q('SELECT lang AS k, COUNT(*) AS n FROM users WHERE created_at >= ?1 GROUP BY lang', fromMs),
     q('SELECT device AS k, COUNT(*) AS n FROM users WHERE created_at >= ?1 GROUP BY device', fromMs),
@@ -229,6 +229,8 @@ export async function insights(env, list, fromMs, now = Date.now()) {
     q("SELECT currency, COUNT(*) AS n, SUM(total) AS total FROM payments WHERE env = ?1 AND billed_at >= ?2 AND origin <> 'subscription_recurring' GROUP BY currency", pe, fromMs),
     q("SELECT currency, COUNT(*) AS n, SUM(total) AS total FROM refunds WHERE env = ?1 AND created_at >= ?2 AND status = 'approved' AND action IN ('refund','chargeback') GROUP BY currency", pe, fromMs),
     q('SELECT COALESCE(SUM(media_bytes), 0) + COALESCE(SUM(size), 0) AS bytes FROM projects'),
+    q(`SELECT u.country AS k, COUNT(DISTINCT s.user_id) AS n FROM subscriptions s JOIN users u ON u.id = s.user_id
+       WHERE s.env = ?1 AND s.status IN ('active','trialing','past_due') GROUP BY u.country`, pe),
   ]);
   const R = (r) => r.results || [];
   const dev = (rows) => { const t = tally(rows), o = { ios: 0, android: 0, desktop: 0, unknown: 0 }; for (const k in t) o[DEVICES.includes(k) ? k : 'unknown'] += t[k]; return o; };
@@ -244,7 +246,7 @@ export async function insights(env, list, fromMs, now = Date.now()) {
     test: pe !== 'production',
     people: {
       byMethod: tally(R(uMethod)), byLang: tally(R(uLang)), byDevice: dev(R(uDevice)),
-      byCountry: tally(R(uCountry)), byCountryAll: tally(R(uCountryAll)), returningAccounts: one(back),
+      byCountry: tally(R(uCountry)), byCountryAll: tally(R(uCountryAll)), returningAccounts: one(back), subsByCountry: tally(R(sCountry)),
     },
     audience: {
       byCountry: tally(R(vCountry)), bySource: tally(R(vSource)), byDevice: dev(R(vDevice)), byLang: tally(R(vLang)),
@@ -260,6 +262,94 @@ export async function insights(env, list, fromMs, now = Date.now()) {
       ntfy: ntfyOn(env),
       telegram: await tgStatus(env),
     },
+  };
+}
+
+// ---- dashboard v3 (5/11): the « Accueil » page, the list of new accounts, subscribers per country (globe) ----
+// Net money: Paddle's own figure (earnings, after its fees and taxes) when it gave it, else an estimate: (paid − tax) × 95 % − 0.50 $.
+const NET = `COALESCE(earnings, CAST(ROUND((total - tax) * 0.95) AS INTEGER) - 50)`;
+export const PAYOUT_MIN_CENTS = 10000;   // Paddle pays on the 15th the balance of the 1st, from 100 $ (else it waits)
+const ymOf = (ms) => new Date(ms).toISOString().slice(0, 7);
+export function nextPayout(months, now = Date.now()) {
+  // months: [{ym, net}] in order; the balance of each month end is paid when it reaches 100 $, else carried over
+  const cur = ymOf(now); let bal = 0;
+  for (const m of months) { if (m.ym >= cur) continue; bal += m.net; if (bal >= PAYOUT_MIN_CENTS) bal = 0; }
+  const thisMonth = (months.find((m) => m.ym === cur) || {}).net || 0;
+  const amount = bal + thisMonth, d = new Date(now);
+  const date = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 15)).toISOString().slice(0, 10);
+  return { amount, date, enough: amount >= PAYOUT_MIN_CENTS, min: PAYOUT_MIN_CENTS };
+}
+export async function home(env, now = Date.now()) {
+  const q = (sql, ...b) => env.DB.prepare(sql).bind(...b), pe = payEnv(env);
+  const day = (ms) => new Date(ms).toISOString().slice(0, 10);
+  const t0 = Date.parse(day(now) + 'T00:00:00Z'), today = day(now), yday = day(now - 864e5);
+  const d = new Date(now), monthStart = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1);
+  const prevStart = Date.UTC(d.getUTCFullYear(), d.getUTCMonth() - 1, 1), prevSame = prevStart + (now - monthStart);
+  const w0 = now - 7 * 864e5, w1 = now - 14 * 864e5;
+  const [months, prevPart, subs, firsts, visits, signups, srcNow, srcPrev, tix, counts] = await env.DB.batch([
+    q(`SELECT strftime('%Y-%m', billed_at / 1000, 'unixepoch') AS ym, SUM(${NET}) AS net FROM payments WHERE env = ?1 AND currency = 'USD' GROUP BY ym ORDER BY ym`, pe),
+    q(`SELECT SUM(${NET}) AS net FROM payments WHERE env = ?1 AND currency = 'USD' AND billed_at >= ?2 AND billed_at < ?3`, pe, prevStart, prevSame),
+    q("SELECT id, user_id, status, price_id, plan, current_period_end, cancel_at, keep_plan, keep_until FROM subscriptions WHERE env = ?1", pe),
+    q(`SELECT SUM(billed_at >= ?2) AS today, SUM(billed_at >= ?3 AND billed_at < ?2) AS yday, SUM(billed_at >= ?4) AS week,
+         SUM(billed_at >= ?5 AND billed_at < ?4) AS prevweek FROM payments WHERE env = ?1 AND origin <> 'subscription_recurring' AND billed_at >= ?5`,
+      pe, t0, t0 - 864e5, w0, w1),
+    q('SELECT day, COUNT(*) AS n FROM visits WHERE day IN (?1, ?2) GROUP BY day', today, yday),
+    q('SELECT SUM(created_at >= ?1) AS today, SUM(created_at >= ?2 AND created_at < ?1) AS yday FROM users WHERE created_at >= ?2', t0, t0 - 864e5),
+    q('SELECT source AS k, COUNT(*) AS n FROM visits WHERE day > ?1 GROUP BY source', day(w0)),
+    q('SELECT source AS k, COUNT(*) AS n FROM visits WHERE day > ?1 AND day <= ?2 GROUP BY source', day(w1), day(w0)),
+    q(`SELECT SUM(status = 'open' AND (admin_read_at IS NULL OR admin_read_at < updated_at)
+         AND (SELECT sender FROM ticket_messages m WHERE m.ticket_id = tickets.id ORDER BY m.id DESC LIMIT 1) = 'user') AS unread FROM tickets`),
+    q('SELECT name, n FROM daily_counts WHERE day = ?1', today),
+  ]);
+  const R = (r) => r.results || [];
+  const active = R(subs).filter((s) => subscriptionGivesPro(s, now));
+  const byPlan = { pro: 0, creator: 0 };
+  for (const s of active) byPlan[planOfSub(env, s, now) === 'creator' ? 'creator' : 'pro']++;
+  const f = R(firsts)[0] || {}, v = Object.fromEntries(R(visits).map((r) => [r.day, r.n])), s = R(signups)[0] || {};
+  const tally = (rows) => { const o = {}; for (const r of rows) o[r.k || 'direct'] = (o[r.k || 'direct'] || 0) + r.n; return o; };
+  const now7 = tally(R(srcNow)), prev7 = tally(R(srcPrev));
+  const sources = Object.keys(now7).sort((a, b) => now7[b] - now7[a]).slice(0, 4).map((k) => ({ source: k, week: now7[k], prevWeek: prev7[k] || 0 }));
+  const t = Object.fromEntries(R(counts).map((r) => [r.name, r.n]));
+  const monthsArr = R(months).map((r) => ({ ym: r.ym, net: r.net || 0 }));
+  // alerts: what needs the owner; none → « Tout va bien ✅ »
+  const alerts = [];
+  const unread = (R(tix)[0] || {}).unread || 0;
+  if (unread) alerts.push({ kind: 'messages', n: unread, tab: 'msgs' });
+  if (t.err_5xx) alerts.push({ kind: 'errors', n: t.err_5xx, tab: 'health' });
+  const mailMax = Number.parseInt(env.EMAIL_DAILY_MAX, 10) > 0 ? Number.parseInt(env.EMAIL_DAILY_MAX, 10) : 1000;
+  if ((t.code_mail || 0) >= mailMax * 0.8) alerts.push({ kind: 'mails', n: t.code_mail, max: mailMax, tab: 'health' });
+  const tg = await tgStatus(env);
+  if (tg.state !== 'linked') alerts.push({ kind: 'telegram', state: tg.state, tab: 'health' });
+  return {
+    test: pe !== 'production',
+    money: { month: (monthsArr.find((m) => m.ym === ymOf(now)) || {}).net || 0, prevMonthSameDays: (R(prevPart)[0] || {}).net || 0,
+      payout: nextPayout(monthsArr, now), currency: 'USD' },
+    subscribers: { total: active.length, ...byPlan, newToday: f.today || 0, newYesterday: f.yday || 0, newWeek: f.week || 0, newPrevWeek: f.prevweek || 0 },
+    visitors: { today: v[today] || 0, yesterday: v[yday] || 0 },
+    signups: { today: s.today || 0, yesterday: s.yday || 0 },
+    sources, alerts,
+  };
+}
+// the list of new accounts: date, country, where it came from, plan now (newest first; « before » pages back)
+export async function signupList(env, before, limitN = 50, now = Date.now()) {
+  const n = Math.min(100, Math.max(1, limitN | 0)), pe = payEnv(env);
+  const { results } = await env.DB.prepare(
+    `SELECT u.id, u.created_at, u.country, u.signup_source, u.signup_method,
+       (SELECT i.provider FROM identities i WHERE i.user_id = u.id AND i.created_at <= u.created_at + 120000 LIMIT 1) AS idp
+     FROM users u WHERE u.created_at < ?1 ORDER BY u.created_at DESC LIMIT ?2`
+  ).bind(Number.isFinite(before) && before > 0 ? before : now + 1, n + 1).all();
+  const rows = results.slice(0, n);
+  const plans = {};
+  if (rows.length) {
+    const ids = rows.map((r) => r.id);
+    const subs = (await env.DB.prepare(`SELECT user_id, status, price_id, plan, current_period_end, cancel_at, keep_plan, keep_until FROM subscriptions
+      WHERE env = ?1 AND user_id IN (${ids.map((_, i) => '?' + (i + 2)).join(',')})`).bind(pe, ...ids).all()).results;
+    for (const s of subs) if (subscriptionGivesPro(s, now)) { const p = planOfSub(env, s, now); if (p === 'creator' || !plans[s.user_id]) plans[s.user_id] = p; }
+  }
+  return {
+    signups: rows.map((r) => ({ at: new Date(r.created_at).toISOString(), country: r.country || null, source: r.signup_source || null,
+      method: r.signup_method || r.idp || 'email', plan: plans[r.id] || 'free' })),
+    more: results.length > n ? rows[rows.length - 1].created_at : null,
   };
 }
 
@@ -325,6 +415,11 @@ export async function admin(request, env, method, rest) {
       d = first && first.t ? Math.ceil((Date.now() - first.t) / 864e5) + 1 : 30;
     }
     return json(await stats(env, Math.min(730, Math.max(7, Number.isFinite(d) ? d : 30))));
+  }
+  if (route === 'home' && method === 'GET') return json(await home(env));
+  if (route === 'signups' && method === 'GET') {
+    const b = Number.parseInt(url.searchParams.get('before') || '', 10);
+    return json(await signupList(env, b, Number.parseInt(url.searchParams.get('limit') || '50', 10)));
   }
   if (route === 'live' && method === 'GET') {
     // the dashboard is open: it counts as « here » for the visitors when « disponible » is on

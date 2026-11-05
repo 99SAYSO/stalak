@@ -6,7 +6,9 @@
 // Charts follow the dataviz rules: one measure per chart (no second axis), one hue (the brand blue) for magnitude, a
 // sequential blue ramp for the map, labelled bar lists instead of many colours, rounded data-ends, tooltips, a table view.
 // Written with String.raw: no backtick and no dollar-brace inside.
-import { MAP_W, MAP_H, MAP_PATHS, COUNTRY_NAMES_FR } from './admin-map.js';
+import { COUNTRY_NAMES_FR } from './admin-map.js';
+import { GLOBE_LIBS, WORLD_TOPO } from './admin-globe.js';
+import { DEMO_DATA } from './admin-demo-data.js';
 
 const PAGE = String.raw`<!doctype html>
 <html lang="fr">
@@ -161,38 +163,149 @@ th{color:var(--text2);font-weight:600}
 @media (max-width:900px){.grid3{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:760px){.grid2,.grid3,.support{grid-template-columns:1fr}.tlist{max-height:260px}.brand h1{font-size:20px}.kpi .v{font-size:30px}
   .fstep{grid-template-columns:minmax(0,1fr) 4.6em}.fstep .tr{grid-column:1 / -1;order:3}.blist li{grid-template-columns:minmax(0,7.5em) minmax(0,1fr) auto}}
+/* ---- v3 (5/11): menu ☰, Accueil, « ? », globe, new accounts, demo ---- */
+:root{--ease-out:cubic-bezier(.165,.84,.44,1);--up:#0f7a3a;--down:#b42318}
+@media (prefers-color-scheme:dark){:root{--up:#5fd38d;--down:#ff8a80}}
+.menubtn{flex:none;width:44px;height:44px;border-radius:12px;border:2px solid #0a0d14;background:#fff;color:#0a0d14;font-size:22px;line-height:1;cursor:pointer;display:grid;place-items:center}
+.menubtn:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.where{font-family:Lilita,Rubik,sans-serif;font-size:20px;color:#fff}
+.scrim{position:fixed;inset:0;background:rgba(10,13,20,.45);opacity:0;pointer-events:none;transition:opacity 180ms ease;z-index:40}
+.scrim.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;left:0;bottom:0;width:min(300px,86vw);background:var(--card);border-right:3px solid #0a0d14;z-index:41;padding:14px 12px;overflow-y:auto;
+  transform:translateX(-104%);transition:transform 180ms var(--ease-out);visibility:hidden}
+.drawer.open{transform:none;transition-duration:240ms;visibility:visible}
+.drawer .dh{display:flex;align-items:center;gap:10px;margin:0 4px 12px}
+.drawer .dh img{width:34px;height:34px}
+.drawer nav{display:flex;flex-direction:column;gap:4px}
+.drawer nav button{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:2px solid transparent;background:none;border-radius:14px;padding:11px 12px;font-size:16px;font-weight:600;color:var(--text);cursor:pointer;min-height:48px}
+.drawer nav button .ic{width:26px;text-align:center;font-size:19px}
+.drawer nav button[aria-current="page"]{background:var(--ink);color:#fff}
+@media (prefers-color-scheme:dark){.drawer nav button[aria-current="page"]{background:var(--series);color:#04101f}}
+@media (hover:hover){.drawer nav button:not([aria-current="page"]):hover{background:var(--sunk)}}
+.drawer nav button:focus-visible{outline:3px solid var(--sky);outline-offset:1px}
+.drawer .sep{height:1px;background:var(--line);margin:6px 8px}
+.bar[hidden]{display:none}
+.kpi .k .q{margin-left:auto}
+.q{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid var(--line);background:var(--card);color:var(--text2);font-weight:800;font-size:14px;line-height:1;cursor:pointer;display:inline-grid;place-items:center;padding:0}
+.q[aria-expanded="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.q:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
+.kpi .e{display:none}.kpi.help .e{display:block}
+.home{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.hc{background:var(--card);border:2px solid var(--ink);border-radius:22px;padding:16px 18px;box-shadow:0 4px 0 var(--ink);display:flex;flex-direction:column;gap:6px;min-width:0;text-align:left;color:var(--text);font:inherit}
+@media (prefers-color-scheme:dark){.hc{box-shadow:none}}
+.hc.wide{grid-column:1 / -1}
+.hc .hk{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;color:var(--text2)}
+.hc .hk .ico{font-size:20px}
+.hc .hv{font-family:Lilita,Rubik,sans-serif;font-size:46px;line-height:1.05;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.hc .hs{font-size:15px;color:var(--text2)}
+.hc .he{display:none;font-size:13.5px;color:var(--muted)}.hc.help .he{display:block}
+.hc .more{margin-top:auto;align-self:flex-start;border:0;background:none;color:var(--sky-deep);font-weight:700;padding:4px 0;cursor:pointer;font-size:14.5px}
+@media (prefers-color-scheme:dark){.hc .more{color:var(--series)}}
+.trend{display:inline-flex;align-items:center;gap:5px;font-weight:700;font-size:14.5px;border-radius:99px;padding:3px 10px;width:fit-content}
+.trend.up{color:var(--up);background:var(--good-bg)}.trend.down{color:var(--down);background:var(--bad-bg)}.trend.same{color:var(--text2);background:var(--sunk)}
+.srcs{list-style:none;margin:4px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.srcs li{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;font-size:16px}
+.srcs b{font-variant-numeric:tabular-nums}
+.alerts{list-style:none;margin:4px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.alerts li button{width:100%;text-align:left;border:2px solid var(--bad);background:var(--bad-bg);color:var(--bad);border-radius:14px;padding:10px 12px;font-weight:700;font-size:15px;cursor:pointer}
+.alerts li.warn button{border-color:var(--warn);background:var(--warn-bg);color:var(--warn)}
+.allok{font-size:20px;font-weight:700;color:var(--up)}
+.signups{list-style:none;margin:0;padding:0}
+.signups li{display:grid;grid-template-columns:5.6em minmax(0,1.2fr) minmax(0,1.3fr) auto;gap:10px;align-items:center;padding:11px 4px;border-bottom:1px solid var(--line);font-size:15px}
+.signups .when{color:var(--text2);font-variant-numeric:tabular-nums;font-size:14px}
+.signups .ctry,.signups .src{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.plan{border-radius:8px;padding:2px 8px;font-size:12.5px;font-weight:800;white-space:nowrap}
+.plan.free{background:var(--sunk);color:var(--text2)}.plan.pro{background:var(--ink);color:#fff}.plan.creator{background:var(--sky);color:#fff}
+.globe-wrap{position:relative;touch-action:none;user-select:none;-webkit-user-select:none}
+.globe-wrap canvas{display:block;width:100%;height:auto;aspect-ratio:1/1;max-width:560px;margin:0 auto;cursor:grab}
+.globe-wrap canvas.drag{cursor:grabbing}
+.gzoom{position:absolute;right:6px;bottom:6px;display:flex;flex-direction:column;gap:6px}
+.gzoom button{width:40px;height:40px;border-radius:12px;border:2px solid var(--ink);background:var(--card);color:var(--text);font-size:20px;font-weight:800;cursor:pointer}
+.ginfo{border:2px solid var(--ink);border-radius:16px;padding:12px 14px;margin-top:10px;background:var(--sunk);min-height:64px}
+.ginfo b{font-size:17px}.ginfo p{margin:4px 0 0;color:var(--text2)}
+details.more-d{margin-top:12px}
+details.more-d>summary{cursor:pointer;font-weight:700;color:var(--sky-deep);padding:8px 0;list-style:none}
+details.more-d>summary::-webkit-details-marker{display:none}
+details.more-d>summary::before{content:"▸ ";}details.more-d[open]>summary::before{content:"▾ ";}
+@media (prefers-color-scheme:dark){details.more-d>summary{color:var(--series)}}
+.demo{background:#ffe7b8;color:#7a3e00;border-bottom:3px solid #0a0d14;text-align:center;font-weight:700;padding:8px 12px;font-size:14px}
+@media (max-width:760px){.home{grid-template-columns:1fr}.hc .hv{font-size:40px}.where{font-size:18px}
+  .signups li{grid-template-columns:4.6em minmax(0,1fr) auto;row-gap:2px}.signups .src{grid-column:2 / 3;grid-row:2;font-size:13.5px;color:var(--text2)}.signups .plan{grid-row:1 / 3;grid-column:3}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
-<header class="top"><div class="in">
-  <div class="brand"><img src="/icons/icon-192.png" alt="" width="38" height="38"><h1>Tableau de bord</h1></div>
-  <span class="who" id="who"></span>
+__DEMO_BANNER__<header class="top"><div class="in">
+  <button class="menubtn" type="button" id="menuBtn" aria-label="Menu" aria-expanded="false" aria-controls="drawer">☰</button>
+  <div class="brand"><img src="/icons/icon-192.png" alt="" width="38" height="38"><h1 class="where" id="whereTxt">Accueil</h1></div>
   <span class="sp"></span>
   <span class="pill" id="availPill"><span class="dot"></span><span id="availTxt">…</span></span>
   <label class="switch"><input type="checkbox" id="availSw"><span>Je suis disponible</span></label>
 </div></header>
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Menu" aria-hidden="true">
+  <div class="dh"><img src="/icons/icon-192.png" alt="" width="34" height="34"><b>Tableau de bord</b></div>
+  <nav>
+    <button type="button" id="tab-home" data-go="home"><span class="ic">🏠</span>Accueil</button>
+    <button type="button" id="tab-today" data-go="today"><span class="ic">☀️</span>Aujourd’hui</button>
+    <button type="button" id="tab-signups" data-go="signups"><span class="ic">🆕</span>Nouveaux comptes</button>
+    <button type="button" id="tab-users" data-go="users"><span class="ic">🌍</span>Visiteurs et pays</button>
+    <button type="button" id="tab-money" data-go="money"><span class="ic">💵</span>Argent <span class="test" data-test hidden>TEST</span></button>
+    <button type="button" id="tab-funnel" data-go="funnel"><span class="ic">🪜</span>Du visiteur à l’abonné</button>
+    <button type="button" id="tab-msgs" data-go="msgs"><span class="ic">💬</span>Messages <span class="badge" id="tabBadge" hidden></span></button>
+    <button type="button" id="tab-health" data-go="health"><span class="ic">🩺</span>Santé du serveur</button>
+  </nav>
+  <div class="sep"></div>
+  <p class="note" id="who"></p>
+</aside>
 <div class="wrap">
   <div class="banner" id="banner" role="alert"></div>
-  <div class="bar">
+  <p class="testnote" id="testNote" role="note">Les abonnements et l’argent affichés viennent des <b>paiements de test</b> (Paddle « sandbox ») : ce n’est pas de l’argent réel.</p>
+  <div class="bar" id="periodBar" hidden>
     <div class="seg" role="group" aria-label="Période"><button type="button" data-days="7" aria-pressed="false">7 j</button><button type="button" data-days="30" aria-pressed="true">30 j</button><button type="button" data-days="90" aria-pressed="false">90 j</button><button type="button" data-days="all" aria-pressed="false">Tout</button></div>
     <span class="note" id="rangeTxt"></span>
     <span class="sp"></span>
     <span class="test" id="testTag" hidden>TEST</span>
   </div>
-  <p class="testnote" id="testNote" role="note">Les abonnements et l’argent affichés viennent des <b>paiements de test</b> (Paddle « sandbox ») : ce n’est pas de l’argent réel. Ils disparaîtront tout seuls au passage aux vrais paiements.</p>
-  <nav class="tabs" role="tablist" aria-label="Rubriques">
-    <button class="tab" role="tab" id="tab-today" aria-controls="p-today" aria-selected="true">Aujourd’hui</button>
-    <button class="tab" role="tab" id="tab-users" aria-controls="p-users" aria-selected="false" tabindex="-1">Utilisateurs</button>
-    <button class="tab" role="tab" id="tab-money" aria-controls="p-money" aria-selected="false" tabindex="-1">Argent <span class="test" data-test hidden>TEST</span></button>
-    <button class="tab" role="tab" id="tab-funnel" aria-controls="p-funnel" aria-selected="false" tabindex="-1">Entonnoir</button>
-    <button class="tab" role="tab" id="tab-msgs" aria-controls="p-msgs" aria-selected="false" tabindex="-1">Messages <span class="badge" id="tabBadge" hidden></span></button>
-    <button class="tab" role="tab" id="tab-health" aria-controls="p-health" aria-selected="false" tabindex="-1">Santé du serveur</button>
-  </nav>
+
+  <!-- ===== Accueil ===== -->
+  <section class="panel" id="p-home" aria-labelledby="tab-home">
+    <div class="home">
+      <div class="hc" id="hMoney"><div class="hk"><span class="ico">💵</span>Gagné ce mois-ci <span class="test" data-test hidden>TEST</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
+        <div class="hv" id="hMoneyV">–</div><span class="trend same" id="hMoneyT">…</span><div class="hs" id="hMoneyS">&nbsp;</div>
+        <p class="he">Ce qui te reste ce mois-ci après la part de Paddle et les taxes (estimé). Paddle te verse l’argent une fois par mois, vers le 15, dès que tu as au moins 100 $.</p>
+        <button class="more" type="button" data-go="money">Voir l’argent →</button></div>
+      <div class="hc" id="hSubs"><div class="hk"><span class="ico">⭐</span>Abonnés <span class="test" data-test hidden>TEST</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
+        <div class="hv" id="hSubsV">–</div><div class="hs" id="hSubsS">&nbsp;</div><span class="trend same" id="hSubsT">…</span><span class="trend same" id="hSubsW">…</span>
+        <p class="he">Personnes qui paient en ce moment (Pro ou Creator Plus). Les flèches comparent les nouveaux abonnés d’aujourd’hui à hier, et de la semaine à la semaine d’avant.</p>
+        <button class="more" type="button" data-go="money">Voir les abonnés →</button></div>
+      <div class="hc" id="hVis"><div class="hk"><span class="ico">👀</span>Visiteurs aujourd’hui<span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
+        <div class="hv" id="hVisV">–</div><span class="trend same" id="hVisT">…</span>
+        <p class="he">Nombre de fois où quelqu’un a ouvert Stalak aujourd’hui, comparé à hier à la même heure de fin de journée.</p>
+        <button class="more" type="button" data-go="users">Voir les visiteurs →</button></div>
+      <div class="hc" id="hSign"><div class="hk"><span class="ico">🆕</span>Comptes créés aujourd’hui<span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
+        <div class="hv" id="hSignV">–</div><span class="trend same" id="hSignT">…</span>
+        <p class="he">Personnes qui ont créé un compte aujourd’hui (par e-mail ou Google), comparé à hier.</p>
+        <button class="more" type="button" data-go="signups">Voir d’où ils viennent →</button></div>
+      <div class="hc" id="hSrc"><div class="hk"><span class="ico">🧭</span>D’où viennent les gens (7 jours)<span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
+        <ul class="srcs" id="hSrcL"></ul>
+        <p class="he">Les sites ou liens qui ont amené le plus de visiteurs ces 7 derniers jours, avec la flèche par rapport aux 7 jours d’avant.</p>
+        <button class="more" type="button" data-go="users">Voir le détail →</button></div>
+      <div class="hc" id="hAlerts"><div class="hk"><span class="ico">🔔</span>Alertes<span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
+        <div id="hAlertsL"></div>
+        <p class="he">Ce qui demande ton attention : messages sans réponse, souci sur le serveur, notifications Telegram pas reliées.</p></div>
+    </div>
+  </section>
+
+  <!-- ===== Nouveaux comptes ===== -->
+  <section class="panel" id="p-signups" aria-labelledby="tab-signups" hidden>
+    <p class="intro">Une ligne par compte créé, du plus récent au plus ancien : quand, depuis quel pays, d’où venait la personne la première fois, et sa formule aujourd’hui.</p>
+    <div class="card"><ul class="signups" id="signupList"></ul><div class="row" data-mt><button class="btn" type="button" id="signupMore" hidden>Voir plus</button><span class="note" id="signupNote"></span></div></div>
+  </section>
 
   <!-- ===== Aujourd'hui ===== -->
-  <section class="panel" role="tabpanel" id="p-today" aria-labelledby="tab-today">
-    <p class="intro">L’essentiel en un coup d’œil. Les chiffres « aujourd’hui » repartent de zéro chaque nuit à 1 h (heure de Paris, minuit UTC).</p>
+  <section class="panel" id="p-today" aria-labelledby="tab-today" hidden>
+    <p class="intro">Les chiffres d’aujourd’hui. Ils repartent de zéro chaque nuit à 1 h (heure de Paris). Touche « ? » pour l’explication d’un chiffre.</p>
     <div class="kpis">
       <div class="kpi"><div class="k">Visiteurs en direct</div><div class="v" id="kLive">–</div><div class="d" id="kLiveS">&nbsp;</div><div class="e">Personnes qui ont Stalak ouvert en ce moment (vues dans les 6 dernières minutes).</div></div>
       <div class="kpi"><div class="k">Visites aujourd’hui</div><div class="v" id="kVisT">–</div><div class="d" id="kVisTS">&nbsp;</div><div class="e">Chaque page de Stalak ouverte compte pour une visite.</div></div>
@@ -202,11 +315,10 @@ th{color:var(--text2);font-weight:600}
       <div class="kpi"><div class="k">Revenu mensuel <span class="test" data-test hidden>TEST</span></div><div class="v" id="kMrr">–</div><div class="d" id="kMrrS">&nbsp;</div><div class="e">Ce que rapportent les abonnements chaque mois (un annuel compte pour un douzième), avant taxes.</div></div>
       <div class="kpi"><div class="k">Messages à traiter</div><div class="v" id="kTix">–</div><div class="d" id="kTixS">&nbsp;</div><div class="e">Messages d’abonnés (« Parler à un humain ») sans réponse de ta part.</div></div>
     </div>
-    <div class="charts" id="todayCharts"></div>
   </section>
 
   <!-- ===== Utilisateurs ===== -->
-  <section class="panel" role="tabpanel" id="p-users" aria-labelledby="tab-users" hidden>
+  <section class="panel" id="p-users" aria-labelledby="tab-users" hidden>
     <p class="intro">Qui vient sur Stalak, d’où, avec quel appareil, et qui revient. Seul le <b>pays</b> est enregistré (donné par Cloudflare) : jamais l’adresse IP ni la ville.</p>
     <div class="kpis">
       <div class="kpi"><div class="k">Comptes en tout</div><div class="v" id="kUsers">–</div><div class="d" id="kUsersS">&nbsp;</div><div class="e">Tous les comptes créés depuis le début.</div></div>
@@ -215,14 +327,17 @@ th{color:var(--text2);font-weight:600}
       <div class="kpi"><div class="k">Visites de retour</div><div class="v" id="kRet">–</div><div class="d" id="kRetS">&nbsp;</div><div class="e">Part des visites faites par un navigateur déjà venu un autre jour.</div></div>
     </div>
     <div class="card">
-      <div class="head"><h2>Carte du monde</h2><span class="sp"></span>
-        <div class="seg" role="group" aria-label="Ce que montre la carte"><button type="button" data-map="accounts" aria-pressed="true">Comptes</button><button type="button" data-map="visits" aria-pressed="false">Visites</button></div>
-        <p id="mapTxt">Plus le bleu est foncé, plus il y a de comptes créés depuis ce pays pendant la période.</p></div>
+      <div class="head"><h2>Le globe</h2><span class="sp"></span>
+        <div class="seg" role="group" aria-label="Ce que montre le globe"><button type="button" data-map="visits" aria-pressed="true">Visiteurs</button><button type="button" data-map="accounts" aria-pressed="false">Comptes</button><button type="button" data-map="subs" aria-pressed="false">Abonnés</button></div>
+        <p id="mapTxt">Fais tourner le globe avec le doigt ou la souris, pince ou utilise + / − pour zoomer, touche un pays pour voir ses chiffres. Plus le bleu est foncé, plus il y en a.</p></div>
       <div class="grid2">
-        <div class="map" id="map"></div>
+        <div><div class="globe-wrap" id="globeWrap"><canvas id="globe" width="560" height="560" aria-label="Globe des pays"></canvas>
+          <div class="gzoom"><button type="button" id="gIn" aria-label="Zoomer">+</button><button type="button" id="gOut" aria-label="Dézoomer">−</button></div></div>
+          <div class="ginfo" id="gInfo" role="status"><b>Touche un pays</b><p>pour voir ses visiteurs, comptes et abonnés.</p></div></div>
         <div><h3 id="topTitle">Pays</h3><ul class="blist" id="topCountries"></ul><p class="note" id="mapUnknown"></p></div>
       </div>
     </div>
+    <details class="more-d"><summary>Voir le détail : jour par jour, appareils, langues, provenance</summary>
     <div class="card">
       <div class="head"><h2>Jour par jour</h2><span class="sp"></span><button class="btn small" type="button" id="tableBtn" aria-expanded="false">Voir en tableau</button>
         <p>Chaque barre est un jour (une semaine quand la période est longue). Passe la souris ou touche une barre pour le chiffre exact.</p></div>
@@ -241,11 +356,12 @@ th{color:var(--text2);font-weight:600}
       <h2>Derniers inscrits</h2>
       <div class="scroll-x"><table id="users"><thead><tr><th>E-mail</th><th>Pseudo</th><th>Inscrit le</th><th>Vérifié</th><th>Formule</th></tr></thead><tbody></tbody></table></div>
     </div>
+    </details>
     <p class="note" id="visitsKept">Les visites sont gardées 90 jours ; les comptes, tant qu’ils existent.</p>
   </section>
 
   <!-- ===== Argent ===== -->
-  <section class="panel" role="tabpanel" id="p-money" aria-labelledby="tab-money" hidden>
+  <section class="panel" id="p-money" aria-labelledby="tab-money" hidden>
     <p class="intro">Abonnés, revenu et désabonnements. Prix en dollars, avant les taxes que Paddle ajoute selon le pays. Encaissé = argent réellement payé, remboursements à part.</p>
     <div class="kpis">
       <div class="kpi"><div class="k">Abonnés <span class="test" data-test hidden>TEST</span></div><div class="v" id="mPro">–</div><div class="d" id="mProS">&nbsp;</div><div class="e">Personnes qui paient en ce moment, toutes formules.</div></div>
@@ -263,7 +379,7 @@ th{color:var(--text2);font-weight:600}
   </section>
 
   <!-- ===== Entonnoir ===== -->
-  <section class="panel" role="tabpanel" id="p-funnel" aria-labelledby="tab-funnel" hidden>
+  <section class="panel" id="p-funnel" aria-labelledby="tab-funnel" hidden>
     <p class="intro">Le chemin d’un visiteur jusqu’au paiement, sur la période. Chaque étape montre combien de fois elle a eu lieu et la part de l’étape d’avant. Ce sont des compteurs anonymes : rien sur la personne.</p>
     <div class="card"><div class="head"><h2>Du visiteur à l’abonné</h2><p>Une étape faible = l’endroit où les gens s’arrêtent. C’est là qu’il faut agir.</p></div><div class="funnel" id="funnel"></div></div>
     <div class="grid3">
@@ -275,7 +391,7 @@ th{color:var(--text2);font-weight:600}
   </section>
 
   <!-- ===== Messages ===== -->
-  <section class="panel" role="tabpanel" id="p-msgs" aria-labelledby="tab-msgs" hidden>
+  <section class="panel" id="p-msgs" aria-labelledby="tab-msgs" hidden>
     <div class="card">
       <div class="row"><h2 id="hSup">Messages des abonnés</h2><span class="sp"></span>
         <div class="seg" role="group" aria-label="Quels messages"><button type="button" data-st="open" aria-pressed="true">Ouverts</button><button type="button" data-st="closed" aria-pressed="false">Fermés</button><button type="button" data-st="all" aria-pressed="false">Tous</button></div>
@@ -290,7 +406,7 @@ th{color:var(--text2);font-weight:600}
   </section>
 
   <!-- ===== Santé du serveur ===== -->
-  <section class="panel" role="tabpanel" id="p-health" aria-labelledby="tab-health" hidden>
+  <section class="panel" id="p-health" aria-labelledby="tab-health" hidden>
     <p class="intro">Est-ce que tout marche, et reste-t-il de la marge ? Vert = tout va bien ; orange = à surveiller ; rouge = à régler. Tu reçois aussi un e-mail d’alerte quand quelque chose casse.</p>
     <div class="card">
       <div class="head"><h2>Notifications sur ton téléphone</h2><span class="sp"></span><span class="status" id="tgState">…</span>
@@ -305,10 +421,14 @@ th{color:var(--text2);font-weight:600}
     <div class="card" data-mt><h2>Usage des fonctions (30 derniers jours)</h2><div class="grid3" id="usage"></div></div>
   </section>
 </div>
+<script nonce="__NONCE__">__GLOBE_LIBS__</script>
 <script nonce="__NONCE__">
 (function () {
   'use strict';
   var MAP = __MAP__;
+  var DEMO = __DEMO__;
+  var WORLD = __WORLD__;
+  __DEMO_JS__
   var $ = function (s, el) { return (el || document).querySelector(s); };
   var $$ = function (s, el) { return Array.prototype.slice.call((el || document).querySelectorAll(s)); };
   var S = { days: '30', status: 'open', open: null, unread: -1, stats: null, timers: {}, map: 'accounts', tab: 'today' };
@@ -333,6 +453,7 @@ th{color:var(--text2);font-weight:600}
 
   // every call goes to /api/admin/... on this host; an Access session that ended answers with a redirect to its login
   function api(method, path, body) {
+    if (DEMO) return DEMO_API(method, path, body);   // demo page (previews only): made-up data, nothing sent anywhere
     var opts = { method: method, credentials: 'same-origin', cache: 'no-store', redirect: 'manual', headers: { Accept: 'application/json' } };
     if (body !== undefined) { opts.headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify(body); }
     return fetch('/api/admin/' + path, opts).then(function (r) {
@@ -347,27 +468,140 @@ th{color:var(--text2);font-weight:600}
     });
   }
 
-  // ---- tabs ----
-  var TABS = ['today', 'users', 'money', 'funnel', 'msgs', 'health'];
-  function showTab(name, focus) {
-    if (TABS.indexOf(name) < 0) name = 'today';
-    S.tab = name;
-    TABS.forEach(function (t) {
-      var b = $('#tab-' + t), p = $('#p-' + t), on = t === name;
-      b.setAttribute('aria-selected', on ? 'true' : 'false'); b.tabIndex = on ? 0 : -1; p.hidden = !on;
-    });
-    if (focus) $('#tab-' + name).focus();
-    if (!/^#t=/.test(location.hash)) try { history.replaceState(null, '', '#' + name); } catch (e) {}
+  // ---- menu ☰ (drawer): one page at a time; the period choice only where it means something ----
+  var PAGES = { home: 'Accueil', today: 'Aujourd’hui', signups: 'Nouveaux comptes', users: 'Visiteurs et pays', money: 'Argent', funnel: 'Du visiteur à l’abonné', msgs: 'Messages', health: 'Santé du serveur' };
+  var PERIOD = { users: 1, money: 1, funnel: 1, health: 1 };
+  function menu(open) {
+    var d = $('#drawer'), b = $('#menuBtn');
+    d.classList.toggle('open', open); $('#scrim').classList.toggle('open', open);
+    d.setAttribute('aria-hidden', open ? 'false' : 'true'); b.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open) { var cur = $('#drawer [aria-current="page"]') || $('#drawer nav button'); cur.focus(); } else b.focus({ preventScroll: true });
   }
-  TABS.forEach(function (t, i) {
-    var b = $('#tab-' + t);
-    b.addEventListener('click', function () { showTab(t); });
-    b.addEventListener('keydown', function (e) {
-      var k = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
-      if (e.key === 'Home') { e.preventDefault(); showTab(TABS[0], true); } else if (e.key === 'End') { e.preventDefault(); showTab(TABS[TABS.length - 1], true); }
-      else if (k) { e.preventDefault(); showTab(TABS[(i + k + TABS.length) % TABS.length], true); }
+  $('#menuBtn').addEventListener('click', function () { menu(!$('#drawer').classList.contains('open')); });
+  $('#scrim').addEventListener('click', function () { menu(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && $('#drawer').classList.contains('open')) menu(false); });
+  function showTab(name) {
+    if (!PAGES[name]) name = 'home';
+    S.tab = name;
+    Object.keys(PAGES).forEach(function (t) {
+      var p = $('#p-' + t), b = $('#tab-' + t);
+      if (p) p.hidden = t !== name;
+      if (b) { if (t === name) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); }
     });
+    set('#whereTxt', PAGES[name]);
+    $('#periodBar').hidden = !PERIOD[name];
+    if (name === 'home') home();
+    if (name === 'signups' && !S.signupsLoaded) signups();
+    if (name === 'users') globeStart(); else globeStop();
+    if (!/^#t=/.test(location.hash)) try { history.replaceState(null, '', '#' + name); } catch (e) {}
+    window.scrollTo(0, 0);
+  }
+  // every [data-go] (menu, « Voir … → » on the cards, alerts) opens that page
+  document.addEventListener('click', function (e) {
+    var g = e.target.closest && e.target.closest('[data-go]'); if (!g) return;
+    var fromMenu = !!g.closest('#drawer');
+    showTab(g.dataset.go); if (fromMenu) menu(false);
   });
+  // « ? » : one sentence that explains the figure (the cards of every page)
+  function helpButtons() {
+    $$('.kpi').forEach(function (k) {
+      if (k.querySelector('.q') || !k.querySelector('.e')) return;
+      var b = el('button', { class: 'q', type: 'button', 'aria-expanded': 'false', 'aria-label': 'Explication' }, '?');
+      k.querySelector('.k').append(b);
+    });
+    $$('.q').forEach(function (b) {
+      if (b.dataset.on) return; b.dataset.on = '1';
+      b.addEventListener('click', function (e) {
+        e.stopPropagation(); var c = b.closest('.kpi, .hc'), on = !c.classList.contains('help');
+        c.classList.toggle('help', on); b.setAttribute('aria-expanded', on ? 'true' : 'false');
+      });
+    });
+  }
+
+  // ---- Accueil: the few figures that matter, with an arrow against yesterday / last week ----
+  function trend(node, cur, prev, what) {
+    var e = $(node); if (!e) return;
+    var diff = cur - prev, up = diff > 0, same = diff === 0;
+    e.className = 'trend ' + (same ? 'same' : up ? 'up' : 'down');
+    e.textContent = (same ? '= ' : up ? '▲ +' : '▼ ') + (same ? 'pareil que ' + what : nf.format(diff) + ' par rapport à ' + what);
+    e.setAttribute('aria-label', same ? 'Pareil que ' + what : (up ? 'En hausse de ' : 'En baisse de ') + nf.format(Math.abs(diff)) + ' par rapport à ' + what);
+  }
+  function home() {
+    return api('GET', 'home').then(function (d) {
+      $$('[data-test]').forEach(function (x) { x.hidden = !d.test; }); $('#testNote').classList.toggle('show', !!d.test);
+      var m = d.money;
+      set('#hMoneyV', money(m.month, 'USD'));
+      var dm = m.month - m.prevMonthSameDays, tm = $('#hMoneyT');
+      tm.className = 'trend ' + (dm === 0 ? 'same' : dm > 0 ? 'up' : 'down');
+      tm.textContent = dm === 0 ? '= pareil que le mois dernier' : (dm > 0 ? '▲ +' : '▼ −') + money(Math.abs(dm), 'USD') + ' par rapport au mois dernier (mêmes jours)';
+      var pd = new Date(m.payout.date + 'T12:00:00Z').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+      set('#hMoneyS', m.payout.enough ? 'Prochain versement : environ ' + money(m.payout.amount, 'USD') + ' vers le ' + pd + '.'
+        : 'Pas encore de versement : Paddle paie à partir de 100 $ (' + money(m.payout.amount, 'USD') + ' pour l’instant).');
+      var sb = d.subscribers;
+      set('#hSubsV', nf.format(sb.total)); set('#hSubsS', 'Pro ' + nf.format(sb.pro) + ' · Creator Plus ' + nf.format(sb.creator));
+      var t1 = $('#hSubsT'); t1.className = 'trend ' + (sb.newToday > sb.newYesterday ? 'up' : sb.newToday < sb.newYesterday ? 'down' : 'same');
+      t1.textContent = (sb.newToday > sb.newYesterday ? '▲ ' : sb.newToday < sb.newYesterday ? '▼ ' : '= ') + sb.newToday + ' nouveau' + (sb.newToday > 1 ? 'x' : '') + ' aujourd’hui (hier : ' + sb.newYesterday + ')';
+      var t2 = $('#hSubsW'); t2.className = 'trend ' + (sb.newWeek > sb.newPrevWeek ? 'up' : sb.newWeek < sb.newPrevWeek ? 'down' : 'same');
+      t2.textContent = (sb.newWeek > sb.newPrevWeek ? '▲ ' : sb.newWeek < sb.newPrevWeek ? '▼ ' : '= ') + sb.newWeek + ' nouveau' + (sb.newWeek > 1 ? 'x' : '') + ' en 7 jours (7 jours d’avant : ' + sb.newPrevWeek + ')';
+      set('#hVisV', nf.format(d.visitors.today)); trend('#hVisT', d.visitors.today, d.visitors.yesterday, 'hier (' + nf.format(d.visitors.yesterday) + ')');
+      set('#hSignV', nf.format(d.signups.today)); trend('#hSignT', d.signups.today, d.signups.yesterday, 'hier (' + nf.format(d.signups.yesterday) + ')');
+      var ul = $('#hSrcL'); ul.textContent = '';
+      if (!d.sources.length) ul.append(el('li', { class: 'empty' }, 'Pas encore de visites cette semaine.'));
+      d.sources.forEach(function (x) {
+        var li = el('li'), diff = x.week - x.prevWeek, t = el('span', { class: 'trend ' + (diff > 0 ? 'up' : diff < 0 ? 'down' : 'same') }, diff > 0 ? '▲ +' + diff : diff < 0 ? '▼ ' + diff : '=');
+        t.setAttribute('aria-label', diff > 0 ? 'en hausse' : diff < 0 ? 'en baisse' : 'pareil');
+        li.append(el('span', null, sourceName(x.source)), el('b', null, nf.format(x.week)), t); ul.append(li);
+      });
+      var al = $('#hAlertsL'); al.textContent = '';
+      if (!d.alerts.length) al.append(el('div', { class: 'allok' }, 'Tout va bien ✅'));
+      else {
+        var list = el('ul', { class: 'alerts' });
+        d.alerts.forEach(function (a) {
+          var txt = a.kind === 'messages' ? '💬 ' + a.n + ' message' + (a.n > 1 ? 's' : '') + ' à traiter'
+            : a.kind === 'errors' ? '⚠️ ' + a.n + ' erreur' + (a.n > 1 ? 's' : '') + ' du serveur aujourd’hui'
+            : a.kind === 'mails' ? '✉️ Les e-mails de code approchent de la limite du jour (' + a.n + ' / ' + a.max + ')'
+            : a.kind === 'telegram' ? '📱 Notifications Telegram ' + (a.state === 'no_token' ? 'pas installées (clé du bot manquante)' : 'pas encore reliées') : a.kind;
+          var li = el('li', { class: a.kind === 'telegram' ? 'warn' : '' }), b = el('button', { type: 'button', 'data-go': a.tab }, txt + ' →');
+          li.append(b); list.append(li);
+        });
+        al.append(list);
+      }
+    }).catch(function (e) { if (e.code !== 'access') banner('L’accueil n’a pas pu être chargé (' + e.message + ').'); });
+  }
+
+  // ---- Nouveaux comptes: one line per account, where it came from ----
+  var SOURCES = { tiktok: 'TikTok', ig: 'Instagram', instagram: 'Instagram', yt: 'YouTube', youtube: 'YouTube', google: 'Google', bing: 'Bing', x: 'X (Twitter)', twitter: 'X (Twitter)',
+    reddit: 'Reddit', discord: 'Discord', facebook: 'Facebook', fb: 'Facebook', snapchat: 'Snapchat', direct: 'Lien direct', other: 'Autre site', unknown: 'Lien direct', wm: 'Filigrane d’une vidéo' };
+  var DIRS = { alternativeto: 'AlternativeTo', saashub: 'SaaSHub', producthunt: 'Product Hunt', betalist: 'BetaList', futurepedia: 'Futurepedia', theresanaiforthat: 'There’s An AI For That', contentcreators: 'contentcreators.com', buzzsonic: 'Buzzsonic', toolify: 'Toolify' };
+  function sourceName(src) {
+    if (!src) return 'Inconnue';
+    var m = /^(ref|utm|dir|site):(.+)$/.exec(src);
+    if (!m) return SOURCES[src] || src;
+    if (m[1] === 'dir') return 'Annuaire (' + (DIRS[m[2]] || m[2]) + ')';
+    if (m[1] === 'site') return 'Site ' + m[2];
+    var known = SOURCES[m[2]];
+    return m[1] === 'ref' ? (known ? known + ' (lien ?ref=' + m[2] + ')' : 'Lien ?ref=' + m[2]) : (known || m[2]) + ' (pub/utm)';
+  }
+  function flag(c) { return /^[A-Z]{2}$/.test(c || '') ? String.fromCodePoint.apply(null, c.split('').map(function (x) { return 0x1f1a5 + x.charCodeAt(0); })) : '🏳️'; }
+  var PLAN_LABEL = { free: 'Gratuit', pro: 'Pro', creator: 'Creator Plus' };
+  function signups(more) {
+    S.signupsLoaded = true;
+    var ul = $('#signupList'); if (!more) { ul.textContent = ''; S.signupBefore = null; }
+    return api('GET', 'signups?limit=40' + (S.signupBefore ? '&before=' + S.signupBefore : '')).then(function (d) {
+      if (!d.signups.length && !more) ul.append(el('li', { class: 'empty' }, 'Personne pour l’instant.'));
+      d.signups.forEach(function (u) {
+        var li = el('li');
+        li.append(el('span', { class: 'when' }, new Date(u.at).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })),
+          el('span', { class: 'ctry' }, flag(u.country) + ' ' + (u.country ? (MAP.names[u.country] || u.country) : 'Pays inconnu')),
+          el('span', { class: 'src', title: u.source || '' }, '↳ ' + (u.source ? sourceName(u.source) : (u.method === 'google' ? 'Inconnue (Google, avant le 5/11)' : 'Inconnue (avant le 5/11)'))),
+          el('span', { class: 'plan ' + (PLAN_LABEL[u.plan] ? u.plan : 'free') }, PLAN_LABEL[u.plan] || 'Gratuit'));
+        ul.append(li);
+      });
+      S.signupBefore = d.more; $('#signupMore').hidden = !d.more;
+      set('#signupNote', 'La source est la première façon dont la personne est arrivée sur Stalak (lien suivi, site, annuaire).');
+    }).catch(function (e) { if (e.code !== 'access') banner(e.message); });
+  }
+  $('#signupMore').addEventListener('click', function () { signups(true); });
 
   // ---- live: visitors, availability, unread messages (every 10 s; also tells the server the dashboard is open) ----
   function live() {
@@ -488,43 +722,105 @@ th{color:var(--text2);font-weight:600}
     });
   }
 
-  // ---- the world map: a sequential blue ramp by country; the list beside it gives the exact numbers ----
-  var mapTip = el('div', { class: 'tip' });
-  function drawMap() {
+  // ---- the globe (d3-geo, orthographic, on a canvas): turn with a finger or the mouse, pinch or +/− to zoom, tap a country.
+  //      One hue ramp (light → dark blue) for the chosen figure; the list beside it gives the exact numbers. ----
+  var G = { cv: null, ctx: null, proj: null, path: null, feats: null, rot: [-10, -25], k: 1, sel: null, raf: 0, spin: true, data: {}, max: 0, run: false, last: 0 };
+  var RAMP = ['--m0', '--m1', '--m2', '--m3', '--m4', '--m5'], REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function cssv(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim() || '#999'; }
+  function globeInit() {
+    if (G.cv || !window.d3 || !window.topojson) return !!G.cv;
+    G.cv = $('#globe'); G.ctx = G.cv.getContext('2d');
+    G.feats = topojson.feature(WORLD, WORLD.objects.countries).features;
+    G.proj = d3.geoOrthographic().precision(0.6).clipAngle(90);
+    G.path = d3.geoPath(G.proj, G.ctx);
+    var pts = {}, drag = null;
+    var size = function () { var w = Math.min(560, G.cv.parentNode.clientWidth || 320), dpr = Math.min(2, window.devicePixelRatio || 1);
+      G.cv.width = Math.round(w * dpr); G.cv.height = Math.round(w * dpr); G.w = w; G.dpr = dpr; draw(); };
+    window.addEventListener('resize', size); size();
+    G.cv.addEventListener('pointerdown', function (e) {
+      G.cv.setPointerCapture(e.pointerId); pts[e.pointerId] = [e.clientX, e.clientY]; G.spin = false;
+      drag = { x: e.clientX, y: e.clientY, rot: G.rot.slice(), k: G.k, moved: false, d0: dist() }; G.cv.classList.add('drag');
+    });
+    function dist() { var p = Object.values(pts); return p.length > 1 ? Math.hypot(p[0][0] - p[1][0], p[0][1] - p[1][1]) : 0; }
+    G.cv.addEventListener('pointermove', function (e) {
+      if (!drag || !pts[e.pointerId]) return; pts[e.pointerId] = [e.clientX, e.clientY];
+      var n = Object.keys(pts).length;
+      if (n > 1) { var d = dist(); if (!drag.d0) drag.d0 = d; G.k = Math.max(1, Math.min(6, drag.k * d / drag.d0)); drag.moved = true; }
+      else {
+        var dx = e.clientX - drag.x, dy = e.clientY - drag.y; if (Math.abs(dx) + Math.abs(dy) > 4) drag.moved = true;
+        var sens = 0.35 / G.k; G.rot = [drag.rot[0] + dx * sens, Math.max(-80, Math.min(80, drag.rot[1] - dy * sens))];
+      }
+      draw();
+    });
+    function up(e) {
+      var wasTap = drag && !drag.moved && Object.keys(pts).length === 1;
+      delete pts[e.pointerId];
+      if (!Object.keys(pts).length) { G.cv.classList.remove('drag'); if (wasTap) pick(e); drag = null; }
+      else if (drag) { var p = Object.values(pts)[0]; drag = { x: p[0], y: p[1], rot: G.rot.slice(), k: G.k, moved: true, d0: 0 }; }
+    }
+    G.cv.addEventListener('pointerup', up); G.cv.addEventListener('pointercancel', up);
+    G.cv.addEventListener('wheel', function (e) { e.preventDefault(); G.spin = false; G.k = Math.max(1, Math.min(6, G.k * (e.deltaY < 0 ? 1.15 : 1 / 1.15))); draw(); }, { passive: false });
+    $('#gIn').addEventListener('click', function () { G.spin = false; G.k = Math.min(6, G.k * 1.4); draw(); });
+    $('#gOut').addEventListener('click', function () { G.spin = false; G.k = Math.max(1, G.k / 1.4); draw(); });
+    G.cv.tabIndex = 0;
+    G.cv.addEventListener('keydown', function (e) {
+      var k = { ArrowLeft: [-10, 0], ArrowRight: [10, 0], ArrowUp: [0, 10], ArrowDown: [0, -10] }[e.key];
+      if (k) { e.preventDefault(); G.spin = false; G.rot = [G.rot[0] + k[0], Math.max(-80, Math.min(80, G.rot[1] + k[1]))]; draw(); }
+    });
+    return true;
+  }
+  function pick(e) {
+    var r = G.cv.getBoundingClientRect(), x = (e.clientX - r.left) * G.cv.width / r.width, y = (e.clientY - r.top) * G.cv.height / r.height;
+    var ll = G.proj.invert([x, y]); if (!ll || isNaN(ll[0])) return;
+    // only the front side of the globe can be touched
+    if (d3.geoDistance(ll, [-G.rot[0], -G.rot[1]]) > Math.PI / 2) return;
+    var f = G.feats.find(function (f) { return d3.geoContains(f, ll); });
+    G.sel = f ? f.id : null; draw(); showCountry(G.sel);
+  }
+  function showCountry(c) {
+    var box = $('#gInfo'); box.textContent = '';
+    if (!c) { box.append(el('b', null, 'Touche un pays'), el('p', null, 'pour voir ses visiteurs, comptes et abonnés.')); return; }
+    var d = S.stats || {}, A = (d.audience || {}).byCountry || {}, P = (d.people || {}).byCountry || {}, B = (d.people || {}).subsByCountry || {};
+    box.append(el('b', null, flag(c) + ' ' + (MAP.names[c] || c)),
+      el('p', null, nf.format(A[c] || 0) + ' visiteur' + ((A[c] || 0) > 1 ? 's' : '') + ' · ' + nf.format(P[c] || 0) + ' compte' + ((P[c] || 0) > 1 ? 's' : '') + ' créé' + ((P[c] || 0) > 1 ? 's' : '') + ' (période choisie) · ' + nf.format(B[c] || 0) + ' abonné' + ((B[c] || 0) > 1 ? 's' : '') + ' en ce moment'));
+  }
+  function draw() {
+    if (!G.ctx) return;
+    var c = G.ctx, W = G.cv.width, s = W / 2 * 0.94 * G.k;
+    G.proj.translate([W / 2, W / 2]).scale(s).rotate([G.rot[0], G.rot[1]]);
+    c.clearRect(0, 0, W, W);
+    var cols = RAMP.map(cssv), line = cssv('--card'), sea = cssv('--sunk'), ink = cssv('--text2');
+    c.beginPath(); G.path({ type: 'Sphere' }); c.fillStyle = sea; c.fill();
+    c.lineWidth = Math.max(0.5, 0.6 * G.dpr);
+    G.feats.forEach(function (f) {
+      var v = G.data[f.id] || 0, r = G.max ? v / G.max : 0, i = !v ? 0 : r > .8 ? 5 : r > .6 ? 4 : r > .4 ? 3 : r > .2 ? 2 : 1;
+      c.beginPath(); G.path(f); c.fillStyle = cols[i]; c.fill(); c.strokeStyle = line; c.stroke();
+    });
+    if (G.sel) { var f = G.feats.find(function (x) { return x.id === G.sel; }); if (f) { c.beginPath(); G.path(f); c.lineWidth = 2.5 * G.dpr; c.strokeStyle = cssv('--text'); c.stroke(); } }
+    c.beginPath(); G.path({ type: 'Sphere' }); c.lineWidth = 1.5 * G.dpr; c.strokeStyle = ink; c.stroke();
+  }
+  function loop(t) {
+    if (!G.run) return;
+    if (G.spin && !REDUCED && !document.hidden) { var dt = G.last ? Math.min(64, t - G.last) : 16; G.rot[0] += dt * 0.006; draw(); }
+    G.last = t; G.raf = requestAnimationFrame(loop);
+  }
+  function globeStart() { if (!globeInit()) return; G.run = true; globeData(); cancelAnimationFrame(G.raf); G.last = 0; G.raf = requestAnimationFrame(loop); }
+  function globeStop() { G.run = false; cancelAnimationFrame(G.raf); }
+  function globeData() {
     var d = S.stats; if (!d || !d.people) return;
-    var data = S.map === 'accounts' ? d.people.byCountry : d.audience.byCountry, box = $('#map');
-    box.textContent = '';
+    var data = S.map === 'accounts' ? d.people.byCountry : S.map === 'subs' ? (d.people.subsByCountry || {}) : d.audience.byCountry;
     var known = {}, unknown = 0, max = 0;
     for (var k in data) { if (k === 'unknown') unknown += data[k]; else { known[k] = data[k]; if (data[k] > max) max = data[k]; } }
-    var steps = [0, 1, 2, 3, 4, 5].map(function (i) { return Math.max(1, Math.round(max * i / 5)); });
-    var cls = function (v) { if (!v) return 0; var r = v / max; return r > .8 ? 5 : r > .6 ? 4 : r > .4 ? 3 : r > .2 ? 2 : 1; };
-    var svg = svgEl('svg', { viewBox: '0 0 ' + MAP.w + ' ' + MAP.h, role: 'img', 'aria-label': (S.map === 'accounts' ? 'Comptes' : 'Visites') + ' par pays' });
-    Object.keys(MAP.paths).forEach(function (c) {
-      var v = known[c] || 0, p = svgEl('path', { d: MAP.paths[c] });
-      p.style.fill = 'var(--m' + cls(v) + ')';
-      if (v) p.setAttribute('class', 'has');
-      var show = function (e) {
-        var r = box.getBoundingClientRect();
-        mapTip.textContent = COUNTRY(c) + ' · ' + nf.format(v);
-        mapTip.style.left = (e.clientX - r.left) + 'px'; mapTip.style.top = (e.clientY - r.top) + 'px'; mapTip.style.display = 'block';
-      };
-      p.addEventListener('mousemove', show); p.addEventListener('mouseleave', function () { mapTip.style.display = 'none'; });
-      p.addEventListener('touchstart', function (e) { if (e.touches[0]) show(e.touches[0]); }, { passive: true });
-      svg.append(p);
-    });
-    box.append(svg, mapTip);
-    var lg = el('div', { class: 'legend' }), sw = el('span', { class: 'sw' });
-    for (var i = 0; i <= 5; i++) { var s = el('i'); s.style.background = 'var(--m' + i + ')'; sw.append(s); }
-    lg.append(el('span', null, '0'), sw, el('span', null, max ? nf.format(max) + ' ' + (S.map === 'accounts' ? 'comptes' : 'visites') : 'pas encore de données'));
-    box.append(lg);
-    set('#topTitle', S.map === 'accounts' ? 'Comptes par pays' : 'Visites par pays');
-    set('#mapTxt', S.map === 'accounts' ? 'Plus le bleu est foncé, plus il y a de comptes créés depuis ce pays pendant la période.' : 'Plus le bleu est foncé, plus il y a de visites venues de ce pays pendant la période.');
-    blist($('#topCountries'), known, COUNTRY, { max: 12 });
-    set('#mapUnknown', unknown ? nf.format(unknown) + (S.map === 'accounts' ? ' compte(s)' : ' visite(s)') + ' sans pays connu (avant le 1/11, ou pays caché).' : '');
+    G.data = known; G.max = max; draw(); if (G.sel) showCountry(G.sel);
+    var what = S.map === 'accounts' ? 'comptes créés' : S.map === 'subs' ? 'abonnés' : 'visiteurs';
+    set('#topTitle', 'Pays : ' + what);
+    blist($('#topCountries'), known, function (c) { return flag(c) + ' ' + COUNTRY(c); }, { max: 12 });
+    set('#mapUnknown', unknown ? nf.format(unknown) + ' ' + what + ' sans pays connu (avant le 1/11, ou pays caché).' : '');
   }
   $$('[data-map]').forEach(function (b) {
-    b.addEventListener('click', function () { S.map = b.dataset.map; $$('[data-map]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); drawMap(); });
+    b.addEventListener('click', function () { S.map = b.dataset.map; $$('[data-map]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); globeData(); });
   });
+  S.map = 'visits';
 
   // ---- stats ----
   var PLAN_NAME = { pro: 'Pro', creator: 'Creator Plus', basic: 'Pro', max: 'Creator Plus' };
@@ -557,7 +853,6 @@ th{color:var(--text2);font-weight:600}
       set('#kProS', t.pro.month + ' mensuels · ' + t.pro.year + ' annuels' + (t.pro.ending ? ' · ' + t.pro.ending + ' arrêt prévu' : ''));
       set('#kMrr', totalsByCur(cents(t.mrr || { USD: t.mrrCents })));
       set('#kMrrS', 'Avant taxes, en dollars');
-      charts($('#todayCharts'), days, [DAY_CHARTS[0], DAY_CHARTS[1]]);
       // Utilisateurs
       var P = d.people || {}, A = d.audience || {};
       set('#kUsers', nf.format(t.users)); set('#kUsersS', t.verified + ' avec e-mail vérifié');
@@ -565,7 +860,7 @@ th{color:var(--text2);font-weight:600}
       set('#kBack', nf.format(P.returningAccounts || 0)); set('#kBackS', label);
       var rt = A.returning || { yes: 0, no: 0, unknown: 0 };
       set('#kRet', (rt.yes + rt.no ? pct(rt.yes, rt.yes + rt.no) : 0) + ' %'); set('#kRetS', nf.format(rt.yes) + ' visites de retour sur ' + nf.format(rt.yes + rt.no) + ' ' + label);
-      drawMap();
+      globeData();
       charts($('#charts'), days, DAY_CHARTS);
       var tw = $('#tableWrap'); tw.textContent = ''; tw.append(table(days));
       blist($('#bMethod'), P.byMethod, NAMES.method);
@@ -768,6 +1063,7 @@ th{color:var(--text2);font-weight:600}
 
   // a link from an e-mail (#t=<conversation>) opens the Messages tab on it; #users, #money… open that tab
   var tm = location.hash.match(/^#t=([\w-]+)$/), th = location.hash.replace('#', '');
+  helpButtons();
   showTab(tm ? 'msgs' : th);
   api('GET', 'me').then(function (d) { set('#who', d.email); }).catch(function () {});
   live(); stats(); tickets().then(function () { if (tm) openTicket(decodeURIComponent(tm[1])); });
@@ -780,5 +1076,49 @@ th{color:var(--text2);font-weight:600}
 </body>
 </html>`;
 
-// the world map goes in as data (paths per country, French names)
-export const ADMIN_HTML = PAGE.replace('__MAP__', () => JSON.stringify({ w: MAP_W, h: MAP_H, paths: MAP_PATHS, names: COUNTRY_NAMES_FR }));
+// The demo of previews (functions/admin-demo/[[path]].js): the same page, answered in the browser by MADE-UP figures
+// (admin-demo-data.js, built by tools/admin_demo_data.mjs with the real dashboard code on a fake database). It sends nothing.
+const DEMO_JS = String.raw`var DD = __DEMO_DATA__, DS = { avail: false, tickets: [
+    { id: 't_demo1', email: 'fan12_3@demo.stalak', pro: true, plan: 'creator', account: true, lang: 'en', status: 'open', unread: true, visitorLive: true,
+      createdAt: new Date(Date.now() - 36e5).toISOString(), updatedAt: new Date(Date.now() - 6e5).toISOString(),
+      messages: [{ from: 'user', text: 'Hi! My export stops at 80% on my iPhone, what can I do?', at: new Date(Date.now() - 6e5).toISOString() }] },
+    { id: 't_demo2', email: 'fan30_1@demo.stalak', pro: true, plan: 'pro', account: true, lang: 'fr', status: 'open', unread: false, visitorLive: false,
+      createdAt: new Date(Date.now() - 864e5).toISOString(), updatedAt: new Date(Date.now() - 5e6).toISOString(),
+      messages: [{ from: 'user', text: 'Comment je mets les paroles en karaoké ?', at: new Date(Date.now() - 6e6).toISOString() },
+        { from: 'admin', text: 'Étape Paroles → Style → Karaoké. Dis-moi si ça marche !', at: new Date(Date.now() - 5e6).toISOString(), emailed: true }] }] };
+  function DEMO_API(method, path, body) {
+    var p = path.split('?')[0], q = new URLSearchParams(path.split('?')[1] || ''), r = null, m;
+    var row = function (t) { var last = t.messages[t.messages.length - 1]; return { id: t.id, email: t.email, pro: t.pro, plan: t.plan, account: t.account, lang: t.lang, status: t.status,
+      unread: t.unread && last.from === 'user', visitorLive: t.visitorLive, lastFrom: last.from, lastText: last.text, updatedAt: t.updatedAt }; };
+    if (p === 'me') r = { email: 'démo (fausses données)' };
+    else if (p === 'live') r = { visitors: { total: 7, en: 5, fr: 2 }, availableSwitch: DS.avail, available: DS.avail,
+      tickets: { open: DS.tickets.filter(function (t) { return t.status === 'open'; }).length, unread: DS.tickets.filter(function (t) { return row(t).unread; }).length } };
+    else if (p === 'home') r = DD.home;
+    else if (p === 'stats') r = DD.stats[q.get('days') || '30'] || DD.stats['30'];
+    else if (p === 'signups') { var b = q.get('before'), i = 0; if (b) { DD.signups.forEach(function (pg, k) { if (String(pg.more) === b) i = k + 1; }); } r = DD.signups[i] || { signups: [], more: null }; }
+    else if (p === 'tickets') { var st = q.get('status') || 'open'; r = { tickets: DS.tickets.filter(function (t) { return st === 'all' || t.status === st; }).map(row) }; }
+    else if ((m = /^tickets\/([\w-]+)(\/(messages|status))?$/.exec(p))) {
+      var t = DS.tickets.find(function (x) { return x.id === m[1]; });
+      if (!t) return Promise.reject(Object.assign(new Error('Introuvable'), { code: 'not_found' }));
+      if (method === 'DELETE') { DS.tickets = DS.tickets.filter(function (x) { return x !== t; }); r = { ok: true }; }
+      else if (m[3] === 'messages') { t.messages.push({ from: 'admin', text: body.text, at: new Date().toISOString(), emailed: !t.visitorLive }); t.unread = false; t.updatedAt = new Date().toISOString(); r = { emailed: !t.visitorLive, messages: t.messages }; }
+      else if (m[3] === 'status') { t.status = body.status; r = { ok: true }; }
+      else { t.unread = false; r = { id: t.id, email: t.email, status: t.status, lang: t.lang, createdAt: t.createdAt, visitorLive: t.visitorLive, visitorSeenAt: t.updatedAt,
+        account: { email: t.email, pro: t.pro, plan: t.plan, interval: 'month' }, context: 'Démo : ce que montrait la page.', messages: t.messages }; }
+    }
+    else if (p === 'available') { DS.avail = !!body.available; r = { availableSwitch: DS.avail }; }
+    else if (p === 'notify-test' || p === 'ntfy-test') r = { configured: true, sent: true, telegram: 'sent', ntfy: false };
+    else if (p === 'telegram-link') r = { linked: true, name: 'Démo' };
+    else if (p === 'telegram-unlink') r = { linked: false };
+    else return Promise.reject(Object.assign(new Error('Pas dans la démo'), { code: 'demo' }));
+    return new Promise(function (res) { setTimeout(function () { res(JSON.parse(JSON.stringify(r))); }, 120); });
+  }`;
+const fill = (page, demo) => page
+  .replace('__GLOBE_LIBS__', () => GLOBE_LIBS)
+  .replace('__WORLD__', () => JSON.stringify(WORLD_TOPO))
+  .replace('__MAP__', () => JSON.stringify({ names: COUNTRY_NAMES_FR }))
+  .replace('__DEMO__', demo ? 'true' : 'false')
+  .replace('__DEMO_JS__', () => (demo ? DEMO_JS.replace('__DEMO_DATA__', () => JSON.stringify(DEMO_DATA)) : 'var DEMO_API = null;'))
+  .replace('__DEMO_BANNER__', demo ? '<div class="demo" role="note">DÉMO avec de fausses données, pour voir le tableau de bord avant la mise en ligne. Le vrai est sur admin.stalak.app.</div>\n' : '');
+export const ADMIN_HTML = fill(PAGE, false);
+export const ADMIN_DEMO_HTML = fill(PAGE, true);

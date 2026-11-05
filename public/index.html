@@ -2604,7 +2604,18 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
   }
 
   function me() {
-    return api('GET', 'me').then(setState);
+    return api('GET', 'me').then(setState).then(function (st) { sendSource(st); return st; });
+  }
+  // a new account (made less than an hour ago): where this browser first came from (src/app.js FIRST_SRC), sent once
+  var sourceSent = false;
+  function sendSource(st) {
+    try {
+      if (sourceSent || !st.user || !st.user.createdAt || Date.now() - Date.parse(st.user.createdAt) > 3600e3) return;
+      var src = localStorage.getItem('stalak:src');
+      if (!src) return;
+      sourceSent = true;
+      api('POST', 'account/source', { source: src }).catch(function () {});
+    } catch (e) {}
   }
 
   function config() {
@@ -2842,7 +2853,7 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
         return api('POST', 'auth/signup', b);
       });
     },
-    signupVerify: function (email, code) { return api('POST', 'auth/signup/verify', { email: email, code: code, lang: lang() }).then(setState); },
+    signupVerify: function (email, code) { return api('POST', 'auth/signup/verify', { email: email, code: code, lang: lang() }).then(setState).then(function (st) { sendSource(st); return st; }); },
     login: function (email, password) {
       return api('POST', 'auth/login', { email: email, password: password, lang: lang() }).then(function (d) { return d.needCode ? d : setState(d); });
     },
@@ -10426,6 +10437,28 @@ async function humanSend(text, retried){
 /* Marketing & croissance : where the visit comes from, for the dashboard. ?ref=tiktok (ig, yt, x, reddit, discord, wm…) is read from
    the address, then removed from it; without one, the site that sent the visitor (TikTok, Instagram…) if the browser tells it.
    Kept for this tab only (sessionStorage "stalak:ref", nothing about the person) and sent with the visits below; Comptes counts it. */
+/* Comptes (dashboard v3): where this browser came from the FIRST time (a ?ref= link, utm_source, the site that sent it, or
+   direct), kept in this browser only (localStorage "stalak:src") and sent once, at sign-up, to show where new accounts come from. */
+const FIRST_SRC = (() => {
+  try {
+    const old = localStorage.getItem('stalak:src');
+    if (old) return old;
+    const u = new URL(location.href), ref = (u.searchParams.get('ref') || '').trim().toLowerCase(), utm = (u.searchParams.get('utm_source') || '').trim().toLowerCase();
+    let s = /^[a-z0-9_-]{1,32}$/.test(ref) ? 'ref:' + ref : /^[a-z0-9_-]{1,32}$/.test(utm) ? 'utm:' + utm : 'direct';
+    if (s === 'direct' && document.referrer) {
+      const h = new URL(document.referrer).hostname.replace(/^www\./, '').toLowerCase();
+      if (h && h !== location.hostname) {
+        const kinds = [[/(^|\.)tiktok\.com$/, 'tiktok'], [/(^|\.)instagram\.com$/, 'ig'], [/(^|\.)(youtube\.com|youtu\.be)$/, 'yt'], [/^(t\.co|x\.com|twitter\.com)$/, 'x'],
+          [/(^|\.)reddit\.com$/, 'reddit'], [/(^|\.)discord(app)?\.com$/, 'discord'], [/(^|\.)facebook\.com$/, 'facebook'], [/(^|\.)google\./, 'google'], [/(^|\.)bing\.com$/, 'bing'],
+          [/(^|\.)alternativeto\.net$/, 'dir:alternativeto'], [/(^|\.)saashub\.com$/, 'dir:saashub'], [/(^|\.)producthunt\.com$/, 'dir:producthunt'], [/(^|\.)betalist\.com$/, 'dir:betalist'],
+          [/(^|\.)futurepedia\.io$/, 'dir:futurepedia'], [/(^|\.)theresanaiforthat\.com$/, 'dir:theresanaiforthat'], [/(^|\.)contentcreators\.com$/, 'dir:contentcreators'], [/(^|\.)toolify\.ai$/, 'dir:toolify']];
+        s = kinds.reduce((a, [re, n]) => a || (re.test(h) ? n : null), null) || (/^[a-z0-9.-]{3,48}$/.test(h) ? 'site:' + h : 'other');
+      }
+    }
+    localStorage.setItem('stalak:src', s);
+    return s;
+  } catch(e){ return null; }
+})();
 const VISIT_REF = (() => {
   let r = null;
   try {

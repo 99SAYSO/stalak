@@ -472,6 +472,20 @@ sandbox) sont marqués **TEST**.
 **Pays** : seul le pays donné par Cloudflare (2 lettres) est gardé, à l'inscription et sur les visites ; jamais l'adresse IP
 ni la ville (migration `0010_dashboard.sql`). « Visites de retour » : la page dit seulement oui / non (la date de la dernière
 visite reste dans le navigateur, `localStorage` « stalak:lastDay »).
+**Version 3 (5/11)** : un menu ☰ (facile au doigt) remplace les onglets ; la page qui s'ouvre en premier est **Accueil** (6 grosses
+cartes : argent gagné ce mois-ci net de Paddle, estimé, et prochain versement — Paddle verse vers le 15 du mois suivant dès 100 $,
+sinon le solde est reporté —, abonnés, visiteurs et comptes d'aujourd'hui avec une flèche verte ou rouge par rapport à hier,
+d'où viennent les gens sur 7 jours, alertes ou « Tout va bien ✅ ») ; une page **Nouveaux comptes** (une ligne par compte : date,
+pays, provenance en mots simples, formule actuelle, sans e-mail) ; la carte devient un **globe 3D** (tourner au doigt / à la souris,
+pincer ou + / − pour zoomer, toucher un pays). Les boutons 7 j / 30 j / 90 j / Tout n'apparaissent que sur les pages où ils
+servent. Un petit « ? » à côté de chaque chiffre affiche sa phrase d'explication.
+**Provenance d'un compte** (migration `0011_signup_source.sql`) : à la première visite, la page garde dans le navigateur
+(`localStorage` « stalak:src ») d'où vient la personne (`?ref=`, `utm_source`, TikTok / Instagram / YouTube / Google…, nom de
+l'annuaire, ou seulement le nom du site d'origine) ; à l'inscription, elle l'envoie une fois (`POST /api/account/source`, dans
+l'heure qui suit la création du compte) dans `users.signup_source`.
+**Démo** : sur chaque maquette, `https://<branche-avec-tirets>.stalak-site.pages.dev/admin-demo/` montre le tableau de bord avec
+de **fausses données** (aucune requête au serveur). Elle n'existe ni sur stalak.app ni sur admin.stalak.app. Les fausses données
+se régénèrent avec `node tools/admin_demo_data.mjs`.
 Il est à `https://admin.stalak.app/admin/`, réservé à ton e-mail par **Cloudflare Access**. Le serveur vérifie lui-même,
 à chaque requête, la signature d'Access, l'adresse `admin.stalak.app` et ton e-mail : ailleurs (stalak.app, pages.dev),
 ces pages n'existent pas. Tant que les 2 secrets de l'étape 13.4 manquent, le tableau de bord est éteint.
@@ -479,6 +493,7 @@ ces pages n'existent pas. Tant que les 2 secrets de l'étape 13.4 manquent, le t
 ### 13.1 La base (avant de publier)
 Dans la **Console** de la base D1 `stalak`, colle **tout** `migrations/0006_admin_support.sql` et clique sur **Execute** (une seule fois).
 Pour le nouveau tableau de bord (1/11) : colle de même **tout** `migrations/0010_dashboard.sql` (7 colonnes vides) **avant** de publier.
+Pour la version 3 (5/11) : colle de même **tout** `migrations/0011_signup_source.sql` (1 colonne vide) **avant** de publier.
 
 ### 13.2 L'adresse admin.stalak.app
 **Workers & Pages → stalak-site → Custom domains → Set up a custom domain** → `admin.stalak.app` → **Continue** → **Activate domain**.

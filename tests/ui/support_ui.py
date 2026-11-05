@@ -6,7 +6,7 @@ Build the site first (python3 build_site.py …, python3 build.py), then run nod
 (a fresh one for each run): the real Functions on node:sqlite; Cloudflare Access is imitated by a test key (cookie
 test_admin=1, set by /__test/admin-login); test accounts come from POST /__test/user {pro}.
 Checks: signed out and free → « Réservé à Stalak Pro » screen (button to the Pro page, contact address); a Pro member when
-nobody is there (answer by e-mail « sous 24 h », owner told by e-mail); the dashboard (6 tabs, figures explained, map, charts, table, « Pro » badge, TEST)
+nobody is there (answer by e-mail « sous 24 h », owner told by e-mail); the dashboard (☰ menu, Accueil, figures explained with « ? », globe, charts, table, « Pro » badge, TEST)
 on a computer and a phone; the owner's answer e-mailed to the member who left; the live chat when the owner is « disponible »;
 an ex-Pro keeps the answers already received but cannot write; FR and EN; no horizontal scroll; no page error (strict CSP);
 the claude.ai build. Run this file by absolute path from a clean directory."""
@@ -39,6 +39,15 @@ async def shot(page, name):
 def watch(page, errors):
     page.on('pageerror', lambda e: errors.append(str(e)))
     page.on('console', lambda m: errors.append(m.text) if m.type == 'error' and 'favicon' not in m.text else None)
+
+
+async def go(page, name):
+    # dashboard v3: the pages are in the ☰ menu
+    await page.click('#menuBtn')
+    await page.wait_for_selector('#drawer.open #tab-' + name, state='visible', timeout=5000)
+    await page.click('#tab-' + name)
+    await page.wait_for_selector('#p-' + name, state='visible', timeout=5000)
+    await page.wait_for_timeout(250)
 
 
 async def no_scroll(page):
@@ -129,30 +138,50 @@ async def main():
         aerr = []
         watch(a, aerr)
         await a.goto(BASE + '/__test/admin-login', wait_until='load')
-        await a.wait_for_selector('#todayCharts .chart', timeout=15000)
+        await a.wait_for_function("() => document.querySelector('#hMoneyV').textContent.trim() !== '–'", timeout=15000)
         await a.wait_for_function("() => document.querySelector('#who').textContent.includes('@')", timeout=10000)
-        tabs = await a.eval_on_selector_all('[role=tab]', 'els => els.map(e => e.textContent.replace(/\\s+/g, " ").trim())')
-        check('admin-1280: 6 tabs (Aujourd’hui, Utilisateurs, Argent, Entonnoir, Messages, Santé)', [t.split(' ')[0] for t in tabs] == ['Aujourd’hui', 'Utilisateurs', 'Argent', 'Entonnoir', 'Messages', 'Santé'], tabs)
+        check('admin-1280: opens on Accueil, no period buttons there', await a.is_visible('#p-home') and not await a.is_visible('#periodBar'))
+        cards = await a.eval_on_selector_all('#p-home .hc', 'e => e.length')
+        check('admin-1280: Accueil = 6 big cards', cards == 6, cards)
+        await a.click('#menuBtn')
+        await a.wait_for_selector('#drawer.open', timeout=5000)
+        items = await a.eval_on_selector_all('#drawer nav button', 'els => els.map(e => e.textContent.replace(/\\s+/g, " ").trim())')
+        check('admin-1280: ☰ menu with 8 pages', len(items) == 8 and items[0].endswith('Accueil'), items)
+        await a.keyboard.press('Escape')
+        await a.wait_for_timeout(300)
+        check('admin-1280: Escape closes the menu', not await a.is_visible('#drawer nav'))
+        await go(a, 'today')
+        check('admin-1280: « Aujourd’hui » has no 7 j / 30 j buttons (bug fixed)', not await a.is_visible('#periodBar'))
         check('admin-1280: Pro subscribers counted, marked TEST (sandbox)', (await a.inner_text('#kPro')).strip() == '1' and await a.is_visible('#testNote'), await a.inner_text('#kPro'))
         expl = await a.eval_on_selector_all('#p-today .kpi', 'els => els.filter(e => !e.querySelector(".e") || e.querySelector(".e").textContent.length < 20).length')
         check('admin-1280: every figure explained in a sentence', expl == 0, expl)
-        await a.click('#tab-users')
-        await a.wait_for_selector('#map svg path', timeout=10000)
-        check('admin-1280: world map drawn', await a.eval_on_selector_all('#map svg path', 'e => e.length') > 150)
+        hidden = await a.eval_on_selector_all('#p-today .kpi .e', "els => els.filter(e => getComputedStyle(e).display !== 'none').length")
+        await a.click('#p-today .kpi .q >> nth=0')
+        shown = await a.eval_on_selector_all('#p-today .kpi .e', "els => els.filter(e => getComputedStyle(e).display !== 'none').length")
+        check('admin-1280: sentences hidden until « ? » is tapped', hidden == 0 and shown == 1, (hidden, shown))
+        await go(a, 'signups')
+        await a.wait_for_selector('#signupList li', timeout=10000)
+        row = await a.inner_text('#signupList li >> nth=0')
+        check('admin-1280: new accounts listed with a source and a plan', any(w in row for w in ['Gratuit', 'Pro', 'Creator Plus']), row)
+        await go(a, 'users')
+        check('admin-1280: period buttons on Utilisateurs', await a.is_visible('#periodBar'))
+        await a.wait_for_function("() => { const c = document.querySelector('#globe'); return c && c.width > 100; }", timeout=10000)
+        check('admin-1280: globe drawn', await a.evaluate("() => { const c = document.querySelector('#globe'), x = c.getContext('2d').getImageData(c.width/2|0, c.height/2|0, 1, 1).data; return x[3] > 0; }"))
         check('admin-1280: 4 day-by-day charts', await a.eval_on_selector_all('#charts .chart', 'e => e.length') == 4)
-        await a.click('#tab-msgs')
+        await go(a, 'msgs')
         await a.wait_for_selector('#tlist button', timeout=10000)
         item = await a.inner_text('#tlist button')
         check('admin-1280: conversation listed, new, with the « Creator Plus » badge', 'nouveau' in item and 'Creator Plus' in item, item)
-        await a.click('#tab-users')
+        await go(a, 'users')
+        await a.click('details.more-d > summary')
         await a.click('#tableBtn')
         check('admin-1280: table view', await a.is_visible('#tableWrap table'))
         await a.hover('#charts .chart .hit >> nth=-1')
         tip = await a.eval_on_selector_all('#charts .chart .tip', "els => els.filter(e => getComputedStyle(e).display !== 'none').map(e => e.textContent)")
         check('admin-1280: tooltip on hover', len(tip) == 1 and '·' in tip[0], tip)
-        await a.click('#tab-money')
+        await go(a, 'money')
         check('admin-1280: money tab marked TEST', await a.is_visible('#p-money [data-test]'))
-        await a.click('#tab-msgs')
+        await go(a, 'msgs')
         await a.click('#tlist button')
         await a.wait_for_selector('#replyText')
         head = await a.inner_text('#conv .head')
@@ -223,14 +252,16 @@ async def main():
         perr = []
         watch(ph, perr)
         await ph.goto(BASE + '/__test/admin-login', wait_until='load')
-        await ph.wait_for_selector('#todayCharts .chart', timeout=15000)
-        for t in ['today', 'users', 'money', 'funnel', 'msgs', 'health']:
-            await ph.click('#tab-' + t)
-            await ph.wait_for_timeout(150)
-            if not await no_scroll(ph): check('admin-390: no horizontal scroll on ' + t, False)
-        await ph.click('#tab-msgs')
+        await ph.wait_for_function("() => document.querySelector('#hMoneyV').textContent.trim() !== '–'", timeout=15000)
+        check('admin-390: Accueil without horizontal scroll', await no_scroll(ph))
+        await shot(ph, 'tdb3-accueil-390')
+        bad = []
+        for t in ['today', 'signups', 'users', 'money', 'funnel', 'msgs', 'health', 'home']:
+            await go(ph, t)
+            if not await no_scroll(ph): bad.append(t)
+        check('admin-390: no horizontal scroll on any page', not bad, bad)
+        await go(ph, 'msgs')
         await ph.wait_for_selector('#tlist button', timeout=10000)
-        check('admin-390: no horizontal scroll (6 tabs)', await no_scroll(ph))
         await shot(ph, 'humain-pro-admin-390')
         check('admin-390: no page error (strict CSP)', not perr, perr)
         await pctx.close()

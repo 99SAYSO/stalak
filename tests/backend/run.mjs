@@ -15,6 +15,9 @@ import { resetJwksCache } from '../../functions/_lib/oauth.js';
 import { cleanPrompt, songPrompt, PROMPT_MAX } from '../../functions/_lib/lyrics.js';
 import { HELP_GUIDE_FR, HELP_GUIDE_EN } from '../../functions/_lib/help-guide.js';
 import { codeEmail } from '../../functions/_lib/email.js';
+import { nextPayout } from '../../functions/_lib/admin.js';
+import { onRequest as adminDemo } from '../../functions/admin-demo/[[path]].js';
+import { DEMO_DATA } from '../../functions/_lib/admin-demo-data.js';
 import { warningEmail } from '../../functions/_lib/cloud.js';
 import { replyEmail } from '../../functions/_lib/support.js';
 import { reminderEmail } from '../../functions/_lib/reminders.js';
@@ -3166,6 +3169,88 @@ test('Telegram: down or slow never blocks the webhook nor the plan, and the bot 
       assert.ok(logs.length > 0 && !logs.join('\n').includes(TG_TOKEN) && !logs.join('\n').includes('AAH-fake'), mode + ': no key in the logs ' + logs);
     } finally { console.warn = warn; console.error = error; extraFetch = null; }
   }
+});
+
+// ---- dashboard v3 (5/11): Accueil, where each new account comes from, demo of previews ----
+test('signup source: sent once by the page within the hour after sign-up, checked, never changed afterwards', async () => {
+  const env = makeEnv();
+  const u = await login(env, 'src1@example.com', 'en');
+  let r = await call(env, 'POST', '/api/account/source', { cookie: u.cookie, body: { source: '<script>' } });
+  assert.equal(r.status, 400);
+  r = await call(env, 'POST', '/api/account/source', { body: { source: 'tiktok' } });
+  assert.equal(r.status, 401, 'signed in only');
+  r = await call(env, 'POST', '/api/account/source', { cookie: u.cookie, body: { source: 'ref:ytshort' } });
+  assert.equal(r.status, 200); assert.equal(r.data.saved, true);
+  r = await call(env, 'POST', '/api/account/source', { cookie: u.cookie, body: { source: 'google' } });
+  assert.equal(r.data.saved, false, 'written once');
+  assert.equal(env.DB.raw.prepare("SELECT signup_source FROM users WHERE email = 'src1@example.com'").get().signup_source, 'ref:ytshort');
+  for (const ok of ['direct', 'ig', 'dir:alternativeto', 'site:reddit.com', 'utm:newsletter']) {
+    const v = await login(env, ok.replace(/\W/g, '') + '@example.com', 'en');
+    r = await call(env, 'POST', '/api/account/source', { cookie: v.cookie, body: { source: ok } });
+    assert.equal(r.data.saved, true, ok);
+  }
+  // an older account (more than an hour): nothing written
+  const o = await login(env, 'old-src@example.com', 'en');
+  env.DB.raw.prepare("UPDATE users SET created_at = ? WHERE email = 'old-src@example.com'").run(Date.now() - 2 * 3600e3);
+  r = await call(env, 'POST', '/api/account/source', { cookie: o.cookie, body: { source: 'tiktok' } });
+  assert.equal(r.data.saved, false);
+});
+
+test('dashboard v3: Accueil (money net, next payout, subscribers, today vs yesterday, sources, alerts) and the new-accounts list', async () => {
+  const env = makeEnv(ADMIN_ENV), token = await accessToken();
+  // nothing yet: Telegram not linked is an alert, money 0
+  let r = await adminCall(env, 'GET', '/api/admin/home', { token });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.equal(r.data.money.month, 0); assert.equal(r.data.test, true);
+  assert.deepEqual(r.data.alerts.map((a) => a.kind), ['telegram']);
+  // a subscriber from the US who came from TikTok, a payment with Paddle's net, a visit from Instagram
+  const u = await proUser(env, 'home1@example.com', 'creator');
+  env.DB.raw.prepare("UPDATE users SET country = 'US', signup_source = 'tiktok' WHERE id = ?").run(u.user.id);
+  env.DB.raw.prepare("INSERT INTO payments (id, user_id, subscription_id, price_id, origin, currency, total, tax, earnings, billed_at, created_at, env) VALUES ('txn_h1', ?, 'sub_01', 'pri_creator_m', 'web', 'USD', 1499, 0, 1300, ?, ?, 'sandbox')").run(u.user.id, Date.now(), Date.now());
+  env.DB.raw.prepare("INSERT INTO payments (id, user_id, subscription_id, price_id, origin, currency, total, tax, earnings, billed_at, created_at, env) VALUES ('txn_h2', ?, 'sub_01', 'pri_creator_m', 'web', 'USD', 1000, 0, NULL, ?, ?, 'sandbox')").run(u.user.id, Date.now(), Date.now());
+  await call(env, 'POST', '/api/presence', { body: { vid: 'v_home_visit_0000000001', lang: 'en', ref: 'ig' } });
+  env.DB.raw.prepare("INSERT INTO tickets (id, token_hash, email, lang, status, created_at, updated_at) VALUES ('t_h1', 'x', null, 'en', 'open', 1, 2)").run();
+  env.DB.raw.prepare("INSERT INTO ticket_messages (ticket_id, sender, body, created_at) VALUES ('t_h1', 'user', 'hi', 2)").run();
+  r = await adminCall(env, 'GET', '/api/admin/home', { token });
+  const h = r.data;
+  assert.equal(h.money.month, 1300 + (Math.round(1000 * 0.95) - 50), 'Paddle net, else estimated');
+  assert.equal(h.money.payout.enough, false, 'under 100 $: carried over'); assert.equal(h.money.payout.amount, h.money.month); assert.match(h.money.payout.date, /^\d{4}-\d{2}-15$/);
+  assert.equal(h.subscribers.total, 1); assert.equal(h.subscribers.creator, 1);
+  assert.ok(h.signups.today >= 1); assert.equal(h.visitors.today, 1);
+  assert.deepEqual(h.sources[0], { source: 'ig', week: 1, prevWeek: 0 });
+  assert.deepEqual(h.alerts.map((a) => a.kind).sort(), ['messages', 'telegram']);
+  assert.ok(!JSON.stringify(h).includes('home1@example.com'), 'no e-mail on the Accueil');
+  // the list: date, country, source, plan now
+  r = await adminCall(env, 'GET', '/api/admin/signups?limit=10', { token });
+  const row = r.data.signups.find((x) => x.source === 'tiktok');
+  assert.deepEqual(Object.keys(row).sort(), ['at', 'country', 'method', 'plan', 'source']);
+  assert.equal(row.country, 'US'); assert.equal(row.plan, 'creator');
+  assert.ok(!JSON.stringify(r.data).includes('@example.com'), 'no e-mail in the list');
+  r = await adminCall(env, 'GET', '/api/admin/signups', {});
+  assert.notEqual(r.status, 200, 'owner only');
+});
+
+test('next payout: Paddle pays on the 15th from 100 $, smaller balances carried over', async () => {
+  const now = Date.parse('2026-11-05T12:00:00Z');
+  assert.deepEqual(nextPayout([{ ym: '2026-11', net: 5000 }], now), { amount: 5000, date: '2026-12-15', enough: false, min: 10000 });
+  assert.equal(nextPayout([{ ym: '2026-10', net: 6000 }, { ym: '2026-11', net: 5000 }], now).amount, 11000, 'October under 100 $ is carried');
+  assert.equal(nextPayout([{ ym: '2026-10', net: 15000 }, { ym: '2026-11', net: 5000 }], now).amount, 5000, 'October paid on Nov 15');
+});
+
+test('dashboard demo: only on previews (and localhost), made-up figures, asks the server for nothing', async () => {
+  const get = (host) => adminDemo({ request: new Request(`https://${host}/admin-demo/`), env: makeEnv(ADMIN_ENV) });
+  for (const host of ['stalak.app', 'admin.stalak.app', 'stalak-site.pages.dev', 'evil.example']) assert.equal((await get(host)).status, 404, host);
+  const res = await get('compte-tableau-de-bord-v3.stalak-site.pages.dev');
+  assert.equal(res.status, 200);
+  const csp = res.headers.get('Content-Security-Policy'), html = await res.text();
+  assert.match(csp, /connect-src 'none'/); assert.match(csp, /script-src 'nonce-/);
+  assert.ok(html.includes('DÉMO avec de fausses données') && html.includes('var DEMO = true'));
+  assert.ok(!html.includes('__NONCE__') && !/__[A-Z]+_?[A-Z]*__/.test(html.replace(/__proto__/g, '')));
+  assert.ok(!/@example\.com/.test(JSON.stringify(DEMO_DATA)), 'demo addresses are made-up (@demo.stalak)');
+  assert.ok(DEMO_DATA.home && DEMO_DATA.stats['30'].people && DEMO_DATA.signups[0].signups.length > 10);
+  const real = await adminPage({ request: new Request('https://admin.stalak.app/admin/', { headers: { 'Cf-Access-Jwt-Assertion': await accessToken() } }), env: makeEnv(ADMIN_ENV) });
+  const rh = await real.text();
+  assert.ok(rh.includes('var DEMO = false') && !rh.includes('DÉMO avec') && !rh.includes('@demo.stalak'), 'no demo data in the real page');
 });
 
 // ---- runner --------------------------------------------------------------------------

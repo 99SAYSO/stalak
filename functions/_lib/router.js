@@ -222,6 +222,8 @@ async function deleteAccount(request, env) {
   return json({ ok: true, deleted: true }, 200, { 'Set-Cookie': clearSessionCookie() });
 }
 
+// ref:<code> | utm:<source> | dir:<directory> | site:<domain> | a site kind (tiktok, ig, yt, google…) | direct
+export const SIGNUP_SOURCE = /^(?:(?:ref|utm|dir):[a-z0-9_-]{1,32}|site:[a-z0-9.-]{3,48}|[a-z0-9_-]{1,24})$/;
 // <branch or id>.<project>.pages.dev = a preview deployment of Cloudflare Pages (the bare <project>.pages.dev is production)
 export const isPreviewHost = (h) => /^[^.]+\.[^.]+\.pages\.dev$/i.test(String(h || ''));
 const PREVIEW_BLOCKED = (route, parts, method) => route === 'paddle/webhook' || route.startsWith('cron/') || route === 'paddle/change' ||
@@ -342,6 +344,18 @@ async function dispatch(request, env, ctx) {
       case 'account':
         if (method !== 'DELETE') break;
         return deleteAccount(request, env);
+      case 'account/source': {
+        // where a new account comes from (the page's first visit: ?ref=, utm, the site that sent it), for the owner's dashboard.
+        // Written once, within the hour after sign-up (e-mail or Google alike); later calls change nothing.
+        if (method !== 'POST') break;
+        const u = await requireUser(request, env);
+        const b = await readJson(request, 256);
+        const src = typeof b.source === 'string' ? b.source.trim().toLowerCase() : '';
+        if (!SIGNUP_SOURCE.test(src)) throw new HttpError(400, 'invalid_source', 'Unknown source.');
+        const r = await env.DB.prepare('UPDATE users SET signup_source = ?2 WHERE id = ?1 AND signup_source IS NULL AND created_at > ?3')
+          .bind(u.id, src, Date.now() - 3600e3).run();
+        return json({ ok: true, saved: !!(r.meta && r.meta.changes) });
+      }
       case 'lyrics/transcribe':
         // « Paroles automatiques » (Stalak Pro): one piece of the song's voice → timed words (functions/_lib/lyrics.js)
         if (method !== 'POST') break;
