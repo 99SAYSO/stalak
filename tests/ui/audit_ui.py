@@ -240,7 +240,8 @@ def run(b, base, lang, iphone):
     check(tag + ' : compteurs envoyés (export commencé, réussi, raté, offre Pro une fois)', all(n in names for n in ('export_start', 'export_ok', 'export_fail')) and names.count('pro_offer') >= 1, names)
     fail = [e['body'] for e in events if e['body'].get('name') == 'export_fail']
     check(tag + ' : export raté avec sa catégorie (app quittée, mémoire)', any(f.get('cat') == 'hidden' for f in fail) and any(f.get('cat') == 'memory' for f in fail), fail)
-    check(tag + ' : compteurs anonymes (nom, catégorie, iPhone ou non ; aucun cookie)', keys <= {'name', 'cat', 'why', 'ios'} and all(e['cookie'] is None for e in events)
+    # 5/11 : + le numéro de visite au hasard (vid, « vidéos par personne ») ; la session peut partir avec (même site) pour ne pas compter le propriétaire
+    check(tag + ' : compteurs anonymes (nom, catégorie, iPhone ou non, numéro de visite au hasard)', keys <= {'name', 'cat', 'why', 'ios', 'vid'}
           and all(e['body'].get('ios') is (True if iphone else None) for e in events), (keys, [e['cookie'] for e in events][:3]))
     check(tag + ' : aucune erreur dans la page', not errs, errs)
     sw = pg.evaluate('document.documentElement.scrollWidth')
