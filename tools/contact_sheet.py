@@ -21,9 +21,13 @@ out = a.out or os.path.splitext(a.video)[0] + "_planche"
 os.makedirs(out, exist_ok=True)
 tmp = tempfile.mkdtemp()
 tw = a.width; th = round(H * tw / W)
-subprocess.run(["ffmpeg","-v","error","-y","-i",a.video,"-vf",
-    f"fps=1/{a.step}:start_time=0,scale={tw}:{th}", os.path.join(tmp,"f_%05d.png")], check=True)
-frames = sorted(glob.glob(os.path.join(tmp,"f_*.png")))
+# une recherche exacte par horodatage (le filtre fps d'ffmpeg décalait les images d'environ 0,25 s)
+n = int(dur // a.step) + 1; frames = []; times = []
+for k in range(n):
+    t = min(k * a.step, max(dur - 0.05, 0)); f = os.path.join(tmp, f"f_{k:05d}.png")
+    subprocess.run(["ffmpeg","-v","error","-y","-ss",f"{t:.3f}","-i",a.video,"-frames:v","1",
+        "-vf",f"scale={tw}:{th}",f], check=True)
+    if os.path.exists(f): frames.append(f); times.append(t)
 try: font = ImageFont.truetype("DejaVuSans-Bold.ttf", 16)
 except Exception: font = ImageFont.load_default()
 vertical = H > W
@@ -33,7 +37,7 @@ for s in range(0, len(frames), per):
     sheet = Image.new("RGB", (a.cols*(tw+6)+6, a.rows*(th+lab+6)+6), (20,20,20))
     d = ImageDraw.Draw(sheet)
     for i, f in enumerate(chunk):
-        t = (s+i) * a.step
+        t = times[s+i]
         x = 6 + (i % a.cols)*(tw+6); y = 6 + (i // a.cols)*(th+lab+6)
         im = Image.open(f).convert("RGB")
         if vertical and not a.no_zones:

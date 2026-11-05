@@ -4,6 +4,7 @@
 > Dernière mise à jour : 30/10/2026 à 21 h (offre hybride fusionnée et en ligne : App, Comptes, Juridique, Marketing ; migration 0008 appliquée).
 
 ## Décisions récentes du propriétaire
+- **5/11, 11 h 30 : fusionné `marketing/promo-youtube` (film de lancement v6, planche contact, 12 défauts corrigés ; sources seulement, rien sur le site).** `tools/contact_sheet.py` corrigé : chaque image est maintenant prise exactement à son horodatage (avant : ~0,23 s plus tard, remarque de Marketing).
 - **5/11, 0 h 20 : règle 10 du contexte, planche contact obligatoire** avant l'export final de chaque vidéo (skill `planche-contact`, script `tools/contact_sheet.py` : une image toutes les 0,5 s avec horodatage et zones masquées par TikTok / Instagram en rouge).
 - **5/11, minuit : nouvelle règle 9 du contexte, « maquette avant le vrai site »** : chaque branche a sa maquette (`https://<branche-avec-tirets>.stalak-site.pages.dev`, créée par Cloudflare à chaque push) ; le lien va dans le compte rendu (`Maquette : …`) ; le Chef de projet ne met en ligne qu'après le « ok » du propriétaire sur la maquette.
 - **4/11 : PREMIÈRES VENTES RÉELLES** (vrais clients, pas des tests) : Pro annuel 52,49 $ TTC et Pro mensuel 8,70 $ TTC, webhooks livrés (15 h 43 et 17 h 10, heure Paddle). Environ 54 $ net après taxes et frais Paddle (estimation). AdSense : site toujours « Getting ready » (compte soundslikesayso@gmail.com), ads.txt bien en ligne.
