@@ -3046,8 +3046,8 @@ test('ntfy: « Envoyer une notif de test » from the dashboard (owner only), say
     assert.equal(r.data.limits.ntfy, true);
     r = await adminCall(env, 'POST', '/api/admin/ntfy-test', { body: {} });
     assert.notEqual(r.status, 200, 'not without the owner\'s Access token');
-    for (let i = 0; i < 10; i++) r = await adminCall(env, 'POST', '/api/admin/ntfy-test', { token, body: {} });
-    assert.equal(r.status, 429, '10 an hour');
+    for (let i = 0; i < 12; i++) r = await adminCall(env, 'POST', '/api/admin/ntfy-test', { token, body: {} });
+    assert.equal(r.status, 200, 'no limit for the owner (5/11)');
   } finally { extraFetch = null; }
 });
 

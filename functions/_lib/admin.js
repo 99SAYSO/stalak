@@ -342,7 +342,7 @@ export async function admin(request, env, method, rest) {
   // webhook cannot be tried on a preview. 'ntfy-test' = the name of the first version.
   if ((route === 'notify-test' || route === 'ntfy-test') && method === 'POST') {
     await readJson(request);
-    await limit(env, 'ntfy-test', 10, 3600e3, 'Too many test notifications, try again in an hour.');
+    // no limit (owner's request of 5/11): the route is only reachable by the owner (Cloudflare Access + server check)
     const tg = await tgStatus(env), nt = ntfyOn(env);
     if (tg.state !== 'linked' && !nt) return json({ configured: false, sent: false, telegram: tg.state, ntfy: false });
     const r = await notifyOwner(env, { title: '🔔 Notif de test Stalak', message: 'Ça marche ! Tu seras prévenu ici à chaque nouvel abonné (et, plus discrètement, à chaque annulation).', tags: ['bell'] });
