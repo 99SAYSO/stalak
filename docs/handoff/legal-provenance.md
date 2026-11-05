@@ -15,7 +15,14 @@ Infos pour décider, pas un avis juridique.
   - bouton « Ne pas enregistrer d'où je viens » / « Don't record where I came from » : fonctionne déjà, il met localStorage stalak:src à « none » ;
   - le paragraphe des visites mentionne stalak:ref (onglet) et stalak:lastDay (retour) ;
   - section « Your US privacy rights » : provenance ajoutée à « internet activity ».
-- Consigne pour Comptes et App : docs/STATUS.md, section Juridique & business.
+- Ajout (05/11 après-midi) : e-mail de remerciement aux nouveaux abonnés dans la confidentialité FR/EN (paragraphe #thanks / #merci) :
+  - un seul e-mail de 99sayso environ 3 h après le premier abonnement, 3 questions facultatives, ni pub ni offre ;
+  - réponses à contact@ lues par le propriétaire, gardées 12 mois au plus, jamais citées sans accord ;
+  - empreinte de l'adresse gardée 3 ans pour ne pas renvoyer l'e-mail ; base : intérêt légitime ;
+  - section « Your US privacy rights » : « Why » complété.
+  - Telegram (notification de vente au propriétaire : formule, prix, pays) ajouté aux prestataires.
+- Consigne pour Comptes et App : docs/STATUS.md, section Juridique & business (dont l'effacement des empreintes thanks: au
+  bout de 3 ans).
 
 Fichiers touchés :
 - site_src/privacy.html, site_src/fr/confidentialite.html (texte, petit bouton + 1 script en ligne, 1 règle de style)
@@ -33,4 +40,5 @@ ce fonctionnement : la publier seule annoncerait quelque chose que le code ne fa
 de suite : le code actuel renvoie « none », que le serveur accepte, et aucune vraie provenance n'est enregistrée.
 
 Reste au propriétaire :
+- Supprimer dans Gmail les réponses au remerciement de plus de 12 mois (libellé conseillé).
 - Valider la règle (Europe = anonyme, ailleurs = par compte), ou choisir le total anonyme pour tout le monde.
