@@ -211,9 +211,12 @@ th{color:var(--text2);font-weight:600}
 .alerts li.warn button{border-color:var(--warn);background:var(--warn-bg);color:var(--warn)}
 .allok{font-size:20px;font-weight:700;color:var(--up)}
 .signups{list-style:none;margin:0;padding:0}
-.signups li{display:grid;grid-template-columns:5.6em minmax(0,1.2fr) minmax(0,1.3fr) auto;gap:10px;align-items:center;padding:11px 4px;border-bottom:1px solid var(--line);font-size:15px}
+.signups li{display:grid;grid-template-columns:5.6em minmax(0,2fr) minmax(0,1.1fr) minmax(0,1.2fr) auto;gap:10px;align-items:center;padding:11px 4px;border-bottom:1px solid var(--line);font-size:15px}
 .signups .when{color:var(--text2);font-variant-numeric:tabular-nums;font-size:14px}
 .signups .ctry,.signups .src{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.signups .who{display:flex;align-items:baseline;gap:8px;min-width:0}
+.signups .who .nm{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:45%;flex:none}.signups .who .nm.none{color:var(--muted);font-weight:400}
+.signups .who .em{color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;user-select:all}
 .plan{border-radius:8px;padding:2px 8px;font-size:12.5px;font-weight:800;white-space:nowrap}
 .plan.free{background:var(--sunk);color:var(--text2)}.plan.pro{background:var(--ink);color:#fff}.plan.creator{background:var(--sky);color:#fff}
 .globe-wrap{position:relative;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -230,7 +233,9 @@ details.more-d>summary::before{content:"▸ ";}details.more-d[open]>summary::bef
 @media (prefers-color-scheme:dark){details.more-d>summary{color:var(--series)}}
 .demo{background:#ffe7b8;color:#7a3e00;border-bottom:3px solid #0a0d14;text-align:center;font-weight:700;padding:8px 12px;font-size:14px}
 @media (max-width:760px){.home{grid-template-columns:1fr}.hc .hv{font-size:40px}.where{font-size:18px}
-  .signups li{grid-template-columns:4.6em minmax(0,1fr) auto;row-gap:2px}.signups .src{grid-column:2 / 3;grid-row:2;font-size:13.5px;color:var(--text2)}.signups .plan{grid-row:1 / 3;grid-column:3}}
+  .signups li{grid-template-columns:4.6em minmax(0,1fr) auto;row-gap:2px;align-items:start}.signups .when{grid-row:1 / 4}
+  .signups .who{grid-column:2;grid-row:1;flex-direction:column;align-items:stretch;gap:0}.signups .who .nm{max-width:none}.signups .who .em{font-size:13.5px}
+  .signups .ctry{grid-column:2;grid-row:2}.signups .src{grid-column:2;grid-row:3;font-size:13.5px;color:var(--text2)}.signups .plan{grid-row:1 / 4;grid-column:3;align-self:center}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -299,7 +304,7 @@ __DEMO_BANNER__<header class="top"><div class="in">
 
   <!-- ===== Nouveaux comptes ===== -->
   <section class="panel" id="p-signups" aria-labelledby="tab-signups" hidden>
-    <p class="intro">Une ligne par compte créé, du plus récent au plus ancien : quand, depuis quel pays, d’où venait la personne la première fois, et sa formule aujourd’hui.</p>
+    <p class="intro">Une ligne par compte créé, du plus récent au plus ancien : quand, qui (pseudo et e-mail), depuis quel pays, d’où venait la personne la première fois, et sa formule aujourd’hui.</p>
     <div class="card"><ul class="signups" id="signupList"></ul><div class="row" data-mt><button class="btn" type="button" id="signupMore" hidden>Voir plus</button><span class="note" id="signupNote"></span></div></div>
   </section>
 
@@ -591,7 +596,9 @@ __DEMO_BANNER__<header class="top"><div class="in">
       if (!d.signups.length && !more) ul.append(el('li', { class: 'empty' }, 'Personne pour l’instant.'));
       d.signups.forEach(function (u) {
         var li = el('li');
-        li.append(el('span', { class: 'when' }, new Date(u.at).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })),
+        var who = el('span', { class: 'who' });
+        who.append(el('b', { class: 'nm' + (u.name ? '' : ' none') }, u.name || '—'), el('span', { class: 'em', title: u.email || '' }, u.email || ''));
+        li.append(el('span', { class: 'when' }, new Date(u.at).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })), who,
           el('span', { class: 'ctry' }, flag(u.country) + ' ' + (u.country ? (MAP.names[u.country] || u.country) : 'Pays inconnu')),
           el('span', { class: 'src', title: u.source || '' }, '↳ ' + (u.source ? sourceName(u.source) : (u.method === 'google' ? 'Inconnue (Google, avant le 5/11)' : 'Inconnue (avant le 5/11)'))),
           el('span', { class: 'plan ' + (PLAN_LABEL[u.plan] ? u.plan : 'free') }, PLAN_LABEL[u.plan] || 'Gratuit'));

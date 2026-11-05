@@ -3205,7 +3205,7 @@ test('dashboard v3: Accueil (money net, next payout, subscribers, today vs yeste
   assert.deepEqual(r.data.alerts.map((a) => a.kind), ['telegram']);
   // a subscriber from the US who came from TikTok, a payment with Paddle's net, a visit from Instagram
   const u = await proUser(env, 'home1@example.com', 'creator');
-  env.DB.raw.prepare("UPDATE users SET country = 'US', signup_source = 'tiktok' WHERE id = ?").run(u.user.id);
+  env.DB.raw.prepare("UPDATE users SET country = 'US', signup_source = 'tiktok', display_name = 'Lila' WHERE id = ?").run(u.user.id);
   env.DB.raw.prepare("INSERT INTO payments (id, user_id, subscription_id, price_id, origin, currency, total, tax, earnings, billed_at, created_at, env) VALUES ('txn_h1', ?, 'sub_01', 'pri_creator_m', 'web', 'USD', 1499, 0, 1300, ?, ?, 'sandbox')").run(u.user.id, Date.now(), Date.now());
   env.DB.raw.prepare("INSERT INTO payments (id, user_id, subscription_id, price_id, origin, currency, total, tax, earnings, billed_at, created_at, env) VALUES ('txn_h2', ?, 'sub_01', 'pri_creator_m', 'web', 'USD', 1000, 0, NULL, ?, ?, 'sandbox')").run(u.user.id, Date.now(), Date.now());
   await call(env, 'POST', '/api/presence', { body: { vid: 'v_home_visit_0000000001', lang: 'en', ref: 'ig' } });
@@ -3219,13 +3219,17 @@ test('dashboard v3: Accueil (money net, next payout, subscribers, today vs yeste
   assert.ok(h.signups.today >= 1); assert.equal(h.visitors.today, 1);
   assert.deepEqual(h.sources[0], { source: 'ig', week: 1, prevWeek: 0 });
   assert.deepEqual(h.alerts.map((a) => a.kind).sort(), ['messages', 'telegram']);
-  assert.ok(!JSON.stringify(h).includes('home1@example.com'), 'no e-mail on the Accueil');
+  assert.ok(!JSON.stringify(h).includes('@'), 'no e-mail on the Accueil');
+  assert.ok(!JSON.stringify(h).includes('Lila'), 'no pseudo on the Accueil');
   // the list: date, country, source, plan now
+  await login(env, 'nopseudo@example.com', 'en');
   r = await adminCall(env, 'GET', '/api/admin/signups?limit=10', { token });
   const row = r.data.signups.find((x) => x.source === 'tiktok');
-  assert.deepEqual(Object.keys(row).sort(), ['at', 'country', 'method', 'plan', 'source']);
+  assert.deepEqual(Object.keys(row).sort(), ['at', 'country', 'email', 'method', 'name', 'plan', 'source']);
+  assert.equal(row.email, 'home1@example.com'); assert.equal(row.name, 'Lila');
   assert.equal(row.country, 'US'); assert.equal(row.plan, 'creator');
-  assert.ok(!JSON.stringify(r.data).includes('@example.com'), 'no e-mail in the list');
+  // the owner's request of 5/11: e-mail and pseudo on this page; no pseudo → null (shown « — »)
+  assert.ok(r.data.signups.some((x) => x.name === null && /@example\.com$/.test(x.email)), 'an account without pseudo');
   r = await adminCall(env, 'GET', '/api/admin/signups', {});
   assert.notEqual(r.status, 200, 'owner only');
 });
@@ -3247,6 +3251,9 @@ test('dashboard demo: only on previews (and localhost), made-up figures, asks th
   assert.ok(html.includes('DÉMO avec de fausses données') && html.includes('var DEMO = true'));
   assert.ok(!html.includes('__NONCE__') && !/__[A-Z]+_?[A-Z]*__/.test(html.replace(/__proto__/g, '')));
   assert.ok(!/@example\.com/.test(JSON.stringify(DEMO_DATA)), 'demo addresses are made-up (@demo.stalak)');
+  const demoMails = DEMO_DATA.signups.flatMap((p) => p.signups.map((x) => x.email));
+  assert.ok(demoMails.length > 10 && demoMails.every((e) => /^fan\d+_\d+@demo\.stalak$/.test(e)), 'every e-mail of the demo is @demo.stalak');
+  assert.ok(!JSON.stringify(DEMO_DATA.home).includes('@'), 'no e-mail on the demo Accueil');
   assert.ok(DEMO_DATA.home && DEMO_DATA.stats['30'].people && DEMO_DATA.signups[0].signups.length > 10);
   const real = await adminPage({ request: new Request('https://admin.stalak.app/admin/', { headers: { 'Cf-Access-Jwt-Assertion': await accessToken() } }), env: makeEnv(ADMIN_ENV) });
   const rh = await real.text();

@@ -476,7 +476,7 @@ visite reste dans le navigateur, `localStorage` « stalak:lastDay »).
 cartes : argent gagné ce mois-ci net de Paddle, estimé, et prochain versement — Paddle verse vers le 15 du mois suivant dès 100 $,
 sinon le solde est reporté —, abonnés, visiteurs et comptes d'aujourd'hui avec une flèche verte ou rouge par rapport à hier,
 d'où viennent les gens sur 7 jours, alertes ou « Tout va bien ✅ ») ; une page **Nouveaux comptes** (une ligne par compte : date,
-pays, provenance en mots simples, formule actuelle, sans e-mail) ; la carte devient un **globe 3D** (tourner au doigt / à la souris,
+pseudo — ou « — » — et e-mail (5/11), pays, provenance en mots simples, formule actuelle ; l'e-mail n'apparaît que sur cette page, jamais sur l'Accueil, dans Telegram ni dans la démo) ; la carte devient un **globe 3D** (tourner au doigt / à la souris,
 pincer ou + / − pour zoomer, toucher un pays). Les boutons 7 j / 30 j / 90 j / Tout n'apparaissent que sur les pages où ils
 servent. Un petit « ? » à côté de chaque chiffre affiche sa phrase d'explication.
 **Provenance d'un compte** (migration `0011_signup_source.sql`) : à la première visite, la page garde dans le navigateur

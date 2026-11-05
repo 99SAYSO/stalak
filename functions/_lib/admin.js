@@ -334,7 +334,7 @@ export async function home(env, now = Date.now()) {
 export async function signupList(env, before, limitN = 50, now = Date.now()) {
   const n = Math.min(100, Math.max(1, limitN | 0)), pe = payEnv(env);
   const { results } = await env.DB.prepare(
-    `SELECT u.id, u.created_at, u.country, u.signup_source, u.signup_method,
+    `SELECT u.id, u.email, u.display_name, u.created_at, u.country, u.signup_source, u.signup_method,
        (SELECT i.provider FROM identities i WHERE i.user_id = u.id AND i.created_at <= u.created_at + 120000 LIMIT 1) AS idp
      FROM users u WHERE u.created_at < ?1 ORDER BY u.created_at DESC LIMIT ?2`
   ).bind(Number.isFinite(before) && before > 0 ? before : now + 1, n + 1).all();
@@ -347,7 +347,8 @@ export async function signupList(env, before, limitN = 50, now = Date.now()) {
     for (const s of subs) if (subscriptionGivesPro(s, now)) { const p = planOfSub(env, s, now); if (p === 'creator' || !plans[s.user_id]) plans[s.user_id] = p; }
   }
   return {
-    signups: rows.map((r) => ({ at: new Date(r.created_at).toISOString(), country: r.country || null, source: r.signup_source || null,
+    // the e-mail and the pseudo (owner's request of 5/11: this page only; never on the Accueil, in Telegram or in the demo)
+    signups: rows.map((r) => ({ at: new Date(r.created_at).toISOString(), email: r.email || null, name: r.display_name || null, country: r.country || null, source: r.signup_source || null,
       method: r.signup_method || r.idp || 'email', plan: plans[r.id] || 'free' })),
     more: results.length > n ? rows[rows.length - 1].created_at : null,
   };
