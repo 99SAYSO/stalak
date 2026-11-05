@@ -476,7 +476,7 @@ visite reste dans le navigateur, `localStorage` « stalak:lastDay »).
 cartes : argent gagné ce mois-ci net de Paddle, estimé, et prochain versement — Paddle verse vers le 15 du mois suivant dès 100 $,
 sinon le solde est reporté —, abonnés, visiteurs et comptes d'aujourd'hui avec une flèche verte ou rouge par rapport à hier,
 d'où viennent les gens sur 7 jours, alertes ou « Tout va bien ✅ ») ; une page **Nouveaux comptes** (une ligne par compte : date,
-pays, provenance en mots simples, formule actuelle, sans e-mail) ; la carte devient un **globe 3D** (tourner au doigt / à la souris,
+pseudo — ou « — » — et e-mail (5/11), pays, provenance en mots simples, formule actuelle ; l'e-mail n'apparaît que sur cette page, jamais sur l'Accueil, dans Telegram ni dans la démo) ; la carte devient un **globe 3D** (tourner au doigt / à la souris,
 pincer ou + / − pour zoomer, toucher un pays). Les boutons 7 j / 30 j / 90 j / Tout n'apparaissent que sur les pages où ils
 servent. Un petit « ? » à côté de chaque chiffre affiche sa phrase d'explication.
 **Provenance d'un compte** (migration `0011_signup_source.sql`) : à la première visite, la page garde dans le navigateur
@@ -494,6 +494,7 @@ ces pages n'existent pas. Tant que les 2 secrets de l'étape 13.4 manquent, le t
 Dans la **Console** de la base D1 `stalak`, colle **tout** `migrations/0006_admin_support.sql` et clique sur **Execute** (une seule fois).
 Pour le nouveau tableau de bord (1/11) : colle de même **tout** `migrations/0010_dashboard.sql` (7 colonnes vides) **avant** de publier.
 Pour la version 3 (5/11) : colle de même **tout** `migrations/0011_signup_source.sql` (1 colonne vide) **avant** de publier.
+Pour l'e-mail de remerciement (5/11) : colle de même **tout** `migrations/0012_thanks_mail.sql` (1 colonne, et les clients déjà abonnés marqués) **avant** de publier.
 
 ### 13.2 L'adresse admin.stalak.app
 **Workers & Pages → stalak-site → Custom domains → Set up a custom domain** → `admin.stalak.app` → **Continue** → **Activate domain**.
@@ -552,6 +553,18 @@ du client. Si Telegram ne répond pas (3 s au plus), rien n'est bloqué : le com
 5. **Envoyer une notif de test** : ton téléphone sonne. **Délier** arrête les messages.
 **ntfy** reste possible en plus : remplis le secret `NTFY_TOPIC` (nom de canal long et impossible à deviner) ; vide = pas utilisé.
 (Le tableau de bord n'existe que sur admin.stalak.app : ces boutons ne marchent pas sur une maquette.)
+
+### 13.6 ter Un e-mail de remerciement à chaque nouvel abonné (5/11)
+Environ **3 heures** après un nouvel abonnement réel (Pro ou Creator Plus, mensuel ou annuel), le client reçoit un e-mail simple,
+sans mise en page, de **« 99sayso de Stalak »** (`99sayso@stalak.app`), dans la langue de son compte, qui le remercie et lui pose
+3 questions. Ses réponses vont à **contact@stalak.app** (ta boîte Gmail). Même déclencheur que la notif Telegram (jamais pour un
+renouvellement) ; jamais pour un paiement de test (sandbox) ; **une seule fois par personne** : par compte (`users.thanked_at`) et
+par adresse e-mail (une empreinte de l'adresse, gardée même si le compte est supprimé puis recréé). Les clients qui avaient déjà
+un abonnement réel quand la migration 0012 a été appliquée ne le reçoivent jamais (tu leur écris toi-même).
+L'envoi passe par Resend, programmé 3 heures plus tard (`scheduled_at`) ; il part après la réponse à Paddle et ne peut jamais
+bloquer le paiement. Si Resend ne répond pas, le prochain message de Paddle pour le même achat réessaie.
+Pour le voir : tableau de bord → **Santé du serveur** → « M'envoyer l'e-mail de remerciement » (tout de suite, à ton adresse,
+une fois en français avec Creator Plus pour un an, une fois en anglais avec Stalak Pro au mois). Le texte est dans `functions/_lib/thanks.js`.
 
 ### 13.7 Vérifier
 - `https://admin.stalak.app/admin/` : Cloudflare demande ton e-mail, envoie un code, puis le tableau de bord s'affiche.

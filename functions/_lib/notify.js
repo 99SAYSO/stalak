@@ -69,6 +69,15 @@ async function once(env, key) {
   return !!(r.meta && r.meta.changes === 1);
 }
 
+// A new subscription that pays (or is in trial). « New » = not known before this event, or started less than 2 days ago
+// (created and activated may come in any order); a renewal of an older subscription is never « new ». Also the trigger of
+// the thank-you e-mail (thanks.js).
+export function isNewPurchase(sub, info) {
+  const started = Date.parse(sub.started_at || sub.first_billed_at || '') || 0;
+  const fresh = info.isNew || (started && Date.now() - started < 2 * 864e5);
+  return !!(fresh && ['active', 'trialing'].includes(String(sub.status || '')) && !sub.scheduled_change);
+}
+
 // Called by the Paddle webhook after a subscription was written. sub: the Paddle data; info: {plan, interval, isNew,
 // wasCanceling, userId, test}. Returns the promise of the sending (or null when there is nothing to send).
 export async function subscriptionNotice(env, sub, info) {
@@ -78,9 +87,7 @@ export async function subscriptionNotice(env, sub, info) {
   const test = info.test ? '[TEST] ' : '';
   // a new subscription that pays (or is in trial): once per subscription. « New » = not known before this event, or started
   // less than 2 days ago (created and activated may come in any order); a renewal of an older subscription is never « new ».
-  const started = Date.parse(sub.started_at || sub.first_billed_at || '') || 0;
-  const fresh = info.isNew || (started && Date.now() - started < 2 * 864e5);
-  if (fresh && ['active', 'trialing'].includes(status) && !sub.scheduled_change && await once(env, 'ntfy:new:' + sub.id)) {
+  if (isNewPurchase(sub, info) && await once(env, 'ntfy:new:' + sub.id)) {
     let country = '';
     if (info.userId) {
       const u = await env.DB.prepare('SELECT country FROM users WHERE id = ?1').bind(info.userId).first().catch(() => null);

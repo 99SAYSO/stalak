@@ -11,6 +11,9 @@ export function seedDashboard(env, { now = Date.now() } = {}) {
   const DEV = [['ios', 55], ['android', 25], ['desktop', 20]], SRC = [['tiktok', 34], ['ig', 18], ['google', 16], [null, 22], ['yt', 5], ['reddit', 3], ['other', 2]];
   const insV = db.prepare('INSERT OR IGNORE INTO visits (day, vid, first_at, last_at, lang, country, device, source, came_back) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
   const insU = db.prepare('INSERT OR IGNORE INTO users (id, email, lang, created_at, last_login_at, email_verified_at, country, device, signup_method, signup_source) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+  // made-up pseudos (a few accounts have none: shown « — »); not from rnd(), so the other figures stay the same
+  const NAMES = ['lilnova', 'beatsbyjay', 'Mira K', 'drill.fr', 'kaïa', 'yungwave', 'Sami', 'noctis', 'Lou B', 'prodbymax', 'zoé', 'blkcherry'];
+  const setName = db.prepare('UPDATE users SET display_name = ? WHERE id = ?');
   const bump = db.prepare('INSERT INTO daily_counts (day, name, n) VALUES (?, ?, ?) ON CONFLICT(day, name) DO UPDATE SET n = n + excluded.n');
   for (let i = 40; i >= 0; i--) {
     const t = now - i * 864e5, d = day(t), grow = 1 + (40 - i) / 14, nv = Math.round((40 + rnd() * 30) * grow);
@@ -23,6 +26,7 @@ export function seedDashboard(env, { now = Date.now() } = {}) {
       const c = pick(COUNTRIES);
       insU.run('u_seed' + i + '_' + k, `fan${i}_${k}@example.com`, c === 'FR' ? 'fr' : 'en', t - k * 6e4, t, t, c, pick(DEV), rnd() < 0.62 ? 'email' : 'google',
         pick([['tiktok', 30], ['ig', 14], ['yt', 8], ['google', 12], ['direct', 16], ['ref:tiktok', 6], ['ref:ytshort', 4], ['dir:alternativeto', 3], ['dir:saashub', 2], ['site:reddit.com', 2], [null, 3]]));
+      if ((i * 7 + k) % 5) setName.run(NAMES[(i * 3 + k) % NAMES.length], 'u_seed' + i + '_' + k);
       // some come back a few days later (a new session)
       if (i > 3 && rnd() < 0.3) db.prepare("INSERT OR IGNORE INTO sessions (token_hash, user_id, created_at, expires_at, method) VALUES (?, ?, ?, ?, 'password')").run('seedsess' + i + '_' + k, 'u_seed' + i + '_' + k, t + 3 * 864e5, t + 60 * 864e5);
     }

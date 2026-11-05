@@ -14,6 +14,7 @@ import { subscriptionGivesPro, intervalOf, planOfSub, planOfPrice, salePrices, p
 import { getState, setState, isAvailable, messagesOf, deliverReply, catchUpReplies, MESSAGE_MAX, cleanupTickets } from './support.js';
 import { LIVE_MS, today } from './metrics.js';
 import { notifyOwner, ntfyOn } from './notify.js';
+import { sendThanks, thanksEmail } from './thanks.js';
 import { tgStatus, linkTelegram, unlinkTelegram } from './telegram.js';
 import { limit } from './ratelimit.js';
 
@@ -334,7 +335,7 @@ export async function home(env, now = Date.now()) {
 export async function signupList(env, before, limitN = 50, now = Date.now()) {
   const n = Math.min(100, Math.max(1, limitN | 0)), pe = payEnv(env);
   const { results } = await env.DB.prepare(
-    `SELECT u.id, u.created_at, u.country, u.signup_source, u.signup_method,
+    `SELECT u.id, u.email, u.display_name, u.created_at, u.country, u.signup_source, u.signup_method,
        (SELECT i.provider FROM identities i WHERE i.user_id = u.id AND i.created_at <= u.created_at + 120000 LIMIT 1) AS idp
      FROM users u WHERE u.created_at < ?1 ORDER BY u.created_at DESC LIMIT ?2`
   ).bind(Number.isFinite(before) && before > 0 ? before : now + 1, n + 1).all();
@@ -347,7 +348,8 @@ export async function signupList(env, before, limitN = 50, now = Date.now()) {
     for (const s of subs) if (subscriptionGivesPro(s, now)) { const p = planOfSub(env, s, now); if (p === 'creator' || !plans[s.user_id]) plans[s.user_id] = p; }
   }
   return {
-    signups: rows.map((r) => ({ at: new Date(r.created_at).toISOString(), country: r.country || null, source: r.signup_source || null,
+    // the e-mail and the pseudo (owner's request of 5/11: this page only; never on the Accueil, in Telegram or in the demo)
+    signups: rows.map((r) => ({ at: new Date(r.created_at).toISOString(), email: r.email || null, name: r.display_name || null, country: r.country || null, source: r.signup_source || null,
       method: r.signup_method || r.idp || 'email', plan: plans[r.id] || 'free' })),
     more: results.length > n ? rows[rows.length - 1].created_at : null,
   };
@@ -442,6 +444,18 @@ export async function admin(request, env, method, rest) {
     if (tg.state !== 'linked' && !nt) return json({ configured: false, sent: false, telegram: tg.state, ntfy: false });
     const r = await notifyOwner(env, { title: '🔔 Notif de test Stalak', message: 'Ça marche ! Tu seras prévenu ici à chaque nouvel abonné (et, plus discrètement, à chaque annulation).', tags: ['bell'] });
     return json({ configured: true, sent: r.telegram || r.ntfy, telegram: tg.state === 'linked' ? (r.telegram ? 'sent' : 'failed') : tg.state, ntfy: nt ? (r.ntfy ? 'sent' : 'failed') : false });
+  }
+  // « M’envoyer l’e-mail de remerciement » (5/11): the thank-you e-mail of a new customer, to the owner (his Access address),
+  // once in French (Creator Plus for a year) and once in English (Stalak Pro by month), sent now; the webhook cannot be
+  // tried on a preview. Owner only (Cloudflare Access + server check); no limit, like the test notification (owner's choice).
+  if (route === 'thanks-test' && method === 'POST') {
+    await readJson(request);
+    if (!who.email) throw new HttpError(400, 'no_email', 'No e-mail address for the owner.');
+    const r = await Promise.all([
+      sendThanks(env, who.email, thanksEmail('fr', 'creator', 'year')),
+      sendThanks(env, who.email, thanksEmail('en', 'pro', 'month')),
+    ]);
+    return json({ to: who.email, fr: r[0], en: r[1] });
   }
   // « Relier mon Telegram »: the private chat that just sent /start to the bot becomes the owner's chat
   if (route === 'telegram-link' && method === 'POST') {
