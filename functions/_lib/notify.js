@@ -1,4 +1,5 @@
-// Notifications on the owner's phone with ntfy (ntfy.sh, free app), owner's request of 5/11:
+// Notifications on the owner's phone, owner's request of 5/11: Telegram (telegram.js, the main channel since ntfy did not show
+// on the iPhone) and ntfy (ntfy.sh, optional: only when NTFY_TOPIC is set). Both get the same notices:
 //   - a new subscription: « 💸 Nouvel abonné Creator Plus » / « 14,99 $ / mois · États-Unis » (one per purchase, not one per
 //     Paddle event: subscription.created, .activated and transaction.completed all arrive for the same purchase);
 //   - a cancellation, quieter: « Abonnement Pro annulé » (once per subscription).
@@ -8,6 +9,7 @@
 // docs.ntfy.sh/publish/#publish-as-json
 import { normPlan } from './entitlements.js';
 import { COUNTRY_NAMES_FR } from './admin-map.js';
+import { telegram, tgToken } from './telegram.js';
 
 const TOPIC = /^[A-Za-z0-9_-]{1,64}$/;
 const PLAN_NAME = { pro: 'Pro', creator: 'Creator Plus' };
@@ -35,6 +37,16 @@ export async function ntfy(env, { title, message, tags = [], priority = 3 }) {
   } finally { clearTimeout(timer); }
 }
 
+// one notice to every channel that is set (Telegram, ntfy); quiet = no sound. {telegram, ntfy}: true when taken. Never throws.
+export async function notifyOwner(env, { title, message, quiet = false, tags = [] }) {
+  const [tg, nt] = await Promise.all([
+    tgToken(env) ? telegram(env, message ? `${title}\n${message}` : title, { quiet }).catch(() => false) : false,
+    ntfyOn(env) ? ntfy(env, { title, message: message || title, tags, priority: quiet ? 2 : 4 }) : false,
+  ]);
+  return { telegram: tg, ntfy: nt };
+}
+const anyChannel = (env) => !!tgToken(env) || ntfyOn(env);
+
 // « 14,99 $ / mois » from the subscription's price (unit_price in cents, as a string), in French for the owner
 export function priceText(item, interval) {
   const up = item && item.price && item.price.unit_price;
@@ -60,7 +72,7 @@ async function once(env, key) {
 // Called by the Paddle webhook after a subscription was written. sub: the Paddle data; info: {plan, interval, isNew,
 // wasCanceling, userId, test}. Returns the promise of the sending (or null when there is nothing to send).
 export async function subscriptionNotice(env, sub, info) {
-  if (!ntfyOn(env) || !sub || !sub.id) return null;
+  if (!anyChannel(env) || !sub || !sub.id) return null;
   const plan = PLAN_NAME[normPlan(info.plan)] || 'Pro';
   const status = String(sub.status || '');
   const test = info.test ? '[TEST] ' : '';
@@ -76,15 +88,15 @@ export async function subscriptionNotice(env, sub, info) {
     }
     const item = (sub.items || []).find((i) => i && i.status !== 'inactive') || (sub.items || [])[0];
     const price = priceText(item, info.interval) || (info.interval === 'year' ? 'annuel' : 'mensuel');
-    return ntfy(env, { title: `${test}💸 Nouvel abonné ${plan}`, message: [price, country].filter(Boolean).join(' · '), tags: ['moneybag'], priority: 4 });
+    return notifyOwner(env, { title: `${test}💸 Nouvel abonné ${plan}`, message: [price, country].filter(Boolean).join(' · '), tags: ['moneybag'] });
   }
   // cancelled: when the person stops it (end of the paid period planned) or it ends at once; once per subscription
   const sc = sub.scheduled_change;
   const canceling = (sc && sc.action === 'cancel') || status === 'canceled';
   if (canceling && await once(env, 'ntfy:cancel:' + sub.id)) {
     const end = sc && sc.action === 'cancel' && sc.effective_at ? new Date(sc.effective_at) : null;
-    const when = end && !Number.isNaN(end.getTime()) ? ` (fin le ${end.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', timeZone: 'Europe/Paris' })})` : '';
-    return ntfy(env, { title: `${test}Abonnement ${plan} annulé`, message: `Abonnement ${plan} annulé${when}.`, tags: ['wave'], priority: 2 });
+    const day = end && !Number.isNaN(end.getTime()) ? end.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', timeZone: 'Europe/Paris' }) : '';
+    return notifyOwner(env, { title: `${test}Abonnement ${plan} annulé`, message: day ? `Fin le ${day}.` : '', tags: ['wave'], quiet: true });
   }
   return null;
 }

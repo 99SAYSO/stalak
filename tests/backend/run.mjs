@@ -3033,13 +3033,13 @@ test('ntfy: « Envoyer une notif de test » from the dashboard (owner only), say
   const token = await accessToken();
   let env = makeEnv(ADMIN_ENV);
   let r = await adminCall(env, 'POST', '/api/admin/ntfy-test', { token, body: {} });
-  assert.equal(r.status, 200); assert.deepEqual(r.data, { configured: false, sent: false });
+  assert.equal(r.status, 200); assert.deepEqual(r.data, { configured: false, sent: false, telegram: 'no_token', ntfy: false });
   env = makeEnv({ ...ADMIN_ENV, NTFY_TOPIC: 'stalak-owner' });
   const sent = [];
   extraFetch = async (url, init) => { if (url === 'https://ntfy.sh') { sent.push(JSON.parse(init.body)); return Response.json({}); } return null; };
   try {
     r = await adminCall(env, 'POST', '/api/admin/ntfy-test', { token, body: {} });
-    assert.deepEqual(r.data, { configured: true, sent: true });
+    assert.deepEqual(r.data, { configured: true, sent: true, telegram: 'no_token', ntfy: 'sent' });
     await settle();
     assert.match(sent[0].title, /Notif de test/);
     r = await adminCall(env, 'GET', '/api/admin/stats?days=7', { token });
@@ -3049,6 +3049,123 @@ test('ntfy: « Envoyer une notif de test » from the dashboard (owner only), say
     for (let i = 0; i < 10; i++) r = await adminCall(env, 'POST', '/api/admin/ntfy-test', { token, body: {} });
     assert.equal(r.status, 429, '10 an hour');
   } finally { extraFetch = null; }
+});
+
+// ---- Telegram: the owner's notifications since 5/11 (ntfy did not show on the iPhone); ntfy stays optional ----
+const TG_TOKEN = '123456789:AAH-fake_bot_key_for_tests_0123456789x';
+function tgFake({ updates = [], down = false, hang = false, status = 200 } = {}) {
+  const calls = [];
+  extraFetch = async (url, init) => {
+    if (!url.startsWith('https://api.telegram.org/')) return null;
+    const method = url.split('/').pop(), body = JSON.parse(init.body || '{}');
+    calls.push({ url, method, body });
+    if (down) throw new TypeError('fetch failed');
+    if (hang) return new Promise((_, rej) => init.signal.addEventListener('abort', () => rej(Object.assign(new Error('aborted'), { name: 'AbortError' }))));
+    if (status !== 200) return Response.json({ ok: false, error_code: status, description: 'Unauthorized' }, { status });
+    if (method === 'getUpdates') return Response.json({ ok: true, result: body.offset ? [] : updates });
+    return Response.json({ ok: true, result: { message_id: calls.length } });
+  };
+  return calls;
+}
+const tgUpdate = (id, chat, text = '/start', ago = 60, type = 'private') => ({ update_id: id, message: { message_id: id, date: Math.floor((Date.now() - ago * 1000) / 1000),
+  text, chat: { id: chat, type, first_name: 'Sayso', username: 'sayso' }, from: { id: chat, first_name: 'Sayso' } } });
+
+test('Telegram: « Relier mon Telegram » keeps only the private chat that sent /start (recent, alone); clear errors otherwise', async () => {
+  const token = await accessToken();
+  let env = makeEnv(ADMIN_ENV);
+  let r = await adminCall(env, 'POST', '/api/admin/telegram-link', { token, body: {} });
+  assert.equal(r.status, 409); assert.equal(r.data.error, 'telegram_no_token');
+  env = makeEnv({ ...ADMIN_ENV, TELEGRAM_BOT_TOKEN: TG_TOKEN });
+  try {
+    r = await adminCall(env, 'GET', '/api/admin/stats?days=7', { token });
+    assert.deepEqual(r.data.limits.telegram, { state: 'not_linked' });
+    // nothing yet / only a group, an old /start or another text
+    tgFake({ updates: [tgUpdate(1, -100200, '/start', 30, 'group'), tgUpdate(2, 555, '/start', 3600), tgUpdate(3, 556, 'hello')] });
+    r = await adminCall(env, 'POST', '/api/admin/telegram-link', { token, body: {} });
+    assert.equal(r.status, 404); assert.equal(r.data.error, 'telegram_no_start');
+    // two different people sent /start: refused
+    tgFake({ updates: [tgUpdate(4, 777), tgUpdate(5, 888)] });
+    r = await adminCall(env, 'POST', '/api/admin/telegram-link', { token, body: {} });
+    assert.equal(r.status, 409); assert.equal(r.data.error, 'telegram_several');
+    // the owner alone (a group /start around is ignored)
+    const calls = tgFake({ updates: [tgUpdate(6, -100300, '/start', 20, 'supergroup'), tgUpdate(7, 424242, '/start'), tgUpdate(8, 424242, '/start@stalak_bot')] });
+    r = await adminCall(env, 'POST', '/api/admin/telegram-link', { token, body: {} });
+    assert.equal(r.status, 200, JSON.stringify(r.data)); assert.deepEqual(r.data, { linked: true, name: 'Sayso' });
+    const st = env.DB.raw.prepare("SELECT key, value FROM admin_state WHERE key LIKE 'telegram_%'").all();
+    assert.deepEqual(Object.fromEntries(st.map((x) => [x.key, x.value])), { telegram_chat: '424242', telegram_name: 'Sayso' }, 'only the chat id and first name');
+    assert.ok(calls.some((c) => c.method === 'getUpdates' && c.body.offset === 9), 'the messages read are marked as seen');
+    const conf = calls.find((c) => c.method === 'sendMessage');
+    assert.equal(conf.body.chat_id, '424242'); assert.match(conf.body.text, /relié/);
+    r = await adminCall(env, 'GET', '/api/admin/stats?days=7', { token });
+    assert.deepEqual(r.data.limits.telegram, { state: 'linked', name: 'Sayso' });
+    assert.ok(!JSON.stringify(r.data).includes(TG_TOKEN), 'the key never leaves the server');
+    // the test button goes to Telegram
+    const c2 = tgFake();
+    r = await adminCall(env, 'POST', '/api/admin/notify-test', { token, body: {} });
+    assert.deepEqual(r.data, { configured: true, sent: true, telegram: 'sent', ntfy: false });
+    assert.equal(c2[0].body.chat_id, '424242'); assert.match(c2[0].body.text, /Notif de test/);
+    // a key Telegram refuses
+    tgFake({ status: 401 });
+    r = await adminCall(env, 'POST', '/api/admin/telegram-link', { token, body: {} });
+    assert.equal(r.data.error, 'telegram_bad_token');
+    // not without the owner's Access token
+    r = await adminCall(env, 'POST', '/api/admin/telegram-link', { body: {} });
+    assert.notEqual(r.status, 200);
+    // unlink
+    r = await adminCall(env, 'POST', '/api/admin/telegram-unlink', { token, body: {} });
+    assert.equal(r.status, 200);
+    r = await adminCall(env, 'GET', '/api/admin/stats?days=7', { token });
+    assert.deepEqual(r.data.limits.telegram, { state: 'not_linked' });
+  } finally { extraFetch = null; }
+});
+
+test('Telegram: a message per new subscription and a silent one per cancellation; never e-mail nor name; ntfy too when set', async () => {
+  const env = makeEnv({ TELEGRAM_BOT_TOKEN: TG_TOKEN, NTFY_TOPIC: 'stalak-owner' });
+  env.DB.raw.prepare("INSERT INTO admin_state (key, value, updated_at) VALUES ('telegram_chat', '424242', 0)").run();
+  const calls = [], nt = [];
+  extraFetch = async (url, init) => {
+    if (url.startsWith('https://api.telegram.org/')) { calls.push(JSON.parse(init.body)); return Response.json({ ok: true, result: {} }); }
+    if (url === 'https://ntfy.sh') { nt.push(JSON.parse(init.body)); return Response.json({}); }
+    return null;
+  };
+  try {
+    const u = await login(env, 'jane.doe@example.com', 'en');
+    env.DB.raw.prepare("UPDATE users SET country = 'GB', display_name = 'Jane Doe' WHERE id = ?").run(u.user.id);
+    const s1 = sub(u.user.id, { id: 'sub_tg1', started_at: new Date().toISOString(),
+      items: [{ status: 'active', quantity: 1, price: { id: 'pri_pro_y', product_id: 'pro_pro', unit_price: { amount: '4999', currency_code: 'USD' } } }] });
+    for (const t of ['subscription.created', 'subscription.activated']) await webhook(env, subEvent(t, s1));
+    await settle();
+    assert.equal(calls.length, 1, 'one message per purchase'); assert.equal(nt.length, 1, 'ntfy too, when NTFY_TOPIC is set');
+    assert.equal(calls[0].chat_id, '424242');
+    assert.equal(calls[0].text, '[TEST] 💸 Nouvel abonné Pro\n49,99 $ / an · 🇬🇧 Royaume-Uni');
+    assert.equal(calls[0].disable_notification, false);
+    await webhook(env, subEvent('subscription.updated', { ...s1, scheduled_change: { action: 'cancel', effective_at: new Date(Date.now() + 200 * 864e5).toISOString() } }));
+    await settle();
+    assert.equal(calls.length, 2); assert.match(calls[1].text, /^\[TEST\] Abonnement Pro annulé\nFin le /); assert.equal(calls[1].disable_notification, true, 'silent');
+    assert.ok(!/jane|doe|example\.com|sub_tg|ctm_/i.test(JSON.stringify(calls) + JSON.stringify(nt)), 'never e-mail, name or ids');
+  } finally { extraFetch = null; }
+});
+
+test('Telegram: down or slow never blocks the webhook nor the plan, and the bot key never goes to the logs', async () => {
+  for (const mode of ['down', 'hang', 'refused']) {
+    const env = makeEnv({ TELEGRAM_BOT_TOKEN: TG_TOKEN });
+    env.DB.raw.prepare("INSERT INTO admin_state (key, value, updated_at) VALUES ('telegram_chat', '424242', 0)").run();
+    const v = await login(env, 'tg' + mode + '@example.com', 'en');
+    tgFake({ down: mode === 'down', hang: mode === 'hang', status: mode === 'refused' ? 403 : 200 });
+    const logs = [], warn = console.warn, error = console.error;
+    console.warn = (...a) => logs.push(a.join(' ')); console.error = (...a) => logs.push(a.join(' '));
+    try {
+      const t0 = Date.now();
+      const r = await webhook(env, subEvent('subscription.created', sub(v.user.id, { id: 'sub_tg_' + mode, started_at: new Date().toISOString(),
+        items: [{ status: 'active', quantity: 1, price: { id: 'pri_pro_m', product_id: 'pro_pro' } }] })));
+      assert.equal(r.status, 200, mode);
+      await new Promise((res) => setTimeout(res, mode === 'hang' ? 3300 : 30));
+      assert.ok(Date.now() - t0 < 4500, mode + ': 3 s at most');
+      const me = await call(env, 'GET', '/api/me', { cookie: v.cookie });
+      assert.equal(me.data.entitlements.plan, 'pro', mode);
+      assert.ok(logs.length > 0 && !logs.join('\n').includes(TG_TOKEN) && !logs.join('\n').includes('AAH-fake'), mode + ': no key in the logs ' + logs);
+    } finally { console.warn = warn; console.error = error; extraFetch = null; }
+  }
 });
 
 // ---- runner --------------------------------------------------------------------------

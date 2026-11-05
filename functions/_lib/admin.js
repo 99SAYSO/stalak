@@ -13,7 +13,8 @@ import { jwksFor } from './oauth.js';
 import { subscriptionGivesPro, intervalOf, planOfSub, planOfPrice, salePrices, payEnv } from './entitlements.js';
 import { getState, setState, isAvailable, messagesOf, deliverReply, catchUpReplies, MESSAGE_MAX, cleanupTickets } from './support.js';
 import { LIVE_MS, today } from './metrics.js';
-import { ntfy, ntfyOn } from './notify.js';
+import { notifyOwner, ntfyOn } from './notify.js';
+import { tgStatus, linkTelegram, unlinkTelegram } from './telegram.js';
 import { limit } from './ratelimit.js';
 
 const TEAM = /^https:\/\/[a-z0-9][a-z0-9-]{0,62}\.cloudflareaccess\.com$/;
@@ -257,6 +258,7 @@ export async function insights(env, list, fromMs, now = Date.now()) {
       storage: { bytes: (R(storage)[0] || {}).bytes || 0, perAccount: 100 * 1024 ** 3 },
       errorsToday: t.err_5xx || 0,
       ntfy: ntfyOn(env),
+      telegram: await tgStatus(env),
     },
   };
 }
@@ -336,13 +338,25 @@ export async function admin(request, env, method, rest) {
     return json({ visitors: await liveVisitors(env, now), availableSwitch: state.available === '1', available: isAvailable(state, now),
       tickets: await ticketCounts(env) });
   }
-  // « Envoyer une notif de test »: checks that ntfy rings on the owner's phone (the Paddle webhook cannot be tried on a preview)
-  if (route === 'ntfy-test' && method === 'POST') {
+  // « Envoyer une notif de test »: checks that the owner's phone rings (Telegram, and ntfy when NTFY_TOPIC is set); the Paddle
+  // webhook cannot be tried on a preview. 'ntfy-test' = the name of the first version.
+  if ((route === 'notify-test' || route === 'ntfy-test') && method === 'POST') {
     await readJson(request);
     await limit(env, 'ntfy-test', 10, 3600e3, 'Too many test notifications, try again in an hour.');
-    if (!ntfyOn(env)) return json({ configured: false, sent: false });
-    const sent = await ntfy(env, { title: '🔔 Notif de test Stalak', message: 'Ça marche ! Tu seras prévenu ici à chaque nouvel abonné (et, plus discrètement, à chaque annulation).', tags: ['bell'], priority: 3 });
-    return json({ configured: true, sent });
+    const tg = await tgStatus(env), nt = ntfyOn(env);
+    if (tg.state !== 'linked' && !nt) return json({ configured: false, sent: false, telegram: tg.state, ntfy: false });
+    const r = await notifyOwner(env, { title: '🔔 Notif de test Stalak', message: 'Ça marche ! Tu seras prévenu ici à chaque nouvel abonné (et, plus discrètement, à chaque annulation).', tags: ['bell'] });
+    return json({ configured: true, sent: r.telegram || r.ntfy, telegram: tg.state === 'linked' ? (r.telegram ? 'sent' : 'failed') : tg.state, ntfy: nt ? (r.ntfy ? 'sent' : 'failed') : false });
+  }
+  // « Relier mon Telegram »: the private chat that just sent /start to the bot becomes the owner's chat
+  if (route === 'telegram-link' && method === 'POST') {
+    await readJson(request);
+    await limit(env, 'telegram-link', 20, 3600e3, 'Too many tries, try again in an hour.');
+    return json(await linkTelegram(env));
+  }
+  if (route === 'telegram-unlink' && method === 'POST') {
+    await readJson(request);
+    return json(await unlinkTelegram(env));
   }
   if (route === 'available' && method === 'POST') {
     const body = await readJson(request);

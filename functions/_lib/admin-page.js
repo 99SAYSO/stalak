@@ -293,9 +293,12 @@ th{color:var(--text2);font-weight:600}
   <section class="panel" role="tabpanel" id="p-health" aria-labelledby="tab-health" hidden>
     <p class="intro">Est-ce que tout marche, et reste-t-il de la marge ? Vert = tout va bien ; orange = à surveiller ; rouge = à régler. Tu reçois aussi un e-mail d’alerte quand quelque chose casse.</p>
     <div class="card">
-      <div class="head"><h2>Notifications sur ton téléphone</h2><span class="sp"></span><span class="status" id="ntfyState">…</span>
-        <p>L’appli ntfy sonne à chaque nouvel abonné (formule, prix, pays) et, plus discrètement, à chaque annulation. Jamais l’e-mail ni le nom du client. Le canal est le secret <b>NTFY_TOPIC</b> (Cloudflare) ; abonne-toi au même nom dans l’appli ntfy.</p></div>
-      <div class="row"><button class="btn primary" type="button" id="ntfyBtn">Envoyer une notif de test</button><span class="note" id="ntfyOut" role="status"></span></div>
+      <div class="head"><h2>Notifications sur ton téléphone</h2><span class="sp"></span><span class="status" id="tgState">…</span>
+        <p>Telegram t’envoie un message à chaque nouvel abonné (formule, prix, mensuel ou annuel, pays) et un message silencieux à chaque annulation. Jamais l’e-mail ni le nom du client.</p>
+        <p><b>Pour relier :</b> 1. la clé du bot est le secret <b>TELEGRAM_BOT_TOKEN</b> (Cloudflare) ; 2. dans Telegram, ouvre ton bot et envoie <b>/start</b> ; 3. dans les 15 minutes, touche « Relier mon Telegram ».</p></div>
+      <div class="row"><button class="btn" type="button" id="tgLink">Relier mon Telegram</button><button class="btn primary" type="button" id="ntfyBtn">Envoyer une notif de test</button>
+        <button class="btn small danger" type="button" id="tgUnlink" hidden>Délier</button><span class="note" id="ntfyOut" role="status"></span></div>
+      <p class="note" id="ntfyState">ntfy (facultatif) : …</p>
     </div>
     <div class="grid2" id="limits"></div>
     <div class="charts" id="healthCharts" data-mt></div>
@@ -620,7 +623,11 @@ th{color:var(--text2);font-weight:600}
       charts($('#funnelCharts'), days, [{ k: 'exportOk', t: 'Vidéos exportées', f: N, x: 'Réussies.' }, { k: 'exportFail', t: 'Exports ratés', f: N, x: 'Erreur pendant l’export (voir les raisons plus haut).' }, { k: 'adOk', t: 'Pubs regardées', f: N, x: 'Filigrane enlevé grâce à une pub.' }]);
       // Santé
       var L = d.limits || {}, u = d.usage, lb = $('#limits'); lb.textContent = '';
-      var ns = $('#ntfyState'); ns.className = 'status ' + (L.ntfy ? 'ok' : 'warn'); ns.textContent = L.ntfy ? 'Activées' : 'Pas réglées (NTFY_TOPIC vide)';
+      var tg = L.telegram || { state: 'no_token' }, ts = $('#tgState');
+      ts.className = 'status ' + (tg.state === 'linked' ? 'ok' : 'warn');
+      ts.textContent = tg.state === 'linked' ? 'Telegram relié' + (tg.name ? ' (' + tg.name + ')' : '') : tg.state === 'not_linked' ? 'Telegram pas encore relié' : 'Clé du bot manquante (TELEGRAM_BOT_TOKEN)';
+      $('#tgUnlink').hidden = tg.state !== 'linked'; $('#tgLink').disabled = tg.state === 'no_token';
+      set('#ntfyState', 'ntfy (facultatif) : ' + (L.ntfy ? 'activé aussi (NTFY_TOPIC rempli).' : 'pas utilisé (NTFY_TOPIC vide).'));
       if (L.codeMails) limitCard(lb, 'E-mails de code aujourd’hui', L.codeMails.today, L.codeMails.max, '', 'Codes envoyés pour créer un compte, se connecter ou changer de mot de passe. Au-delà de la limite, ils attendent minuit (UTC).');
       if (L.help) limitCard(lb, 'Questions au glaçon d’aide (IA) aujourd’hui', L.help.today, L.help.max, '', 'L’assistant répond jusqu’à cette limite par jour, pour garder la facture IA sous contrôle.');
       if (L.lyrics) limitCard(lb, 'Paroles automatiques aujourd’hui', L.lyrics.todayMinutes, L.lyrics.freeMinutes, 'min', 'Minutes de son transcrites. Environ ' + L.lyrics.freeMinutes + ' min par jour sont gratuites chez Cloudflare ; au-delà, il faut le forfait payant (5 $/mois).');
@@ -645,9 +652,26 @@ th{color:var(--text2);font-weight:600}
   });
   $('#ntfyBtn').addEventListener('click', function () {
     var b = this, out = $('#ntfyOut'); b.disabled = true; out.textContent = 'Envoi…';
-    api('POST', 'ntfy-test', {}).then(function (r) {
-      out.textContent = !r.configured ? 'Rien envoyé : le secret NTFY_TOPIC est vide dans Cloudflare.' : r.sent ? 'Envoyée ! Ton téléphone devrait sonner dans quelques secondes.' : 'ntfy n’a pas répondu. Réessaie dans une minute.';
+    api('POST', 'notify-test', {}).then(function (r) {
+      out.textContent = !r.configured ? 'Rien envoyé : relie d’abord ton Telegram (ou remplis NTFY_TOPIC).'
+        : r.sent ? 'Envoyée ! Ton téléphone devrait sonner dans quelques secondes.' + (r.telegram === 'failed' ? ' (Telegram n’a pas répondu, ntfy oui.)' : r.ntfy === 'failed' ? ' (ntfy n’a pas répondu.)' : '')
+        : 'Telegram n’a pas répondu. Réessaie dans une minute.';
     }).catch(function (e) { out.textContent = 'Pas envoyée : ' + e.message; }).then(function () { b.disabled = false; });
+  });
+  var TG_ERR = { telegram_no_start: 'Je ne trouve pas ton /start : ouvre ton bot dans Telegram, envoie /start, puis réessaie (dans les 15 minutes).',
+    telegram_several: 'Plusieurs personnes ont écrit /start à ton bot : renvoie /start toi-même, attends 15 minutes que les autres expirent, puis réessaie.',
+    telegram_bad_token: 'Telegram refuse la clé du bot : vérifie TELEGRAM_BOT_TOKEN dans Cloudflare.',
+    telegram_webhook: 'Ce bot est relié à un autre service (webhook) : utilise un bot à toi seul.',
+    telegram_no_token: 'Ajoute d’abord la clé du bot (TELEGRAM_BOT_TOKEN) dans Cloudflare.', telegram_unreachable: 'Telegram n’a pas répondu. Réessaie dans une minute.' };
+  $('#tgLink').addEventListener('click', function () {
+    var b = this, out = $('#ntfyOut'); b.disabled = true; out.textContent = 'Recherche de ton /start…';
+    api('POST', 'telegram-link', {}).then(function (r) {
+      out.textContent = 'Relié' + (r.name ? ' à ' + r.name : '') + ' ! Un message de confirmation vient de partir dans Telegram.'; stats();
+    }).catch(function (e) { out.textContent = TG_ERR[e.code] || ('Pas relié : ' + e.message); }).then(function () { b.disabled = false; });
+  });
+  $('#tgUnlink').addEventListener('click', function () {
+    if (!confirm('Ne plus recevoir les notifications sur ce Telegram ?')) return;
+    api('POST', 'telegram-unlink', {}).then(function () { $('#ntfyOut').textContent = 'Telegram délié.'; stats(); }).catch(function (e) { $('#ntfyOut').textContent = e.message; });
   });
   $('#tableBtn').addEventListener('click', function () {
     var w = $('#tableWrap'), on = !w.classList.contains('show'); w.classList.toggle('show', on);
