@@ -4,6 +4,7 @@
 > Dernière mise à jour : 30/10/2026 à 21 h (offre hybride fusionnée et en ligne : App, Comptes, Juridique, Marketing ; migration 0008 appliquée).
 
 ## Décisions récentes du propriétaire
+- **5/11, 12 h 35 : en ligne `compte/notif-telegram`** (ntfy ne s'affichait pas sur l'iPhone du propriétaire) : notifs de ventes par un bot Telegram, bouton « Relier mon Telegram » au tableau de bord (Santé du serveur), ntfy gardé en option. Sans maquette (règle 9). Reste au propriétaire : secret `TELEGRAM_BOT_TOKEN`, /start au bot, Relier, notif de test.
 - **5/11, 12 h 20 : en ligne `compte/notif-ventes`** (notif ntfy au propriétaire : nouvel abonné / annulation, une par achat, bouton de test au tableau de bord → Santé du serveur). Sans maquette (règle 9 : rien de visible sur le site). Tests serveur 83/83. Reste au propriétaire : secret `NTFY_TOPIC` dans Cloudflare (nom de canal long et secret, pas celui écrit dans la conversation), puis le bouton de test.
 - **5/11, 11 h 30 : fusionné `marketing/promo-youtube` (film de lancement v6, planche contact, 12 défauts corrigés ; sources seulement, rien sur le site).** `tools/contact_sheet.py` corrigé : chaque image est maintenant prise exactement à son horodatage (avant : ~0,23 s plus tard, remarque de Marketing).
 - **5/11, 0 h 20 : règle 10 du contexte, planche contact obligatoire** avant l'export final de chaque vidéo (skill `planche-contact`, script `tools/contact_sheet.py` : une image toutes les 0,5 s avec horodatage et zones masquées par TikTok / Instagram en rouge).
