@@ -17,7 +17,7 @@ import { cleanPrompt, songPrompt, PROMPT_MAX } from '../../functions/_lib/lyrics
 import { HELP_GUIDE_FR, HELP_GUIDE_EN } from '../../functions/_lib/help-guide.js';
 import { codeEmail } from '../../functions/_lib/email.js';
 import { nextPayout } from '../../functions/_lib/admin.js';
-import { thanksEmail, THANKS_DELAY_MS } from '../../functions/_lib/thanks.js';
+import { thanksEmail, THANKS_DELAY_MS, purgeOldThanks } from '../../functions/_lib/thanks.js';
 import { onRequest as adminDemo } from '../../functions/admin-demo/[[path]].js';
 import { DEMO_DATA } from '../../functions/_lib/admin-demo-data.js';
 import { warningEmail } from '../../functions/_lib/cloud.js';
@@ -3177,6 +3177,7 @@ test('Telegram: down or slow never blocks the webhook nor the plan, and the bot 
 test('signup source: sent once by the page within the hour after sign-up, checked, never changed afterwards', async () => {
   const env = makeEnv();
   const u = await login(env, 'src1@example.com', 'en');
+  env.DB.raw.prepare("UPDATE users SET country = 'US'").run();   // outside Europe: the source goes with the account
   let r = await call(env, 'POST', '/api/account/source', { cookie: u.cookie, body: { source: '<script>' } });
   assert.equal(r.status, 400);
   r = await call(env, 'POST', '/api/account/source', { body: { source: 'tiktok' } });
@@ -3188,6 +3189,7 @@ test('signup source: sent once by the page within the hour after sign-up, checke
   assert.equal(env.DB.raw.prepare("SELECT signup_source FROM users WHERE email = 'src1@example.com'").get().signup_source, 'ref:ytshort');
   for (const ok of ['direct', 'ig', 'dir:alternativeto', 'site:reddit.com', 'utm:newsletter']) {
     const v = await login(env, ok.replace(/\W/g, '') + '@example.com', 'en');
+    env.DB.raw.prepare("UPDATE users SET country = 'CA' WHERE id = ?").run(v.user.id);
     r = await call(env, 'POST', '/api/account/source', { cookie: v.cookie, body: { source: ok } });
     assert.equal(r.data.saved, true, ok);
   }
@@ -3376,6 +3378,69 @@ test('thank-you e-mail: « M’envoyer l’e-mail de remerciement » sends it no
   assert.match(thanksEmail('en', 'creator', 'year').text, /you took Creator Plus for a full year/);
   assert.match(thanksEmail('fr', 'pro', 'month').text, /tu as pris Stalak Pro, et franchement/);
   assert.match(thanksEmail('de', 'pro', 'month').subject, /Thank you/, 'English unless French');
+});
+
+// ---- CNIL: first-visit source of accounts made from Europe (Juridique, 5/11) ----
+test('source from Europe: never tied to the account, only +1 on an anonymous total per source and day; « none » respected', async () => {
+  const env = makeEnv({ ...ADMIN_ENV }), db = env.DB.raw, srcOf = (id) => db.prepare('SELECT signup_source FROM users WHERE id = ?').get(id).signup_source;
+  const total = (name) => (db.prepare("SELECT SUM(n) AS n FROM daily_counts WHERE name = ?").get(name).n || 0);
+  for (const [c, mail] of [['FR', 'eu-fr'], ['CH', 'eu-ch'], ['GB', 'eu-gb'], ['NO', 'eu-no'], [null, 'eu-unknown']]) {
+    const v = await login(env, mail + '@example.com', 'fr');
+    db.prepare('UPDATE users SET country = ? WHERE id = ?').run(c, v.user.id);
+    let r = await call(env, 'POST', '/api/account/source', { cookie: v.cookie, body: { source: 'tiktok' } });
+    assert.equal(r.status, 200); assert.equal(r.data.saved, true); assert.equal(r.data.anonymous, true, String(c));
+    assert.equal(srcOf(v.user.id), 'eu', 'the account keeps only « Europe »');
+    r = await call(env, 'POST', '/api/account/source', { cookie: v.cookie, body: { source: 'ig' } });
+    assert.equal(r.data.saved, false, 'counted once');
+  }
+  assert.equal(total('src_eu:tiktok'), 5); assert.equal(total('src_eu:ig'), 0);
+  // the United States: the source stays with the account (as before)
+  const us = await login(env, 'us-src@example.com', 'en');
+  db.prepare("UPDATE users SET country = 'US' WHERE id = ?").run(us.user.id);
+  let r = await call(env, 'POST', '/api/account/source', { cookie: us.cookie, body: { source: 'dir:saashub' } });
+  assert.equal(r.data.anonymous, false); assert.equal(srcOf(us.user.id), 'dir:saashub'); assert.equal(total('src_eu:dir:saashub'), 0);
+  // refused on the privacy page: « none » keeps nothing (and « eu » cannot be sent to dodge the count)
+  const n = await login(env, 'refused@example.com', 'en');
+  db.prepare("UPDATE users SET country = 'US' WHERE id = ?").run(n.user.id);
+  for (const v of ['none', 'eu']) {
+    r = await call(env, 'POST', '/api/account/source', { cookie: n.cookie, body: { source: v } });
+    assert.equal(r.data.saved, false, v);
+  }
+  assert.equal(srcOf(n.user.id), null);
+  // dashboard: « Europe (anonyme) » in the list (source « eu »), the anonymous totals beside it
+  r = await adminCall(env, 'GET', '/api/admin/signups?limit=50', { token: await accessToken() });
+  assert.equal(r.data.signups.find((x) => x.email === 'eu-fr@example.com').source, 'eu');
+  assert.deepEqual(r.data.euSources, { days: 30, sources: [{ source: 'tiktok', n: 5 }] });
+  const more = await adminCall(env, 'GET', '/api/admin/signups?limit=1&before=' + (Date.now() + 1), { token: await accessToken() });
+  assert.equal(more.data.euSources, undefined, 'the totals come with the first page only');
+});
+
+test('migration 0014: the sources already kept for accounts from Europe become anonymous totals', async () => {
+  const env = makeEnv(), db = env.DB.raw;
+  const ins = db.prepare('INSERT INTO users (id, email, lang, created_at, country, signup_source) VALUES (?, ?, ?, ?, ?, ?)');
+  const day = Date.parse('2026-11-05T10:00:00Z');
+  ins.run('m1', 'm1@example.com', 'fr', day, 'FR', 'tiktok'); ins.run('m2', 'm2@example.com', 'en', day + 60e3, 'GB', 'tiktok');
+  ins.run('m3', 'm3@example.com', 'en', day, 'US', 'ig'); ins.run('m4', 'm4@example.com', 'en', day, null, 'ref:ytshort');
+  ins.run('m5', 'm5@example.com', 'en', day, 'DE', null);
+  db.exec(readFileSync(join(root, 'migrations', '0014_provenance_eu.sql'), 'utf8'));
+  const src = Object.fromEntries(db.prepare("SELECT id, signup_source AS s FROM users WHERE id LIKE 'm_'").all().map((r) => [r.id, r.s]));
+  assert.deepEqual(src, { m1: 'eu', m2: 'eu', m3: 'ig', m4: 'eu', m5: null });
+  const counts = db.prepare("SELECT day, name, n FROM daily_counts WHERE name LIKE 'src_eu:%' ORDER BY name").all().map((r) => ({ ...r }));
+  assert.deepEqual(counts, [{ day: '2026-11-05', name: 'src_eu:ref:ytshort', n: 1 }, { day: '2026-11-05', name: 'src_eu:tiktok', n: 2 }]);
+  db.exec(readFileSync(join(root, 'migrations', '0014_provenance_eu.sql'), 'utf8'));
+  assert.equal(db.prepare("SELECT n FROM daily_counts WHERE name = 'src_eu:tiktok'").get().n, 2, 'run twice by mistake: no double count');
+});
+
+test('thank-you hashes: deleted after 3 years by the daily tasks', async () => {
+  const env = makeEnv(), db = env.DB.raw, now = Date.now();
+  const ins = db.prepare('INSERT INTO webhook_events (event_id, event_type, received_at) VALUES (?, ?, ?)');
+  ins.run('thanks:old', 'thanks', now - 3 * 365 * 864e5 - 864e5); ins.run('thanks:new', 'thanks', now - 2 * 365 * 864e5);
+  ins.run('evt_old_paddle', 'subscription.created', now - 4 * 365 * 864e5);
+  assert.equal(await purgeOldThanks(env, now), 1);
+  assert.deepEqual(db.prepare('SELECT event_id FROM webhook_events ORDER BY event_id').all().map((r) => r.event_id), ['evt_old_paddle', 'thanks:new']);
+  // wired into the daily tasks of the site and of the Worker
+  assert.match(readFileSync(join(root, 'functions/_lib/cloud.js'), 'utf8'), /purgeOldThanks\(env, now\)/);
+  assert.match(readFileSync(join(root, 'workers/cloud-cleanup/index.js'), 'utf8'), /purgeOldThanks\(env/);
 });
 
 // ---- runner --------------------------------------------------------------------------

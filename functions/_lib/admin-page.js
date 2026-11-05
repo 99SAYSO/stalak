@@ -194,6 +194,10 @@ th{color:var(--text2);font-weight:600}
 .hc{background:var(--card);border:2px solid var(--ink);border-radius:22px;padding:16px 18px;box-shadow:0 4px 0 var(--ink);display:flex;flex-direction:column;gap:6px;min-width:0;text-align:left;color:var(--text);font:inherit}
 @media (prefers-color-scheme:dark){.hc{box-shadow:none}}
 .hc.wide{grid-column:1 / -1}
+.hq .he{display:none;font-size:13.5px;color:var(--muted);margin:6px 0 0}.hq.help .he{display:block}
+.hbest{display:flex;align-items:center;gap:8px;font-weight:700;font-size:17px}.hbest .sp{flex:1}
+#euBox{margin-bottom:14px}.eus{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.eus li{border:2px solid var(--line);border-radius:999px;padding:4px 12px;font-size:14.5px}.eus li b{font-variant-numeric:tabular-nums;margin-left:6px}
 .hc .hk{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;color:var(--text2)}
 .hc .hk .ico{font-size:20px}
 .hc .hv{font-family:Lilita,Rubik,sans-serif;font-size:46px;line-height:1.05;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
@@ -305,6 +309,11 @@ __DEMO_BANNER__<header class="top"><div class="in">
   <!-- ===== Nouveaux comptes ===== -->
   <section class="panel" id="p-signups" aria-labelledby="tab-signups" hidden>
     <p class="intro">Une ligne par compte créé, du plus récent au plus ancien : quand, qui (pseudo et e-mail), depuis quel pays, d’où venait la personne la première fois, et sa formule aujourd’hui.</p>
+    <div class="card hq" id="euBox" hidden>
+      <div class="hbest"><span>🇪🇺 Comptes d’Europe : d’où ils viennent (30 jours)</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
+      <p class="he">Règle de la CNIL : pour un compte créé depuis l’Europe (Union européenne, Royaume-Uni, Suisse…), on ne garde pas d’où venait la personne. On ajoute seulement +1 au total de cette provenance pour le jour. Dans la liste, ces comptes affichent « Europe (anonyme) ».</p>
+      <ul class="eus" id="euList"></ul>
+    </div>
     <div class="card"><ul class="signups" id="signupList"></ul><div class="row" data-mt><button class="btn" type="button" id="signupMore" hidden>Voir plus</button><span class="note" id="signupNote"></span></div></div>
   </section>
 
@@ -522,7 +531,7 @@ __DEMO_BANNER__<header class="top"><div class="in">
     $$('.q').forEach(function (b) {
       if (b.dataset.on) return; b.dataset.on = '1';
       b.addEventListener('click', function (e) {
-        e.stopPropagation(); var c = b.closest('.kpi, .hc'), on = !c.classList.contains('help');
+        e.stopPropagation(); var c = b.closest('.kpi, .hc, .hq'), on = !c.classList.contains('help');
         c.classList.toggle('help', on); b.setAttribute('aria-expanded', on ? 'true' : 'false');
       });
     });
@@ -585,6 +594,7 @@ __DEMO_BANNER__<header class="top"><div class="in">
   var DIRS = { alternativeto: 'AlternativeTo', saashub: 'SaaSHub', producthunt: 'Product Hunt', betalist: 'BetaList', futurepedia: 'Futurepedia', theresanaiforthat: 'There’s An AI For That', contentcreators: 'contentcreators.com', buzzsonic: 'Buzzsonic', toolify: 'Toolify' };
   function sourceName(src) {
     if (!src) return 'Inconnue';
+    if (src === 'eu') return 'Europe (anonyme)';
     var m = /^(ref|utm|dir|site):(.+)$/.exec(src);
     if (!m) return SOURCES[src] || src;
     if (m[1] === 'dir') return 'Annuaire (' + (DIRS[m[2]] || m[2]) + ')';
@@ -598,6 +608,12 @@ __DEMO_BANNER__<header class="top"><div class="in">
     S.signupsLoaded = true;
     var ul = $('#signupList'); if (!more) { ul.textContent = ''; S.signupBefore = null; }
     return api('GET', 'signups?limit=40' + (S.signupBefore ? '&before=' + S.signupBefore : '')).then(function (d) {
+      if (d.euSources) {
+        var eu = $('#euList'); eu.textContent = '';
+        d.euSources.sources.forEach(function (x) { var li = el('li', null, sourceName(x.source)); li.append(el('b', null, String(x.n))); eu.append(li); });
+        if (!d.euSources.sources.length) eu.append(el('li', null, 'Pas encore de compte d’Europe sur 30 jours.'));
+        $('#euBox').hidden = false;
+      }
       if (!d.signups.length && !more) ul.append(el('li', { class: 'empty' }, 'Personne pour l’instant.'));
       d.signups.forEach(function (u) {
         var li = el('li');

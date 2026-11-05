@@ -102,13 +102,20 @@
   }
   // a new account (made less than an hour ago): where this browser first came from (src/app.js FIRST_SRC), sent once
   var sourceSent = false;
+  // CNIL (Juridique, 5/11): « none » (refused) is never sent; once signed in, the source leaves this browser (« done|date »
+  // keeps it from being recorded again, and is itself forgotten after 13 months, like the source).
   function sendSource(st) {
     try {
-      if (sourceSent || !st.user || !st.user.createdAt || Date.now() - Date.parse(st.user.createdAt) > 3600e3) return;
-      var src = localStorage.getItem('stalak:src');
-      if (!src) return;
+      if (sourceSent || !st.user) return;
+      var raw = localStorage.getItem('stalak:src');
+      if (!raw) return;
+      var i = raw.lastIndexOf('|'), src = i > 0 ? raw.slice(0, i) : raw;
+      if (src === 'none' || src === 'done') return;
       sourceSent = true;
-      api('POST', 'account/source', { source: src }).catch(function () {});
+      var forget = function () { try { localStorage.setItem('stalak:src', 'done|' + Date.now()); } catch (e) {} };
+      // an older account (signed in again, on this browser): nothing to send, only forget it
+      if (!st.user.createdAt || Date.now() - Date.parse(st.user.createdAt) > 3600e3) { forget(); return; }
+      api('POST', 'account/source', { source: src }).then(forget, forget);
     } catch (e) {}
   }
 

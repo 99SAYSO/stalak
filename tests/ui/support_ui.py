@@ -163,6 +163,9 @@ async def main():
         await a.wait_for_selector('#signupList li', timeout=10000)
         row = await a.inner_text('#signupList li >> nth=0')
         check('admin-1280: new accounts listed with a source and a plan', any(w in row for w in ['Gratuit', 'Pro', 'Creator Plus']), row)
+        eu_txt = await a.inner_text('#euBox') if await a.is_visible('#euBox') else ''
+        check('admin-1280: anonymous totals of the accounts from Europe', 'Comptes d’Europe' in eu_txt and await a.eval_on_selector_all('#euList li b', 'e => e.length') > 0, eu_txt[:120])
+        check('admin-1280: accounts from Europe shown « Europe (anonyme) »', 'Europe (anonyme)' in await a.inner_text('#signupList'))
         whos = await a.eval_on_selector_all('#signupList li .who', 'els => els.map(e => [e.querySelector(".nm").textContent, e.querySelector(".em").textContent])')
         check('admin-1280: each new account shows its pseudo (or « — ») and its e-mail', whos and all(n and '@' in e for n, e in whos) and any(n == '—' for n, e in whos), whos[:3])
         home_txt = await a.evaluate("() => document.querySelector('#p-home').innerText")

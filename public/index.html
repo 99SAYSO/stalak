@@ -2608,13 +2608,20 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
   }
   // a new account (made less than an hour ago): where this browser first came from (src/app.js FIRST_SRC), sent once
   var sourceSent = false;
+  // CNIL (Juridique, 5/11): « none » (refused) is never sent; once signed in, the source leaves this browser (« done|date »
+  // keeps it from being recorded again, and is itself forgotten after 13 months, like the source).
   function sendSource(st) {
     try {
-      if (sourceSent || !st.user || !st.user.createdAt || Date.now() - Date.parse(st.user.createdAt) > 3600e3) return;
-      var src = localStorage.getItem('stalak:src');
-      if (!src) return;
+      if (sourceSent || !st.user) return;
+      var raw = localStorage.getItem('stalak:src');
+      if (!raw) return;
+      var i = raw.lastIndexOf('|'), src = i > 0 ? raw.slice(0, i) : raw;
+      if (src === 'none' || src === 'done') return;
       sourceSent = true;
-      api('POST', 'account/source', { source: src }).catch(function () {});
+      var forget = function () { try { localStorage.setItem('stalak:src', 'done|' + Date.now()); } catch (e) {} };
+      // an older account (signed in again, on this browser): nothing to send, only forget it
+      if (!st.user.createdAt || Date.now() - Date.parse(st.user.createdAt) > 3600e3) { forget(); return; }
+      api('POST', 'account/source', { source: src }).then(forget, forget);
     } catch (e) {}
   }
 
@@ -10439,10 +10446,22 @@ async function humanSend(text, retried){
    Kept for this tab only (sessionStorage "stalak:ref", nothing about the person) and sent with the visits below; Comptes counts it. */
 /* Comptes (dashboard v3): where this browser came from the FIRST time (a ?ref= link, utm_source, the site that sent it, or
    direct), kept in this browser only (localStorage "stalak:src") and sent once, at sign-up, to show where new accounts come from. */
+/* CNIL (Juridique, 5/11): « source|first-seen ms »; forgotten after 13 months, never extended (a visit does not renew it);
+   « none » = refused on the privacy page → nothing is recorded; « done|ms » = already sent at sign-up (the source itself is gone).
+   Whether it is tied to the account or only counted anonymously (Europe) is decided by the server (router.js account/source). */
+const SRC_KEEP_MS = 396 * 864e5;   // 13 months
 const FIRST_SRC = (() => {
   try {
     const old = localStorage.getItem('stalak:src');
-    if (old) return old;
+    if (old === 'none' || (old && old.startsWith('none|'))) return null;
+    if (old) {
+      const i = old.lastIndexOf('|'), v = i > 0 ? old.slice(0, i) : old;
+      // before this rule the date was not kept: counted from 5/11/2026, when it began
+      const t = i > 0 ? Number(old.slice(i + 1)) : Date.parse('2026-11-05T00:00:00Z');
+      if (i <= 0 && Number.isFinite(t)) localStorage.setItem('stalak:src', v + '|' + t);
+      if (Number.isFinite(t) && Date.now() - t < SRC_KEEP_MS) return v === 'done' ? null : v;
+      localStorage.removeItem('stalak:src');
+    }
     const u = new URL(location.href), ref = (u.searchParams.get('ref') || '').trim().toLowerCase(), utm = (u.searchParams.get('utm_source') || '').trim().toLowerCase();
     let s = /^[a-z0-9_-]{1,32}$/.test(ref) ? 'ref:' + ref : /^[a-z0-9_-]{1,32}$/.test(utm) ? 'utm:' + utm : 'direct';
     if (s === 'direct' && document.referrer) {
@@ -10455,7 +10474,7 @@ const FIRST_SRC = (() => {
         s = kinds.reduce((a, [re, n]) => a || (re.test(h) ? n : null), null) || (/^[a-z0-9.-]{3,48}$/.test(h) ? 'site:' + h : 'other');
       }
     }
-    localStorage.setItem('stalak:src', s);
+    localStorage.setItem('stalak:src', s + '|' + Date.now());
     return s;
   } catch(e){ return null; }
 })();

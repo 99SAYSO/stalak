@@ -106,3 +106,11 @@ export async function thanksAfterPurchase(env, info, now = Date.now()) {
     return 'skipped:error';
   }
 }
+
+// Juridique (5/11): the hashes of the addresses already thanked (webhook_events « thanks:… ») are deleted after 3 years.
+// Run with the daily tasks (cloud.js maybeCleanup and the daily Worker). Returns the number deleted.
+export const THANKS_KEEP_MS = 3 * 365 * 864e5;
+export async function purgeOldThanks(env, now = Date.now()) {
+  const r = await env.DB.prepare("DELETE FROM webhook_events WHERE event_type = 'thanks' AND received_at < ?1").bind(now - THANKS_KEEP_MS).run();
+  return (r.meta && r.meta.changes) || 0;
+}

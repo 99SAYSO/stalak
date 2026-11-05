@@ -352,7 +352,15 @@ export async function signupList(env, before, limitN = 50, now = Date.now()) {
     signups: rows.map((r) => ({ at: new Date(r.created_at).toISOString(), email: r.email || null, name: r.display_name || null, country: r.country || null, source: r.signup_source || null,
       method: r.signup_method || r.idp || 'email', plan: plans[r.id] || 'free' })),
     more: results.length > n ? rows[rows.length - 1].created_at : null,
+    // CNIL (Juridique, 5/11): the accounts made from Europe only count anonymously, per source, over the last 30 days
+    euSources: before ? undefined : await euSources(env, now),
   };
+}
+export async function euSources(env, now = Date.now(), days = 30) {
+  const from = new Date(now - (days - 1) * 864e5).toISOString().slice(0, 10);
+  const r = await env.DB.prepare("SELECT substr(name, 8) AS source, SUM(n) AS n FROM daily_counts WHERE name LIKE 'src\\_eu:%' ESCAPE '\\' AND day >= ?1 GROUP BY name ORDER BY n DESC, name")
+    .bind(from).all();
+  return { days, sources: (r.results || []).map((x) => ({ source: x.source, n: x.n })) };
 }
 
 async function ticketList(env, status) {

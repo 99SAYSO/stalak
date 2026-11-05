@@ -47,6 +47,12 @@ export function deviceOf(request) {
   if (/Android/i.test(ua)) return 'android';
   return ua ? 'desktop' : null;
 }
+// Europe for the CNIL rules on the first-visit source (Juridique, 5/11): EU, EEA (Iceland, Liechtenstein, Norway), United Kingdom,
+// Switzerland, by Cloudflare's country. An unknown country counts as Europe (the careful side).
+export const EUROPE = new Set(['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL',
+  'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'IS', 'LI', 'NO', 'GB', 'CH']);
+export const isEurope = (c) => !c || EUROPE.has(String(c).toUpperCase());
+
 // where the visit comes from (?ref=…, or the site that sent it, read by the page: src/app.js VISIT_REF)
 export const SOURCE = /^[a-z0-9_-]{1,24}$/;
 

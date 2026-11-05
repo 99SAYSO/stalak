@@ -16,7 +16,7 @@ import { transcribe } from './lyrics.js';
 import { helpChat } from './help.js';
 import { admin } from './admin.js';
 import { support } from './support.js';
-import { presence, bump, event } from './metrics.js';
+import { presence, bump, event, isEurope, countryOf } from './metrics.js';
 
 const PROJECT_MAX_BYTES = 256 * 1024; // ~200 KB of project JSON + envelope
 const PROJECT_MAX_COUNT = 200;
@@ -352,9 +352,17 @@ async function dispatch(request, env, ctx) {
         const b = await readJson(request, 256);
         const src = typeof b.source === 'string' ? b.source.trim().toLowerCase() : '';
         if (!SIGNUP_SOURCE.test(src)) throw new HttpError(400, 'invalid_source', 'Unknown source.');
+        // « none »: the person refused it (privacy page) → nothing is kept
+        if (src === 'none' || src === 'eu') return json({ ok: true, saved: false });
+        // CNIL (Juridique, 5/11): an account made from Europe (EU, EEA, UK, Switzerland) does not keep its source: only +1 on an
+        // anonymous total per source and per day (daily_counts `src_eu:<source>`); the account gets « eu » so that it counts once.
+        const row = await env.DB.prepare('SELECT country FROM users WHERE id = ?1').bind(u.id).first();
+        const eu = isEurope((row && row.country) || countryOf(request));
         const r = await env.DB.prepare('UPDATE users SET signup_source = ?2 WHERE id = ?1 AND signup_source IS NULL AND created_at > ?3')
-          .bind(u.id, src, Date.now() - 3600e3).run();
-        return json({ ok: true, saved: !!(r.meta && r.meta.changes) });
+          .bind(u.id, eu ? 'eu' : src, Date.now() - 3600e3).run();
+        const saved = !!(r.meta && r.meta.changes);
+        if (saved && eu) await bump(env, 'src_eu:' + src);
+        return json({ ok: true, saved, anonymous: eu });
       }
       case 'lyrics/transcribe':
         // « Paroles automatiques » (Stalak Pro): one piece of the song's voice → timed words (functions/_lib/lyrics.js)

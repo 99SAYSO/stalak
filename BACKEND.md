@@ -483,6 +483,13 @@ servent. Un petit « ? » à côté de chaque chiffre affiche sa phrase d'explic
 (`localStorage` « stalak:src ») d'où vient la personne (`?ref=`, `utm_source`, TikTok / Instagram / YouTube / Google…, nom de
 l'annuaire, ou seulement le nom du site d'origine) ; à l'inscription, elle l'envoie une fois (`POST /api/account/source`, dans
 l'heure qui suit la création du compte) dans `users.signup_source`.
+**Règles CNIL (Juridique, 5/11, migration 0014)** : pour un compte créé depuis l'**Europe** (UE, EEE, Royaume-Uni, Suisse, d'après le
+pays Cloudflare ; pays inconnu compris), la provenance n'est **pas** gardée avec le compte (il garde seulement « eu », affiché
+« Europe (anonyme) ») : on ajoute +1 au total anonyme de cette provenance pour le jour (`daily_counts` « src_eu:… »), montré en haut
+de « Nouveaux comptes » (30 jours). Ailleurs, rien ne change. Dans le navigateur, « stalak:src » garde la date de la première visite,
+n'est jamais prolongé, est oublié après 13 mois, et devient « done » après l'inscription ; « none » (refus sur la page de
+confidentialité) n'est jamais remplacé ni envoyé. Les empreintes d'adresses du remerciement (`thanks:…`) sont effacées après 3 ans
+par les tâches du jour.
 **Démo** : sur chaque maquette, `https://<branche-avec-tirets>.stalak-site.pages.dev/admin-demo/` montre le tableau de bord avec
 de **fausses données** (aucune requête au serveur). Elle n'existe ni sur stalak.app ni sur admin.stalak.app. Les fausses données
 se régénèrent avec `node tools/admin_demo_data.mjs`.
@@ -495,6 +502,7 @@ Dans la **Console** de la base D1 `stalak`, colle **tout** `migrations/0006_admi
 Pour le nouveau tableau de bord (1/11) : colle de même **tout** `migrations/0010_dashboard.sql` (7 colonnes vides) **avant** de publier.
 Pour la version 3 (5/11) : colle de même **tout** `migrations/0011_signup_source.sql` (1 colonne vide) **avant** de publier.
 Pour l'e-mail de remerciement (5/11) : colle de même **tout** `migrations/0012_thanks_mail.sql` (1 colonne, et les clients déjà abonnés marqués) **avant** de publier.
+Pour les règles CNIL de la provenance (5/11) : colle de même **tout** `migrations/0014_provenance_eu.sql` **avant** de publier (une seule fois).
 
 ### 13.2 L'adresse admin.stalak.app
 **Workers & Pages → stalak-site → Custom domains → Set up a custom domain** → `admin.stalak.app` → **Continue** → **Activate domain**.
