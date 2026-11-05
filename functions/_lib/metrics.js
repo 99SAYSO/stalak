@@ -28,6 +28,17 @@ export async function bump(env, name, n = 1) {
   }
 }
 
+// +1 on this hour's counter `name` (hourly_counts, migration 0013): only the exports, for the « Heure par heure » page.
+export async function bumpHour(env, name, now = Date.now()) {
+  try {
+    await env.DB.prepare(
+      'INSERT INTO hourly_counts (hour, name, n) VALUES (?1, ?2, 1) ON CONFLICT(hour, name) DO UPDATE SET n = n + 1'
+    ).bind(Math.floor(now / 3600e3), name).run();
+  } catch (e) {
+    console.error('[stalak] hourly metric', name, e && e.message ? String(e.message).slice(0, 120) : 'error');
+  }
+}
+
 // audit of 30/10: one request + one D1 write per sign of life; every 5 min (was 1 min) spares the Cloudflare quota
 export const VISIT_EVERY_S = 300;         // the page sends a sign of life every 5 minutes while it is shown (and when it comes back)
 export const LIVE_MS = 390e3;             // "live" = seen in the last 6 min 30 s
@@ -59,6 +70,7 @@ export async function event(request, env) {
   const ipKey = (await sha256Hex('ip:' + clientIp(request))).slice(0, 32);
   await limit(env, `event:ip:${ipKey}`, EVENTS_PER_IP_HOUR, 3600e3);
   await bump(env, 'ev_' + name);
+  if (name === 'export_ok') await bumpHour(env, 'export_ok');   // the hour of the export (« Heure par heure »)
   if (body.ios === true) await bump(env, 'ios_' + name);   // the same step on an iPhone / iPad
   if (name === 'export_fail') await bump(env, 'ev_export_fail_' + (EXPORT_FAIL.includes(body.cat) ? body.cat : 'other'));
   if (name === 'plans_open' && typeof body.why === 'string') await bump(env, 'ev_plans_why_' + (EVENT_REASONS.includes(body.why) ? body.why : 'other'));
@@ -91,6 +103,7 @@ export async function presence(request, env) {
     if (Math.random() < 0.01) {
       const old = today(now - VISITS_KEEP_DAYS * 864e5);
       await env.DB.prepare('DELETE FROM visits WHERE day < ?1').bind(old).run().catch(() => {});
+      await env.DB.prepare('DELETE FROM hourly_counts WHERE hour < ?1').bind(Math.floor((now - VISITS_KEEP_DAYS * 864e5) / 3600e3)).run().catch(() => {});
     }
   }
   return json({ ok: true, every: VISIT_EVERY_S });

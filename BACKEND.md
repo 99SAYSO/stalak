@@ -495,6 +495,7 @@ Dans la **Console** de la base D1 `stalak`, colle **tout** `migrations/0006_admi
 Pour le nouveau tableau de bord (1/11) : colle de même **tout** `migrations/0010_dashboard.sql` (7 colonnes vides) **avant** de publier.
 Pour la version 3 (5/11) : colle de même **tout** `migrations/0011_signup_source.sql` (1 colonne vide) **avant** de publier.
 Pour l'e-mail de remerciement (5/11) : colle de même **tout** `migrations/0012_thanks_mail.sql` (1 colonne, et les clients déjà abonnés marqués) **avant** de publier.
+Pour « Heure par heure » (5/11) : colle de même **tout** `migrations/0013_hourly_counts.sql` (1 petite table) **avant** de publier.
 
 ### 13.2 L'adresse admin.stalak.app
 **Workers & Pages → stalak-site → Custom domains → Set up a custom domain** → `admin.stalak.app` → **Continue** → **Activate domain**.
@@ -565,6 +566,15 @@ L'envoi passe par Resend, programmé 3 heures plus tard (`scheduled_at`) ; il pa
 bloquer le paiement. Si Resend ne répond pas, le prochain message de Paddle pour le même achat réessaie.
 Pour le voir : tableau de bord → **Santé du serveur** → « M'envoyer l'e-mail de remerciement » (tout de suite, à ton adresse,
 une fois en français avec Creator Plus pour un an, une fois en anglais avec Stalak Pro au mois). Le texte est dans `functions/_lib/thanks.js`.
+
+### 13.6 quater « Heure par heure » (5/11)
+Menu ☰ → **Heure par heure** : une ligne par heure (0 h–1 h … 23 h–0 h) avec les visites (la barre), les comptes créés, les
+vidéos exportées et les nouveaux abonnements ; l'heure qui a le plus de visites est mise en avant (« 🔥 Le plus de monde : … »).
+Période : Aujourd'hui (depuis minuit dans la ville choisie) / 7 j / 30 j (la **moyenne** d'une journée). Bouton 🇫🇷 Paris /
+🇺🇸 New York (heure d'été et d'hiver comprises ; le choix est retenu sur l'appareil).
+Les visites, les comptes et les abonnements avaient déjà leur heure. Les **exports** n'avaient qu'un total par jour : ils sont
+maintenant aussi comptés par heure (table `hourly_counts`, migration 0013, anonyme, effacée après 90 jours), donc seulement
+**à partir de la mise en ligne** (la page le dit).
 
 ### 13.7 Vérifier
 - `https://admin.stalak.app/admin/` : Cloudflare demande ton e-mail, envoie un code, puis le tableau de bord s'affiche.

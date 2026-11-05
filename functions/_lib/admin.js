@@ -332,6 +332,42 @@ export async function home(env, now = Date.now()) {
   };
 }
 // the list of new accounts: date, country, where it came from, plan now (newest first; « before » pages back)
+// « Heure par heure » (5/11): for each hour of the day (0 h–1 h … 23 h–0 h) in Paris or New York time, the visits, the accounts
+// made, the videos exported and the new subscriptions. period 'today' (since midnight there) or 7 / 30 days (the AVERAGE per
+// hour over those days, to see the habit). Counted per UTC hour in the database, then put in the local hour of the chosen city
+// (summer / winter time included: both cities are whole hours away from UTC). Exports: only since migration 0013 (exportsSince).
+export const HOUR_TZ = { paris: 'Europe/Paris', ny: 'America/New_York' };
+export async function hourly(env, period, tz, now = Date.now()) {
+  const zone = HOUR_TZ[tz] ? tz : 'paris', days = period === '7' ? 7 : period === '30' ? 30 : 1;
+  const fmt = new Intl.DateTimeFormat('en-GB', { timeZone: HOUR_TZ[zone], hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' });
+  const parts = (ms) => { const o = {}; for (const p of fmt.formatToParts(new Date(ms))) o[p.type] = Number(p.value); return o; };
+  const p = parts(now), nowHour = p.hour % 24;
+  // today: since midnight in that city; 7 / 30 days: the last 7 / 30 × 24 hours, from the start of an hour
+  const sinceMidnight = ((p.hour % 24) * 3600 + p.minute * 60 + p.second) * 1000 + (now % 1000);
+  const from = days === 1 ? now - sinceMidnight : Math.floor(now / 3600e3) * 3600e3 + 3600e3 - days * 864e5;
+  const fromH = Math.floor(from / 3600e3), pe = payEnv(env), q = (sql, ...b) => env.DB.prepare(sql).bind(...b);
+  const fromDay = new Date(from - 864e5).toISOString().slice(0, 10);
+  const [vis, acc, exp, sub, first] = await env.DB.batch([
+    q('SELECT first_at / 3600000 AS h, COUNT(*) AS n FROM visits WHERE day >= ?1 AND first_at >= ?2 AND first_at <= ?3 GROUP BY h', fromDay, from, now),
+    q('SELECT created_at / 3600000 AS h, COUNT(*) AS n FROM users WHERE created_at >= ?1 AND created_at <= ?2 GROUP BY h', from, now),
+    q("SELECT hour AS h, n FROM hourly_counts WHERE name = 'export_ok' AND hour >= ?1 AND hour <= ?2", fromH, Math.floor(now / 3600e3)),
+    q('SELECT started_at / 3600000 AS h, COUNT(*) AS n FROM subscriptions WHERE env = ?1 AND started_at >= ?2 AND started_at <= ?3 GROUP BY h', pe, from, now),
+    q("SELECT MIN(hour) AS h FROM hourly_counts WHERE name = 'export_ok'"),
+  ]);
+  const hours = Array.from({ length: 24 }, () => ({ visits: 0, signups: 0, exports: 0, subs: 0 }));
+  const local = new Map();
+  const at = (h) => { if (!local.has(h)) local.set(h, parts(h * 3600e3 + 1).hour % 24); return local.get(h); };
+  for (const [rows, key] of [[vis, 'visits'], [acc, 'signups'], [exp, 'exports'], [sub, 'subs']]) {
+    for (const r of rows.results || []) hours[at(Math.floor(r.h))][key] += r.n;
+  }
+  if (days > 1) for (const h of hours) for (const k of Object.keys(h)) h[k] = Math.round((h[k] / days) * 10) / 10;
+  let best = null;
+  hours.forEach((h, i) => { if (h.visits > 0 && (best === null || h.visits > hours[best].visits)) best = i; });
+  const f = first.results && first.results[0] && first.results[0].h;
+  return { period: days === 1 ? 'today' : String(days), tz: zone, average: days > 1, nowHour, best, hours,
+    exportsSince: f ? f * 3600e3 : null, test: pe !== 'production' };
+}
+
 export async function signupList(env, before, limitN = 50, now = Date.now()) {
   const n = Math.min(100, Math.max(1, limitN | 0)), pe = payEnv(env);
   const { results } = await env.DB.prepare(
@@ -419,6 +455,7 @@ export async function admin(request, env, method, rest) {
     return json(await stats(env, Math.min(730, Math.max(7, Number.isFinite(d) ? d : 30))));
   }
   if (route === 'home' && method === 'GET') return json(await home(env));
+  if (route === 'hours' && method === 'GET') return json(await hourly(env, url.searchParams.get('period') || 'today', url.searchParams.get('tz') || 'paris'));
   if (route === 'signups' && method === 'GET') {
     const b = Number.parseInt(url.searchParams.get('before') || '', 10);
     return json(await signupList(env, b, Number.parseInt(url.searchParams.get('limit') || '50', 10)));

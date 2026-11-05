@@ -16,7 +16,7 @@ import { resetJwksCache } from '../../functions/_lib/oauth.js';
 import { cleanPrompt, songPrompt, PROMPT_MAX } from '../../functions/_lib/lyrics.js';
 import { HELP_GUIDE_FR, HELP_GUIDE_EN } from '../../functions/_lib/help-guide.js';
 import { codeEmail } from '../../functions/_lib/email.js';
-import { nextPayout } from '../../functions/_lib/admin.js';
+import { nextPayout, hourly } from '../../functions/_lib/admin.js';
 import { thanksEmail, THANKS_DELAY_MS } from '../../functions/_lib/thanks.js';
 import { onRequest as adminDemo } from '../../functions/admin-demo/[[path]].js';
 import { DEMO_DATA } from '../../functions/_lib/admin-demo-data.js';
@@ -3376,6 +3376,55 @@ test('thank-you e-mail: « M’envoyer l’e-mail de remerciement » sends it no
   assert.match(thanksEmail('en', 'creator', 'year').text, /you took Creator Plus for a full year/);
   assert.match(thanksEmail('fr', 'pro', 'month').text, /tu as pris Stalak Pro, et franchement/);
   assert.match(thanksEmail('de', 'pro', 'month').subject, /Thank you/, 'English unless French');
+});
+
+// ---- « Heure par heure » (5/11) ----
+test('hour by hour: each hour in Paris or New York time, today or the average of 7 / 30 days, the busiest hour, exports by hour', async () => {
+  const env = makeEnv({ ...ADMIN_ENV, PADDLE_ENV: 'production' }), db = env.DB.raw;
+  const now = Date.parse('2026-11-05T15:30:00Z');   // 16:30 in Paris (winter time, UTC+1), 10:30 in New York (UTC-5)
+  const visit = (iso, k) => db.prepare('INSERT INTO visits (day, vid, first_at, last_at, lang) VALUES (?, ?, ?, ?, ?)').run(iso.slice(0, 10), 'vid_hours_test_' + k + '_' + iso, Date.parse(iso), Date.parse(iso), 'en');
+  // today 01:30 UTC = 2 h–3 h in Paris = 20 h–21 h the day before in New York; 3 visits; 1 visit at 14:10 UTC (15 h in Paris)
+  for (let k = 0; k < 3; k++) visit('2026-11-05T01:30:00Z', k);
+  visit('2026-11-05T14:10:00Z', 0);
+  // the 6 days before, one visit a day at 01:30 UTC
+  for (let d = 1; d <= 6; d++) visit(new Date(Date.parse('2026-11-05T01:30:00Z') - d * 864e5).toISOString(), 9);
+  db.prepare("INSERT INTO users (id, email, lang, created_at) VALUES ('u_h1', 'h1@example.com', 'en', ?)").run(Date.parse('2026-11-05T01:45:00Z'));
+  db.prepare("INSERT INTO subscriptions (id, user_id, customer_id, status, price_id, last_event_at, updated_at, env, started_at) VALUES ('sub_h1', 'u_h1', 'c', 'active', 'p', 1, 1, 'production', ?), ('sub_h2', 'u_h1', 'c', 'active', 'p', 1, 1, 'sandbox', ?)")
+    .run(Date.parse('2026-11-05T01:50:00Z'), Date.parse('2026-11-05T01:50:00Z'));
+  let r = await hourly(env, 'today', 'paris', now);
+  assert.equal(r.nowHour, 16); assert.equal(r.best, 2); assert.equal(r.average, false);
+  assert.deepEqual(r.hours[2], { visits: 3, signups: 1, exports: 0, subs: 1 }, 'the sandbox subscription is not counted in production');
+  assert.equal(r.hours[15].visits, 1); assert.equal(r.hours.reduce((a, h) => a + h.visits, 0), 4, 'today only (since midnight in Paris)');
+  assert.equal(r.exportsSince, null, 'no export counted by hour yet');
+  // New York: 01:30 UTC is 20 h–21 h of yesterday there → not « today » in New York; over 7 days it is 20 h
+  r = await hourly(env, 'today', 'ny', now);
+  assert.equal(r.nowHour, 10); assert.equal(r.hours[20].visits, 0); assert.equal(r.hours[9].visits, 1);
+  r = await hourly(env, '7', 'ny', now);
+  assert.equal(r.average, true); assert.equal(r.best, 20);
+  // New York changed to winter time on 1 November: before, 01:30 UTC was 21 h–22 h there
+  assert.equal(r.hours[20].visits, Math.round(6 / 7 * 10) / 10, 'the average of a day over 7 days');
+  assert.equal(r.hours[21].visits, Math.round(3 / 7 * 10) / 10, 'summer time days of New York');
+  // summer time: 01:30 UTC in July is 3 h–4 h in Paris (UTC+2) and 21 h–22 h in New York (UTC-4)
+  const july = Date.parse('2026-07-10T12:00:00Z');
+  visit('2026-07-10T01:30:00Z', 1);
+  assert.equal((await hourly(env, 'today', 'paris', july)).best, 3);
+  assert.equal((await hourly(env, '7', 'ny', july)).best, 21);
+  // an export is counted in its hour; route for the owner only
+  const res = await call(env, 'POST', '/api/event', { body: { name: 'export_ok' } });
+  assert.equal(res.status, 200);
+  const h = db.prepare("SELECT hour, n FROM hourly_counts WHERE name = 'export_ok'").all();
+  assert.equal(h.length, 1); assert.equal(h[0].n, 1); assert.equal(h[0].hour, Math.floor(Date.now() / 3600e3));
+  await call(env, 'POST', '/api/event', { body: { name: 'export_start' } });
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM hourly_counts').get().n, 1, 'only finished exports');
+  let a = await adminCall(env, 'GET', '/api/admin/hours?period=30&tz=ny', { token: await accessToken() });
+  assert.equal(a.status, 200); assert.equal(a.data.tz, 'ny'); assert.equal(a.data.period, '30'); assert.equal(a.data.hours.length, 24);
+  assert.ok(a.data.exportsSince > 0);
+  a = await adminCall(env, 'GET', '/api/admin/hours?period=x&tz=tokyo', { token: await accessToken() });
+  assert.equal(a.data.tz, 'paris'); assert.equal(a.data.period, 'today', 'unknown values → today in Paris');
+  a = await adminCall(env, 'GET', '/api/admin/hours', {});
+  assert.notEqual(a.status, 200, 'owner only');
+  const { DEMO_DATA: D } = await import('../../functions/_lib/admin-demo-data.js');
+  assert.ok(D.hours && D.hours['7_ny'].average && D.hours.today_paris.hours.length === 24, 'the demo has the hours');
 });
 
 // ---- runner --------------------------------------------------------------------------

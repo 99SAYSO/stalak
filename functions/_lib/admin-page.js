@@ -194,6 +194,27 @@ th{color:var(--text2);font-weight:600}
 .hc{background:var(--card);border:2px solid var(--ink);border-radius:22px;padding:16px 18px;box-shadow:0 4px 0 var(--ink);display:flex;flex-direction:column;gap:6px;min-width:0;text-align:left;color:var(--text);font:inherit}
 @media (prefers-color-scheme:dark){.hc{box-shadow:none}}
 .hc.wide{grid-column:1 / -1}
+.hctl{gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.hq .he{display:none;font-size:13.5px;color:var(--muted);margin:6px 0 0}.hq.help .he{display:block}
+.hbest{display:flex;align-items:center;gap:8px;font-weight:700;font-size:18px}.hbest .sp{flex:1}
+.hlist{list-style:none;margin:10px 0 0;padding:0}
+.hhead,.hlist li{display:grid;grid-template-columns:6.4em 3.6em minmax(0,1fr) 5.2em 5.2em 7em;align-items:center;gap:10px}
+.hhead{font-size:12.5px;color:var(--muted);margin-top:12px;padding:0 6px}.hhead span:nth-child(n+4){text-align:right}
+.hlist li{padding:5px 6px;border-radius:10px;font-variant-numeric:tabular-nums}.hlist .cs{display:contents}
+.hlist li+li{border-top:1px solid var(--line)}
+.hlist .hl{font-weight:700;white-space:nowrap}.hlist .hn{text-align:right;font-weight:700}
+.hlist .hb{height:14px;background:var(--sunk);border-radius:7px;overflow:hidden}.hlist .hb i{display:block;height:100%;background:var(--series);border-radius:7px;transform-origin:left}
+.hlist .c{text-align:right;color:var(--text2)}.hlist .c small{display:none}.hlist .c.z{color:var(--muted)}
+.hlist li.best{background:var(--hot-bg)}.hlist li.best .hb i{background:var(--hot)}
+.hlist li.now{box-shadow:inset 3px 0 0 var(--series)}.hlist li.now .hl::after{content:"maintenant";display:block;font-weight:400;color:var(--muted);font-size:12px}
+.hlist li.later{opacity:.45}
+:root{--hot:#d9480f;--hot-bg:#fff1e8}
+@media (prefers-color-scheme:dark){:root{--hot:#fb923c;--hot-bg:#3a2214}}
+@media (max-width:760px){.hhead{display:none}
+  .hlist li{grid-template-columns:5.6em minmax(0,1fr) 3em;row-gap:2px}
+  .hlist .hb{grid-column:2;grid-row:1}.hlist .hn{grid-column:3;grid-row:1}.hlist .hl{grid-column:1;grid-row:1 / 3}
+  .hlist .cs{grid-column:2 / 4;grid-row:2;display:flex;gap:10px;flex-wrap:wrap;font-size:13px}.hlist .c{text-align:left}.hlist .c small{display:inline}}
+
 .hc .hk{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;color:var(--text2)}
 .hc .hk .ico{font-size:20px}
 .hc .hv{font-family:Lilita,Rubik,sans-serif;font-size:46px;line-height:1.05;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
@@ -253,6 +274,7 @@ __DEMO_BANNER__<header class="top"><div class="in">
   <nav>
     <button type="button" id="tab-home" data-go="home"><span class="ic">🏠</span>Accueil</button>
     <button type="button" id="tab-today" data-go="today"><span class="ic">☀️</span>Aujourd’hui</button>
+    <button type="button" id="tab-hours" data-go="hours"><span class="ic">🕑</span>Heure par heure</button>
     <button type="button" id="tab-signups" data-go="signups"><span class="ic">🆕</span>Nouveaux comptes</button>
     <button type="button" id="tab-users" data-go="users"><span class="ic">🌍</span>Visiteurs et pays</button>
     <button type="button" id="tab-money" data-go="money"><span class="ic">💵</span>Argent <span class="test" data-test hidden>TEST</span></button>
@@ -299,6 +321,22 @@ __DEMO_BANNER__<header class="top"><div class="in">
       <div class="hc" id="hAlerts"><div class="hk"><span class="ico">🔔</span>Alertes<span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
         <div id="hAlertsL"></div>
         <p class="he">Ce qui demande ton attention : messages sans réponse, souci sur le serveur, notifications Telegram pas reliées.</p></div>
+    </div>
+  </section>
+
+  <!-- ===== Heure par heure ===== -->
+  <section class="panel" id="p-hours" aria-labelledby="tab-hours" hidden>
+    <p class="intro">À quelle heure il y a le plus de monde sur Stalak. Une ligne par heure ; la barre montre les visites.</p>
+    <div class="row hctl">
+      <div class="seg" role="group" aria-label="Période" id="hPer"><button type="button" data-p="today" aria-pressed="true">Aujourd’hui</button><button type="button" data-p="7" aria-pressed="false">7 j</button><button type="button" data-p="30" aria-pressed="false">30 j</button></div>
+      <div class="seg" role="group" aria-label="Heure de" id="hTz"><button type="button" data-tz="paris" aria-pressed="true">🇫🇷 Paris</button><button type="button" data-tz="ny" aria-pressed="false">🇺🇸 New York</button></div>
+    </div>
+    <div class="card hq">
+      <div class="hbest"><span id="hBest">…</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
+      <p class="he" id="hHelp">Chaque ligne est une heure de la journée, à l’heure de la ville choisie. Visites : pages de Stalak ouvertes. Comptes : comptes créés. Exports : vidéos exportées. Abonnements : nouveaux abonnés. Sur 7 ou 30 jours, c’est la moyenne d’une journée, pour voir l’habitude.</p>
+      <p class="note" id="hNote" hidden></p>
+      <div class="hhead" aria-hidden="true"><span>Heure</span><span>Visites</span><span></span><span>Comptes</span><span>Exports</span><span>Abonnements</span></div>
+      <ol class="hlist" id="hList"></ol>
     </div>
   </section>
 
@@ -479,7 +517,7 @@ __DEMO_BANNER__<header class="top"><div class="in">
   }
 
   // ---- menu ☰ (drawer): one page at a time; the period choice only where it means something ----
-  var PAGES = { home: 'Accueil', today: 'Aujourd’hui', signups: 'Nouveaux comptes', users: 'Visiteurs et pays', money: 'Argent', funnel: 'Du visiteur à l’abonné', msgs: 'Messages', health: 'Santé du serveur' };
+  var PAGES = { home: 'Accueil', today: 'Aujourd’hui', hours: 'Heure par heure', signups: 'Nouveaux comptes', users: 'Visiteurs et pays', money: 'Argent', funnel: 'Du visiteur à l’abonné', msgs: 'Messages', health: 'Santé du serveur' };
   var PERIOD = { users: 1, money: 1, funnel: 1, health: 1 };
   function menu(open) {
     var d = $('#drawer'), b = $('#menuBtn');
@@ -502,6 +540,7 @@ __DEMO_BANNER__<header class="top"><div class="in">
     $('#periodBar').hidden = !PERIOD[name];
     if (name === 'home') home();
     if (name === 'signups' && !S.signupsLoaded) signups();
+    if (name === 'hours') hours();
     if (name === 'users') globeStart(); else globeStop();
     if (!/^#t=/.test(location.hash)) try { history.replaceState(null, '', '#' + name); } catch (e) {}
     window.scrollTo(0, 0);
@@ -522,12 +561,58 @@ __DEMO_BANNER__<header class="top"><div class="in">
     $$('.q').forEach(function (b) {
       if (b.dataset.on) return; b.dataset.on = '1';
       b.addEventListener('click', function (e) {
-        e.stopPropagation(); var c = b.closest('.kpi, .hc'), on = !c.classList.contains('help');
+        e.stopPropagation(); var c = b.closest('.kpi, .hc, .hq'), on = !c.classList.contains('help');
         c.classList.toggle('help', on); b.setAttribute('aria-expanded', on ? 'true' : 'false');
       });
     });
   }
 
+  // ---- Heure par heure (5/11): the visits, accounts, exports and subscriptions of each hour, in Paris or New York time ----
+  var HZ = { paris: 'Paris', ny: 'New York' };
+  S.hPer = 'today'; S.hTz = 'paris';
+  try { var tz0 = localStorage.getItem('stalak:admin:tz'); if (HZ[tz0]) S.hTz = tz0; } catch (e) {}
+  function hLabel(h) { return h + ' h–' + ((h + 1) % 24) + ' h'; }
+  function nfmt(x) { return Number(x).toLocaleString('fr-FR', { maximumFractionDigits: 1 }); }
+  function plural(n, one, many) { return n >= 2 ? many : one; }
+  function hours() {
+    $$('#hPer button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.p === S.hPer ? 'true' : 'false'); });
+    $$('#hTz button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.tz === S.hTz ? 'true' : 'false'); });
+    return api('GET', 'hours?period=' + S.hPer + '&tz=' + S.hTz).then(function (d) {
+      var city = HZ[d.tz] || 'Paris', avg = d.average, ol = $('#hList'); ol.textContent = '';
+      var max = Math.max.apply(null, d.hours.map(function (h) { return h.visits; }).concat([0]));
+      set('#hBest', d.best === null ? 'Pas encore de visites sur cette période.'
+        : '🔥 Le plus de monde : ' + hLabel(d.best) + ' (heure de ' + city + ')');
+      var notes = [];
+      if (avg) notes.push('Moyenne d’une journée sur les ' + d.period + ' derniers jours.');
+      if (!d.exportsSince) notes.push('Les exports sont comptés heure par heure depuis la mise en ligne de cette page : pas encore de chiffre.');
+      else if (d.exportsSince > Date.now() - Number(avg ? d.period : 1) * 864e5) notes.push('Exports comptés heure par heure seulement depuis le ' + new Date(d.exportsSince).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' }) + '.');
+      if (d.test) notes.push('Abonnements : paiements de test.');
+      var note = $('#hNote'); note.textContent = notes.join(' '); note.hidden = !notes.length;
+      d.hours.forEach(function (h, i) {
+        var li = el('li'), later = d.period === 'today' && i > d.nowHour;
+        if (i === d.best) li.classList.add('best');
+        if (d.period === 'today' && i === d.nowHour) li.classList.add('now');
+        if (later) li.classList.add('later');
+        var bar = el('i'), hb = el('span', { class: 'hb', 'aria-hidden': 'true' }); hb.append(bar);
+        bar.style.width = (max ? Math.round(h.visits / max * 100) : 0) + '%';
+        var cs = el('span', { class: 'cs' });
+        if (later) cs.append(el('span', { class: 'c z' }, 'plus tard'));
+        else [[h.signups, ' compte', ' comptes'], [h.exports, ' export', ' exports'], [h.subs, ' abonnement', ' abonnements']].forEach(function (c) {
+          var sp = el('span', { class: 'c' + (c[0] ? '' : ' z') }, nfmt(c[0]));
+          sp.append(el('small', null, plural(c[0], c[1], c[2]))); cs.append(sp);
+        });
+        li.append(el('span', { class: 'hl' }, hLabel(i) + (i === d.best ? ' 🔥' : '')), el('span', { class: 'hn', title: 'Visites' }, later ? '' : nfmt(h.visits)), hb, cs);
+        li.setAttribute('aria-label', hLabel(i) + ' : ' + nfmt(h.visits) + ' visites, ' + nfmt(h.signups) + ' comptes, ' + nfmt(h.exports) + ' exports, ' + nfmt(h.subs) + ' abonnements' + (avg ? ' en moyenne' : ''));
+        ol.append(li);
+      });
+    }).catch(function (e) { set('#hBest', 'Impossible de charger : ' + e.message); });
+  }
+  $('#hPer').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; S.hPer = b.dataset.p; hours(); });
+  $('#hTz').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return; S.hTz = b.dataset.tz;
+    try { localStorage.setItem('stalak:admin:tz', S.hTz); } catch (er) {}
+    hours();
+  });
   // ---- Accueil: the few figures that matter, with an arrow against yesterday / last week ----
   function trend(node, cur, prev, what) {
     var e = $(node); if (!e) return;
@@ -1115,6 +1200,7 @@ const DEMO_JS = String.raw`var DD = __DEMO_DATA__, DS = { avail: false, tickets:
       tickets: { open: DS.tickets.filter(function (t) { return t.status === 'open'; }).length, unread: DS.tickets.filter(function (t) { return row(t).unread; }).length } };
     else if (p === 'home') r = DD.home;
     else if (p === 'stats') r = DD.stats[q.get('days') || '30'] || DD.stats['30'];
+    else if (p === 'hours') r = DD.hours[(q.get('period') || 'today') + '_' + (q.get('tz') || 'paris')] || DD.hours.today_paris;
     else if (p === 'signups') { var b = q.get('before'), i = 0; if (b) { DD.signups.forEach(function (pg, k) { if (String(pg.more) === b) i = k + 1; }); } r = DD.signups[i] || { signups: [], more: null }; }
     else if (p === 'tickets') { var st = q.get('status') || 'open'; r = { tickets: DS.tickets.filter(function (t) { return st === 'all' || t.status === st; }).map(row) }; }
     else if ((m = /^tickets\/([\w-]+)(\/(messages|status))?$/.exec(p))) {
