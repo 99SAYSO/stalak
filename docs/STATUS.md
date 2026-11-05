@@ -4,6 +4,7 @@
 > Dernière mise à jour : 30/10/2026 à 21 h (offre hybride fusionnée et en ligne : App, Comptes, Juridique, Marketing ; migration 0008 appliquée).
 
 ## Décisions récentes du propriétaire
+- **5/11 : 3ᵉ vente réelle, Creator Plus annuel** (106,61 $ TTC, le 5/11 vers 1 h 30 ; webhooks livrés). 3 brouillons de remerciement (anglais, signés 99sayso, un par client) préparés dans le Gmail stalak.alaska ; c'est le propriétaire qui les envoie.
 - **5/11, 14 h 15 : en ligne `compte/comptes-emails`** (« ok » du propriétaire sur la démo) : e-mail et pseudo dans « Nouveaux comptes » du tableau de bord ; toujours rien sur l'Accueil ni dans les notifs. Tests serveur 90/90.
 - **5/11, 13 h 30 : en ligne `compte/tableau-de-bord-v3`** (« ok » du propriétaire sur la démo) : Accueil, menu ☰, Nouveaux comptes avec provenance, globe 3D, bug des périodes sur « Aujourd'hui » réglé. **Migration 0011 appliquée** (`users.signup_source`). Confidentialité FR/EN complétée par le Chef de projet (provenance de la première visite, intérêt légitime, mise à jour du 5/11) : **Juridique doit relire** (dont le stockage `stalak:src` dans le navigateur au regard des règles sur les traceurs). Tests : serveur 90/90, pied_de_page 396, liens_cmp 98, audit 158, formules 169, projet local 48.
 - **5/11, 12 h 45 : plus de limite sur « Envoyer une notif de test »** (demande du propriétaire ; avant : 10 par heure). La route reste réservée au propriétaire (Cloudflare Access + vérification serveur). Changement fait par le Chef de projet, à savoir pour Comptes.
