@@ -5,7 +5,8 @@ import { HttpError, readText } from './http.js';
 import { hmacSha256Hex, timingSafeEqual } from './crypto.js';
 import { planOfPrice, normPlan, salePrices, priceTable, subscriptionActive, planOfSub, payEnv, intervalOf } from './entitlements.js';
 import { bump } from './metrics.js';
-import { subscriptionNotice } from './notify.js';
+import { subscriptionNotice, isNewPurchase } from './notify.js';
+import { thanksAfterPurchase } from './thanks.js';
 
 export const SIGNATURE_TOLERANCE_S = 300;
 
@@ -165,9 +166,13 @@ export async function handleWebhook(request, env, ctx) {
     // the owner's phone (ntfy): new subscription or cancellation, after the answer to Paddle; it can never fail the webhook
     if (type.startsWith('subscription.') && r.applied) {
       const item = (event.data.items || []).find((i) => i && i.status !== 'inactive') || (event.data.items || [])[0];
-      const p = subscriptionNotice(env, event.data, { plan: r.plan, interval: intervalOf(env, item && item.price && item.price.id) ||
-        (item && item.price && item.price.billing_cycle && item.price.billing_cycle.interval), isNew: r.isNew, userId: r.userId, test: payEnv(env) !== 'production' })
-        .catch((e) => console.warn('[stalak] ntfy notice', String(e && e.message || e).slice(0, 80)));
+      const info = { plan: r.plan, interval: intervalOf(env, item && item.price && item.price.id) ||
+        (item && item.price && item.price.billing_cycle && item.price.billing_cycle.interval), isNew: r.isNew, userId: r.userId, test: payEnv(env) !== 'production' };
+      const p = Promise.all([
+        subscriptionNotice(env, event.data, info).catch((e) => console.warn('[stalak] ntfy notice', String(e && e.message || e).slice(0, 80))),
+        // the thank-you e-mail (thanks.js): same trigger, real payments only, once per person, sent ~3 hours later
+        isNewPurchase(event.data, info) ? thanksAfterPurchase(env, { ...info, live: !info.test }) : null,
+      ]);
       if (ctx && typeof ctx.waitUntil === 'function') ctx.waitUntil(p); else await p;
     }
     return { ok: true, ...r };

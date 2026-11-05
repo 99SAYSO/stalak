@@ -1,6 +1,7 @@
 // Backend tests: node tests/backend/run.mjs   (Node >= 22.5, no dependencies)
 // Runs the real Pages Function (functions/api/[[path]].js) against an in-memory SQLite "D1" and a fake fetch
 // (Resend, Paddle, and fake Google / Apple / Microsoft token endpoints and key sets).
+import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import assert from 'node:assert/strict';
@@ -16,6 +17,7 @@ import { cleanPrompt, songPrompt, PROMPT_MAX } from '../../functions/_lib/lyrics
 import { HELP_GUIDE_FR, HELP_GUIDE_EN } from '../../functions/_lib/help-guide.js';
 import { codeEmail } from '../../functions/_lib/email.js';
 import { nextPayout } from '../../functions/_lib/admin.js';
+import { thanksEmail, THANKS_DELAY_MS } from '../../functions/_lib/thanks.js';
 import { onRequest as adminDemo } from '../../functions/admin-demo/[[path]].js';
 import { DEMO_DATA } from '../../functions/_lib/admin-demo-data.js';
 import { warningEmail } from '../../functions/_lib/cloud.js';
@@ -3258,6 +3260,122 @@ test('dashboard demo: only on previews (and localhost), made-up figures, asks th
   const real = await adminPage({ request: new Request('https://admin.stalak.app/admin/', { headers: { 'Cf-Access-Jwt-Assertion': await accessToken() } }), env: makeEnv(ADMIN_ENV) });
   const rh = await real.text();
   assert.ok(rh.includes('var DEMO = false') && !rh.includes('DÉMO avec') && !rh.includes('@demo.stalak'), 'no demo data in the real page');
+});
+
+// ---- thank-you e-mail after a new subscription (5/11) ----
+const thanksMails = () => outbound.filter((o) => o.url === 'https://api.resend.com/emails' && o.body && /99sayso/.test(o.body.from || ''));
+const proItem = (price) => [{ status: 'active', quantity: 1, price: { id: price, product_id: 'pro_x' } }];
+test('thank-you e-mail: once per person ~3 h after a new real subscription, in the account language, plan and duration', async () => {
+  const env = makeEnv({ PADDLE_ENV: 'production' });
+  const before = thanksMails().length;
+  const u = await login(env, 'fan.one@example.com', 'fr');
+  const s1 = sub(u.user.id, { id: 'sub_th1', started_at: new Date().toISOString(), items: proItem('pri_creator_y') });
+  const t0 = Date.now();
+  for (const t of ['subscription.created', 'subscription.activated', 'subscription.updated']) assert.equal((await webhook(env, subEvent(t, s1))).status, 200);
+  await settle();
+  let m = thanksMails().slice(before);
+  assert.equal(m.length, 1, 'one e-mail for the purchase, not one per Paddle event');
+  const b = m[0].body;
+  assert.equal(b.from, '99sayso de Stalak <99sayso@stalak.app>'); assert.equal(b.reply_to, 'contact@stalak.app');
+  assert.deepEqual(b.to, ['fan.one@example.com']);
+  const at = Date.parse(b.scheduled_at);
+  assert.ok(at >= t0 + THANKS_DELAY_MS - 1000 && at <= Date.now() + THANKS_DELAY_MS + 1000, 'about 3 hours later');
+  assert.equal(b.subject, 'Merci, de la part de 99sayso');
+  assert.match(b.text, /^Salut,\n\nC’est 99sayso, le rappeur qui a créé Stalak\. Je viens de voir que tu as pris Creator Plus pour un an entier/);
+  assert.match(b.text, /2\. Qu’est-ce qui t’a donné envie de prendre Creator Plus \?/);
+  assert.ok(!/<img|<table|style=/i.test(b.html), 'no layout: plain paragraphs');
+  assert.ok(m[0].headers['Idempotency-Key'], 'Resend never sends it twice');
+  // a renewal later (same subscription, started long ago) → nothing
+  await webhook(env, subEvent('subscription.updated', { ...s1, started_at: new Date(Date.now() - 40 * 864e5).toISOString() }));
+  // stops, then takes a new subscription a few months later → nothing (once per person)
+  await webhook(env, subEvent('subscription.canceled', { ...s1, status: 'canceled', canceled_at: new Date().toISOString() }));
+  await webhook(env, subEvent('subscription.created', sub(u.user.id, { id: 'sub_th2', started_at: new Date().toISOString(), items: proItem('pri_pro_m') })));
+  // deletes the account, makes a new one with the same address and subscribes → nothing either
+  env.DB.raw.prepare('DELETE FROM subscriptions WHERE user_id = ?').run(u.user.id);
+  env.DB.raw.prepare('DELETE FROM users WHERE id = ?').run(u.user.id);
+  const u2 = await login(env, 'fan.one@example.com', 'fr');
+  await webhook(env, subEvent('subscription.created', sub(u2.user.id, { id: 'sub_th3', customer_id: 'ctm_02', started_at: new Date().toISOString(), items: proItem('pri_pro_m') })));
+  await settle();
+  assert.equal(thanksMails().length - before, 1, 'never twice to the same person');
+  // English, Stalak Pro by month: the owner's text word for word
+  const v = await login(env, 'fan.two@example.com', 'en');
+  await webhook(env, subEvent('subscription.created', sub(v.user.id, { id: 'sub_th4', customer_id: 'ctm_03', started_at: new Date().toISOString(), items: proItem('pri_pro_m') })));
+  await settle();
+  m = thanksMails().slice(before);
+  assert.equal(m.length, 2); assert.equal(m[1].body.subject, 'Thank you, from 99sayso');
+  assert.equal(m[1].body.text, `Hey,
+
+I’m 99sayso, the rapper who built Stalak. I just saw you took Stalak Pro, and honestly it made my day. You’re one of the very first people to support it, so thank you.
+
+Quick question, if you have 2 minutes (just hit reply, even a few words is perfect):
+
+1. How did you find Stalak?
+2. What made you go for Stalak Pro?
+3. Is there anything that bugged you, or something you wish Stalak could do?
+
+I read every reply myself, and I’ll use what you tell me to decide what to build next.
+
+And if you post something made with Stalak, send me the link, I’d love to see it.
+
+Thanks again,
+99sayso
+— Stalak, stalak.app
+`);
+});
+
+test('thank-you e-mail: never in sandbox, never to the customers of before (migration 0012), never blocks the webhook', async () => {
+  const before = thanksMails().length;
+  // sandbox
+  const sb = makeEnv();
+  const a = await login(sb, 'sandbox.fan@example.com', 'en');
+  await webhook(sb, subEvent('subscription.created', sub(a.user.id, { id: 'sub_sb', started_at: new Date().toISOString(), items: proItem('pri_pro_m') })));
+  await settle();
+  assert.equal(thanksMails().length, before, 'no thank-you for a test payment');
+  // the 3 first customers: marked by the migration, nothing even if they take a new subscription
+  const env = makeEnv({ PADDLE_ENV: 'production' });
+  const c = await login(env, 'first.customer@example.com', 'en');
+  env.DB.raw.prepare("INSERT INTO subscriptions (id, user_id, customer_id, status, price_id, last_event_at, updated_at, env) VALUES ('sub_old', ?, 'ctm_old', 'active', 'pri_pro_m', 1, 1, 'production')").run(c.user.id);
+  const upd = readFileSync(join(root, 'migrations', '0012_thanks_mail.sql'), 'utf8').match(/UPDATE users[\s\S]*?;/)[0];
+  env.DB.raw.exec(upd);
+  assert.ok(env.DB.raw.prepare('SELECT thanked_at FROM users WHERE id = ?').get(c.user.id).thanked_at > 0);
+  await webhook(env, subEvent('subscription.created', sub(c.user.id, { id: 'sub_new', customer_id: 'ctm_old', started_at: new Date().toISOString(), items: proItem('pri_creator_m') })));
+  await settle();
+  assert.equal(thanksMails().length, before, 'not to the customers the owner writes to himself');
+  // Resend down: the webhook answers 200, the plan is given, and the next event of the purchase tries again
+  const d = await login(env, 'down.fan@example.com', 'en');
+  extraFetch = async (url) => (url === 'https://api.resend.com/emails' && extraFetch.down ? new Response('down', { status: 500 }) : null);
+  extraFetch.down = true;
+  try {
+    const s = sub(d.user.id, { id: 'sub_down', customer_id: 'ctm_down', started_at: new Date().toISOString(), items: proItem('pri_pro_y') });
+    assert.equal((await webhook(env, subEvent('subscription.created', s))).status, 200);
+    await settle();
+    assert.equal((await call(env, 'GET', '/api/me', { cookie: d.cookie })).data.entitlements.plan, 'pro');
+    assert.equal(env.DB.raw.prepare('SELECT thanked_at FROM users WHERE id = ?').get(d.user.id).thanked_at, null, 'mark taken back');
+    extraFetch.down = false;
+    await webhook(env, subEvent('subscription.activated', s));
+    await settle();
+    const m = thanksMails().slice(before);
+    assert.equal(m.length, 1); assert.match(m[0].body.text, /Stalak Pro for a full year/);
+  } finally { extraFetch = null; }
+});
+
+test('thank-you e-mail: « M’envoyer l’e-mail de remerciement » sends it now to the owner, in French and in English', async () => {
+  const env = makeEnv({ ...ADMIN_ENV, PADDLE_ENV: 'production' });
+  const before = thanksMails().length;
+  let r = await adminCall(env, 'POST', '/api/admin/thanks-test', { body: {} });
+  assert.notEqual(r.status, 200, 'owner only');
+  r = await adminCall(env, 'POST', '/api/admin/thanks-test', { token: await accessToken(), body: {}, origin: 'https://evil.example' });
+  assert.equal(r.status, 403, 'from the dashboard only');
+  r = await adminCall(env, 'POST', '/api/admin/thanks-test', { token: await accessToken(), body: {} });
+  assert.equal(r.status, 200, JSON.stringify(r.data)); assert.deepEqual(r.data, { to: 'owner@example.com', fr: true, en: true });
+  const m = thanksMails().slice(before);
+  assert.equal(m.length, 2);
+  assert.ok(m.every((x) => x.body.to[0] === 'owner@example.com' && !x.body.scheduled_at && x.body.reply_to === 'contact@stalak.app'));
+  assert.ok(m.some((x) => /tu as pris Creator Plus pour un an entier/.test(x.body.text)) && m.some((x) => /you took Stalak Pro, and/.test(x.body.text)));
+  // the texts by plan and duration
+  assert.match(thanksEmail('en', 'creator', 'year').text, /you took Creator Plus for a full year/);
+  assert.match(thanksEmail('fr', 'pro', 'month').text, /tu as pris Stalak Pro, et franchement/);
+  assert.match(thanksEmail('de', 'pro', 'month').subject, /Thank you/, 'English unless French');
 });
 
 // ---- runner --------------------------------------------------------------------------

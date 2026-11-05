@@ -421,6 +421,11 @@ __DEMO_BANNER__<header class="top"><div class="in">
         <button class="btn small danger" type="button" id="tgUnlink" hidden>Délier</button><span class="note" id="ntfyOut" role="status"></span></div>
       <p class="note" id="ntfyState">ntfy (facultatif) : …</p>
     </div>
+    <div class="card" data-mt>
+      <div class="head"><h2>E-mail de remerciement aux nouveaux abonnés</h2>
+        <p>Environ 3 heures après un nouvel abonnement (Pro ou Creator Plus), le client reçoit un e-mail simple de « 99sayso de Stalak », dans sa langue. Une seule fois par personne, jamais pour un renouvellement ni pour un paiement de test. Ses réponses arrivent sur contact@stalak.app.</p></div>
+      <div class="row"><button class="btn" type="button" id="thanksBtn">M’envoyer l’e-mail de remerciement</button><span class="note" id="thanksOut" role="status"></span></div>
+    </div>
     <div class="grid2" id="limits"></div>
     <div class="charts" id="healthCharts" data-mt></div>
     <div class="card" data-mt><h2>Usage des fonctions (30 derniers jours)</h2><div class="grid3" id="usage"></div></div>
@@ -960,6 +965,14 @@ __DEMO_BANNER__<header class="top"><div class="in">
         : 'Telegram n’a pas répondu. Réessaie dans une minute.';
     }).catch(function (e) { out.textContent = 'Pas envoyée : ' + e.message; }).then(function () { b.disabled = false; });
   });
+  $('#thanksBtn').addEventListener('click', function () {
+    var b = this, out = $('#thanksOut'); b.disabled = true; out.textContent = 'Envoi…';
+    api('POST', 'thanks-test', {}).then(function (r) {
+      out.textContent = r.fr && r.en ? 'Envoyés à ' + r.to + ' : un en français (Creator Plus, un an) et un en anglais (Stalak Pro, mensuel). Regarde ta boîte dans une minute.'
+        : (r.fr || r.en) ? 'Un seul est parti (' + (r.fr ? 'français' : 'anglais') + '). Réessaie dans une minute.'
+        : 'Pas envoyés : Resend n’a pas répondu (ou la clé RESEND_API_KEY manque).';
+    }).catch(function (e) { out.textContent = 'Pas envoyés : ' + e.message; }).then(function () { b.disabled = false; });
+  });
   var TG_ERR = { telegram_no_start: 'Je ne trouve pas ton /start : ouvre ton bot dans Telegram, envoie /start, puis réessaie (dans les 15 minutes).',
     telegram_several: 'Plusieurs personnes ont écrit /start à ton bot : renvoie /start toi-même, attends 15 minutes que les autres expirent, puis réessaie.',
     telegram_bad_token: 'Telegram refuse la clé du bot : vérifie TELEGRAM_BOT_TOKEN dans Cloudflare.',
@@ -1115,6 +1128,7 @@ const DEMO_JS = String.raw`var DD = __DEMO_DATA__, DS = { avail: false, tickets:
     }
     else if (p === 'available') { DS.avail = !!body.available; r = { availableSwitch: DS.avail }; }
     else if (p === 'notify-test' || p === 'ntfy-test') r = { configured: true, sent: true, telegram: 'sent', ntfy: false };
+    else if (p === 'thanks-test') r = { to: 'toi@demo.stalak', fr: true, en: true };
     else if (p === 'telegram-link') r = { linked: true, name: 'Démo' };
     else if (p === 'telegram-unlink') r = { linked: false };
     else return Promise.reject(Object.assign(new Error('Pas dans la démo'), { code: 'demo' }));

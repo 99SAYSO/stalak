@@ -14,6 +14,7 @@ import { subscriptionGivesPro, intervalOf, planOfSub, planOfPrice, salePrices, p
 import { getState, setState, isAvailable, messagesOf, deliverReply, catchUpReplies, MESSAGE_MAX, cleanupTickets } from './support.js';
 import { LIVE_MS, today } from './metrics.js';
 import { notifyOwner, ntfyOn } from './notify.js';
+import { sendThanks, thanksEmail } from './thanks.js';
 import { tgStatus, linkTelegram, unlinkTelegram } from './telegram.js';
 import { limit } from './ratelimit.js';
 
@@ -443,6 +444,18 @@ export async function admin(request, env, method, rest) {
     if (tg.state !== 'linked' && !nt) return json({ configured: false, sent: false, telegram: tg.state, ntfy: false });
     const r = await notifyOwner(env, { title: '🔔 Notif de test Stalak', message: 'Ça marche ! Tu seras prévenu ici à chaque nouvel abonné (et, plus discrètement, à chaque annulation).', tags: ['bell'] });
     return json({ configured: true, sent: r.telegram || r.ntfy, telegram: tg.state === 'linked' ? (r.telegram ? 'sent' : 'failed') : tg.state, ntfy: nt ? (r.ntfy ? 'sent' : 'failed') : false });
+  }
+  // « M’envoyer l’e-mail de remerciement » (5/11): the thank-you e-mail of a new customer, to the owner (his Access address),
+  // once in French (Creator Plus for a year) and once in English (Stalak Pro by month), sent now; the webhook cannot be
+  // tried on a preview. Owner only (Cloudflare Access + server check); no limit, like the test notification (owner's choice).
+  if (route === 'thanks-test' && method === 'POST') {
+    await readJson(request);
+    if (!who.email) throw new HttpError(400, 'no_email', 'No e-mail address for the owner.');
+    const r = await Promise.all([
+      sendThanks(env, who.email, thanksEmail('fr', 'creator', 'year')),
+      sendThanks(env, who.email, thanksEmail('en', 'pro', 'month')),
+    ]);
+    return json({ to: who.email, fr: r[0], en: r[1] });
   }
   // « Relier mon Telegram »: the private chat that just sent /start to the bot becomes the owner's chat
   if (route === 'telegram-link' && method === 'POST') {
