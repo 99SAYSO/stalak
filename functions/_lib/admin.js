@@ -13,6 +13,8 @@ import { jwksFor } from './oauth.js';
 import { subscriptionGivesPro, intervalOf, planOfSub, planOfPrice, salePrices, payEnv } from './entitlements.js';
 import { getState, setState, isAvailable, messagesOf, deliverReply, catchUpReplies, MESSAGE_MAX, cleanupTickets } from './support.js';
 import { LIVE_MS, today } from './metrics.js';
+import { ntfy, ntfyOn } from './notify.js';
+import { limit } from './ratelimit.js';
 
 const TEAM = /^https:\/\/[a-z0-9][a-z0-9-]{0,62}\.cloudflareaccess\.com$/;
 const TICKET = /^t_[A-Za-z0-9_-]{16,32}$/;
@@ -254,6 +256,7 @@ export async function insights(env, list, fromMs, now = Date.now()) {
       lyrics: { todayJobs: (lyr && lyr.j) || 0, todayMinutes: Math.round(((lyr && lyr.s) || 0) / 60), freeMinutes: 210 },
       storage: { bytes: (R(storage)[0] || {}).bytes || 0, perAccount: 100 * 1024 ** 3 },
       errorsToday: t.err_5xx || 0,
+      ntfy: ntfyOn(env),
     },
   };
 }
@@ -332,6 +335,14 @@ export async function admin(request, env, method, rest) {
     await catchUpReplies(env, now).catch((e) => console.error('[stalak] catch-up', e && e.message));
     return json({ visitors: await liveVisitors(env, now), availableSwitch: state.available === '1', available: isAvailable(state, now),
       tickets: await ticketCounts(env) });
+  }
+  // « Envoyer une notif de test »: checks that ntfy rings on the owner's phone (the Paddle webhook cannot be tried on a preview)
+  if (route === 'ntfy-test' && method === 'POST') {
+    await readJson(request);
+    await limit(env, 'ntfy-test', 10, 3600e3, 'Too many test notifications, try again in an hour.');
+    if (!ntfyOn(env)) return json({ configured: false, sent: false });
+    const sent = await ntfy(env, { title: '🔔 Notif de test Stalak', message: 'Ça marche ! Tu seras prévenu ici à chaque nouvel abonné (et, plus discrètement, à chaque annulation).', tags: ['bell'], priority: 3 });
+    return json({ configured: true, sent });
   }
   if (route === 'available' && method === 'POST') {
     const body = await readJson(request);

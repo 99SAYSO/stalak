@@ -2952,6 +2952,105 @@ test('dashboard: country (Cloudflare) and device at sign-up and on visits, never
   assert.equal(r.data.test, false);
 });
 
+// ---- ntfy: a notification on the owner's phone for each new subscription and each cancellation (5/11) ----
+const ntfySent = (from) => outbound.slice(from).filter((o) => o.url === 'https://ntfy.sh');
+const settle = () => new Promise((res) => setTimeout(res, 30));   // the notification goes after the answer (waitUntil)
+test('ntfy: one notification per new subscription (plan, price, interval, country), one per cancellation, never e-mail nor name', async () => {
+  const env = makeEnv({ NTFY_TOPIC: 'stalak-owner-Xy7_secret' });
+  const sent = [];
+  extraFetch = async (url, init) => { if (url === 'https://ntfy.sh') { sent.push(JSON.parse(init.body)); return Response.json({ id: 'n1' }); } return null; };
+  try {
+    const u = await login(env, 'buyer.name@example.com', 'en');
+    env.DB.raw.prepare("UPDATE users SET country = 'US', display_name = 'Jane Buyer' WHERE id = ?").run(u.user.id);
+    const s1 = sub(u.user.id, { id: 'sub_n1', started_at: new Date().toISOString(),
+      items: [{ status: 'active', quantity: 1, price: { id: 'pri_creator_m', product_id: 'pro_cr', unit_price: { amount: '1499', currency_code: 'USD' }, billing_cycle: { interval: 'month', frequency: 1 } } }] });
+    // Paddle sends several events for one purchase: created, activated, updated (+ transaction.completed)
+    for (const t of ['subscription.created', 'subscription.activated', 'subscription.updated']) {
+      const r = await webhook(env, subEvent(t, s1));
+      assert.equal(r.status, 200, JSON.stringify(r.data));
+    }
+    await settle();
+    assert.equal(sent.length, 1, 'one notification per purchase');
+    assert.equal(sent[0].topic, 'stalak-owner-Xy7_secret');
+    assert.equal(sent[0].title, '[TEST] 💸 Nouvel abonné Creator Plus');
+    assert.equal(sent[0].message, '14,99 $ / mois · 🇺🇸 États-Unis');
+    assert.ok(sent[0].priority >= 4);
+    // the person cancels (end of the paid period planned): one quiet notification, even if Paddle repeats it
+    const end = new Date(Date.now() + 20 * 864e5).toISOString();
+    for (let i = 0; i < 2; i++) await webhook(env, subEvent('subscription.updated', { ...s1, scheduled_change: { action: 'cancel', effective_at: end } }));
+    await webhook(env, subEvent('subscription.canceled', { ...s1, status: 'canceled', scheduled_change: null }));
+    await settle();
+    assert.equal(sent.length, 2, 'one notification per cancellation');
+    assert.match(sent[1].title, /Abonnement Creator Plus annulé/); assert.ok(sent[1].priority <= 2);
+    // a yearly Pro, no country known, production (no « [TEST] »)
+    const prod = { ...env, PADDLE_ENV: 'production' };
+    const u2 = await login(env, 'second@example.com', 'en');
+    await webhook(prod, subEvent('subscription.created', sub(u2.user.id, { id: 'sub_n2', started_at: new Date().toISOString(),
+      items: [{ status: 'active', quantity: 1, price: { id: 'pri_pro_y', product_id: 'pro_pro', unit_price: { amount: '4999', currency_code: 'USD' } } }] })));
+    await settle();
+    assert.equal(sent[2].title, '💸 Nouvel abonné Pro'); assert.equal(sent[2].message, '49,99 $ / an');
+    // a renewal of a subscription that existed before (started long ago): never « new »
+    env.DB.raw.prepare("INSERT INTO subscriptions (id, user_id, status, price_id, last_event_at, updated_at, plan, env) VALUES ('sub_old', ?, 'active', 'pri_pro_m', 0, 0, 'pro', 'production')").run(u2.user.id);
+    await webhook(prod, subEvent('subscription.updated', sub(u2.user.id, { id: 'sub_old', started_at: new Date(Date.now() - 60 * 864e5).toISOString(),
+      items: [{ status: 'active', quantity: 1, price: { id: 'pri_pro_m', product_id: 'pro_pro' } }] })));
+    await settle();
+    assert.equal(sent.length, 3, 'an older subscription is not announced as new');
+    const all = JSON.stringify(sent);
+    assert.ok(!/buyer\.name|example\.com|Jane|Buyer|ctm_|sub_n/.test(all), 'never e-mail, name or ids');
+  } finally { extraFetch = null; }
+});
+
+test('ntfy: no topic → nothing sent; ntfy down or slow never blocks the webhook nor the plan', async () => {
+  let env = makeEnv();
+  const start = outbound.length;
+  const u = await login(env, 'notopic@example.com', 'en');
+  let r = await webhook(env, subEvent('subscription.created', sub(u.user.id, { id: 'sub_q1', started_at: new Date().toISOString() })));
+  assert.equal(r.status, 200); assert.equal(ntfySent(start).length, 0);
+  env = makeEnv({ NTFY_TOPIC: 'bad topic/with spaces' });
+  r = await webhook(env, subEvent('subscription.created', sub(u.user.id, { id: 'sub_q2', started_at: new Date().toISOString() })));
+  assert.equal(r.status, 200); assert.equal(ntfySent(start).length, 0, 'an invalid topic sends nothing');
+  for (const mode of ['down', 'hang']) {
+    env = makeEnv({ NTFY_TOPIC: 'stalak-owner' });
+    const v = await login(env, mode + '@example.com', 'en');
+    extraFetch = async (url, init) => {
+      if (url !== 'https://ntfy.sh') return null;
+      if (mode === 'down') throw new TypeError('fetch failed');
+      return new Promise((_, rej) => init.signal.addEventListener('abort', () => rej(Object.assign(new Error('aborted'), { name: 'AbortError' }))));
+    };
+    try {
+      const t0 = Date.now();
+      r = await webhook(env, subEvent('subscription.created', sub(v.user.id, { id: 'sub_' + mode, started_at: new Date().toISOString(),
+        items: [{ status: 'active', quantity: 1, price: { id: 'pri_pro_m', product_id: 'pro_pro' } }] })));
+      assert.equal(r.status, 200, mode + JSON.stringify(r.data));
+      assert.ok(Date.now() - t0 < 4500, mode + ': 3 s at most');
+      const me = await call(env, 'GET', '/api/me', { cookie: v.cookie });
+      assert.equal(me.data.entitlements.plan, 'pro', mode + ': the account became Pro');
+    } finally { extraFetch = null; }
+  }
+});
+
+test('ntfy: « Envoyer une notif de test » from the dashboard (owner only), says when NTFY_TOPIC is empty', async () => {
+  const token = await accessToken();
+  let env = makeEnv(ADMIN_ENV);
+  let r = await adminCall(env, 'POST', '/api/admin/ntfy-test', { token, body: {} });
+  assert.equal(r.status, 200); assert.deepEqual(r.data, { configured: false, sent: false });
+  env = makeEnv({ ...ADMIN_ENV, NTFY_TOPIC: 'stalak-owner' });
+  const sent = [];
+  extraFetch = async (url, init) => { if (url === 'https://ntfy.sh') { sent.push(JSON.parse(init.body)); return Response.json({}); } return null; };
+  try {
+    r = await adminCall(env, 'POST', '/api/admin/ntfy-test', { token, body: {} });
+    assert.deepEqual(r.data, { configured: true, sent: true });
+    await settle();
+    assert.match(sent[0].title, /Notif de test/);
+    r = await adminCall(env, 'GET', '/api/admin/stats?days=7', { token });
+    assert.equal(r.data.limits.ntfy, true);
+    r = await adminCall(env, 'POST', '/api/admin/ntfy-test', { body: {} });
+    assert.notEqual(r.status, 200, 'not without the owner\'s Access token');
+    for (let i = 0; i < 10; i++) r = await adminCall(env, 'POST', '/api/admin/ntfy-test', { token, body: {} });
+    assert.equal(r.status, 429, '10 an hour');
+  } finally { extraFetch = null; }
+});
+
 // ---- runner --------------------------------------------------------------------------
 let failed = 0;
 for (const t of tests) {

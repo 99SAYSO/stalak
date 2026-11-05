@@ -521,6 +521,17 @@ les paiements d'avant ne sont pas rattrapés.)
 **stalak.app → Rules → Redirect Rules → Create rule** : si le nom d'hôte est `admin.stalak.app` et le chemin est `/`,
 rediriger (302) vers `https://admin.stalak.app/admin/`. Sinon, garde le favori `https://admin.stalak.app/admin/`.
 
+### 13.6 bis Une notification sur ton téléphone à chaque vente (ntfy)
+Le site envoie une notification à l'appli **ntfy** (gratuite, ntfy.sh) : « 💸 Nouvel abonné Creator Plus » avec « 14,99 $ / mois ·
+🇺🇸 États-Unis » (une seule par achat), et une plus discrète « Abonnement Pro annulé » (une par abonnement). Jamais l'e-mail ni le
+nom du client. Si ntfy ne répond pas (3 s au plus), rien n'est bloqué : le compte passe quand même en Pro.
+1. Installe l'appli **ntfy** (App Store / Google Play), touche **+** et abonne-toi à un nom de canal **long et impossible à deviner**
+   (par exemple 25 lettres et chiffres au hasard) : sur ntfy.sh, quiconque connaît le nom peut lire les notifications.
+2. Cloudflare → Workers & Pages → `stalak-site` → *Settings → Variables and Secrets* → *Add* → type **Secret**, nom `NTFY_TOPIC`,
+   valeur : ce nom de canal (lettres, chiffres, `-` et `_`, 64 au plus). Vide = aucune notification.
+3. Après la mise en ligne : tableau de bord → onglet **Santé du serveur** → **Envoyer une notif de test** : ton téléphone sonne.
+   (Le tableau de bord n'existe que sur admin.stalak.app : le bouton ne marche pas sur une maquette.)
+
 ### 13.7 Vérifier
 - `https://admin.stalak.app/admin/` : Cloudflare demande ton e-mail, envoie un code, puis le tableau de bord s'affiche.
 - `https://stalak.app/admin/` : « Not found ».

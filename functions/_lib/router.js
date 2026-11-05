@@ -261,7 +261,7 @@ async function dispatch(request, env, ctx) {
     // The webhook is server-to-server: authenticated by its signature, not by Origin.
     if (route === 'paddle/webhook') {
       if (method !== 'POST') throw new HttpError(405, 'method_not_allowed', 'Method not allowed.');
-      return json(await handleWebhook(request, env));
+      return json(await handleWebhook(request, env, ctx));
     }
     // Google / Apple / Microsoft: browser navigations (Apple comes back with a cross-site form POST, checked by state + cookie)
     if (parts[0] === 'auth' && parts[1] === 'oauth' && parts.length === 4 && PROVIDERS[parts[2]]) {

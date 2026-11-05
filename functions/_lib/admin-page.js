@@ -292,6 +292,11 @@ th{color:var(--text2);font-weight:600}
   <!-- ===== Santé du serveur ===== -->
   <section class="panel" role="tabpanel" id="p-health" aria-labelledby="tab-health" hidden>
     <p class="intro">Est-ce que tout marche, et reste-t-il de la marge ? Vert = tout va bien ; orange = à surveiller ; rouge = à régler. Tu reçois aussi un e-mail d’alerte quand quelque chose casse.</p>
+    <div class="card">
+      <div class="head"><h2>Notifications sur ton téléphone</h2><span class="sp"></span><span class="status" id="ntfyState">…</span>
+        <p>L’appli ntfy sonne à chaque nouvel abonné (formule, prix, pays) et, plus discrètement, à chaque annulation. Jamais l’e-mail ni le nom du client. Le canal est le secret <b>NTFY_TOPIC</b> (Cloudflare) ; abonne-toi au même nom dans l’appli ntfy.</p></div>
+      <div class="row"><button class="btn primary" type="button" id="ntfyBtn">Envoyer une notif de test</button><span class="note" id="ntfyOut" role="status"></span></div>
+    </div>
     <div class="grid2" id="limits"></div>
     <div class="charts" id="healthCharts" data-mt></div>
     <div class="card" data-mt><h2>Usage des fonctions (30 derniers jours)</h2><div class="grid3" id="usage"></div></div>
@@ -615,6 +620,7 @@ th{color:var(--text2);font-weight:600}
       charts($('#funnelCharts'), days, [{ k: 'exportOk', t: 'Vidéos exportées', f: N, x: 'Réussies.' }, { k: 'exportFail', t: 'Exports ratés', f: N, x: 'Erreur pendant l’export (voir les raisons plus haut).' }, { k: 'adOk', t: 'Pubs regardées', f: N, x: 'Filigrane enlevé grâce à une pub.' }]);
       // Santé
       var L = d.limits || {}, u = d.usage, lb = $('#limits'); lb.textContent = '';
+      var ns = $('#ntfyState'); ns.className = 'status ' + (L.ntfy ? 'ok' : 'warn'); ns.textContent = L.ntfy ? 'Activées' : 'Pas réglées (NTFY_TOPIC vide)';
       if (L.codeMails) limitCard(lb, 'E-mails de code aujourd’hui', L.codeMails.today, L.codeMails.max, '', 'Codes envoyés pour créer un compte, se connecter ou changer de mot de passe. Au-delà de la limite, ils attendent minuit (UTC).');
       if (L.help) limitCard(lb, 'Questions au glaçon d’aide (IA) aujourd’hui', L.help.today, L.help.max, '', 'L’assistant répond jusqu’à cette limite par jour, pour garder la facture IA sous contrôle.');
       if (L.lyrics) limitCard(lb, 'Paroles automatiques aujourd’hui', L.lyrics.todayMinutes, L.lyrics.freeMinutes, 'min', 'Minutes de son transcrites. Environ ' + L.lyrics.freeMinutes + ' min par jour sont gratuites chez Cloudflare ; au-delà, il faut le forfait payant (5 $/mois).');
@@ -636,6 +642,12 @@ th{color:var(--text2);font-weight:600}
     b.addEventListener('click', function () {
       S.days = b.dataset.days; $$('[data-days]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); stats();
     });
+  });
+  $('#ntfyBtn').addEventListener('click', function () {
+    var b = this, out = $('#ntfyOut'); b.disabled = true; out.textContent = 'Envoi…';
+    api('POST', 'ntfy-test', {}).then(function (r) {
+      out.textContent = !r.configured ? 'Rien envoyé : le secret NTFY_TOPIC est vide dans Cloudflare.' : r.sent ? 'Envoyée ! Ton téléphone devrait sonner dans quelques secondes.' : 'ntfy n’a pas répondu. Réessaie dans une minute.';
+    }).catch(function (e) { out.textContent = 'Pas envoyée : ' + e.message; }).then(function () { b.disabled = false; });
   });
   $('#tableBtn').addEventListener('click', function () {
     var w = $('#tableWrap'), on = !w.classList.contains('show'); w.classList.toggle('show', on);

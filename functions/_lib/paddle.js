@@ -3,8 +3,9 @@
 //       https://developer.paddle.com/api-reference/customer-portals/create-customer-portal-session
 import { HttpError, readText } from './http.js';
 import { hmacSha256Hex, timingSafeEqual } from './crypto.js';
-import { planOfPrice, normPlan, salePrices, priceTable, subscriptionActive, planOfSub, payEnv } from './entitlements.js';
+import { planOfPrice, normPlan, salePrices, priceTable, subscriptionActive, planOfSub, payEnv, intervalOf } from './entitlements.js';
 import { bump } from './metrics.js';
+import { subscriptionNotice } from './notify.js';
 
 export const SIGNATURE_TOLERANCE_S = 300;
 
@@ -89,7 +90,7 @@ async function applySubscription(env, data, occurredAt) {
   ).bind(data.id, userId, data.customer_id || null, String(data.status || 'active'), priceId, periodEnd, cancelAt, occurredAt, now, plan, payEnv(env), startedAt).run();
   await linkCustomer(env, userId, data.customer_id);
   if (!userId) console.warn('[stalak] subscription without known user', data.id, data.customer_id);
-  return { applied: true, userId, plan };
+  return { applied: true, userId, plan, isNew: !prev };
 }
 
 // transaction.completed: links the Paddle customer to the user (custom_data.user_id), and keeps the payment for the
@@ -141,7 +142,7 @@ export const HANDLED_EVENTS = [
   'transaction.completed', 'adjustment.created', 'adjustment.updated',
 ];
 
-export async function handleWebhook(request, env) {
+export async function handleWebhook(request, env, ctx) {
   if (!env.PADDLE_WEBHOOK_SECRET) throw new HttpError(500, 'not_configured', 'PADDLE_WEBHOOK_SECRET is not set.');
   const raw = await readText(request, 1024 * 1024);
   const v = await verifySignature(env.PADDLE_WEBHOOK_SECRET, request.headers.get('Paddle-Signature'), raw);
@@ -161,6 +162,14 @@ export async function handleWebhook(request, env) {
   try {
     const r = type.startsWith('subscription.') ? await applySubscription(env, event.data, occurredAt)
       : type.startsWith('adjustment.') ? await applyAdjustment(env, event.data, occurredAt) : await applyTransaction(env, event.data);
+    // the owner's phone (ntfy): new subscription or cancellation, after the answer to Paddle; it can never fail the webhook
+    if (type.startsWith('subscription.') && r.applied) {
+      const item = (event.data.items || []).find((i) => i && i.status !== 'inactive') || (event.data.items || [])[0];
+      const p = subscriptionNotice(env, event.data, { plan: r.plan, interval: intervalOf(env, item && item.price && item.price.id) ||
+        (item && item.price && item.price.billing_cycle && item.price.billing_cycle.interval), isNew: r.isNew, userId: r.userId, test: payEnv(env) !== 'production' })
+        .catch((e) => console.warn('[stalak] ntfy notice', String(e && e.message || e).slice(0, 80)));
+      if (ctx && typeof ctx.waitUntil === 'function') ctx.waitUntil(p); else await p;
+    }
     return { ok: true, ...r };
   } catch (e) {
     // Let Paddle retry: forget the event id so the retry is not seen as a duplicate.
