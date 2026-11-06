@@ -59,6 +59,10 @@ Fichiers : `promo/essai-skills/` (nouveau : `build_after.py`, `phone.js`, `captu
 Aucun média dans le dépôt. Rien à intégrer dans l'app ni le site. Migration SQL : aucune. Tests : sans objet (rien du site ni de
 l'app n'a changé).
 
+Salle de visionnage (`promo/retours/README.md`) : les deux Shorts y sont ajoutés pour ses remarques à l'image près
+(`short-avant-v4` et `short-apres-skills-v8` ; copies de relecture 720p de moins de 20 Mo). Le vrai fichier d'après (masterisé)
+est dans `promo/essai-skills/renders/Apres_3_skills_v8.mp4`, hors du dépôt.
+
 Reste au propriétaire : regarder les deux vidéos et dire laquelle il garde ; écouter la comparaison des voix
 (« Voix_Flora_puis_Kokoro.mp3 »). S'il préfère la voix Flora avec le reste de la version d'après : `VOICE=flora python3
 build_after.py`, puis rendu (environ 6 min), master, planche contact.
