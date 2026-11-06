@@ -225,7 +225,7 @@ const I18N_EN = /*@EN*/{
   "outro": "Free videos end with 3 seconds of the Stalak logo.",
   "save.btn": "Save to device",
   "post.title": "Post your video",
-  "post.share": "Share to TikTok, Insta, YouTube…",
+  "post.share": "Share",
   "post.hint": "Save your video, then open the app of your choice and add it.",
   "diag.sum": "Technical info",
   "copy": "Copy",
@@ -1153,14 +1153,16 @@ const I18N_EN = /*@EN*/{
   "pack.mem1": "Too heavy for this device’s memory: {n} videos of {s} s. Pick a shorter part of the song (up to {smax} s).",
   "exp.fab": "Export",
   "post.sharePhotos": "Save to Photos / Share",
-  "save.file": "Download the file instead",
-  "post.shareHintIos": "In the list, tap “Save Video” to put it in Photos, or pick TikTok or Instagram: the video opens right there.",
+  "save.file": "Download the file",
+  "post.shareHintIos": "Pick TikTok or Instagram: the app opens with your video already in. Paste the caption under it and post. To keep it in Photos: “Save Video”.",
   "cap.t": "Caption, ready to copy",
   "cap.copy": "Copy caption",
   "cap.ok": "Caption copied ✓",
   "cap.sel": "Select the text and copy it.",
   "cap.tags": "#lipsync #rap #newmusic #madewithstalak",
-  "cap.made": "Made with stalak.app",
+  "cap.made": "made with stalak.app",
+  "post.shareMain": "Share",
+  "post.shareHintPhone": "Pick TikTok or Instagram: the app opens with your video already in. Paste the caption under it and post.",
   "fa.t": "“{name}” is a Pro filter",
   "fa.p": "You can try it in the preview. To export it, go Pro, or export your video without this filter.",
   "fa.pro": "Go Pro, from $4.17/mo",
@@ -1820,17 +1822,19 @@ const I18N_FR = /*@FR*/{
   "pack.mem": "Trop lourd pour la mémoire de cet appareil : {n} vidéos de {s} s. Choisis un pack de {nmax} vidéos, ou un passage plus court (jusqu’à {smax} s).",
   "pack.mem1": "Trop lourd pour la mémoire de cet appareil : {n} vidéos de {s} s. Choisis un passage plus court du son (jusqu’à {smax} s).",
   "exp.fab": "Exporter",
-  "post.share": "Partager vers TikTok, Insta, YouTube…",
+  "post.share": "Partager",
   "save.btn": "Enregistrer sur l'appareil",
   "post.sharePhotos": "Enregistrer dans Photos / Partager",
-  "save.file": "Télécharger le fichier à la place",
-  "post.shareHintIos": "Dans la liste, touche « Enregistrer la vidéo » pour la mettre dans Photos, ou choisis TikTok ou Instagram : la vidéo s’y ouvre directement.",
+  "save.file": "Télécharger le fichier",
+  "post.shareHintIos": "Choisis TikTok ou Instagram : l’appli s’ouvre avec ta vidéo déjà importée. Colle la légende dessous et poste. Pour la garder dans Photos : « Enregistrer la vidéo ».",
   "cap.t": "Légende prête à copier",
   "cap.copy": "Copier la légende",
   "cap.ok": "Légende copiée ✓",
   "cap.sel": "Sélectionne le texte et copie-le.",
   "cap.tags": "#playback #rap #lipsync #madewithstalak",
-  "cap.made": "Fait avec stalak.app",
+  "cap.made": "made with stalak.app",
+  "post.shareMain": "Partager",
+  "post.shareHintPhone": "Choisis TikTok ou Instagram : l’appli s’ouvre avec ta vidéo déjà importée. Colle la légende dessous et poste.",
   "fa.t": "« {name} » est un filtre Pro",
   "fa.p": "Tu peux l’essayer dans l’aperçu. Pour l’exporter, passe à Pro, ou exporte ta vidéo sans ce filtre.",
   "fa.pro": "Passer à Pro, dès 4,17 $/mois",
@@ -6848,6 +6852,8 @@ async function pickVideoConfig(){
    device; a video that would not fit is made with a lighter bitrate (not below 3 Mbit/s for one video, 5 for a pack);
    a pack that still does not fit is not started: shorter passage or a smaller pack. S.memMB: set by the tests. ---- */
 const IOS_DEV = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+// a phone or a tablet (export: « Partager » first, owner 05/11); a computer keeps the download
+const PHONE_DEV = IOS_DEV || /Android/i.test(navigator.userAgent);
 function memBudget(){
   if (S.memMB) return S.memMB;
   if (IOS_DEV) return 380;
@@ -7689,7 +7695,12 @@ function expClose(ok){
   if (!ok){ sc.hidden = true; modalOn(false); try { $('#exportBtn').focus(); } catch(e){} return; }
   expUpdate(1); expBlocks.forEach(b => b.classList.add('on')); $('#expDoor').classList.add('on'); $('#expFlag').classList.add('on');
   sc.classList.add('done'); $('#expPct').textContent = pctT(100); $('#expMsg').textContent = _t('exps.done'); $('#expCancel').disabled = true;
-  setTimeout(() => { sc.hidden = true; modalOn(false); try { $('#saveBtn').focus({ preventScroll: true }); } catch(e){} const r = $('#result'); if (r && !r.hidden) r.scrollIntoView({ behavior: scrollB(), block: 'center' }); }, 1600);
+  setTimeout(() => { sc.hidden = true; modalOn(false); const r = $('#result'), box = $('#shareBox');
+    // a phone that shares (05/11): « Partager » comes just under the preview, which stays at the top of the screen
+    if (box && !box.hidden){ try { $('#shareBtn').focus({ preventScroll: true }); } catch(e){}
+      const st = $('.work .stage'), top = st && getComputedStyle(st).position === 'sticky' ? st.offsetHeight : 0;
+      window.scrollBy({ top: box.getBoundingClientRect().top - top - 12, behavior: scrollB() }); return; }
+    try { $('#saveBtn').focus({ preventScroll: true }); } catch(e){} if (r && !r.hidden) r.scrollIntoView({ behavior: scrollB(), block: 'center' }); }, 1600);
 }
 $('#expCancel').onclick = () => { $('#cancelBtn').click(); $('#expMsg').textContent = _t('exps.stop'); $('#expCancel').disabled = true; };
 $('#expScreen').addEventListener('keydown', e => { if (e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); } });
@@ -7857,13 +7868,22 @@ function postShow(){
   links.forEach(a => { if (/tiktok/.test(a.href)) a.hidden = wide; if (/youtube/.test(a.href)) a.textContent = wide ? 'YouTube' : 'YouTube Shorts'; });
   let can = false;
   try { can = !!(navigator.canShare && navigator.share && lastBlob && navigator.canShare({ files: [new File([lastBlob], lastName || 'stalak.mp4', { type: lastBlob.type || 'video/mp4' })] })); } catch(e){}
-  $('#shareBtn').hidden = !can || S.noShare === true;
-  // iPhone / iPad (audit 30/10): the share sheet is the main button (« Enregistrer la vidéo » puts it in Photos, and TikTok /
-  // Instagram are there); the download (to the Files app) becomes a small link
-  const sb = $('#shareBtn'), sv = $('#saveBtn'), iosMain = IOS_DEV && can && !S.noShare && !zip;
-  if (iosMain){ if (sb.nextElementSibling !== sv) sv.parentNode.insertBefore(sb, sv); sb.className = 'btn primary big sharemain'; sv.className = 'linkbtn savefile'; setT(sb, 'post.sharePhotos'); setT(sv, 'save.file'); }
-  else if (sb.classList.contains('sharemain')){ $('#postBox .row').prepend(sb); sb.className = 'btn'; sv.className = 'btn primary'; setT(sb, 'post.share'); setT(sv, 'save.btn'); }
-  setT('#postHint', iosMain ? 'post.shareHintIos' : can && !S.noShare ? 'post.shareHint' : 'post.hint');
+  // phones and tablets (iPhone, iPad, Android; owner 05/11, « comme CapCut »): « Partager » is the main button, it opens the
+  // phone's share list with the video file (TikTok / Instagram open with the video already in), the caption to copy right under
+  // it, the download a small link. A computer, or a phone that cannot share a file: the download, as before (no share button)
+  const sb = $('#shareBtn'), sv = $('#saveBtn'), box = $('#shareBox'), main = PHONE_DEV && can && !S.noShare && !zip;
+  sb.hidden = !main;
+  if (main){
+    if (sb.parentNode !== box){ box.append(sb, $('#postHint'), $('#capBox')); sb.className = 'btn primary big sharemain'; sv.className = 'linkbtn savefile'; }
+    setT(sb, 'post.shareMain'); setT(sv, 'save.file');
+  } else if (sb.parentNode === box){
+    $('#postBox .row').prepend(sb); $('#postBox .row').after($('#postHint')); $('#postHint').after($('#capBox'));
+    sb.className = 'btn'; sv.className = 'btn primary'; setT(sb, 'post.share'); setT(sv, 'save.btn');
+  }
+  box.hidden = !main || !lastBlob;
+  // the post box keeps, on a phone that shares, only… nothing: its links to the networks are replaced by the share list
+  if (main) $('#postBox').hidden = true;
+  setT('#postHint', main ? (IOS_DEV ? 'post.shareHintIos' : 'post.shareHintPhone') : 'post.hint');
   capUi(); proOfferUi();
 }
 $('#shareBtn').onclick = async () => {
@@ -7872,7 +7892,7 @@ $('#shareBtn').onclick = async () => {
   catch(e){
     if (e && e.name === 'AbortError') return;   // closed by the person
     diag('partage : ' + (e && (e.name + ' ' + e.message) || e)); S.noShare = true; postShow();
-    setT('#postHint', 'post.noshare');
+    $('#postBox').hidden = false; setT('#postHint', 'post.noshare');
   }
 };
 /* the logo: a new project, everything cleared (asked first when there is something to lose) */
