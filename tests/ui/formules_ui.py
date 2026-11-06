@@ -105,7 +105,9 @@ def run(b, base, lang, iphone):
     check(tag + ' gratuit : « ou passe à Pro » → Pro', lock(pg, "$('#outroPro').click()")[0] == ['nowm', 'pro'])
     check(tag + ' gratuit : karaoké → Pro', lock(pg, "document.querySelector('#stAnim button[data-v=\"kara\"]').click()")[0] == ['text', 'pro'])
     check(tag + ' gratuit : taille L → Pro', lock(pg, "document.querySelector('#stSize button[data-v=\"l\"]').click()")[0] == ['text', 'pro'])
-    check(tag + ' gratuit : mode Clip → Pro', lock(pg, "document.querySelector('#kindSeg button[data-v=\"clip\"]').click()")[0] == ['clip', 'pro'])
+    # (audit 6/11, n° 18) « Clip » is tried in the preview; only its export asks (audit611_ui.py tests the question)
+    check(tag + ' gratuit : mode Clip → l’aperçu, pas de page de paiement', lock(pg, "document.querySelector('#kindSeg button[data-v=\"clip\"]').click()")[0] is None and ev(pg, 'isClip()'))
+    ev(pg, "setKind('reel', true)")
     ev(pg, "filtAsk = async () => 'pro'")   # (audit 30/10) the question « Pro, or without this filter »: answered Pro here (audit_ui.py tests it)
     check(tag + ' gratuit : filtre Pro à l’export → Pro', lock(pg, "setFilter('demon', true), exportOne()") == [['filters', 'pro'], False])
     check(tag + ' gratuit : pack → Creator Plus', lock(pg, "setFilter('nb', true), $('#packSel').value = '10', exportPack()")[0] == ['pack', 'creator'])
@@ -188,10 +190,7 @@ def engine(b, base):
 def main():
     tmp = tempfile.mkdtemp(prefix='stalak-formules-')
     site = os.path.join(tmp, 'site'); shutil.copytree(PUBLIC, site)
-    for page in ('index.html', 'fr/index.html'):
-        p = os.path.join(site, page); html = open(p, encoding='utf-8').read()
-        assert 'applyLang();\n})();' in html, 'repère de la sonde introuvable'
-        open(p, 'w', encoding='utf-8').write(html.replace('applyLang();\n})();', 'applyLang();\nwindow.__ev = (s) => eval(s);\n})();'))
+    from _probe import add_probe; add_probe(site)
     srv = http.server.ThreadingHTTPServer(('127.0.0.1', 0), functools.partial(Quiet, directory=site))
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     base = 'http://127.0.0.1:%d/' % srv.server_address[1]

@@ -114,6 +114,8 @@ def run(b, base, lang, iphone):
     pg.evaluate("""() => { window.__wake = []; Object.defineProperty(navigator, 'wakeLock', { configurable: true, value: { request: async t => { const s = { released: false, listeners: [],
       addEventListener(n, f){ this.listeners.push(f); }, release(){ this.released = true; window.__wake.push('release'); this.listeners.forEach(f => f()); return Promise.resolve(); } }; window.__wake.push('request:' + t); return s; } } });
       navigator.canShare = () => true; navigator.share = async () => { window.__shared = true; }; }""")
+    # (audit 6/11, n° 5) the window never comes for the example, and on a phone only after « Enregistrer » (audit611_ui.py): here one's own video, saved
+    ev(pg, "S.song.demo = false, S.ppSaved = true")
     pg.evaluate('() => { window.__p = __ev("exportOne()"); }'); pg.wait_for_selector('#filtAsk:not([hidden])', timeout=5000)
     pg.locator('#faWithout').click()
     pg.wait_for_function('() => __ev("!S.exporting && !!lastBlob")', timeout=20000)
@@ -252,10 +254,7 @@ def run(b, base, lang, iphone):
 def main():
     tmp = tempfile.mkdtemp(prefix='stalak-audit-')
     site = os.path.join(tmp, 'site'); shutil.copytree(PUBLIC, site)
-    for page in ('index.html', 'fr/index.html'):
-        p = os.path.join(site, page); html = open(p, encoding='utf-8').read()
-        assert 'applyLang();\n})();' in html, 'repère de la sonde introuvable'
-        open(p, 'w', encoding='utf-8').write(html.replace('applyLang();\n})();', 'applyLang();\nwindow.__ev = (s) => eval(s);\n})();'))
+    from _probe import add_probe; add_probe(site)
     srv = http.server.ThreadingHTTPServer(('127.0.0.1', 0), functools.partial(Quiet, directory=site))
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     base = 'http://127.0.0.1:%d/' % srv.server_address[1]

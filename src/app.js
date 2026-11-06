@@ -105,6 +105,8 @@ const I18N_EN = /*@EN*/{
   "step.2": "<b>2</b>Takes",
   "step.3": "<b>3</b>Lyrics",
   "step.4": "<b>4</b>Edit",
+  "hero.h1": "Free lip-sync video editor for rappers",
+  "hero.tag": "Drop your song and your takes. Stalak cuts them on the beat, lips in sync.",
   "p1.title": "Pick your song",
   "p1.kind": "I’m making",
   "kind.clip": "Music video",
@@ -635,6 +637,14 @@ const I18N_EN = /*@EN*/{
   "dv.t": "Your video is ready ✓",
   "dv.tPack": "Your pack is ready ✓",
   "dv.edit": "Edit the video",
+  "dv.try": "Now try it with your song",
+  "dv.tryNow": "Pick your song: Stalak does the rest.",
+  "dv.nowm": "Save without watermark",
+  "save.videoWm": "Save this one (with watermark)",
+  "ca.t": "Clip mode is a Pro feature",
+  "ca.p": "You can try it in the preview. To export your 16:9 clip, go Pro, or export your video as TikTok / Reels.",
+  "ca.reel": "Export as TikTok / Reels",
+  "ca.try": "Clip mode: try it in the preview. Exporting a 16:9 clip is for Pro.",
   "ly.trHint": "Stalak listens to the voice in the part you picked and writes the lyrics, already synced to your voice. You can fix any word afterwards.",
   "ly.trLang": "Sung language",
   "ly.trAuto": "Auto",
@@ -1539,6 +1549,14 @@ const I18N_FR = /*@FR*/{
   "dv.t": "Ta vidéo est prête ✓",
   "dv.tPack": "Ton pack est prêt ✓",
   "dv.edit": "Modifier la vidéo",
+  "dv.try": "Essaie avec ton son",
+  "dv.tryNow": "Choisis ton son : Stalak fait le reste.",
+  "dv.nowm": "Enregistrer sans filigrane",
+  "save.videoWm": "Enregistrer celle-ci (avec filigrane)",
+  "ca.t": "Le mode Clip est réservé à Pro",
+  "ca.p": "Tu peux l’essayer dans l’aperçu. Pour exporter ton clip en 16:9, passe à Pro, ou exporte ta vidéo au format TikTok / Reels.",
+  "ca.reel": "Exporter en TikTok / Reels",
+  "ca.try": "Mode Clip : essaie-le dans l’aperçu. L’export d’un clip 16:9 est pour Pro.",
   "ly.trGo": "Écrire mes paroles",
   "ly.trAgain": "Les réécrire",
   "lyr.busy": "J’écoute…",
@@ -7740,9 +7758,32 @@ function expClose(ok){
 }
 $('#expCancel').onclick = () => { $('#cancelBtn').click(); $('#expMsg').textContent = _t('exps.stop'); $('#expCancel').disabled = true; };
 $('#expScreen').addEventListener('keydown', e => { if (e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); } });
+/* a clip (16:9) at the export, without Pro: Pro, or the video in 9:16, or nothing */
+let caDone = null;
+function clipAsk(){
+  return new Promise(res => {
+    const back = document.activeElement;
+    caDone = v => { $('#clipAsk').hidden = true; modalOn(false); caDone = null; try { back && back.focus(); } catch(e){} res(v); };
+    $('#clipAsk').hidden = false; modalOn(true); $('#caReel').focus();
+  });
+}
+$('#caPro').onclick = () => { if (caDone) caDone('pro'); };
+$('#caReel').onclick = () => { if (caDone) caDone('reel'); };
+$('#caNo').onclick = () => { if (caDone) caDone(null); };
+$('#clipAsk').addEventListener('keydown', e => { if (e.key === 'Escape'){ e.stopPropagation(); $('#caNo').click(); } });
+$('#clipAsk').addEventListener('click', e => { if (e.target === e.currentTarget) $('#caNo').click(); });
+async function clipGate(){
+  if (!isClip() || can('clip')) return true;
+  const c = await clipAsk();
+  if (c === 'pro'){ lockOpen('clip'); return false; }
+  if (c !== 'reel') return false;
+  setKind('reel', true); diag('mode Clip sans Pro : export en 9:16');
+  return !!S.cuts.length;
+}
 async function exportOne(){
   logLyrics('export');
   if (!S.cuts.length || S.exporting || exportGate) return;
+  if (!(await clipGate())) return;
   if (filtLocked()){ const c = await filtAsk(); if (c === 'pro'){ lockOpen('filters', 'filters'); return; } if (c !== 'without') return; setFilter('none', true); diag('filtre Pro : export sans ce filtre'); }
   if (S.exporting || exportGate) return;
   S.packN = 1; S.wm = wmOn(); beginExport(); const TX = performance.now(); await fontsReady();
@@ -7763,13 +7804,14 @@ async function exportOne(){
     else throw new Error(_t('exp.nosupport'));
     if (S.cancel) throw new Error('annulé');
     if (!blob) throw new Error(_t('exp.nosupport'));
-    lastBlob = blob; resultDone();
+    lastBlob = blob; resultDone(); S.lastWm = !!S.wm; S.lastDemo = demoOnly();
     lastName = 'stalak-' + (isClip() ? 'clip-' : '') + 'v' + S.version + '-' + S.fmt + '.' + ext;
     const rv = $('#resultVideo'); rv.src = URL.createObjectURL(lastBlob); rv.hidden = false;
     $('#result').hidden = false; postShow(); setT('#saveNote', ext === 'mp4' ? (isClip() ? 'save.mp4clip' : 'save.mp4reel') : 'save.webm');
     say('exp.ready', { mb: (lastBlob.size/1048576).toFixed(1) }); acctEvent('export_ok');
     wmUI();
-    S.okCount = (S.okCount || 0) + 1; if (S.okCount === 1) S.okFirst = lastBlob; proOfferUi();
+    // (the example's videos do not count: the offer is for the first video of the person's own)
+    if (!S.lastDemo){ S.okCount = (S.okCount || 0) + 1; if (S.okCount === 1) S.okFirst = lastBlob; } proOfferUi();
   } catch(e){ diag('export : ' + (e && e.message || e)); resultBack(); acctEvent('export_fail', { cat: expFailCat(e) }); expFailSay(e, 'exp.cancelled', 'exp.fail'); }
   endExport();
 }
@@ -7788,6 +7830,7 @@ function shareBroll(list){
 /* pack: N different edits of the same passage, zipped */
 async function exportPack(){
   { const f = packFeat($('#packSel').value); if (!can(f)){ lockOpen(f, 'pack'); return; } }
+  if (!(await clipGate())) return;
   if (filtLocked()){ lockOpen('filters'); return; }
   logLyrics('pack');
   if (!S.cuts.length || S.exporting || exportGate) return;
@@ -7939,10 +7982,20 @@ function doneShow(){
   diag('fin d’export : écran simplifié' + (zip ? ' (pack)' : ''));
 }
 function doneUi(){
-  const zip = /\.zip$/i.test(lastName);
+  const zip = /\.zip$/i.test(lastName), demo = !zip && !!S.lastDemo;
   setT('#dvT', zip ? 'dv.tPack' : 'dv.t');
-  $('#dvPro').hidden = !ACCT || can('nowm') || zip;
+  // (audit 6/11, n° 7) the example: « Essaie avec ton son » first; no Pro link for it
+  $('#dvTry').hidden = !demo;
+  // (n° 4) paid since (or now Pro) while this video carries the watermark: the same video again without it, in big
+  const redo = !zip && !demo && !!S.lastWm && can('nowm');
+  $('#dvNoWm').hidden = !redo;
+  $('#dvPro').hidden = !ACCT || can('nowm') || zip || demo;
+  $('#saveBtn').classList.toggle('primary', !demo && !redo);
+  if (S.done) setT('#saveBtn', zip ? 'save.packBtn' : redo ? 'save.videoWm' : 'save.video');
 }
+/* the person's own song after the example: a fresh page, on the song step, its button picked out */
+$('#dvTry').onclick = () => { try { sessionStorage.setItem('stalak:trySong', '1'); } catch(e){} homeGo(); };
+$('#dvNoWm').onclick = () => { if (!S.exporting) exportOne(); };
 function doneHide(){
   if (!S.done) return;
   S.done = false; document.body.classList.remove('isdone');
@@ -8009,8 +8062,12 @@ $('#capCopy').onclick = async () => {
    again, never for a subscriber), never during an export. It closes with one touch (×, « Plus tard », a touch beside it,
    Escape) and never stands in the way of saving or sharing the video: the page under it is left as it is (no inert). */
 const PP_KEY = 'stalak:proPopSeen';
+/* the example (bips and drawn faces), nothing of the person's own */
+function demoOnly(){ return !!S.song && !!S.song.demo && S.takes.length > 0 && S.takes.every(t => t.kind === 'demo'); }
 let ppTimer = 0, ppBack = null;
 function ppEligible(){
+  // (audit 6/11, n° 5) never for the example; on a phone, only once « Enregistrer la vidéo » has been tapped (it is not hidden)
+  if (S.lastDemo || (PHONE_DEV && !S.ppSaved)) return false;
   return !!ACCT && !can('nowm') && !!lastBlob && !/\.zip$/i.test(lastName) && (S.okCount || 0) === 1 && S.okFirst === lastBlob && !S.exporting && !store.get(PP_KEY);
 }
 // asked when the first video is ready: the window comes 1 s later, if all is still as it was
@@ -8054,6 +8111,8 @@ $('#homeAsk').addEventListener('keydown', e => { if (e.key === 'Escape'){ e.stop
 $('#homeAsk').addEventListener('click', e => { if (e.target === e.currentTarget) $('#homeNo').click(); });
 $('#saveBtn').onclick = async () => {
   if (!lastBlob) return;
+  // (audit 6/11, n° 5) on a phone the Pro offer waits for this tap, so it never hides « Enregistrer »
+  if (!S.ppSaved){ S.ppSaved = true; setTimeout(proOfferUi, 600); }
   // asked again at the click: the first answer can come back empty when the page was still loading
   if (!downloads && window.claude && window.claude.use){ try { downloads = await window.claude.use('downloads'); } catch(e){} }
   // on Stalak's own site (no Claude around it): the browser's own download
@@ -8520,7 +8579,8 @@ $('#lyAsk').addEventListener('click', e => { if (e.target === e.currentTarget &&
 function togglePlay(){ if (S.exporting) return; if (S.playing) stop(); else play(S.step === 4 ? startPoint() : null); }
 $('#playBtn').onclick = togglePlay;
 $('#songPlay').onclick = listenToggle;
-bindSeg('#kindSeg', k => { if (k === 'clip' && !can('clip')){ kindUI(); lockOpen('clip'); return; } setKind(k); });
+// (audit 6/11, n° 18) the Clip mode can be tried by everybody, in the preview; only its export asks for Pro (as the filters)
+bindSeg('#kindSeg', k => { setKind(k); if (k === 'clip' && !can('clip')) say('ca.try'); });
 // the end of the passage, one bar earlier or later (both modes: the same as the end handle)
 $('#endPrev').onclick = () => { if (!S.song) return; if (segMove('r', segEndBar() - 1)){ stop(true); rebuild(false); } };
 $('#endNext').onclick = () => { if (!S.song) return; if (segMove('r', segEndBar() + 1)){ stop(true); rebuild(false); } };
@@ -8818,6 +8878,8 @@ async function demoLoad(){
   $('#songBox').hidden = false; $('#lyText').value = demoLy.join('\n');
   rebuild(false); go(4);
   say('demo.loaded');
+  // (audit 6/11, n° 22) the keyboard goes on from the edit, not from the button now hidden
+  try { $('#playBtn').focus({ preventScroll: true }); } catch(e){}
 }
 
 /* ---------- boot ---------- */
@@ -8826,6 +8888,12 @@ const st = store.get('lyrStyle'); if (st && typeof st === 'object') Object.assig
 initPickers();
 ['#stPos','#stDeco','#stSize','#stAnim'].forEach((sel, i) => { const key = ['pos','deco','size','anim'][i]; $$(sel + ' button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === S.lyrics.style[key])); });
 setRes(PREV); renderTakes(); drawEmpty(); updateNav(); go(1);
+// (audit 6/11, n° 6) the home page's looping video: still for reduced motion (its first picture stays)
+{ const v = $('#heroVid'); if (v){ const calm = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){ return false; } };
+  const sync = () => { if (calm()){ v.removeAttribute('autoplay'); try { v.pause(); } catch(e){} } else if (v.paused) v.play().catch(() => {}); };
+  sync(); try { matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', sync); } catch(e){} } }
+{ let t = null; try { t = sessionStorage.getItem('stalak:trySong'); sessionStorage.removeItem('stalak:trySong'); } catch(e){}
+  if (t){ const d = $('#songDrop'); d.classList.add('try'); try { d.scrollIntoView({ block: 'center' }); $('#songFile').focus({ preventScroll: true }); } catch(e){} say('dv.tryNow'); setTimeout(() => d.classList.remove('try'), 6000); } }
 if (store.get('stalak:kind') === 'clip' && !window.StalakAccount) setKind('clip', true); else kindUI();
 diag('navigateur : ' + navigator.userAgent);
 diag('WebCodecs : décodeur vidéo ' + (window.VideoDecoder ? 'oui' : 'non') + ', encodeur vidéo ' + (window.VideoEncoder ? 'oui' : 'non') + ', décodeur audio ' + (window.AudioDecoder ? 'oui' : 'non') + ', encodeur audio ' + (window.AudioEncoder ? 'oui' : 'non'));
@@ -9751,7 +9819,8 @@ function acctSync(){
   if (!u) acctMenu(false); else setT('#amProT', paid ? 'am.manage' : 'am.pro');
   planTags();   // the padlocks of the plans (App & montage)
   textGate();
-  if (!pro && isClip() && !S.exporting) setKind('reel', true);
+  // (audit 6/11, n° 18: the Clip mode stays, tried in the preview; only its export asks for Pro)
+  if (S.done) doneUi();
   if (pro && !acctWasPro && store.get('stalak:kind') === 'clip' && !isClip() && !S.song && !S.exporting) setKind('clip', true);
   if (pro) apWhyK = null;
   if (apWhyK && apWhyHas(apWhyK)) apWhyK = null;
@@ -9958,6 +10027,7 @@ function ptClose(){
   clearTimeout(ptTimer); ptPhase = 0;
   layerOut($('#proThx'), () => { if (!isShown($('#proThx'))) $('#ptBurst').textContent = ''; }); $('#acctPage').removeAttribute('inert'); modalOn(false);
   if (apView) setTimeout(() => { try { (apView === 'pro' ? $('#apProT') : $('#acctPage')).focus({ preventScroll: true }); } catch(e){} }, 30);
+  else if (S.done && !$('#dvNoWm').hidden) try { $('#dvNoWm').focus(); } catch(e){}
   else try { (ptBackEl && ptBackEl.isConnected ? ptBackEl : $('#acctBtn')).focus(); } catch(e){}
 }
 

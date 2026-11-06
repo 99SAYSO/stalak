@@ -54,6 +54,10 @@ head = re.sub(r'<link rel="preconnect" href="https://fonts.googleapis.com">\n?',
 head = re.sub(r'<link rel="stylesheet" href="https://fonts.googleapis.com[^"]*">', '<link rel="stylesheet" href="/fonts/fonts.css">', head)
 head = head.replace('https://cdn.jsdelivr.net/npm/mp4-muxer@5.1.3/build/mp4-muxer.min.js', '/vendor/mp4-muxer.min.js')
 head = head.replace('https://cdn.jsdelivr.net/npm/mp4box@0.5.2/dist/mp4box.all.min.js', '/vendor/mp4box.all.min.js')
+# App & montage (audit 6/11, n° 10): the two video libraries no longer hold up the first paint (« defer »: they run after the
+# page is read, in their order, before the app's own code, which is « defer » too, see page())
+head = head.replace('<script src="/vendor/', '<script defer src="/vendor/')
+assert head.count('<script defer src="/vendor/') == 2
 assert 'googleapis' not in head and 'jsdelivr' not in head, 'an outside resource is left in the head'
 head = re.sub(r'<meta charset="utf-8">\n?|<meta name="viewport"[^>]*>\n?', '', head)
 assert '<title>Stalak</title>' in head
@@ -258,7 +262,11 @@ def page(lang, body):
     # the banner and its script come first in the page: shown or not before the first paint, so nothing moves afterwards
     if lang == 'en': h, body = h + PWA_LANG_JS, FR_HINT_HTML + FR_HINT_JS + body
     tail = ''
-    return '<!doctype html>\n<html lang="' + lang + '">\n<head>\n' + h + '<style>' + css + '</style>\n</head>\n<body>\n' + body + '<script>' + ACCOUNT_JS + '</script>\n<script>' + js + '</script>\n' + tail + '</body>\n</html>\n'
+    # App & montage (audit 6/11, n° 10): the app's code is no longer written inside the page (860 KB downloaded again at every
+    # visit, the page being « no-cache »): two files whose name carries their version (/assets/…), kept a year by the browser
+    h = h.replace('href="/fonts/fonts.css"', 'href="/fonts/fonts.css?v=' + _v['fonts/fonts.css'] + '"')
+    return ('<!doctype html>\n<html lang="' + lang + '">\n<head>\n' + h + '<style>' + css + '</style>\n</head>\n<body>\n' + body
+            + '<script defer src="/assets/' + ASSETS['account'] + '"></script>\n<script defer src="/assets/' + ASSETS['app'] + '"></script>\n' + tail + '</body>\n</html>\n')
 
 if out.exists(): shutil.rmtree(out)
 shutil.copytree(extra, out)
@@ -267,11 +275,17 @@ shutil.copytree(extra, out)
 import hashlib
 # the footer of the static pages (src/footer.py): its style goes into /site.css, which all of them load
 (out / 'site.css').write_text((out / 'site.css').read_text(encoding='utf-8') + '\n' + (src / 'footer.css').read_text(encoding='utf-8'), encoding='utf-8')
-_v = {n: hashlib.sha1((out / n).read_bytes()).hexdigest()[:8] for n in ('pricing.css', 'site.css') if (out / n).exists()}
+_v = {n: hashlib.sha1((out / n).read_bytes()).hexdigest()[:8] for n in ('pricing.css', 'site.css', 'fonts/fonts.css') if (out / n).exists()}
 for f in list(out.glob('*.html')) + list((out / 'fr').glob('*.html')):
     t = f.read_text(encoding='utf-8'); t2 = t
     for n, v in _v.items(): t2 = t2.replace('href="/' + n + '"', 'href="/' + n + '?v=' + v + '"')
     if t2 != t: f.write_text(t2, encoding='utf-8')
+# App & montage (audit 6/11, n° 10): the app's code and the account's, as versioned files
+(out / 'assets').mkdir(exist_ok=True)
+ASSETS = {}
+for _k, _code in (('app', js), ('account', ACCOUNT_JS)):
+    _b = _code.encode('utf-8'); _n = _k + '.' + hashlib.sha1(_b).hexdigest()[:10] + '.js'
+    (out / 'assets' / _n).write_bytes(_b); ASSETS[_k] = _n
 (out / 'index.html').write_text(page('en', markup_en), encoding='utf-8')
 (out / 'fr').mkdir(exist_ok=True)
 (out / 'fr' / 'index.html').write_text(page('fr', markup), encoding='utf-8')

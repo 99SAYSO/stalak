@@ -139,10 +139,7 @@ def main():
     global PW
     tmp = tempfile.mkdtemp(prefix='stalak-fluide-')
     site = os.path.join(tmp, 'site'); shutil.copytree(PUBLIC, site)
-    for page in ('index.html', 'fr/index.html'):
-        p = os.path.join(site, page); html = open(p, encoding='utf-8').read()
-        assert 'applyLang();\n})();' in html, 'repère de la sonde introuvable'
-        open(p, 'w', encoding='utf-8').write(html.replace('applyLang();\n})();', 'applyLang();\nwindow.__ev = (s) => eval(s);\n})();'))
+    from _probe import add_probe; add_probe(site)
     subprocess.run([FF, '-nostdin', '-v', 'error', '-y', '-f', 'lavfi', '-i', "aevalsrc='%s':s=44100:d=20" % BEAT, '-ac', '1', os.path.join(site, 'beat.wav')], check=True)
     make_take(os.path.join(site, 'take1.mp4'), 1080, 1920, '30', 1)
     make_take(os.path.join(site, 'take2.mp4'), 720, 1280, '30000/1001', 2)

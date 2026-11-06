@@ -170,10 +170,7 @@ def run(b, base, wav, lang, phone):
 def main():
     tmp = tempfile.mkdtemp(prefix='stalak-son-')
     site = os.path.join(tmp, 'site'); shutil.copytree(PUBLIC, site)
-    for page in ('index.html', 'fr/index.html'):
-        p = os.path.join(site, page); html = open(p, encoding='utf-8').read()
-        assert 'applyLang();\n})();' in html, 'repère de la sonde introuvable'
-        open(p, 'w', encoding='utf-8').write(html.replace('applyLang();\n})();', 'applyLang();\nwindow.__ev = (s) => eval(s);\n})();'))
+    from _probe import add_probe; add_probe(site)
     # a song with a clear beat: 120 BPM, a kick on each beat and a held note, 40 s
     wav = os.path.join(site, 'beat.wav')
     subprocess.run([shutil.which('ffmpeg'), '-nostdin', '-v', 'error', '-y', '-f', 'lavfi', '-i',
