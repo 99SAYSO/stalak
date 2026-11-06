@@ -2,6 +2,19 @@ Statut : PRÊT
 Branche : app/audit-6-11 (créée depuis `main` du 6/11 au soir, après « plus de pub »).
 Maquette : https://app-audit-6-11.stalak-site.pages.dev (à faire valider par le propriétaire, règle 9).
 
+**Suite du 6/11 au soir, après la mise en ligne de 21 h 45** (`main` 77b64ed fusionnée dans la branche ; le titre de l'accueil
+de Marketing, choisi par le propriétaire, est gardé tel quel). Ce qui reste à intégrer est petit :
+- **Défaut corrigé** (`src/app.js`, une ligne) : après « Enregistrer sans filigrane », la vidéo refaite sortait bien sans
+  filigrane, mais le bouton restait affiché, parce que l'écran de fin se mettait à jour avant de noter que la nouvelle vidéo
+  n'a pas de filigrane. Maintenant il disparaît et « Enregistrer la vidéo » redevient le bouton principal.
+- **Tests adaptés** (l'exemple a maintenant son propre écran de fin, « Essaie avec ton son ») :
+  - `fin_export_ui.py` et `partager_ui.py` testent la fin d'export avec sa propre vidéo ;
+  - `formules_ui.py` remet exactement le passage après l'essai de « Clip » (sinon la vidéo exportée ensuite était plus courte) ;
+  - `audit611_ui.py` attend la fin de l'écran d'export (1,6 s) et le rechargement après « Essaie avec ton son ».
+- Résultats : voir la fin de ce compte rendu.
+
+Ce qui suit est le compte rendu de la première partie, déjà en ligne.
+
 Résumé (audit du 6/11, `docs/audit/2026-11-06-audit-complet.md`, points 4, 5, 6, 7, 10, 18 et 22) :
 
 1. **n° 4 — « Enregistrer sans filigrane » après le paiement.** Si on passe à Pro alors que la vidéo de l'écran de fin a le
