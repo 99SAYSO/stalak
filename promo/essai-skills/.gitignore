@@ -1,0 +1,21 @@
+# Media stay out of the repo (owner's rule; Earshot trial: never any sound file in the repo).
+# short/assets/: links to ../../youtube/assets (his takes, the music, the Flora voice) and made files (see MEDIA.md).
+short/assets/takes
+short/assets/audio/
+short/assets/sfx
+short/assets/sfx_es/
+short/assets/stills
+short/assets/clip
+short/assets/app/
+short/renders/
+renders/
+*.mp4
+*.mov
+*.webm
+*.wav
+*.mp3
+*.png
+*.jpg
+.hyperframes/
+node_modules/
+snapshots/
