@@ -336,8 +336,8 @@ body{background:var(--sky) var(--flakes);background-size:240px 240px;color:var(-
 
 /* ---------- en-tête : logo Stalak (SVG en ligne, lettrage dessiné + stalactites, aucune police requise) ---------- */
 header{gap:18px 24px;align-items:flex-start}
-h1{display:block;margin:0;padding:0;line-height:0;text-shadow:none}
-h1 .logo{display:block;height:clamp(56px,7.4vw,84px);width:auto;overflow:visible}
+.brand{display:block;margin:0;padding:0;line-height:0;text-shadow:none}
+.brand .logo{display:block;height:clamp(56px,7.4vw,84px);width:auto;overflow:visible}
 
 /* stepper : quatre glaçons */
 .stepper{gap:8px;padding-top:4px}
@@ -536,7 +536,7 @@ input.ly{background:var(--frost);border:2px solid var(--ice-2);border-radius:12p
 @media (max-width:640px){
   body{padding-block:16px 44px;font-size:15px}
   header{flex-direction:column;align-items:flex-start;gap:12px}
-  h1 .logo{height:60px}
+  .brand .logo{height:60px}
   .stepper{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));width:100%;gap:6px}
   .stepper button{flex-direction:column;gap:3px;padding:7px 2px;width:100%;min-height:60px;font-size:13px;justify-content:center;border-radius:14px}
   .card{padding:32px 16px 22px;border-radius:22px}
@@ -1383,6 +1383,19 @@ body.isdone > .help-cube{display:none}
 .dv-card .dv-try[hidden],.dv-card .dv-nowm[hidden]{display:none}
 .drop.try{outline:4px solid var(--sky-deep);outline-offset:4px}
 
+/* (audit 6/11, n° 6) the home page's real title: what Stalak is, above the song form; hidden once the work has begun (steps 2-4,
+   the end screen). The looping video (only when site_src/demo/hero.mp4 exists) stays still for reduced motion (motion-design:
+   a decorative loop is the first thing to stop). */
+.hero{display:flex;flex-direction:column;gap:8px;margin:0 0 2px}
+.hero-h1{margin:0;font:400 clamp(30px,5.4vw,46px)/1.05 var(--display);letter-spacing:.01em;color:#fff;text-shadow:0 3px 0 var(--ink);text-wrap:balance}
+.hero-tag{margin:0;max-width:44ch;font:500 clamp(17px,2.2vw,20px)/1.4 var(--body);color:var(--ink)}
+.hero-vid{display:block;width:min(100%,220px);aspect-ratio:9/16;object-fit:cover;margin-top:8px;border:3px solid var(--ink);border-radius:18px;background:var(--ink)}
+/* the hero takes the room the mascot had above the card (it still stands on the card's edge, right): the text keeps clear of it */
+#p1:has(#songBox[hidden]):has(> .hero){padding-top:28px}
+#p1 > .hero{padding-right:150px}
+#p1:not(:has(#songBox[hidden])) > .hero{display:none}
+@media (max-width:640px){ #p1:has(#songBox[hidden]):has(> .hero){padding-top:12px} #p1 > .hero{padding-right:0} #p1 > .hero .hero-tag{padding-right:96px} }
+
 /* ---- pricing: promo, plan cards, trust line, comparison, FAQ ----
    One component for the Stalak Pro page in the app (#pro, appended to the theme by build.py / build_site.py) and the
    static pages /pricing and /fr/tarifs (served as /pricing.css). Tokens: the theme's (--ink, --sky-deep, --ice, --fur…).
@@ -1618,7 +1631,7 @@ body:has(> .help-cube) > .wrap{padding-bottom:0}
 
 <div class="wrap">
   <header>
-    <h1><button class="home" id="homeBtn" type="button" title="Nouveau projet" aria-label="Stalak : recommencer un nouveau projet" data-i18n-attr="title:home.title;aria-label:home.aria"><svg class="logo" focusable="false" viewBox="-16.0 -6 370.0 163" role="img" aria-label="Stalak"><title>Stalak</title><g fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M51 19.0C46 11.0 38 10.0 30 10.0C18 10.0 9 17.0 9 28.0C9 40.0 20 43.0 30 47.0C42 51.0 52 56.0 52 68.0C52 88.0 42 90.0 30 90.0C20 90.0 12 87.0 7 80.0 M79 14.0L79 76.0Q79 90.0 93 90.0L96 90.0 M68 37.0L97 37.0 M166.0 37.0L166.0 90.0 M166.0 63.5A26.5 26.5 0 1 0 113 63.5A26.5 26.5 0 1 0 166.0 63.5 M193.0 10.0L193.0 90.0 M273.0 37.0L273.0 90.0 M273.0 63.5A26.5 26.5 0 1 0 220.0 63.5A26.5 26.5 0 1 0 273.0 63.5 M302.0 10.0L302.0 90.0 M332.0 37.0L305.0 65.5L334.0 90.0" stroke="#0a0d14" stroke-width="30" transform="translate(3 6)"/><path d="M9.0 99.0Q14.8 115.5 18.0 129.0Q21.1 115.5 27.0 99.0Z M131.5 101.0Q136.7 113.1 139.5 123.0Q142.3 113.1 147.5 101.0Z M186.0 101.0Q190.6 110.9 193.0 119.0Q195.4 110.9 200.0 101.0Z M243.5 101.0Q248.1 114.2 250.5 125.0Q252.9 114.2 257.5 101.0Z M293.0 101.0Q301.3 129.6 306.0 153.0Q309.7 129.6 317.0 101.0Z" fill="#d6ecff" stroke="#0a0d14" stroke-width="4"/><path d="M51 19.0C46 11.0 38 10.0 30 10.0C18 10.0 9 17.0 9 28.0C9 40.0 20 43.0 30 47.0C42 51.0 52 56.0 52 68.0C52 88.0 42 90.0 30 90.0C20 90.0 12 87.0 7 80.0 M79 14.0L79 76.0Q79 90.0 93 90.0L96 90.0 M68 37.0L97 37.0 M166.0 37.0L166.0 90.0 M166.0 63.5A26.5 26.5 0 1 0 113 63.5A26.5 26.5 0 1 0 166.0 63.5 M193.0 10.0L193.0 90.0 M273.0 37.0L273.0 90.0 M273.0 63.5A26.5 26.5 0 1 0 220.0 63.5A26.5 26.5 0 1 0 273.0 63.5 M302.0 10.0L302.0 90.0 M332.0 37.0L305.0 65.5L334.0 90.0" stroke="#0a0d14" stroke-width="30"/><path d="M51 19.0C46 11.0 38 10.0 30 10.0C18 10.0 9 17.0 9 28.0C9 40.0 20 43.0 30 47.0C42 51.0 52 56.0 52 68.0C52 88.0 42 90.0 30 90.0C20 90.0 12 87.0 7 80.0 M79 14.0L79 76.0Q79 90.0 93 90.0L96 90.0 M68 37.0L97 37.0 M166.0 37.0L166.0 90.0 M166.0 63.5A26.5 26.5 0 1 0 113 63.5A26.5 26.5 0 1 0 166.0 63.5 M193.0 10.0L193.0 90.0 M273.0 37.0L273.0 90.0 M273.0 63.5A26.5 26.5 0 1 0 220.0 63.5A26.5 26.5 0 1 0 273.0 63.5 M302.0 10.0L302.0 90.0 M332.0 37.0L305.0 65.5L334.0 90.0" stroke="#fff" stroke-width="20"/></g></svg></button></h1>
+    <div class="brand"><button class="home" id="homeBtn" type="button" title="Nouveau projet" aria-label="Stalak : recommencer un nouveau projet" data-i18n-attr="title:home.title;aria-label:home.aria"><svg class="logo" focusable="false" viewBox="-16.0 -6 370.0 163" role="img" aria-label="Stalak"><title>Stalak</title><g fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M51 19.0C46 11.0 38 10.0 30 10.0C18 10.0 9 17.0 9 28.0C9 40.0 20 43.0 30 47.0C42 51.0 52 56.0 52 68.0C52 88.0 42 90.0 30 90.0C20 90.0 12 87.0 7 80.0 M79 14.0L79 76.0Q79 90.0 93 90.0L96 90.0 M68 37.0L97 37.0 M166.0 37.0L166.0 90.0 M166.0 63.5A26.5 26.5 0 1 0 113 63.5A26.5 26.5 0 1 0 166.0 63.5 M193.0 10.0L193.0 90.0 M273.0 37.0L273.0 90.0 M273.0 63.5A26.5 26.5 0 1 0 220.0 63.5A26.5 26.5 0 1 0 273.0 63.5 M302.0 10.0L302.0 90.0 M332.0 37.0L305.0 65.5L334.0 90.0" stroke="#0a0d14" stroke-width="30" transform="translate(3 6)"/><path d="M9.0 99.0Q14.8 115.5 18.0 129.0Q21.1 115.5 27.0 99.0Z M131.5 101.0Q136.7 113.1 139.5 123.0Q142.3 113.1 147.5 101.0Z M186.0 101.0Q190.6 110.9 193.0 119.0Q195.4 110.9 200.0 101.0Z M243.5 101.0Q248.1 114.2 250.5 125.0Q252.9 114.2 257.5 101.0Z M293.0 101.0Q301.3 129.6 306.0 153.0Q309.7 129.6 317.0 101.0Z" fill="#d6ecff" stroke="#0a0d14" stroke-width="4"/><path d="M51 19.0C46 11.0 38 10.0 30 10.0C18 10.0 9 17.0 9 28.0C9 40.0 20 43.0 30 47.0C42 51.0 52 56.0 52 68.0C52 88.0 42 90.0 30 90.0C20 90.0 12 87.0 7 80.0 M79 14.0L79 76.0Q79 90.0 93 90.0L96 90.0 M68 37.0L97 37.0 M166.0 37.0L166.0 90.0 M166.0 63.5A26.5 26.5 0 1 0 113 63.5A26.5 26.5 0 1 0 166.0 63.5 M193.0 10.0L193.0 90.0 M273.0 37.0L273.0 90.0 M273.0 63.5A26.5 26.5 0 1 0 220.0 63.5A26.5 26.5 0 1 0 273.0 63.5 M302.0 10.0L302.0 90.0 M332.0 37.0L305.0 65.5L334.0 90.0" stroke="#0a0d14" stroke-width="30"/><path d="M51 19.0C46 11.0 38 10.0 30 10.0C18 10.0 9 17.0 9 28.0C9 40.0 20 43.0 30 47.0C42 51.0 52 56.0 52 68.0C52 88.0 42 90.0 30 90.0C20 90.0 12 87.0 7 80.0 M79 14.0L79 76.0Q79 90.0 93 90.0L96 90.0 M68 37.0L97 37.0 M166.0 37.0L166.0 90.0 M166.0 63.5A26.5 26.5 0 1 0 113 63.5A26.5 26.5 0 1 0 166.0 63.5 M193.0 10.0L193.0 90.0 M273.0 37.0L273.0 90.0 M273.0 63.5A26.5 26.5 0 1 0 220.0 63.5A26.5 26.5 0 1 0 273.0 63.5 M302.0 10.0L302.0 90.0 M332.0 37.0L305.0 65.5L334.0 90.0" stroke="#fff" stroke-width="20"/></g></svg></button></div>
     <ol class="stepper" id="stepper">
       <li><button type="button" data-go="1" data-i18n="step.1"><b>1</b>Son</button></li>
       <li><button type="button" data-go="2" data-i18n="step.2"><b>2</b>Prises</button></li>
@@ -1658,6 +1671,12 @@ body:has(> .help-cube) > .wrap{padding-bottom:0}
 
   <!-- STEP 1 -->
   <section class="narrow" id="p1">
+    <!-- (audit 6/11, n° 6; texts: Marketing & croissance) what Stalak is, in one title and one line, above the form -->
+    <div class="hero" id="hero">
+      <h1 class="hero-h1" data-i18n="hero.h1">Montage vidéo lip-sync gratuit pour rappeurs</h1>
+      <p class="hero-tag" data-i18n="hero.tag">Importe ton son et tes prises : Stalak les coupe sur le rythme, les lèvres bien synchro.</p>
+      
+    </div>
     <div class="card lpoffer" id="lpOffer" hidden role="region" aria-labelledby="lpOfferT">
       <h2 id="lpOfferT" data-i18n="lp.t">Reprendre ton dernier montage ?</h2>
       <p class="hint" id="lpOfferP"></p>
@@ -2562,6 +2581,6 @@ body:has(> .help-cube) > .wrap{padding-bottom:0}
   <button class="hp-diag" id="helpDiag" type="button" data-i18n="help.diag">Copier les infos pour l’équipe</button>
 </section>
 <script defer src="/assets/account.d25f9b3c6e.js"></script>
-<script defer src="/assets/app.869c1af0d3.js"></script>
+<script defer src="/assets/app.dff1c1b29d.js"></script>
 </body>
 </html>
