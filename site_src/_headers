@@ -29,6 +29,14 @@
 /og.png
   Cache-Control: public, max-age=86400
 
+# Marketing & croissance (06/11) : la vidéo de démo et l'exemple réel de l'app (prises « neva die » du propriétaire)
+/demo/*
+  Cache-Control: public, max-age=86400
+
+# Marketing & croissance (06/11) : les images de partage des guides
+/og/*
+  Cache-Control: public, max-age=86400
+
 /manifest.webmanifest
   Content-Type: application/manifest+json
   Cache-Control: public, max-age=3600

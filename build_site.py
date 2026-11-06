@@ -41,8 +41,9 @@ head = (src / 'head.html').read_text(encoding='utf-8')
 css = (src / 'style.css').read_text(encoding='utf-8') + '\n/* ---- theme ---- */\n' + (src / 'theme.css').read_text(encoding='utf-8') + '\n' + (src / 'pricing.css').read_text(encoding='utf-8')
 PRICING_CSS = (src / 'pricing.css').read_text(encoding='utf-8')   # plan cards: in the app's Stalak Pro page and in /pricing.css for /tarifs
 markup = (src / 'markup.html').read_text(encoding='utf-8')
-# Marketing & croissance : la vidéo du premier écran n'apparaît que si site_src/demo/hero.mp4 existe (une vraie vidéo finie, 9:16, 5 à 8 s, sans son)
-markup = re.sub(r'<!--HEROVIDEO-->.*?<!--/HEROVIDEO-->', '', markup, flags=re.S) if not (extra / 'demo' / 'hero.mp4').exists() else markup.replace('<!--HEROVIDEO-->', '').replace('<!--/HEROVIDEO-->', '')
+# Marketing & croissance : la petite vidéo du premier écran n'apparaît que si site_src/demo/edit.mp4 existe (un vrai montage Stalak,
+# 9:16, quelques secondes ; 06/11 : les prises « neva die » du propriétaire, avec son accord) ; même fichier dans les guides
+markup = re.sub(r'<!--HEROVIDEO-->.*?<!--/HEROVIDEO-->', '', markup, flags=re.S) if not (extra / 'demo' / 'edit.mp4').exists() else markup.replace('<!--HEROVIDEO-->', '').replace('<!--/HEROVIDEO-->', '')
 js = (src / 'app.js').read_text(encoding='utf-8')
 ACCOUNT_JS = (src / 'account.js').read_text(encoding='utf-8')   # stalak.app only: sign in, Stalak Pro
 
@@ -74,11 +75,12 @@ PAGE = {
     <p><strong>Stalak</strong> est un site de <strong>montage de playback</strong> (lip sync) :
     tu importes ton son et plusieurs vidéos où tu chantes dessus, et Stalak coupe sur le rythme en passant d’une prise à l’autre,
     avec une <strong>synchro des lèvres parfaite</strong>. Tu exportes pour <strong>TikTok, Instagram Reels, YouTube Shorts</strong> ou un clip <strong>YouTube</strong> en 16:9.</p>
-    <p><strong>Aucun téléchargement, aucune inscription : 3 étapes et c’est posté.</strong> Stalak marche dans ton navigateur, sur iPhone, Android ou ordinateur, gratuitement et sans créer de compte.</p>
+    <p><strong>Aucun téléchargement, aucune inscription : 4 étapes et c’est posté.</strong> Stalak marche dans ton navigateur, sur iPhone, Android ou ordinateur, gratuitement et sans créer de compte.</p>
     <p><strong>Comment faire un playback avec Stalak :</strong></p>
     <ul>
       <li>Importe ton son.</li>
       <li>Ajoute plusieurs prises où tu chantes dessus, filmées avant ou directement avec la caméra de Stalak.</li>
+      <li>Ajoute tes paroles si tu veux : colle-les et cale-les en tapant, ou laisse Stalak les écrire (Stalak Pro).</li>
       <li>Stalak coupe sur le rythme, passe d’une prise à l’autre, et tu exportes ta vidéo.</li>
     </ul>
     <p><strong>Ce que tu peux faire :</strong></p>
@@ -102,11 +104,12 @@ PAGE = {
     <p><strong>Stalak</strong> is a <strong>lip-sync video editor</strong> for rappers and singers.
     Drop in your song and a few videos of you performing it, and Stalak cuts between your takes on the beat,
     with <strong>the lip sync locked in</strong>. Export for <strong>TikTok, Instagram Reels and YouTube Shorts</strong>, or a full 16:9 music video for <strong>YouTube</strong>.</p>
-    <p><strong>No download. No sign-up. 3 steps and you’re ready to post.</strong> Stalak runs right in your browser on iPhone, Android or desktop. It’s free, and you don’t need an account.</p>
+    <p><strong>No download. No sign-up. 4 steps and you’re ready to post.</strong> Stalak runs right in your browser on iPhone, Android or desktop. It’s free, and you don’t need an account.</p>
     <p><strong>How to make a lip-sync video with Stalak</strong> (<a href="/how-to-make-a-lip-sync-video">step-by-step guide</a>):</p>
     <ul>
       <li>Upload your song.</li>
       <li>Add a few takes of you performing it. Film them ahead of time, or right in Stalak’s camera.</li>
+      <li>Add your lyrics if you want: paste them and tap along, or let Stalak write them (Stalak Pro).</li>
       <li>Stalak cuts between your takes on the beat. Hit export and post.</li>
     </ul>
     <p><strong>What you can do:</strong></p>
@@ -133,7 +136,7 @@ markup = markup.replace(a, '<section class="about" aria-labelledby="aboutT" data
 assert '<!--FOOTER-->' in markup
 markup = markup.replace('<!--FOOTER-->', FOOT.render('fr', i18n='site.footer'))
 css += '\n' + (src / 'footer.css').read_text(encoding='utf-8')
-css += '\n.about{align-self:center;max-width:760px;width:100%;color:#fff;font-size:14.5px;line-height:1.55;margin-top:18px}.about h2{font:400 22px/1.2 var(--display);margin:0 0 6px;color:#fff;text-shadow:0 2px 0 var(--ink)}.about p{margin:0 0 8px}.about ul{margin:0 0 8px;padding-left:20px}.about strong{font-weight:700}\n'
+css += '\n.about{align-self:center;max-width:760px;width:100%;color:#fff;font-size:14.5px;line-height:1.55;margin-top:18px}.about h2{font:400 22px/1.2 var(--display);margin:0 0 6px;color:#fff;text-shadow:0 2px 0 var(--ink)}.about p{margin:0 0 8px}.about ul{margin:0 0 8px;padding-left:20px}.about strong{font-weight:700}.about a{color:#fff;font-weight:700;text-decoration:underline;text-underline-offset:3px}\n'
 
 # 3. languages: the dictionaries are in app.js (between /*@EN*/ … /*EN@*/ and /*@FR*/ … /*FR@*/); the French of the page's
 #    fixed texts is read from the markup (data-i18n, data-i18n-attr) and given to the app, so that the English page can
@@ -292,8 +295,8 @@ for _k, _code in (('app', js), ('account', ACCOUNT_JS)):
 
 # 4. static pages: legal pages (to complete with the publisher's details: see the [ … ] parts), pricing, guides, comparison page.
 #    English at the root, French in fr/. Marketing & croissance : the example video of the guides only shows if
-#    site_src/demo/exemple.mp4 exists (a real finished video).
-DEMO = (extra / 'demo' / 'exemple.mp4').exists()
+#    site_src/demo/edit.mp4 exists (a real Stalak edit; 06/11: the before / after of the guides, audit point 13).
+DEMO = (extra / 'demo' / 'edit.mp4').exists()
 for p in [f for f in list(out.glob('*.html')) + list((out / 'fr').glob('*.html')) if f.name != 'index.html']:
     fr = p.parent.name == 'fr'
     seller = SELLER or ((BIZ['nom'] + (', entrepreneur individuel (EI)' if fr else ', sole proprietor (EI, France)')) if BIZ_ON else

@@ -235,7 +235,7 @@ I'm a rapper and I built a free browser tool that cuts my takes to the beat. Loo
 ### 9. Ce que tu fais toi-même
 
 - Créer ou renommer les comptes TikTok, Instagram et YouTube, puis donner les adresses à Marketing (liste `SOCIAL` de `build_site.py`). Sur TikTok, garder un compte **personnel** : un compte Business a le lien tout de suite, mais moins de musiques disponibles.
-- Filmer une vraie vidéo finie de 5 à 8 s (9:16, sans son, avec un son à toi) et la déposer dans `site_src/demo/hero.mp4` : elle apparaîtra en haut du premier écran. Une version de 20 à 30 s dans `site_src/demo/exemple.mp4` servira aux pages de cas d'usage.
+- ~~Vidéo du premier écran et des guides~~ : faite le 6/11 avec ses prises « neva die » (son accord) : `site_src/demo/edit.mp4`, voir `docs/marketing/DEMO.md`.
 - Filmer et poster les vidéos, et répondre aux commentaires en ton nom.
 - Demander par écrit l'accord des artistes avant de reposter leurs prises.
 - Décider : cites-tu des concurrents dans tes propres posts ? Et passe-t-on l'anglais à l'adresse principale (partie A) ?
