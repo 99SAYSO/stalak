@@ -114,6 +114,8 @@ def run(b, base, lang, iphone):
     pg.evaluate("""() => { window.__wake = []; Object.defineProperty(navigator, 'wakeLock', { configurable: true, value: { request: async t => { const s = { released: false, listeners: [],
       addEventListener(n, f){ this.listeners.push(f); }, release(){ this.released = true; window.__wake.push('release'); this.listeners.forEach(f => f()); return Promise.resolve(); } }; window.__wake.push('request:' + t); return s; } } });
       navigator.canShare = () => true; navigator.share = async () => { window.__shared = true; }; }""")
+    # (audit 6/11, n° 5) the window never comes for the example, and on a phone only after « Enregistrer » (audit611_ui.py): here one's own video, saved
+    ev(pg, "S.song.demo = false, S.ppSaved = true")
     pg.evaluate('() => { window.__p = __ev("exportOne()"); }'); pg.wait_for_selector('#filtAsk:not([hidden])', timeout=5000)
     pg.locator('#faWithout').click()
     pg.wait_for_function('() => __ev("!S.exporting && !!lastBlob")', timeout=20000)

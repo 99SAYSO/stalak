@@ -105,6 +105,8 @@ const I18N_EN = /*@EN*/{
   "step.2": "<b>2</b>Takes",
   "step.3": "<b>3</b>Lyrics",
   "step.4": "<b>4</b>Edit",
+  "hero.h1": "Free lip-sync video editor for rappers",
+  "hero.tag": "Drop your song and your takes. Stalak cuts them on the beat, lips in sync.",
   "p1.title": "Pick your song",
   "p1.kind": "I’m making",
   "kind.clip": "Music video",
@@ -8882,6 +8884,10 @@ const st = store.get('lyrStyle'); if (st && typeof st === 'object') Object.assig
 initPickers();
 ['#stPos','#stDeco','#stSize','#stAnim'].forEach((sel, i) => { const key = ['pos','deco','size','anim'][i]; $$(sel + ' button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === S.lyrics.style[key])); });
 setRes(PREV); renderTakes(); drawEmpty(); updateNav(); go(1);
+// (audit 6/11, n° 6) the home page's looping video: still for reduced motion (its first picture stays)
+{ const v = $('#heroVid'); if (v){ const calm = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){ return false; } };
+  const sync = () => { if (calm()){ v.removeAttribute('autoplay'); try { v.pause(); } catch(e){} } else if (v.paused) v.play().catch(() => {}); };
+  sync(); try { matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', sync); } catch(e){} } }
 { let t = null; try { t = sessionStorage.getItem('stalak:trySong'); sessionStorage.removeItem('stalak:trySong'); } catch(e){}
   if (t){ const d = $('#songDrop'); d.classList.add('try'); try { d.scrollIntoView({ block: 'center' }); $('#songFile').focus({ preventScroll: true }); } catch(e){} say('dv.tryNow'); setTimeout(() => d.classList.remove('try'), 6000); } }
 if (store.get('stalak:kind') === 'clip' && !window.StalakAccount) setKind('clip', true); else kindUI();
