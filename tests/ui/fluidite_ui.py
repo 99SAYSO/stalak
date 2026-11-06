@@ -9,7 +9,9 @@ Measured picture by picture, in the exported files:
   its name (2 squares under them). Read back from every picture of the export, inside a shot the number must go up by exactly
   1 from one picture to the next: the same number twice is a picture shown twice (a little slow moment), +2 a skipped one.
 The 3 takes are the cases met: exactly 30 pictures/s (1080 × 1920); 29.97 pictures/s in 720 × 1280 (drawn bigger, through
-the canvas); 30 pictures/s with uneven timestamps (± 4 ms, as an iPhone or a recorder writes them).
+the canvas); 30 pictures/s with uneven timestamps (± 4 ms, as an iPhone or a recorder writes them). Each take is lined up
+half a picture away from the video's pictures, the hardest case (measured on 06/11 with the version then online: 54 pictures
+shown twice and 54 skipped out of 200 on the uneven take; 0 with the fix).
 On an iPhone (iPhone 15 Pro emulated: Safari's ways, WebGL drawing, decoding straight through) and a computer; a single video
 (free plan, with the watermark) and a pack (Creator Plus). The test browser has no AAC encoder: the export is asked with Opus
 sound (same pictures, same timing as with AAC on a phone)."""
@@ -42,11 +44,12 @@ def make_take(path, w, h, rate, take_id, jitter=False):
            "if(between(Y,{ty0},{ty1}),if(lt(X,{bw}*2),if(mod(floor({tid}/pow(2,floor(X/{bw}))),2),235,16),128),"
            "100+60*sin(X/57+N/9)))").format(y0=y0, y1=y1, bw=bw, n=BITS, ty0=ty0, ty1=ty1, tid=take_id)
     vf = "geq=lum='%s':cb=128:cr=128" % lum
-    if jitter: vf += ",setpts='(N/30+0.004*sin(N*1.7))/TB'"
+    # (the time base made fine first: otherwise the uneven times are rounded to 1/30 s, two pictures at the same time)
+    if jitter: vf += ",settb=1/90000,setpts='(N/30+0.004*sin(N*1.7))/TB'"
     args = [FF, '-nostdin', '-v', 'error', '-y', '-f', 'lavfi', '-i', 'color=c=gray:s=%dx%d:r=%s:d=20' % (w, h, rate),
             '-f', 'lavfi', '-i', "aevalsrc='%s':s=44100:d=20" % BEAT, '-vf', vf, '-shortest',
             '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '18', '-g', '30', '-pix_fmt', 'yuv420p', '-c:a', 'aac']
-    if jitter: args += ['-fps_mode', 'passthrough', '-video_track_timescale', '90000']
+    if jitter: args += ['-fps_mode', 'passthrough', '-enc_time_base', '1:90000', '-video_track_timescale', '90000']
     subprocess.run(args + [path], check=True)
 
 
@@ -98,6 +101,9 @@ def run(b, base, site, iphone, measures):
     pg.wait_for_function('() => __ev("!!S.song")', timeout=30000)
     pg.set_input_files('#takeFiles', [os.path.join(site, n) for n in ('take1.mp4', 'take2.mp4', 'take3.mp4')])
     pg.wait_for_function('() => __ev("S.takes.length === 3 && S.takes.every(t => t.status !== \'pending\')")', timeout=120000)
+    # the hardest case: each take lined up half a picture away from the video's pictures (the sound's sync decides it, so it
+    # happens to some takes): there the nearest picture in time flips from one to the other with the least unevenness
+    ev(pg, "S.takes.forEach(t => { t.offset = Math.round(t.offset * 30) / 30 + 0.5 / 30 + 0.0003; })")
     ev(pg, "go(4)"); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=30000)
     ev(pg, "S.lyrics.mode = 'none', setFilter('none', true), store.set(PP_KEY, 1), pickAudioConfig = async sr => ({ codec: 'opus', sampleRate: sr, numberOfChannels: 2, bitrate: 128000 })")
     fx = ev(pg, "S.takes.map(t => [t.name, +(t.offset || 0).toFixed(3)])")

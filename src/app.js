@@ -5824,7 +5824,7 @@ class FrameSource {
   async frameAt(t){
     const us = t * 1e6, half = 0.5e6 / Math.max(1, this.fps), q = this.queue, fd = 1e6 / Math.max(1, this.fps);
     const seq = this.lastUs != null && Math.abs(us - this.lastUs - 1e6 / OUT_FPS) < 2000 && this.fps > OUT_FPS * 0.94 && this.fps < OUT_FPS * 1.06;
-    const after = seq ? this.lastTs : -Infinity;
+    const after = seq ? this.lastTs : -Infinity, lp = seq ? this.lastPick : null;
     if (!this.canGo(us)) this.reset(us);
     const n0 = this.outN, t0 = performance.now();
     for (let idle = 0, seen = this.outN; ; ){
@@ -5832,7 +5832,7 @@ class FrameSource {
       // stuck: nothing came out of the decoder for about 6 s
       if (this.outN !== seen){ seen = this.outN; idle = 0; } else if (++idle > 200) throw new Error('le décodeur ne répond plus');
       // (a picture not shown yet, just before the time, is kept: it may be the next one of the take)
-      while (q.length >= 2 && q[1].timestamp <= us + half && (!seq || q[0].timestamp <= after || q[0].timestamp < us - fd)) q.shift().close();
+      while (q.length >= 2 && q[1].timestamp <= us + half && (!seq || q[0] === lp || q[0].timestamp < after || q[0].timestamp < us - fd)) q.shift().close();
       this.feed();
       if (q.length && q[q.length-1].timestamp >= us + half) break;
       if (this.done) break;
@@ -5846,8 +5846,9 @@ class FrameSource {
     if (n >= 4 && dt > 0.01) this.rate = this.rate ? this.rate * 0.6 + 0.4 * n / dt : n / dt;
     if (!q.length){ this.lastUs = null; return null; }
     let pick = q[0]; for (const f of q){ if (f.timestamp <= us + half) pick = f; else break; }
-    if (seq){ const nx = q.find(f => f.timestamp > after); if (nx && Math.abs(nx.timestamp - us) <= fd) pick = nx; }
-    this.lastUs = us; this.lastTs = pick.timestamp;
+    // (the next picture of the take: the one after the last shown, even at the same timestamp, which some recorders write)
+    if (seq){ const i = lp ? q.indexOf(lp) : -1, nx = i >= 0 ? q[i + 1] : q.find(f => f.timestamp > after); if (nx && Math.abs(nx.timestamp - us) <= fd) pick = nx; }
+    this.lastUs = us; this.lastTs = pick.timestamp; this.lastPick = pick;
     return pick;
   }
   /* keeps the decoder busy a few pictures ahead (8 at most decoded or being decoded, so a graphics chip's decoder never runs
