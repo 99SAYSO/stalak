@@ -1,4 +1,4 @@
-Statut : EN COURS (ajouts du 6/11 en cours)
+Statut : PRÊT
 Branche : app/filigrane-mascotte (créée depuis `main` du 6/11 : d3d7564, avec la maquette du Chef de projet). **Contient aussi `app/partager`** (fusionnée le 6/11 : l'écran de fin demandé a « Partager » sur téléphone) : intégrer cette branche suffit, `app/partager` n'est plus à fusionner à part.
 Maquette : https://app-filigrane-mascotte.stalak-site.pages.dev (à faire valider par le propriétaire, règle 9).
 Vidéo d'exemple : `docs/design/filigrane-mascotte-exemple.mp4` (export réel image par image de l'exemple de l'app, en Gratuit, filigrane à 14 %, 9:16, 20 s ; son converti en AAC après coup, le navigateur de test n'ayant pas d'encodeur AAC).
@@ -102,22 +102,32 @@ Pour les autres conversations :
 - **Comptes** : l'app n'envoie plus `ad_offer`, `ad_shown` ni `ad_ok`. Le serveur les accepte encore (`tests/backend/run.mjs`) et le commentaire de `acctEvent` dans `app.js` (bloc compte) les cite toujours. Les étapes pub de l'entonnoir du tableau de bord sont à retirer de votre côté.
 - **Chef de projet** : `STALAK_CONTEXTE.md` (offre, filigrane « logo seul », pub récompensée) est à mettre à jour.
 
-Tests (6/11, iPhone et ordinateur, FR et EN) :
-- `formules_ui.py` 137/137 (adapté). Il vérifie :
-  - un seul « Exporter » et « Sans filigrane → Pro » juste à côté ;
-  - le filigrane à ~17 % de la largeur, plus haut que large (mascotte + texte) ;
-  - les sauts toutes les 5 s, dans les 4 coins, tous hors des zones TikTok / Instagram ;
-  - l'aperçu identique à l'export 2D et WebGL ;
-  - un vrai export avec le filigrane dans chaque image ;
-  - aucun script de pub Google chargé.
-- `liens_cmp_ui.py` 58/58 (adapté : plus de consentement pub, aucun script Google même après une vidéo, « Your Privacy Choices » mène à la Confidentialité).
-- `pied_de_page_ui.py` 402/402, `audit_ui.py` 158/158, `plans_ui.py` 35/35 (texte « Sans filigrane »), `export_pub_ui.py` 22/22.
-- `son_passage.py` 86/86, `projet_local_ui.py` 48/48, `filtres_ui.py` 106/106, `animations_ui.py` 44/44, `remux_frag.py` 10/10, `paroles_suppr.py` 44/44.
-- `gallery_ui.py` 49/49, `help_ui.py` 42/42, `tests/backend/run.mjs` 96/96.
-- `support_ui.py` et `lyrics_ui.py` s'arrêtent comme sur `main`. `support_ui.py` a aussi un échec sur « M'envoyer l'e-mail de remerciement » (tableau de bord, Comptes) : vérifié identique sur `main` du 6/11, sans lien avec cette branche.
-- `partager_ui.py` n'est pas sur cette branche : `app/partager` n'est pas encore fusionnée. Les deux branches touchent `postShow` / la zone d'export à des endroits différents ; à fusionner l'une après l'autre.
+Tests (6/11 au soir, iPhone de 390 px et ordinateur de 1280 px, FR et EN) :
+- **Nouveau `fluidite_ui.py`** : 30/30, sur 12 vidéos (iPhone et ordinateur ; export simple et pack de 5). Chaque vidéo a 600 images, toutes exactement à 1/30 s d'écart. Au total, 7 046 passages d'une image à la suivante vérifiés dans les plans : **0 image en double, 0 sautée**. Avant la correction, sur la version en ligne : 54 doubles et 54 sautées sur 200 dans le cas le plus dur.
+- **Nouveau `fin_export_ui.py`** : 86/86. Il vérifie :
+  - sans minuteur, aucun chiffre ; avec le minuteur, 3, 2, 1 (caméra simulée) ;
+  - « Lancer la prise 1 », puis 2, puis de nouveau 1 après suppression ;
+  - la question des paroles : Oui, Non, Échap, et pas de question quand il y a déjà des paroles ;
+  - l'écran de fin : seulement l'essentiel, dans l'ordre, les boutons dans l'écran sur téléphone ;
+  - « Modifier la vidéo » ; la fin d'un pack ;
+  - pas de défilement de côté, aucune erreur.
+- Tests adaptés :
+  - `partager_ui.py` 74/74 (« Enregistrer la vidéo » d'abord, « Partager » dessous) ;
+  - `formules_ui.py` 137/137 (filigrane à 14 %) ;
+  - `audit_ui.py` 158/158 ;
+  - `liens_cmp_ui.py` 58/58 ;
+  - `pied_de_page_ui.py` 402/402 (dont la version claude.ai) ;
+  - `plans_ui.py` 35/35 ;
+  - `export_pub_ui.py` 22/22.
+- Autres suites :
+  - `son_passage.py` 86/86, `projet_local_ui.py` 48/48, `filtres_ui.py` 106/106, `animations_ui.py` 44/44 ;
+  - `remux_frag.py` 10/10, `paroles_suppr.py` 44/44, `gallery_ui.py` 49/49, `help_ui.py` 42/42 ;
+  - `tests/backend/run.mjs` 96/96.
+- `support_ui.py` et `lyrics_ui.py` s'arrêtent comme sur `main`, y compris l'échec « M'envoyer l'e-mail de remerciement » du tableau de bord (Comptes), vérifié identique sur `main` du 6/11.
 
 À tester par le propriétaire sur la maquette :
-1. Faire une vidéo (l'exemple suffit), sans être Pro. Il n'y a qu'un bouton « Exporter », avec le lien « Sans filigrane → Pro » juste dessous, qui ouvre les formules.
-2. Exporter et regarder la vidéo : le visage de la mascotte avec « stalak.app » change de coin toutes les 5 s.
-3. Ou regarder directement `docs/design/filigrane-mascotte-exemple.mp4` (envoyée aussi dans la conversation).
+1. Importer un son et des prises (ou en filmer une sans minuteur : aucun chiffre ne doit s'afficher). Supprimer une prise filmée : le bouton revient à « Lancer la prise 1 ».
+2. « Continuer » : la question « Tu veux ajouter les paroles à la vidéo ? » ; essayer Oui puis Non.
+3. Exporter, sans être Pro : l'écran de fin ne montre que « Enregistrer la vidéo », « Partager » (téléphone), « Copier la légende », « Sans filigrane → Pro » et « Modifier la vidéo ».
+4. Regarder la vidéo : le visage de la mascotte avec « stalak.app » (14 %) change de coin toutes les 5 s, et le mouvement est fluide d'un bout à l'autre, surtout sur une prise filmée à l'iPhone.
+5. Ou regarder directement `docs/design/filigrane-mascotte-exemple.mp4` (envoyée aussi dans la conversation).
