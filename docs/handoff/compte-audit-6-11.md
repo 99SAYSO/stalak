@@ -28,7 +28,7 @@ Résumé :
   fois sur la page des formules : l'étiquette de la carte Pro (choix du 6/11) le garde, le bandeau du haut dit seulement
   « Pro dès 4,17 $/mois en annuel » (comme la page Tarifs).
 
-Skills utilisés : `appsec-review` (`docs/appsec-review-audit-6-11.md`), `webapp-testing` (nouveau test navigateur `achat_ui.py`).
+Skills utilisés : `appsec-review` (`docs/appsec-review-audit-6-11.md`).
 
 Fichiers touchés :
 - nouveaux : `functions/_lib/retention.js`, `migrations/0016_thanks_mail_id.sql`, `tests/ui/achat_ui.py`, `docs/appsec-review-audit-6-11.md`
