@@ -40,7 +40,7 @@ def run(b, base, lang, iphone, real):
     pg.wait_for_function('window.__ev && window.MP4Box', timeout=20000)
     pg.locator('#demoBtn').click()
     pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000)
-    ev(pg, "ACCT.state.user = null, adUI()")
+    ev(pg, "ACCT.state.user = null, wmUI()")
     if SHOTS:
         card = pg.locator('#expRow').locator('xpath=ancestor::*[contains(@class,"card")][1]')
         card.scroll_into_view_if_needed(); pg.wait_for_timeout(300)

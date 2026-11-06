@@ -365,11 +365,9 @@
           <h2 data-i18n="exp.h">Exporter</h2>
           <div class="exprow" id="expRow">
             <button class="btn primary big expgo" id="exportBtn" type="button"><span data-i18n="exp.btn">Exporter</span><small id="exportSub" hidden data-i18n="exp.sub.wm">avec filigrane</small></button>
-            <button class="btn big adgo" id="adBtn" type="button" hidden><span data-i18n="ad.btn">Regarder une pub (30 s)</span><small data-i18n="ad.sub">sans filigrane</small></button>
           </div>
           <div class="wmnote" id="outroNote" hidden>
-            <p class="note"><span id="wmNoteT" data-i18n="wm.note">Les vidéos gratuites portent un petit logo Stalak en filigrane.</span> <button class="linkbtn" id="outroPro" type="button" hidden data-i18n="ad.or">Sans filigrane ni pub : passe à Pro</button></p>
-            <p class="note adst" id="adStatus" role="status" aria-live="polite" hidden></p>
+            <p class="note"><span id="wmNoteT" data-i18n="wm.note">Les vidéos gratuites portent le filigrane Stalak.</span> <button class="linkbtn" id="outroPro" type="button" hidden data-i18n="wm.pro">Sans filigrane → Pro</button></p>
           </div>
           <div class="nearbox" id="expNear"></div>
           <div class="row">
@@ -474,7 +472,7 @@
     <div class="pp-mascot" aria-hidden="true"></div>
     <h2 id="proPopT" data-i18n="pp.t">Belle vidéo ! La prochaine, sans filigrane ?</h2>
     <ul class="pp-list">
-      <li data-i18n="pp.l1">Ni pub ni filigrane</li>
+      <li data-i18n="pp.l1">Sans filigrane</li>
       <li data-i18n="pp.l2">Le mode Clip 16:9, sur tout le son</li>
       <li data-i18n="pp.l3">Tous les filtres</li>
     </ul>
@@ -485,22 +483,6 @@
 </div>
 
 <!-- « Your Privacy Choices » (United States: do not sell or share, kept on this device; GPC counts as a refusal) -->
-<div class="askbox" id="pcAsk" role="dialog" aria-modal="true" aria-labelledby="pcAskT" hidden>
-  <div class="card">
-    <h2 id="pcAskT" data-i18n="pc.t">Vos choix de confidentialité</h2>
-    <p data-i18n="pc.p">Stalak ne montre une pub que si tu choisis « Regarder une pub » pour retirer le filigrane. Tu peux interdire à Google et à ses partenaires d’utiliser tes informations pour des pubs ciblées (« Ne pas vendre ni partager mes informations »). Tu pourras quand même regarder une pub : elle ne sera pas personnalisée.</p>
-    <p class="note" id="pcGpc" data-i18n="pc.gpc" hidden>Le contrôle « Global Privacy Control » est activé dans ton navigateur : c’est déjà un refus.</p>
-    <div class="pc-two">
-      <button class="btn" id="pcOut" type="button" aria-describedby="pcState" data-i18n="pc.out">Ne pas vendre ni partager</button>
-      <button class="btn" id="pcIn" type="button" aria-describedby="pcState" data-i18n="pc.in">Autoriser</button>
-    </div>
-    <p class="note" id="pcState" role="status" aria-live="polite"></p>
-    <div class="row pc-row">
-      <a class="linkbtn" id="pcMore" href="/fr/confidentialite#cookies" target="_blank" rel="noopener" data-i18n="pc.more">En savoir plus</a>
-      <button class="btn primary" id="pcClose" type="button" data-i18n="pc.ok">OK</button>
-    </div>
-  </div>
-</div>
 
 <div class="askbox" id="filtAsk" role="alertdialog" aria-modal="true" aria-labelledby="filtAskT" hidden>
   <div class="card">
@@ -729,7 +711,7 @@
     </section>
 
     <section class="ap-view ap-proview" id="apPro" hidden>
-      <p class="pr-promo" id="apPromo"><svg class="pr-flake" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.5v19M3.8 7.25l16.4 9.5M3.8 16.75l16.4-9.5M9.6 3.9 12 6.3l2.4-2.4M9.6 20.1 12 17.7l2.4 2.4"/></svg><span data-i18n="pr.promo">Ni pub ni filigrane dès <b>4,17 $/mois</b> avec Pro annuel</span></p>
+      <p class="pr-promo" id="apPromo"><svg class="pr-flake" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.5v19M3.8 7.25l16.4 9.5M3.8 16.75l16.4-9.5M9.6 3.9 12 6.3l2.4-2.4M9.6 20.1 12 17.7l2.4 2.4"/></svg><span data-i18n="pr.promo">Sans filigrane dès <b>4,17 $/mois</b> avec Pro annuel</span></p>
       <h2 id="apProT" tabindex="-1" data-i18n="acct.proT">Les formules Stalak</h2>
       <p class="pr-sub" id="apProSub" data-i18n="pr.sub">Stalak monte tes vidéos à ta place. Avec une formule, tu postes plus, plus vite, et chaque vidéo a l’air sortie d’un studio.</p>
       <p class="ap-why" id="apProWhy" hidden></p>
@@ -750,7 +732,7 @@
         <div class="pr-plans pl-plans">
           <article class="pr-plan pl-card pl-pro is-best" data-plan="pro" aria-labelledby="plProN">
             <span class="pr-glint" aria-hidden="true"></span>
-            <p class="pr-ribbon pl-ribbon" data-i18n="pl.rib.pro">Ni pub ni filigrane</p>
+            <p class="pr-ribbon pl-ribbon" data-i18n="pl.rib.pro">Sans filigrane</p>
             <div class="pr-art"><img data-emo="money" alt="" width="112" height="112"></div>
             <h3 class="pr-name" id="plProN" data-i18n="pl.n.pro">Pro</h3>
             <p class="pr-price"><span class="pr-amt" data-pl="amt">7,99 $</span><span class="pr-per" data-i18n="pr.per">/mois</span></p>
@@ -759,7 +741,7 @@
             <button class="btn pr-cta primary" type="button" data-buy="pro" data-i18n="pl.cta.pro">Choisir Pro</button>
             <p class="pl-note" data-pl="note" hidden></p>
             <ul class="pr-feats">
-              <li data-i18n="pl.f.nowm"><strong>Ni pub ni filigrane</strong></li>
+              <li data-i18n="pl.f.nowm"><strong>Sans filigrane</strong></li>
               <li data-i18n="pl.f.clip"><strong>Le mode Clip</strong> : ton clip YouTube 16:9, monté tout seul</li>
               <li data-i18n="pl.f.fx"><strong>Les effets premium</strong></li>
               <li data-i18n="pl.f.text"><strong>Paroles mot par mot et karaoké</strong>, toutes les tailles</li>
@@ -796,7 +778,7 @@
               <li data-i18n="pr.f.lyr0">Paroles à l’écran (taille M, phrase entière)</li>
               <li data-i18n="pl.f.tap">Import des paroles et calage au tap</li>
               <li data-i18n="pl.f.filters3">3 filtres</li>
-              <li class="is-minus" data-i18n="pl.f.wm">Petit filigrane Stalak ; une pub d’environ 30 s l’enlève pour une vidéo</li>
+              <li class="is-minus" data-i18n="pl.f.wm">Filigrane Stalak sur chaque vidéo</li>
             </ul>
           </article>
         </div>
@@ -818,7 +800,7 @@
             <tbody>
               <tr><th scope="row" data-i18n="pr.r.auto">Montage automatique sur les temps, les mots ou par mesure</th><td><i class="pr-yes" role="img" aria-label="Oui" data-i18n-attr="aria-label:pr.yes"></i></td><td><i class="pr-yes" role="img" aria-label="Oui" data-i18n-attr="aria-label:pr.yes"></i></td><td class="pr-colpro"><i class="pr-yes" role="img" aria-label="Oui" data-i18n-attr="aria-label:pr.yes"></i></td></tr>
               <tr><th scope="row" data-i18n="pr.r.916">Vidéos 9:16 pour TikTok, Reels et Shorts</th><td><i class="pr-yes" role="img" aria-label="Oui" data-i18n-attr="aria-label:pr.yes"></i></td><td><i class="pr-yes" role="img" aria-label="Oui" data-i18n-attr="aria-label:pr.yes"></i></td><td class="pr-colpro"><i class="pr-yes" role="img" aria-label="Oui" data-i18n-attr="aria-label:pr.yes"></i></td></tr>
-              <tr><th scope="row" data-i18n="pl.r.nowm">Ni pub ni filigrane</th><td class="pr-v"><span data-i18n="pl.v.ad">Une pub l’enlève</span></td><td><i class="pr-yes" role="img" aria-label="Oui" data-i18n-attr="aria-label:pr.yes"></i></td><td class="pr-colpro"><i class="pr-yes" role="img" aria-label="Oui" data-i18n-attr="aria-label:pr.yes"></i></td></tr>
+              <tr><th scope="row" data-i18n="pl.r.nowm">Sans filigrane</th><td class="pr-v"><span data-i18n="pl.v.ad">Avec filigrane</span></td><td><i class="pr-yes" role="img" aria-label="Oui" data-i18n-attr="aria-label:pr.yes"></i></td><td class="pr-colpro"><i class="pr-yes" role="img" aria-label="Oui" data-i18n-attr="aria-label:pr.yes"></i></td></tr>
               <tr><th scope="row" data-i18n="pr.r.size">Taille du texte</th><td class="pr-v"><span data-i18n="pr.v.m">M</span></td><td class="pr-v"><span data-i18n="pr.v.sml">S, M, L</span></td><td class="pr-colpro pr-v"><span data-i18n="pr.v.sml">S, M, L</span></td></tr>
               <tr><th scope="row" data-i18n="pr.r.anim">Apparition du texte</th><td class="pr-v"><span data-i18n="pr.v.line">Phrase entière</span></td><td class="pr-v"><span data-i18n="pr.v.all">+ mot par mot, karaoké</span></td><td class="pr-colpro pr-v"><span data-i18n="pr.v.all">+ mot par mot, karaoké</span></td></tr>
               <tr><th scope="row" data-i18n="pl.r.filters">Filtres vidéo</th><td class="pr-v">3</td><td class="pr-v"><span data-i18n="pl.v.all">Tous</span></td><td class="pr-colpro pr-v"><span data-i18n="pl.v.all">Tous</span></td></tr>

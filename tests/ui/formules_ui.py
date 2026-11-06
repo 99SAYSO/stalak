@@ -1,17 +1,14 @@
-"""Test of the offer of 30/10 in the evening in the app: Gratuit / Stalak Pro / Stalak Creator Plus, the moving watermark of
-free videos and the rewarded ad that removes it from one video. Python Playwright (chromium) + ffmpeg.
+"""Test of the offer in the app: Gratuit / Stalak Pro / Stalak Creator Plus and the watermark of free videos (no ad since
+06/11: free videos always carry it; no watermark = Pro or Creator Plus). Python Playwright (chromium) + ffmpeg.
 
     python3 /abs/path/tests/ui/formules_ui.py <path of a built public/ folder> [folder for screenshots]
 
-- Gratuit: no account needed to export; the watermark is in the preview and in the export (2D and WebGL, same picture), it
-  moves; every padlock opens the plans page on Pro or Creator Plus.
+- Gratuit: no account needed to export; one « Exporter » button and, next to it, « Sans filigrane → Pro » (the plans). The
+  watermark (06/11: the mascot's face as a white stencil + « stalak.app », about 17 % of the width) is in the preview and in
+  the export (2D and WebGL, same picture; packs use the same drawing); it jumps to another corner every 5 s, always inside the part
+  TikTok and Instagram do not cover (top 8 %, bottom 20 %, right 12 %). No ad button, and Google's ad script is never loaded.
 - Pro / Creator Plus are played by the test: acctHas(feat) is replaced inside the app; at the end Comptes' own function is
   put back. acctOpen is watched.
-- The rewarded ad: Google's script (securepubads.g.doubleclick.net/tag/js/gpt.js) cannot be reached from the test machine,
-  so the test serves an imitation of its documented interface (defineOutOfPageSlot + OutOfPageFormat.REWARDED, events
-  rewardedSlotReady / rewardedSlotGranted / rewardedSlotClosed / slotRenderEnded, makeRewardedVisible, destroySlots) and
-  plays the 4 cases: reward, closed too early, no ad, device not supported. One real export checks that the reward is
-  for this video only.
 - An iPhone (iPhone 15 Pro: size, touch, Safari's user agent) and a computer, in French and English."""
 import functools, http.server, os, shutil, sys, tempfile, threading
 os.environ.setdefault('PLAYWRIGHT_BROWSERS_PATH', '/opt/pw-browsers')
@@ -26,30 +23,6 @@ PLANS = {
     'pro': ['nowm', 'clip', 'fx', 'text', 'filters', 'lyrics'],
     'creator': ['nowm', 'clip', 'fx', 'text', 'filters', 'lyrics', 'pack5', 'pack10', 'pack30', 'cloud', 'human'],
 }
-# an imitation of Google Publisher Tag's rewarded API (as in Google's sample « display-rewarded-ad »); window.__adMode: the case
-FAKE_GPT = r"""
-(function(){
-  var gt = window.googletag = window.googletag || { cmd: [] }, L = {}, pa = {
-    addEventListener: function(n, f){ (L[n] = L[n] || []).push(f); return pa; },
-    setPrivacySettings: function(o){ window.__privacy = o; return pa; }
-  };
-  function fire(n, e){ (L[n] || []).forEach(function(f){ f(e); }); }
-  gt.apiReady = true; gt.enums = { OutOfPageFormat: { REWARDED: 5 } }; gt.pubads = function(){ return pa; };
-  gt.defineOutOfPageSlot = function(u, f){ window.__adUnit = u; window.__adFmt = f; window.__adAsked = (window.__adAsked || 0) + 1;
-    if (window.__adMode === 'null') return null; var s = { addService: function(){ return s; } }; return s; };
-  gt.destroySlots = function(){ window.__destroyed = (window.__destroyed || 0) + 1; };
-  gt.enableServices = function(){};
-  gt.display = function(s){ setTimeout(function(){
-    if (window.__adMode === 'empty'){ fire('slotRenderEnded', { slot: s, isEmpty: true }); return; }
-    fire('slotRenderEnded', { slot: s, isEmpty: false });
-    fire('rewardedSlotReady', { slot: s, makeRewardedVisible: function(){ window.__visible = true; setTimeout(function(){
-      if (window.__adMode === 'reward') fire('rewardedSlotGranted', { slot: s, payload: { type: 'reward', amount: 1 } });
-      fire('rewardedSlotClosed', { slot: s }); }, 300); } }); }, 150); };
-  var q = gt.cmd; gt.cmd = { push: function(f){ f(); } }; (q || []).forEach(function(f){ f(); });
-})();
-"""
-
-
 class Quiet(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 
@@ -65,7 +38,7 @@ def ev(pg, code):
 
 def plan(pg, name):
     pg.evaluate("""feats => { window.__feats = feats; if (!window.__real) window.__real = __ev("acctHas");
-      __ev("acctHas = f => window.__feats.includes(f); acctOpen = (why, o) => { window.__open = [why, o && o.plan || null]; }; textGate(); planTags(); filtUI(); kindUI(); adUI()"); }""", PLANS[name])
+      __ev("acctHas = f => window.__feats.includes(f); acctOpen = (why, o) => { window.__open = [why, o && o.plan || null]; }; textGate(); planTags(); filtUI(); kindUI(); wmUI()"); }""", PLANS[name])
 
 
 def lock(pg, code, stop_export=True):
@@ -82,8 +55,8 @@ def wm_spot(pg, t, res=0.5):
     return ev(pg, """(() => { const t = %f, take = { kind: 'video', offset: 0, duration: 999, live: null, el: { readyState: 0 }, color: '#fff', name: 't' };
       const pic = { img: window.__flat, w: 1080, h: 1920, rot: 0 }, oldLy = S.lyrics.mode; S.lyrics.mode = 'none'; setRes(%f);
       const grab = () => g.getImageData(0, 0, view.width, view.height).data;
-      const keep = wmPass; wmPass = true; drawFrame(g, { take }, t, false, pic); const a = grab();
-      wmPass = keep; drawFrame(g, { take }, t, false, pic); const b = grab();
+      S.exporting = true; S.wm = false; drawFrame(g, { take }, t, false, pic); const a = grab();
+      S.wm = wmOn(); drawFrame(g, { take }, t, false, pic); const b = grab(); S.exporting = false;
       let x0 = 1e9, y0 = 1e9, x1 = -1, y1 = -1, n = 0;
       for (let i = 0; i < a.length; i += 4) if (Math.abs(a[i] - b[i]) + Math.abs(a[i+1] - b[i+1]) + Math.abs(a[i+2] - b[i+2]) > 30){ const p = i / 4, x = p %% view.width, y = Math.floor(p / view.width); n++; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
       S.lyrics.mode = oldLy; setRes(0.5); const k = 1 / %f;
@@ -94,7 +67,7 @@ def run(b, base, lang, iphone):
     tag = ('iPhone' if iphone else 'ordinateur') + ' ' + lang
     opts = dict(PW.devices['iPhone 15 Pro']) if iphone else {'viewport': {'width': 1280, 'height': 860}}
     ctx = b.new_context(**opts, locale='en-US' if lang == 'en' else 'fr-FR')
-    ctx.route('**/tag/js/gpt.js', lambda r: r.fulfill(status=200, content_type='application/javascript', body=FAKE_GPT))
+    gpt = []; ctx.route('**/*doubleclick.net/**', lambda r: (gpt.append(r.request.url), r.fulfill(status=404, body='')))
     pg = ctx.new_page(); errs = []
     pg.on('pageerror', lambda e: errs.append(str(e)[:200]) if 'test : export arrêté ici' not in str(e) else None)
     pg.goto(base + ('' if lang == 'en' else 'fr/'), wait_until='load')
@@ -104,28 +77,30 @@ def run(b, base, lang, iphone):
     ev(pg, "window.__flat = (() => { const c = document.createElement('canvas'); c.width = 1080; c.height = 1920; const x = c.getContext('2d'); x.fillStyle = '#7a8fa8'; x.fillRect(0, 0, 1080, 1920); return c; })()")
 
     # ---- Gratuit, no account (Comptes' own acctHas, signed out) ----
-    ev(pg, "ACCT.state.user = null, acctOpen = (why, o) => { window.__open = [why, o && o.plan || null]; }, textGate(), planTags(), filtUI(), adUI()")
+    ev(pg, "ACCT.state.user = null, acctOpen = (why, o) => { window.__open = [why, o && o.plan || null]; }, textGate(), planTags(), filtUI(), wmUI()")
     note = pg.locator('#outroNote')
-    check(tag + ' gratuit : note du filigrane, bouton pub et « ou passe à Pro » visibles', note.is_visible() and pg.locator('#adBtn').is_visible() and pg.locator('#outroPro').is_visible())
-    # two buttons side by side: « Exporter » (with the watermark) and « Regarder une pub (30 s) » (without), blue and frosted
-    eb, ab = pg.locator('#exportBtn').bounding_box(), pg.locator('#adBtn').bounding_box()
-    check(tag + ' gratuit : deux boutons côte à côte', eb and ab and abs(eb['y'] - ab['y']) < 4 and ab['x'] >= eb['x'] + eb['width'] - 1 and abs(eb['width'] - ab['width']) < 4, (eb, ab))
-    et, at = ' '.join(pg.locator('#exportBtn').inner_text().split()), ' '.join(pg.locator('#adBtn').inner_text().split())
-    want_e, want_a = (('Export with watermark', 'Watch an ad (30 s) no watermark') if lang == 'en' else ('Exporter avec filigrane', 'Regarder une pub (30 s) sans filigrane'))
-    check(tag + ' gratuit : textes des deux boutons', et == want_e and at == want_a, (et, at))
-    look = pg.evaluate("() => { const b = document.querySelector('#adBtn'), cs = getComputedStyle(b); return [cs.backgroundImage, getComputedStyle(b, '::before').animationName, getComputedStyle(b, '::after').animationName]; }")
-    check(tag + ' gratuit : bouton pub bleu et givré (animé)', 'gradient' in look[0] and 'ad-frost' in look[1] and 'ad-twinkle' in look[2], look)
+    want_p = 'No watermark → Pro' if lang == 'en' else 'Sans filigrane → Pro'
+    check(tag + ' gratuit : note du filigrane et « ' + want_p + ' » visibles', note.is_visible() and pg.locator('#outroPro').is_visible() and pg.locator('#outroPro').inner_text().strip() == want_p, pg.locator('#outroPro').inner_text())
+    check(tag + ' gratuit : un seul bouton « Exporter », plus de bouton pub', pg.locator('#adBtn').count() == 0 and pg.locator('#expRow button').count() == 1)
+    et = ' '.join(pg.locator('#exportBtn').inner_text().split())
+    check(tag + ' gratuit : texte du bouton', et == ('Export with watermark' if lang == 'en' else 'Exporter avec filigrane'), et)
+    pb, eb = pg.locator('#outroPro').bounding_box(), pg.locator('#exportBtn').bounding_box()
+    check(tag + ' gratuit : « ' + want_p + ' » juste à côté du bouton', pb and eb and 0 <= pb['y'] - (eb['y'] + eb['height']) < 90, (eb, pb))
     o = lock(pg, "setFilter('nb', true), exportOne()")
     check(tag + ' gratuit : export sans compte, sans écran du jour', o == [None, True] and ev(pg, 'S.wm === true') and pg.locator('#dayDone').count() == 0, o)
     check(tag + ' gratuit : plus de fin Stalak de 3 s', ev(pg, 'outroOn() === false'))
-    # the watermark: the logo only, small, in the preview; it jumps from spot to spot every 5 s (never seen gliding)
+    # the watermark (06/11): the mascot and « stalak.app », about 17 % of the width, in the preview; it jumps from corner to
+    # corner every 5 s (never seen gliding), always inside the part TikTok and Instagram do not cover
     s1, s4, s5, s6, s11, s16 = (wm_spot(pg, t) for t in (1.0, 4.9, 5.1, 6.0, 11.0, 16.0))
-    check(tag + ' gratuit : filigrane dans l’aperçu (en haut à droite au début, loin du nom de la prise)', s1 is not None and s1[2] > 900 and s1[1] < 200, s1)
-    check(tag + ' gratuit : logo seul, sans texte (carré)', s1 is not None and (s1[2] - s1[0]) < 1.3 * (s1[3] - s1[1]) and (s1[3] - s1[1]) < 1.3 * (s1[2] - s1[0]), s1)
-    check(tag + ' gratuit : filigrane discret (moins de 1 % de l’image)', s1 is not None and s1[4] < 0.01 * ev(pg, 'view.width * view.height'), s1)
+    check(tag + ' gratuit : filigrane dans l’aperçu, en haut à droite au début', s1 is not None and s1[2] > 850 and s1[1] < 260, s1)
+    ww, hh = (s1[2] - s1[0], s1[3] - s1[1]) if s1 else (0, 0)
+    check(tag + ' gratuit : environ 17 % de la largeur, la mascotte et « stalak.app » dessous (plus haut que large)', 0.15 * 1080 <= ww <= 0.21 * 1080 and 1.0 < hh / max(ww, 1) < 1.35, (ww, hh))
     check(tag + ' gratuit : il ne glisse pas (même place de 1 à 4,9 s)', s4 is not None and abs(s4[0] - s1[0]) < 4 and abs(s4[1] - s1[1]) < 4, (s1, s4))
-    check(tag + ' gratuit : il saute d’un coup à 5 s (en bas à gauche)', s5 is not None and s6 is not None and s5[:4] == s6[:4] and s5[0] < 120 and s5[1] > 1500, (s5, s6))
-    check(tag + ' gratuit : puis en bas à droite, puis à gauche au tiers', s11 is not None and s16 is not None and s11[2] > 900 and s11[1] > 1500 and s16[0] < 120 and 500 < s16[1] < 900, (s11, s16))
+    check(tag + ' gratuit : il saute d’un coup à 5 s (en bas à gauche)', s5 is not None and s6 is not None and all(abs(u - v) < 4 for u, v in zip(s5[:4], s6[:4])) and s5[0] < 120 and s5[1] > 1150, (s5, s6))
+    check(tag + ' gratuit : puis en bas à droite, puis en haut à gauche (jamais au milieu, où sont les paroles)', s11 is not None and s16 is not None and s11[2] > 850 and s11[1] > 1150 and s16[0] < 120 and s16[1] < 260, (s11, s16))
+    # TikTok / Instagram (tools/contact_sheet.py): top 8 %, bottom 20 %, right 12 % (a few px of soft shadow allowed)
+    inside = all(sp and sp[1] >= 0.08 * 1920 - 6 and sp[3] <= 0.80 * 1920 + 8 and sp[2] <= 0.88 * 1080 + 8 for sp in (s1, s5, s11, s16))
+    check(tag + ' gratuit : les 4 coins hors des zones cachées par TikTok et Instagram', inside, (s1, s5, s11, s16))
     # padlocks: the right plan
     check(tag + ' gratuit : « ou passe à Pro » → Pro', lock(pg, "$('#outroPro').click()")[0] == ['nowm', 'pro'])
     check(tag + ' gratuit : karaoké → Pro', lock(pg, "document.querySelector('#stAnim button[data-v=\"kara\"]').click()")[0] == ['text', 'pro'])
@@ -150,34 +125,9 @@ def run(b, base, lang, iphone):
         pg.locator('#packBtn').scroll_into_view_if_needed(); pg.locator('#packBtn').screenshot(path=os.path.join(SHOTS, 'pack-' + ('iphone' if iphone else 'ordi') + '-' + lang + '.png'))
         ev(pg, "showFrame(1.0)"); pg.wait_for_timeout(400); pg.locator('#view').screenshot(path=os.path.join(SHOTS, 'filigrane-' + ('iphone' if iphone else 'ordi') + '-' + lang + '.png'))
 
-    # ---- the rewarded ad: the 4 cases ----
-    def ad(mode):
-        pg.evaluate('m => { window.__adMode = m; window.__visible = false; window.__began = false; window.__wmAt = null; }', mode)
-        ev(pg, 'wmPass = false, lastBlob = null, lastWm = false, adUI()')
-        pg.locator('#adBtn').click()
-        pg.wait_for_function('() => __ev("!adBusy")', timeout=20000); pg.wait_for_timeout(100)
-        return pg.locator('#adStatus').inner_text(), ev(pg, 'wmPass')
-    st, ok = ad('reward')
-    check(tag + ' pub : unité de test de Google, format récompensé, pubs limitées', pg.evaluate('[window.__adUnit, window.__adFmt, window.__privacy && window.__privacy.limitedAds]') == ['/22639388115/rewarded_web_example', 5, True])
-    check(tag + ' pub regardée : pas de filigrane pour cette vidéo', ok and pg.evaluate('window.__visible') and ('without the watermark' in st if lang == 'en' else 'sans filigrane' in st), st)
-    check(tag + ' pub regardée : note « pas de filigrane sur cette vidéo », bouton caché', ('no watermark on this video' if lang == 'en' else 'pas de filigrane sur cette vidéo') in pg.locator('#wmNoteT').inner_text().lower() and not pg.locator('#adBtn').is_visible())
-    check(tag + ' pub regardée : aperçu sans filigrane', wm_spot(pg, 1.0) is None or ev(pg, 'wmPass') is False)
-    check(tag + ' pub regardée : l’export sans filigrane démarre tout seul', pg.evaluate('[window.__began, window.__wmAt]') == [True, False])
-    st, ok = ad('close')
-    check(tag + ' pub fermée trop tôt : le filigrane reste, pas d’export', not ok and ('stays' in st if lang == 'en' else 'reste' in st) and not pg.evaluate('window.__began'), st)
-    st, ok = ad('empty')
-    check(tag + ' pas de pub : message, filigrane gardé', not ok and ('No ad' in st if lang == 'en' else 'Pas de pub' in st), st)
-    st, ok = ad('null')
-    check(tag + ' appareil non compatible : message', not ok and ('device' in st if lang == 'en' else 'appareil' in st), st)
-    # a video already made with the watermark: the ad makes it again at once, without it
-    pg.evaluate('() => { window.__adMode = "reward"; }')
-    ev(pg, "wmPass = false, lastBlob = new Blob(['x']), lastWm = true, adUI(), window.__began = false, beginExport = () => { window.__began = true; window.__wmAt = S.wm; throw new Error('test : export arrêté ici'); }")
-    pg.locator('#adBtn').click(); pg.wait_for_function('() => __ev("!adBusy")', timeout=20000); pg.wait_for_timeout(300)
-    check(tag + ' pub après l’export : la vidéo est refaite sans filigrane', pg.evaluate('[window.__began, window.__wmAt]') == [True, False])
-
     # ---- Pro ----
     plan(pg, 'pro')
-    check(tag + ' pro : ni filigrane ni pub', not pg.locator('#outroNote').is_visible() and ev(pg, 'wmOn() === false') and wm_spot(pg, 1.0) is None)
+    check(tag + ' pro : pas de filigrane, ni note ni lien', not pg.locator('#outroNote').is_visible() and ev(pg, 'wmOn() === false') and wm_spot(pg, 1.0) is None)
     check(tag + ' pro : Clip, karaoké, filtres ouverts', ev(pg, "can('clip') && textFree('anim', 'kara') && !filtLocked()") and pg.locator('#filtRow .filtpro').count() == 0)
     check(tag + ' pro : pack → Creator Plus', lock(pg, "$('#packSel').value = '5', planTags(), exportPack()")[0] == ['pack', 'creator'])
     # ---- Creator Plus ----
@@ -192,12 +142,12 @@ def run(b, base, lang, iphone):
     msg = pg.locator('#status').inner_text(); ev(pg, 'S.takes = S.__takes')
     check(tag + ' creator : pack avec 2 playbacks accepté', o[0] is None and 'at least 2' not in msg and 'au moins 2' not in msg, (n, o, msg))
     # ---- Comptes' own acctHas again ----
-    # (the reward of the ad watched above was never used: the export of the test stops before; it would stay for the next video)
-    ev(pg, "acctHas = window.__real, ACCT.state.user = null, wmPass = false, planTags()")
-    st = ev(pg, "[wmOn(), can('clip'), can('nowm'), wmPass, S.exporting, exportGate]")
+    ev(pg, "acctHas = window.__real, ACCT.state.user = null, planTags()")
+    st = ev(pg, "[wmOn(), can('clip'), can('nowm'), S.exporting, exportGate]")
     check(tag + ' fonctions de Comptes, sans compte : gratuit avec filigrane', st[0] is True and st[1] is False, st)
     o = lock(pg, "setFilter('nb', true), exportOne()")
     check(tag + ' fonctions de Comptes, sans compte : export sans compte', o == [None, True], o)
+    check(tag + ' le script de pub de Google n’est jamais chargé', not gpt, gpt)
     check(tag + ' aucune erreur dans la page', not errs, errs)
     sw = pg.evaluate('document.documentElement.scrollWidth')
     check(tag + ' pas de défilement horizontal', sw <= pg.viewport_size['width'], sw)
@@ -205,9 +155,8 @@ def run(b, base, lang, iphone):
 
 
 def engine(b, base):
-    """the watermark is the same in the preview, the export's 2D canvas and its WebGL drawing; one real export with a reward"""
+    """the watermark is the same in the preview, the export's 2D canvas and its WebGL drawing; a real export carries it"""
     ctx = b.new_context(viewport={'width': 1280, 'height': 860}, locale='fr-FR'); pg = ctx.new_page(); errs = []
-    ctx.route('**/tag/js/gpt.js', lambda r: r.fulfill(status=200, content_type='application/javascript', body=FAKE_GPT))
     pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
     pg.goto(base + 'fr/', wait_until='load'); pg.wait_for_function('window.__ev && window.MP4Box', timeout=20000)
     pg.locator('#demoBtn').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000)
@@ -228,10 +177,10 @@ def engine(b, base):
       S.lyrics.mode = oldLy; return out; })()""")
     for t, (a, b2, c) in r.items():
         check('filigrane à %s s : aperçu = export 2D (écart %.2f), export WebGL = export 2D (%.2f), présent dans l’export (%.2f)' % (t, a, b2, c), a < 3 and b2 < 2 and c > 0.05, (a, b2, c))
-    # one real export after a reward: no watermark in this video, then the watermark is back
-    ev(pg, "wmPass = true, lastBlob = null")
-    aok = pg.evaluate('async () => { await __ev("exportOne()"); return [__ev("!!lastBlob"), __ev("lastWm"), __ev("wmPass"), __ev("wmOn()")]; }')
-    check('export après une pub : vidéo sans filigrane, puis le filigrane revient', aok == [True, False, False, True], aok)
+    # a real export of a free video: the watermark is drawn in every picture
+    ev(pg, "window.__wmN = 0, (() => { const w0 = wmDraw; wmDraw = function(){ window.__wmN++; return w0.apply(this, arguments); }; })(), lastBlob = null")
+    aok = pg.evaluate('async () => { await __ev("exportOne()"); return [__ev("!!lastBlob"), window.__wmN]; }')
+    check('export d’une vidéo gratuite : le filigrane est dans chaque image', aok[0] and aok[1] > 100, aok)
     check('moteur : aucune erreur dans la page', not errs, errs)
     ctx.close()
 

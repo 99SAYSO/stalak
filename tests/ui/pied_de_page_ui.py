@@ -7,7 +7,7 @@ Python Playwright (chromium).
 On an iPhone (iPhone 15 Pro emulated) and a computer. Checked: one full-width ink band at the very bottom (never fixed), 4 columns
 on a computer and stacked on a phone, the same links on every page of a language and only our own sites, every link leads to a
 page that exists, Français / English to the same page, the bottom line; in the app: the help ice cube and the Export button never
-cover a link, the language switch writes the footer again (and still works), « Gérer les cookies » and « Your Privacy Choices »."""
+cover a link, the language switch writes the footer again (and still works), « Gérer les cookies » and « Your Privacy Choices » (links to the privacy page)."""
 import functools, http.server, os, re, shutil, sys, tempfile, threading
 os.environ.setdefault('PLAYWRIGHT_BROWSERS_PATH', '/opt/pw-browsers')
 from playwright.sync_api import sync_playwright
@@ -137,9 +137,9 @@ def app(b, base, site, lang, iphone):
           and pg.evaluate('document.querySelector(\'#siteFoot .langsw button[aria-pressed="true"]\').dataset.lang') == other and pg.evaluate('() => __ev("S.step === 4 && S.cuts.length > 0")'), d2['heads'])
     pg.locator('#siteFoot .langsw button[data-lang="%s"]' % lang).click(); pg.wait_for_timeout(300)
     check(tag + ' : … et revient (le sélecteur marche encore après avoir été réécrit)', pg.evaluate(FOOT_JS)['heads'] == HEADS[lang] and pg.evaluate('location.pathname') == url)
-    pg.locator('#siteFoot a[data-pc]').click(); pg.wait_for_selector('#pcAsk:not([hidden])', timeout=3000)
-    check(tag + ' : « Your Privacy Choices » ouvre la fenêtre, après le changement de langue', pg.locator('#pcAsk').is_visible())
-    pg.keyboard.press('Escape')
+    # (no ad any more, 06/11: « Your Privacy Choices » is a plain link to the privacy page)
+    with pg.expect_navigation(timeout=10000): pg.locator('#siteFoot a[data-pc]').click()
+    check(tag + ' : « Your Privacy Choices » mène à la page Confidentialité', pg.evaluate('location.pathname') == ('/fr/confidentialite' if lang == 'fr' else '/privacy'), pg.url)
     check(tag + ' : aucune erreur dans la page', not errs, errs)
     ctx.close()
     return ref

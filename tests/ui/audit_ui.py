@@ -72,7 +72,7 @@ def run(b, base, lang, iphone):
     pg.locator('#demoBtn').click()
     pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000)
     check(tag + ' : le message d’erreur part avec un nouvel essai', pg.locator('#songNear .nearmsg').count() == 0 or ev(pg, "!$('#songNear .nearmsg')") or True)
-    ev(pg, "ACCT.state.user = null, window.__open = null, acctOpen = (why, o) => { window.__open = [why, o && o.plan || null]; }, planTags(), filtUI(), adUI()")
+    ev(pg, "ACCT.state.user = null, window.__open = null, acctOpen = (why, o) => { window.__open = [why, o && o.plan || null]; }, planTags(), filtUI(), wmUI()")
 
     # ---- n° 4: « Exporter » within reach ----
     pg.evaluate('window.scrollTo(0, 0)'); pg.wait_for_timeout(500)
@@ -82,9 +82,9 @@ def run(b, base, lang, iphone):
     fb, hb = fab.bounding_box(), pg.locator('#helpBtn').bounding_box()
     check(tag + ' : il ne touche pas le glaçon d’aide', fb['x'] + fb['width'] <= hb['x'] or fb['y'] + fb['height'] <= hb['y'], (fb, hb))
     pg.evaluate("document.querySelector('#expFab').click()")
-    try: pg.wait_for_function("() => document.querySelector('#expFab').hidden && (() => ['#exportBtn', '#adBtn'].every(s => { const e = document.querySelector(s), r = e.getBoundingClientRect(); if (!r.width) return true; const x = r.left + r.width / 2, y = r.top + r.height / 2; return y > 0 && y < innerHeight && e.contains(document.elementFromPoint(x, y)); }))()", timeout=8000); inview = True
+    try: pg.wait_for_function("() => document.querySelector('#expFab').hidden && (() => ['#exportBtn'].every(s => { const e = document.querySelector(s), r = e.getBoundingClientRect(); if (!r.width) return true; const x = r.left + r.width / 2, y = r.top + r.height / 2; return y > 0 && y < innerHeight && e.contains(document.elementFromPoint(x, y)); }))()", timeout=8000); inview = True
     except Exception: inview = False
-    st = pg.evaluate("() => [scrollY, innerHeight, document.querySelector('#expFab').hidden, ...['#exportBtn', '#adBtn'].map(s => { const e = document.querySelector(s), r = e.getBoundingClientRect(), t = r.width ? document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2) : null; return [Math.round(r.top), Math.round(r.bottom), t && (t.id || t.className || t.tagName)]; })]")
+    st = pg.evaluate("() => [scrollY, innerHeight, document.querySelector('#expFab').hidden, ...['#exportBtn'].map(s => { const e = document.querySelector(s), r = e.getBoundingClientRect(), t = r.width ? document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2) : null; return [Math.round(r.top), Math.round(r.bottom), t && (t.id || t.className || t.tagName)]; })]")
     check(tag + ' : un appui amène aux boutons d’export, puis il disparaît', inview and not fab.is_visible(), st)
 
     # ---- n° 9: fewer PRO tags; n° 7: « Exporter sans ce filtre » ----
@@ -128,7 +128,7 @@ def run(b, base, lang, iphone):
         anim: getComputedStyle(document.querySelector('#proPopCard')).animationName, frost: getComputedStyle(document.querySelector('#proPop .pp-shine'), '::before').animationName,
         mascot: getComputedStyle(document.querySelector('.pp-mascot')).backgroundImage.slice(0, 20), items: [...document.querySelectorAll('#proPop .pp-list li')].map(l => l.textContent.trim()),
         price: document.querySelector('#proPop .pp-price').textContent, focus: document.activeElement && document.activeElement.id }; }''')
-    want_items = ['No ads, no watermark', 'Music video mode (16:9, the whole song)', 'Every filter'] if lang == 'en' else ['Ni pub ni filigrane', 'Le mode Clip 16:9, sur tout le son', 'Tous les filtres']
+    want_items = ['No watermark', 'Music video mode (16:9, the whole song)', 'Every filter'] if lang == 'en' else ['Sans filigrane', 'Le mode Clip 16:9, sur tout le son', 'Tous les filtres']
     check(tag + ' : au milieu de l’écran, fond assombri', abs(look['cx']) <= 2 and abs(look['cy']) <= 40 and look['inside'] and look['bg'].startswith('rgba(8, 14, 30'), look)
     check(tag + ' : apparition animée et reflet givré', look['anim'] == 'pp-rise' and look['frost'] == 'pp-frost', look)
     check(tag + ' : mascotte, titre, 3 avantages, prix au mois', look['mascot'].startswith('url(') and look['items'] == want_items and ('$4.17/mo' in look['price'] if lang == 'en' else '4,17 $/mois' in look['price'])
@@ -204,7 +204,7 @@ def run(b, base, lang, iphone):
     check(tag + ' : quitter la page pendant un export → le navigateur demande', asked)
 
     # ---- n° 2: memory ----
-    pg.evaluate('(feats) => { window.__feats = feats; __ev("acctHas = f => window.__feats.includes(f); planTags(); filtUI(); adUI()"); }', CREATOR)
+    pg.evaluate('(feats) => { window.__feats = feats; __ev("acctHas = f => window.__feats.includes(f); planTags(); filtUI(); wmUI()"); }', CREATOR)
     ev(pg, "S.memMB = 120, $('#packSel').value = '30'")
     ev(pg, """pickVideoConfig = async () => ({ codec: 'avc1.640028', width: W, height: H, bitrate: 10e6, framerate: 30 }); pickAudioConfig = async () => ({ codec: 'mp4a.40.2', sampleRate: 44100, numberOfChannels: 2, bitrate: 192000 });
       beginExport = () => { window.__began = true; throw new Error('test : export arrêté ici'); }""")
