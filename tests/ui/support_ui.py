@@ -212,6 +212,8 @@ async def main():
         await a.click('#vPer button[data-p="30"]')
         await a.wait_for_function("() => document.querySelector('#vPer button[data-p=\"30\"]').getAttribute('aria-pressed') === 'true'", timeout=5000)
         check('admin-1280: iPhone share shown', 'iPhone' in await a.inner_text('#vIos'), await a.inner_text('#vIos'))
+        ftxt = await a.inner_text('#p-funnel')
+        check('admin-1280: no more ad on the funnel page (6/11)', not __import__('re').search(r'\bpubs?\b', ftxt, __import__('re').I) and await a.query_selector('#bAds') is None and await a.query_selector('#vAds') is None and await a.eval_on_selector_all('#funnelCharts .chart', 'e => e.length') == 2, [m for m in __import__('re').findall(r'.{20}\bpubs?\b.{20}', ftxt, __import__('re').I)][:3])
         await go(a, 'money')
         check('admin-1280: money tab marked TEST', await a.is_visible('#p-money [data-test]'))
         await go(a, 'msgs')

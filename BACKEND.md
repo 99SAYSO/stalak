@@ -579,7 +579,7 @@ maintenant aussi comptés par heure (table `hourly_counts`, migration 0013, anon
 
 ### 13.6 quinquies « Combien de vidéos par personne » (5/11)
 Tableau de bord → Du visiteur à l'abonné → carte **🎬 Combien de vidéos par personne** (7 j / 30 j) : la part des gens qui font
-1, 2, 3 vidéos ou plus dans la journée, la même chose pour les vidéos propres via la pub, la part d'iPhone, et une phrase de
+1, 2, 3 vidéos ou plus dans la journée, la part d'iPhone (depuis le 6/11, plus de pub : la partie « vidéos propres via la pub » n'est plus affichée), et une phrase de
 conclusion. « Personne » = le numéro au hasard que la page crée à chaque ouverture (`vid`, déjà envoyé pour les visites) : il est
 maintenant joint aux évènements `export_ok` et `ad_ok` (table `video_counts`, migration 0015 : jour, numéro, nombre, iPhone oui/non ;
 ni compte, ni e-mail, ni IP ; effacé après 90 jours). Si la personne recharge la page, elle compte pour deux.
