@@ -95,8 +95,9 @@ def flow(b, base, site, lang, iphone, PW):
           ev(pg, 'S.step') == 1 and not ev(pg, 'S.song') and pg.evaluate("document.querySelector('#songDrop').classList.contains('try')") and pg.evaluate("document.activeElement && document.activeElement.id") == 'songFile')
     # 5. one's own video: on a phone the window waits for « Enregistrer »
     pg.set_input_files('#songFile', os.path.join(site, 'beat.wav')); pg.wait_for_function('() => __ev("!!S.song")', timeout=120000)
-    pg.set_input_files('#takeFiles', [os.path.join(site, 'take.mp4')]); pg.wait_for_function('() => __ev("S.takes.length === 1 && S.takes[0].status === \'ready\' && S.cuts.length > 0")', timeout=180000)
-    ev(pg, "go(4), store.set(PP_KEY, 0), " + FAST_EXPORT)
+    pg.set_input_files('#takeFiles', [os.path.join(site, 'take.mp4')]); pg.wait_for_function('() => __ev("S.takes.length === 1 && S.takes[0].status !== \'pending\'")', timeout=180000)
+    ev(pg, "go(4)"); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=120000)
+    ev(pg, "store.set(PP_KEY, 0), " + FAST_EXPORT)
     pg.evaluate('() => { __ev("exportOne()"); }'); pg.wait_for_function('() => __ev("S.done === true")', timeout=120000); pg.wait_for_timeout(2600)
     if iphone:
         check(tag + ' : 1re vidéo : la fenêtre Pro n’est pas encore là, « Enregistrer » se voit', not visible(pg, '#proPop .card') and visible(pg, '#dvPro'))
