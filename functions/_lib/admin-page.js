@@ -195,9 +195,8 @@ th{color:var(--text2);font-weight:600}
 @media (prefers-color-scheme:dark){.hc{box-shadow:none}}
 .hc.wide{grid-column:1 / -1}
 .hctl{gap:10px;flex-wrap:wrap;margin-bottom:12px}
-.vsum{font-size:17px;font-weight:700;margin:12px 0}.vcols{display:grid;grid-template-columns:1fr 1fr;gap:18px}.vcols h3{margin:0 0 8px}
+.vsum{font-size:17px;font-weight:700;margin:12px 0}.vcol{max-width:640px}.vcol h3{margin:0 0 8px}
 #vppCard{margin-top:16px}#vppCard .hbest{flex-wrap:wrap}
-@media (max-width:760px){.vcols{grid-template-columns:1fr}}
 .hq .he{display:none;font-size:13.5px;color:var(--muted);margin:6px 0 0}.hq.help .he{display:block}
 .hbest{display:flex;align-items:center;gap:8px;font-weight:700;font-size:18px}.hbest .sp{flex:1}
 .hlist{list-style:none;margin:10px 0 0;padding:0}
@@ -428,9 +427,8 @@ __DEMO_BANNER__<header class="top"><div class="in">
   <section class="panel" id="p-funnel" aria-labelledby="tab-funnel" hidden>
     <p class="intro">Le chemin d’un visiteur jusqu’au paiement, sur la période. Chaque étape montre combien de fois elle a eu lieu et la part de l’étape d’avant. Ce sont des compteurs anonymes : rien sur la personne.</p>
     <div class="card"><div class="head"><h2>Du visiteur à l’abonné</h2><p>Une étape faible = l’endroit où les gens s’arrêtent. C’est là qu’il faut agir.</p></div><div class="funnel" id="funnel"></div></div>
-    <div class="grid3">
+    <div class="grid2">
       <div class="card"><h3>Vidéos exportées</h3><p class="note">Réussies ou ratées, et pourquoi ça a raté.</p><ul class="blist" id="bExport"></ul></div>
-      <div class="card"><h3>Pubs</h3><p class="note">Demandées (bouton touché), vraiment affichées, puis regardées jusqu’au bout (filigrane enlevé).</p><ul class="blist" id="bAds"></ul></div>
       <div class="card"><h3>Ce qui ouvre la page des formules</h3><p class="note">La fonction payante qui a donné envie (cadenas touché).</p><ul class="blist" id="bWhy"></ul></div>
     </div>
     <div class="card hq" id="vppCard">
@@ -439,10 +437,7 @@ __DEMO_BANNER__<header class="top"><div class="in">
         <button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
       <p class="he">Pour chaque personne et chaque jour, combien de vidéos elle a faites : 1, 2, 3 ou plus. « Personne » = une page de Stalak ouverte (un numéro au hasard, sans compte) : si elle recharge la page, elle compte pour deux. Ton compte et ceux des tests ne sont pas comptés.</p>
       <p class="vsum" id="vSum">…</p>
-      <div class="vcols">
-        <div><h3>Vidéos exportées</h3><ul class="blist" id="vExp"></ul></div>
-        <div><h3>Vidéos propres via la pub</h3><ul class="blist" id="vAds"></ul></div>
-      </div>
+      <div class="vcol"><h3>Vidéos exportées</h3><ul class="blist" id="vExp"></ul></div>
       <p class="note" id="vIos"></p>
     </div>
     <div class="charts" id="funnelCharts" data-mt></div>
@@ -635,7 +630,8 @@ __DEMO_BANNER__<header class="top"><div class="in">
     $$('#vPer button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.p === S.vPer ? 'true' : 'false'); });
     return api('GET', 'videos?period=' + S.vPer).then(function (d) {
       set('#vSum', d.summary);
-      [['#vExp', d.exports], ['#vAds', d.ads]].forEach(function (x) {
+      // no more ad since 6/11 (owner's decision): only the exports are shown (the server still answers d.ads)
+      [['#vExp', d.exports]].forEach(function (x) {
         var ul = $(x[0]), g = x[1]; ul.textContent = '';
         if (!g.people) { ul.append(el('li', { class: 'note' }, 'Rien encore.')); return; }
         [['1 vidéo', g.one], ['2 vidéos', g.two], ['3 ou plus', g.three]].forEach(function (r) {
@@ -712,7 +708,7 @@ __DEMO_BANNER__<header class="top"><div class="in">
     if (m[1] === 'dir') return 'Annuaire (' + (DIRS[m[2]] || m[2]) + ')';
     if (m[1] === 'site') return 'Site ' + m[2];
     var known = SOURCES[m[2]];
-    return m[1] === 'ref' ? (known ? known + ' (lien ?ref=' + m[2] + ')' : 'Lien ?ref=' + m[2]) : (known || m[2]) + ' (pub/utm)';
+    return m[1] === 'ref' ? (known ? known + ' (lien ?ref=' + m[2] + ')' : 'Lien ?ref=' + m[2]) : (known || m[2]) + ' (lien utm)';
   }
   function flag(c) { return /^[A-Z]{2}$/.test(c || '') ? String.fromCodePoint.apply(null, c.split('').map(function (x) { return 0x1f1a5 + x.charCodeAt(0); })) : '🏳️'; }
   var PLAN_LABEL = { free: 'Gratuit', pro: 'Pro', creator: 'Creator Plus' };
@@ -1046,10 +1042,9 @@ __DEMO_BANNER__<header class="top"><div class="in">
         var ex = { ok: fu.exportOk || 0 }; var fw = fu.exportFailWhy || {};
         var exObj = { 'Réussies': fu.exportOk || 0 }; for (var k in fw) exObj['Ratées : ' + (NAMES.fail[k] || k)] = fw[k];
         blist($('#bExport'), exObj, function (x) { return x; }, { order: Object.keys(exObj) });
-        blist($('#bAds'), { 'Demandées': fu.adOffer || 0, 'Affichées': fu.adShown || 0, 'Regardées': fu.adOk || 0 }, function (x) { return x; }, { order: ['Demandées', 'Affichées', 'Regardées'], noPct: true, keepZero: true });
         blist($('#bWhy'), fu.plansWhy || {}, NAMES.why);
       }
-      charts($('#funnelCharts'), days, [{ k: 'exportOk', t: 'Vidéos exportées', f: N, x: 'Réussies.' }, { k: 'exportFail', t: 'Exports ratés', f: N, x: 'Erreur pendant l’export (voir les raisons plus haut).' }, { k: 'adOk', t: 'Pubs regardées', f: N, x: 'Filigrane enlevé grâce à une pub.' }]);
+      charts($('#funnelCharts'), days, [{ k: 'exportOk', t: 'Vidéos exportées', f: N, x: 'Réussies.' }, { k: 'exportFail', t: 'Exports ratés', f: N, x: 'Erreur pendant l’export (voir les raisons plus haut).' }]);   // no more ad (owner's decision of 6/11): the « Pubs regardées » chart is gone
       // Santé
       var L = d.limits || {}, u = d.usage, lb = $('#limits'); lb.textContent = '';
       var tg = L.telegram || { state: 'no_token' }, ts = $('#tgState');
