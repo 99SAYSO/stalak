@@ -78,7 +78,7 @@ def flow(b, base, site, lang, iphone, PW):
     tag_ok = pg.locator('.hero-s').inner_text().strip()
     check(tag + ' : une ligne d’accroche sous le titre', len(tag_ok) > 30, tag_ok)
     hb, mb = pg.evaluate("() => { const r = document.createRange(); r.selectNodeContents(document.querySelector('.hero-s')); const b = r.getBoundingClientRect(); return { x: b.x, y: b.y, width: b.width, height: b.height }; }"), pg.evaluate("() => { const c = document.querySelector('#p1 > .card:not(.lpoffer)'); const r = c.getBoundingClientRect(), a = getComputedStyle(c, '::after'); return { right: r.right - parseFloat(a.right), w: parseFloat(a.width) }; }")
-    check(tag + ' : l’accroche ne passe pas sous la mascotte', hb['x'] + hb['width'] <= mb['right'] - mb['w'] + 4 or hb['y'] + hb['height'] < pg.locator('#p1 > .card:not(.lpoffer)').bounding_box()['y'] - 142, (hb, mb))
+    check(tag + ' : l’accroche ne passe pas sous la mascotte', hb['x'] + hb['width'] <= mb['right'] - mb['w'] + 4 or hb['y'] + hb['height'] <= pg.evaluate("() => { const c = document.querySelector('#p1 > .card:not(.lpoffer)'), a = getComputedStyle(c, '::after'); return c.getBoundingClientRect().top + 22 - parseFloat(a.height); }") + 4, (hb, mb))   # (beside it, or above its head)
     if SHOTS: shot(pg, os.path.join(SHOTS, 'accueil-%s-%s.png' % ('iphone' if iphone else 'ordi', lang)))
     # (6/11, Chef de projet: the home title is Marketing's « version compacte », chosen by the owner: #heroPitch, .hero-s)
     # 22. the example: the keyboard on « Lecture »

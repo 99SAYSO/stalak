@@ -11,7 +11,12 @@ de Marketing, choisi par le propriétaire, est gardé tel quel). Ce qui reste à
   - `fin_export_ui.py` et `partager_ui.py` testent la fin d'export avec sa propre vidéo ;
   - `formules_ui.py` remet exactement le passage après l'essai de « Clip » (sinon la vidéo exportée ensuite était plus courte) ;
   - `audit611_ui.py` attend la fin de l'écran d'export (1,6 s) et le rechargement après « Essaie avec ton son ».
-- Résultats : voir la fin de ce compte rendu.
+- `audit611_ui.py` mesure aussi correctement la place de la mascotte sur téléphone (l'accroche de Marketing ne la touche pas).
+- Résultats sur le site fusionné : `audit611_ui` 91/91, `fin_export_ui` 86/86, `partager_ui` 74/74, `formules_ui` 137/137
+  (le « filigrane dans chaque image » passe aussi), `audit_ui` 158/158. Plus tôt, sur la branche : `fluidite_ui` 30/30,
+  `plans_ui` 35/35, `help_ui` 42/42, `gallery_ui` 49/49, `projet_local_ui` 48/48, et 0 échec pour `filtres_ui`, `paroles_suppr`,
+  `remux_frag`, `animations_ui`, `liens_cmp_ui`, `pied_de_page_ui`, `export_pub_ui` et `son_passage`. `support_ui` échoue
+  comme sur `main` (même cause qu'avant, rien à voir avec cette branche).
 
 Ce qui suit est le compte rendu de la première partie, déjà en ligne.
 
