@@ -44,7 +44,7 @@ COMPTE ET STALAK PRO
 - Mot de passe perdu : « Mot de passe oublié ? » sur la page de connexion. Compte créé avec un code seul : « Crée ton mot de passe ». Trop d'erreurs : attendre 15 minutes ou choisir un nouveau mot de passe.
 - Gratuit, sans compte : montage illimité sur le rythme, paroles en phrases entières taille M, import des paroles et calage au tap (pas de paroles automatiques), 3 filtres (Givre, Film 35 mm, Noir & blanc), avec le filigrane Stalak sur chaque vidéo.
 - Stalak Pro : 7,99 $ par mois ou 49,99 $ par an. Sans filigrane, mode Clip 16:9, effets premium, paroles mot par mot et karaoké (toutes les tailles), tous les filtres, paroles automatiques (20 par jour).
-- Stalak Creator Plus : 14,99 $ par mois ou 99,99 $ par an. Tout Pro, plus le générateur de packs (5 à 30 vidéos aux coupes différentes, à partir d'au moins 3 playbacks), les paroles automatiques 60 par jour, la sauvegarde en ligne (100 Go) et « Parler à un humain ».
+- Stalak Creator Plus : 14,99 $ par mois ou 99,99 $ par an. Tout Pro, plus le générateur de packs (5 à 30 vidéos aux coupes différentes, à partir de 2 playbacks), les paroles automatiques 60 par jour, la sauvegarde en ligne (100 Go) et « Parler à un humain ».
 - Prix en dollars : Paddle les convertit dans la monnaie du pays et ajoute la TVA. Un abonné garde son prix.
 - Changer de formule : page des formules. Passer à Creator Plus (ou à l'annuel) : tout de suite, la différence au prorata, montant affiché avant. Revenir à Pro : au prochain renouvellement, rien n'est remboursé.
 - Paiement sécurisé par Paddle (revendeur officiel, qui envoie le reçu). Après le paiement, le compte passe à la formule choisie en quelques secondes.
@@ -114,7 +114,7 @@ ACCOUNT AND STALAK PRO
 - Lost password: "Forgot your password?" on the sign-in page. Account made with an email code only: "Create your password". Too many tries: wait 15 minutes or choose a new password.
 - Free, no account: unlimited editing on the beat, lyrics as whole lines in size M, lyrics import and tap sync (no auto lyrics), 3 filters (Frost, 35 mm film, Black & white), with the Stalak watermark on every video.
 - Stalak Pro: $7.99 a month or $49.99 a year. No watermark, 16:9 music video mode, premium effects, word-by-word and karaoke lyrics (all sizes), every filter, auto lyrics (20 a day).
-- Stalak Creator Plus: $14.99 a month or $99.99 a year. Everything in Pro, plus the pack generator (5 to 30 videos with different cuts, from at least 3 playbacks), auto lyrics 60 a day, online saving (100 GB) and "Talk to a human".
+- Stalak Creator Plus: $14.99 a month or $99.99 a year. Everything in Pro, plus the pack generator (5 to 30 videos with different cuts, from 2 playbacks), auto lyrics 60 a day, online saving (100 GB) and "Talk to a human".
 - Prices in dollars: Paddle converts them to the local currency and adds the VAT. Subscribers keep their price.
 - Changing plan: the plans page. Up to Creator Plus (or to yearly): right away, the difference prorated, amount shown first. Back to Pro: at the next renewal, nothing refunded.
 - Secure payment by Paddle (the official reseller, which sends the receipt). After paying, the account switches to the chosen plan in a few seconds.

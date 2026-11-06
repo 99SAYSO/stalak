@@ -17,6 +17,7 @@ import { cleanPrompt, songPrompt, PROMPT_MAX } from '../../functions/_lib/lyrics
 import { HELP_GUIDE_FR, HELP_GUIDE_EN } from '../../functions/_lib/help-guide.js';
 import { codeEmail } from '../../functions/_lib/email.js';
 import { nextPayout, hourly, videosPerPerson } from '../../functions/_lib/admin.js';
+import { dailyRetention } from '../../functions/_lib/retention.js';
 import { thanksEmail, THANKS_DELAY_MS } from '../../functions/_lib/thanks.js';
 import { onRequest as adminDemo } from '../../functions/admin-demo/[[path]].js';
 import { DEMO_DATA } from '../../functions/_lib/admin-demo-data.js';
@@ -82,6 +83,7 @@ globalThis.fetch = async (url, init = {}) => {
   const body = init.body ? JSON.parse(init.body) : null;
   outbound.push({ url, method: init.method, body, headers: init.headers });
   if (url === 'https://api.resend.com/emails') return Response.json({ id: 'email_1' });
+  if (/^https:\/\/api\.resend\.com\/emails\/[\w-]+\/cancel$/.test(url)) return Response.json({ object: 'email', id: url.split('/')[4] });
   let m = url.match(/paddle\.com\/customers\/(ctm_\w+)\/portal-sessions$/);
   if (m) return Response.json({ data: { id: 'cpls_1', customer_id: m[1], urls: { general: { overview: 'https://portal.example/overview' },
     subscriptions: (body.subscription_ids || []).map((id) => ({ id, cancel_subscription: 'https://portal.example/cancel/' + id,
@@ -1672,10 +1674,15 @@ test('help chat: open to everyone; guide kept on the server; turns checked; answ
 
 test('help chat: per-connection and daily site limits; model failure → 502; no binding → 503; odd outputs', async () => {
   let AI = fakeAI(HELP_OUT), env = makeEnv({ AI });
-  for (let i = 0; i < 15; i++) assert.equal((await askHelp(env, {}, { ip: '10.7.7.7' })).status, 200, 'question ' + i);
+  // audit of 6/11, point 17: 6 questions per 10 minutes and 10 a day per connection (one connection cannot take the day's 60)
+  for (let i = 0; i < 6; i++) assert.equal((await askHelp(env, {}, { ip: '10.7.7.7' })).status, 200, 'question ' + i);
   let r = await askHelp(env, {}, { ip: '10.7.7.7' });
   assert.equal(r.status, 429); assert.equal(r.data.error, 'rate_limited'); assert.ok(r.data.retryAfter > 0);
-  assert.equal(AI.calls.length, 15);
+  assert.equal(AI.calls.length, 6);
+  const k8 = (await sha256Hex('ip:10.8.8.8')).slice(0, 32);
+  env.DB.raw.exec(`INSERT INTO rate_limits (key, window_start, count) VALUES ('help:ipd:${k8}', ${Date.now()}, 10)`);
+  r = await askHelp(env, {}, { ip: '10.8.8.8' });
+  assert.equal(r.status, 429); assert.match(r.data.message || '', /today/);
   // the whole site: HELP_DAILY_MAX a day (default 60), then "help_busy" until tomorrow
   AI = fakeAI(HELP_OUT); env = makeEnv({ AI, HELP_DAILY_MAX: '3' });
   for (let i = 0; i < 3; i++) assert.equal((await askHelp(env, {})).status, 200);
@@ -2359,7 +2366,8 @@ test('payments and refunds from Paddle → revenue, Pro by plan and day-by-day s
   const p = env.DB.raw.prepare("SELECT * FROM payments WHERE id = 'txn_1'").get();
   assert.equal(p.total, 999); assert.equal(p.tax, 999 - 833); assert.equal(p.currency, 'EUR'); assert.equal(p.user_id, a.user.id); assert.equal(p.earnings, null);
   // a refund: pending, then approved; an older event does not undo the approval
-  const adj = (status, at) => ({ ...subEvent('adjustment.updated', { id: 'adj_1', action: 'refund', status, transaction_id: 'txn_1', currency_code: 'EUR',
+  // (a partial refund: the subscription goes on; the full refund that stops it has its own test, audit of 6/11)
+  const adj = (status, at) => ({ ...subEvent('adjustment.updated', { id: 'adj_1', action: 'refund', type: 'partial', status, transaction_id: 'txn_1', currency_code: 'EUR',
     totals: { subtotal: '833', tax: '166', total: '999', fee: '0', earnings: '0', currency_code: 'EUR' }, created_at: new Date().toISOString() }, at) });
   await webhook(env, { ...adj('pending_approval', new Date(Date.now() - 5000).toISOString()), event_type: 'adjustment.created' });
   await webhook(env, adj('approved', new Date().toISOString()));
@@ -3483,6 +3491,137 @@ test('videos per person: shares of 1, 2, 3 or more a day, the clean videos throu
   assert.notEqual(a.status, 200, 'owner only');
   const { DEMO_DATA: D } = await import('../../functions/_lib/admin-demo-data.js');
   assert.ok(D.videos && D.videos['7'].exports.people > 0 && D.videos['30'].summary, 'the demo has it');
+});
+
+// ---- audit of 6/11 ----
+test('audit 6/11 n°1: a full refund stops the subscription now (Paddle + here) and tells the owner; a plan-change refund only alerts', async () => {
+  const env = makeEnv({ ...ADMIN_ENV, TELEGRAM_BOT_TOKEN: TG_TOKEN }), db = env.DB.raw;
+  db.prepare("INSERT INTO admin_state (key, value, updated_at) VALUES ('telegram_chat', '424242', 0)").run();
+  const tg = [];
+  extraFetch = async (url, init) => (url.startsWith('https://api.telegram.org/') ? (tg.push(JSON.parse(init.body).text), Response.json({ ok: true, result: {} })) : null);
+  try {
+    const a = await login(env, 'refund@example.com', 'fr');
+    const s1 = sub(a.user.id, { id: 'sub_rf1', customer_id: 'ctm_rf', items: [{ status: 'active', quantity: 1, price: { id: 'pri_pro_m', product_id: 'pro_x' } }] });
+    await webhook(env, subEvent('subscription.created', s1, new Date(Date.now() - 60e3).toISOString()));
+    await webhook(env, subEvent('transaction.completed', { id: 'txn_rf1', status: 'completed', customer_id: 'ctm_rf', subscription_id: 'sub_rf1', origin: 'web',
+      custom_data: { user_id: a.user.id }, details: { totals: { total: '799', grand_total: '799', tax: '0', earnings: '700', currency_code: 'USD' } }, items: [{ price: { id: 'pri_pro_m' } }] }));
+    await settle(); tg.length = 0;
+    assert.equal((await call(env, 'GET', '/api/me', { cookie: a.cookie })).data.entitlements.plan, 'pro');
+    const before = outbound.length;
+    const adj = (id, over) => subEvent('adjustment.updated', { id, action: 'refund', type: 'full', status: 'approved', transaction_id: 'txn_rf1', subscription_id: 'sub_rf1',
+      currency_code: 'USD', totals: { total: '799', currency_code: 'USD' }, created_at: new Date().toISOString(), ...over });
+    // pending: nothing yet
+    await webhook(env, { ...adj('adj_rf1', { status: 'pending_approval' }), event_type: 'adjustment.created' });
+    assert.equal(outbound.slice(before).filter((o) => /\/cancel$/.test(o.url)).length, 0);
+    // approved: cancelled at Paddle, Free here at once, the owner told
+    let r = await webhook(env, adj('adj_rf1'));
+    assert.equal(r.status, 200); assert.equal(r.data.refundStop, 'stopped');
+    const cancels = outbound.slice(before).filter((o) => /paddle\.com\/subscriptions\/sub_rf1\/cancel$/.test(o.url));
+    assert.equal(cancels.length, 1); assert.deepEqual(cancels[0].body, { effective_from: 'immediately' });
+    assert.equal(db.prepare("SELECT status FROM subscriptions WHERE id = 'sub_rf1'").get().status, 'canceled');
+    assert.equal((await call(env, 'GET', '/api/me', { cookie: a.cookie })).data.entitlements.plan, 'free', 'Free right away');
+    await settle();
+    assert.equal(tg.length, 1); assert.match(tg[0], /^\[TEST\] ↩️ Remboursement \(7,99 USD\) : abonnement Pro arrêté\nLe compte est repassé en Gratuit\./);
+    // the same approval again, and Paddle's own subscription.canceled: no second cancel, no second notice
+    await webhook(env, adj('adj_rf1'));
+    await webhook(env, subEvent('subscription.canceled', { ...s1, status: 'canceled', canceled_at: new Date().toISOString() }));
+    // an older subscription event arriving late cannot turn it back on
+    await webhook(env, subEvent('subscription.updated', s1, new Date(Date.now() - 30e3).toISOString()));
+    await settle();
+    assert.equal(outbound.slice(before).filter((o) => /\/cancel$/.test(o.url)).length, 1);
+    assert.equal(tg.length, 1, 'one notice');
+    assert.equal(db.prepare("SELECT status FROM subscriptions WHERE id = 'sub_rf1'").get().status, 'canceled');
+    // the refund of a plan change: the subscription goes on, the owner gets « remettre l'ancienne formule »
+    const b = await login(env, 'change@example.com', 'en');
+    await webhook(env, subEvent('subscription.created', sub(b.user.id, { id: 'sub_rf2', customer_id: 'ctm_rf2' })));
+    await webhook(env, subEvent('transaction.completed', { id: 'txn_rf2', status: 'completed', customer_id: 'ctm_rf2', subscription_id: 'sub_rf2', origin: 'subscription_update',
+      details: { totals: { total: '700', grand_total: '700', tax: '0', currency_code: 'USD' } }, items: [{ price: { id: 'pri_creator_m' } }] }));
+    r = await webhook(env, adj('adj_rf2', { transaction_id: 'txn_rf2', subscription_id: 'sub_rf2', totals: { total: '700', currency_code: 'USD' } }));
+    assert.equal(r.data.refundStop, 'plan_change');
+    assert.equal(db.prepare("SELECT status FROM subscriptions WHERE id = 'sub_rf2'").get().status, 'active');
+    await settle();
+    assert.match(tg[tg.length - 1], /changement de formule \(7,00 USD\)[\s\S]*remettre l'ancienne formule/);
+    // a partial refund: nothing stops
+    r = await webhook(env, adj('adj_rf3', { type: 'partial', transaction_id: 'txn_rf2', subscription_id: 'sub_rf2', totals: { total: '100', currency_code: 'USD' } }));
+    assert.equal(db.prepare("SELECT status FROM subscriptions WHERE id = 'sub_rf2'").get().status, 'active');
+    // Paddle refuses the cancel: Free here anyway, the notice says to stop it by hand
+    const c = await login(env, 'locked@example.com', 'en');
+    await webhook(env, subEvent('subscription.created', sub(c.user.id, { id: 'sub_rf4', customer_id: 'ctm_rf4' })));
+    extraFetch = async (url, init) => {
+      if (url.startsWith('https://api.telegram.org/')) { tg.push(JSON.parse(init.body).text); return Response.json({ ok: true, result: {} }); }
+      if (/sub_rf4\/cancel$/.test(url)) return Response.json({ error: { code: 'subscription_locked_pending_changes' } }, { status: 400 });
+      return null;
+    };
+    r = await webhook(env, adj('adj_rf4', { action: 'chargeback', transaction_id: null, subscription_id: 'sub_rf4' }));
+    assert.equal(r.status, 200, 'never makes Paddle retry'); assert.equal(r.data.refundStop, 'stop_failed');
+    assert.equal(db.prepare("SELECT status FROM subscriptions WHERE id = 'sub_rf4'").get().status, 'canceled');
+    await settle();
+    assert.match(tg[tg.length - 1], /arrête-le à la main dans Paddle/);
+    // dashboard: the refunds of the day in dollars too
+    const t = await adminCall(env, 'GET', '/api/admin/stats?days=7', { token: await accessToken() });
+    assert.equal(t.status, 200); assert.equal(t.data.days[t.data.days.length - 1].refundsUsd, 799 + 700 + 100 + 799);
+  } finally { extraFetch = null; }
+});
+
+test('audit 6/11 n°3: a sign of life less than 4 minutes after the last one writes nothing', async () => {
+  const env = makeEnv(), db = env.DB.raw, vid = 'v_presence_gap_00000001';
+  assert.equal((await call(env, 'POST', '/api/presence', { body: { vid, lang: 'en' } })).status, 200);
+  const t1 = db.prepare('SELECT last_at FROM visits WHERE vid = ?').get(vid).last_at;
+  for (let i = 0; i < 50; i++) assert.equal((await call(env, 'POST', '/api/presence', { body: { vid, lang: 'en' } })).status, 200);
+  assert.equal(db.prepare('SELECT last_at FROM visits WHERE vid = ?').get(vid).last_at, t1, 'not written again');
+  db.prepare('UPDATE visits SET last_at = last_at - 241000 WHERE vid = ?').run(vid);
+  await call(env, 'POST', '/api/presence', { body: { vid, lang: 'en' } });
+  assert.ok(db.prepare('SELECT last_at FROM visits WHERE vid = ?').get(vid).last_at > t1 - 1000, 'after 4 minutes: written');
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM visits').get().n, 1);
+});
+
+test('audit 6/11 n°12: lyrics use 90 days and with the account, thank-you hashes 3 years, counters purged daily, a waiting thank-you cancelled', async () => {
+  const env = makeEnv({ PADDLE_ENV: 'production' }), db = env.DB.raw, now = Date.now();
+  const a = await login(env, 'lyr@example.com', 'en');
+  const day = (d) => new Date(now - d * 864e5).toISOString().slice(0, 10);
+  const ins = db.prepare('INSERT INTO lyrics_usage (user_id, day, jobs, pieces, seconds, updated_at) VALUES (?, ?, 1, 1, 10, 0)');
+  ins.run(a.user.id, day(100)); ins.run(a.user.id, day(10));
+  db.prepare('INSERT INTO webhook_events (event_id, event_type, received_at) VALUES (?, ?, ?)').run('thanks:old', 'thanks', now - 3 * 365 * 864e5 - 864e5);
+  db.prepare('INSERT INTO rate_limits (key, window_start, count) VALUES (?, ?, 1)').run('visit:ip:abc', now - 2 * 864e5);
+  const r = await dailyRetention(env, now);
+  assert.deepEqual(r, { thanks: 1, lyricsUsage: 1, rateLimits: true });
+  assert.deepEqual(db.prepare('SELECT day FROM lyrics_usage').all().map((x) => x.day), [day(10)]);
+  assert.equal(db.prepare("SELECT COUNT(*) AS n FROM rate_limits WHERE key = 'visit:ip:abc'").get().n, 0);
+  assert.match(readFileSync(join(root, 'functions/_lib/cloud.js'), 'utf8'), /dailyRetention\(env, now\)/);
+  assert.match(readFileSync(join(root, 'workers/cloud-cleanup/index.js'), 'utf8'), /dailyRetention\(env/);
+  // a new subscriber: the thank-you waits at Resend (id kept); the account is deleted before it leaves → cancelled
+  await webhook(env, subEvent('subscription.created', sub(a.user.id, { id: 'sub_lyr', started_at: new Date().toISOString(), items: [{ status: 'active', quantity: 1, price: { id: 'pri_pro_m', product_id: 'pro_x' } }] })));
+  await settle();
+  assert.equal(db.prepare('SELECT thanks_mail_id FROM users WHERE id = ?').get(a.user.id).thanks_mail_id, 'email_1');
+  const before = outbound.length;
+  const del = await call(env, 'DELETE', '/api/account', { cookie: a.cookie, body: { confirm: true } });
+  assert.equal(del.status, 200, JSON.stringify(del.data));
+  assert.ok(outbound.slice(before).some((o) => o.url === 'https://api.resend.com/emails/email_1/cancel'), 'the waiting e-mail is cancelled');
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM lyrics_usage').get().n, 0, 'lyrics use gone with the account');
+});
+
+test('audit 6/11 n°15 and 16: an older Paddle message never overwrites a newer one; a Paddle customer already set is never replaced', async () => {
+  const env = makeEnv(), db = env.DB.raw;
+  const a = await login(env, 'order@example.com', 'en');
+  const s1 = sub(a.user.id, { id: 'sub_ord', customer_id: 'ctm_mine' });
+  await webhook(env, subEvent('subscription.updated', { ...s1, status: 'past_due' }, new Date(Date.now() - 1000).toISOString()));
+  await webhook(env, subEvent('subscription.updated', { ...s1, status: 'active' }, new Date().toISOString()));
+  const r = await webhook(env, subEvent('subscription.updated', { ...s1, status: 'paused' }, new Date(Date.now() - 500).toISOString()));
+  assert.equal(r.data.applied, false);
+  assert.equal(db.prepare("SELECT status FROM subscriptions WHERE id = 'sub_ord'").get().status, 'active');
+  // the same account pays again with someone else's e-mail in Paddle's window → another Paddle customer: ours is kept
+  assert.equal(db.prepare('SELECT paddle_customer_id AS c FROM users WHERE id = ?').get(a.user.id).c, 'ctm_mine');
+  await webhook(env, subEvent('transaction.completed', { id: 'txn_other', status: 'completed', customer_id: 'ctm_someone_else', custom_data: { user_id: a.user.id } }));
+  assert.equal(db.prepare('SELECT paddle_customer_id AS c FROM users WHERE id = ?').get(a.user.id).c, 'ctm_mine', 'never replaced');
+  // an account without one gets it
+  const b = await login(env, 'first@example.com', 'en');
+  await webhook(env, subEvent('transaction.completed', { id: 'txn_first', status: 'completed', customer_id: 'ctm_first', custom_data: { user_id: b.user.id } }));
+  assert.equal(db.prepare('SELECT paddle_customer_id AS c FROM users WHERE id = ?').get(b.user.id).c, 'ctm_first');
+});
+
+test('audit 6/11 n°14: the help guide says packs from 2 playbacks (as everywhere else)', async () => {
+  const g = readFileSync(join(root, 'functions/_lib/help-guide.js'), 'utf8');
+  assert.ok(!/3 playbacks/.test(g)); assert.equal((g.match(/2 playbacks/g) || []).length, 4);
 });
 
 // ---- runner --------------------------------------------------------------------------

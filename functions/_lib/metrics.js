@@ -40,6 +40,7 @@ export async function bumpHour(env, name, now = Date.now()) {
 }
 
 // audit of 30/10: one request + one D1 write per sign of life; every 5 min (was 1 min) spares the Cloudflare quota
+export const PRESENCE_GAP_MS = 240e3;     // audit of 6/11: at most one write per visit every 4 minutes
 export const VISIT_EVERY_S = 300;         // the page sends a sign of life every 5 minutes while it is shown (and when it comes back)
 export const LIVE_MS = 390e3;             // "live" = seen in the last 6 min 30 s
 export const NEW_VISITS_PER_IP_HOUR = 60; // new page loads counted per connection and per hour (sign-of-life updates are free)
@@ -96,8 +97,10 @@ export async function presence(request, env) {
   const now = Date.now(), day = today(now);
   const row = await env.DB.prepare(
     `INSERT INTO visits (day, vid, first_at, last_at, lang, country, device, source, came_back) VALUES (?1, ?2, ?3, ?3, ?4, ?5, ?6, ?7, ?8)
-     ON CONFLICT(day, vid) DO UPDATE SET last_at = ?3 RETURNING first_at`
-  ).bind(day, vid, now, lang, countryOf(request), deviceOf(request), source, back).first();
+     ON CONFLICT(day, vid) DO UPDATE SET last_at = ?3 WHERE visits.last_at < ?3 - ?9 RETURNING first_at`
+  ).bind(day, vid, now, lang, countryOf(request), deviceOf(request), source, back, PRESENCE_GAP_MS).first();
+  // audit of 6/11, point 3: a sign of life less than 4 minutes after the last one writes nothing (the page sends one every
+  // 5 minutes): one visitor sending thousands of them can no longer use up the database's daily writes
   if (row && row.first_at === now) {
     // a new page load: limited per connection, so nobody can fill the table with made-up visits
     const ipKey = (await sha256Hex('ip:' + clientIp(request))).slice(0, 32);

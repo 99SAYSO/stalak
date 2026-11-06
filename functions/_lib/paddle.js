@@ -5,7 +5,7 @@ import { HttpError, readText } from './http.js';
 import { hmacSha256Hex, timingSafeEqual } from './crypto.js';
 import { planOfPrice, normPlan, salePrices, priceTable, subscriptionActive, planOfSub, payEnv, intervalOf } from './entitlements.js';
 import { bump } from './metrics.js';
-import { subscriptionNotice, isNewPurchase } from './notify.js';
+import { subscriptionNotice, isNewPurchase, notifyOwner } from './notify.js';
 import { thanksAfterPurchase } from './thanks.js';
 
 export const SIGNATURE_TOLERANCE_S = 300;
@@ -55,9 +55,13 @@ async function findUserId(env, data) {
   return null;
 }
 
+// audit of 6/11, point 16: a customer id already set is never replaced (someone who pays with another person's e-mail in
+// Paddle's window gets that person's Paddle customer: it must not take the place of this account's own customer, nor give
+// this account the other person's customer portal)
 async function linkCustomer(env, userId, customerId) {
   if (userId && customerId) {
-    await env.DB.prepare('UPDATE users SET paddle_customer_id = ?2 WHERE id = ?1').bind(userId, customerId).run();
+    await env.DB.prepare("UPDATE users SET paddle_customer_id = ?2 WHERE id = ?1 AND (paddle_customer_id IS NULL OR paddle_customer_id = '')")
+      .bind(userId, customerId).run();
   }
 }
 
@@ -82,13 +86,17 @@ async function applySubscription(env, data, occurredAt) {
   const now = Date.now();
 
   const startedAt = ms(data.started_at) || ms(data.first_billed_at) || null;
-  await env.DB.prepare(
+  const w = await env.DB.prepare(
     `INSERT INTO subscriptions (id, user_id, customer_id, status, price_id, current_period_end, cancel_at, last_event_at, updated_at, plan, env, started_at)
      VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)
      ON CONFLICT(id) DO UPDATE SET user_id = COALESCE(?2, user_id), customer_id = ?3, status = ?4, price_id = COALESCE(?5, price_id),
        current_period_end = ?6, cancel_at = ?7, last_event_at = ?8, updated_at = ?9, plan = CASE WHEN ?5 IS NULL THEN plan ELSE ?10 END,
-       env = ?11, started_at = COALESCE(started_at, ?12)`
+       env = ?11, started_at = COALESCE(started_at, ?12)
+     WHERE subscriptions.last_event_at <= ?8`
   ).bind(data.id, userId, data.customer_id || null, String(data.status || 'active'), priceId, periodEnd, cancelAt, occurredAt, now, plan, payEnv(env), startedAt).run();
+  // audit of 6/11, point 15: two Paddle messages at the same moment: the older one written last no longer overwrites the newer
+  // (the check above read the row before; the WHERE of the write is checked by the database itself)
+  if (prev && w.meta && w.meta.changes === 0) return { applied: false, reason: 'older_event' };
   await linkCustomer(env, userId, data.customer_id);
   if (!userId) console.warn('[stalak] subscription without known user', data.id, data.customer_id);
   return { applied: true, userId, plan, isNew: !prev };
@@ -134,7 +142,56 @@ async function applyAdjustment(env, data, occurredAt) {
   ).bind(data.id, data.transaction_id || null, String(data.action || ''), String(data.status || ''),
     String(t.currency_code || data.currency_code || 'EUR').toUpperCase().slice(0, 3), cents(t.total) || 0, occurredAt,
     ms(data.created_at) || occurredAt, payEnv(env)).run();
-  return { applied: true };
+  const stop = await refundStopsSubscription(env, data, occurredAt);
+  return { applied: true, ...stop };
+}
+
+// Audit of 6/11, point 1: the refund page promises « the subscription stops and the account goes back to Free ». A FULL refund
+// (or a chargeback) of a subscription payment, approved, stops the subscription now (Paddle API, effective_from: immediately)
+// and here at once (status canceled: Free right away, before Paddle's own subscription.canceled). The refund of a plan
+// CHANGE (payment origin subscription_update) does not stop anything: the owner gets an alert to put the old plan back.
+// The owner's phone gets a Telegram notice either way. Once per adjustment (webhook_events key), never throws: Paddle must
+// not retry the refund because the cancellation failed (the notice then says to stop it by hand).
+async function refundStopsSubscription(env, data, occurredAt) {
+  const approved = String(data.status || '') === 'approved';
+  const kind = String(data.action || '');
+  const full = kind === 'chargeback' || (kind === 'refund' && String(data.type || 'full') === 'full');
+  if (!approved || !['refund', 'chargeback'].includes(kind)) return {};
+  const pay = data.transaction_id
+    ? await env.DB.prepare('SELECT subscription_id, origin, user_id FROM payments WHERE id = ?1').bind(data.transaction_id).first().catch(() => null) : null;
+  const subId = data.subscription_id || (pay && pay.subscription_id) || null;
+  if (!subId) return {};
+  const key = await env.DB.prepare('INSERT OR IGNORE INTO webhook_events (event_id, event_type, received_at) VALUES (?1, ?2, ?3)')
+    .bind('refund-stop:' + data.id, 'refund_stop', Date.now()).run();
+  if (!(key.meta && key.meta.changes === 1)) return { refundStop: 'already' };
+  const sub = await env.DB.prepare('SELECT id, plan, status FROM subscriptions WHERE id = ?1').bind(subId).first();
+  const plan = normPlan(sub && sub.plan) === 'creator' ? 'Creator Plus' : 'Pro';
+  const test = payEnv(env) !== 'production' ? '[TEST] ' : '';
+  const t = data.totals || {}, amount = cents(t.total) || 0, cur = String(t.currency_code || data.currency_code || 'USD').toUpperCase();
+  const money = `${(amount / 100).toFixed(2).replace('.', ',')} ${cur}`;
+  if (pay && pay.origin === 'subscription_update') {
+    await notifyOwner(env, { title: `${test}↩️ Remboursement d'un changement de formule (${money})`,
+      message: `Abonnement ${plan} gardé. À faire : remettre l'ancienne formule dans Paddle (Subscriptions → l'abonnement → Change plan).` }).catch(() => {});
+    return { refundStop: 'plan_change' };
+  }
+  if (!full) {
+    await notifyOwner(env, { title: `${test}↩️ Remboursement partiel (${money})`, message: `Abonnement ${plan} gardé (remboursement partiel).`, quiet: true }).catch(() => {});
+    return { refundStop: 'partial' };
+  }
+  let stopped = sub && sub.status === 'canceled';
+  if (!stopped) {
+    try { await cancelSubscriptionNow(env, subId); stopped = true; } catch { stopped = false; }
+    // here at once: Free right away (Paddle's subscription.canceled comes after); an older subscription event that arrives
+    // late cannot turn it back on (last_event_at moved to the refund's time)
+    await env.DB.prepare(`UPDATE subscriptions SET status = 'canceled', cancel_at = ?2, keep_plan = NULL, keep_until = NULL, updated_at = ?2,
+      last_event_at = MAX(COALESCE(last_event_at, 0), ?3) WHERE id = ?1`).bind(subId, Date.now(), occurredAt).run();
+  }
+  // no second « Abonnement annulé » notice when Paddle's subscription.canceled arrives
+  await env.DB.prepare('INSERT OR IGNORE INTO webhook_events (event_id, event_type, received_at) VALUES (?1, ?2, ?3)')
+    .bind('ntfy:cancel:' + subId, 'ntfy', Date.now()).run().catch(() => {});
+  await notifyOwner(env, { title: `${test}↩️ Remboursement (${money}) : abonnement ${plan} arrêté`,
+    message: stopped ? 'Le compte est repassé en Gratuit.' : 'Le compte est repassé en Gratuit ici, mais Paddle n’a pas pu arrêter l’abonnement : arrête-le à la main dans Paddle (Subscriptions → Cancel → Immediately).' }).catch(() => {});
+  return { refundStop: stopped ? 'stopped' : 'stop_failed' };
 }
 
 export const HANDLED_EVENTS = [
