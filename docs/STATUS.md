@@ -426,6 +426,17 @@
 Ces montants sont avant TVA et frais. Réaliste : 10 000 € par mois en avril 2027.
 
 ### Juridique & business
+- **Fait (branche `legal/audit-6-11`, 06/11 soir)** : audit du 6/11, point 12, partie Juridique. Confidentialité FR/EN complétée :
+  - cookies `stalak_d` (appareil reconnu 90 j, empreinte effacée à l'expiration, au changement de mot de passe et à la suppression du compte) et `stalak_o` (connexion Google, 10 min) ; section Cookies = 3 cookies, tous nécessaires ;
+  - type d'appareil du compte et des visites ; provenance de la visite (`stalak:ref`) et « déjà venu » (`stalak:lastDay`) ;
+  - ntfy à côté de Telegram ;
+  - durées annoncées : paroles auto 90 j et suppression avec le compte ; empreintes d'IP 2 jours ; empreinte « déjà remercié » 3 ans ; e-mail de remerciement annulé si le compte est supprimé avant l'envoi.
+- **À faire par Comptes (point 12), pour que la page dise vrai** : la page annonce déjà ces durées, à fusionner ensemble.
+  - `lyrics_usage` : effacer les lignes de plus de 90 jours (tâche du jour) **et** celles du compte à sa suppression.
+  - Empreintes d'IP des limites (`ratelimit`, aide, événements) : vraie purge chaque jour des lignes de plus de 2 jours (au lieu de 5 % au hasard).
+  - Empreintes « déjà remercié » (`webhook_events`, `thanks:`) : effacer au-delà de 3 ans (tâche du jour).
+  - E-mail de remerciement programmé chez Resend : l'annuler (API Resend « cancel » de l'e-mail programmé) quand le compte est supprimé avant l'envoi.
+  - Si une durée choisie est différente, prévenir Juridique : la page sera corrigée sur la même branche.
 - **Fait (branche `legal/sans-pub`, 06/11)** : décision « plus de pub du tout » appliquée aux pages légales FR/EN.
   - Conditions : section 4 = « Filigrane » seul (toujours présent en Gratuit, seul Pro ou Creator Plus l'enlève, nouveau filigrane = visage de la mascotte + « stalak.app ») ; plus de « pub 30 s », de fraude à la pub, ni de « pub indisponible ».
   - Confidentialité : plus de Google Ad Manager, de partenaires pub, de fenêtre de consentement, de règle des moins de 15 ans pour les cookies pub, ni de « Do Not Sell or Share » à exercer. `#cookies` = cookies nécessaires seulement, donc pas de bandeau ; `#choices` = « nous ne vendons ni ne partageons rien, GPC respecté ». Les deux ancres sont gardées pour les liens du pied de page.
