@@ -115,7 +115,7 @@ def flow(b, base, site, lang, iphone, PW):
           and pg.locator('#dvNoWm').bounding_box()['y'] < pg.locator('#saveBtn').bounding_box()['y'] and pg.locator('#dvNoWm').bounding_box()['height'] >= 56)
     if SHOTS: shot(pg, os.path.join(SHOTS, 'sans-filigrane-%s-%s.png' % ('iphone' if iphone else 'ordi', lang)))
     n0 = ev(pg, 'S.okCount')
-    pg.locator('#dvNoWm').click(); pg.wait_for_function('() => __ev("!S.exporting && S.done && S.lastWm === false")', timeout=120000); pg.wait_for_timeout(300)
+    pg.locator('#dvNoWm').click(); pg.wait_for_function('() => __ev("!S.exporting && S.done && S.lastWm === false")', timeout=120000); pg.wait_for_timeout(2200)   # (the export screen goes away first: 1.6 s)
     check(tag + ' : la même vidéo refaite sans filigrane, le bouton s’en va', ev(pg, 'S.okCount') == n0 + 1 and not visible(pg, '#dvNoWm') and pg.locator('#saveBtn').inner_text().strip() == t['save'],
           (ev(pg, 'S.okCount'), n0, visible(pg, '#dvNoWm'), pg.locator('#saveBtn').inner_text()))
     check(tag + ' : aucune erreur dans la page', not errs, errs)
