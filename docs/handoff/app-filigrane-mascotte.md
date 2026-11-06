@@ -1,4 +1,4 @@
-Statut : EN COURS (tests en cours)
+Statut : PRÊT
 Branche : app/filigrane-mascotte (créée depuis `main` du 6/11 : d3d7564, avec la maquette du Chef de projet).
 Maquette : https://app-filigrane-mascotte.stalak-site.pages.dev (à faire valider par le propriétaire, règle 9).
 Vidéo d'exemple : `docs/design/filigrane-mascotte-exemple.mp4` (export réel de l'exemple de l'app, en Gratuit, 9:16, 20 s).
@@ -65,7 +65,20 @@ Pour les autres conversations :
 - **Comptes** : l'app n'envoie plus `ad_offer`, `ad_shown` ni `ad_ok`. Le serveur les accepte encore (`tests/backend/run.mjs`) et le commentaire de `acctEvent` dans `app.js` (bloc compte) les cite toujours. Les étapes pub de l'entonnoir du tableau de bord sont à retirer de votre côté.
 - **Chef de projet** : `STALAK_CONTEXTE.md` (offre, filigrane « logo seul », pub récompensée) est à mettre à jour.
 
-Tests : RÉSULTATS_SUITES
+Tests (6/11, iPhone et ordinateur, FR et EN) :
+- `formules_ui.py` 137/137 (adapté). Il vérifie :
+  - un seul « Exporter » et « Sans filigrane → Pro » juste à côté ;
+  - le filigrane à ~17 % de la largeur, plus haut que large (mascotte + texte) ;
+  - les sauts toutes les 5 s, dans les 4 coins, tous hors des zones TikTok / Instagram ;
+  - l'aperçu identique à l'export 2D et WebGL ;
+  - un vrai export avec le filigrane dans chaque image ;
+  - aucun script de pub Google chargé.
+- `liens_cmp_ui.py` 58/58 (adapté : plus de consentement pub, aucun script Google même après une vidéo, « Your Privacy Choices » mène à la Confidentialité).
+- `pied_de_page_ui.py` 402/402, `audit_ui.py` 158/158, `plans_ui.py` 35/35 (texte « Sans filigrane »), `export_pub_ui.py` 22/22.
+- `son_passage.py` 86/86, `projet_local_ui.py` 48/48, `filtres_ui.py` 106/106, `animations_ui.py` 44/44, `remux_frag.py` 10/10, `paroles_suppr.py` 44/44.
+- `gallery_ui.py` 49/49, `help_ui.py` 42/42, `tests/backend/run.mjs` 96/96.
+- `support_ui.py` et `lyrics_ui.py` s'arrêtent comme sur `main`. `support_ui.py` a aussi un échec sur « M'envoyer l'e-mail de remerciement » (tableau de bord, Comptes) : vérifié identique sur `main` du 6/11, sans lien avec cette branche.
+- `partager_ui.py` n'est pas sur cette branche : `app/partager` n'est pas encore fusionnée. Les deux branches touchent `postShow` / la zone d'export à des endroits différents ; à fusionner l'une après l'autre.
 
 À tester par le propriétaire sur la maquette :
 1. Faire une vidéo (l'exemple suffit), sans être Pro. Il n'y a qu'un bouton « Exporter », avec le lien « Sans filigrane → Pro » juste dessous, qui ouvre les formules.

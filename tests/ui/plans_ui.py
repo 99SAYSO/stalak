@@ -118,7 +118,7 @@ async def main():
         check('fr-390 yearly: Creator Plus saves 44 %', '44' in by['creator']['pill'], by['creator'])
         check('fr-390 yearly: a plan without a price says « Bientôt »', by['creator']['btn'] == 'Bientôt' and by['creator']['off'], by['creator'])
         rib = await pg.inner_text('#apBuy .pl-pro .pl-ribbon')
-        check('fr-390: Pro put forward « Ni pub ni filigrane »', rib == 'Ni pub ni filigrane' and await pg.eval_on_selector('#apBuy .pl-pro', 'e => e.classList.contains("is-best")'), rib)
+        check('fr-390: Pro put forward « Sans filigrane » (no ads since 06/11)', rib == 'Sans filigrane' and await pg.eval_on_selector('#apBuy .pl-pro', 'e => e.classList.contains("is-best")'), rib)
         save = await pg.inner_text('#plIntSave')
         check('fr-390: the yearly switch says « jusqu’à −47 % »', '47' in save, save)
         packs = await pg.inner_text('#apBuy .pl-creator [data-i18n="pl.f.packs"]')
