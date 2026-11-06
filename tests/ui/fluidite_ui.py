@@ -46,8 +46,9 @@ def make_take(path, w, h, rate, take_id, jitter=False):
     vf = "geq=lum='%s':cb=128:cr=128" % lum
     # (the time base made fine first: otherwise the uneven times are rounded to 1/30 s, two pictures at the same time)
     if jitter: vf += ",settb=1/90000,setpts='(N/30+0.004*sin(N*1.7))/TB'"
-    args = [FF, '-nostdin', '-v', 'error', '-y', '-f', 'lavfi', '-i', 'color=c=gray:s=%dx%d:r=%s:d=20' % (w, h, rate),
-            '-f', 'lavfi', '-i', "aevalsrc='%s':s=44100:d=20" % BEAT, '-vf', vf, '-shortest',
+    # (24 s, longer than the 20 s song: a take never runs out before the end of the passage, its last picture held)
+    args = [FF, '-nostdin', '-v', 'error', '-y', '-f', 'lavfi', '-i', 'color=c=gray:s=%dx%d:r=%s:d=24' % (w, h, rate),
+            '-f', 'lavfi', '-i', "aevalsrc='%s':s=44100:d=24" % BEAT, '-vf', vf, '-shortest',
             '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '18', '-g', '30', '-pix_fmt', 'yuv420p', '-c:a', 'aac']
     if jitter: args += ['-fps_mode', 'passthrough', '-enc_time_base', '1:90000', '-video_track_timescale', '90000']
     subprocess.run(args + [path], check=True)
