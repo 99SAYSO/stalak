@@ -418,6 +418,13 @@
 Ces montants sont avant TVA et frais. Réaliste : 10 000 € par mois en avril 2027.
 
 ### Juridique & business
+- **Fait (branche `legal/sans-pub`, 06/11)** : décision « plus de pub du tout » appliquée aux pages légales FR/EN.
+  - Conditions : section 4 = « Filigrane » seul (toujours présent en Gratuit, seul Pro ou Creator Plus l'enlève, nouveau filigrane = visage de la mascotte + « stalak.app ») ; plus de « pub 30 s », de fraude à la pub, ni de « pub indisponible ».
+  - Confidentialité : plus de Google Ad Manager, de partenaires pub, de fenêtre de consentement, de règle des moins de 15 ans pour les cookies pub, ni de « Do Not Sell or Share » à exercer. `#cookies` = cookies nécessaires seulement, donc pas de bandeau ; `#choices` = « nous ne vendons ni ne partageons rien, GPC respecté ». Les deux ancres sont gardées pour les liens du pied de page.
+  - Aussi ajoutés, car déjà en ligne mais seulement dans `legal/provenance` (en attente) : e-mail de remerciement (`#thanks` / `#merci`), Telegram dans les prestataires, compteurs « vidéos par visite » (migration 0015).
+  - Mentions légales : description du filigrane. `docs/juridique/PADDLE.md` (réponse « No ads ») et `ETATS_UNIS.md` (note : parties pub sans objet) à jour.
+- **À faire par App (pied de page commun `src/footer.py`)** : retirer « Gérer les cookies » / « Cookie settings » (plus de fenêtre de consentement), ou le renommer « Cookies » vers `#cookies`. « Your Privacy Choices » n'est plus obligatoire sans pub : il peut rester (il mène à `#choices`) ou partir.
+- **Note pour le Chef de projet** : `legal/provenance` (en attente) touche les mêmes paragraphes de la confidentialité. Quand elle reviendra, Juridique la refera sur la base de `legal/sans-pub` (ne pas la fusionner telle quelle).
 - **Fait (branche `legal/adresses-vendeur`, 01/11)** : détail dans `docs/juridique/PADDLE.md`.
   - **Adresses vérifiées** après la bascule :
     - pages légales, app, e-mails et liens externes : tout répond ; anciennes adresses en 301 ;

@@ -32,12 +32,11 @@ Il manque une seule chose : **le nom légal dans les conditions**. Il s'affiche 
   a song, adds on-screen lyrics and exports vertical videos for TikTok, Reels and Shorts, or 16:9 music videos. Editing
   happens in the user's browser. »
 - *What do you sell?* : « Software subscriptions (SaaS): Stalak Pro ($7.99/month or $49.99/year) and Stalak Creator Plus
-  ($14.99/month or $99.99/year). A free plan with a watermark is also available. »
+  ($14.99/month or $99.99/year). A free plan, with a watermark on every exported video, is also available. »
 - *Delivery* : « Instant access in the web app after payment, linked to the customer's Stalak account. »
 - *AI features* (si Paddle pose la question) : « Speech-to-text transcription of the user's own song lyrics (Cloudflare
   Workers AI, Whisper) and an AI help assistant. No AI-generated images, video, voices or music. »
-- *Ads* (si Paddle pose la question) : « The free plan shows optional rewarded video ads from Google Ad Manager. We don't sell
-  advertising ourselves. »
+- *Ads* (si Paddle pose la question) : « No ads. The free plan adds a small Stalak watermark to exported videos; paid plans remove it. » (plus de pub depuis le 6/11)
 
 À éviter dans le formulaire et sur le site : toute promesse de « campagne », de « vues », d'« abonnés » ou de « promotion sur
 les réseaux ». Les règles de Paddle du 13/04/2026 interdisent la vente de pub et le marketing automatisé sur les réseaux.

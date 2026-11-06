@@ -2,6 +2,8 @@
 
 > Rôle Juridique & business. Infos pour décider, **pas un avis juridique**. À faire relire par un pro avant les vrais paiements et la vraie pub.
 > Hypothèse : micro-entreprise française, Paddle revendeur officiel (Merchant of Record), pub récompensée Google Ad Manager.
+>
+> **Mise à jour 6/11 : plus de pub du tout.** Tout ce qui concerne la pub (Google Ad Manager, « Do Not Sell or Share », GPP, mineurs et pub ciblée, W-8BEN pour Google) est sans objet tant qu'il n'y a pas de pub. Sans pub ni vente de données, la CCPA ne peut s'appliquer que par le seuil de chiffre d'affaires (26,6 M$), et le lien « Your Privacy Choices » n'est plus obligatoire. Restent valables : la partie 0 (structure), la partie 2 pour les comptes d'enfants, la partie 3 (renouvellement automatique) en entier.
 
 ## 0. Structure : micro-entreprise + Paddle, ça marche pour les États-Unis
 - **Pas besoin de société américaine pour vendre aux États-Unis.** Paddle est le vendeur légal : il encaisse, gère la taxe de vente de chaque État (sales tax), les factures et les remboursements. La micro-entreprise vend à Paddle, qui lui reverse l'argent.
