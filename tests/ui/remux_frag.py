@@ -49,9 +49,7 @@ def main():
     tmp = tempfile.mkdtemp(prefix='stalak-remux-')
     site = os.path.join(tmp, 'site'); shutil.copytree(PUBLIC, site)
     # the app lives in a closure: the page gets a test probe, __ev(code), that evaluates code inside it (this copy only)
-    idx = os.path.join(site, 'index.html'); html = open(idx, encoding='utf-8').read()
-    assert 'applyLang();\n})();' in html, 'repère de la sonde introuvable'
-    open(idx, 'w', encoding='utf-8').write(html.replace('applyLang();\n})();', 'applyLang();\nwindow.__ev = (s) => eval(s);\n})();'))
+    from _probe import add_probe; add_probe(site)
     # a filmed take: 1920×1080 H.264 baseline turned upright, AAC 48 kHz mono, 4 s, a key picture each second
     src = os.path.join(tmp, 'src.mp4')
     ff('-f', 'lavfi', '-i', 'testsrc2=size=1920x1080:rate=30', '-f', 'lavfi', '-i', 'sine=frequency=440:sample_rate=48000', '-t', '4',

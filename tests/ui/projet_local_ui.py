@@ -108,10 +108,7 @@ def run(b, base, site, lang, iphone):
 def main():
     tmp = tempfile.mkdtemp(prefix='stalak-local-')
     site = os.path.join(tmp, 'site'); shutil.copytree(PUBLIC, site)
-    for page in ('index.html', 'fr/index.html'):
-        p = os.path.join(site, page); html = open(p, encoding='utf-8').read()
-        assert 'applyLang();\n})();' in html, 'repère de la sonde introuvable'
-        open(p, 'w', encoding='utf-8').write(html.replace('applyLang();\n})();', 'applyLang();\nwindow.__ev = (s) => eval(s);\n})();'))
+    from _probe import add_probe; add_probe(site)
     ff = shutil.which('ffmpeg')
     beat = "0.8*sin(2*PI*60*t)*exp(-25*mod(t,0.5))+0.15*sin(2*PI*440*t)"
     subprocess.run([ff, '-nostdin', '-v', 'error', '-y', '-f', 'lavfi', '-i', "aevalsrc='%s':s=44100:d=20" % beat, '-ac', '1', os.path.join(site, 'beat.wav')], check=True)

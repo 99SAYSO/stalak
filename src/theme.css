@@ -1107,3 +1107,10 @@ body.isdone header .stepper,body.isdone header .hdtools{display:none !important}
 @media (max-width:600px){ .doneview .result video{max-height:30vh} .doneview #saveNote{margin-top:10px} }
 .doneview .sharebox[hidden]{display:none}
 body.isdone > .help-cube{display:none}
+
+/* ---- App & montage (audit 6/11): « Essaie avec ton son » after the example, « Enregistrer sans filigrane » once Pro: on top
+   of the end card, as big as « Enregistrer »; the song's button picked out when coming back from the example (no animation:
+   a plain ring that goes after 6 s) ---- */
+.dv-card .dv-try,.dv-card .dv-nowm{width:100%;justify-content:center;min-height:62px;font-size:21px;margin:0 0 14px}
+.dv-card .dv-try[hidden],.dv-card .dv-nowm[hidden]{display:none}
+.drop.try{outline:4px solid var(--sky-deep);outline-offset:4px}

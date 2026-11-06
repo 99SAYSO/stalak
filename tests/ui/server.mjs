@@ -120,7 +120,7 @@ http.createServer(async (req, res) => {
     try { if ((await stat(f)).isDirectory()) f = join(f, 'index.html'); } catch { if (!extname(f)) f += '.html'; }
     let data = await readFile(f);
     // test probe: the app lives in a closure; __ev(code) evaluates code inside it (test server only, never in the build)
-    if (extname(f) === '.html') data = Buffer.from(data.toString('utf8').replace(/applyLang\(\);\n\}\)\(\);/, 'applyLang();\nwindow.__ev = (s) => eval(s);\n})();'));
+    if (extname(f) === '.html' || (extname(f) === '.js' && /[\\/]assets[\\/]app\.[0-9a-f]+\.js$/.test(f))) data = Buffer.from(data.toString('utf8').replace(/applyLang\(\);\n\}\)\(\);/, 'applyLang();\nwindow.__ev = (s) => eval(s);\n})();'));
     res.writeHead(200, { 'Content-Type': TYPES[extname(f)] || 'application/octet-stream' }); res.end(data);
   } catch (e) {
     res.writeHead(e.code === 'ENOENT' ? 404 : 500, { 'Content-Type': 'text/plain' }); res.end(String(e.code === 'ENOENT' ? 'not found' : e.stack));

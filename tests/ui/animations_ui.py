@@ -136,10 +136,7 @@ def run(b, base, lang, iphone, calm):
 def main():
     tmp = tempfile.mkdtemp(prefix='stalak-anim-')
     site = os.path.join(tmp, 'site'); shutil.copytree(PUBLIC, site)
-    for page in ('index.html', 'fr/index.html'):
-        p = os.path.join(site, page); html = open(p, encoding='utf-8').read()
-        assert 'applyLang();\n})();' in html, 'repère de la sonde introuvable'
-        open(p, 'w', encoding='utf-8').write(html.replace('applyLang();\n})();', 'applyLang();\nwindow.__ev = (s) => eval(s);\n})();'))
+    from _probe import add_probe; add_probe(site)
     srv = http.server.ThreadingHTTPServer(('127.0.0.1', 0), functools.partial(Quiet, directory=site))
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     base = 'http://127.0.0.1:%d/' % srv.server_address[1]

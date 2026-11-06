@@ -113,7 +113,7 @@ async function file(req, url, res) {
     res.writeHead(200, { 'Content-Type': TYPES[extname(f)] || 'application/octet-stream', 'Cache-Control': 'no-store' });
     let data = await readFile(f);
     // test probe: the app lives in a closure; __ev(code) evaluates code inside it (test server only, never in the build)
-    if (extname(f) === '.html') data = Buffer.from(data.toString('utf8').replace(/applyLang\(\);\n\}\)\(\);/, 'applyLang();\nwindow.__ev = (s) => eval(s);\n})();'));
+    if (extname(f) === '.html' || (extname(f) === '.js' && /[\\/]assets[\\/]app\.[0-9a-f]+\.js$/.test(f))) data = Buffer.from(data.toString('utf8').replace(/applyLang\(\);\n\}\)\(\);/, 'applyLang();\nwindow.__ev = (s) => eval(s);\n})();'));
     res.end(data);
   } catch {
     try { await stat(full + '.html'); res.writeHead(200, { 'Content-Type': TYPES['.html'] }); res.end(await readFile(full + '.html')); }

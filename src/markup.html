@@ -27,6 +27,10 @@
   <section class="doneview" id="doneView" hidden aria-labelledby="dvT">
     <div class="card dv-card">
       <h2 id="dvT" data-i18n="dv.t">Ta vidéo est prête ✓</h2>
+      <!-- (audit 6/11, n° 7) after the example: the next step is the person's own song -->
+      <button class="btn primary big dv-try" id="dvTry" type="button" hidden data-i18n="dv.try">Essaie avec ton son</button>
+      <!-- (audit 6/11, n° 4) paid while this video has the watermark: the same video again, without it -->
+      <button class="btn primary big dv-nowm" id="dvNoWm" type="button" hidden data-i18n="dv.nowm">Enregistrer sans filigrane</button>
       <div class="dv-slot" id="dvSlot"></div>
       <div class="dv-foot">
         <button class="linkbtn dv-pro" id="dvPro" type="button" hidden data-i18n="wm.pro">Sans filigrane → Pro</button>
@@ -508,6 +512,19 @@
       <button class="btn primary" id="faPro" type="button" data-i18n="fa.pro">Passer à Pro, dès 4,17 $/mois</button>
       <button class="btn" id="faWithout" type="button" data-i18n="fa.without">Exporter sans ce filtre</button>
       <button class="linkbtn" id="faNo" type="button" data-i18n="cancel">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- App & montage (audit 6/11, n° 18): the Clip mode can be tried in the preview; at the export, Pro or the video in 9:16 -->
+<div class="askbox" id="clipAsk" role="alertdialog" aria-modal="true" aria-labelledby="clipAskT" aria-describedby="clipAskP" hidden>
+  <div class="card">
+    <h2 id="clipAskT" data-i18n="ca.t">Le mode Clip est réservé à Pro</h2>
+    <p id="clipAskP" data-i18n="ca.p">Tu peux l’essayer dans l’aperçu. Pour exporter ton clip en 16:9, passe à Pro, ou exporte ta vidéo au format TikTok / Reels.</p>
+    <div class="row fa-row">
+      <button class="btn primary" id="caPro" type="button" data-i18n="fa.pro">Passer à Pro, dès 4,17 $/mois</button>
+      <button class="btn" id="caReel" type="button" data-i18n="ca.reel">Exporter en TikTok / Reels</button>
+      <button class="linkbtn" id="caNo" type="button" data-i18n="cancel">Annuler</button>
     </div>
   </div>
 </div>

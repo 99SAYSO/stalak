@@ -83,10 +83,7 @@ def main():
     global SITE
     tmp = tempfile.mkdtemp(prefix='stalak-paroles-')
     SITE = os.path.join(tmp, 'site'); shutil.copytree(PUBLIC, SITE)
-    for page in ('index.html', 'fr/index.html'):
-        p = os.path.join(SITE, page); html = open(p, encoding='utf-8').read()
-        assert 'applyLang();\n})();' in html, 'repère de la sonde introuvable'
-        open(p, 'w', encoding='utf-8').write(html.replace('applyLang();\n})();', 'applyLang();\nwindow.__ev = (s) => eval(s);\n})();'))
+    from _probe import add_probe; add_probe(SITE)
     subprocess.run([shutil.which('ffmpeg'), '-nostdin', '-v', 'error', '-y', '-f', 'lavfi', '-i',
                     "aevalsrc='0.8*sin(2*PI*60*t)*exp(-25*mod(t,0.5))+0.15*sin(2*PI*440*t)':s=44100:d=30", '-ac', '1', os.path.join(SITE, 'beat.wav')], check=True)
     srv = http.server.ThreadingHTTPServer(('127.0.0.1', 0), functools.partial(Quiet, directory=SITE))
