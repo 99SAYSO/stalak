@@ -1,4 +1,5 @@
-Statut : PRÊT (essai : le propriétaire choisit entre la version d'avant et celle d'après, et entre les deux voix)
+Statut : FAIT — **décision du propriétaire (6/11, 23 h 51) : il préfère largement la version d'avant, et la voix Flora
+(Achird) ; la version d'après n'est pas retenue.** On garde le Short « The edit nobody sees » v4 tel quel.
 Branche : marketing/essai-skills-video
 Conversation : 5. Marketing & croissance
 Partie de : `main` 5e98322 (vetting des skills vidéo, Chef de projet)
@@ -63,6 +64,13 @@ Salle de visionnage (`promo/retours/README.md`) : les deux Shorts y sont ajouté
 (`short-avant-v4` et `short-apres-skills-v8` ; copies de relecture 720p de moins de 20 Mo). Le vrai fichier d'après (masterisé)
 est dans `promo/essai-skills/renders/Apres_3_skills_v8.mp4`, hors du dépôt.
 
-Reste au propriétaire : regarder les deux vidéos et dire laquelle il garde ; écouter la comparaison des voix
-(« Voix_Flora_puis_Kokoro.mp3 »). S'il préfère la voix Flora avec le reste de la version d'après : `VOICE=flora python3
-build_after.py`, puis rendu (environ 6 min), master, planche contact.
+Décision du propriétaire (6/11, 23 h 51, dans la conversation, recopiée dans la Salle de visionnage) : « je préfère
+largement la première version, même la voix l'ancienne est mieux ». Donc :
+- on garde la version d'avant (`promo/youtube/short/`, voix Flora Achird) ; rien à publier de l'essai ;
+- pour le Chef de projet (suite du vetting) : à l'usage, aucun des trois skills n'a donné un résultat préféré par le
+  propriétaire ; la voix Kokoro d'Explainroo est écartée (Flora / Achird reste la voix) ; Earshot reste utile comme contrôle
+  (volume, synchro) sans changer le son de façon nette ; la méthode Take One (vraie app à l'écran) n'a pas convaincu sur ce
+  Short ;
+- la version d'avant garde deux défauts trouvés par la planche contact (« 1 frame off » dans la zone du bas que TikTok
+  recouvre, de 0:06,5 à 0:08,0 ; la fin de « OFF BEAT » sous les boutons de droite, de 0:04,5 à 0:05,5) : proposé au
+  propriétaire de les corriger sans rien changer d'autre, s'il le veut.
