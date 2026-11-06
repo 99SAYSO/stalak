@@ -111,7 +111,8 @@ def flow(b, base, lang, iphone, PW):
     check(tag + ' : des paroles déjà là → pas de question, onglet Paroles', ev(pg, 'S.step') == 3 and not visible(pg, '#lyAsk .card'))
     ev(pg, 'go(4)')
     # 6. the end of an export (free plan)
-    ev(pg, "store.set(PP_KEY, 1), " + FAST_EXPORT)
+    # (since 6/11 the example's own end screen is « Essaie avec ton son », tested in audit611_ui.py: here, a video of one's own)
+    ev(pg, "S.song.demo = false, store.set(PP_KEY, 1), " + FAST_EXPORT)
     pg.evaluate('() => { __ev("exportOne()"); }')
     pg.wait_for_function('() => __ev("S.done === true")', timeout=30000); pg.wait_for_timeout(400)
     vis = {k: visible(pg, s) for k, s in (('save', '#saveBtn'), ('share', '#shareBtn'), ('copy', '#capCopy'), ('pro', '#dvPro'), ('edit', '#dvEdit'),

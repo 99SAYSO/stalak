@@ -60,6 +60,7 @@ def make_video(pg, pro=False, share='ok'):
         pg.locator('#demoBtn').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000)
     ev(pg, "store.set(PP_KEY, Date.now()), setFilter('none', true), S.noShare = false, " + FAST_EXPORT.replace('\n', ' ')
        + (", acctHas = f => true" if pro else ""))
+    ev(pg, "S.song && (S.song.demo = false)")   # (audit 6/11: the example's own end screen is « Essaie avec ton son », audit611_ui.py)
     pg.evaluate('() => { window.__p = __ev("exportOne()"); }')
     pg.wait_for_function('() => __ev("!S.exporting && !!lastBlob")', timeout=30000); pg.wait_for_timeout(400)
 
