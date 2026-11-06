@@ -4,7 +4,7 @@
     python3 /abs/path/tests/ui/formules_ui.py <path of a built public/ folder> [folder for screenshots]
 
 - Gratuit: no account needed to export; one « Exporter » button and, next to it, « Sans filigrane → Pro » (the plans). The
-  watermark (06/11: the mascot's face as a white stencil + « stalak.app », about 17 % of the width) is in the preview and in
+  watermark (06/11: the mascot's face as a white stencil + « stalak.app », about 14 % of the width) is in the preview and in
   the export (2D and WebGL, same picture; packs use the same drawing); it jumps to another corner every 5 s, always inside the part
   TikTok and Instagram do not cover (top 8 %, bottom 20 %, right 12 %). No ad button, and Google's ad script is never loaded.
 - Pro / Creator Plus are played by the test: acctHas(feat) is replaced inside the app; at the end Comptes' own function is
@@ -94,7 +94,7 @@ def run(b, base, lang, iphone):
     s1, s4, s5, s6, s11, s16 = (wm_spot(pg, t) for t in (1.0, 4.9, 5.1, 6.0, 11.0, 16.0))
     check(tag + ' gratuit : filigrane dans l’aperçu, en haut à droite au début', s1 is not None and s1[2] > 850 and s1[1] < 260, s1)
     ww, hh = (s1[2] - s1[0], s1[3] - s1[1]) if s1 else (0, 0)
-    check(tag + ' gratuit : environ 17 % de la largeur, la mascotte et « stalak.app » dessous (plus haut que large)', 0.15 * 1080 <= ww <= 0.21 * 1080 and 1.0 < hh / max(ww, 1) < 1.35, (ww, hh))
+    check(tag + ' gratuit : environ 14 % de la largeur (06/11), la mascotte et « stalak.app » dessous', 0.125 * 1080 <= ww <= 0.165 * 1080 and 0.95 < hh / max(ww, 1) < 1.3, (ww, hh))
     check(tag + ' gratuit : il ne glisse pas (même place de 1 à 4,9 s)', s4 is not None and abs(s4[0] - s1[0]) < 4 and abs(s4[1] - s1[1]) < 4, (s1, s4))
     check(tag + ' gratuit : il saute d’un coup à 5 s (en bas à gauche)', s5 is not None and s6 is not None and all(abs(u - v) < 4 for u, v in zip(s5[:4], s6[:4])) and s5[0] < 120 and s5[1] > 1150, (s5, s6))
     check(tag + ' gratuit : puis en bas à droite, puis en haut à gauche (jamais au milieu, où sont les paroles)', s11 is not None and s16 is not None and s11[2] > 850 and s11[1] > 1150 and s16[0] < 120 and s16[1] < 260, (s11, s16))

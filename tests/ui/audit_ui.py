@@ -170,12 +170,12 @@ def run(b, base, lang, iphone):
     sb, sv = pg.locator('#shareBtn'), pg.locator('#saveBtn')
     if iphone:
         first = pg.evaluate("() => document.querySelector('#shareBox').firstElementChild === document.querySelector('#shareBtn') && !document.querySelector('#shareBox').hidden")
-        check(tag + ' : « Partager » en bouton principal, le téléchargement en petit lien (05/11)', first and 'primary' in sb.get_attribute('class') and 'linkbtn' in sv.get_attribute('class')
+        check(tag + ' : « Enregistrer la vidéo » en grand, « Partager » en grand juste dessous (06/11)', first and 'primary' in sv.get_attribute('class') and 'big' in (sb.get_attribute('class') or '')
               and sb.inner_text().strip() == ('Share' if lang == 'en' else 'Partager'), (sb.inner_text(), sv.inner_text()))
         sb.click(); pg.wait_for_timeout(200)
         check(tag + ' : le bouton ouvre le partage d’iOS', pg.evaluate('window.__shared === true'))
     else:
-        check(tag + ' : ordinateur : « Enregistrer sur l’appareil » reste le bouton principal', 'primary' in sv.get_attribute('class') and 'sharemain' not in (sb.get_attribute('class') or ''))
+        check(tag + ' : ordinateur : « Enregistrer la vidéo » reste le bouton principal', 'primary' in sv.get_attribute('class') and 'sharemain' not in (sb.get_attribute('class') or ''))
     if SHOTS:
         shot(lambda: pg.locator('#result').scroll_into_view_if_needed(timeout=5000)); pg.wait_for_timeout(300)
         shot(lambda: pg.locator('#result').screenshot(path=os.path.join(SHOTS, 'resultat-' + ('iphone' if iphone else 'ordi') + '-' + lang + '.png')))

@@ -20,8 +20,8 @@ PW = None
 FAST_EXPORT = """pickVideoConfig = async () => null;
   renderRealtime = async () => { await new Promise(r => setTimeout(r, 120)); return { blob: new Blob([new Uint8Array(4096)], { type: 'video/mp4' }), ext: 'mp4' }; }"""
 TXT = {
-    'fr': {'share': 'Partager', 'file': 'Télécharger le fichier', 'save': 'Enregistrer sur l\'appareil', 'copied': 'copiée', 'sent': 'Envoyé', 'noshare': 'partage direct'},
-    'en': {'share': 'Share', 'file': 'Download the file', 'save': 'Save to device', 'copied': 'copied', 'sent': 'Sent', 'noshare': 'Direct sharing'},
+    'fr': {'share': 'Partager', 'save': 'Enregistrer la vidéo', 'copied': 'copiée', 'sent': 'Envoyé', 'noshare': 'partage direct'},
+    'en': {'share': 'Share', 'save': 'Save video', 'copied': 'copied', 'sent': 'Sent', 'noshare': 'Direct sharing'},
 }
 
 
@@ -41,7 +41,7 @@ def ev(pg, code):
 LAYOUT_JS = """() => {
   const q = s => document.querySelector(s), vis = e => !!e && !e.closest('[hidden]') && e.getClientRects().length > 0;
   const box = q('#shareBox');
-  return { box: vis(box), kids: [...box.children].map(e => e.id), after: box.nextElementSibling && box.nextElementSibling.id,
+  return { box: vis(box), kids: [...box.children].map(e => e.id), before: box.previousElementSibling && box.previousElementSibling.id,
            share: vis(q('#shareBtn')), shareTxt: q('#shareBtn').textContent.trim(), shareCls: q('#shareBtn').className,
            save: vis(q('#saveBtn')), saveTxt: q('#saveBtn').textContent.trim(), saveCls: q('#saveBtn').className,
            post: vis(q('#postBox')), hint: q('#postHint').textContent, cap: vis(q('#capCopy')), capTxt: q('#capText').value,
@@ -76,15 +76,15 @@ def phone(b, base, lang, dev):
     pg.goto(base + ('' if lang == 'en' else 'fr/'), wait_until='load'); pg.wait_for_function('typeof window.__ev === "function"', timeout=20000)
     T = TXT[lang]
     make_video(pg)
-    pg.wait_for_function('() => document.querySelector("#expScreen").hidden', timeout=10000); pg.wait_for_timeout(900)
-    v = pg.evaluate('''() => { const st = document.querySelector('.work .stage').getBoundingClientRect(), b = document.querySelector('#shareBtn').getBoundingClientRect();
-      return { stage: Math.round(st.bottom), top: Math.round(b.top), bottom: Math.round(b.bottom), h: innerHeight, focus: document.activeElement && document.activeElement.id }; }''')
-    check(tag + ' : la vidéo prête, « ' + T['share'] + ' » arrive à l’écran, juste sous l’aperçu', v['top'] >= v['stage'] - 1 and v['bottom'] <= v['h'] and v['top'] - v['stage'] < 60 and v['focus'] == 'shareBtn', v)
+    pg.wait_for_function('() => __ev("S.done === true")', timeout=10000); pg.wait_for_timeout(500)
+    v = pg.evaluate('''() => { const a = document.querySelector('#saveBtn').getBoundingClientRect(), b = document.querySelector('#shareBtn').getBoundingClientRect();
+      return { save: Math.round(a.top), top: Math.round(b.top), bottom: Math.round(b.bottom), h: innerHeight, focus: document.activeElement && document.activeElement.id }; }''')
+    check(tag + ' : la vidéo prête (écran de fin, 06/11) : « ' + T['save'] + ' » puis « ' + T['share'] + ' » dessous, à l’écran', v['save'] < v['top'] and v['bottom'] <= v['h'] and v['focus'] == 'saveBtn', v)
     if SHOTS: pg.screenshot(path=os.path.join(SHOTS, 'tel-' + dev.lower() + '-' + lang + '.png'))
     L = pg.evaluate(LAYOUT_JS)
-    check(tag + ' : « ' + T['share'] + ' » en grand bouton principal, en premier', L['box'] and L['share'] and L['shareTxt'] == T['share'] and 'primary' in L['shareCls'] and 'big' in L['shareCls'], L)
-    check(tag + ' : dessous, l’explication (TikTok ou Instagram) puis la légende à copier', L['kids'] == ['shareBtn', 'postHint', 'capBox'] and 'TikTok' in L['hint'] and 'Instagram' in L['hint'] and L['cap'], L)
-    check(tag + ' : le téléchargement devient un petit lien « ' + T['file'] + ' », sous le partage', L['after'] == 'saveRow' and L['save'] and L['saveTxt'] == T['file'] and 'linkbtn' in L['saveCls'], L)
+    check(tag + ' : « ' + T['share'] + ' » en grand bouton, juste sous « ' + T['save'] + ' » (le plus grand, 06/11)', L['box'] and L['share'] and L['shareTxt'] == T['share'] and 'big' in L['shareCls']
+          and L['before'] == 'saveRow' and L['saveTxt'] == T['save'] and 'primary' in L['saveCls'] and 'big' in L['saveCls'], L)
+    check(tag + ' : l’explication (TikTok ou Instagram) et la légende à copier', L['kids'] == ['shareBtn', 'postHint'] and 'TikTok' in L['hint'] and 'Instagram' in L['hint'] and L['cap'], L)
     check(tag + ' : plus de liens vers les sites des réseaux (le partage du téléphone les remplace)', not L['post'], L)
     check(tag + ' : légende courte avec « made with stalak.app »', 'made with stalak.app' in L['capTxt'] and '#madewithstalak' in L['capTxt'] and len(L['capTxt']) < 140, L['capTxt'])
     pg.locator('#capCopy').click(); pg.wait_for_timeout(300)
@@ -107,7 +107,7 @@ def phone(b, base, lang, dev):
     # Pro: the same
     make_video(pg, pro=True)
     L3 = pg.evaluate(LAYOUT_JS)
-    check(tag + ' : Pro : le même « ' + T['share'] + ' »', L3['box'] and L3['share'] and L3['kids'] == ['shareBtn', 'postHint', 'capBox'], L3)
+    check(tag + ' : Pro : le même « ' + T['share'] + ' »', L3['box'] and L3['share'] and L3['kids'] == ['shareBtn', 'postHint'], L3)
     # the phone refuses to share the file: the download comes back as the main button
     make_video(pg, share='refuse'); pg.locator('#shareBtn').click(); pg.wait_for_timeout(300)
     L4 = pg.evaluate(LAYOUT_JS)

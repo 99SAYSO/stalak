@@ -21,6 +21,19 @@
       <button type="button" role="menuitem" tabindex="-1" data-am="out" class="am-out"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4M9.5 16.5 5 12l4.5-4.5M5 12h10"/></svg><span data-i18n="acct.out">Se déconnecter</span></button>
     </div></div>
   </header>
+
+  <!-- App & montage (06/11): the end of the export — only what matters, plainly (the edit and the steps hidden); the result
+       (#result) is moved in here by app.js (doneShow), and back into the Export card by « Modifier la vidéo » -->
+  <section class="doneview" id="doneView" hidden aria-labelledby="dvT">
+    <div class="card dv-card">
+      <h2 id="dvT" data-i18n="dv.t">Ta vidéo est prête ✓</h2>
+      <div class="dv-slot" id="dvSlot"></div>
+      <div class="dv-foot">
+        <button class="linkbtn dv-pro" id="dvPro" type="button" hidden data-i18n="wm.pro">Sans filigrane → Pro</button>
+        <button class="linkbtn dv-edit" id="dvEdit" type="button" data-i18n="dv.edit">Modifier la vidéo</button>
+      </div>
+    </div>
+  </section>
   <div class="status" id="status" role="status" aria-live="polite"></div>
 
   <!-- STEP 1 -->
@@ -391,11 +404,20 @@
           <p class="note cover-note" id="coverNote" hidden></p>
           <div class="result" id="result" hidden>
             <video id="resultVideo" controls playsinline hidden></video>
-            <!-- phones (owner 05/11): « Partager » first, the caption to copy right under it (app.js postShow moves them here) -->
-            <div class="sharebox" id="shareBox" hidden></div>
+            <!-- (06/11) « Enregistrer la vidéo » first and big; on a phone, « Partager » under it (app.js postShow moves it
+                 into #shareBox); then the caption to copy -->
             <div class="row" id="saveRow">
-              <button class="btn primary" id="saveBtn" type="button" data-i18n="save.btn">Enregistrer sur l'appareil</button>
+              <button class="btn primary big" id="saveBtn" type="button" data-i18n="save.video">Enregistrer la vidéo</button>
               <span class="note" id="saveNote"></span>
+            </div>
+            <div class="sharebox" id="shareBox" hidden></div>
+            <div class="capbox" id="capBox">
+              <label class="label" for="capText" data-i18n="cap.t">Légende prête à copier</label>
+              <textarea id="capText" rows="3" spellcheck="false"></textarea>
+              <div class="row">
+                <button class="btn" id="capCopy" type="button" data-i18n="cap.copy">Copier la légende</button>
+                <span class="note" id="capNote" role="status" aria-live="polite"></span>
+              </div>
             </div>
             <div class="post" id="postBox">
               <p class="label" data-i18n="post.title">Poster ta vidéo</p>
@@ -406,14 +428,6 @@
                 <a class="btn sm" href="https://www.youtube.com/upload" target="_blank" rel="noopener">YouTube Shorts</a>
               </div>
               <p class="hint" id="postHint" data-i18n="post.hint">Enregistre ta vidéo, puis ouvre le réseau de ton choix et ajoute-la.</p>
-              <div class="capbox" id="capBox">
-                <label class="label" for="capText" data-i18n="cap.t">Légende prête à copier</label>
-                <textarea id="capText" rows="3" spellcheck="false"></textarea>
-                <div class="row">
-                  <button class="btn sm" id="capCopy" type="button" data-i18n="cap.copy">Copier la légende</button>
-                  <span class="note" id="capNote" role="status" aria-live="polite"></span>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -494,6 +508,18 @@
       <button class="btn primary" id="faPro" type="button" data-i18n="fa.pro">Passer à Pro, dès 4,17 $/mois</button>
       <button class="btn" id="faWithout" type="button" data-i18n="fa.without">Exporter sans ce filtre</button>
       <button class="linkbtn" id="faNo" type="button" data-i18n="cancel">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- App & montage (06/11): when the takes are there, « Continuer » asks whether the lyrics go on the video -->
+<div class="askbox" id="lyAsk" role="alertdialog" aria-modal="true" aria-labelledby="lyAskT" aria-describedby="lyAskP" hidden>
+  <div class="card">
+    <h2 id="lyAskT" data-i18n="lq.t">Tu veux ajouter les paroles à la vidéo ?</h2>
+    <p id="lyAskP" data-i18n="lq.p">Tu pourras toujours les ajouter plus tard, dans l’onglet Paroles.</p>
+    <div class="lq-two">
+      <button class="btn primary big" id="lqYes" type="button" data-i18n="lq.yes">Oui</button>
+      <button class="btn big" id="lqNo" type="button" data-i18n="lq.no">Non</button>
     </div>
   </div>
 </div>

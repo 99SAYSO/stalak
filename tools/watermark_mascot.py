@@ -105,7 +105,7 @@ def text_path(txt, width, top):
 def main():
     m = stencil()
     w, h, d = trace(m)
-    tw = w * 1.02
+    tw = w * 1.12   # (owner, 06/11: 14 % of the width; the words a little wider than the face, so they stay readable on a phone)
     td, th = text_path('stalak.app', tw, h + h * 0.03)
     W = max(w, tw)
     ox = (W - w) / 2

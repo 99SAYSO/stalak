@@ -1,4 +1,4 @@
-Statut : PRÊT
+Statut : EN COURS (ajouts du 6/11 en cours)
 Branche : app/filigrane-mascotte (créée depuis `main` du 6/11 : d3d7564, avec la maquette du Chef de projet).
 Maquette : https://app-filigrane-mascotte.stalak-site.pages.dev (à faire valider par le propriétaire, règle 9).
 Vidéo d'exemple : `docs/design/filigrane-mascotte-exemple.mp4` (export réel de l'exemple de l'app, en Gratuit, 9:16, 20 s).
