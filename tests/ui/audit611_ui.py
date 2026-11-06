@@ -90,7 +90,8 @@ def flow(b, base, site, lang, iphone, PW):
     if SHOTS: shot(pg, os.path.join(SHOTS, 'fin-exemple-%s-%s.png' % ('iphone' if iphone else 'ordi', lang)))
     pg.locator('#saveBtn').click(); pg.wait_for_timeout(2600)
     check(tag + ' : la fenêtre Pro ne s’ouvre pas pour l’exemple (même après « Enregistrer »)', not visible(pg, '#proPop .card'))
-    pg.locator('#dvTry').click(); pg.wait_for_load_state('load'); pg.wait_for_function('window.__ev && window.MP4Box', timeout=60000); pg.wait_for_timeout(300)
+    with pg.expect_navigation(wait_until='load', timeout=120000): pg.locator('#dvTry').click()
+    pg.wait_for_function('window.__ev && window.MP4Box', timeout=60000); pg.wait_for_timeout(300)
     check(tag + ' : « %s » : retour au choix du son, mis en avant, le clavier dessus' % t['try'],
           ev(pg, 'S.step') == 1 and not ev(pg, 'S.song') and pg.evaluate("document.querySelector('#songDrop').classList.contains('try')") and pg.evaluate("document.activeElement && document.activeElement.id") == 'songFile')
     # 5. one's own video: on a phone the window waits for « Enregistrer »
@@ -115,7 +116,8 @@ def flow(b, base, site, lang, iphone, PW):
     if SHOTS: shot(pg, os.path.join(SHOTS, 'sans-filigrane-%s-%s.png' % ('iphone' if iphone else 'ordi', lang)))
     n0 = ev(pg, 'S.okCount')
     pg.locator('#dvNoWm').click(); pg.wait_for_function('() => __ev("!S.exporting && S.done && S.lastWm === false")', timeout=120000); pg.wait_for_timeout(300)
-    check(tag + ' : la même vidéo refaite sans filigrane, le bouton s’en va', ev(pg, 'S.okCount') == n0 + 1 and not visible(pg, '#dvNoWm') and pg.locator('#saveBtn').inner_text().strip() == t['save'])
+    check(tag + ' : la même vidéo refaite sans filigrane, le bouton s’en va', ev(pg, 'S.okCount') == n0 + 1 and not visible(pg, '#dvNoWm') and pg.locator('#saveBtn').inner_text().strip() == t['save'],
+          (ev(pg, 'S.okCount'), n0, visible(pg, '#dvNoWm'), pg.locator('#saveBtn').inner_text()))
     check(tag + ' : aucune erreur dans la page', not errs, errs)
     ctx.close()
 

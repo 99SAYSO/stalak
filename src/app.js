@@ -7800,7 +7800,7 @@ async function exportOne(){
     else throw new Error(_t('exp.nosupport'));
     if (S.cancel) throw new Error('annulé');
     if (!blob) throw new Error(_t('exp.nosupport'));
-    lastBlob = blob; resultDone(); S.lastWm = !!S.wm; S.lastDemo = demoOnly();
+    lastBlob = blob; S.lastWm = !!S.wm; S.lastDemo = demoOnly(); resultDone();   // (the end screen reads them)
     lastName = 'stalak-' + (isClip() ? 'clip-' : '') + 'v' + S.version + '-' + S.fmt + '.' + ext;
     const rv = $('#resultVideo'); rv.src = URL.createObjectURL(lastBlob); rv.hidden = false;
     $('#result').hidden = false; postShow(); setT('#saveNote', ext === 'mp4' ? (isClip() ? 'save.mp4clip' : 'save.mp4reel') : 'save.webm');
