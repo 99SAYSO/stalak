@@ -28,3 +28,15 @@ Toutes les licences : MIT.
 ## Non établi
 Pas d'exécution, pas de scanner, pas de revue complète des 172 fichiers Python d'Earshot (lus : les scripts de real-sound et llm.py).
 L'essai se fait sur **une** vidéo promo, en comparant avec et sans, et le propriétaire décide à l'œil et à l'oreille.
+
+## Deuxième passe (6/11, 20 h 45, à la demande du propriétaire) : Take One, Explainroo, Huashu Motion
+
+Même méthode (lecture, recherche de commandes à risque, rien installé ni lancé ; scanners et signatures : NOT RUN).
+Aucun hook d'installation (`preinstall`/`postinstall`), aucun lien symbolique, aucun `shell: true` / `curl | sh` trouvé ;
+les `.exec(` trouvés sont des expressions régulières. ffmpeg / ffprobe lancés avec des listes d'arguments.
+
+| Skill (commit) | Ce qu'il fait mieux | Points relevés | Décision |
+|---|---|---|---|
+| talsiach/take-one (`830621c`) | Méthode tirée de vraies vidéos : se comprendre sans le son, ne jamais cacher un visage, vertical = nouveau cadrage, montrer le vrai produit, une idée + un look + une chute, se noter sur 10 face à une référence, bruitages par défaut. Contrôles `scripts/gate.mjs`, `text-audit.mjs`, `edge-audit.mjs`. | Cite des outils payants (Higgsfield, Seedance, Kling, Suno, ElevenLabs) mais exige de demander avant toute dépense. Salle de relecture = petit serveur local. | **Essai encadré, comme guide de méthode** avec HyperFrames (pas de changement de moteur) ; **aucun outil payant sans accord du propriétaire, prix en dollars annoncé**. |
+| vincentsch/explainroo (`e95232c`) | **Voix off gratuite sur la machine** (modèle Kokoro-82M, timing des mots par Whisper), sans clé. | Télécharge les modèles depuis Hugging Face (peut être bloqué par l'espace de travail). `src/images.js:72` appelle OpenRouter (images générées) : **ne jamais fournir de clé**. Polices téléchargées. | **Essai encadré : la voix seulement**, sur une vidéo, comparée à la voix Flora. |
+| alchaincyf/huashu-motion (`52467f9`) | **Studio dans le navigateur : on touche l'image à changer et on écrit sa remarque** ; garde les goûts du propriétaire d'un film à l'autre (`om learn`) ; 3 directions avec une vraie image chacune avant de construire ; musique composée et bruitages placés à l'image. | Moteur complet (remplacerait HyperFrames). `om grab <url>` télécharge des pages avec curl (OK pour stalak.app, à ne pas utiliser sur des sites tiers pour copier). Vérification de version par `git ls-remote` (lecture seule). | **Plus tard : test A/B** (une même vidéo avec lui et avec HyperFrames) ; si le propriétaire préfère, changement de moteur = nouvelle décision. |
