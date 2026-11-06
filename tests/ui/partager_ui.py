@@ -41,7 +41,7 @@ def ev(pg, code):
 LAYOUT_JS = """() => {
   const q = s => document.querySelector(s), vis = e => !!e && !e.closest('[hidden]') && e.getClientRects().length > 0;
   const box = q('#shareBox');
-  return { box: vis(box), kids: [...box.children].map(e => e.id), before: box.previousElementSibling && box.previousElementSibling.id,
+  return { box: !box.hidden && !box.closest('[hidden]'), note: q('#saveNote').textContent, kids: [...box.children].map(e => e.id), before: box.previousElementSibling && box.previousElementSibling.id,
            share: vis(q('#shareBtn')), shareTxt: q('#shareBtn').textContent.trim(), shareCls: q('#shareBtn').className,
            save: vis(q('#saveBtn')), saveTxt: q('#saveBtn').textContent.trim(), saveCls: q('#saveBtn').className,
            post: vis(q('#postBox')), hint: q('#postHint').textContent, cap: vis(q('#capCopy')), capTxt: q('#capText').value,
@@ -112,7 +112,7 @@ def phone(b, base, lang, dev):
     make_video(pg, share='refuse'); pg.locator('#shareBtn').click(); pg.wait_for_timeout(300)
     L4 = pg.evaluate(LAYOUT_JS)
     check(tag + ' : partage refusé par le téléphone → « ' + T['save'] + ' » redevient le bouton principal, avec une explication',
-          not L4['box'] and not L4['share'] and L4['saveTxt'] == T['save'] and 'primary' in L4['saveCls'] and L4['post'] and T['noshare'] in L4['hint'] and L4['cap'], L4)
+          not L4['box'] and not L4['share'] and L4['saveTxt'] == T['save'] and 'primary' in L4['saveCls'] and T['noshare'] in L4['note'] and L4['cap'], L4)
     check(tag + ' : aucune erreur dans la page', not errs, errs)
     ctx.close()
     # a phone that cannot share a file
@@ -124,7 +124,7 @@ def phone(b, base, lang, dev):
     make_video(pg, share='nofile')
     L5 = pg.evaluate(LAYOUT_JS)
     check(tag + ' : téléphone qui ne sait pas partager un fichier → « ' + T['save'] + ' » comme aujourd’hui',
-          not L5['box'] and not L5['share'] and L5['saveTxt'] == T['save'] and 'primary' in L5['saveCls'] and L5['post'] and L5['cap'], L5)
+          not L5['box'] and not L5['share'] and L5['saveTxt'] == T['save'] and 'primary' in L5['saveCls'] and L5['cap'], L5)
     check(tag + ' : aucune erreur dans la page (sans partage de fichier)', not errs, errs)
     ctx.close()
 
@@ -143,7 +143,7 @@ def computer(b, base, lang):
         make_video(pg, pro=pro)   # (its browser says it could share a file: a computer keeps the download all the same)
         L = pg.evaluate(LAYOUT_JS)
         check(tag + (' Pro' if pro else ' gratuit') + ' : « ' + T['save'] + ' » reste le bouton principal, pas de bouton Partager',
-              not L['box'] and not L['share'] and L['saveTxt'] == T['save'] and 'primary' in L['saveCls'] and L['post'], L)
+              not L['box'] and not L['share'] and L['saveTxt'] == T['save'] and 'primary' in L['saveCls'], L)
         check(tag + (' Pro' if pro else ' gratuit') + ' : la légende à copier, avec « made with stalak.app »', L['cap'] and 'made with stalak.app' in L['capTxt'], L['capTxt'])
     pg.locator('#capCopy').click(); pg.wait_for_timeout(300)
     check(tag + ' : « Copier la légende » copie le texte', T['copied'] in pg.locator('#capNote').inner_text())

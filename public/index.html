@@ -9153,6 +9153,8 @@ $('#shareBtn').onclick = async () => {
     if (e && e.name === 'AbortError') return;   // closed by the person
     diag('partage : ' + (e && (e.name + ' ' + e.message) || e)); S.noShare = true; postShow();
     $('#postBox').hidden = false; setT('#postHint', 'post.noshare');
+    // (06/11) on the end screen the networks' links are hidden: the explanation goes under « Enregistrer la vidéo »
+    if (S.done) setT('#saveNote', 'post.noshare');
   }
 };
 /* the logo: a new project, everything cleared (asked first when there is something to lose) */
