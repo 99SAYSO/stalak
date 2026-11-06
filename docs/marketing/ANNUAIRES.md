@@ -10,6 +10,8 @@ Logo carré et 5 vraies captures de Stalak (anglais) : `docs/marketing/annuaires
 
 **Quand :** maintenant. La bascule « anglais à la racine » est en ligne depuis le 1/11 au soir : les fiches pointent vers les adresses définitives.
 
+**6/11 : plus de pub** (décision du propriétaire). Le texte B disait « a small watermark that a ~30-second ad removes from a video » : il est corrigé plus bas. Les fiches **AlternativeTo** et **SaaSHub** ont reçu le texte B le 1/11 : si cette phrase y est, la remplacer par la nouvelle ligne « Pricing » du texte B (sur leur site, une fois connecté). Les textes A et C ne parlaient pas de la pub.
+
 ## 1. Bing Webmaster Tools (le propriétaire, environ 10 minutes)
 
 1. https://www.bing.com/webmasters → se connecter (compte Microsoft, Google ou Facebook).
@@ -78,7 +80,7 @@ Premier commentaire Product Hunt :
 > - Video packs: 5 to 30 differently cut videos from one song (Creator Plus)
 > - Runs in the browser; editing stays on your device
 >
-> Pricing: free, with a small watermark that a ~30-second ad removes from a video. Stalak Pro $7.99/month or $49.99/year. Creator Plus $14.99/month or $99.99/year.
+> Pricing: free with no ads, and a small watermark on every free video. Stalak Pro (no watermark) $7.99/month or $49.99/year. Creator Plus $14.99/month or $99.99/year.
 
 **Phrase Triller** (seulement AlternativeTo et SaaSHub, à la fin de la description B ; décision du 1/11) :
 > Coming from Triller? Like Triller's original editor, Stalak turns several takes of your song into one video cut to the music, right in your browser.

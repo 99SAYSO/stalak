@@ -8,10 +8,10 @@ ROOT = pathlib.Path(__file__).parent
 BASE = sys.argv[sys.argv.index('--base') + 1] if '--base' in sys.argv else ''
 HOME = BASE + '/' if BASE else '/'
 PRICING = BASE + '/pricing' if BASE else '/pricing'
-TODAY = '2026-11-01'
+TODAY = '2026-11-06'   # 06/11: no more ads (owner's decision), new watermark (the mascot's face + stalak.app)
 
 COMMON_FAQ = [
-  ('Is Stalak free?', 'Yes. Unlimited videos, no account. Free videos carry a small Stalak logo that moves to a new spot now and then; watch a ~30-second ad to remove it from that video, or go Pro ($7.99/mo or $49.99/yr) for no ads and no watermark.'),
+  ('Is Stalak free?', 'Yes. Unlimited videos, no account and no ads. Free videos carry a small watermark (our mascot’s face and stalak.app); go Pro ($7.99/mo or $49.99/yr) to export without it.'),
   ('Is this an AI lip-sync tool?', 'No. Stalak never fakes your mouth. It edits your real takes: you perform the song, Stalak picks the cuts and keeps every take lined up with the audio.'),
   ('Do my videos get uploaded?', 'No. Editing happens in your browser, on your device. The only exceptions, if you use them: cloud projects (Creator Plus, saved automatically) and the audio sent for auto lyrics (Pro).'),
 ]
@@ -121,8 +121,8 @@ def page(p):
 <ul>{li(p["tips"][1])}</ul>
 <h2>What’s free, what’s Pro</h2>
 <ul>
-<li><strong>Free</strong>: unlimited videos, auto cuts, lyrics one line at a time, 3 filters, 9:16 export. A small Stalak logo, or a ~30-second ad to remove it.</li>
-<li><strong>Stalak Pro</strong> ($7.99/mo or $49.99/yr): no ads, no watermark, 16:9 music videos, karaoke and word-by-word lyrics, auto lyrics, all filters and premium effects.</li>
+<li><strong>Free</strong>: unlimited videos, auto cuts, lyrics one line at a time, 3 filters, 9:16 export, no ads. A small watermark (our mascot and stalak.app) on every video.</li>
+<li><strong>Stalak Pro</strong> ($7.99/mo or $49.99/yr): no watermark, 16:9 music videos, karaoke and word-by-word lyrics, auto lyrics, all filters and premium effects.</li>
 <li><strong>Creator Plus</strong> ($14.99/mo or $99.99/yr): everything in Pro, plus video packs, automatic cloud saving and a real person to talk to.</li>
 </ul>
 <p><a href="{PRICING}">See pricing</a></p>
@@ -133,7 +133,7 @@ def page(p):
 <ul class="more">{others}</ul>
 <p><a class="cta" href="{HOME}?ref=seo">Make your video now</a></p>
 </main>
-<footer><a href="{PRICING}">Pricing</a> · <a href="{BASE}/terms">Terms</a> · <a href="{BASE}/refunds">Refunds</a> · <a href="{BASE}/privacy">Privacy</a> · <a href="{BASE}/legal-notice">Legal notice</a> · <a href="{BASE}/privacy#choices">Your Privacy Choices</a></footer>
+<footer><a href="{PRICING}">Pricing</a> · <a href="{BASE}/terms">Terms</a> · <a href="{BASE}/refunds">Refunds</a> · <a href="{BASE}/privacy">Privacy</a> · <a href="{BASE}/legal-notice">Legal notice</a> · <a href="{BASE}/privacy#cookies">Cookie settings</a> · <a href="{BASE}/privacy#choices">Your Privacy Choices</a></footer>
 </body></html>
 '''
 

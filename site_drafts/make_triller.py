@@ -4,7 +4,8 @@
 # nowhere else on the site (no link from the home page, the pricing page or the app). Facts about Triller are dated and sourced.
 import json, html as H, pathlib, sys
 REPO = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else pathlib.Path(__file__).resolve().parent.parent
-DATE = '2026-11-01'
+DATE = '2026-11-01'       # first published
+MODIFIED = '2026-11-06'   # 06/11: no more ads (owner's decision), new watermark (the mascot's face + stalak.app)
 
 SOURCES = {
  'en': [
@@ -33,7 +34,7 @@ T = {
   desc='Triller’s parent company says it shut down the original app. Stalak still cuts several takes of your song on the beat, in your browser. Free.',
   crumb='Triller alternative', back='← Back to Stalak',
   h1='Triller alternative: cut your lip-sync takes on the beat',
-  updated='Updated November 1, 2026 · Written by the team that makes Stalak. Every fact about Triller on this page comes from a source listed at the bottom.',
+  updated='Updated November 6, 2026 · Written by the team that makes Stalak. Every fact about Triller on this page comes from a source listed at the bottom.',
   lead='Triller’s parent company says it shut down the original Triller app and doesn’t plan to bring it back as it was. If you used Triller to turn a few takes of a song into one video cut to the music, Stalak does that job in your browser: upload your song, add your takes, and it cuts between them on the beat. It’s free, and there’s nothing to install.',
   cta1='Make my video, free', cta2='Start now, no sign-up',
   s_what='What happened to Triller?',
@@ -41,13 +42,13 @@ T = {
         'In its June 2026 answers to shareholder questions, Triller Group said the legacy app had been shut down because it didn’t work economically. It added that “the strategy is not to recreate old Triller” (the company also plans to rename itself Eight Holdings). In July 2026, Digital Music News reported that Triller shut down its video-sharing app earlier in the year.',
         'So if Triller was how you edited your videos, you need another tool for that part.'],
   s_table='Stalak vs Triller at a glance',
-  table_note='The Triller column describes the app as Android Police reviewed it in 2015 and as its parent company described it in 2026. Stalak’s prices and features are those of November 1, 2026.',
+  table_note='The Triller column describes the app as Android Police reviewed it in 2015 and as its parent company described it in 2026. Stalak’s prices and features are those of November 6, 2026.',
   cols=('', 'Triller', 'Stalak'),
   rows=[('Edits several takes of one song for you', 'Yes, it was its signature feature', 'Yes: cuts on the beat, phrase by phrase, on your lines or every bar'),
         ('Where it runs', 'iPhone and Android app', 'In the browser, on iPhone, Android or computer'),
         ('The song', 'Featured tracks, or music from your phone (2015)', 'Your own file: MP3, WAV, M4A, or the sound of a video'),
         ('Social feed', 'Yes, it was a social video app', 'No: you post your video on TikTok, Instagram or YouTube'),
-        ('Price', 'Free (2015)', 'Free, with a small Stalak logo; Pro $7.99/mo or $49.99/yr'),
+        ('Price', 'Free (2015)', 'Free, with a small watermark; Pro $7.99/mo or $49.99/yr'),
         ('Status in November 2026', 'Original app shut down, according to its parent company', 'Online')],
   s_adds='What Stalak adds',
   adds=['Lyrics on screen: one line at a time for free; word-by-word and karaoke with Stalak Pro; lyrics written and synced from your vocals (Pro).',
@@ -60,7 +61,7 @@ T = {
   nots=['It isn’t a social network: no feed, no followers. You post where your audience already is.',
         'There’s no song catalog: you bring your own track. For a cover, only post songs you’re allowed to use.',
         'There’s no app to download: Stalak runs in the browser, and you can add it to your home screen.',
-        'Free videos carry a small Stalak logo. Watch a ~30-second ad to remove it from that video, or go Pro.'],
+        'Free videos carry a small watermark (our mascot and stalak.app). To export without it, go Pro.'],
   s_who='Is Stalak the right fit?',
   who=['<strong>Yes</strong>, if you made Triller videos of your own songs and want the same multi-take edit for TikTok, Reels or Shorts, with your lyrics on screen.',
        '<strong>Probably not</strong>, if you mainly want an app to scroll and share videos with a community, or a library of licensed songs to lip-sync to.'],
@@ -71,14 +72,14 @@ T = {
   s_faq='FAQ',
   faq=[('Is Triller still working?', 'Triller Group, Triller’s parent company, said in June 2026 that the legacy Triller app had been shut down, and that it doesn’t plan to recreate it as it was. For the latest, check the app store on your phone.'),
        ('What app does what Triller did?', 'Triller’s signature feature was turning several takes of one song into one video cut to the music. Stalak does that in your browser: upload the song, add your takes, and it cuts between them on the beat, on your lines or every bar, with your lyrics on screen if you want.'),
-       ('Is Stalak free?', 'Yes, with no account: unlimited videos, lyrics one line at a time, 3 filters and 9:16 export. Free videos carry a small Stalak logo that moves to a new spot now and then; a ~30-second ad removes it from that video. Stalak Pro ($7.99/mo or $49.99/yr) removes ads and the logo, and adds 16:9 music videos, karaoke lyrics, every filter and auto lyrics. Creator Plus ($14.99/mo or $99.99/yr) adds video packs, automatic cloud saving and a real person to talk to.'),
+       ('Is Stalak free?', 'Yes, with no account and no ads: unlimited videos, lyrics one line at a time, 3 filters and 9:16 export. Free videos carry a small watermark (our mascot’s face and stalak.app). Stalak Pro ($7.99/mo or $49.99/yr) removes it, and adds 16:9 music videos, karaoke lyrics, every filter and auto lyrics. Creator Plus ($14.99/mo or $99.99/yr) adds video packs, automatic cloud saving and a real person to talk to.'),
        ('Do I need to download an app?', 'No. Stalak runs in the browser on iPhone, Android or computer, at stalak.app. Editing and export happen on your device.'),
        ('Is Stalak related to Triller?', 'No. Stalak is an independent tool made by 99Sayso, a rapper from the Alaska collective. It isn’t affiliated with Triller or Triller Group.')],
   founder='Stalak is made by 99Sayso, an independent rapper from the Alaska collective. He coded it to cut his own takes to the beat.',
   s_src='Sources', src_note='Checked on November 1, 2026.',
   tm='Triller is a trademark of its owner. Stalak is an independent product, not affiliated with, endorsed or sponsored by Triller.',
   lang_link=('Version française', 'fr'),
-  footer=[('/pricing', 'Pricing'), ('/terms', 'Terms'), ('/refunds', 'Refunds'), ('/privacy', 'Privacy'), ('/legal-notice', 'Legal notice'), ('/privacy#choices', 'Your Privacy Choices')],
+  footer=[('/pricing', 'Pricing'), ('/terms', 'Terms'), ('/refunds', 'Refunds'), ('/privacy', 'Privacy'), ('/legal-notice', 'Legal notice'), ('/privacy#cookies', 'Cookie settings'), ('/privacy#choices', 'Your Privacy Choices')],
  ),
  'fr': dict(
   path='/fr/alternative-triller', other='/triller-alternative', home='/fr/', pricing='/fr/tarifs', locale='fr_FR', lang='fr',
@@ -86,7 +87,7 @@ T = {
   desc='La société mère de Triller dit avoir arrêté l’appli d’origine. Stalak coupe toujours tes prises sur le rythme, dans ton navigateur. Gratuit.',
   crumb='Alternative à Triller', back='← Retour à Stalak',
   h1='Alternative à Triller : tes prises de playback montées sur le rythme',
-  updated='Mis à jour le 1er novembre 2026 · Écrit par l’équipe qui fait Stalak. Chaque information sur Triller vient d’une source citée en bas de page.',
+  updated='Mis à jour le 6 novembre 2026 · Écrit par l’équipe qui fait Stalak. Chaque information sur Triller vient d’une source citée en bas de page.',
   lead='La société mère de Triller dit avoir arrêté l’appli Triller d’origine, et ne pas vouloir la refaire telle qu’elle était. Si tu utilisais Triller pour transformer quelques prises d’un son en une vidéo montée sur la musique, Stalak fait ce travail dans ton navigateur : tu importes ton son, tu ajoutes tes prises, et il coupe de l’une à l’autre sur le rythme. C’est gratuit, sans rien à installer.',
   cta1='Monter ma vidéo gratuitement', cta2='Commencer, sans inscription',
   s_what='Que s’est-il passé avec Triller ?',
@@ -94,13 +95,13 @@ T = {
         'Dans ses réponses aux questions des actionnaires (juin 2026), Triller Group explique avoir arrêté l’ancienne appli, faute de modèle économique viable. Il précise que sa stratégie n’est pas de recréer l’ancien Triller (la société prévoit aussi de se renommer Eight Holdings). En juillet 2026, Digital Music News écrit que Triller a fermé son appli de partage de vidéos plus tôt dans l’année.',
         'Si Triller te servait à monter tes vidéos, il te faut donc un autre outil pour ça.'],
   s_table='Stalak et Triller en un coup d’œil',
-  table_note='La colonne Triller décrit l’appli telle qu’Android Police l’a testée en 2015 et telle que sa société mère la décrit en 2026. Les prix et fonctions de Stalak sont ceux du 1er novembre 2026.',
+  table_note='La colonne Triller décrit l’appli telle qu’Android Police l’a testée en 2015 et telle que sa société mère la décrit en 2026. Les prix et fonctions de Stalak sont ceux du 6 novembre 2026.',
   cols=('', 'Triller', 'Stalak'),
   rows=[('Monte pour toi plusieurs prises d’un même son', 'Oui, c’était sa fonction phare', 'Oui : coupes sur les temps, sur les mots ou par mesure'),
         ('Où ça marche', 'Appli iPhone et Android', 'Dans le navigateur, sur iPhone, Android ou ordinateur'),
         ('Le son', 'Des titres proposés, ou la musique de ton téléphone (2015)', 'Ton propre fichier : MP3, WAV, M4A, ou le son d’une vidéo'),
         ('Fil social', 'Oui, c’était une appli sociale de vidéos', 'Non : tu postes ta vidéo sur TikTok, Instagram ou YouTube'),
-        ('Prix', 'Gratuite (2015)', 'Gratuit, avec un petit logo Stalak ; Pro à 7,99 $/mois ou 49,99 $/an'),
+        ('Prix', 'Gratuite (2015)', 'Gratuit, avec un petit filigrane ; Pro à 7,99 $/mois ou 49,99 $/an'),
         ('État en novembre 2026', 'Appli d’origine arrêtée, selon sa société mère', 'En ligne')],
   s_adds='Ce que Stalak ajoute',
   adds=['Les paroles à l’écran : en phrase entière en gratuit ; mot par mot et karaoké avec Stalak Pro ; paroles écrites et calées à partir de ta voix (Pro).',
@@ -113,7 +114,7 @@ T = {
   nots=['Ce n’est pas un réseau social : pas de fil, pas d’abonnés. Tu postes là où ton public est déjà.',
         'Pas de catalogue de sons : tu apportes ton propre morceau. Pour une reprise, poste seulement ce que tu as le droit d’utiliser.',
         'Pas d’appli à télécharger : Stalak marche dans le navigateur, et tu peux l’ajouter à ton écran d’accueil.',
-        'Les vidéos gratuites ont un petit logo Stalak. Regarde une pub d’environ 30 s pour l’enlever de cette vidéo, ou passe à Pro.'],
+        'Les vidéos gratuites ont un petit filigrane (la mascotte et stalak.app). Pour tes vidéos sans filigrane, passe à Pro.'],
   s_who='Stalak est-il fait pour toi ?',
   who=['<strong>Oui</strong>, si tu faisais des vidéos Triller sur tes propres sons et que tu veux le même montage multi-prises pour TikTok, Reels ou Shorts, avec tes paroles à l’écran.',
        '<strong>Sans doute pas</strong>, si tu cherches surtout une appli pour regarder et partager des vidéos avec une communauté, ou un catalogue de titres sous licence pour faire du playback.'],
@@ -124,14 +125,14 @@ T = {
   s_faq='Questions fréquentes',
   faq=[('Triller marche-t-elle encore ?', 'Triller Group, la société mère de Triller, a indiqué en juin 2026 avoir arrêté l’ancienne appli Triller, et ne pas vouloir la recréer telle qu’elle était. Pour l’état le plus récent, regarde le magasin d’applis de ton téléphone.'),
        ('Quelle appli fait ce que faisait Triller ?', 'La fonction phare de Triller, c’était de transformer plusieurs prises d’un même son en une seule vidéo montée sur la musique. Stalak le fait dans ton navigateur : tu importes ton son, tu ajoutes tes prises, et il coupe de l’une à l’autre sur les temps, sur les mots ou par mesure, avec tes paroles à l’écran si tu veux.'),
-       ('Stalak est-il gratuit ?', 'Oui, et sans compte : montage illimité, paroles en phrase entière, 3 filtres et export 9:16. Les vidéos gratuites ont un petit logo Stalak, qui change de place de temps en temps ; une pub d’environ 30 s l’enlève de cette vidéo. Stalak Pro (7,99 $/mois ou 49,99 $/an) enlève les pubs et le logo, et ajoute le clip 16:9, le karaoké, tous les filtres et les paroles automatiques. Creator Plus (14,99 $/mois ou 99,99 $/an) ajoute les packs de vidéos, la sauvegarde en ligne automatique et un vrai humain pour t’aider.'),
+       ('Stalak est-il gratuit ?', 'Oui, sans compte et sans pub : montage illimité, paroles en phrase entière, 3 filtres et export 9:16. Les vidéos gratuites ont un petit filigrane (le visage de la mascotte et stalak.app). Stalak Pro (7,99 $/mois ou 49,99 $/an) l’enlève, et ajoute le clip 16:9, le karaoké, tous les filtres et les paroles automatiques. Creator Plus (14,99 $/mois ou 99,99 $/an) ajoute les packs de vidéos, la sauvegarde en ligne automatique et un vrai humain pour t’aider.'),
        ('Faut-il télécharger une appli ?', 'Non. Stalak marche dans le navigateur sur iPhone, Android ou ordinateur, sur stalak.app. Le montage et l’export se font sur ton appareil.'),
        ('Stalak a-t-il un lien avec Triller ?', 'Non. Stalak est un outil indépendant fait par 99Sayso, rappeur du collectif Alaska. Il n’est affilié ni à Triller ni à Triller Group.')],
   founder='Stalak est fait par 99Sayso, rappeur indépendant du collectif Alaska. Il l’a codé pour monter ses propres prises sur le rythme.',
   s_src='Sources', src_note='Vérifiées le 1er novembre 2026 (en anglais).',
   tm='Triller est une marque de son propriétaire. Stalak est un produit indépendant, sans lien avec Triller, ni approuvé ou sponsorisé par Triller.',
   lang_link=('English version', 'en'),
-  footer=[('/fr/tarifs', 'Tarifs'), ('/fr/conditions', 'Conditions'), ('/fr/remboursement', 'Remboursement'), ('/fr/confidentialite', 'Confidentialité'), ('/fr/mentions-legales', 'Mentions légales')],
+  footer=[('/fr/tarifs', 'Tarifs'), ('/fr/conditions', 'Conditions'), ('/fr/remboursement', 'Remboursement'), ('/fr/confidentialite', 'Confidentialité'), ('/fr/mentions-legales', 'Mentions légales'), ('/fr/confidentialite#cookies', 'Gérer les cookies')],
  ),
 }
 
@@ -159,7 +160,7 @@ def page(L):
     P = T[L]; url = '{{URL}}' + P['path']; abs_url = 'https://stalak.app' + P['path']
     src = SOURCES[L]
     ld = {'@context': 'https://schema.org', '@graph': [
-        {'@type': 'Article', 'headline': P['h1'], 'description': P['desc'], 'inLanguage': P['lang'], 'datePublished': DATE, 'dateModified': DATE,
+        {'@type': 'Article', 'headline': P['h1'], 'description': P['desc'], 'inLanguage': P['lang'], 'datePublished': DATE, 'dateModified': MODIFIED,
          'mainEntityOfPage': abs_url, 'image': 'https://stalak.app/og.png',
          'author': {'@type': 'Organization', 'name': 'Stalak', 'url': 'https://stalak.app' + P['home']}, 'publisher': {'@id': 'https://stalak.app/#organization'},
          'about': [{'@type': 'SoftwareApplication', 'name': 'Triller'}, {'@type': 'WebApplication', 'name': 'Stalak', 'url': 'https://stalak.app' + P['home']}],

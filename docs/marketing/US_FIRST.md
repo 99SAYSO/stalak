@@ -94,7 +94,7 @@ Les balises `hreflang` relient déjà les deux langues, et la page par défaut (
 | 6 | **Discord** | Ton #stalak-beta, et des serveurs de producteurs ou de rappeurs | Participer chaque semaine |
 | 7 | **Beatmakers « type beats » (YouTube)** | Leurs clients sont des rappeurs : un producteur qui montre Stalak parle directement à ton public | 5 à 10 producteurs contactés, une fois |
 
-**Avant la grosse promo** (audit, point 1) : tant que Paddle n'est pas en mode réel et que la vraie pub n'est pas branchée, les visiteurs ne peuvent ni payer ni regarder une vraie pub. D'ici là : vidéos « build in public », participation sur Reddit, contacts avec les beatmakers. Le thread X et le post Reddit sur Stalak attendent les vrais paiements.
+**Avant la grosse promo** (audit, point 1) : tant que Paddle n'est pas en mode réel, les visiteurs ne peuvent pas payer (Paddle est en réel depuis le 3/11 ; plus aucune pub depuis le 6/11, décision du propriétaire). D'ici là : vidéos « build in public », participation sur Reddit, contacts avec les beatmakers. Le thread X et le post Reddit sur Stalak attendent les vrais paiements.
 
 **Horaires** : le soir sur la côte Est (19 h – 22 h), c'est-à-dire 1 h – 4 h du matin en France. Programme tes posts à l'avance avec les outils de programmation de chaque réseau, sans rester debout la nuit.
 
@@ -200,8 +200,8 @@ I coded this because editing my snippets took forever 🧊 Drop your song + a fe
 **X (thread) :**
 1. I'm a rapper. Editing my snippets by hand was killing me, so I coded my own editor. It's called Stalak 🧊 stalak.app
 2. Drop your song + 3 or 4 takes of you rapping. It cuts between them on the beat, lip sync locked in. Lyrics on screen if you want.
-3. Runs in your browser. No download, no sign-up. Free videos get a small logo, or watch a 30-second ad to remove it.
-4. Pro drops ads + watermark and unlocks 16:9 music videos, karaoke lyrics and auto lyrics.
+3. Runs in your browser. No download, no sign-up, no ads. Free videos get a small watermark.
+4. Pro drops the watermark and unlocks 16:9 music videos, karaoke lyrics and auto lyrics.
 5. One artist building for artists. Tell me what's missing and I'll build it.
 
 **Reddit (titre + texte) :**
@@ -209,13 +209,13 @@ I'm a rapper and I built a free browser tool that cuts my takes to the beat. Loo
 
 > I'm 99Sayso, an independent rapper. I film 3 or 4 takes of every snippet and editing them by hand took forever, so I coded Stalak (stalak.app). You drop your song and your takes, it cuts between them on the beat with the lip sync locked in, and you can add lyrics on screen. It runs in the browser, no download, no account.
 >
-> Full transparency: free videos get a small Stalak logo, or you can watch a ~30 s ad to remove it. The paid plan removes both, that's how I keep it running.
+> Full transparency: free videos get a small watermark (the Stalak mascot and "stalak.app"). The paid plan removes it, that's how I keep it running. There are no ads.
 >
 > What would make this actually useful for you? I'll answer everything.
 
 **Réponses types :**
 - **"What is it?"** It's a site I built: drop your song and a few takes, it cuts between them on the beat with the lips in sync. stalak.app
-- **"Is it free?"** Yep, unlimited and no account. Free videos get a small logo; a 30 s ad removes it, or Pro ($7.99/mo) gets rid of it for good.
+- **"Is it free?"** Yep, unlimited, no account and no ads. Free videos get a small watermark; Pro ($7.99/mo) gets rid of it.
 - **"Is this an ad?"** It's my own tool, so yeah, I'm promoting it, and I'm telling you that up front. Mostly I want feedback.
 - **"Where do my videos go?"** Nowhere. Editing happens on your phone or computer. Only cloud saving (Creator Plus) and auto lyrics (Pro) send anything.
 - **"It's buggy"** Thanks for telling me. What phone and browser? Send me what you're seeing at contact@stalak.app and I'll look into it.
