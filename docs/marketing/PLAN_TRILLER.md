@@ -18,7 +18,7 @@ La seule voix qu'on utilise est la tienne : « je suis 99Sayso, rappeur, j'ai co
 - Sur un fil où quelqu'un demande une alternative à Triller, tu réponds d'abord à sa question (y compris en citant CapCut ou camrip quand ils lui vont mieux), puis tu proposes Stalak.
 - Pas de message privé à des inconnus qui n'ont rien demandé.
 
-**Quand commencer :** une fois la nouvelle offre en ligne (gratuit sans compte, filigrane, pub). Sinon, « sans inscription » serait faux le jour où quelqu'un clique.
+**Quand commencer :** une fois la nouvelle offre en ligne (gratuit sans compte, avec filigrane ; plus aucune pub depuis le 6/11). Sinon, « sans inscription » serait faux le jour où quelqu'un clique.
 
 ## 2. Où est ce public
 
@@ -49,7 +49,7 @@ La seule voix qu'on utilise est la tienne : « je suis 99Sayso, rappeur, j'ai co
 >
 > It's called Stalak (stalak.app). It runs in the browser on iPhone, Android or computer, no download, no account for the free version. You import the song, add your takes, and it cuts between them on the beats, the words or every bar, with the lips in sync. You can put the lyrics on screen too.
 >
-> Being upfront: the free version adds a small moving watermark ("Clipped with stalak.app"), or you can watch a ~30 s ad to remove it from that video. The paid plan removes both. That's how I pay for it.
+> Being upfront: free videos get a small watermark (the Stalak mascot and "stalak.app"). The paid plan removes it, and that's how I pay for it. No ads, on any plan.
 >
 > I'd really like feedback from people who used Triller: what's missing, what's broken, what Triller did better. I'll answer everything here.
 
@@ -60,22 +60,22 @@ La seule voix qu'on utilise est la tienne : « je suis 99Sayso, rappeur, j'ai co
 >
 > Ça s'appelle Stalak (stalak.app). Ça marche dans le navigateur, sur iPhone, Android ou ordi, sans rien télécharger ni créer de compte pour la version gratuite. Tu mets ton son et tes prises, il coupe sur les temps, sur les mots ou par mesure, en gardant la synchro des lèvres. Tu peux mettre les paroles à l'écran.
 >
-> Pour être clair : en gratuit il y a un petit filigrane qui bouge (« Clipped with stalak.app »), ou tu regardes une pub de 30 s pour l'enlever de la vidéo. L'abonnement enlève les deux, c'est comme ça que je le finance.
+> Pour être clair : en gratuit il y a un petit filigrane (la mascotte de Stalak et « stalak.app »). L'abonnement l'enlève, c'est comme ça que je le finance. Et il n'y a aucune pub.
 >
 > Je cherche surtout des retours de gens qui utilisaient Triller : ce qui manque, ce qui bug. Je réponds à tout.
 
 ### X, thread de lancement (EN)
 1. Triller is gone. I'm a rapper and it was the only app I used to cut my takes to the beat. So I coded my own. It's called Stalak 🧊 stalak.app
 2. You import your song + 3 or 4 takes of you rapping. It cuts between them on the beat and keeps the lips in sync. Lyrics on screen if you want.
-3. It runs in the browser. No download, no account on the free version. Free videos have a small watermark, or watch a 30 s ad to remove it.
-4. Pro removes ads + watermark and adds the 16:9 music video mode, karaoke lyrics and automatic lyrics.
+3. It runs in the browser. No download, no account on the free version, no ads. Free videos have a small watermark.
+4. Pro removes the watermark and adds the 16:9 music video mode, karaoke lyrics and automatic lyrics.
 5. Built by one artist for artists. Tell me what's missing and I'll build it. [vidéo avant / après]
 
 ### X, thread de lancement (FR)
 1. Triller est mort. Je suis rappeur et c'était la seule appli qui montait mes prises sur le rythme. Alors j'ai codé la mienne : Stalak 🧊 stalak.app
 2. Tu mets ton son et 3 ou 4 prises où tu rappes dessus. Il coupe sur le rythme et garde la synchro des lèvres. Les paroles à l'écran si tu veux.
-3. Ça marche dans le navigateur : rien à télécharger, pas de compte en gratuit. En gratuit il y a un petit filigrane, ou une pub de 30 s pour l'enlever.
-4. Pro enlève pubs et filigrane, et ajoute le clip 16:9, le karaoké et les paroles écrites automatiquement.
+3. Ça marche dans le navigateur : rien à télécharger, pas de compte en gratuit, et aucune pub. En gratuit il y a un petit filigrane.
+4. Pro enlève le filigrane, et ajoute le clip 16:9, le karaoké et les paroles écrites automatiquement.
 5. Fait par un artiste pour les artistes. Dis-moi ce qui manque, je le code. [vidéo avant / après]
 
 ### TikTok / Reels, vidéo 1 « Triller est mort, j'ai codé le mien »
@@ -100,12 +100,12 @@ FR : C'est un site que j'ai codé : tu mets ton son et plusieurs prises où tu c
 EN : It's a site I built: you add your song and a few takes of you singing along, and it cuts between them on the beat with the lips in sync. Like Triller, but in the browser. stalak.app
 
 **« C'est gratuit ? » / « Is it free? »**
-FR : Oui, sans limite et sans compte. Il y a un petit filigrane en gratuit ; une pub de 30 s l'enlève de la vidéo, ou Pro (7,99 $/mois, 49,99 $/an) l'enlève pour de bon.
-EN : Yes, no limit and no account. Free videos have a small watermark; a 30 s ad removes it from that video, or Pro ($7.99/mo, $49.99/yr) removes it for good.
+FR : Oui, sans limite, sans compte et sans pub. Il y a un petit filigrane en gratuit ; Pro (7,99 $/mois, 49,99 $/an) l'enlève.
+EN : Yes, no limit, no account and no ads. Free videos have a small watermark; Pro ($7.99/mo, $49.99/yr) removes it.
 
 **« Encore un filigrane… » / « Ugh, a watermark »**
-FR : Je comprends. Je l'ai fait petit, et la pub de 30 s l'enlève gratuitement à chaque vidéo. C'est ce qui me permet de garder le gratuit sans limite.
-EN : Fair. I kept it small, and the 30 s ad removes it for free on every video. That's what lets me keep the free version unlimited.
+FR : Je comprends. Je l'ai fait petit, et il n'y a aucune pub à côté. C'est ce qui me permet de garder le gratuit sans limite ; si tu postes beaucoup, Pro l'enlève.
+EN : Fair. I kept it small, and there are no ads. The watermark is what lets me keep the free version unlimited; if you post a lot, Pro removes it.
 
 **« C'est une pub déguisée / t'es payé ? » / « Is this an ad? »**
 FR : C'est mon outil, je l'ai codé, donc oui je le mets en avant, et je le dis. Je veux surtout des retours.

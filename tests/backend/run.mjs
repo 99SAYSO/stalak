@@ -2671,6 +2671,7 @@ test('help guide: no other editing app named, and the rule is written in both la
     assert.ok(!/triller|capcut|inshot|vn editor|splice|premiere|final cut|imovie|davinci|kinemaster|veed|canva|camrip|filmora|vllo/i.test(g),
       (g.match(/triller|capcut|inshot|vn editor|splice|premiere|final cut|imovie|davinci|kinemaster|veed|canva|camrip|filmora|vllo/i) || [])[0]);
     assert.ok(!/Sauvegarder en ligne »|“Save online”/.test(g), 'no more save button in the guide');
+    assert.ok(!/pub vidéo d'environ 30 s|ad of about 30 s|~30 s ad|pub d'environ 30 s/.test(g), 'no more rewarded ad in the guide (owner, 06/11)');   // Marketing, sans pub
   }
 });
 

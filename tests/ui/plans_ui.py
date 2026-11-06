@@ -6,7 +6,7 @@ the plans page (Gratuit + Stalak Pro + Stalak Creator Plus, monthly / yearly, in
 Build the site first (python3 build_site.py …), then run node tests/ui/cloud-server.mjs <repo>/public <port> (a fresh one per
 run): the real Functions on node:sqlite, Paddle imitated. Accounts come from /__test/login?email=…&pro=1[&plan=pro] (or pro=0).
 In that server, Creator Plus yearly has no Paddle price: its button must say « Bientôt ».
-Checks (aligned on the Tarifs page, audit of 30/10): signed out, FR, 390 px: 3 cards (Pro first on a phone, « Ni pub ni
+Checks (aligned on the Tarifs page, audit of 30/10): signed out, FR, 390 px: 3 cards (Pro first on a phone, « Sans
 filigrane »), YEARLY by default (Pro 4,17 $/mois, 49,99 $ a year, « Économise 47 % »), monthly 7,99 $ / 14,99 $, « dès 2
 playbacks », « 100 GB » in English, a plan asks to sign in; free, EN, 1280 px: 3 cards side by side (Free → Creator Plus), no
 reminder box any more; Pro at 1280 px: « Ta formule », « Passer à Creator Plus » shows today's price before confirming; Creator
@@ -118,7 +118,7 @@ async def main():
         check('fr-390 yearly: Creator Plus saves 44 %', '44' in by['creator']['pill'], by['creator'])
         check('fr-390 yearly: a plan without a price says « Bientôt »', by['creator']['btn'] == 'Bientôt' and by['creator']['off'], by['creator'])
         rib = await pg.inner_text('#apBuy .pl-pro .pl-ribbon')
-        check('fr-390: Pro put forward « Ni pub ni filigrane »', rib == 'Ni pub ni filigrane' and await pg.eval_on_selector('#apBuy .pl-pro', 'e => e.classList.contains("is-best")'), rib)
+        check('fr-390: Pro put forward « Sans filigrane »', rib == 'Sans filigrane' and await pg.eval_on_selector('#apBuy .pl-pro', 'e => e.classList.contains("is-best")'), rib)
         save = await pg.inner_text('#plIntSave')
         check('fr-390: the yearly switch says « jusqu’à −47 % »', '47' in save, save)
         packs = await pg.inner_text('#apBuy .pl-creator [data-i18n="pl.f.packs"]')

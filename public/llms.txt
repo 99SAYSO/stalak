@@ -20,8 +20,9 @@ Stalak is not related to the Dofus game creature of the same name.
 
 ## Facts
 - No download and no sign-up: Stalak runs in the browser. The free plan needs no account.
-- Free: unlimited videos; auto cuts that land on the beat (phrase by phrase, on the lines and rhymes of your lyrics, or every bar); on-screen lyrics one line at a time (size M), pasted in and synced by tapping; 3 filters (Frost, 35mm Film, Black & White); vertical 9:16 export. Free videos carry a small Stalak logo watermark that moves to a new spot now and then; watching a ~30-second ad removes it from that video.
-- Stalak Pro ($7.99/month or $49.99/year): no ads, no watermark, 16:9 music video mode, premium effects, word-by-word and karaoke lyrics in any size, all filters, auto lyrics written and synced from your vocals.
+- No ads, on any plan (free included).
+- Free: unlimited videos; auto cuts that land on the beat (phrase by phrase, on the lines and rhymes of your lyrics, or every bar); on-screen lyrics one line at a time (size M), pasted in and synced by tapping; 3 filters (Frost, 35mm Film, Black & White); vertical 9:16 export. Every free video carries a small watermark (the face of Stalak's mascot and "stalak.app"); only Stalak Pro and Creator Plus export without it.
+- Stalak Pro ($7.99/month or $49.99/year): no watermark, 16:9 music video mode, premium effects, word-by-word and karaoke lyrics in any size, all filters, auto lyrics written and synced from your vocals.
 - Creator Plus ($14.99/month or $99.99/year): everything in Pro, plus video packs (5 to 30 differently cut videos from one song, from just 2 takes), automatic cloud saving, and "Talk to a human" (live chat, or an email reply within 24 hours).
 - Prices are in US dollars; any sales tax or VAT is added at checkout. Subscribers keep their price.
 - Payments are handled by Paddle. Full refund within 14 days.

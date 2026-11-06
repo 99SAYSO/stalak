@@ -128,7 +128,7 @@ def run(b, base, lang, iphone):
         anim: getComputedStyle(document.querySelector('#proPopCard')).animationName, frost: getComputedStyle(document.querySelector('#proPop .pp-shine'), '::before').animationName,
         mascot: getComputedStyle(document.querySelector('.pp-mascot')).backgroundImage.slice(0, 20), items: [...document.querySelectorAll('#proPop .pp-list li')].map(l => l.textContent.trim()),
         price: document.querySelector('#proPop .pp-price').textContent, focus: document.activeElement && document.activeElement.id }; }''')
-    want_items = ['No ads, no watermark', 'Music video mode (16:9, the whole song)', 'Every filter'] if lang == 'en' else ['Ni pub ni filigrane', 'Le mode Clip 16:9, sur tout le son', 'Tous les filtres']
+    want_items = ['No watermark', 'Music video mode (16:9, the whole song)', 'Every filter'] if lang == 'en' else ['Sans filigrane', 'Le mode Clip 16:9, sur tout le son', 'Tous les filtres']
     check(tag + ' : au milieu de l’écran, fond assombri', abs(look['cx']) <= 2 and abs(look['cy']) <= 40 and look['inside'] and look['bg'].startswith('rgba(8, 14, 30'), look)
     check(tag + ' : apparition animée et reflet givré', look['anim'] == 'pp-rise' and look['frost'] == 'pp-frost', look)
     check(tag + ' : mascotte, titre, 3 avantages, prix au mois', look['mascot'].startswith('url(') and look['items'] == want_items and ('$4.17/mo' in look['price'] if lang == 'en' else '4,17 $/mois' in look['price'])
