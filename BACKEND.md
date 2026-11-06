@@ -497,6 +497,7 @@ Pour la version 3 (5/11) : colle de même **tout** `migrations/0011_signup_sourc
 Pour l'e-mail de remerciement (5/11) : colle de même **tout** `migrations/0012_thanks_mail.sql` (1 colonne, et les clients déjà abonnés marqués) **avant** de publier.
 Pour « Heure par heure » (5/11) : colle de même **tout** `migrations/0013_hourly_counts.sql` (1 petite table) **avant** de publier.
 Pour « Combien de vidéos par personne » (5/11) : colle de même **tout** `migrations/0015_video_counts.sql` (1 petite table) **avant** de publier.
+Pour l'audit du 6/11 : colle de même **tout** `migrations/0016_thanks_mail_id.sql` (1 colonne vide) **avant** de publier.
 
 ### 13.2 L'adresse admin.stalak.app
 **Workers & Pages → stalak-site → Custom domains → Set up a custom domain** → `admin.stalak.app` → **Continue** → **Activate domain**.
@@ -710,6 +711,30 @@ annulé), sur iPhone/iPad, et la raison qui a ouvert la page des formules. À aj
 (Juridique) : de simples compteurs, rien sur la personne.
 
 ---
+
+### 15.6 Audit du 6/11 (Comptes)
+- **Remboursement** : un remboursement complet approuvé (ou une contestation bancaire) d'un paiement d'abonnement arrête
+  l'abonnement **tout de suite** chez Paddle (`effective_from: immediately`) et ici (le compte repasse en Gratuit à l'instant),
+  avec une notif Telegram « ↩️ Remboursement (7,99 USD) : abonnement Pro arrêté ». Si Paddle refuse l'arrêt, la notif dit de
+  l'arrêter à la main (Subscriptions → Cancel → Immediately). Le remboursement d'un **changement de formule** n'arrête rien :
+  notif « remettre l'ancienne formule dans Paddle ». Remboursement partiel : notif discrète, rien ne s'arrête.
+- **Un seul « Choose Pro »** : la formule et la durée choisies (page Tarifs `?plan=pro-year`, ou la page des formules de l'app)
+  sont gardées pendant la connexion (30 minutes, cet onglet) ; la fenêtre de paiement s'ouvre dès le code validé ou le retour de
+  Google / Apple / Microsoft. Déjà connecté : le lien de la page Tarifs ouvre le paiement tout de suite.
+- **Signe de vie** : un signe de vie reçu moins de 4 minutes après le précédent n'écrit plus rien dans la base.
+  **À faire par toi (Cloudflare, gratuit)** : *stalak.app → Security → WAF → Rate limiting rules → Create rule* :
+  nom « API », si *URI Path* commence par `/api/` **et** ne commence pas par `/api/cloud/` **et** n'est pas `/api/paddle/webhook`,
+  *Requests* 60 par *10 seconds* par IP → *Block* pendant 10 secondes. Et passer en **Workers Paid** (5 $/mois, déjà dans
+  `docs/PADDLE_PRODUCTION.md`).
+- **Données gardées** (`functions/_lib/retention.js`, avec les tâches du jour) : paroles automatiques (`lyrics_usage`) 90 jours et
+  effacées avec le compte ; empreintes « déjà remercié » 3 ans ; compteurs de limites (empreintes d'IP et d'e-mail) effacés 24 h
+  après leur fenêtre, chaque jour et plus au hasard ; l'e-mail de remerciement encore en attente chez Resend est **annulé** si le
+  compte est supprimé (migration `0016_thanks_mail_id.sql`).
+- **Paddle** : un message plus ancien n'écrase jamais un plus récent (vérifié par la base elle-même) ; un client Paddle déjà relié
+  à un compte n'est jamais remplacé (quelqu'un qui paie avec l'e-mail d'une autre personne).
+- **Assistant d'aide** : 6 questions par connexion toutes les 10 minutes et 10 par jour (avant 15 et 60 : une seule connexion
+  pouvait prendre tout le budget du jour).
+- **Fenêtre de paiement bloquée** (bloqueur de pub) : message clair « Désactive-le pour stalak.app (ou essaie un autre navigateur) ».
 
 ## Pour le développeur
 

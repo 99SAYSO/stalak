@@ -72,7 +72,7 @@ T = {
   s_faq='FAQ',
   faq=[('Is Triller still working?', 'Triller Group, Triller’s parent company, said in June 2026 that the legacy Triller app had been shut down, and that it doesn’t plan to recreate it as it was. For the latest, check the app store on your phone.'),
        ('What app does what Triller did?', 'Triller’s signature feature was turning several takes of one song into one video cut to the music. Stalak does that in your browser: upload the song, add your takes, and it cuts between them on the beat, on your lines or every bar, with your lyrics on screen if you want.'),
-       ('Is Stalak free?', 'Yes, with no account and no ads: unlimited videos, lyrics one line at a time, 3 filters and 9:16 export. Free videos carry a small watermark (our mascot’s face and stalak.app). Stalak Pro ($7.99/mo or $49.99/yr) removes it, and adds 16:9 music videos, karaoke lyrics, every filter and auto lyrics. Creator Plus ($14.99/mo or $99.99/yr) adds video packs, automatic cloud saving and a real person to talk to.'),
+       ('Is Stalak free?', 'Yes, with no account and no ads: unlimited videos, lyrics one line at a time, 3 filters and 9:16 export. Free videos carry a small watermark (our mascot’s face and stalak.app). Stalak Pro ($7.99/mo or $49.99/yr) removes it, and adds 16:9 music videos, karaoke lyrics, every filter and auto lyrics. Creator Plus ($14.99/mo or $99.99/yr) adds video packs, automatic cloud saving (100 GB) and “Talk to a human”.'),
        ('Do I need to download an app?', 'No. Stalak runs in the browser on iPhone, Android or computer, at stalak.app. Editing and export happen on your device.'),
        ('Is Stalak related to Triller?', 'No. Stalak is an independent tool made by 99Sayso, a rapper from the Alaska collective. It isn’t affiliated with Triller or Triller Group.')],
   founder='Stalak is made by 99Sayso, an independent rapper from the Alaska collective. He coded it to cut his own takes to the beat.',
@@ -125,7 +125,7 @@ T = {
   s_faq='Questions fréquentes',
   faq=[('Triller marche-t-elle encore ?', 'Triller Group, la société mère de Triller, a indiqué en juin 2026 avoir arrêté l’ancienne appli Triller, et ne pas vouloir la recréer telle qu’elle était. Pour l’état le plus récent, regarde le magasin d’applis de ton téléphone.'),
        ('Quelle appli fait ce que faisait Triller ?', 'La fonction phare de Triller, c’était de transformer plusieurs prises d’un même son en une seule vidéo montée sur la musique. Stalak le fait dans ton navigateur : tu importes ton son, tu ajoutes tes prises, et il coupe de l’une à l’autre sur les temps, sur les mots ou par mesure, avec tes paroles à l’écran si tu veux.'),
-       ('Stalak est-il gratuit ?', 'Oui, sans compte et sans pub : montage illimité, paroles en phrase entière, 3 filtres et export 9:16. Les vidéos gratuites ont un petit filigrane (le visage de la mascotte et stalak.app). Stalak Pro (7,99 $/mois ou 49,99 $/an) l’enlève, et ajoute le clip 16:9, le karaoké, tous les filtres et les paroles automatiques. Creator Plus (14,99 $/mois ou 99,99 $/an) ajoute les packs de vidéos, la sauvegarde en ligne automatique et un vrai humain pour t’aider.'),
+       ('Stalak est-il gratuit ?', 'Oui, sans compte et sans pub : montage illimité, paroles en phrase entière, 3 filtres et export 9:16. Les vidéos gratuites ont un petit filigrane (le visage de la mascotte et stalak.app). Stalak Pro (7,99 $/mois ou 49,99 $/an) l’enlève, et ajoute le clip 16:9, le karaoké, tous les filtres et les paroles automatiques. Creator Plus (14,99 $/mois ou 99,99 $/an) ajoute les packs de vidéos, la sauvegarde en ligne automatique (100 Go) et « Parler à un humain ».'),
        ('Faut-il télécharger une appli ?', 'Non. Stalak marche dans le navigateur sur iPhone, Android ou ordinateur, sur stalak.app. Le montage et l’export se font sur ton appareil.'),
        ('Stalak a-t-il un lien avec Triller ?', 'Non. Stalak est un outil indépendant fait par 99Sayso, rappeur du collectif Alaska. Il n’est affilié ni à Triller ni à Triller Group.')],
   founder='Stalak est fait par 99Sayso, rappeur indépendant du collectif Alaska. Il l’a codé pour monter ses propres prises sur le rythme.',
@@ -153,6 +153,7 @@ details{border:2px solid var(--ink);border-radius:14px;padding:10px 14px;margin:
 .cta{display:inline-block;margin-top:10px;background:var(--ink);color:#fff!important;text-decoration:none;font-weight:700;border-radius:14px;padding:12px 18px}
 .founder{background:var(--frost);border-radius:14px;padding:12px 14px;margin-top:22px;font-size:15px}
 video{width:100%;max-width:340px;display:block;margin:12px auto;border:3px solid var(--ink);border-radius:18px;background:#000}
+.demo{margin:14px 0}.demo video{max-width:210px;height:auto}.demo figcaption{text-align:center;font-size:14px}
 .src{font-size:13.5px} .src li{margin:3px 0} .tm{font-size:12.5px;opacity:.7;margin-top:18px}
 footer{max-width:860px;margin:18px auto 0;color:#fff;font-size:13px;text-align:center}footer a{color:#fff}"""
 
@@ -195,7 +196,7 @@ def page(L):
 <p class="updated">{P["updated"]}</p>
 <p class="lead">{P["lead"]}</p>
 <p><a class="cta" href="{P["home"]}?ref=seo-triller">{P["cta1"]}</a></p>
-<!--DEMO--><video controls playsinline muted preload="metadata" src="/demo/exemple.mp4" aria-label="{"Example of a video edited with Stalak" if L == "en" else "Exemple de vidéo montée avec Stalak"}"></video><!--/DEMO-->
+<!--DEMO--><figure class="demo"><video src="/demo/edit.mp4" poster="/demo/edit.jpg" width="432" height="768" controls muted loop playsinline preload="none" aria-label="{"A video Stalak edited from three takes by 99Sayso" if L == "en" else "Une vidéo montée par Stalak à partir de trois prises de 99Sayso"}"></video><figcaption>{"A real Stalak edit: three takes by 99Sayso, one cut per bar. Play it with the sound on." if L == "en" else "Un vrai montage Stalak : trois prises de 99Sayso, une coupe par mesure. Lance-le avec le son."}</figcaption></figure><!--/DEMO-->
 <h2>{P["s_what"]}</h2>
 {"".join(f"<p>{x}</p>" for x in P["what"])}
 <h2>{P["s_table"]}</h2>

@@ -31,7 +31,9 @@ def help_max(n):
 async def run_one(browser, path, lang, width, height):
     tag = f'{lang}-{width}'
     ctx = await browser.new_context(locale='fr-FR' if lang == 'fr' else 'en-US', viewport={'width': width, 'height': height}, device_scale_factor=2 if width < 500 else 1,
-                                    is_mobile=width < 500, has_touch=width < 500)
+                                    is_mobile=width < 500, has_touch=width < 500,
+                                    # one « connection » per screen (audit of 6/11: 6 questions per connection every 10 minutes, 10 a day)
+                                    extra_http_headers={'X-Test-IP': f'10.9.{width % 250}.{len(path) + len(lang)}'})
     page = await ctx.new_page()
     errors = []
     page.on('pageerror', lambda e: errors.append(str(e)))

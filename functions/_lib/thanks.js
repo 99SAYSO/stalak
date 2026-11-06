@@ -56,7 +56,8 @@ export function thanksEmail(lang, plan, interval) {
   return { subject: t.subject, text, html };
 }
 
-// one e-mail with Resend; at = when (ms) or null for now. true when Resend took it. Never throws.
+// one e-mail with Resend; at = when (ms) or null for now. Resend's id of the e-mail (or true) when Resend took it, false
+// otherwise. Never throws.
 export async function sendThanks(env, to, msg, { at = null, key = null } = {}) {
   if (!env.RESEND_API_KEY) {
     if (isDev(env)) { console.log(`[stalak dev] thank-you mail to ${to}: ${msg.subject}`); return true; }
@@ -68,8 +69,9 @@ export async function sendThanks(env, to, msg, { at = null, key = null } = {}) {
   if (key) headers['Idempotency-Key'] = key;
   try {
     const res = await fetch('https://api.resend.com/emails', { method: 'POST', headers, body: JSON.stringify(body) });
-    if (!res.ok) console.warn('[stalak] thank-you mail', res.status);
-    return res.ok;
+    if (!res.ok) { console.warn('[stalak] thank-you mail', res.status); return false; }
+    const d = await res.json().catch(() => ({}));
+    return typeof d.id === 'string' && /^[A-Za-z0-9_-]{1,80}$/.test(d.id) ? d.id : true;
   } catch {
     console.warn('[stalak] thank-you mail unreachable');
     return false;
@@ -100,9 +102,32 @@ export async function thanksAfterPurchase(env, info, now = Date.now()) {
       await env.DB.prepare('DELETE FROM webhook_events WHERE event_id = ?1').bind(key).run().catch(() => {});
       return 'skipped:send_failed';
     }
+    // its id at Resend: cancelled if the account is deleted before it leaves (audit of 6/11, point 12)
+    if (typeof ok === 'string') await env.DB.prepare('UPDATE users SET thanks_mail_id = ?2 WHERE id = ?1').bind(info.userId, ok).run().catch(() => {});
     return 'sent';
   } catch (e) {
     console.warn('[stalak] thank-you mail', String(e && e.message || e).slice(0, 80));
     return 'skipped:error';
   }
+}
+
+// The account is deleted while its thank-you e-mail still waits at Resend (sent ~3 hours after the purchase): cancel it.
+// resend.com/docs/api-reference/emails/cancel-email. true when cancelled (or nothing to cancel). Never throws.
+export async function cancelThanks(env, user, now = Date.now()) {
+  const id = user && user.thanks_mail_id;
+  if (!id || !env.RESEND_API_KEY || !(user.thanked_at > now - THANKS_DELAY_MS - 3600e3)) return true;
+  try {
+    const res = await fetch(`https://api.resend.com/emails/${encodeURIComponent(id)}/cancel`, {
+      method: 'POST', headers: { Authorization: `Bearer ${env.RESEND_API_KEY}` } });
+    if (!res.ok) console.warn('[stalak] thank-you mail cancel', res.status);
+    return res.ok;
+  } catch { return false; }
+}
+
+// Juridique (5/11): the hashes of the addresses already thanked (webhook_events « thanks:… ») are deleted after 3 years.
+// Run with the daily tasks (cloud.js maybeCleanup and the daily Worker). Returns the number deleted.
+export const THANKS_KEEP_MS = 3 * 365 * 864e5;
+export async function purgeOldThanks(env, now = Date.now()) {
+  const r = await env.DB.prepare("DELETE FROM webhook_events WHERE event_type = 'thanks' AND received_at < ?1").bind(now - THANKS_KEEP_MS).run();
+  return (r.meta && r.meta.changes) || 0;
 }

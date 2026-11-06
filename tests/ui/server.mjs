@@ -108,7 +108,7 @@ http.createServer(async (req, res) => {
     if (url.pathname.startsWith('/api/') || isAdmin) {
       const headers = new Headers(); for (const [k, v] of Object.entries(req.headers)) headers.set(k, Array.isArray(v) ? v.join(', ') : v);
       if (isAdmin && /(^|;\s*)test_admin=1/.test(req.headers.cookie || '')) headers.set('Cf-Access-Jwt-Assertion', await accessToken());
-      headers.set('CF-Connecting-IP', '127.0.0.1');
+      headers.set('CF-Connecting-IP', /^[0-9.]{7,15}$/.test(req.headers['x-test-ip'] || '') ? req.headers['x-test-ip'] : '127.0.0.1');   // a test may play several connections
       const request = new Request(origin + req.url, { method: req.method, headers, body: ['GET', 'HEAD'].includes(req.method) ? undefined : body });
       const r = url.pathname.startsWith('/api/') ? await onRequest({ request, env, params: {}, waitUntil() {} }) : await adminPage({ request, env });
       const h = {}; r.headers.forEach((v, k) => { if (k !== 'set-cookie') h[k] = v; });

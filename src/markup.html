@@ -42,11 +42,18 @@
 
   <!-- STEP 1 -->
   <section class="narrow" id="p1">
-    <!-- (audit 6/11, n° 6; texts: Marketing & croissance) what Stalak is, in one title and one line, above the form -->
-    <div class="hero" id="hero">
-      <h1 class="hero-h1" data-i18n="hero.h1">Montage vidéo lip-sync gratuit pour rappeurs</h1>
-      <p class="hero-tag" data-i18n="hero.tag">Importe ton son et tes prises : Stalak les coupe sur le rythme, les lèvres bien synchro.</p>
-      <!--HEROVIDEO--><video class="hero-vid" id="heroVid" src="/demo/hero.mp4" muted loop playsinline autoplay preload="metadata" aria-hidden="true" tabindex="-1"></video><!--/HEROVIDEO-->
+    <!-- Marketing & croissance (06/11, audit point 6, « version compacte » choisie par le propriétaire) : le vrai titre de la
+         page, une phrase et une petite vidéo (un vrai montage Stalak de ses prises) ; seulement tant qu'aucun son n'est importé -->
+    <div class="hero" id="heroPitch">
+      <!--HEROVIDEO--><video class="hero-v" src="/demo/edit.mp4" poster="/demo/edit.jpg" width="432" height="768" autoplay muted loop playsinline preload="metadata" aria-label="Exemple : une vidéo montée par Stalak à partir de trois prises" data-i18n-attr="aria-label:hero.v"></video>
+      <script>(function (v) { if (!v) return;   // plays only while it can be seen; « reduce motion »: still, with the controls to play it
+        if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches){ v.removeAttribute('autoplay'); v.pause(); v.controls = true; return; }
+        if ('IntersectionObserver' in window) new IntersectionObserver(function (e) { if (e[0].isIntersecting){ var p = v.play(); if (p && p.catch) p.catch(function () {}); } else v.pause(); }).observe(v);
+      })(document.currentScript.previousElementSibling);</script><!--/HEROVIDEO-->
+      <div class="hero-txt">
+        <h1 class="hero-h1" data-i18n="hero.h1">Le montage de playback gratuit pour les rappeurs</h1>
+        <p class="hero-s" data-i18n="hero.s">Filme quelques prises sur ton son : Stalak les coupe sur le temps, lèvres synchro.</p>
+      </div>
     </div>
     <div class="card lpoffer" id="lpOffer" hidden role="region" aria-labelledby="lpOfferT">
       <h2 id="lpOfferT" data-i18n="lp.t">Reprendre ton dernier montage ?</h2>
@@ -762,7 +769,7 @@
     </section>
 
     <section class="ap-view ap-proview" id="apPro" hidden>
-      <p class="pr-promo" id="apPromo"><svg class="pr-flake" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.5v19M3.8 7.25l16.4 9.5M3.8 16.75l16.4-9.5M9.6 3.9 12 6.3l2.4-2.4M9.6 20.1 12 17.7l2.4 2.4"/></svg><span data-i18n="pr.promo">Sans filigrane dès <b>4,17 $/mois</b> avec Pro annuel</span></p>
+      <p class="pr-promo" id="apPromo"><svg class="pr-flake" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.5v19M3.8 7.25l16.4 9.5M3.8 16.75l16.4-9.5M9.6 3.9 12 6.3l2.4-2.4M9.6 20.1 12 17.7l2.4 2.4"/></svg><span data-i18n="pr.promo">Pro dès <b>4,17 $/mois</b> en annuel</span></p>
       <h2 id="apProT" tabindex="-1" data-i18n="acct.proT">Les formules Stalak</h2>
       <p class="pr-sub" id="apProSub" data-i18n="pr.sub">Stalak monte tes vidéos à ta place. Avec une formule, tu postes plus, plus vite, et chaque vidéo a l’air sortie d’un studio.</p>
       <p class="ap-why" id="apProWhy" hidden></p>

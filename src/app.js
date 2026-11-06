@@ -105,8 +105,6 @@ const I18N_EN = /*@EN*/{
   "step.2": "<b>2</b>Takes",
   "step.3": "<b>3</b>Lyrics",
   "step.4": "<b>4</b>Edit",
-  "hero.h1": "Free lip-sync video editor for rappers",
-  "hero.tag": "Drop your song and your takes. Stalak cuts them on the beat, lips in sync.",
   "p1.title": "Pick your song",
   "p1.kind": "I’m making",
   "kind.clip": "Music video",
@@ -803,6 +801,8 @@ const I18N_EN = /*@EN*/{
   "acct.e.too_large": "This photo is too heavy. Try another one.",
   "acct.e.not_logged_in": "Your session has expired. Sign in again.",
   "acct.e.not_configured": "Payments aren’t open yet. Try again soon.",
+  "acct.e.paddle_load_failed": "The payment window was blocked, often by an ad blocker. Turn it off for stalak.app (or use another browser), then try again.",
+  "acct.e.paddle_blocked": "The payment window didn’t open, often because of an ad blocker. Turn it off for stalak.app (or use another browser), then try again.",
   "ap.tabs.aria": "Sign in or create an account",
   "ap.tabIn": "Sign in",
   "ap.tabUp": "Create account",
@@ -873,7 +873,7 @@ const I18N_EN = /*@EN*/{
   "ap.whyIn.pack": "Packs of 5 to 30 videos come with Creator Plus. Sign in or create an account to get it.",
   "acct.perk6": "Every text size and style: word by word, karaoke",
   "acct.why.text": "Word by word, karaoke and all text sizes come with Pro.",
-  "pr.promo": "No watermark from <b>$4.17/mo</b> with Pro yearly",
+  "pr.promo": "Pro from <b>$4.17/mo</b>, billed yearly",
   "pr.sub": "Stalak edits your videos for you. With a plan, you post more, faster, and every video looks studio-made.",
   "pr.popular": "Best value",
   "pr.year.n": "Pro yearly",
@@ -1046,12 +1046,10 @@ const I18N_EN = /*@EN*/{
   "ap.whyIn.support": "“Talk to a human” is part of Stalak Creator Plus. Sign in or create an account to get it.",
   "help.h.fail": "Your message didn’t go through. Try again in a moment.",
   "help.h.failMail": "Your message didn’t go through. Try again in a moment, or write to {mail}.",
-  "_bloc.marketing.accueil": "Marketing & croissance : promesse du premier écran, compte facultatif",
-  "hero.t": "Your takes, cut on the beat.",
-  "hero.s": "Drop your song and a few takes of you performing it. Stalak cuts between them on the beat, lip sync locked in. Free, right in your browser.",
-  "hero.v": "Example of a video edited with Stalak",
-  "hero.acct": "No account needed",
-  "hero.priv": "On Free, your videos never leave your device",
+  "_bloc.marketing.accueil": "Marketing & croissance : titre, phrase et vidéo du premier écran (audit du 6/11, point 6), compte facultatif",
+  "hero.h1": "Free lip-sync video editor for rappers",
+  "hero.s": "Film a few takes of your song. Stalak cuts them on the beat, lips in sync.",
+  "hero.v": "Example: a video Stalak edited from three takes",
   "ap.noacct": "You don’t need an account to make videos. It’s only for subscribing and getting your projects back.",
   "_bloc.app.son": "App & montage : étape Son (glisser-déposer, poignées du passage)",
   "listen.seg": "▶ Play the part",
@@ -1651,6 +1649,8 @@ const I18N_FR = /*@FR*/{
   "acct.e.too_large": "Cette photo est trop lourde. Essaies-en une autre.",
   "acct.e.not_logged_in": "Ta session a expiré. Reconnecte-toi.",
   "acct.e.not_configured": "Le paiement n’est pas encore ouvert. Réessaie bientôt.",
+  "acct.e.paddle_load_failed": "La fenêtre de paiement a été bloquée, souvent par un bloqueur de pub. Désactive-le pour stalak.app (ou essaie un autre navigateur), puis réessaie.",
+  "acct.e.paddle_blocked": "La fenêtre de paiement ne s’est pas ouverte, souvent à cause d’un bloqueur de pub. Désactive-le pour stalak.app (ou essaie un autre navigateur), puis réessaie.",
   "ap.up.t": "Crée ton compte Stalak",
   "ap.code.t": "Vérifie ton e-mail",
   "ap.code.tDev": "Nouvel appareil",
@@ -9536,6 +9536,7 @@ function apAuthDone(f){
       store.set('stalak:hadAcct', 1); apAfter = 'account'; apStep = 'form'; apClearPw();
       apGo(to, { replace: open, keepMsg: true }); apSay(acctPaid() ? 'acct.welcomePro' : 'acct.welcome', acctPlanVars());
       diag('compte : connecté (' + (ACCT.state.session && ACCT.state.session.method) + ')');
+      if (to === 'pro') plResume(); else plTake();
     }, () => {});
   } else {
     const c = f.slice(9);
@@ -9738,9 +9739,27 @@ function plFocus(plan){
     const b = c.querySelector('[data-buy]'); if (b) try { b.focus({ preventScroll: true }); } catch(e){}
   }, 350);
 }
+/* audit of 6/11, point 2: one « Choose Pro » is enough. The plan and the billing chosen before signing in are kept (this tab,
+   30 minutes, also through Google / Apple / Microsoft) and the payment window opens as soon as the person is signed in. */
+const PL_WANT_KEY = 'stalak:buy', PL_WANT_MS = 30 * 60e3;
+function plWant(plan, int){ try { sessionStorage.setItem(PL_WANT_KEY, JSON.stringify({ plan, int, t: Date.now() })); } catch(e){} }
+function plTake(){
+  try {
+    const w = JSON.parse(sessionStorage.getItem(PL_WANT_KEY) || 'null'); sessionStorage.removeItem(PL_WANT_KEY);
+    if (w && PL_PLANS.includes(w.plan) && (w.int === 'month' || w.int === 'year') && Date.now() - w.t < PL_WANT_MS) return w;
+  } catch(e){}
+  return null;
+}
+// signed in now: the plan chosen before opens its payment (a subscriber: nothing, the plans page shows his plan)
+function plResume(){
+  if (!ACCT || !ACCT.state.user) return;
+  const w = plTake(); if (!w || acctPaid()) return;
+  plInt = w.int; store.set('stalak:plInt', w.int); plRender();
+  setTimeout(() => apRun(async () => { apSay('acct.paying'); diag('compte : paiement après connexion ' + w.plan + ' ' + w.int); await ACCT.checkout(w.plan, w.int); apSay(null); }), 60);
+}
 function plBuy(plan, btn){
   plan = plNorm(plan);
-  if (!ACCT.state.user){ apAfter = 'pro'; apGo('login', { mode: store.get('stalak:hadAcct') ? 'in' : 'up' }); return; }
+  if (!ACCT.state.user){ plWant(plan, plInt); apAfter = 'pro'; apGo('login', { mode: store.get('stalak:hadAcct') ? 'in' : 'up' }); return; }
   if (acctPaid()){
     // a subscriber: another plan on the same subscription. First tap: what it costs today (Paddle's preview) or when it
     // starts (a smaller plan: at the renewal); second tap: the change.
@@ -10043,6 +10062,7 @@ if (ACCT){
     acctSync();
     apGo(to, { replace: true, keepMsg: true });
     apSay(msgK || (acctPaid() ? 'acct.welcomePro' : 'acct.welcome'), acctPlanVars());
+    if (to === 'pro') plResume(); else plTake();   // signed in from somewhere else: the old choice is dropped
   };
   const toCode = (what, mail) => {
     apCodeFor = what; apMailV = mail; apStep = 'code'; $('#apCode').value = ''; apFErr('apCode', null);
@@ -10285,6 +10305,23 @@ if (ACCT){
   try { const bc = new BroadcastChannel('stalak-auth'); bc.onmessage = e => { if (e.data && typeof e.data.stalakAuth === 'string') apAuthDone(e.data.stalakAuth); }; } catch(e){}
   window.addEventListener('storage', e => { if (e.key === 'stalak:auth' && e.newValue) try { apAuthDone(JSON.parse(e.newValue).f); } catch(err){} });
   const boot = () => {
+    // ?plan=pro-year (« Choose Pro » of the pricing page): that plan and billing; signed in → the payment at once, else
+    // sign in first and the payment opens right after (plResume)
+    let want = null;
+    try {
+      const u = new URL(location.href), m = /^(pro|creator)-(month|year)$/.exec(u.searchParams.get('plan') || '');
+      if (m){
+        want = { plan: m[1], int: m[2] }; u.searchParams.delete('plan');
+        history.replaceState(null, '', u.pathname + u.search + u.hash);
+        plInt = m[2]; store.set('stalak:plInt', m[2]); plWant(m[1], m[2]);
+      }
+    } catch(e){}
+    if (want){
+      try { history.replaceState(null, '', location.pathname + location.search); } catch(e){}
+      if (ACCT.state.user){ apGo('pro'); plFocus(want.plan); plResume(); }
+      else { apAfter = 'pro'; apGo('login', { mode: store.get('stalak:hadAcct') ? 'in' : 'up' }); }
+      return;
+    }
     const h = location.hash.slice(1);
     if (/^auth-(ok|err)-/.test(h)){ try { history.replaceState(null, '', location.pathname + location.search); } catch(e){} apAuthDone(h); return; }
     const v = apHashView(); if (!v) return;

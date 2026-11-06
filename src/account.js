@@ -143,8 +143,11 @@
     setTimeout(function () { me().then(function () { waitForPlan(tries - 1); }, function () { waitForPlan(tries - 1); }); }, 2000);
   }
 
+  var loadedWait = null, CHECKOUT_WAIT_MS = 12000;
   function onPaddleEvent(ev) {
-    if (ev && ev.name === 'checkout.closed') checkoutOpen = false;
+    if (ev && ev.name === 'checkout.loaded' && loadedWait) loadedWait(true);
+    if (ev && ev.name === 'checkout.error' && loadedWait) loadedWait(false, Object.assign(new Error('The payment window did not open.'), { code: 'paddle_blocked' }));
+    if (ev && ev.name === 'checkout.closed') { checkoutOpen = false; if (loadedWait) loadedWait(true); }
     if (ev && ev.name === 'checkout.completed') waitForPlan(20);
   }
 
@@ -225,6 +228,16 @@
           customer: { email: st.user.email },
           customData: { user_id: st.user.id },
           settings: { displayMode: 'overlay', locale: lang(), allowLogout: false }   // the page's language, not the one at sign-up
+        });
+        // audit of 6/11, point 20: the window can be blocked (an ad blocker) after paddle.js loaded: no « checkout.loaded »
+        // and no Paddle frame on the page after a while → a clear message instead of nothing
+        return new Promise(function (resolve, reject) {
+          var t = setTimeout(function () {
+            loadedWait = null;
+            var frame = document.querySelector('iframe[name="paddle_frame"], iframe.paddle-frame, iframe[src*="paddle.com"]');
+            if (frame && frame.offsetParent !== null) resolve(); else { checkoutOpen = false; reject(Object.assign(new Error('The payment window did not open.'), { code: 'paddle_blocked' })); }
+          }, CHECKOUT_WAIT_MS);
+          loadedWait = function (ok, err) { clearTimeout(t); loadedWait = null; if (ok) resolve(); else reject(err); };
         });
       });
     });

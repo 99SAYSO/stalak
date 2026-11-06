@@ -1388,18 +1388,32 @@ body.isdone > .help-cube{display:none}
 .dv-card .dv-try[hidden],.dv-card .dv-nowm[hidden]{display:none}
 .drop.try{outline:4px solid var(--sky-deep);outline-offset:4px}
 
-/* (audit 6/11, n° 6) the home page's real title: what Stalak is, above the song form; hidden once the work has begun (steps 2-4,
-   the end screen). The looping video (only when site_src/demo/hero.mp4 exists) stays still for reduced motion (motion-design:
-   a decorative loop is the first thing to stop). */
-.hero{display:flex;flex-direction:column;gap:8px;margin:0 0 2px}
-.hero-h1{margin:0;font:400 clamp(30px,5.4vw,46px)/1.05 var(--display);letter-spacing:.01em;color:#fff;text-shadow:0 3px 0 var(--ink);text-wrap:balance}
-.hero-tag{margin:0;max-width:44ch;font:500 clamp(17px,2.2vw,20px)/1.4 var(--body);color:var(--ink)}
-.hero-vid{display:block;width:min(100%,220px);aspect-ratio:9/16;object-fit:cover;margin-top:8px;border:3px solid var(--ink);border-radius:18px;background:var(--ink)}
-/* the hero takes the room the mascot had above the card (it still stands on the card's edge, right): the text keeps clear of it */
-#p1:has(#songBox[hidden]):has(> .hero){padding-top:28px}
-#p1 > .hero{padding-right:150px}
-#p1:not(:has(#songBox[hidden])) > .hero{display:none}
-@media (max-width:640px){ #p1:has(#songBox[hidden]):has(> .hero){padding-top:12px} #p1 > .hero{padding-right:0} #p1 > .hero .hero-tag{padding-right:118px} }
+/* ---------- Marketing & croissance (06/11, audit point 6) : le premier écran dit ce qu'est Stalak ----------
+   « Version compacte » choisie par le propriétaire : le titre de la page (h1), une phrase et une petite vidéo (un vrai
+   montage Stalak de ses prises). Téléphone : la vidéo à côté du titre, au-dessus de la mascotte ; ordinateur : à gauche du
+   formulaire. Seulement à l'étape Son vide, sans la carte « Reprendre ton dernier montage ? » (sinon caché). */
+#p1 > .hero{display:none}
+#p1:has(#songBox[hidden]):not(:has(> .lpoffer:not([hidden]))) > .hero{display:flex}
+.hero{align-items:center;gap:13px;color:var(--snow)}
+.hero-v{flex:none;display:block;width:64px;height:auto;aspect-ratio:9/16;object-fit:cover;border:2.5px solid var(--ink);border-radius:13px;box-shadow:0 4px 0 var(--ink);background:var(--ink)}
+.hero-txt{min-width:0}
+.hero-h1{margin:0 0 5px;font:400 clamp(21px,5.4vw,25px)/1.08 var(--display);letter-spacing:.01em;color:var(--snow);text-shadow:0 2px 0 var(--ink);text-wrap:balance}
+.hero-s{margin:0;max-width:34em;font:600 14.5px/1.4 var(--body);color:var(--snow);text-shadow:0 1px 0 rgba(10,13,20,.4);text-wrap:pretty}
+/* phone and tablet: the hero first, then the room where the mascot stands on the card (it was the top padding) */
+@media (max-width:899px){
+  #p1:has(#songBox[hidden]):not(:has(> .lpoffer:not([hidden]))):has(> .hero){padding-top:4px}
+  #p1 > .hero{margin:-16px 0 92px}
+}
+@media (max-width:640px){ #p1 > .hero{margin-bottom:66px} }
+/* computer: two columns, the hero on the left of the form, its top level with the mascot's head */
+@media (min-width:900px){
+  #p1:has(#songBox[hidden]):not(:has(> .lpoffer:not([hidden]))):has(> .hero){display:grid;grid-template-columns:minmax(210px,290px) minmax(0,700px);column-gap:44px;row-gap:22px;max-width:1034px;justify-content:center;align-items:start}
+  #p1:has(#songBox[hidden]):not(:has(> .lpoffer:not([hidden]))):has(> .hero) > *{grid-column:2}
+  #p1:has(#songBox[hidden]):not(:has(> .lpoffer:not([hidden]))):has(> .hero) > .hero{grid-column:1;grid-row:1 / span 6;margin-top:-72px;flex-direction:column;align-items:flex-start;gap:16px}
+  .hero-v{order:2;width:172px;border-width:3px;border-radius:20px;box-shadow:0 6px 0 var(--ink)}
+  .hero-h1{font-size:clamp(30px,3vw,38px);margin-bottom:10px}
+  .hero-s{font-size:16px}
+}
 
 /* ---- pricing: promo, plan cards, trust line, comparison, FAQ ----
    One component for the Stalak Pro page in the app (#pro, appended to the theme by build.py / build_site.py) and the
@@ -1575,6 +1589,26 @@ body.isdone > .help-cube{display:none}
   .p4 .pr-feats li{font-size:15px}
 }
 @media (max-width:520px){ .p4-cycle label{padding:0 13px;font-size:14.5px} }
+/* Marketing & croissance (06/11, audit point 8): on a phone the comparison fits the card, nothing to slide sideways.
+   Each row: the feature on its own line, then the 3 plans side by side; the plan names stay at the top of the screen
+   while the table scrolls by. The table keeps its meaning for screen readers through its role attributes. */
+@media (max-width:600px){
+  .p4-scroll{overflow:visible}
+  .p4-table{min-width:0;display:block}
+  .p4-table thead,.p4-table tbody,.p4-table tfoot{display:block}
+  .p4-table tr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+  .p4-table thead{position:sticky;top:0;z-index:2;background:#fff;box-shadow:0 2px 0 var(--frost)}
+  .p4-table thead th:first-child{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+  .p4-table thead th{padding:8px 4px 9px;font-size:18px}
+  .p4-table thead th.pr-colpro{border-radius:14px 14px 0 0}
+  .p4-table tbody th,.p4-table tfoot th{grid-column:1/-1;width:auto;padding:12px 16px 3px;border-top:2px solid var(--frost);text-align:left;font-size:14.5px}
+  .p4-table th:first-child{width:auto}
+  .p4-table td{border-top:0;padding:5px 6px 12px;font-size:13.5px}
+  .p4-table tfoot th{border-top:2.5px solid var(--ink)}
+  .p4-table tfoot td{border-top:0}
+  .p4-table tfoot .pr-colpro{border-radius:0}
+  .p4-table tfoot tr:last-child .pr-colpro{border-radius:0 0 14px 14px}
+}
 
 /* ---- the footer (src/footer.py, owner 01/11): the same on every page — app, Pricing, legal pages, guides, Triller page.
    A full-width ink band with icicles along its top edge; at the very bottom of the page, never fixed. No animation (motion-design:
@@ -1626,7 +1660,7 @@ body:has(> .help-cube) > .ft{padding-bottom:calc(env(safe-area-inset-bottom, 0px
   margin-left:calc(-8px - max(16px, env(safe-area-inset-left, 0px)));margin-right:calc(-8px - max(16px, env(safe-area-inset-right, 0px)))}
 body:has(> .help-cube) > .wrap{padding-bottom:0}
 
-.about{align-self:center;max-width:760px;width:100%;color:#fff;font-size:14.5px;line-height:1.55;margin-top:18px}.about h2{font:400 22px/1.2 var(--display);margin:0 0 6px;color:#fff;text-shadow:0 2px 0 var(--ink)}.about p{margin:0 0 8px}.about ul{margin:0 0 8px;padding-left:20px}.about strong{font-weight:700}
+.about{align-self:center;max-width:760px;width:100%;color:#fff;font-size:14.5px;line-height:1.55;margin-top:18px}.about h2{font:400 22px/1.2 var(--display);margin:0 0 6px;color:#fff;text-shadow:0 2px 0 var(--ink)}.about p{margin:0 0 8px}.about ul{margin:0 0 8px;padding-left:20px}.about strong{font-weight:700}.about a{color:#fff;font-weight:700;text-decoration:underline;text-underline-offset:3px}
 
 .frhint{display:flex;align-items:center;gap:2px;width:max-content;max-width:calc(100% - 32px);margin:0 auto 12px;background:#fff;color:var(--ink,#0a0d14);border:2px solid var(--ink,#0a0d14);border-radius:999px;box-shadow:0 3px 0 var(--ink,#0a0d14);font-size:14.5px;font-weight:600;line-height:1.2}.frhint[hidden]{display:none}.frhint a{color:inherit;text-decoration:none;padding:10px 4px 10px 16px}.frhint button{flex:none;width:40px;height:40px;border:0;border-radius:50%;background:transparent;color:inherit;font:inherit;font-size:20px;line-height:1;cursor:pointer}
 </style>
@@ -1687,11 +1721,18 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
 
   <!-- STEP 1 -->
   <section class="narrow" id="p1">
-    <!-- (audit 6/11, n° 6; texts: Marketing & croissance) what Stalak is, in one title and one line, above the form -->
-    <div class="hero" id="hero">
-      <h1 class="hero-h1" data-i18n="hero.h1">Free lip-sync video editor for rappers</h1>
-      <p class="hero-tag" data-i18n="hero.tag">Drop your song and your takes. Stalak cuts them on the beat, lips in sync.</p>
-      
+    <!-- Marketing & croissance (06/11, audit point 6, « version compacte » choisie par le propriétaire) : le vrai titre de la
+         page, une phrase et une petite vidéo (un vrai montage Stalak de ses prises) ; seulement tant qu'aucun son n'est importé -->
+    <div class="hero" id="heroPitch">
+      <video class="hero-v" src="/demo/edit.mp4" poster="/demo/edit.jpg" width="432" height="768" autoplay muted loop playsinline preload="metadata" aria-label="Example: a video Stalak edited from three takes" data-i18n-attr="aria-label:hero.v"></video>
+      <script>(function (v) { if (!v) return;   // plays only while it can be seen; « reduce motion »: still, with the controls to play it
+        if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches){ v.removeAttribute('autoplay'); v.pause(); v.controls = true; return; }
+        if ('IntersectionObserver' in window) new IntersectionObserver(function (e) { if (e[0].isIntersecting){ var p = v.play(); if (p && p.catch) p.catch(function () {}); } else v.pause(); }).observe(v);
+      })(document.currentScript.previousElementSibling);</script>
+      <div class="hero-txt">
+        <h1 class="hero-h1" data-i18n="hero.h1">Free lip-sync video editor for rappers</h1>
+        <p class="hero-s" data-i18n="hero.s">Film a few takes of your song. Stalak cuts them on the beat, lips in sync.</p>
+      </div>
     </div>
     <div class="card lpoffer" id="lpOffer" hidden role="region" aria-labelledby="lpOfferT">
       <h2 id="lpOfferT" data-i18n="lp.t">Pick up your last edit?</h2>
@@ -2110,11 +2151,12 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
     <p><strong>Stalak</strong> is a <strong>lip-sync video editor</strong> for rappers and singers.
     Drop in your song and a few videos of you performing it, and Stalak cuts between your takes on the beat,
     with <strong>the lip sync locked in</strong>. Export for <strong>TikTok, Instagram Reels and YouTube Shorts</strong>, or a full 16:9 music video for <strong>YouTube</strong>.</p>
-    <p><strong>No download. No sign-up. 3 steps and you’re ready to post.</strong> Stalak runs right in your browser on iPhone, Android or desktop. It’s free, and you don’t need an account.</p>
+    <p><strong>No download. No sign-up. 4 steps and you’re ready to post.</strong> Stalak runs right in your browser on iPhone, Android or desktop. It’s free, and you don’t need an account.</p>
     <p><strong>How to make a lip-sync video with Stalak</strong> (<a href="/how-to-make-a-lip-sync-video">step-by-step guide</a>):</p>
     <ul>
       <li>Upload your song.</li>
       <li>Add a few takes of you performing it. Film them ahead of time, or right in Stalak’s camera.</li>
+      <li>Add your lyrics if you want: paste them and tap along, or let Stalak write them (Stalak Pro).</li>
       <li>Stalak cuts between your takes on the beat. Hit export and post.</li>
     </ul>
     <p><strong>What you can do:</strong></p>
@@ -2429,7 +2471,7 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
     </section>
 
     <section class="ap-view ap-proview" id="apPro" hidden>
-      <p class="pr-promo" id="apPromo"><svg class="pr-flake" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.5v19M3.8 7.25l16.4 9.5M3.8 16.75l16.4-9.5M9.6 3.9 12 6.3l2.4-2.4M9.6 20.1 12 17.7l2.4 2.4"/></svg><span data-i18n="pr.promo">No watermark from <b>$4.17/mo</b> with Pro yearly</span></p>
+      <p class="pr-promo" id="apPromo"><svg class="pr-flake" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.5v19M3.8 7.25l16.4 9.5M3.8 16.75l16.4-9.5M9.6 3.9 12 6.3l2.4-2.4M9.6 20.1 12 17.7l2.4 2.4"/></svg><span data-i18n="pr.promo">Pro from <b>$4.17/mo</b>, billed yearly</span></p>
       <h2 id="apProT" tabindex="-1" data-i18n="acct.proT">Stalak plans</h2>
       <p class="pr-sub" id="apProSub" data-i18n="pr.sub">Stalak edits your videos for you. With a plan, you post more, faster, and every video looks studio-made.</p>
       <p class="ap-why" id="apProWhy" hidden></p>
@@ -2596,7 +2638,7 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
   <button class="hp-human" id="helpHuman" type="button" data-i18n="help.human" hidden>Talk to a human</button>
   <button class="hp-diag" id="helpDiag" type="button" data-i18n="help.diag">Copy info for the team</button>
 </section>
-<script defer src="/assets/account.d25f9b3c6e.js"></script>
-<script defer src="/assets/app.e8f5136d7d.js"></script>
+<script defer src="/assets/account.e2c6824cbb.js"></script>
+<script defer src="/assets/app.415cd4a3dc.js"></script>
 </body>
 </html>
