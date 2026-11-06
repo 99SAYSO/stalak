@@ -23,8 +23,9 @@ import { bump } from './metrics.js';
 
 export const DEFAULT_MODEL = '@cf/google/gemma-4-26b-a4b-it';
 export const DAILY_MAX = 60;            // questions a day for the whole site (≈ 3,000 neurons); variable HELP_DAILY_MAX
-export const IP_PER_10MIN = 15;         // questions per connection
-export const IP_PER_DAY = 60;
+// audit of 6/11, point 17: one connection can no longer use the whole day's budget (60): about 10 questions a day each
+export const IP_PER_10MIN = 6;          // questions per connection
+export const IP_PER_DAY = 10;
 export const TURNS_MAX = 10;            // last messages sent to the model
 export const QUESTION_MAX = 1000;       // characters in one user message
 export const ANSWER_MAX = 2000;         // characters in one earlier assistant message (sent back by the browser)

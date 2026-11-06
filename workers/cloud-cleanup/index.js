@@ -7,11 +7,14 @@
 // Without this Worker, the same cleanup still runs lazily from the site (at most every 6 hours, see BACKEND.md).
 import { cleanupCloud } from '../../functions/_lib/cloud.js';
 import { yearlyReminders } from '../../functions/_lib/reminders.js';
+import { dailyRetention } from '../../functions/_lib/retention.js';
 
 export default {
   async scheduled(controller, env, ctx) {
     ctx.waitUntil(cleanupCloud(env, Date.now(), { max: 200 }).then((r) => console.log('[stalak] cloud cleanup', JSON.stringify(r)))
       // the yearly reminder of monthly subscribers (US terms), same day
-      .then(() => yearlyReminders(env, Date.now(), { max: 100 })).then((r) => console.log('[stalak] yearly reminders', JSON.stringify(r))));
+      .then(() => yearlyReminders(env, Date.now(), { max: 100 })).then((r) => console.log('[stalak] yearly reminders', JSON.stringify(r)))
+      // audit of 6/11, point 12: thank-you hashes 3 years, lyrics use 90 days, rate-limit counters (retention.js)
+      .then(() => dailyRetention(env, Date.now())).then((r) => console.log('[stalak] retention', JSON.stringify(r))));
   },
 };

@@ -117,7 +117,7 @@ export async function stats(env, days = 30, now = Date.now()) {
   const R = (r) => r.results || [];
 
   const series = {};
-  for (const d of list) series[d] = { day: d, signups: 0, visits: 0, newPro: 0, payments: 0, revenue: 0, revenueUsd: 0, refunds: 0,
+  for (const d of list) series[d] = { day: d, signups: 0, visits: 0, newPro: 0, payments: 0, revenue: 0, revenueUsd: 0, refunds: 0, refundsUsd: 0,
     exportOk: 0, exportFail: 0, adOk: 0, paid: 0, errors: 0, codeMails: 0,
     lyricsJobs: 0, lyricsMinutes: 0, lyricsUsers: 0, cloudSaves: 0, helpQuestions: 0, helpFailed: 0, tickets: 0, ticketMessages: 0 };
   const at = (d) => series[d];
@@ -125,7 +125,8 @@ export async function stats(env, days = 30, now = Date.now()) {
   for (const r of R(visitDays)) if (at(r.d)) at(r.d).visits = r.n;
   // revenue per day in euros (other currencies are listed in the totals, not in the chart)
   for (const r of R(payDays)) if (at(r.d)) { at(r.d).payments += r.n; at(r.d).newPro += r.first || 0; if (r.currency === 'EUR') at(r.d).revenue += r.total || 0; if (r.currency === 'USD') at(r.d).revenueUsd += r.total || 0; }
-  for (const r of R(refDays)) if (at(r.d) && r.currency === 'EUR') at(r.d).refunds += r.total || 0;
+  // audit of 6/11: the refunds of the day in dollars too (the prices are in dollars)
+  for (const r of R(refDays)) if (at(r.d)) { if (r.currency === 'EUR') at(r.d).refunds += r.total || 0; if (r.currency === 'USD') at(r.d).refundsUsd += r.total || 0; }
   for (const r of R(lyrDays)) if (at(r.d)) { at(r.d).lyricsJobs = r.jobs || 0; at(r.d).lyricsMinutes = Math.round((r.seconds || 0) / 6) / 10; at(r.d).lyricsUsers = r.users || 0; }
   const KEY = { help_q: 'helpQuestions', help_fail: 'helpFailed', cloud_save: 'cloudSaves', ticket: 'tickets', ticket_msg: 'ticketMessages' };
   for (const r of R(counts)) if (at(r.d) && KEY[r.name] && r.name !== 'ticket') at(r.d)[KEY[r.name]] = r.n;
@@ -518,7 +519,7 @@ export async function admin(request, env, method, rest) {
       sendThanks(env, who.email, thanksEmail('fr', 'creator', 'year')),
       sendThanks(env, who.email, thanksEmail('en', 'pro', 'month')),
     ]);
-    return json({ to: who.email, fr: r[0], en: r[1] });
+    return json({ to: who.email, fr: !!r[0], en: !!r[1] });
   }
   // « Relier mon Telegram »: the private chat that just sent /start to the bot becomes the owner's chat
   if (route === 'telegram-link' && method === 'POST') {

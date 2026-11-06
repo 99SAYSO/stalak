@@ -16,6 +16,7 @@ import { transcribe } from './lyrics.js';
 import { helpChat } from './help.js';
 import { admin } from './admin.js';
 import { support } from './support.js';
+import { cancelThanks } from './thanks.js';
 import { presence, bump, event } from './metrics.js';
 
 const PROJECT_MAX_BYTES = 256 * 1024; // ~200 KB of project JSON + envelope
@@ -196,6 +197,9 @@ async function deleteAccount(request, env) {
         'Open it in Paddle (Customers → Subscriptions) and cancel it by hand if it is still active.');
     }
   }
+  // the thank-you e-mail still waiting at Resend (audit of 6/11, point 12)
+  const tk = await env.DB.prepare('SELECT thanks_mail_id, thanked_at FROM users WHERE id = ?1').bind(user.id).first().catch(() => null);
+  await cancelThanks(env, tk);
   // linked TikTok / Instagram accounts: tokens revoked, rows erased (social.js)
   await deleteSocialAccounts(env, user.id);
   // the media files saved online (R2), then their rows with the rest
@@ -209,6 +213,8 @@ async function deleteAccount(request, env) {
     env.DB.prepare('DELETE FROM login_codes WHERE email = ?1').bind(user.email),
     env.DB.prepare('DELETE FROM auth_codes WHERE email = ?1').bind(user.email),
     env.DB.prepare('DELETE FROM trusted_devices WHERE user_id = ?1').bind(user.id),
+    // audit of 6/11, point 12: the daily use of the automatic lyrics goes with the account too
+    env.DB.prepare('DELETE FROM lyrics_usage WHERE user_id = ?1').bind(user.id),
     env.DB.prepare('DELETE FROM identities WHERE user_id = ?1').bind(user.id),
     env.DB.prepare('DELETE FROM rate_limits WHERE key = ?1').bind(await failKey(user.email)),
     // « Parler à un humain »: the conversations of this account go too; payments stay (accounting) without the link
