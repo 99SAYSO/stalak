@@ -16,7 +16,7 @@ Marketing & croissance. Écrites le 30/10/2026, publiées le 01/11/2026 sur la b
 3. Copier `site_drafts/out/*.html` dans `site_src/`.
 4. Reconstruire le site : `python3 build_site.py --domain stalak.app --email contact@stalak.app`.
 
-`build_site.py` s'occupe du reste : plan du site (liste `GUIDES`, anglais seul), liens « Guides » dans le pied de page de l'accueil anglais, `{{URL}}`, et le bloc vidéo `<!--DEMO-->`, qui n'apparaît que si `site_src/demo/exemple.mp4` existe (une vraie vidéo finie, 9:16, sans son). Dès que cette vidéo est là, les 6 pages et la page comparative la montrent.
+`build_site.py` s'occupe du reste : plan du site (liste `GUIDES`, anglais seul), liens « Guides » dans le pied de page de l'accueil anglais, `{{URL}}`, et le bloc vidéo `<!--DEMO-->`, qui n'apparaît que si `site_src/demo/edit.mp4` existe. Depuis le 6/11, c'est un vrai montage Stalak des prises « neva die » du propriétaire, avec son accord (avant / après dans les 6 guides, la vidéo sur la page comparative ; voir `docs/marketing/DEMO.md`). Les images de partage des guides : `make_og.py`.
 
 **Règles :**
 - aucun concurrent cité (la seule page qui en parle est `/triller-alternative`, décision du 31/10) ;

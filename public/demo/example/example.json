@@ -1,0 +1,16 @@
+{
+  "about": "Stalak's example (audit of 06/11, point 7): 8 bars of « neva die » by 99Sayso and three of his takes, filmed in three places. Used with his OK (06/11). The takes carry the song as their own sound (his lips follow this version), all lined up at 0 with song.mp3.",
+  "song": "song.mp3",
+  "title": "neva die",
+  "artist": "99Sayso",
+  "bpm": 157,
+  "beat": 0.38217,
+  "firstDownbeat": 0,
+  "bars": 8,
+  "duration": 12.227,
+  "takes": [
+    { "file": "take1.mp4", "offset": 0, "duration": 2.875, "place": "mountains (ends after 2 bars)" },
+    { "file": "take2.mp4", "offset": 0, "duration": 12.267, "place": "attic" },
+    { "file": "take3.mp4", "offset": 0, "duration": 12.267, "place": "garden" }
+  ]
+}

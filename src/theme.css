@@ -68,8 +68,8 @@ body{background:var(--sky) var(--flakes);background-size:240px 240px;color:var(-
 
 /* ---------- en-tête : logo Stalak (SVG en ligne, lettrage dessiné + stalactites, aucune police requise) ---------- */
 header{gap:18px 24px;align-items:flex-start}
-h1{display:block;margin:0;padding:0;line-height:0;text-shadow:none}
-h1 .logo{display:block;height:clamp(56px,7.4vw,84px);width:auto;overflow:visible}
+.brand{display:block;margin:0;padding:0;line-height:0;text-shadow:none}
+.brand .logo{display:block;height:clamp(56px,7.4vw,84px);width:auto;overflow:visible}
 
 /* stepper : quatre glaçons */
 .stepper{gap:8px;padding-top:4px}
@@ -268,7 +268,7 @@ input.ly{background:var(--frost);border:2px solid var(--ice-2);border-radius:12p
 @media (max-width:640px){
   body{padding-block:16px 44px;font-size:15px}
   header{flex-direction:column;align-items:flex-start;gap:12px}
-  h1 .logo{height:60px}
+  .brand .logo{height:60px}
   .stepper{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));width:100%;gap:6px}
   .stepper button{flex-direction:column;gap:3px;padding:7px 2px;width:100%;min-height:60px;font-size:13px;justify-content:center;border-radius:14px}
   .card{padding:32px 16px 22px;border-radius:22px}
@@ -1107,3 +1107,30 @@ body.isdone header .stepper,body.isdone header .hdtools{display:none !important}
 @media (max-width:600px){ .doneview .result video{max-height:30vh} .doneview #saveNote{margin-top:10px} }
 .doneview .sharebox[hidden]{display:none}
 body.isdone > .help-cube{display:none}
+
+/* ---------- Marketing & croissance (06/11, audit point 6) : le premier écran dit ce qu'est Stalak ----------
+   « Version compacte » choisie par le propriétaire : le titre de la page (h1), une phrase et une petite vidéo (un vrai
+   montage Stalak de ses prises). Téléphone : la vidéo à côté du titre, au-dessus de la mascotte ; ordinateur : à gauche du
+   formulaire. Seulement à l'étape Son vide, sans la carte « Reprendre ton dernier montage ? » (sinon caché). */
+#p1 > .hero{display:none}
+#p1:has(#songBox[hidden]):not(:has(> .lpoffer:not([hidden]))) > .hero{display:flex}
+.hero{align-items:center;gap:13px;color:var(--snow)}
+.hero-v{flex:none;display:block;width:64px;height:auto;aspect-ratio:9/16;object-fit:cover;border:2.5px solid var(--ink);border-radius:13px;box-shadow:0 4px 0 var(--ink);background:var(--ink)}
+.hero-txt{min-width:0}
+.hero-h1{margin:0 0 5px;font:400 clamp(21px,5.4vw,25px)/1.08 var(--display);letter-spacing:.01em;color:var(--snow);text-shadow:0 2px 0 var(--ink);text-wrap:balance}
+.hero-s{margin:0;max-width:34em;font:600 14.5px/1.4 var(--body);color:var(--snow);text-shadow:0 1px 0 rgba(10,13,20,.4);text-wrap:pretty}
+/* phone and tablet: the hero first, then the room where the mascot stands on the card (it was the top padding) */
+@media (max-width:899px){
+  #p1:has(#songBox[hidden]):not(:has(> .lpoffer:not([hidden]))):has(> .hero){padding-top:4px}
+  #p1 > .hero{margin:-16px 0 92px}
+}
+@media (max-width:640px){ #p1 > .hero{margin-bottom:66px} }
+/* computer: two columns, the hero on the left of the form, its top level with the mascot's head */
+@media (min-width:900px){
+  #p1:has(#songBox[hidden]):not(:has(> .lpoffer:not([hidden]))):has(> .hero){display:grid;grid-template-columns:minmax(210px,290px) minmax(0,700px);column-gap:44px;row-gap:22px;max-width:1034px;justify-content:center;align-items:start}
+  #p1:has(#songBox[hidden]):not(:has(> .lpoffer:not([hidden]))):has(> .hero) > *{grid-column:2}
+  #p1:has(#songBox[hidden]):not(:has(> .lpoffer:not([hidden]))):has(> .hero) > .hero{grid-column:1;grid-row:1 / span 6;margin-top:-72px;flex-direction:column;align-items:flex-start;gap:16px}
+  .hero-v{order:2;width:172px;border-width:3px;border-radius:20px;box-shadow:0 6px 0 var(--ink)}
+  .hero-h1{font-size:clamp(30px,3vw,38px);margin-bottom:10px}
+  .hero-s{font-size:16px}
+}

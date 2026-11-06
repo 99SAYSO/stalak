@@ -4,7 +4,7 @@
 <meta name="description" content="Free lip-sync video editor for rappers and singers. Drop your song and a few takes; Stalak cuts between them on the beat, perfectly in sync. No app, no sign-up.">
 <meta property="og:type" content="website"><meta property="og:site_name" content="Stalak"><meta property="og:locale" content="en_US">
 <meta property="og:title" content="Lip-Sync Video Editor That Cuts Your Takes to the Beat | Stalak"><meta property="og:description" content="Free lip-sync video editor for rappers and singers. Drop your song and a few takes; Stalak cuts between them on the beat, perfectly in sync. No app, no sign-up.">
-<meta property="og:url" content="https://stalak.app/lip-sync-video-editor"><meta property="og:image" content="https://stalak.app/og.png"><meta name="twitter:card" content="summary_large_image">
+<meta property="og:url" content="https://stalak.app/lip-sync-video-editor"><meta property="og:image" content="https://stalak.app/og/lip-sync-video-editor.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Lip-sync video editor with Stalak"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://stalak.app/og/lip-sync-video-editor.jpg">
 <link rel="canonical" href="{{URL}}/lip-sync-video-editor">
 <link rel="icon" href="/icons/icon-192.png"><link rel="stylesheet" href="/fonts/fonts.css">
 <style>
@@ -18,6 +18,13 @@ details{border:2px solid var(--ink);border-radius:14px;padding:10px 14px;margin:
 .cta{display:inline-block;margin-top:10px;background:var(--ink);color:#fff!important;text-decoration:none;font-weight:700;border-radius:14px;padding:12px 18px}
 .founder{background:var(--frost);border-radius:14px;padding:12px 14px;margin-top:22px;font-size:15px}
 video{width:100%;max-width:340px;display:block;margin:12px auto;border:3px solid var(--ink);border-radius:18px;background:#000}
+.ba{margin:18px 0 8px;padding:14px;border:2px solid var(--ink);border-radius:18px;background:var(--frost)}
+.ba-row{display:flex;align-items:center;justify-content:center;gap:14px}.ba-before{flex:1 1 0;min-width:0;max-width:430px}
+.ba-before img{display:block;width:100%;height:auto;border:2px solid var(--ink);border-radius:12px}.ba-after{flex:none}
+.ba video{width:150px;height:auto;max-width:none;margin:0;border-width:2px;border-radius:14px}
+.ba-l{margin:6px 0 0;text-align:center;font-weight:700;font-size:14px}.ba-arrow{flex:none;font:400 30px/1 'Lilita One',system-ui,sans-serif}
+.ba figcaption{margin-top:10px;text-align:center;font-size:14px}
+@media (max-width:560px){.ba-row{flex-direction:column;gap:8px}.ba-before{max-width:none;width:100%}.ba-arrow{transform:rotate(90deg)}.ba video{width:180px}}
 .more{font-size:15px} footer{max-width:820px;margin:18px auto 0;color:#fff;font-size:13px;text-align:center}footer a{color:#fff}
 </style>
 <link rel="stylesheet" href="/site.css">
@@ -28,16 +35,18 @@ video{width:100%;max-width:340px;display:block;margin:12px auto;border:3px solid
 <h1>A lip-sync video editor that does the cutting for you</h1>
 <p class="lead">Stalak is a free lip-sync video editor that runs in your browser. Upload your song and a few videos of you performing it, and Stalak cuts between your takes on the beat, keeping your mouth in sync with the track. No download, no account, ready for TikTok, Reels and Shorts.</p>
 <p><a class="cta" href="/?ref=seo">Start free, no sign-up</a></p>
-<!--DEMO--><video controls playsinline muted preload="metadata" src="/demo/exemple.mp4" aria-label="Example of a video edited with Stalak"></video><!--/DEMO-->
+<!--DEMO--><figure class="ba"><div class="ba-row"><div class="ba-before"><img src="/demo/takes.jpg" width="884" height="512" loading="lazy" alt="Three takes of the same song by 99Sayso, filmed in front of mountains, in an attic and in a garden"><p class="ba-l">Before: 3 takes</p></div><div class="ba-arrow" aria-hidden="true">→</div><div class="ba-after"><video src="/demo/edit.mp4" poster="/demo/edit.jpg" width="432" height="768" controls muted loop playsinline preload="none" aria-label="After: the video Stalak edited from these three takes, cut on the beat"></video><p class="ba-l">After: Stalak’s edit</p></div></div><figcaption>Real takes by 99Sayso, edited by Stalak: one cut per bar, the lip sync locked. Play it with the sound on.</figcaption></figure><!--/DEMO-->
 <h2>Why it’s different</h2>
 <ul><li>It edits your <strong>real takes</strong>. No AI face, no fake mouth.</li><li>Cuts land on the beat: phrase by phrase, on your lines and rhymes, or every bar. You pick.</li><li>Lyrics on screen, one line at a time for free, word-by-word or karaoke with Pro.</li><li>Everything runs on your device, so your footage stays yours.</li></ul>
+<h2>What Stalak does with your takes</h2>
+<p>Every take you add was filmed with your song playing, so its sound matches a spot in the track. Stalak listens to each take, finds that spot and lines the take up with your song. From then on, whichever take is on screen, your mouth follows the audio.</p><p>Then it plans the cuts. Stalak finds the beat and the bars of your song and picks where to switch takes. <strong>Auto</strong> follows the music phrase by phrase. <strong>On the words</strong> cuts at the start of each line and on the rhyme at the end of it, once your lyrics are synced. <strong>Every bar</strong> gives each bar to a different take, in turn. The <strong>Pace</strong> setting goes from Chill (long shots, few cuts) to Punchy (quick cuts, down to every beat).</p><p>You stay in charge of the edit. Tap <strong>Shuffle</strong> for a new one. If a shot is perfect, tap <strong>Keep this shot</strong> and it stays put while you shuffle the rest; <strong>Swap take</strong> puts another take in its place.</p><p>If the cuts ever feel off the beat, open “Cuts not on the beat?” under your song, tap <strong>TAP</strong> along with the music, starting on a strong beat, and apply. Stalak fine-tunes your taps on the song itself, then plays beeps so you can check.</p><p>When it looks right, export. The video is rendered on your device, in full quality from your original files, ready for TikTok, Reels and Shorts.</p>
 <h2>Tips for a clean lip-sync edit</h2>
 <ul><li>Play the song out loud while you film, so every take follows the same audio.</li><li>Film 3 or 4 takes from different spots: close-up, wide, a different wall or light.</li><li>Start each take a couple of seconds before the part you want to post.</li></ul>
 <h2>What’s free, what’s Pro</h2>
 <ul>
 <li><strong>Free</strong>: unlimited videos, auto cuts, lyrics one line at a time, 3 filters, 9:16 export, no ads. A small watermark (our mascot and stalak.app) on every video.</li>
 <li><strong>Stalak Pro</strong> ($7.99/mo or $49.99/yr): no watermark, 16:9 music videos, karaoke and word-by-word lyrics, auto lyrics, all filters and premium effects.</li>
-<li><strong>Creator Plus</strong> ($14.99/mo or $99.99/yr): everything in Pro, plus video packs, automatic cloud saving and a real person to talk to.</li>
+<li><strong>Creator Plus</strong> ($14.99/mo or $99.99/yr): everything in Pro, plus video packs, automatic cloud saving (100 GB) and “Talk to a human”.</li>
 </ul>
 <p><a href="/pricing">See pricing</a></p>
 <h2>FAQ</h2>

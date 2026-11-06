@@ -17,7 +17,7 @@ Skills utilisés : `seo-audit`, `ai-seo`, `directory-submissions`, `competitors`
   - liste `SOCIAL` pour les comptes officiels, déclarés en `sameAs` et en liens `rel="me"`. Elle est vide tant que le propriétaire n'a pas donné les adresses ;
   - `SITEMAP_PAIRS` : le plan du site passe de 4 à 14 pages ;
   - lien « Alternative à Triller » dans le pied de page de l'accueil ;
-  - bloc vidéo affiché seulement si `site_src/demo/exemple.mp4` existe.
+  - bloc vidéo affiché seulement si `site_src/demo/edit.mp4` existe (depuis le 6/11 : avant / après dans les guides, `docs/marketing/DEMO.md`).
 - `site_src/llms.txt` : présentation de Stalak pour les IA de recherche.
 - ~~`site_src/alternative-triller.html` et `site_src/en/triller-alternative.html`~~ : **retirées le 30/10 à 21 h** (aucun concurrent cité sur le site), redirigées vers l'accueil par `site_src/_redirects`.
 - `src/app.js` : sur stalak.app (balise canonical présente et `lang="fr"`), la page française reste en français.
