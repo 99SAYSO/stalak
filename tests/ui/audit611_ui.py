@@ -23,7 +23,7 @@ results = []
 FAST_EXPORT = ("pickVideoConfig = async () => null, renderRealtime = async () => { await new Promise(r => setTimeout(r, 120)); "
                "return { blob: new Blob([new Uint8Array(4096)], { type: 'video/mp4' }), ext: 'mp4' }; }")
 T = {
-    'fr': {'h1': 'Montage vidéo lip-sync gratuit pour rappeurs', 'try': 'Essaie avec ton son', 'nowm': 'Enregistrer sans filigrane',
+    'fr': {'h1': 'Le montage de playback gratuit pour les rappeurs', 'try': 'Essaie avec ton son', 'nowm': 'Enregistrer sans filigrane',
            'savewm': 'Enregistrer celle-ci (avec filigrane)', 'save': 'Enregistrer la vidéo', 'ca': 'Le mode Clip est réservé à Pro'},
     'en': {'h1': 'Free lip-sync video editor for rappers', 'try': 'Now try it with your song', 'nowm': 'Save without watermark',
            'savewm': 'Save this one (with watermark)', 'save': 'Save video', 'ca': 'Clip mode is a Pro feature'},
@@ -73,13 +73,14 @@ def flow(b, base, site, lang, iphone, PW):
     ctx, pg, errs = new_page(b, base, lang, iphone, PW)
     # 6. the real title
     h1 = pg.evaluate("() => [...document.querySelectorAll('h1')].filter(e => e.getClientRects().length).map(e => e.textContent.trim())")
-    check(tag + ' : un seul H1, « %s », au-dessus du formulaire' % t['h1'], h1 == [t['h1']] and pg.locator('#hero').bounding_box()['y'] < pg.locator('#songDrop').bounding_box()['y']
+    check(tag + ' : un seul H1, « %s », au-dessus du formulaire' % t['h1'], h1 == [t['h1']] and pg.locator('#heroPitch').bounding_box()['y'] < pg.locator('#songDrop').bounding_box()['y']
           and not pg.evaluate("() => !!document.querySelector('#homeBtn').closest('h1')"), h1)
-    tag_ok = pg.locator('.hero-tag').inner_text().strip()
+    tag_ok = pg.locator('.hero-s').inner_text().strip()
     check(tag + ' : une ligne d’accroche sous le titre', len(tag_ok) > 30, tag_ok)
-    hb, mb = pg.evaluate("() => { const r = document.createRange(); r.selectNodeContents(document.querySelector('.hero-tag')); const b = r.getBoundingClientRect(); return { x: b.x, y: b.y, width: b.width, height: b.height }; }"), pg.evaluate("() => { const c = document.querySelector('#p1 > .card:not(.lpoffer)'); const r = c.getBoundingClientRect(), a = getComputedStyle(c, '::after'); return { right: r.right - parseFloat(a.right), w: parseFloat(a.width) }; }")
+    hb, mb = pg.evaluate("() => { const r = document.createRange(); r.selectNodeContents(document.querySelector('.hero-s')); const b = r.getBoundingClientRect(); return { x: b.x, y: b.y, width: b.width, height: b.height }; }"), pg.evaluate("() => { const c = document.querySelector('#p1 > .card:not(.lpoffer)'); const r = c.getBoundingClientRect(), a = getComputedStyle(c, '::after'); return { right: r.right - parseFloat(a.right), w: parseFloat(a.width) }; }")
     check(tag + ' : l’accroche ne passe pas sous la mascotte', hb['x'] + hb['width'] <= mb['right'] - mb['w'] + 4 or hb['y'] + hb['height'] < pg.locator('#p1 > .card:not(.lpoffer)').bounding_box()['y'] - 142, (hb, mb))
     if SHOTS: shot(pg, os.path.join(SHOTS, 'accueil-%s-%s.png' % ('iphone' if iphone else 'ordi', lang)))
+    # (6/11, Chef de projet: the home title is Marketing's « version compacte », chosen by the owner: #heroPitch, .hero-s)
     # 22. the example: the keyboard on « Lecture »
     demo(pg)
     check(tag + ' : après « Essayer avec un exemple », le clavier est sur « Lecture »', pg.evaluate("document.activeElement && document.activeElement.id") == 'playBtn', pg.evaluate("document.activeElement && (document.activeElement.id || document.activeElement.tagName)"))
