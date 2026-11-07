@@ -197,6 +197,10 @@ th{color:var(--text2);font-weight:600}
 .hctl{gap:10px;flex-wrap:wrap;margin-bottom:12px}
 .vsum{font-size:17px;font-weight:700;margin:12px 0}.vcol{max-width:640px}.vcol h3{margin:0 0 8px}
 #vppCard{margin-top:16px}#vppCard .hbest{flex-wrap:wrap}
+.srcwrap{overflow-x:auto;margin-top:10px}.srct{border-collapse:collapse;width:100%;min-width:560px;font-variant-numeric:tabular-nums}
+.srct th,.srct td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--line)}.srct th{font-size:13px;color:var(--muted);font-weight:600}
+.srct th:first-child,.srct td:first-child{text-align:left;font-weight:700}.srct td small{display:block;color:var(--muted);font-weight:400;font-size:12px}
+#srcCard,#optCard{margin-top:16px}
 .hq .he{display:none;font-size:13.5px;color:var(--muted);margin:6px 0 0}.hq.help .he{display:block}
 .hbest{display:flex;align-items:center;gap:8px;font-weight:700;font-size:18px}.hbest .sp{flex:1}
 .hlist{list-style:none;margin:10px 0 0;padding:0}
@@ -439,6 +443,24 @@ __DEMO_BANNER__<header class="top"><div class="in">
       <p class="vsum" id="vSum">…</p>
       <div class="vcol"><h3>Vidéos exportées</h3><ul class="blist" id="vExp"></ul></div>
       <p class="note" id="vIos"></p>
+    </div>
+    <!-- report of 7/11: where the visitors come from and how far each source goes; payment window closed; e-mails given -->
+    <div class="card hq" id="srcCard">
+      <div class="hbest"><span>🧭 D’où viennent les gens, et jusqu’où ils vont</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
+      <p class="he">Une ligne par source (le lien ou le site qui a amené la personne). On compte seulement des totaux par jour : rien n’est relié à une personne. Les chiffres commencent à la mise en ligne de cette carte.</p>
+      <div class="srcwrap"><table class="srct" id="srcTable"><thead><tr><th scope="col">Source</th><th scope="col">Visites</th><th scope="col">Vidéo faite</th><th scope="col">Formules vues</th><th scope="col">Paiement ouvert</th><th scope="col">Payé</th></tr></thead><tbody></tbody></table></div>
+      <p class="note" id="srcNote"></p>
+    </div>
+    <div class="grid2">
+      <div class="card hq"><div class="hbest"><span>🌍 Pays des visites</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
+        <p class="he">D’après Cloudflare, le pays de chaque nouvelle visite sur la période (totaux anonymes).</p><ul class="blist" id="bCountry"></ul></div>
+      <div class="card hq"><div class="hbest"><span>💳 Paiement fermé sans acheter</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
+        <p class="he">Quand la fenêtre de paiement Paddle est fermée sans achat, à quel moment : tout de suite, après avoir donné son e-mail (et son pays), ou en payant (carte remplie ou paiement essayé).</p><ul class="blist" id="bClose"></ul><p class="note" id="closeNote"></p></div>
+    </div>
+    <div class="card hq" id="optCard">
+      <div class="hbest"><span>📩 E-mails récoltés</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
+      <p class="he">À la fin d’une vidéo, les gratuits peuvent laisser leur e-mail pour recevoir des conseils (case à cocher, puis lien de confirmation). Seuls les e-mails confirmés comptent. Aucun envoi en masse pour l’instant.</p>
+      <p class="vsum" id="optSum">…</p>
     </div>
     <div class="charts" id="funnelCharts" data-mt></div>
   </section>
@@ -699,7 +721,7 @@ __DEMO_BANNER__<header class="top"><div class="in">
 
   // ---- Nouveaux comptes: one line per account, where it came from ----
   var SOURCES = { tiktok: 'TikTok', ig: 'Instagram', instagram: 'Instagram', yt: 'YouTube', youtube: 'YouTube', google: 'Google', bing: 'Bing', x: 'X (Twitter)', twitter: 'X (Twitter)',
-    reddit: 'Reddit', discord: 'Discord', facebook: 'Facebook', fb: 'Facebook', snapchat: 'Snapchat', direct: 'Lien direct', other: 'Autre site', unknown: 'Lien direct', wm: 'Filigrane d’une vidéo' };
+    reddit: 'Reddit', discord: 'Discord', triller: 'Triller', facebook: 'Facebook', fb: 'Facebook', snapchat: 'Snapchat', direct: 'Lien direct', other: 'Autre site', unknown: 'Lien direct', wm: 'Filigrane d’une vidéo' };
   var DIRS = { alternativeto: 'AlternativeTo', saashub: 'SaaSHub', producthunt: 'Product Hunt', betalist: 'BetaList', futurepedia: 'Futurepedia', theresanaiforthat: 'There’s An AI For That', contentcreators: 'contentcreators.com', buzzsonic: 'Buzzsonic', toolify: 'Toolify' };
   function sourceName(src) {
     if (!src) return 'Inconnue';
@@ -1043,6 +1065,28 @@ __DEMO_BANNER__<header class="top"><div class="in">
         var exObj = { 'Réussies': fu.exportOk || 0 }; for (var k in fw) exObj['Ratées : ' + (NAMES.fail[k] || k)] = fw[k];
         blist($('#bExport'), exObj, function (x) { return x; }, { order: Object.keys(exObj) });
         blist($('#bWhy'), fu.plansWhy || {}, NAMES.why);
+        // report of 7/11: the funnel per source (anonymous totals), the visits per country, the payment window closed, the e-mails
+        var tb = $('#srcTable tbody'); tb.textContent = '';
+        (fu.bySource || []).forEach(function (r) {
+          var tr = el('tr'); tr.append(el('td', null, r.source === 'other' ? 'Autres' : sourceName(r.source)));
+          [r.visits, r.videos, r.plans, r.checkout, r.paid].forEach(function (v, i) {
+            var td = el('td', null, nf.format(v || 0));
+            if (i && r.visits) td.append(el('small', null, pct(v || 0, r.visits) + ' %'));
+            tr.append(td);
+          });
+          tb.append(tr);
+        });
+        if (!tb.children.length) { var e0 = el('tr'); var c0 = el('td', null, 'Pas encore de chiffre : ils commencent à la mise en ligne.'); c0.colSpan = 6; e0.append(c0); tb.append(e0); }
+        set('#srcNote', (fu.bySource || []).length ? 'Le % sous chaque chiffre : part des visites de cette source.' + (innerWidth < 640 ? ' Fais glisser le tableau pour voir toutes les étapes.' : '') : '');
+        var cObj = {}; (fu.visitCountries || []).forEach(function (x) { cObj[(flag(x.country) + ' ' + ((MAP.names || {})[x.country] || x.country)).trim()] = x.n; });
+        blist($('#bCountry'), cObj, function (x) { return x; }, { order: Object.keys(cObj) });
+        var cc = fu.checkoutClose || {}, closed = (cc.start || 0) + (cc.details || 0) + (cc.payment || 0);
+        blist($('#bClose'), { 'Tout de suite': cc.start || 0, 'Après l’e-mail': cc.details || 0, 'En payant': cc.payment || 0 }, function (x) { return x; },
+          { order: ['Tout de suite', 'Après l’e-mail', 'En payant'], keepZero: true });
+        set('#closeNote', (fu.checkoutOpen ? 'Fenêtre ouverte ' + nf.format(fu.checkoutOpen) + ' fois, fermée sans acheter ' + nf.format(closed) + ' fois' + (fu.checkoutDone ? ', achats ' + nf.format(fu.checkoutDone) : '') + '.' : 'Pas encore de fenêtre de paiement ouverte sur la période.'));
+        var op = fu.optins || {};
+        set('#optSum', nf.format(op.confirmed || 0) + ' e-mail' + ((op.confirmed || 0) > 1 ? 's' : '') + ' confirmé' + ((op.confirmed || 0) > 1 ? 's' : '') +
+          ' (dont ' + nf.format(op.week || 0) + ' cette semaine) · ' + nf.format(op.waiting || 0) + ' en attente de confirmation');
       }
       charts($('#funnelCharts'), days, [{ k: 'exportOk', t: 'Vidéos exportées', f: N, x: 'Réussies.' }, { k: 'exportFail', t: 'Exports ratés', f: N, x: 'Erreur pendant l’export (voir les raisons plus haut).' }]);   // no more ad (owner's decision of 6/11): the « Pubs regardées » chart is gone
       // Santé

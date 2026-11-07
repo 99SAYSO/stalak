@@ -4,7 +4,12 @@
 - signed in, the pricing link opens the payment at once; the plans page, signed out → sign in → payment, no second tap;
 - the payment window blocked (an ad blocker): paddle.js not loaded, or loaded but no window → a clear message;
 - « Sans filigrane » said once on the plans page: the Pro ribbon (choice of 6/11) keeps it, the banner above gives the price.
-    python3 /abs/path/tests/ui/achat_ui.py <base url of a fresh tests/ui/cloud-server.mjs>"""
+- (7/11) where the payment window is closed without buying (stage) and the visit's source with each step; the optional e-mail
+  for tips at the end of a video (box not ticked, never for a subscriber, not asked again).
+The site served must carry the tests' probe (tests/ui/_probe.py): copy public/ and add it, then start the server on the copy:
+    cp -r public /tmp/x && python3 -c "import sys; sys.path.insert(0, 'tests/ui'); from _probe import add_probe; add_probe('/tmp/x')"
+    node tests/ui/cloud-server.mjs /tmp/x <port>
+    python3 /abs/path/tests/ui/achat_ui.py <base url of that fresh tests/ui/cloud-server.mjs>"""
 import asyncio, json, sys
 from playwright.async_api import async_playwright
 
@@ -82,6 +87,45 @@ async def main():
             txt = await p.evaluate("() => [...document.querySelectorAll('#acctPage [role=status], #acctPage [role=alert], #acctPage .ap-msg')].map(e => e.innerText).join(' | ')")
             check(f'payment window {mode}: a clear message (ad blocker)', ok and 'bloqueur de pub' in await p.inner_text('#acctPage'), txt[:200])
             await c.close()
+        # 6. report of 7/11: where the payment window is closed (stage) and the source of the visit, sent with each step
+        c = await ctx_for(b); p = await c.new_page(); evs = []
+        p.on('request', lambda r: '/api/event' in r.url and evs.append(json.loads(r.post_data or '{}')))
+        await p.goto(BASE + '/__test/login?email=stage@example.com&pro=0&to=' + '/fr/%3Fref%3Dseo-triller%23pro', wait_until='load'); await p.wait_for_timeout(1500)
+        check('the visit source is worked out once for the tab (?ref=seo-triller → triller)', await p.evaluate("() => sessionStorage.getItem('stalak:vsrc')") == 'triller')
+        for steps, want in [(['checkout.customer.created'], 'details'), ([], 'start'), (['checkout.customer.created', 'checkout.payment.selected'], 'payment')]:
+            await p.click('#apBuy .pl-card[data-plan="pro"] [data-buy]'); await opens(p, n=1); await p.wait_for_timeout(300)
+            for n in steps: await p.evaluate("n => window.__pcb({ name: n })", n)
+            await p.evaluate("() => window.__pcb({ name: 'checkout.closed' })"); await p.wait_for_timeout(500)
+            got = [e for e in evs if e.get('name') == 'checkout_close']
+            check(f'payment window closed without buying → stage « {want} »', got and got[-1].get('stage') == want and got[-1].get('src') == 'triller', got[-1:] if got else evs[-3:])
+            await p.evaluate("() => { window.__opens = []; }")
+        await p.click('#apBuy .pl-card[data-plan="pro"] [data-buy]'); await opens(p, n=1); await p.wait_for_timeout(300)
+        await p.evaluate("() => { window.__pcb({ name: 'checkout.payment.initiated' }); window.__pcb({ name: 'checkout.completed', data: {} }); window.__pcb({ name: 'checkout.closed' }); }")
+        await p.wait_for_timeout(500)
+        names = [e.get('name') for e in evs]
+        check('bought: « checkout_done » once, no « closed without buying »', names.count('checkout_done') == 1 and names.count('checkout_close') == 3, names)
+        check('each step carries the source', all(e.get('src') == 'triller' for e in evs if e.get('name') in ('checkout_open', 'checkout_done', 'checkout_close')), evs)
+        await c.close()
+        # 7. report of 7/11: the e-mail for tips at the end of a video (free users; box not ticked)
+        c = await ctx_for(b); p = await c.new_page(); posts = []
+        p.on('request', lambda r: r.url.endswith('/api/optin') and posts.append(json.loads(r.post_data or '{}')))
+        await p.goto(BASE + '/fr/', wait_until='load'); await p.wait_for_function('typeof window.__ev === "function"', timeout=20000)
+        # (the end screen of a real export, imitated: a video in hand; the box is taken out of the hidden step to be seen)
+        await p.evaluate("() => __ev(\"lastBlob = new Blob(['x'], { type: 'video/mp4' }), lastName = 'stalak.mp4', S.lastDemo = false, optUi(), document.body.prepend($('#optBox'))\")")
+        check('free user, after a video: the box is there, not ticked', await p.is_visible('#optBox') and not await p.is_checked('#optOk'))
+        await p.fill('#optEmail', 'tips@example.com'); await p.click('#optGo'); await p.wait_for_timeout(300)
+        check('without the tick: nothing sent, a clear word', not posts and 'Coche la case' in await p.inner_text('#optNote'), (posts, await p.inner_text('#optNote')))
+        await p.check('#optOk'); await p.click('#optGo')
+        await p.wait_for_function("() => /Regarde ta boîte mail/.test(document.querySelector('#optT').textContent)", timeout=8000)
+        check('ticked: sent with the consent, then « regarde ta boîte mail »', posts == [{'email': 'tips@example.com', 'consent': True, 'lang': 'fr'}] and await p.is_hidden('#optForm'), posts)
+        await p.evaluate("() => __ev('optUi()')")
+        check('not asked again on this device', await p.evaluate("() => __ev(\"$('#optBox').hidden\")"))
+        await c.close()
+        c = await ctx_for(b); p = await c.new_page()
+        await p.goto(BASE + '/__test/login?email=sub@example.com&pro=1&to=/fr/', wait_until='load'); await p.wait_for_function('typeof window.__ev === "function"', timeout=20000); await p.wait_for_timeout(1200)
+        await p.evaluate("() => __ev(\"lastBlob = new Blob(['x'], { type: 'video/mp4' }), lastName = 'stalak.mp4', S.lastDemo = false, optUi()\")")
+        check('never asked to a subscriber', await p.evaluate("() => __ev(\"$('#optBox').hidden\")"))
+        await c.close()
         # 5. the Pro ribbon
         c = await ctx_for(b); p = await c.new_page()
         await p.goto(BASE + '/fr/#pro', wait_until='load'); await p.wait_for_timeout(1500)

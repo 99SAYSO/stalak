@@ -17,6 +17,7 @@ import { helpChat } from './help.js';
 import { admin } from './admin.js';
 import { support } from './support.js';
 import { cancelThanks } from './thanks.js';
+import { optinAsk, optinLink } from './optin.js';
 import { presence, bump, event } from './metrics.js';
 
 const PROJECT_MAX_BYTES = 256 * 1024; // ~200 KB of project JSON + envelope
@@ -384,6 +385,14 @@ async function dispatch(request, env, ctx) {
           const u = await currentUser(request, env).catch(() => null);
           return !!(u && list.includes(String(u.email).toLowerCase()));
         });
+      // report of 7/11: e-mails given freely by free users at the end of a video (optin.js)
+      case 'optin':
+        if (method !== 'POST') break;
+        return optinAsk(request, env);
+      case 'optin/confirm':
+      case 'optin/stop':
+        if (method !== 'GET' && method !== 'POST') break;
+        return optinLink(request, env, route === 'optin/confirm' ? 'confirm' : 'stop');
       case 'help/chat':
         // the help assistant of the ice cube (functions/_lib/help.js): open to everyone, signed in or not
         if (method !== 'POST') break;
