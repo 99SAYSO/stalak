@@ -149,11 +149,13 @@ def run(b, base, lang, iphone, PW):
     # 3. left Stalak: waits, then goes on by itself
     del events[:]
     ev(pg, FAKE % (1, json.dumps('Codec reclaimed due to inactivity'), 1))
-    pg.evaluate('() => { __ev("exportOne()"); }'); pg.wait_for_function('() => !!window.__go', timeout=60000)
+    pg.evaluate('() => { window.__done = false; window.__p = Promise.resolve(__ev("exportOne()")).then(() => { window.__done = true; }); }'); pg.wait_for_function('() => !!window.__go', timeout=60000)
     pg.evaluate("""() => { window.__hid = true; Object.defineProperty(document, 'hidden', { configurable: true, get: () => !!window.__hid });
       Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => window.__hid ? 'hidden' : 'visible' });
       document.dispatchEvent(new Event('visibilitychange')); window.__go(); }""")
     pg.wait_for_function('() => !__ev("S.exporting")', timeout=60000); pg.wait_for_timeout(1500)
+    # (7/11, seen by the Chef de projet) the export ends properly while the page stays hidden: it never waits for the return
+    check(tag + ' : appli quittée : l’export se termine proprement tout de suite (page toujours cachée)', pg.evaluate('window.__done') is True and pg.evaluate('document.hidden') is True)
     r = names(events, 'export_retry')
     check(tag + ' : appli quittée : attend, « %s »' % t['back'], pg.evaluate('window.__runs.length') == 1 and t['back'] in text(pg) and len(r) == 1 and r[0].get('cat') == 'hidden', (pg.evaluate('window.__runs.length'), [(e.get('name'), e.get('cat')) for e in events], pg.evaluate("() => { const out = []; let e = document.querySelector('#expNear'); while (e){ const c = getComputedStyle(e); if (c.display === 'none' || e.hidden) out.push((e.id || e.className || e.tagName) + ':' + c.display); e = e.parentElement; } return [out, __ev('S.step'), __ev('S.done')]; }")))
     pg.evaluate("() => { window.__wait = 0; window.__hid = false; document.dispatchEvent(new Event('visibilitychange')); }")

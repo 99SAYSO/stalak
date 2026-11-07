@@ -72,5 +72,38 @@ Onglet « Entonnoir », nouvelle carte **« Pourquoi les exports ratent »** :
   compteurs reste borné (environ 60 noms possibles).
 - Un échec écrit environ 9 lignes de compteurs au lieu de 2. C'est négligeable à ce volume (une dizaine d'échecs par semaine).
 
-## Résultats des tests
-(complétés en fin de travail, voir plus bas)
+## Correction après le retour du Chef de projet (7/11, 17 h)
+`tests/ui/audit_ui.py` restait bloqué au passage « n° 3 : app quittée pendant un export fait en temps réel ». La cause : quand
+on quittait l'app, `exportOne()` attendait le retour de la personne avant de se terminer, pour refaire l'export. Il ne finissait
+donc jamais tant que la page restait cachée. (Plus tôt, j'avais pris ce blocage pour une machine trop chargée : c'était mon
+erreur.)
+Maintenant :
+- l'export s'arrête tout de suite et proprement ;
+- le message « L'export s'est arrêté quand tu as quitté Stalak. Il repart tout seul dès que tu reviens ici. » apparaît sous
+  les boutons, ou sur l'écran de fin si l'export était lancé depuis là ;
+- le nouvel essai est seulement programmé pour le retour, une fois. La page cachée est lue comme pour l'arrêt
+  (`visibilityState`) ;
+- seul un export vraiment commencé est refait.
+`audit_ui.py` est adapté à la nouvelle façon de compter :
+- un export arrêté parce qu'on a quitté l'app est compté `export_retry` (« hidden ») ;
+- un pack trop gros est compté `export_refused` (« memory ») ;
+- les détails `x` font partie des champs anonymes permis.
+`exports_rates_ui.py` vérifie en plus que l'export se termine alors que la page reste cachée.
+
+## Résultats des tests (7/11 au soir, sur la branche à jour, lancés un par un)
+- `tests/ui/audit_ui.py` : **158/158**
+- `tests/ui/formules_ui.py` : **137/137**
+- `tests/ui/audit611_ui.py` : **91/91**
+- `tests/ui/exports_rates_ui.py` : **76/76**
+- serveur `tests/backend/run.mjs` : **102/102**
+- `tests/ui/pied_de_page_ui.py` : **402/402**
+- Plus tôt dans la journée, avant la correction (rien de ce qu'ils testent n'a changé depuis) : `fin_export_ui` 86/86,
+  `fluidite_ui` 30/30, `partager_ui`, `filtres_ui`, `export_pub_ui`, `projet_local_ui`, `son_passage`, `remux_frag`,
+  `paroles_suppr`, `animations_ui` et `liens_cmp_ui` sans échec, `plans_ui` 35/35, `gallery_ui` 49/49, `help_ui` 42/42.
+  `support_ui` échoue comme sur `main`, à cause de son envoi d'e-mail de test (« Pas envoyés : access »), sans lien avec
+  cette branche.
+
+## Planche contact (skill `planche-contact`)
+Un vrai export de l'exemple, fait avec les « réglages plus sûrs » du nouvel essai (comme après un onglet fermé), en Gratuit, 9:16,
+20 s : **41 images vérifiées, aucun problème**. Le filigrane reste hors des zones TikTok / Instagram, les paroles sont lisibles et
+non coupées, il n'y a ni image noire ni image figée. **0 problème restant.**
