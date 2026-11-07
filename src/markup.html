@@ -52,7 +52,19 @@
       })(document.currentScript.previousElementSibling);</script><!--/HEROVIDEO-->
       <div class="hero-txt">
         <h1 class="hero-h1" data-i18n="hero.h1">Le montage de playback gratuit pour les rappeurs</h1>
-        <p class="hero-s" data-i18n="hero.s">Filme quelques prises sur ton son : Stalak les coupe sur le temps, lèvres synchro.</p>
+        <p class="hero-s" data-i18n="hero.s">Filme quelques prises sur ton son&nbsp;: Stalak les coupe sur le temps, lèvres synchro.</p>
+        <!-- Marketing & croissance (07/11, rapport chiffres : le mode Clip, 1re raison d'ouvrir Pro) : choisit « Clip » à l'étape 1
+             (#kindSeg, le choix qui existe déjà) et l'amène sous les yeux ; rien d'autre ne change -->
+        <button type="button" class="hero-clip" id="heroClip" data-i18n="hero.clip">Essaie le <b>mode Clip</b>&nbsp;: tout ton morceau en 16:9</button>
+        <script>(function (b) { if (!b) return;
+          b.addEventListener('click', function () {
+            var k = document.querySelector('#kindSeg button[data-v="clip"]'); if (!k) return;
+            if (k.getAttribute('aria-pressed') !== 'true') k.click();
+            var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+            (k.closest('.kindpick') || k).scrollIntoView({ block: 'center', behavior: still ? 'auto' : 'smooth' });
+            try { k.focus({ preventScroll: true }); } catch (e) { k.focus(); }
+          });
+        })(document.currentScript.previousElementSibling);</script>
       </div>
     </div>
     <div class="card lpoffer" id="lpOffer" hidden role="region" aria-labelledby="lpOfferT">

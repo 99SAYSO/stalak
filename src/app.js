@@ -1050,6 +1050,7 @@ const I18N_EN = /*@EN*/{
   "hero.h1": "Free lip-sync video editor for rappers",
   "hero.s": "Film a few takes of your song. Stalak cuts them on the beat, lips in sync.",
   "hero.v": "Example: a video Stalak edited from three takes",
+  "hero.clip": "Try <b>Music video mode</b>: your whole song in 16:9",
   "ap.noacct": "You don’t need an account to make videos. It’s only for subscribing and getting your projects back.",
   "_bloc.app.son": "App & montage : étape Son (glisser-déposer, poignées du passage)",
   "listen.seg": "▶ Play the part",
