@@ -245,6 +245,7 @@
 - **Au propriétaire** : créer les applis TikTok et Meta en suivant `docs/SOCIAL_SETUP.md`, puis saisir 5 secrets dans Cloudflare (`TIKTOK_CLIENT_KEY`, `TIKTOK_CLIENT_SECRET`, `INSTAGRAM_APP_ID`, `INSTAGRAM_APP_SECRET`, `SOCIAL_TOKEN_KEY`).
 - Reste à faire : boutons « Relier TikTok / Instagram » et écran « Publier » dans l'app, envoi de la vidéo (adresse temporaire sur R2), page de confidentialité à compléter (TikTok / Instagram), dossiers de validation, vidéo de démo.
 - À décider : la publication directe est-elle réservée à Stalak Pro ou ouverte à tous ? Meta risque de demander une vérification d'entreprise (lien avec la LLC).
+- **7/11 (branche `social/promo-auto`)** : heure des vidéos promo passée à **16 h 30, heure de New York** (22 h 30 Paris), tous les jours, au lieu des créneaux tournants (décision du propriétaire du 7/11, d'après le rapport chiffres `docs/stats/2026-11-07-rapport.md`). **Pour Marketing** : consignes à jour dans `docs/social/TACHE_DIMANCHE.md` et `docs/social/PREMIER_ESSAI.md` (l'essai du 5/11 n'a pas eu lieu).
 
 ### Marketing & croissance
 - **Prêt (branche `marketing/audit-6-11`, 6/11, audit du 6/11 : points 6, 7, 8, 11, 13, 19 et 21)** :

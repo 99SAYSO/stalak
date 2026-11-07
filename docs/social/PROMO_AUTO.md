@@ -92,31 +92,21 @@ Les modèles validés sont rangés dans `promo/series/<code>/` (sources seulemen
 
 On fait varier **une chose à la fois de manière organisée**, et on note tout.
 
-**Heures** : 7 créneaux, heure de New York. La vidéo part à la même heure sur TikTok et Instagram.
-
-| Créneau | New York | Paris (heure d'hiver) |
-|---|---|---|
-| 1 | 7 h 30 | 13 h 30 |
-| 2 | 11 h | 17 h |
-| 3 | 13 h 30 | 19 h 30 |
-| 4 | 16 h | 22 h |
-| 5 | 18 h | minuit |
-| 6 | 19 h 30 | 1 h 30 |
-| 7 | 21 h 30 | 3 h 30 |
-
-Chaque semaine, chaque créneau sert **une fois**. Les créneaux décalent d'un jour d'une semaine à l'autre : en 7 semaines, chaque créneau est passé par chaque jour, et on sépare l'effet du jour de celui de l'heure.
-Semaine 1 (lundi 9/11) : lun 19 h 30, mar 21 h 30, mer 7 h 30, jeu 11 h, ven 13 h 30, sam 16 h, dim 18 h. Semaine 2 : on décale d'un cran (lun 21 h 30, mar 7 h 30…).
+**Heure : toutes les vidéos partent à 16 h 30, heure de New York** (22 h 30 à Paris en hiver), sur TikTok et Instagram (décision du propriétaire du 7/11, d'après le rapport chiffres `docs/stats/2026-11-07-rapport.md`).
+Les visites du site culminent de 21 h à 23 h UTC, soit 16 h à 18 h à New York : la vidéo sort juste avant ce pic.
+Ça remplace les 7 créneaux tournants prévus le 3/11. **On ne teste donc plus l'heure** ; on teste les modèles, les accroches et le jour de la semaine. Pour reprendre un test d'heure plus tard : par exemple 5 jours à 16 h 30 et 2 jours à une autre heure.
+Changement d'heure aux États-Unis : Zernio programme en heure de New York (`America/New_York`), donc 16 h 30 reste 16 h 30 là-bas toute l'année. Seule l'heure de Paris change : 22 h 30 en hiver, 21 h 30 pendant les semaines où un seul des deux pays a changé d'heure.
 
 **Types et accroches** : chaque semaine, au moins 4 modèles différents sur les 7 vidéos, et 7 accroches différentes.
 
 **Ce qu'on note** (journal `docs/social/promo-journal.csv` sur la branche `social/promo-journal`, mis à jour par la tâche chaque dimanche) :
-- n° de semaine, date, jour, créneau, heure de New York ;
+- n° de semaine, date, jour, heure de New York ;
 - réseau, modèle, accroche, durée ;
 - puis, relevés dans Zernio : vues, j'aime, commentaires, partages, enregistrements, à 3 jours et à 7 jours.
 
 Les visites du site par réseau (`ref=tiktok`, `ref=ig`) se lisent dans ton tableau de bord, jour par jour.
 
-**Quand on décide** :
+**Quand on décide** (modèles et accroches) :
 - Pas avant **4 semaines** (28 vidéos par réseau). Avant, les chiffres sont trop petits pour conclure.
 - On compare les **médianes** (la valeur du milieu), pas les records : un seul gros succès ne prouve rien.
 - Il faut au moins 3 vidéos par cas comparé.

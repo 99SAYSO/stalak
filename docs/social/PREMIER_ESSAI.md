@@ -17,7 +17,7 @@
    - Proposition par défaut : **« The Snippet Machine »** (v8, 29 s, sans voix).
    - Sans voix et entièrement dessinée en code (rien de réaliste), elle n'a pas besoin d'étiquette IA : `videoMadeWithAi: false`.
    - Si le propriétaire en préfère une avec voix off IA (par exemple « Your snippet is the problem », v7) : `videoMadeWithAi: false` et aucune mention d'IA (décision du propriétaire du 4/11, 0 h 37).
-2. **Quand** : **jeudi 5/11 à 19 h 30, heure de New York** (vendredi 1 h 30 à Paris). Étiquettes : `stalak-promo`, `semaine-0`, `modele-essai`, `creneau-6`.
+2. **Quand** : l'essai prévu le jeudi 5/11 n'a pas eu lieu (aucune publication dans Zernio le 7/11). Nouvelle heure : **le premier jour possible après l'« ok », à 16 h 30, heure de New York** (22 h 30 à Paris), décision du propriétaire du 7/11, d'après le rapport chiffres `docs/stats/2026-11-07-rapport.md`. Étiquettes : `stalak-promo`, `semaine-0`, `modele-essai`, `heure-1630`.
 3. **La légende** : en anglais, ton de `docs/marketing/US_FIRST.md` §7, avec « stalak.app » et 3 à 5 hashtags.
 4. **Montrer au propriétaire** :
    - la vidéo ;
