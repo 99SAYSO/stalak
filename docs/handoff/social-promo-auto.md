@@ -20,8 +20,12 @@ Aucune.
 ## Tests
 Aucun code modifié.
 
+## Changement du 7/11
+- Heure des vidéos : **16 h 30, heure de New York**, tous les jours (rapport chiffres du 7/11, piste 6). Fini les créneaux tournants. Fichiers : `PROMO_AUTO.md`, `TACHE_DIMANCHE.md`, `PREMIER_ESSAI.md`, `TACHE_SAMEDI.md`.
+- Premier essai pas encore fait (aucune publication dans Zernio le 7/11) : nouvelle date, le premier jour possible après l'« ok » du propriétaire, à 16 h 30 heure de New York.
+
 ## Reste à faire
 - Propriétaire : mettre l'outil `call_tool` du connecteur Zernio sur « Nécessite une approbation ». Fait le 4/11 : comptes reliés, connecteur ajouté, publication immédiate bloquée, création d'une publication sur « Nécessite une approbation ».
-- Marketing (5) : le premier essai (`docs/social/PREMIER_ESSAI.md`, jeudi 5/11 à 19 h 30 heure de New York), puis les modèles avec le propriétaire et le rappel du dimanche (`docs/social/TACHE_DIMANCHE.md`). Programmer dans Zernio seulement après son « ok ».
+- Marketing (5) : le premier essai (`docs/social/PREMIER_ESSAI.md`, le premier jour possible après l’« ok », à 16 h 30 heure de New York), puis les modèles avec le propriétaire et le rappel du dimanche (`docs/social/TACHE_DIMANCHE.md`). Programmer dans Zernio seulement après son « ok ».
 - Réseaux sociaux (4) : lire le compte rendu du premier essai et corriger les consignes si besoin. La tâche du samedi tourne déjà.
 - Pour le Chef de projet : rien à fusionner tant que ce compte rendu dit EN COURS (documents seulement).

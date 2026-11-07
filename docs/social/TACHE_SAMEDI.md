@@ -22,11 +22,11 @@ Tu es la conversation « Réseaux sociaux » du projet Stalak (stalak.app). Ta s
 3. Pour chaque publication, sur TikTok et sur Instagram, relève les vues, j'aime, commentaires, partages et enregistrements :
    - publiée il y a 3 jours ou plus : colonnes « 3j » (si elles sont vides) ;
    - il y a 7 jours ou plus : colonnes « 7j » (si elles sont vides).
-   Retrouve la ligne du journal par la colonne `zernio_id`. Si la ligne n'existe pas, ajoute-la à partir des étiquettes de la publication (`semaine-N`, `modele-X`, `creneau-Y`).
+   Retrouve la ligne du journal par la colonne `zernio_id`. Si la ligne n'existe pas, ajoute-la à partir des étiquettes de la publication (`semaine-N`, `modele-X`, `heure-HHMM`).
 4. Écris `docs/social/bilan/semaine-<n>.md` (n = semaine qui vient de se terminer, comptée depuis le lundi 9/11/2026). Moins de 25 lignes :
    - le tableau de la semaine (jour, heure de New York, modèle, accroche, vues à 3 jours sur TikTok et sur Instagram) ;
    - les 2 meilleures et les 2 moins bonnes vidéos, avec une hypothèse prudente pour chacune ;
-   - depuis le début : la vue médiane par modèle et par créneau, avec le nombre de vidéos derrière chaque chiffre. Moins de 3 vidéos = « pas assez de données » ;
+   - depuis le début : la vue médiane par modèle, par accroche et par jour de la semaine (toutes les vidéos partent à 16 h 30 à New York depuis le 7/11), avec le nombre de vidéos derrière chaque chiffre. Moins de 3 vidéos = « pas assez de données » ;
    - à partir de 4 semaines de données : une proposition « 70 % / 30 % » pour la semaine suivante (le propriétaire décide).
 5. Vérifie la santé des comptes (accounts_get_all_accounts_health). Si TikTok ou Instagram doit être reconnecté, note-le en haut du bilan.
 6. Commit et push sur `social/promo-journal`. Vérifie que c'est en ligne (`git ls-remote --heads origin social/promo-journal`).
