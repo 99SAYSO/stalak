@@ -449,6 +449,16 @@
 Ces montants sont avant TVA et frais. Réaliste : 10 000 € par mois en avril 2027.
 
 ### Juridique & business
+- **Fait (branche `legal/video-par-email`, 07/11, refaite à 16 h)** : confidentialité FR/EN alignée **exactement** sur `compte/donnees-7-11`. Il n'y a pas d'envoi de la vidéo par e-mail. Détail dans `docs/juridique/EMAIL_CONSEILS.md`.
+  - Nouvelle section « Conseils par e-mail » (`#conseils-email` / `#email-tips`) : texte de la case cité mot pour mot, confirmation par bouton, effacement à 7 jours sans confirmation, 3 ans après la confirmation, désinscription en un clic qui efface tout de suite, 2 e-mails par mois au plus, ce qui est gardé, `stalak:optin`, moins de 15 ans : accord d'un parent.
+  - Totaux de visites par provenance × pays × appareil, fermetures de la fenêtre de paiement par étape, `stalak:vsrc`, `stalak:lastDay` 13 mois.
+- **Demandé à Comptes (sur `compte/donnees-7-11` ou juste après)** :
+  - petit texte sous la case : « On garde ton e-mail, ta langue et la date de ton accord », avec un lien vers `#conseils-email` / `#email-tips` ;
+  - le jour des premiers envois : lien de désinscription + `List-Unsubscribe`, adresse postale en bas (CAN-SPAM), 2 par mois au plus.
+- **À décider (propriétaire)** : les e-mails proposeront-ils un jour des offres (Pro, promo) ?
+  - Si oui : ajouter « et des offres » dans la case (texte prêt dans `EMAIL_CONSEILS.md`).
+  - Sinon : jamais d'offre dans ces e-mails.
+- **À faire par App** : `stalak:lastDay` effacé au-delà de 13 mois (la page l'annonce).
 - **Fait (branche `legal/audit-6-11`, 06/11 soir)** : audit du 6/11, point 12, partie Juridique. Confidentialité FR/EN complétée :
   - cookies `stalak_d` (appareil reconnu 90 j, empreinte effacée à l'expiration, au changement de mot de passe et à la suppression du compte) et `stalak_o` (connexion Google, 10 min) ; section Cookies = 3 cookies, tous nécessaires ;
   - type d'appareil du compte et des visites ; provenance de la visite (`stalak:ref`) et « déjà venu » (`stalak:lastDay`) ;
