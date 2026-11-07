@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tout ton morceau en clip YouTube, monté sur le temps | Stalak</title>
+<meta name="description" content="Filme quelques prises sur ton son : le mode Clip de Stalak les monte en clip YouTube 16:9, coupé sur le temps, avec des effets sur les drops. Essai gratuit.">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Stalak"><meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Tout ton morceau en clip YouTube | Stalak"><meta property="og:description" content="Filme quelques prises sur ton son : le mode Clip de Stalak les monte en clip YouTube 16:9, coupé sur le temps, avec des effets sur les drops. Essai gratuit.">
+<meta property="og:url" content="https://stalak.app/fr/clip"><meta property="og:image" content="https://stalak.app/og/clip.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="{{URL}}/fr/clip">
+<link rel="alternate" hreflang="fr" href="{{URL}}/fr/clip"><link rel="alternate" hreflang="en" href="{{URL}}/music-video"><link rel="alternate" hreflang="x-default" href="{{URL}}/music-video">
+<link rel="icon" href="/icons/icon-192.png"><link rel="stylesheet" href="/fonts/fonts.css">
+<style>
+body{margin:0;color:#0a0d14;font:400 16px/1.6 Rubik,system-ui,sans-serif;padding:24px 16px 60px}
+a{color:#1a64c8} .back{display:inline-flex;color:#fff;font-weight:600}
+.top{max-width:960px;margin:0 auto 4px}
+main.mv{max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:26px}
+.mv-head{display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:6px;text-align:center;color:#fff}
+.mv-kicker{margin:0;padding:6px 13px 5px;border:2.5px solid #0a0d14;border-radius:999px;background:#fff;color:#0a0d14;font-weight:700;font-size:14px;box-shadow:0 3px 0 #0a0d14}
+.mv-head h1{margin:0;max-width:15em;font:400 clamp(38px,8.4vw,64px)/1.02 'Lilita One',system-ui,sans-serif;letter-spacing:.01em;text-shadow:0 4px 0 #0a0d14;text-wrap:balance}
+.mv-sub{margin:0;max-width:33em;font-size:17.5px;font-weight:500;text-shadow:0 1px 0 rgba(10,13,20,.3);text-wrap:pretty}
+.mv-go{display:flex;flex-direction:column;align-items:center;gap:22px;margin:4px 0 0}
+.mv-go span{font-size:14.5px;font-weight:500;text-shadow:0 1px 0 rgba(10,13,20,.3)}
+.mv-video{margin:0;padding:10px;background:#fff;border:3px solid #0a0d14;border-radius:26px;box-shadow:0 6px 0 #0a0d14}
+.mv-video video{display:block;width:100%;height:auto;aspect-ratio:16/9;border-radius:17px;background:#0a0d14}
+.mv-video figcaption{padding:10px 10px 4px;font-size:14px;line-height:1.45;color:#3f5170;text-align:center}
+.mv-card{position:relative;box-sizing:border-box;padding:36px 22px 24px;background:#fff;border:3px solid #0a0d14;border-radius:26px;box-shadow:0 6px 0 #0a0d14}
+.mv-card::before{content:"";position:absolute;top:0;left:22px;right:22px;height:24px;background:var(--icicles) left top/64px 26px repeat-x;pointer-events:none}
+.mv-card h2{margin:0 0 16px;text-align:center;font:400 28px/1.1 'Lilita One',system-ui,sans-serif}
+.mv-steps{list-style:none;counter-reset:st;margin:0;padding:0;display:grid;gap:16px}
+.mv-steps li{counter-increment:st;position:relative;padding-left:52px}
+.mv-steps li::before{content:counter(st);position:absolute;left:0;top:-3px;width:38px;height:38px;box-sizing:border-box;border:2.5px solid #0a0d14;border-radius:50%;background:#1a64c8;color:#fff;font:400 21px/33px 'Lilita One',system-ui,sans-serif;text-align:center}
+.mv-steps strong{display:block}
+.mv-card .pr-feats{margin:0;padding-top:0;border-top:0}
+.mv-tips{margin:0;padding-left:20px} .mv-tips li{margin:6px 0}
+.mv-price{text-align:center}
+.mv-price p{margin:0 auto 6px;max-width:34em}
+.mv-price .mv-go{margin-top:16px} .mv-price .mv-go span{text-shadow:none;color:#3f5170}
+.mv-amt{font:400 34px/1.1 'Lilita One',system-ui,sans-serif}
+footer{max-width:760px;margin:30px auto 0;color:#fff;font-size:13px;text-align:center}footer a{color:#fff}
+@media (min-width:860px){
+  .mv-steps{grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+  .mv-steps li{padding:52px 0 0}
+  .mv-steps li::before{top:0}
+  .mv-two{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:stretch}
+}
+@media (max-width:859px){ .mv-two{display:flex;flex-direction:column;gap:26px} }
+</style>
+<link rel="stylesheet" href="/site.css"><link rel="stylesheet" href="/pricing.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebPage", "name": "Tout ton morceau en clip YouTube", "url": "{{URL}}/fr/clip", "inLanguage": "fr-FR", "description": "Filme quelques prises sur ton son : le mode Clip de Stalak les monte en clip YouTube 16:9, coupé sur le temps, avec des effets sur les drops."}, {"@type": "VideoObject", "name": "« neva die » de 99Sayso, monté par Stalak en mode Clip", "description": "Un vrai montage Stalak : trois prises au téléphone de « neva die » de 99Sayso, coupées sur le temps en mode Clip (16:9), effets en Intense.", "thumbnailUrl": "{{URL}}/demo/clip.jpg", "contentUrl": "{{URL}}/demo/clip.mp4", "uploadDate": "2026-11-07", "duration": "PT26S", "width": 1280, "height": 720}]}</script>
+</head><body>
+<div class="top"><a class="back" href="/fr/">← Retour à Stalak</a></div>
+<main class="mv">
+<header class="mv-head">
+<p class="mv-kicker">Le mode Clip · Stalak Pro</p>
+<h1>Tout ton morceau en clip YouTube</h1>
+<p class="mv-sub">Filme quelques prises sur ton son&nbsp;: Stalak les monte en clip 16:9, coupé sur le temps, avec des effets sur tes drops, tes refrains et tes breaks.</p>
+<p class="mv-go"><a class="btn primary" href="/fr/">Faire mon clip</a><span>Choisis «&nbsp;Clip&nbsp;» à l’étape 1. Essaie-le gratuitement&nbsp;; l’export du clip est avec Stalak Pro.</span></p>
+</header>
+<figure class="mv-video">
+<video controls playsinline preload="metadata" poster="/demo/clip.jpg" width="1280" height="720" aria-label="Un clip monté par Stalak à partir de trois prises de « neva die » de 99Sayso"><source src="/demo/clip.mp4" type="video/mp4"></video>
+<figcaption>Un vrai montage Stalak&nbsp;: trois prises au téléphone de «&nbsp;neva die&nbsp;» de 99Sayso, filmées dans trois endroits. Mode Clip, effets en Intense. Stalak a placé chaque coupe et chaque effet.</figcaption>
+</figure>
+<section class="mv-card" aria-labelledby="howT">
+<h2 id="howT">Comment ça marche</h2>
+<ol class="mv-steps">
+<li><strong>Choisis «&nbsp;Clip&nbsp;», importe ton son</strong>Stalak prend tout le morceau. Coupe le début et la fin si tu veux.</li>
+<li><strong>Ajoute quelques prises</strong>Filme-toi sur ton son, qui joue fort, ou filme directement dans Stalak. Chaque prise est calée sur la musique.</li>
+<li><strong>Choisis Sobre ou Intense</strong>Les effets tombent sur tes drops, tes refrains et tes breaks. Touche un effet pour le changer, l’enlever ou en ajouter un, puis exporte.</li>
+</ol>
+</section>
+<div class="mv-two">
+<section class="mv-card" aria-labelledby="getT">
+<h2 id="getT">Ce que tu obtiens</h2>
+<ul class="pr-feats">
+<li><strong>Une vidéo Full HD pour YouTube</strong>&nbsp;: 16:9, 1920 × 1080, ou en vertical si tu veux</li>
+<li><strong>Des coupes sur le temps</strong> entre tes prises, lèvres synchro</li>
+<li><strong>7 effets</strong>&nbsp;: flash blanc, flash + zoom, zoom, secousse, noir, rafales de plans et ralenti</li>
+<li><strong>Tes paroles si tu veux</strong>&nbsp;: colle-les et cale-les en tapant, ou n’en mets pas</li>
+<li><strong>Le montage se fait dans ton navigateur</strong>&nbsp;: tes prises restent sur ton appareil (avec Creator Plus, tes projets sont aussi enregistrés en ligne)</li>
+</ul>
+</section>
+<section class="mv-card" aria-labelledby="tipT">
+<h2 id="tipT">Conseils pour filmer</h2>
+<ul class="mv-tips">
+<li><strong>Filme à l’horizontale</strong> pour remplir toute l’image. Les prises verticales marchent aussi&nbsp;: Stalak les montre en entier, au milieu, sur une copie floutée d’elles-mêmes.</li>
+<li><strong>Filme plusieurs prises</strong> dans des endroits ou des tenues différentes&nbsp;: plus tu as de prises, plus ton clip est varié.</li>
+<li><strong>Fais jouer ton son fort</strong> pendant que tu filmes&nbsp;: Stalak se sert du son de chaque prise pour la caler.</li>
+</ul>
+</section>
+</div>
+<section class="mv-card mv-price" aria-labelledby="priceT">
+<h2 id="priceT">Avec Stalak Pro</h2>
+<p><span class="mv-amt">7,99&nbsp;$</span> par mois, ou 49,99&nbsp;$ par an (4,17&nbsp;$ par mois).</p>
+<p>Pro enlève aussi le filigrane et débloque le karaoké, les paroles automatiques et tous les filtres. Annulable à tout moment&nbsp;; remboursé en entier sous 14 jours.</p>
+<p class="mv-go"><a class="btn primary" href="/fr/">Essaie-le gratuitement</a><span><a href="/fr/tarifs#mode-clip">Voir les tarifs</a></span></p>
+</section>
+<section class="pr-faq" aria-labelledby="faqT">
+<h3 id="faqT">Questions fréquentes</h3>
+<details><summary>Je peux l’essayer gratuitement&nbsp;?</summary><p>Oui. Choisis «&nbsp;Clip&nbsp;» à l’étape 1 et regarde tout ton clip dans l’aperçu, effets et paroles compris, avec le petit filigrane. L’export du clip 16:9 est avec Stalak Pro.</p></details>
+<details><summary>Il me faut quoi&nbsp;?</summary><p>Ton son (MP3, WAV, M4A, ou une vidéo&nbsp;: Stalak prend son son) et quelques prises où tu chantes dessus, filmées avec le son qui joue fort. Rien à télécharger et pas de compte pour l’essayer.</p></details>
+<details><summary>Je peux utiliser des prises filmées à la verticale&nbsp;?</summary><p>Oui. Dans un clip 16:9, une prise verticale s’affiche en entier, au milieu de l’image, sur une copie floutée d’elle-même. Les prises horizontales remplissent toute l’image.</p></details>
+<details><summary>Je peux ajouter mes paroles&nbsp;?</summary><p>Oui, si tu en veux. Colle-les et cale-les en tapant, ou laisse Stalak les écrire et les caler à partir de ta voix avec les paroles automatiques (Stalak Pro).</p></details>
+<details><summary>Je peux aussi le poster sur TikTok ou Reels&nbsp;?</summary><p>Choisis «&nbsp;TikTok / Reels&nbsp;» à l’étape 1 pour une vidéo verticale 9:16 de tout le son ou de quelques mesures. Celle-là est gratuite, avec un petit filigrane.</p></details>
+</section>
+</main>
+<footer></footer>
+</body></html>

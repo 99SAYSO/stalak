@@ -32,6 +32,7 @@ TXT = {
         'home': '/fr/', 'tagline': 'Ton playback monté sur le rythme, directement dans ton navigateur.',
         'product': 'Produit', 'legal': 'Légal', 'choices': 'Tes choix',
         'pricing': ('/fr/tarifs', 'Tarifs'), 'triller': ('/fr/alternative-triller', 'Alternative à Triller'),
+        'clip': ('/fr/clip', 'Le mode Clip'),   # Marketing & croissance (07/11) : la page « Clip »
         'legal_links': [('/fr/conditions', 'Conditions'), ('/fr/remboursement', 'Remboursement'),
                         ('/fr/confidentialite', 'Confidentialité'), ('/fr/mentions-legales', 'Mentions légales')],
         # « Your Privacy Choices »: the name required in the United States, in English in both languages (owner, 01/11)
@@ -42,6 +43,7 @@ TXT = {
         'home': '/', 'tagline': 'Lip-sync videos cut to the beat, right in your browser.',
         'product': 'Product', 'legal': 'Legal', 'choices': 'Your choices',
         'pricing': ('/pricing', 'Pricing'), 'triller': ('/triller-alternative', 'Triller alternative'),
+        'clip': ('/music-video', 'Music video mode'),   # Marketing & croissance (07/11): the « Clip » page
         'legal_links': [('/terms', 'Terms'), ('/refunds', 'Refunds'), ('/privacy', 'Privacy'), ('/legal-notice', 'Legal notice')],
         'cookies': ('/privacy#cookies', 'Cookie settings'), 'pc': ('/privacy#choices', 'Your Privacy Choices'),
         'social': 'Stalak on {n} (@stalak_app)',
@@ -49,7 +51,8 @@ TXT = {
 }
 # the same page in the other language (the guides have no French page: their French is the French home)
 PAIRS = [('/fr/', '/'), ('/fr/tarifs', '/pricing'), ('/fr/conditions', '/terms'), ('/fr/remboursement', '/refunds'),
-         ('/fr/confidentialite', '/privacy'), ('/fr/mentions-legales', '/legal-notice'), ('/fr/alternative-triller', '/triller-alternative')]
+         ('/fr/confidentialite', '/privacy'), ('/fr/mentions-legales', '/legal-notice'), ('/fr/alternative-triller', '/triller-alternative'),
+         ('/fr/clip', '/music-video')]
 BOTTOM = '© 2026 Stalak · Made by 99Sayso'
 FLAG_FR = ('<svg class="flag" viewBox="0 0 3 2" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path fill="#002654" d="M0 0h1v2H0z"/>'
            '<path fill="#fff" d="M1 0h1v2H1z"/><path fill="#ce1126" d="M2 0h1v2H2z"/></svg>')
@@ -101,7 +104,7 @@ def inner(lang, page=None, lite=False):
         cols = brand + choices
     else:
         en = ' lang="en"' if lang == 'fr' else ''
-        product = ('<div class="ft-col"><h2 class="ft-h">' + T['product'] + '</h2><ul class="ft-list"><li>' + _a(*T['pricing']) + '</li>'
+        product = ('<div class="ft-col"><h2 class="ft-h">' + T['product'] + '</h2><ul class="ft-list"><li>' + _a(*T['pricing']) + '</li><li>' + _a(*T['clip']) + '</li>'
                    + ''.join('<li>' + _a('/' + s, n, en) + '</li>' for s, n in GUIDES) + '<li>' + _a(*T['triller']) + '</li></ul></div>')
         legal = ('<div class="ft-col"><h2 class="ft-h">' + T['legal'] + '</h2><ul class="ft-list">'
                  + ''.join('<li>' + _a(u, n) + '</li>' for u, n in T['legal_links']) + '</ul></div>')
