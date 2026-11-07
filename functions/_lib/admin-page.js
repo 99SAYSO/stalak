@@ -195,7 +195,10 @@ th{color:var(--text2);font-weight:600}
 @media (prefers-color-scheme:dark){.hc{box-shadow:none}}
 .hc.wide{grid-column:1 / -1}
 .hctl{gap:10px;flex-wrap:wrap;margin-bottom:12px}
-.xfg{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px 22px;margin-top:14px}.xfg h3{margin:0 0 8px;font-size:15px}
+.xfg{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px 26px;margin-top:16px}.xfg h3{margin:0 0 8px;font-size:15px}
+/* the labels are long (« iPhone / iPad · Mémoire pleine »): above their bar, whole */
+.xfg .blist li{grid-template-columns:minmax(0,1fr) auto;row-gap:3px}.xfg .blist .nm{grid-column:1 / -1;white-space:normal}
+@media (max-width:480px){#xfDev th,#xfDev td{padding:6px 4px;font-size:12.5px}}
 .vsum{font-size:17px;font-weight:700;margin:12px 0}.vcol{max-width:640px}.vcol h3{margin:0 0 8px}
 #vppCard{margin-top:16px}#vppCard .hbest{flex-wrap:wrap}
 .hq .he{display:none;font-size:13.5px;color:var(--muted);margin:6px 0 0}.hq.help .he{display:block}
@@ -436,7 +439,7 @@ __DEMO_BANNER__<header class="top"><div class="in">
     <div class="card" id="xfCard">
       <div class="head"><h2>Pourquoi les exports ratent</h2><p>Chaque export raté avec l’appareil, la raison, l’étape où ça a cassé, le format, la mémoire de l’appareil et la durée. Compteurs anonymes, depuis le 7/11. « Rattrapés » : l’export a raté puis Stalak l’a refait tout seul et la personne a eu sa vidéo (ils ne comptent pas dans les ratés).</p></div>
       <p class="vsum" id="xfSum">…</p>
-      <div class="scroll-x"><table id="xfDev"><thead><tr><th scope="col">Appareil</th><th scope="col">Lancés</th><th scope="col">Réussis</th><th scope="col">Ratés</th><th scope="col">Part ratée</th></tr></thead><tbody></tbody></table></div>
+      <div class="scroll-x"><table id="xfDev"><thead><tr><th scope="col">Appareil</th><th scope="col">Lancés</th><th scope="col">Réussis</th><th scope="col">Ratés</th><th scope="col">% ratés</th></tr></thead><tbody></tbody></table></div>
       <div class="xfg">
         <div><h3>Raison</h3><ul class="blist" id="xfCat"></ul></div>
         <div><h3>Appareil et raison</h3><ul class="blist" id="xfDevCat"></ul></div>
