@@ -68,7 +68,7 @@ function evt(name, detail){
   } catch(e){}
 }
 let progMax = 0;
-const progress = p => { $('#prog').hidden = p == null; if (p != null){ if (p === 0) progMax = 0; p = Math.max(progMax, p); progMax = p; $('#progBar').style.width = Math.round(p*100) + '%'; expUpdate(p); } };
+const progress = p => { $('#prog').hidden = p == null; if (p != null){ if (p === 0) progMax = 0; p = Math.max(progMax, p); progMax = p; if (S.exporting){ S.expP = p; expRunMark(); } $('#progBar').style.width = Math.round(p*100) + '%'; expUpdate(p); } };
 function rng(seed){ return () => { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed>>>15, 1|seed); t = t + Math.imul(t ^ t>>>7, 61|t) ^ t; return ((t ^ t>>>14)>>>0)/4294967296; }; }
 const pickW = (rnd, list) => { let x = rnd() * list.reduce((s,e)=>s+e[1],0); for (const e of list){ if ((x -= e[1]) <= 0) return e[0]; } return list[list.length-1][0]; };
 const yieldCh = new MessageChannel(), yieldQ = []; yieldCh.port1.onmessage = () => { const r = yieldQ.shift(); if (r) r(); };
@@ -1164,6 +1164,9 @@ const I18N_EN = /*@EN*/{
   "lp.done": "“{name}” is back, just as you left it.",
   "lp.fail": "This edit can’t come back: one of its files is missing from this phone. Import your song and takes again.",
   "exp.left": "The export stopped because you left Stalak (another app or the screen locked). Try again and stay on this page until the end.",
+  "exp.retry": "The export didn’t work the first time: Stalak is making it again with safer settings…",
+  "exp.retryBack": "The export stopped when you left Stalak. It starts again by itself as soon as you’re back here.",
+  "exp.crashed": "Your last export stopped halfway (the browser closed the page: the device ran out of memory). The next one will be made lighter.",
   "exp.failMem": "This video is too heavy for this device’s memory. Pick a shorter part of the song, then try again.",
   "exps.stay": "Stay on Stalak until it’s done: the screen stays on.",
   "pack.mem": "Too heavy for this device’s memory: {n} videos of {s} s. Pick a pack of {nmax} videos, or a shorter part (up to {smax} s).",
@@ -1853,6 +1856,9 @@ const I18N_FR = /*@FR*/{
   "lp.done": "« {name} » est revenu, comme tu l’avais laissé.",
   "lp.fail": "Ce montage ne peut pas revenir : un de ses fichiers n’est plus dans ce téléphone. Importe à nouveau ton son et tes prises.",
   "exp.left": "L’export s’est arrêté parce que tu as quitté Stalak (autre appli ou écran verrouillé). Réessaie et reste sur cette page jusqu’à la fin.",
+  "exp.retry": "L’export n’a pas marché du premier coup : Stalak le refait avec des réglages plus sûrs…",
+  "exp.retryBack": "L’export s’est arrêté quand tu as quitté Stalak. Il repart tout seul dès que tu reviens ici.",
+  "exp.crashed": "Ton dernier export s’est arrêté en route (le navigateur a fermé la page : l’appareil a manqué de mémoire). Le prochain sera fait plus léger.",
   "exp.failMem": "Cette vidéo est trop lourde pour la mémoire de cet appareil. Choisis un passage plus court du son, puis réessaie.",
   "exps.stay": "Reste sur Stalak jusqu’à la fin : l’écran reste allumé.",
   "pack.mem": "Trop lourd pour la mémoire de cet appareil : {n} vidéos de {s} s. Choisis un pack de {nmax} vidéos, ou un passage plus court (jusqu’à {smax} s).",
@@ -7609,10 +7615,29 @@ function expFailCat(e){
   if (S.leftDuring || document.hidden) return 'hidden';
   if (m.includes('annulé')) return 'cancel';
   if (/memory|mémoire|allocat|QuotaExceeded|RangeError/i.test(m)) return 'memory';
-  if (/decod|encod|codec|reclaim|VideoFrame/i.test(m)) return 'decoder';
+  if (/decod|décod/i.test(m)) return 'decoder';
+  if (/encod|codec|reclaim|VideoFrame/i.test(m)) return 'encoder';
   return 'other';
 }
-function beginExport(){ clearTimeout(ppTimer); ppTimer = 0; ppClose(); acctEvent('export_start'); expOpen(); stop(true); S.exporting = true; S.leftDuring = false; wakeOn(); liveTidy(); nearClear('#expNear'); nearClear('#packBox');   /* the preview's decoders let go: the export gets the graphics chip to itself */
+/* (7/11, report of the figures, track 4) where and how an export broke, as buckets only (functions/_lib/metrics.js EXPORT_X):
+   the step, the shape, one video or a pack, WebCodecs or recorded in real time, the passage's length, the time since the click
+   and the memory the browser tells (iPhones never tell it). Never the video, the song, a file's size nor the account. */
+function expX(){
+  const x = S.expX || {}, p = S.expP || 0, sec = (performance.now() - (x.t0 || performance.now())) / 1000, d = S.segEnd - S.segStart, dm = navigator.deviceMemory;
+  return { st: S.realtime ? 'realtime' : x.st || (p >= 0.92 ? 'assemble' : p > 0 ? 'frames' : 'prepare'), fmt: S.fmt, kind: S.packN > 1 ? 'pack' : 'one', path: x.path || 'none',
+    dur: d < 15 ? 'd15' : d < 30 ? 'd30' : d < 60 ? 'd60' : 'dlong', took: sec < 10 ? 't10' : sec < 30 ? 't30' : sec < 60 ? 't60' : sec < 180 ? 't180' : 'tlong',
+    mem: !dm ? 'unk' : dm <= 1 ? 'm1' : dm <= 2 ? 'm2' : dm <= 4 ? 'm4' : 'm8' };
+}
+/* an export under way is written down (on this device only) as it goes: if the browser closes the tab in the middle (a phone
+   out of memory), the next visit finds it and counts it (« crash »); a page closed by the person counts as « closed ».
+   After such a crash the next export is made with the lighter settings (S.lightNext). */
+const EXP_RUN = 'stalak:expRun';
+function expRunMark(){ if (!S.exporting) return; const x = expX(); if (S.expMarked === x.st) return; S.expMarked = x.st; try { localStorage.setItem(EXP_RUN, JSON.stringify(Object.assign(x, { left: !!S.leftDuring }))); } catch(e){} }
+function expRunClear(){ S.expMarked = null; try { localStorage.removeItem(EXP_RUN); } catch(e){} }
+addEventListener('pagehide', () => { if (!S.exporting || S.cancel) return; acctEvent('export_fail', { cat: 'closed', x: expX() }); expRunClear(); });
+// an export that failed is made again once by itself: for these reasons (a cancel or a browser that cannot export are not)
+function expRetryable(cat, e){ return ['hidden', 'decoder', 'encoder', 'memory', 'other'].includes(cat) && !String(e && e.message || '').includes(_t('exp.nosupport')); }
+function beginExport(again){ clearTimeout(ppTimer); ppTimer = 0; ppClose(); if (!again) acctEvent('export_start'); S.expP = 0; S.expX = { t0: performance.now(), st: 'start', path: null }; expOpen(); stop(true); S.exporting = true; S.leftDuring = false; wakeOn(); liveTidy(); nearClear('#expNear'); nearClear('#packBox');   /* the preview's decoders let go: the export gets the graphics chip to itself */
   resultPark();
   S.takes.forEach(t => { if (t.orig && !t.orig.parentNode) $('#vpool').append(t.orig); }); S.cancel = false; setBusy(true); progress(0); $('#cancelBtn').hidden = false; $('#result').hidden = true; }
 /* the video already made, during a new export: stopped and let go of (a video playing behind kept its sound going, and on
@@ -7660,7 +7685,7 @@ function expFailSay(e, cancelKey, failKey){
   else sayNear('#expNear', failKey, { msg: m });
   return cat;
 }
-function endExport(){ wakeOff(); S.realtime = false; expClose(!$('#result').hidden); S.exporting = false; proOfferUi(); if (RES !== PREV) setRes(PREV); if (S.rebuildLater){ S.rebuildLater = false; setTimeout(() => rebuild(false), 0); } specCache.clear(); S.takes.forEach(t => { if (t.orig && t.el !== t.orig) t.orig.remove(); }); S.takes.forEach(t => { if (t.proxyWaiting) applyProxy(t); }); setBusy(false); progress(null); $('#cancelBtn').hidden = true; showFrame(cursorIn()); }
+function endExport(){ wakeOff(); expRunClear(); S.realtime = false; expClose(!$('#result').hidden); S.exporting = false; proOfferUi(); if (RES !== PREV) setRes(PREV); if (S.rebuildLater){ S.rebuildLater = false; setTimeout(() => rebuild(false), 0); } specCache.clear(); S.takes.forEach(t => { if (t.orig && t.el !== t.orig) t.orig.remove(); }); S.takes.forEach(t => { if (t.proxyWaiting) applyProxy(t); }); setBusy(false); progress(null); $('#cancelBtn').hidden = true; showFrame(cursorIn()); }
 /* the export screen: the igloo gets one more block as the video advances; done, the mascot waves and the screen goes */
 const EXP_MSG = [[0, 'exps.m0'], [0.12, 'exps.m1'], [0.35, 'exps.m2'], [0.6, 'exps.m3'], [0.85, 'exps.m4'], [0.97, 'exps.m5']];   // keys (t)
 let expBlocks = null, expShown = -1, expT = 0;
@@ -7776,15 +7801,29 @@ async function clipGate(){
   setKind('reel', true); diag('mode Clip sans Pro : export en 9:16');
   return !!S.cuts.length;
 }
-async function exportOne(){
-  logLyrics('export');
+/* one video. (7/11, report of the figures: 8 % of the exports failed) an export that fails is made again once by itself
+   (again = the reason of the first go): with the safer settings (one stream at a time, 2D drawing, the encoder chosen by the
+   browser, a lighter bitrate when the memory ran out), and when the person had left Stalak, as soon as she is back. The same
+   lighter settings for the next export after the browser closed the tab in the middle of one (S.lightNext). */
+async function exportOne(again){
+  if (typeof again !== 'string') again = null;
+  if (!again){
+    logLyrics('export');
+    if (!S.cuts.length || S.exporting || exportGate) return;
+    if (!(await clipGate())) return;
+    if (filtLocked()){ const c = await filtAsk(); if (c === 'pro'){ lockOpen('filters', 'filters'); return; } if (c !== 'without') return; setFilter('none', true); diag('filtre Pro : export sans ce filtre'); }
+  }
   if (!S.cuts.length || S.exporting || exportGate) return;
-  if (!(await clipGate())) return;
-  if (filtLocked()){ const c = await filtAsk(); if (c === 'pro'){ lockOpen('filters', 'filters'); return; } if (c !== 'without') return; setFilter('none', true); diag('filtre Pro : export sans ce filtre'); }
-  if (S.exporting || exportGate) return;
-  S.packN = 1; S.wm = wmOn(); beginExport(); const TX = performance.now(); await fontsReady();
+  const safe = !!again || !!S.lightNext, light = again === 'memory' || again === 'crash' || S.lightNext === 'crash';
+  const keep = { noTiles: S.noTiles, noGl: S.noGl }; let retry = null;
+  if (safe){ S.noTiles = true; S.noGl = true; diag('export : réglages plus sûrs' + (again ? ' (nouvel essai après « ' + again + ' »)' : ' (après un onglet fermé pendant l’export)')); }
+  S.lightNext = false; try { localStorage.removeItem('stalak:expLight'); } catch(e){}
+  S.packN = 1; S.wm = wmOn(); beginExport(!!again); const TX = performance.now(); await fontsReady();
+  if (again) say('exp.retry');
   try {
     let vcfg = await pickVideoConfig(); const acfg = vcfg && await pickAudioConfig(S.song.buffer.sampleRate);
+    S.expX.st = null; S.expX.path = vcfg && acfg ? 'wc' : window.MediaRecorder && view.captureStream ? 'rt' : 'none';
+    if (vcfg && safe){ vcfg = plainCfg(vcfg); if (light) vcfg.bitrate = Math.max(3e6, Math.round(vcfg.bitrate * 0.6 / 1e5) * 1e5); }
     if (vcfg){ const mp = memPlan(1, vcfg.bitrate);
       if (mp.bitrate < vcfg.bitrate){ vcfg = Object.assign({}, vcfg, { bitrate: mp.bitrate }); diag('mémoire : ' + Math.round(memNeed(1, 10e6)) + ' Mo à 10 Mbit/s pour ' + mp.budget + ' Mo sur cet appareil, débit ' + (mp.bitrate / 1e6).toFixed(1) + ' Mbit/s'); } }
     let ext = 'mp4', blob = null;
@@ -7800,16 +7839,29 @@ async function exportOne(){
     else throw new Error(_t('exp.nosupport'));
     if (S.cancel) throw new Error('annulé');
     if (!blob) throw new Error(_t('exp.nosupport'));
+    S.expX.st = 'file';
     lastBlob = blob; S.lastWm = !!S.wm; S.lastDemo = demoOnly(); resultDone();   // (the end screen reads them)
     lastName = 'stalak-' + (isClip() ? 'clip-' : '') + 'v' + S.version + '-' + S.fmt + '.' + ext;
     const rv = $('#resultVideo'); rv.src = URL.createObjectURL(lastBlob); rv.hidden = false;
     $('#result').hidden = false; postShow(); setT('#saveNote', ext === 'mp4' ? (isClip() ? 'save.mp4clip' : 'save.mp4reel') : 'save.webm');
-    say('exp.ready', { mb: (lastBlob.size/1048576).toFixed(1) }); acctEvent('export_ok');
+    say('exp.ready', { mb: (lastBlob.size/1048576).toFixed(1) }); acctEvent('export_ok'); if (again) acctEvent('export_saved', { cat: again });
     wmUI();
     // (the example's videos do not count: the offer is for the first video of the person's own)
     if (!S.lastDemo){ S.okCount = (S.okCount || 0) + 1; if (S.okCount === 1) S.okFirst = lastBlob; } proOfferUi();
-  } catch(e){ diag('export : ' + (e && e.message || e)); resultBack(); acctEvent('export_fail', { cat: expFailCat(e) }); expFailSay(e, 'exp.cancelled', 'exp.fail'); }
+  } catch(e){
+    diag('export : ' + (e && e.message || e)); resultBack();
+    const cat = expFailCat(e);
+    if (!again && expRetryable(cat, e)){ retry = cat; acctEvent('export_retry', { cat, x: expX() }); diag('export : nouvel essai automatique (' + cat + ')'); }
+    else { acctEvent('export_fail', { cat, x: expX() }); expFailSay(e, 'exp.cancelled', 'exp.fail'); }
+  }
+  S.noTiles = keep.noTiles; S.noGl = keep.noGl;
   endExport();
+  if (retry){
+    // left Stalak: it goes on as soon as the page is shown again (said under the button meanwhile)
+    if (document.hidden){ sayNear('#expNear', 'exp.retryBack'); await new Promise(r => { const f = () => { if (!document.hidden){ document.removeEventListener('visibilitychange', f); r(); } }; document.addEventListener('visibilitychange', f); }); nearClear('#expNear'); }
+    await sleep(500);
+    if (!S.exporting && S.cuts.length) await exportOne(retry);
+  }
 }
 /* pack: a b-roll shot is drawn and encoded once per moment of the clip it shows. When several videos put a b-roll shot at the
    same place, they share the moments of the clip already picked there by the others (up to 3 different ones per place),
@@ -7842,9 +7894,11 @@ async function exportPackRun(){
   if (!(vcfg && acfg)){ say('pack.nosupport'); return; }
   { const mp = memPlan(N, vcfg.bitrate), secs = Math.round(S.segEnd - S.segStart);
     diag('mémoire du pack : ' + Math.round(mp.need) + ' Mo pour ' + mp.budget + ' Mo sur cet appareil' + (mp.ok ? (mp.bitrate < vcfg.bitrate ? ', débit ' + (mp.bitrate / 1e6).toFixed(1) + ' Mbit/s' : '') : ', pack refusé'));
-    if (!mp.ok){ sayNear('#packBox', mp.nMax ? 'pack.mem' : 'pack.mem1', { n: N, s: secs, nmax: mp.nMax, smax: mp.sMax }); acctEvent('export_fail', { cat: 'memory' }); return; }
+    if (!mp.ok){ sayNear('#packBox', mp.nMax ? 'pack.mem' : 'pack.mem1', { n: N, s: secs, nmax: mp.nMax, smax: mp.sMax }); acctEvent('export_refused', { cat: 'memory' }); return; }
     if (mp.bitrate < vcfg.bitrate) vcfg = Object.assign({}, vcfg, { bitrate: mp.bitrate }); }
-  S.wm = wmOn(); beginExport(); await fontsReady();
+  // (7/11) after the browser closed the tab during an export: a lighter pack this time
+  if (S.lightNext){ vcfg = Object.assign({}, vcfg, { bitrate: Math.max(5e6, Math.round(vcfg.bitrate * 0.6 / 1e5) * 1e5) }); S.lightNext = false; try { localStorage.removeItem('stalak:expLight'); } catch(e){} diag('pack : débit plus léger après un onglet fermé pendant l’export'); }
+  S.wm = wmOn(); beginExport(); S.expX.st = null; S.expX.path = 'wc'; await fontsReady();
   const sigs = [], files = [], list = []; let seed = S.seed * 1000 + 1;
   try {
     const T0 = performance.now();
@@ -7865,10 +7919,10 @@ async function exportPackRun(){
     await renderVideos(list, vcfg, acfg, (p, stage, k) => { progress(p); if (stage === 'assemblage') say('pack.asm', { k: k+1, n: N, pct: Math.round(p*100) }); else say('pack.prog', { n: N, pct: Math.round(p*100) }); },
       (k, ab) => { const bytes = new Uint8Array(ab); files.push({ name: 'stalak-' + String(k+1).padStart(2,'0') + '.mp4', crc: crc32(bytes), size: bytes.length, blob: new Blob([bytes], { type:'video/mp4' }) }); });
     diag('pack : ' + N + ' vidéos en ' + ((performance.now() - T0) / 1000).toFixed(1) + ' s');
-    lastBlob = makeZip(files); lastName = 'pack-' + N + '-videos.zip'; resultDone();
+    S.expX.st = 'file'; lastBlob = makeZip(files); lastName = 'pack-' + N + '-videos.zip'; resultDone();
     { const rv = $('#resultVideo'); rv.removeAttribute('src'); rv.hidden = true; } $('#result').hidden = false; postShow(); setT('#saveNote', 'pack.zip', { n: N, mb: (lastBlob.size/1048576).toFixed(0) });
     say('pack.ready', { n: N }); acctEvent('export_ok');
-  } catch(e){ diag('pack : ' + (e && e.message || e)); resultBack(); acctEvent('export_fail', { cat: expFailCat(e) }); expFailSay(e, 'pack.cancelled', 'pack.fail'); }
+  } catch(e){ diag('pack : ' + (e && e.message || e)); resultBack(); acctEvent('export_fail', { cat: expFailCat(e), x: expX() }); expFailSay(e, 'pack.cancelled', 'pack.fail'); }
   renderTimeline(); endExport();
 }
 /* zip checksum, 8 bytes at a time (a pack holds hundreds of MB: byte by byte it took seconds) */
@@ -8888,6 +8942,11 @@ setRes(PREV); renderTakes(); drawEmpty(); updateNav(); go(1);
 { const v = $('#heroVid'); if (v){ const calm = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){ return false; } };
   const sync = () => { if (calm()){ v.removeAttribute('autoplay'); try { v.pause(); } catch(e){} } else if (v.paused) v.play().catch(() => {}); };
   sync(); try { matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', sync); } catch(e){} } }
+// (7/11) an export that never ended at the last visit (the browser closed the tab: usually out of memory on a phone): counted
+// once, said, and the next export is made lighter (kept for this device until it is done)
+{ let run = null; try { run = JSON.parse(localStorage.getItem(EXP_RUN) || 'null'); localStorage.removeItem(EXP_RUN); if (localStorage.getItem('stalak:expLight')) S.lightNext = 'crash'; } catch(e){}
+  if (run && typeof run === 'object'){ const { left, ...x } = run; acctEvent('export_fail', { cat: 'crash', x }); S.lightNext = 'crash'; try { localStorage.setItem('stalak:expLight', '1'); } catch(e){}
+    diag('export précédent jamais fini (onglet fermé par le navigateur' + (left ? ', après avoir quitté Stalak' : '') + ') : le prochain sera plus léger'); setTimeout(() => say('exp.crashed'), 800); } }
 { let t = null; try { t = sessionStorage.getItem('stalak:trySong'); sessionStorage.removeItem('stalak:trySong'); } catch(e){}
   if (t){ const d = $('#songDrop'); d.classList.add('try'); try { d.scrollIntoView({ block: 'center' }); $('#songFile').focus({ preventScroll: true }); } catch(e){} say('dv.tryNow'); setTimeout(() => d.classList.remove('try'), 6000); } }
 if (store.get('stalak:kind') === 'clip' && !window.StalakAccount) setKind('clip', true); else kindUI();

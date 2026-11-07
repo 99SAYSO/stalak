@@ -56,6 +56,18 @@ export function seedDashboard(env, { now = Date.now() } = {}) {
       ['ev_plans_open', Math.round(ex * 0.16)], ['ev_plans_why_clip', Math.round(ex * 0.05)], ['ev_plans_why_filters', Math.round(ex * 0.04)], ['ev_plans_why_pack', Math.round(ex * 0.03)],
       ['ev_plans_why_wm', Math.round(ex * 0.04)], ['ev_checkout_open', Math.round(ex * 0.05)], ['code_mail', ns + Math.round(rnd() * 4)], ['help_q', Math.round(rnd() * 12)],
       ['err_5xx', rnd() < 0.15 ? 1 : 0]].forEach(([n, v]) => { if (v) bump.run(d, n, v); });
+    // (7/11) the failed exports in detail (metrics.js EXPORT_X), made up: mostly iPhones, out of memory or left during the export
+    { const mem = Math.ceil(fail / 2), hid = Math.floor(fail / 2), iosF = Math.round(fail * 0.7), andF = Math.round(fail * 0.2), desk = fail - iosF - andF;
+      const starts = ex + fail, iosS = Math.round(starts * 0.45), andS = Math.round(starts * 0.2);
+      [['ev_xs_ios', iosS], ['ev_xs_android', andS], ['ev_xs_desktop', starts - iosS - andS], ['ev_xo_ios', iosS - iosF], ['ev_xo_android', andS - andF], ['ev_xo_desktop', starts - iosS - andS - desk],
+        ['ev_xf_dev_ios', iosF], ['ev_xf_dev_android', andF], ['ev_xf_dev_desktop', desk], ['ev_xf_ios_memory', Math.min(iosF, mem)], ['ev_xf_ios_hidden', Math.max(0, iosF - mem)],
+        ['ev_xf_android_hidden', andF], ['ev_xf_desktop_memory', Math.max(0, mem - iosF)], ['ev_xf_desktop_hidden', Math.max(0, desk - Math.max(0, mem - iosF))],
+        ['ev_xf_st_frames', Math.round(fail * 0.6)], ['ev_xf_st_prepare', Math.round(fail * 0.25)], ['ev_xf_st_assemble', fail - Math.round(fail * 0.6) - Math.round(fail * 0.25)],
+        ['ev_xf_fmt_916', fail - Math.round(fail * 0.15)], ['ev_xf_fmt_169', Math.round(fail * 0.15)], ['ev_xf_kind_one', fail - Math.round(fail * 0.3)], ['ev_xf_kind_pack', Math.round(fail * 0.3)],
+        ['ev_xf_path_wc', fail], ['ev_xf_dur_d30', Math.round(fail * 0.5)], ['ev_xf_dur_d60', fail - Math.round(fail * 0.5)], ['ev_xf_took_t30', Math.round(fail * 0.4)], ['ev_xf_took_t60', fail - Math.round(fail * 0.4)],
+        ['ev_xf_mem_unk', iosF], ['ev_xf_mem_m4', andF], ['ev_xf_mem_m8', desk],
+        ['ev_export_retry_hidden', Math.round(fail * 0.8)], ['ev_export_retry_memory', Math.round(fail * 0.5)], ['ev_export_saved_hidden', Math.round(fail * 0.7)], ['ev_export_saved_memory', Math.round(fail * 0.3)],
+        ['ev_export_refused_memory', Math.round(fail * 0.2)]].forEach(([n, v]) => { if (v > 0) bump.run(d, n, v); }); }
     const paid = rnd() < 0.55 ? 1 + Math.round(rnd()) : 0;
     for (let k = 0; k < paid; k++) {
       const uid = 'u_seed' + i + '_' + k, plan = rnd() < 0.7 ? 'pro' : 'creator', year = rnd() < 0.35;

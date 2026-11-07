@@ -11,9 +11,27 @@ export const METRICS = ['help_q', 'help_fail', 'cloud_save', 'ticket', 'ticket_m
 // A closed list; no cookie, no account, no number per visitor: only +1 on the day's counter `ev_<name>`.
 // visit (the visits table) → export_ok → pro_offer → ad_shown → ad_ok → plans_open → checkout_open → paid_first (Paddle webhook).
 // pro_offer: the Pro offer shown after the first video; ad_offer: a rewarded ad asked; ad_shown: the ad really on screen.
-export const EVENTS = ['export_start', 'export_ok', 'export_fail', 'pro_offer', 'ad_offer', 'ad_shown', 'ad_ok', 'plans_open', 'checkout_open'];
+// export_retry: an export that failed and that the page made again by itself (safer settings, or once back in Stalak);
+// export_saved: that second go worked (the person got the video); export_refused: a pack not started (too big for the device).
+export const EVENTS = ['export_start', 'export_ok', 'export_fail', 'export_retry', 'export_saved', 'export_refused', 'pro_offer', 'ad_offer', 'ad_shown', 'ad_ok', 'plans_open', 'checkout_open'];
 // why an export failed, as a category only (App sends it): nothing about the person or the video
-export const EXPORT_FAIL = ['memory', 'decoder', 'hidden', 'cancel', 'other'];
+// (7/11) + encoder; closed: the page closed during the export; crash: an export that never ended, found at the next visit
+// (the browser closed the tab: usually out of memory on a phone)
+export const EXPORT_FAIL = ['memory', 'decoder', 'encoder', 'hidden', 'cancel', 'closed', 'crash', 'other'];
+// (7/11, report of the figures, track 4) the details of an export that failed, each a closed list of buckets (body.x): never the
+// video, the song, the account nor the size of a file. st: where it broke; fmt: the video's shape; kind: one video or a pack;
+// path: WebCodecs (wc) or recorded in real time (rt); dur: the passage's length; took: time from the click; mem: the memory the
+// browser tells (navigator.deviceMemory, in GB; iPhones never tell it: '?'). The device (iPhone / Android / computer) comes from
+// the browser's name (deviceOf). Every value becomes one daily counter ev_xf_<key>_<value>, plus ev_xf_<device>_<cat>.
+export const EXPORT_X = {
+  st: ['start', 'prepare', 'frames', 'assemble', 'file', 'realtime'],
+  fmt: ['916', '45', '11', '169'],
+  kind: ['one', 'pack'],
+  path: ['wc', 'rt', 'none'],
+  dur: ['d15', 'd30', 'd60', 'dlong'],
+  took: ['t10', 't30', 't60', 't180', 'tlong'],
+  mem: ['m1', 'm2', 'm4', 'm8', 'unk'],
+};
 export const EVENTS_PER_IP_HOUR = 120;
 export const EVENT_REASONS = ['filters', 'clip', 'fx', 'text', 'lyrics', 'pack', 'cloud', 'human', 'wm', 'other'];
 
@@ -81,7 +99,21 @@ export async function event(request, env, excluded = null) {
     ).bind(today(), body.vid, name, body.ios === true || deviceOf(request) === 'ios' ? 1 : 0).run()
       .catch((e) => console.error('[stalak] video count', e && e.message ? String(e.message).slice(0, 120) : 'error'));
   }
-  if (name === 'export_fail') await bump(env, 'ev_export_fail_' + (EXPORT_FAIL.includes(body.cat) ? body.cat : 'other'));
+  if (name === 'export_fail' || name === 'export_retry' || name === 'export_saved' || name === 'export_refused') {
+    const cat = EXPORT_FAIL.includes(body.cat) ? body.cat : 'other';
+    if (name === 'export_fail') await bump(env, 'ev_export_fail_' + cat);
+    else await bump(env, 'ev_' + name + '_' + cat);
+    // the details (export_fail: what the person saw; export_retry: the first go of an export made again by itself)
+    if (name === 'export_fail' || name === 'export_retry') {
+      const p = name === 'export_fail' ? 'ev_xf_' : 'ev_xr_', dev = deviceOf(request) || 'desktop';
+      const x = body.x && typeof body.x === 'object' && !Array.isArray(body.x) ? body.x : {};
+      const names = ['dev_' + dev, dev + '_' + cat];
+      for (const k in EXPORT_X) if (EXPORT_X[k].includes(x[k])) names.push(k + '_' + x[k]);
+      for (const n of names) await bump(env, p + n);
+    }
+  }
+  // the same device split for the starts and the videos made, so the dashboard can tell the share that fails on each device
+  if (name === 'export_start' || name === 'export_ok') await bump(env, (name === 'export_start' ? 'ev_xs_' : 'ev_xo_') + (deviceOf(request) || 'desktop'));
   if (name === 'plans_open' && typeof body.why === 'string') await bump(env, 'ev_plans_why_' + (EVENT_REASONS.includes(body.why) ? body.why : 'other'));
   return json({ ok: true });
 }

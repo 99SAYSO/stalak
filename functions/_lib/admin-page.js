@@ -195,6 +195,7 @@ th{color:var(--text2);font-weight:600}
 @media (prefers-color-scheme:dark){.hc{box-shadow:none}}
 .hc.wide{grid-column:1 / -1}
 .hctl{gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.xfg{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px 22px;margin-top:14px}.xfg h3{margin:0 0 8px;font-size:15px}
 .vsum{font-size:17px;font-weight:700;margin:12px 0}.vcol{max-width:640px}.vcol h3{margin:0 0 8px}
 #vppCard{margin-top:16px}#vppCard .hbest{flex-wrap:wrap}
 .hq .he{display:none;font-size:13.5px;color:var(--muted);margin:6px 0 0}.hq.help .he{display:block}
@@ -431,6 +432,23 @@ __DEMO_BANNER__<header class="top"><div class="in">
       <div class="card"><h3>Vidéos exportées</h3><p class="note">Réussies ou ratées, et pourquoi ça a raté.</p><ul class="blist" id="bExport"></ul></div>
       <div class="card"><h3>Ce qui ouvre la page des formules</h3><p class="note">La fonction payante qui a donné envie (cadenas touché).</p><ul class="blist" id="bWhy"></ul></div>
     </div>
+    <!-- (7/11, rapport chiffres, piste 4) the failed exports in detail: anonymous counters (metrics.js EXPORT_X) -->
+    <div class="card" id="xfCard">
+      <div class="head"><h2>Pourquoi les exports ratent</h2><p>Chaque export raté avec l’appareil, la raison, l’étape où ça a cassé, le format, la mémoire de l’appareil et la durée. Compteurs anonymes, depuis le 7/11. « Rattrapés » : l’export a raté puis Stalak l’a refait tout seul et la personne a eu sa vidéo (ils ne comptent pas dans les ratés).</p></div>
+      <p class="vsum" id="xfSum">…</p>
+      <div class="scroll-x"><table id="xfDev"><thead><tr><th scope="col">Appareil</th><th scope="col">Lancés</th><th scope="col">Réussis</th><th scope="col">Ratés</th><th scope="col">Part ratée</th></tr></thead><tbody></tbody></table></div>
+      <div class="xfg">
+        <div><h3>Raison</h3><ul class="blist" id="xfCat"></ul></div>
+        <div><h3>Appareil et raison</h3><ul class="blist" id="xfDevCat"></ul></div>
+        <div><h3>Étape où ça casse</h3><ul class="blist" id="xfSt"></ul></div>
+        <div><h3>Rattrapés tout seuls</h3><ul class="blist" id="xfSaved"></ul></div>
+        <div><h3>Format</h3><ul class="blist" id="xfFmt"></ul></div>
+        <div><h3>Vidéo ou pack</h3><ul class="blist" id="xfKind"></ul></div>
+        <div><h3>Mémoire de l’appareil</h3><ul class="blist" id="xfMem"></ul></div>
+        <div><h3>Durée du passage</h3><ul class="blist" id="xfDur"></ul></div>
+        <div><h3>Temps avant l’échec</h3><ul class="blist" id="xfTook"></ul></div>
+      </div>
+    </div>
     <div class="card hq" id="vppCard">
       <div class="hbest"><span>🎬 Combien de vidéos par personne</span><span class="sp"></span>
         <div class="seg" role="group" aria-label="Période" id="vPer"><button type="button" data-p="7" aria-pressed="true">7 j</button><button type="button" data-p="30" aria-pressed="false">30 j</button></div>
@@ -506,7 +524,14 @@ __DEMO_BANNER__<header class="top"><div class="in">
     lang: { en: 'Anglais', fr: 'Français', unknown: 'Inconnue' },
     source: { tiktok: 'TikTok', ig: 'Instagram', instagram: 'Instagram', yt: 'YouTube', youtube: 'YouTube', x: 'X (Twitter)', reddit: 'Reddit', discord: 'Discord', google: 'Google', bing: 'Bing', other: 'Autre site', unknown: 'Direct / sans indication', wm: 'Filigrane d’une vidéo' },
     why: { filters: 'Filtres', clip: 'Mode Clip 16:9', fx: 'Effets premium', text: 'Paroles karaoké', lyrics: 'Paroles auto', pack: 'Packs', cloud: 'Sauvegarde en ligne', human: 'Parler à un humain', wm: 'Enlever le filigrane', other: 'Autre / menu' },
-    fail: { memory: 'Mémoire pleine', decoder: 'Lecture vidéo', hidden: 'Appli quittée pendant l’export', cancel: 'Annulé par la personne', other: 'Autre raison' },
+    fail: { memory: 'Mémoire pleine', decoder: 'Lecture vidéo', encoder: 'Fabrication de la vidéo', hidden: 'Appli quittée pendant l’export', cancel: 'Annulé par la personne',
+      closed: 'Page fermée pendant l’export', crash: 'Onglet fermé par le navigateur', other: 'Autre raison' },
+    xst: { start: 'Au lancement', prepare: 'Préparation des prises', frames: 'Fabrication des images', assemble: 'Assemblage', file: 'Fichier final', realtime: 'Enregistrement en temps réel' },
+    xfmt: { '916': '9:16 (TikTok / Reels)', '45': '4:5', '11': '1:1', '169': '16:9 (Clip)' },
+    xkind: { one: 'Une vidéo', pack: 'Un pack' },
+    xmem: { m1: '1 Go', m2: '2 Go', m4: '4 Go', m8: '8 Go ou plus', unk: 'Inconnue (iPhone, Safari, Firefox)' },
+    xdur: { d15: 'Moins de 15 s', d30: '15 à 30 s', d60: '30 s à 1 min', dlong: 'Plus d’1 min' },
+    xtook: { t10: 'Moins de 10 s', t30: '10 à 30 s', t60: '30 s à 1 min', t180: '1 à 3 min', tlong: 'Plus de 3 min' },
   };
 
   // every call goes to /api/admin/... on this host; an Access session that ended answers with a redirect to its login
@@ -835,6 +860,33 @@ __DEMO_BANNER__<header class="top"><div class="in">
     t.append(tb); return t;
   }
   // a labelled bar list: one hue, the label and the number written next to each bar (no colour legend to decode)
+  // (7/11) « Pourquoi les exports ratent »: fu.exportX = { dev_ios: n, ios_memory: n, st_frames: n, … } (admin.js)
+  function xfRender(fu) {
+    var X = fu.exportX || {}, sub = function (p) { var o = {}; for (var k in X) if (k.indexOf(p) === 0) o[k.slice(p.length)] = X[k]; return o; };
+    var DEV = { ios: 'iPhone / iPad', android: 'Android', desktop: 'Ordinateur' }, sd = fu.startDev || {}, od = fu.okDev || {}, fd = sub('dev_');
+    var tb = $('#xfDev tbody'); tb.textContent = '';
+    ['ios', 'android', 'desktop'].forEach(function (d) {
+      var tr = el('tr'), st = sd[d] || 0, ok = od[d] || 0, fl = fd[d] || 0;
+      [DEV[d], nf.format(st), nf.format(ok), nf.format(fl), st ? pct(fl, st) + ' %' : '–'].forEach(function (v, i) { tr.append(el(i ? 'td' : 'th', i ? null : { scope: 'row' }, v)); });
+      tb.append(tr);
+    });
+    var failN = Object.keys(fd).reduce(function (n, k) { return n + fd[k]; }, 0), saved = fu.saved || {}, retry = fu.retry || {}, refused = fu.refused || {};
+    var savedN = Object.keys(saved).reduce(function (n, k) { return n + saved[k]; }, 0), retryN = Object.keys(retry).reduce(function (n, k) { return n + retry[k]; }, 0);
+    var refN = Object.keys(refused).reduce(function (n, k) { return n + refused[k]; }, 0), startN = Object.keys(sd).reduce(function (n, k) { return n + sd[k]; }, 0);
+    set('#xfSum', failN || savedN || refN ? nf.format(failN) + ' ratés sur ' + nf.format(startN) + ' lancés (' + pct(failN, startN) + ' %) · ' + nf.format(savedN) + ' rattrapés tout seuls sur ' + nf.format(retryN) + ' nouveaux essais · ' + nf.format(refN) + ' packs refusés (trop gros pour l’appareil)' : 'Aucun export raté avec le détail pour l’instant (compté depuis le 7/11).');
+    var cats = {}, devCat = {};
+    for (var k in X) { var m = /^(ios|android|desktop)_([a-z]+)$/.exec(k); if (m) { cats[m[2]] = (cats[m[2]] || 0) + X[k]; devCat[k] = X[k]; } }
+    blist($('#xfCat'), cats, NAMES.fail);
+    blist($('#xfDevCat'), devCat, function (k) { var p = k.split('_'); return DEV[p[0]] + ' · ' + (NAMES.fail[p[1]] || p[1]); }, { max: 8 });
+    blist($('#xfSt'), sub('st_'), NAMES.xst);
+    var sv = {}; for (var c in retry) sv[c] = saved[c] || 0;
+    blist($('#xfSaved'), sv, function (c) { return (NAMES.fail[c] || c) + ' (' + nf.format(saved[c] || 0) + ' / ' + nf.format(retry[c]) + ')'; }, { keepZero: true, noPct: true });
+    blist($('#xfFmt'), sub('fmt_'), NAMES.xfmt);
+    blist($('#xfKind'), sub('kind_'), NAMES.xkind);
+    blist($('#xfMem'), sub('mem_'), NAMES.xmem);
+    blist($('#xfDur'), sub('dur_'), NAMES.xdur);
+    blist($('#xfTook'), sub('took_'), NAMES.xtook);
+  }
   function blist(ul, obj, names, opts) {
     opts = opts || {}; ul.textContent = '';
     var keys = Object.keys(obj || {}).filter(function (k) { return obj[k] > 0 || opts.keepZero; });
@@ -1043,6 +1095,7 @@ __DEMO_BANNER__<header class="top"><div class="in">
         var exObj = { 'Réussies': fu.exportOk || 0 }; for (var k in fw) exObj['Ratées : ' + (NAMES.fail[k] || k)] = fw[k];
         blist($('#bExport'), exObj, function (x) { return x; }, { order: Object.keys(exObj) });
         blist($('#bWhy'), fu.plansWhy || {}, NAMES.why);
+        xfRender(fu);
       }
       charts($('#funnelCharts'), days, [{ k: 'exportOk', t: 'Vidéos exportées', f: N, x: 'Réussies.' }, { k: 'exportFail', t: 'Exports ratés', f: N, x: 'Erreur pendant l’export (voir les raisons plus haut).' }]);   // no more ad (owner's decision of 6/11): the « Pubs regardées » chart is gone
       // Santé
