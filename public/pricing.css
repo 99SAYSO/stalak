@@ -192,3 +192,16 @@
   .p4-table tfoot .pr-colpro{border-radius:0}
   .p4-table tfoot tr:last-child .pr-colpro{border-radius:0 0 14px 14px}
 }
+
+/* ---- Marketing & croissance (7/11, rapport chiffres : le mode Clip est la 1re raison d'ouvrir la page Pro) ----
+   page Tarifs : la ligne « Music video mode / Le mode Clip » de la carte Pro, mise en avant, et sa section à elle */
+.pr-feats li.pr-hot{margin:0 -8px;padding:6px 8px 6px 42px;border-radius:12px;background:var(--frost);box-shadow:inset 0 0 0 2px var(--ice-2)}
+.pr-feats li.pr-hot::before{left:8px;top:5px}
+.pr-clip{position:relative;box-sizing:border-box;width:100%;max-width:760px;align-self:center;margin-top:58px;padding:72px 22px 24px;color:var(--ink);background:#fff;border:3px solid var(--ink);border-radius:26px;box-shadow:0 6px 0 var(--ink);text-align:center}
+.pr-clip > .pr-art{top:-64px}
+.pr-clip h3{margin:0 0 6px;font:400 28px/1.1 var(--display);color:var(--ink)}
+.pr-clip-lead{margin:0 auto;max-width:32em;font-weight:600}
+.pr-clip .pr-feats{max-width:560px;margin:16px auto 0}
+.pr-clip-go{margin:18px 0 0;display:flex;flex-direction:column;align-items:center;gap:22px}   /* room for the button's icicles */
+.pr-clip-go span{font-size:14px;line-height:1.4;color:var(--muted)}
+@media (max-width:600px){ .pr-clip{padding:70px 16px 20px} }

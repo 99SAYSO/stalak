@@ -86,9 +86,9 @@ PAGE = {
     <p><strong>Ce que tu peux faire :</strong></p>
     <ul>
       <li>Coupes automatiques sur les temps, sur les mots ou par mesure.</li>
+      <li><strong>Mode Clip</strong> : tout ton morceau en clip 16:9 pour YouTube, avec des effets (flash, zoom, rafales de plans, secousses, ralentis) sur les moments forts : drops, refrains, breaks. Essaie-le gratuitement dans l’aperçu ; l’export du clip est avec Stalak Pro.</li>
       <li>Paroles à l’écran en phrase entière ; mot par mot et karaoké avec Stalak Pro.</li>
       <li>Paroles écrites et calées automatiquement à partir de ta voix (Stalak Pro).</li>
-      <li>Mode Clip 16:9 pour YouTube, avec effets : flash, zoom, secousse, ralenti… (Stalak Pro)</li>
       <li>Packs de 5 à 30 vidéos aux coupes différentes du même son, dès 2 prises (Creator Plus).</li>
       <li>Le montage se fait dans ton navigateur, sur iPhone, Android ou ordinateur : tes vidéos restent sur ton appareil, sauf tes projets en ligne, enregistrés automatiquement avec Creator Plus, et le son envoyé pour tes paroles automatiques.</li>
     </ul>
@@ -115,9 +115,9 @@ PAGE = {
     <p><strong>What you can do:</strong></p>
     <ul>
       <li>Auto cuts that land on the beat: phrase by phrase, on your lines and rhymes, or every bar.</li>
+      <li><strong>Music video mode</strong>: your whole song as a 16:9 video for YouTube, with effects (flash, zoom, bursts of shots, shakes, slow-mo) on the big moments: drops, choruses, breaks. Try it free in the preview; exporting the video takes Stalak Pro.</li>
       <li>On-screen lyrics, one line at a time; word-by-word and karaoke styles with Stalak Pro.</li>
       <li>Auto lyrics: Stalak writes and syncs your lyrics from your vocals (Stalak Pro).</li>
-      <li>16:9 music video mode for YouTube, with effects like flash, zoom, shake and slow-mo (Stalak Pro).</li>
       <li>Video packs: 5 to 30 differently cut videos from one song, from just 2 takes (Creator Plus).</li>
       <li>Everything happens in your browser, so your videos stay on your device. The only exceptions: your cloud projects, saved automatically with Creator Plus, and the audio sent for auto lyrics.</li>
     </ul>
