@@ -100,7 +100,7 @@ def run(b, base, lang, iphone, PW):
     # n° 4: the framing
     pg.wait_for_function('() => __ev("!$(\'#frameSeg\').hidden")', timeout=60000)
     labels = ev(pg, "[...document.querySelectorAll('#frameSeg button')].map(b => b.textContent.trim())")
-    check(tag + ' : « %s » : %s / %s / %s, « %s » au départ pour l’exemple' % (t['frame'], t['fit'], t['face'], t['zoom'], t['face']), labels == [t['fit'], t['face'], t['zoom']] and ev(pg, 'S.frame') == 'face', (labels, ev(pg, 'S.frame')))
+    check(tag + ' : « %s » : %s / %s / %s, « %s » au départ pour l’exemple' % (t['frame'], t['fit'], t['face'], t['zoom'], t['zoom']), labels == [t['fit'], t['face'], t['zoom']] and ev(pg, 'S.frame') == 'zoom', (labels, ev(pg, 'S.frame')))
     check(tag + ' : PRO sur « Remplir » et « Zoom » en Gratuit', ev(pg, "[...document.querySelectorAll('#frameSeg button')].map(b => b.classList.contains('protag'))") == [False, True, True])
     pg.wait_for_function('() => __ev("S.takes.every(t => t.qual && t.qual.fy)")', timeout=400000)
     fys = ev(pg, "S.takes.map(t => t.qual.fyMed)")

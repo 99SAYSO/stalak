@@ -6427,9 +6427,9 @@ async function analyseTake(tk){
     q.lap.push(acc.lap[b]/c); q.lum.push(acc.lum[b]/c); q.bright.push(acc.bright[b]/c); q.diff.push(acc.diff[b]); q.face.push(acc.face[b]/c); }
   const ok = q.lap.filter(x => x === x).sort((a, b) => a - b); if (!ok.length) return;
   q.medLap = ok[ok.length >> 1];
-  // the face's height per half second, smoothed over about 3 s (the framing glides, it never jumps)
+  // the face's height per half second, smoothed over about 2 s (the framing glides, it never jumps, and still follows a move)
   { const raw = Array.from({ length: nb }, (_, b) => acc.fyn[b] ? acc.fy[b] / acc.fyn[b] : NaN), sm = [];
-    for (let b=0; b<nb; b++){ let s0 = 0, n0 = 0; for (let k=b-3; k<=b+3; k++) if (k >= 0 && k < nb && raw[k] === raw[k]){ const wt = 4 - Math.abs(k - b); s0 += raw[k] * wt; n0 += wt; } sm.push(n0 ? s0 / n0 : NaN); }
+    for (let b=0; b<nb; b++){ let s0 = 0, n0 = 0; for (let k=b-2; k<=b+2; k++) if (k >= 0 && k < nb && raw[k] === raw[k]){ const wt = 3 - Math.abs(k - b); s0 += raw[k] * wt; n0 += wt; } sm.push(n0 ? s0 / n0 : NaN); }
     const all = raw.filter(x => x === x).sort((a, b) => a - b); q.fyMed = all.length ? all[all.length >> 1] : NaN; q.fy = sm; }
   tk.qual = q;
   const s = qualSummary(tk);
@@ -9044,8 +9044,10 @@ async function demoLoadReal(R){
     tk.offset = j.takes[i].offset || 0; tk.status = 'ok'; tk.cands = null; renderTakes();
   }
   if (!isClip()){ S.nBars = 8; $('#barsSel').value = '8'; S.startBar = 0; }
-  // a clip of upright takes: filled, centred on the face (n° 4), unless the person chose a framing already
-  if (!S.frameUser) S.frame = 'face';
+  // a clip of upright takes: zoomed in, centred on the face (n° 4), unless the person chose a framing already. (« Remplir »
+  // shows only a third of an upright picture's height: when he bends towards the camera it can keep only his cap; « Zoom »
+  // shows half of it and stays right; checked on the contact sheet of 7/11)
+  if (!S.frameUser) S.frame = 'zoom';
   updateSegment(); frameUI();
   $('#songBox').hidden = false;
   rebuild(false); go(4);
