@@ -1013,6 +1013,14 @@ header .stepper{margin-left:auto}
 .result #saveNote:empty{display:none}
 .result .capbox{width:100%}
 .result .capbox[hidden]{display:none}
+/* report of 7/11: the optional e-mail for tips, under the caption */
+.optbox{margin-top:14px;width:100%;display:flex;flex-direction:column;gap:8px;border:2px dashed var(--ink);border-radius:14px;padding:12px 14px;box-sizing:border-box}
+.optbox[hidden]{display:none}
+.optbox form{display:flex;flex-direction:column;gap:8px;margin:0}
+.optbox input[type=email]{width:100%;box-sizing:border-box;font:500 16px/1.4 var(--body);padding:10px 12px;border:2px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink);min-height:44px}
+.optc{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.4;cursor:pointer}
+.optc input{width:22px;height:22px;flex:none;margin:1px 0 0;accent-color:var(--sky,#1f6fd6)}
+.optlegal{font-size:12.5px;margin:0}
 .fa-row{flex-wrap:wrap;gap:10px}
 /* fewer PRO tags at once (audit 30/10): Pro filters behind one tile, one tag per theme; text sizes and appearances show a
    small padlock instead of a PRO pill on every button */

@@ -1179,6 +1179,17 @@ const I18N_EN = /*@EN*/{
   "cap.sel": "Select the text and copy it.",
   "cap.tags": "#lipsync #rap #newmusic #madewithstalak",
   "cap.made": "made with stalak.app",
+  "opt.t": "📩 Get tips for your next videos by e-mail",
+  "opt.ph": "you@email.com",
+  "opt.ok": "I agree to get tips for my videos and Stalak news by e-mail (2 a month at most). I can unsubscribe at any time with the link in each e-mail.",
+  "opt.go": "Get the tips",
+  "opt.legal": "Optional. We only keep your e-mail and your language. <a href=\"/privacy\">Privacy</a>",
+  "opt.need": "Tick the box to agree first.",
+  "opt.bad": "This e-mail address doesn’t look right.",
+  "opt.busy": "Sending…",
+  "opt.sent": "📬 Check your inbox and tap the link to confirm.",
+  "opt.later": "Too many tries. Try again later.",
+  "opt.err": "It didn’t work. Try again in a moment.",
   "post.shareMain": "Share",
   "post.shareHintPhone": "Pick TikTok or Instagram: the app opens with your video already in. Paste the caption under it and post.",
   "fa.t": "“{name}” is a Pro filter",
@@ -1866,6 +1877,12 @@ const I18N_FR = /*@FR*/{
   "post.shareHintIos": "Choisis TikTok ou Instagram : l’appli s’ouvre avec ta vidéo déjà importée. Colle la légende dessous et poste. Pour la garder dans Photos : « Enregistrer la vidéo ».",
   "cap.t": "Légende prête à copier",
   "cap.copy": "Copier la légende",
+  "opt.need": "Coche la case pour accepter d’abord.",
+  "opt.bad": "Cette adresse e-mail ne semble pas bonne.",
+  "opt.busy": "Envoi…",
+  "opt.sent": "📬 Regarde ta boîte mail et touche le lien pour confirmer.",
+  "opt.later": "Trop d’essais. Réessaie plus tard.",
+  "opt.err": "Ça n’a pas marché. Réessaie dans un moment.",
   "cap.ok": "Légende copiée ✓",
   "cap.sel": "Sélectionne le texte et copie-le.",
   "cap.tags": "#playback #rap #lipsync #madewithstalak",
@@ -7962,7 +7979,7 @@ function postShow(){
   // on a phone that shares, the links to the networks' sites are replaced by the share list
   if (main) $('#postBox').hidden = true;
   setT('#postHint', main ? (IOS_DEV ? 'post.shareHintIos' : 'post.shareHintPhone') : 'post.hint');
-  capUi(); proOfferUi();
+  capUi(); proOfferUi(); optUi();
 }
 /* ---- the end of the export (owner, 06/11): only what matters, and where to tap is seen at once. The edit, the steps and the
    rest of the page are hidden; the result is moved into #doneView: « Enregistrer la vidéo » (big), « Partager » on a phone,
@@ -8040,6 +8057,32 @@ $('#faWithout').onclick = () => { if (faDone) faDone('without'); };
 $('#faNo').onclick = () => { if (faDone) faDone(null); };
 $('#filtAsk').addEventListener('keydown', e => { if (e.key === 'Escape'){ e.stopPropagation(); $('#faNo').click(); } });
 $('#filtAsk').addEventListener('click', e => { if (e.target === e.currentTarget) $('#faNo').click(); });
+/* Comptes, report of 7/11: a free user may leave an e-mail for tips, at the end of a video. Optional: the box is NOT ticked,
+   nothing is sent without it; the address counts only once the link of the e-mail is used (functions/_lib/optin.js). Never for a
+   subscriber nor for the example; once given on this device, not asked again ("stalak:optin"). */
+function optUi(){
+  const b = $('#optBox'); if (!b) return;
+  let given = false; try { given = !!localStorage.getItem('stalak:optin'); } catch(e){}
+  b.hidden = !lastBlob || /\.zip$/i.test(lastName || '') || S.lastDemo || can('nowm') || given || !ACCT;
+  if (!b.hidden && ACCT.state && ACCT.state.user && !$('#optEmail').value) $('#optEmail').value = ACCT.state.user.email || '';
+}
+$('#optForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const em = $('#optEmail').value.trim(), note = $('#optNote');
+  if (!$('#optOk').checked){ setT(note, 'opt.need'); $('#optOk').focus(); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){ setT(note, 'opt.bad'); $('#optEmail').focus(); return; }
+  $('#optGo').disabled = true; setT(note, 'opt.busy');
+  try {
+    const r = await fetch('/api/optin', { method: 'POST', credentials: 'omit', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: em, consent: true, lang: LANG === 'fr' ? 'fr' : 'en' }) });
+    const d = await r.json().catch(() => ({}));
+    if (r.ok){
+      try { localStorage.setItem('stalak:optin', String(Date.now())); } catch(er){}
+      $('#optForm').hidden = true; setT('#optT', 'opt.sent'); diag('e-mail donné pour les conseils (à confirmer)');
+    } else setT(note, d.error === 'invalid_email' ? 'opt.bad' : d.error === 'rate_limited' ? 'opt.later' : d.error === 'consent_required' ? 'opt.need' : 'opt.err');
+  } catch(er){ setT(note, 'opt.err'); }
+  $('#optGo').disabled = false;
+});
 /* the caption to copy for TikTok / Reels (audit 30/10), with #madewithstalak; written again until the person changes it */
 let capEdited = false;
 function capMake(){
@@ -9356,6 +9399,29 @@ const VISIT_REF = (() => {
   } catch(e){}
   return r;
 })();
+/* Comptes (report of 7/11, n°1 and 2): where this visit comes from, for the ANONYMOUS totals per day of the dashboard (visits
+   per source and country, and how far each source goes: video, plans, payment). Worked out from ?ref= / utm_source / the site
+   that sent the visit; kept for this tab only (sessionStorage "stalak:vsrc"), never tied to a person or an account. A known
+   platform (tiktok, ig, yt, google, discord, triller, x, reddit, facebook, bing), ref:<code>, site:<domain> or direct. */
+const VISIT_SRC = (() => {
+  try {
+    const old = sessionStorage.getItem('stalak:vsrc'); if (old) return old;
+    const plat = (v) => { v = String(v || '').toLowerCase();
+      return [[/tiktok/, 'tiktok'], [/^(ig|insta)|instagram/, 'ig'], [/^yt|youtu/, 'yt'], [/google/, 'google'], [/discord/, 'discord'], [/triller/, 'triller'],
+        [/^(x|t\.co)$|twitter/, 'x'], [/reddit/, 'reddit'], [/facebook|^fb$/, 'facebook'], [/bing/, 'bing']].reduce((a, [re, n]) => a || (re.test(v) ? n : null), null); };
+    const u = new URL(location.href), utm = (u.searchParams.get('utm_source') || '').trim().toLowerCase();
+    let s = null;
+    for (const v of [VISIT_REF, utm]) if (!s && v && /^[a-z0-9_-]{1,32}$/.test(v)) s = plat(v) || 'ref:' + v;
+    if (!s && document.referrer){
+      const h = new URL(document.referrer).hostname.replace(/^www\./, '').toLowerCase();
+      if (h && h !== location.hostname && !/(^|\.)stalak\.app$/.test(h)) s = plat(h) || (/^[a-z0-9.-]{3,48}$/.test(h) ? 'site:' + h : 'other');
+    }
+    s = s || 'direct';
+    sessionStorage.setItem('stalak:vsrc', s);
+    return s;
+  } catch(e){ return 'direct'; }
+})();
+try { if (ACCT && ACCT.setSource) ACCT.setSource(VISIT_SRC); } catch(e){}
 /* Comptes : « people who come back » on the dashboard: this browser came on an earlier day (yes / no). Only the date of the last
    visit is kept in this browser (localStorage "stalak:lastDay"); nothing is sent but the yes / no. */
 const VISIT_BACK = (() => { try { const d = new Date().toISOString().slice(0, 10), p = localStorage.getItem('stalak:lastDay'); localStorage.setItem('stalak:lastDay', d); return p ? p !== d : false; } catch(e){ return null; } })();
@@ -9368,7 +9434,7 @@ if (HELP_SITE){
   let every = 300e3, last = 0, timer = 0;
   const ping = () => { if (document.hidden) return; last = Date.now();
     fetch('/api/presence', { method: 'POST', credentials: 'same-origin', keepalive: true, headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(Object.assign({ vid, lang: LANG === 'fr' ? 'fr' : 'en', back: VISIT_BACK }, VISIT_REF ? { ref: VISIT_REF } : {})) })
+      body: JSON.stringify(Object.assign({ vid, lang: LANG === 'fr' ? 'fr' : 'en', back: VISIT_BACK, src: VISIT_SRC }, VISIT_REF ? { ref: VISIT_REF } : {})) })
       .then(r => r.json()).then(d => { const e = +(d && d.every) * 1e3; if (e >= 60e3 && e <= 3600e3 && e !== every){ every = e; clearInterval(timer); timer = setInterval(ping, every); } })
       .catch(() => {}); };
   ping(); timer = setInterval(ping, every);

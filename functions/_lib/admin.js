@@ -194,6 +194,11 @@ export async function stats(env, days = 30, now = Date.now()) {
         proOffer: ev.ev_pro_offer || 0, adOffer: ev.ev_ad_offer || 0, adShown: ev.ev_ad_shown || 0, adOk: ev.ev_ad_ok || 0, plansOpen: ev.ev_plans_open || 0, checkoutOpen: ev.ev_checkout_open || 0,
         paid: ev.paid_first || 0, exportFailWhy: pick('ev_export_fail_'), plansWhy: pick('ev_plans_why_'),
         ios: { exportOk: ev.ios_export_ok || 0, exportFail: ev.ios_export_fail || 0 },
+        // report of 7/11: the funnel per source, the visits per country, where the payment window was closed without buying
+        bySource: bySource(ev), visitCountries: visitCountries(ev),
+        checkoutClose: { start: ev.ev_checkout_close_start || 0, details: ev.ev_checkout_close_details || 0, payment: ev.ev_checkout_close_payment || 0 },
+        checkoutDone: ev.ev_checkout_done || 0,
+        optins: await optinCounts(env, now),
       },
       health: { errors30: ev.err_5xx || 0, alerts30: ev.alert || 0, codeMails30: ev.code_mail || 0,
         codeMailsToday: R(counts).filter((r) => r.d === list[list.length - 1] && r.name === 'code_mail').reduce((n, r) => n + r.n, 0) },
@@ -203,6 +208,38 @@ export async function stats(env, days = 30, now = Date.now()) {
     recentUsers: R(recent).map((r) => ({ email: r.email, name: r.display_name || null, createdAt: new Date(r.created_at).toISOString(),
       verified: !!r.email_verified_at, pro: proUsers.has(r.id), plan: proUsers.get(r.id) || null })),
   };
+}
+
+// Report of 7/11, n°2: one line per source (anonymous totals « fs:<step>:<source> » of the period): visits → video → plans →
+// payment window → paid; the biggest sources first, the small ones (< 2 visits) gathered in « other ».
+export function bySource(ev) {
+  const rows = {};
+  for (const k in ev) {
+    const m = /^fs:(visit|export_ok|plans_open|checkout_open|checkout_done):(.+)$/.exec(k);
+    if (!m) continue;
+    const r = rows[m[2]] || (rows[m[2]] = { source: m[2], visits: 0, videos: 0, plans: 0, checkout: 0, paid: 0 });
+    r[{ visit: 'visits', export_ok: 'videos', plans_open: 'plans', checkout_open: 'checkout', checkout_done: 'paid' }[m[1]]] += ev[k];
+  }
+  const out = [], other = { source: 'other', visits: 0, videos: 0, plans: 0, checkout: 0, paid: 0 };
+  for (const r of Object.values(rows)) {
+    if (r.visits < 2 && !r.paid && r.source !== 'direct' && r.source !== 'other') { for (const k of ['visits', 'videos', 'plans', 'checkout', 'paid']) other[k] += r[k]; }
+    else if (r.source === 'other') { for (const k of ['visits', 'videos', 'plans', 'checkout', 'paid']) other[k] += r[k]; }
+    else out.push(r);
+  }
+  if (other.visits || other.paid) out.push(other);
+  return out.sort((a, b) => (a.source === 'other') - (b.source === 'other') || b.visits - a.visits || b.paid - a.paid).slice(0, 20);
+}
+// n°1: the visits per country of the period (« vs:<source>:<country> »), the 10 biggest
+export function visitCountries(ev) {
+  const c = {};
+  for (const k in ev) { const m = /^vs:.+:([A-Z]{2})$/.exec(k); if (m) c[m[1]] = (c[m[1]] || 0) + ev[k]; }
+  return Object.entries(c).map(([country, n]) => ({ country, n })).sort((a, b) => b.n - a.n).slice(0, 10);
+}
+// n°8 (the owner's numbering): the e-mails given by free users at the end of a video, with their consent (optin.js)
+export async function optinCounts(env, now = Date.now()) {
+  const r = await env.DB.prepare(`SELECT SUM(confirmed_at IS NOT NULL) AS confirmed, SUM(confirmed_at IS NULL) AS waiting,
+      SUM(confirmed_at IS NOT NULL AND confirmed_at >= ?1) AS week FROM email_optins`).bind(now - 7 * 864e5).first().catch(() => null);
+  return { confirmed: (r && r.confirmed) || 0, waiting: (r && r.waiting) || 0, week: (r && r.week) || 0 };
 }
 
 // ---- the new dashboard (1/11): who, from where, what they do, what it brings, how the server is (one batch of queries) ----
