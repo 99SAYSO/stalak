@@ -7863,7 +7863,7 @@ async function exportOne(again){
   endExport(made);
   // the second go is only planned: this export ends now, properly (it never waits for the person to come back)
   if (retry){
-    if (document.hidden){ const at = expNearAt(); sayNear(at, 'exp.retryBack'); expResumeOnShow(retry, at); }
+    if (document.visibilityState === 'hidden'){ const at = expNearAt(); sayNear(at, 'exp.retryBack'); expResumeOnShow(retry, at); }   // (the same signal as S.leftDuring)
     else setTimeout(() => { if (!S.exporting && S.cuts.length) exportOne(retry); }, 500);
   }
 }
@@ -7871,7 +7871,7 @@ async function exportOne(again){
    or the page left for good, and nothing happens) */
 function expResumeOnShow(cat, at){
   if (S.resumeF) document.removeEventListener('visibilitychange', S.resumeF);
-  const f = () => { if (document.hidden) return; document.removeEventListener('visibilitychange', f); S.resumeF = null; nearClear(at);
+  const f = () => { if (document.visibilityState === 'hidden') return; document.removeEventListener('visibilitychange', f); S.resumeF = null; nearClear(at);
     setTimeout(() => { if (!S.exporting && S.cuts.length) exportOne(cat); }, 500); };
   S.resumeF = f; document.addEventListener('visibilitychange', f);
 }

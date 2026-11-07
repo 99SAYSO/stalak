@@ -200,7 +200,8 @@ def run(b, base, lang, iphone):
     pg.evaluate("() => { Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' }); document.dispatchEvent(new Event('visibilitychange')); }")
     pg.evaluate('() => window.__p'); pg.wait_for_timeout(300)
     pg.evaluate("() => { delete document.visibilityState; }")
-    m = pg.locator('#expNear .nearmsg')
+    # (7/11) said where the person is: under the buttons, or on the end screen when the export was made from it
+    m = pg.locator('#expNear .nearmsg, #dvSlot .nearmsg')
     check(tag + ' : app quittée pendant l’export → arrêt propre et message près des boutons', m.count() == 1 and ('left Stalak' in m.inner_text() if lang == 'en' else 'quitté Stalak' in m.inner_text()) and not ev(pg, 'S.exporting'), m.inner_text() if m.count() else None)
     asked = pg.evaluate("() => { __ev('S.exporting = true'); const e = new Event('beforeunload', { cancelable: true }); window.dispatchEvent(e); __ev('S.exporting = false'); return e.defaultPrevented; }")
     check(tag + ' : quitter la page pendant un export → le navigateur demande', asked)
@@ -213,7 +214,7 @@ def run(b, base, lang, iphone):
     pg.evaluate('() => { window.__began = false; return Promise.resolve(__ev("exportPack()")).catch(() => {}); }'); pg.wait_for_timeout(300)
     pm = pg.locator('#packBox .nearmsg')
     check(tag + ' : pack trop lourd pour l’appareil → refusé, message près du pack (moins de vidéos ou passage plus court)', pm.count() == 1 and not pg.evaluate('window.__began')
-          and ('memory' in pm.inner_text() if lang == 'en' else 'mémoire' in pm.inner_text()), pm.inner_text() if pm.count() else None)
+          and ('memory' in pm.inner_text() if lang == 'en' else 'mémoire' in pm.inner_text()), (pm.count(), pg.evaluate('window.__began'), pm.all_inner_texts()))
     ev(pg, "S.memMB = 4000")
     pg.evaluate('() => { window.__began = false; return Promise.resolve(__ev("exportPack()")).catch(() => {}); }'); pg.wait_for_timeout(300)
     check(tag + ' : assez de mémoire → le pack part', pg.evaluate('window.__began') and pg.locator('#packBox .nearmsg').count() == 0)
