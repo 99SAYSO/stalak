@@ -440,6 +440,19 @@
 Ces montants sont avant TVA et frais. Réaliste : 10 000 € par mois en avril 2027.
 
 ### Juridique & business
+- **Fait (branche `legal/video-par-email`, 07/11)** : rapport du 7/11, pistes « provenance et pays de chaque visite » et « Reçois ta vidéo par e-mail ». Règles détaillées dans `docs/juridique/EMAIL_VIDEO.md`. Confidentialité FR/EN :
+  - totaux anonymes par jour × provenance × pays × appareil (et étapes de l'app par provenance) ;
+  - `stalak:lastDay` effacé après 13 mois ;
+  - nouvelle section « Recevoir ta vidéo par e-mail » (`#video-par-email` / `#video-email`) : vidéo, lien et adresse supprimés au bout de 7 jours ; case non cochée pour les nouvelles, confirmation par e-mail, désinscription en un clic sans connexion, empreinte après désinscription, suppression après 3 ans sans ouverture ni clic, moins de 15 ans : accord d'un parent ;
+  - « En bref », prestataires (R2, Resend) et section US mis à jour.
+- **À faire par Comptes (+ App pour l'écran de fin et `stalak:lastDay`)** : suivre `docs/juridique/EMAIL_VIDEO.md` à la lettre.
+  - Totaux sans `vid`, compte ni empreinte d'IP.
+  - Case non cochée avec le texte exact ; vidéo envoyée même sans la case.
+  - Confirmation dans l'e-mail de la vidéo ; preuve gardée (date, texte, langue).
+  - Désinscription en un clic + en-têtes `List-Unsubscribe` ; adresse postale en bas des e-mails de nouvelles.
+  - Suppression à 7 jours (vidéo, lien, adresse non confirmée) et à 3 ans sans ouverture ni clic.
+  - Turnstile + limite d'envois.
+- **À faire (propriétaire)** : l'adresse postale en bas des e-mails de nouvelles sera celle de la micro-entreprise. C'est une raison de plus de choisir vite une domiciliation si tu ne veux pas montrer l'adresse de tes parents.
 - **Fait (branche `legal/audit-6-11`, 06/11 soir)** : audit du 6/11, point 12, partie Juridique. Confidentialité FR/EN complétée :
   - cookies `stalak_d` (appareil reconnu 90 j, empreinte effacée à l'expiration, au changement de mot de passe et à la suppression du compte) et `stalak_o` (connexion Google, 10 min) ; section Cookies = 3 cookies, tous nécessaires ;
   - type d'appareil du compte et des visites ; provenance de la visite (`stalak:ref`) et « déjà venu » (`stalak:lastDay`) ;
