@@ -240,10 +240,13 @@ def run(b, base, lang, iphone):
     names = [e['body'].get('name') for e in events]
     keys = set(k for e in events for k in e['body'])
     check(tag + ' : compteurs envoyés (export commencé, réussi, raté, offre Pro une fois)', all(n in names for n in ('export_start', 'export_ok', 'export_fail')) and names.count('pro_offer') >= 1, names)
-    fail = [e['body'] for e in events if e['body'].get('name') == 'export_fail']
-    check(tag + ' : export raté avec sa catégorie (app quittée, mémoire)', any(f.get('cat') == 'hidden' for f in fail) and any(f.get('cat') == 'memory' for f in fail), fail)
+    # (7/11, app/exports-rates) an export stopped because Stalak was left is made again by itself once back: counted
+    # « export_retry » (hidden); a pack too big for the device is never started: « export_refused » (memory), not a failure
+    fail = [e['body'] for e in events if e['body'].get('name') in ('export_fail', 'export_retry', 'export_refused')]
+    check(tag + ' : export raté / refait / refusé avec sa catégorie (app quittée, mémoire)', any(f.get('cat') == 'hidden' and f['name'] == 'export_retry' for f in fail)
+          and any(f.get('cat') == 'memory' and f['name'] == 'export_refused' for f in fail), fail)
     # 5/11 : + le numéro de visite au hasard (vid, « vidéos par personne ») ; la session peut partir avec (même site) pour ne pas compter le propriétaire
-    check(tag + ' : compteurs anonymes (nom, catégorie, iPhone ou non, numéro de visite au hasard)', keys <= {'name', 'cat', 'why', 'ios', 'vid'}
+    check(tag + ' : compteurs anonymes (nom, catégorie, iPhone ou non, numéro de visite au hasard)', keys <= {'name', 'cat', 'why', 'ios', 'vid', 'x'}
           and all(e['body'].get('ios') is (True if iphone else None) for e in events), (keys, [e['cookie'] for e in events][:3]))
     check(tag + ' : aucune erreur dans la page', not errs, errs)
     sw = pg.evaluate('document.documentElement.scrollWidth')

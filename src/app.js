@@ -7688,7 +7688,7 @@ function expFailSay(e, cancelKey, failKey){
   return cat;
 }
 function expNearAt(){ return S.done ? '#dvSlot' : '#expNear'; }
-function endExport(ok){ wakeOff(); expRunClear(); S.realtime = false; expClose(ok === undefined ? !$('#result').hidden : !!ok);   /* (7/11) ok: this export made its video (a failed one after a good one must not show the end screen of the old video) */ S.exporting = false; proOfferUi(); if (RES !== PREV) setRes(PREV); if (S.rebuildLater){ S.rebuildLater = false; setTimeout(() => rebuild(false), 0); } specCache.clear(); S.takes.forEach(t => { if (t.orig && t.el !== t.orig) t.orig.remove(); }); S.takes.forEach(t => { if (t.proxyWaiting) applyProxy(t); }); setBusy(false); progress(null); $('#cancelBtn').hidden = true; showFrame(cursorIn()); }
+function endExport(ok){ wakeOff(); expRunClear(); S.expX = null; S.realtime = false; expClose(ok === undefined ? !$('#result').hidden : !!ok);   /* (7/11) ok: this export made its video (a failed one after a good one must not show the end screen of the old video) */ S.exporting = false; proOfferUi(); if (RES !== PREV) setRes(PREV); if (S.rebuildLater){ S.rebuildLater = false; setTimeout(() => rebuild(false), 0); } specCache.clear(); S.takes.forEach(t => { if (t.orig && t.el !== t.orig) t.orig.remove(); }); S.takes.forEach(t => { if (t.proxyWaiting) applyProxy(t); }); setBusy(false); progress(null); $('#cancelBtn').hidden = true; showFrame(cursorIn()); }
 /* the export screen: the igloo gets one more block as the video advances; done, the mascot waves and the screen goes */
 const EXP_MSG = [[0, 'exps.m0'], [0.12, 'exps.m1'], [0.35, 'exps.m2'], [0.6, 'exps.m3'], [0.85, 'exps.m4'], [0.97, 'exps.m5']];   // keys (t)
 let expBlocks = null, expShown = -1, expT = 0;
@@ -7825,7 +7825,7 @@ async function exportOne(again){
   if (again){ setT('#expRetry', 'exp.retry'); $('#expRetry').hidden = false; }
   try {
     let vcfg = await pickVideoConfig(); const acfg = vcfg && await pickAudioConfig(S.song.buffer.sampleRate);
-    S.expX.st = null; S.expX.path = vcfg && acfg ? 'wc' : window.MediaRecorder && view.captureStream ? 'rt' : 'none';
+    if (S.expX){ S.expX.st = null; S.expX.path = vcfg && acfg ? 'wc' : window.MediaRecorder && view.captureStream ? 'rt' : 'none'; }
     if (vcfg && safe){ vcfg = plainCfg(vcfg); if (light) vcfg.bitrate = Math.max(3e6, Math.round(vcfg.bitrate * 0.6 / 1e5) * 1e5); }
     if (vcfg){ const mp = memPlan(1, vcfg.bitrate);
       if (mp.bitrate < vcfg.bitrate){ vcfg = Object.assign({}, vcfg, { bitrate: mp.bitrate }); diag('mémoire : ' + Math.round(memNeed(1, 10e6)) + ' Mo à 10 Mbit/s pour ' + mp.budget + ' Mo sur cet appareil, débit ' + (mp.bitrate / 1e6).toFixed(1) + ' Mbit/s'); } }
@@ -7842,7 +7842,7 @@ async function exportOne(again){
     else throw new Error(_t('exp.nosupport'));
     if (S.cancel) throw new Error('annulé');
     if (!blob) throw new Error(_t('exp.nosupport'));
-    S.expX.st = 'file';
+    if (S.expX) S.expX.st = 'file';
     lastBlob = blob; S.lastWm = !!S.wm; S.lastDemo = demoOnly(); resultDone();   // (the end screen reads them)
     lastName = 'stalak-' + (isClip() ? 'clip-' : '') + 'v' + S.version + '-' + S.fmt + '.' + ext;
     const rv = $('#resultVideo'); rv.src = URL.createObjectURL(lastBlob); rv.hidden = false;
@@ -7855,17 +7855,25 @@ async function exportOne(again){
   } catch(e){
     diag('export : ' + (e && e.message || e)); resultBack();
     const cat = expFailCat(e);
-    if (!again && expRetryable(cat, e)){ retry = cat; acctEvent('export_retry', { cat, x: expX() }); diag('export : nouvel essai automatique (' + cat + ')'); }
+    // (made again only an export that really began: S.expX is set by beginExport and cleared by endExport)
+    if (!again && S.expX && expRetryable(cat, e)){ retry = cat; acctEvent('export_retry', { cat, x: expX() }); diag('export : nouvel essai automatique (' + cat + ')'); }
     else { acctEvent('export_fail', { cat, x: expX() }); expFailSay(e, 'exp.cancelled', 'exp.fail'); }
   }
   S.noTiles = keep.noTiles; S.noGl = keep.noGl;
   endExport(made);
+  // the second go is only planned: this export ends now, properly (it never waits for the person to come back)
   if (retry){
-    // left Stalak: it goes on as soon as the page is shown again (said under the button meanwhile)
-    if (document.hidden){ const at = expNearAt(); sayNear(at, 'exp.retryBack'); await new Promise(r => { const f = () => { if (!document.hidden){ document.removeEventListener('visibilitychange', f); r(); } }; document.addEventListener('visibilitychange', f); }); nearClear(at); }
-    await sleep(500);
-    if (!S.exporting && S.cuts.length) await exportOne(retry);
+    if (document.hidden){ const at = expNearAt(); sayNear(at, 'exp.retryBack'); expResumeOnShow(retry, at); }
+    else setTimeout(() => { if (!S.exporting && S.cuts.length) exportOne(retry); }, 500);
   }
+}
+/* left Stalak during an export: it is made again as soon as the page is shown again (once; a new export started by hand,
+   or the page left for good, and nothing happens) */
+function expResumeOnShow(cat, at){
+  if (S.resumeF) document.removeEventListener('visibilitychange', S.resumeF);
+  const f = () => { if (document.hidden) return; document.removeEventListener('visibilitychange', f); S.resumeF = null; nearClear(at);
+    setTimeout(() => { if (!S.exporting && S.cuts.length) exportOne(cat); }, 500); };
+  S.resumeF = f; document.addEventListener('visibilitychange', f);
 }
 /* pack: a b-roll shot is drawn and encoded once per moment of the clip it shows. When several videos put a b-roll shot at the
    same place, they share the moments of the clip already picked there by the others (up to 3 different ones per place),
@@ -7902,7 +7910,7 @@ async function exportPackRun(){
     if (mp.bitrate < vcfg.bitrate) vcfg = Object.assign({}, vcfg, { bitrate: mp.bitrate }); }
   // (7/11) after the browser closed the tab during an export: a lighter pack this time
   if (S.lightNext){ vcfg = Object.assign({}, vcfg, { bitrate: Math.max(5e6, Math.round(vcfg.bitrate * 0.6 / 1e5) * 1e5) }); S.lightNext = false; try { localStorage.removeItem('stalak:expLight'); } catch(e){} diag('pack : débit plus léger après un onglet fermé pendant l’export'); }
-  S.wm = wmOn(); beginExport(); S.expX.st = null; S.expX.path = 'wc'; await fontsReady();
+  S.wm = wmOn(); beginExport(); if (S.expX){ S.expX.st = null; S.expX.path = 'wc'; } await fontsReady();
   const sigs = [], files = [], list = []; let seed = S.seed * 1000 + 1, made = false;
   try {
     const T0 = performance.now();
@@ -7923,7 +7931,7 @@ async function exportPackRun(){
     await renderVideos(list, vcfg, acfg, (p, stage, k) => { progress(p); if (stage === 'assemblage') say('pack.asm', { k: k+1, n: N, pct: Math.round(p*100) }); else say('pack.prog', { n: N, pct: Math.round(p*100) }); },
       (k, ab) => { const bytes = new Uint8Array(ab); files.push({ name: 'stalak-' + String(k+1).padStart(2,'0') + '.mp4', crc: crc32(bytes), size: bytes.length, blob: new Blob([bytes], { type:'video/mp4' }) }); });
     diag('pack : ' + N + ' vidéos en ' + ((performance.now() - T0) / 1000).toFixed(1) + ' s');
-    S.expX.st = 'file'; lastBlob = makeZip(files); lastName = 'pack-' + N + '-videos.zip'; resultDone();
+    if (S.expX) S.expX.st = 'file'; lastBlob = makeZip(files); lastName = 'pack-' + N + '-videos.zip'; resultDone();
     { const rv = $('#resultVideo'); rv.removeAttribute('src'); rv.hidden = true; } $('#result').hidden = false; postShow(); setT('#saveNote', 'pack.zip', { n: N, mb: (lastBlob.size/1048576).toFixed(0) });
     say('pack.ready', { n: N }); acctEvent('export_ok'); made = true;
   } catch(e){ diag('pack : ' + (e && e.message || e)); resultBack(); acctEvent('export_fail', { cat: expFailCat(e), x: expX() }); expFailSay(e, 'pack.cancelled', 'pack.fail'); }
