@@ -36,6 +36,8 @@ Résumé :
 - **Vidéos du dimanche** : `docs/marketing/CLIP_AVANT.md`, partie 3 : 2 vidéos sur 7 pour la séance du 8/11 (modèle D « Accroche
   + démo » et modèle C « Tuto express », le modèle E en réserve), avec accroche, déroulé, voix (Flora, Achird), légende et ce qu'il
   faut montrer (un vrai export 16:9 de l'app, effets Intense). La séance suit toujours `docs/social/TACHE_DIMANCHE.md`.
+  Aucun rappel n'existait pour cette séance : je l'ai programmé dans la conversation Marketing, **dimanche 8/11 à 13 h 12
+  (Paris)**, comme le prévoit `TACHE_DIMANCHE.md` (Marketing le reprogramme à la fin de chaque séance).
 - **« Reçois ta vidéo par e-mail »** : `docs/marketing/RECOIS_TA_VIDEO.md`. C'est la **piste 5** du rapport (le propriétaire l'a
   appelée « 8 » ; la 8 est l'abandon au paiement). Textes FR/EN de la carte de l'écran de fin (clés `vbm.*` proposées), de
   l'e-mail de la vidéo, de la confirmation et de la désinscription des nouvelles, des pages du site à changer, et un brouillon pour
