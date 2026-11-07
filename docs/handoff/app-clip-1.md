@@ -66,5 +66,33 @@ STATUS, 7/11 16 h).
   - nouveau `tests/ui/clip1_ui.py` (iPhone 390 px et ordinateur 1280 px, FR et EN, plus la page claude.ai) ;
   - nouveau test serveur dans `tests/backend/run.mjs`.
 
-## Résultats des tests
-(complétés en fin de travail)
+Après la planche contact sur un vrai clip exporté :
+- « Remplir » ne montre qu'un tiers de la hauteur d'une prise verticale. Sur l'exemple, à 0:05, il ne gardait que le bonnet
+  quand il se penche vers la caméra.
+- L'exemple démarre donc en **« Zoom »**, où la tête reste entière sur toutes les images. La personne peut toujours choisir
+  « Remplir ».
+- Le visage est suivi sur 2 s au lieu de 3.
+- Le montage de l'exemple ne se refait plus tout seul quand l'analyse des prises finit : il ne change pas sous les yeux de
+  celui qui le regarde, et n'est pas enregistré une 2ᵉ fois en ligne.
+
+Tests d'autres domaines adaptés au vrai exemple, sans changer ce qu'ils vérifient :
+- `fin_export_ui.py` donne une ligne de paroles (l'exemple n'en a pas encore) ;
+- `animations_ui.py` attend la fin de l'analyse des prises avant de mesurer la fluidité, comme il attendait déjà la fin de
+  l'étape d'avant. Avec les visages dessinés, il n'y avait rien à analyser.
+
+## Résultats des tests (7/11 au soir)
+- **Série complète** sur la branche, par deux en même temps :
+  - son_passage 86/86, audit_ui 158/158, projet_local_ui 48/48, export_pub_ui 22/22, filtres_ui 106/106 ;
+  - paroles_suppr 44/44, remux_frag 10/10, liens_cmp_ui 58/58, pied_de_page_ui 402/402, partager_ui 74/74 ;
+  - fluidite_ui 30/30, plans_ui 35/35, help_ui 42/42 ;
+  - clip1_ui 73/73, exports_rates_ui 76/76, audit611_ui 91/91, serveur 103/103.
+- **Relancés seuls** après les corrections ci-dessus : fin_export_ui 86/86, animations_ui 44/44, formules_ui 137/137
+  (le « filigrane dans chaque image » de la série échoue seulement quand la machine est chargée), clip1_ui 73/73,
+  gallery_ui 49/49.
+- `support_ui` et `lyrics_ui` échouent comme sur `main`, pour des causes sans lien avec cette branche : l'envoi d'e-mail de
+  test (« Pas envoyés : access ») et le compte Pro de test du serveur.
+
+## Planche contact
+Faite avant la précision de la règle 10 (7/11, 18 h : plus de planche pour les exports de test). Elle a quand même trouvé le
+problème de « Remplir » décrit plus haut. Clip 16:9 de l'exemple, Pro, 12 s, 25 images : la tête reste entière en
+« Zoom », sauf à 0:05.0 où il sort lui-même du bord de sa prise d'origine. La fin en fondu au noir est l'effet « noir », voulu.
