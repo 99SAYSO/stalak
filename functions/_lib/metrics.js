@@ -13,7 +13,8 @@ export const METRICS = ['help_q', 'help_fail', 'cloud_save', 'ticket', 'ticket_m
 // pro_offer: the Pro offer shown after the first video; ad_offer: a rewarded ad asked; ad_shown: the ad really on screen.
 // export_retry: an export that failed and that the page made again by itself (safer settings, or once back in Stalak);
 // export_saved: that second go worked (the person got the video); export_refused: a pack not started (too big for the device).
-export const EVENTS = ['export_start', 'export_ok', 'export_fail', 'export_retry', 'export_saved', 'export_refused', 'pro_offer', 'ad_offer', 'ad_shown', 'ad_ok', 'plans_open', 'checkout_open'];
+// clip_ask (7/11, Clip mode): a 16:9 clip exported without Pro, the answer to the question (pro / reel / none)
+export const EVENTS = ['export_start', 'export_ok', 'export_fail', 'export_retry', 'export_saved', 'export_refused', 'clip_ask', 'pro_offer', 'ad_offer', 'ad_shown', 'ad_ok', 'plans_open', 'checkout_open'];
 // why an export failed, as a category only (App sends it): nothing about the person or the video
 // (7/11) + encoder; closed: the page closed during the export; crash: an export that never ended, found at the next visit
 // (the browser closed the tab: usually out of memory on a phone)
@@ -113,7 +114,13 @@ export async function event(request, env, excluded = null) {
     }
   }
   // the same device split for the starts and the videos made, so the dashboard can tell the share that fails on each device
-  if (name === 'export_start' || name === 'export_ok') await bump(env, (name === 'export_start' ? 'ev_xs_' : 'ev_xo_') + (deviceOf(request) || 'desktop'));
+  if (name === 'export_start' || name === 'export_ok') {
+    const p = name === 'export_start' ? 'ev_xs_' : 'ev_xo_';
+    await bump(env, p + (deviceOf(request) || 'desktop'));
+    // (7/11, Clip mode) the kind of video: a 16:9 clip or a TikTok / Reels video
+    if (body.cat === 'clip' || body.cat === 'reel') await bump(env, p + 'kind_' + body.cat);
+  }
+  if (name === 'clip_ask') await bump(env, 'ev_clip_ask_' + (['pro', 'reel', 'none'].includes(body.cat) ? body.cat : 'none'));
   if (name === 'plans_open' && typeof body.why === 'string') await bump(env, 'ev_plans_why_' + (EVENT_REASONS.includes(body.why) ? body.why : 'other'));
   return json({ ok: true });
 }

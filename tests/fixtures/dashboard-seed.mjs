@@ -67,7 +67,9 @@ export function seedDashboard(env, { now = Date.now() } = {}) {
         ['ev_xf_path_wc', fail], ['ev_xf_dur_d30', Math.round(fail * 0.5)], ['ev_xf_dur_d60', fail - Math.round(fail * 0.5)], ['ev_xf_took_t30', Math.round(fail * 0.4)], ['ev_xf_took_t60', fail - Math.round(fail * 0.4)],
         ['ev_xf_mem_unk', iosF], ['ev_xf_mem_m4', andF], ['ev_xf_mem_m8', desk],
         ['ev_export_retry_hidden', Math.round(fail * 0.8)], ['ev_export_retry_memory', Math.round(fail * 0.5)], ['ev_export_saved_hidden', Math.round(fail * 0.7)], ['ev_export_saved_memory', Math.round(fail * 0.3)],
-        ['ev_export_refused_memory', Math.round(fail * 0.2)]].forEach(([n, v]) => { if (v > 0) bump.run(d, n, v); }); }
+        ['ev_export_refused_memory', Math.round(fail * 0.2)],
+        ['ev_xs_kind_clip', Math.round(starts * 0.18)], ['ev_xo_kind_clip', Math.round(starts * 0.16)], ['ev_xs_kind_reel', starts - Math.round(starts * 0.18)], ['ev_xo_kind_reel', ex - Math.round(starts * 0.16)],
+        ['ev_clip_ask_pro', Math.round(ex * 0.03)], ['ev_clip_ask_reel', Math.round(ex * 0.05)], ['ev_clip_ask_none', Math.round(ex * 0.02)]].forEach(([n, v]) => { if (v > 0) bump.run(d, n, v); }); }
     const paid = rnd() < 0.55 ? 1 + Math.round(rnd()) : 0;
     for (let k = 0; k < paid; k++) {
       const uid = 'u_seed' + i + '_' + k, plan = rnd() < 0.7 ? 'pro' : 'creator', year = rnd() < 0.35;

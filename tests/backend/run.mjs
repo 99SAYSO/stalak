@@ -2824,6 +2824,19 @@ test('failed exports in detail (7/11): device from the browser, closed lists onl
   assert.deepEqual(f.retry, { hidden: 1 }); assert.deepEqual(f.saved, { hidden: 1 }); assert.deepEqual(f.refused, { memory: 1 });
 });
 
+test('Clip mode (7/11): the kind with the start and the video made, the answer at the Clip question; nothing else kept', async () => {
+  const env = makeEnv(ADMIN_ENV), token = await accessToken();
+  let n = 0;
+  for (const body of [{ name: 'export_start', cat: 'clip' }, { name: 'export_start', cat: 'clip' }, { name: 'export_start', cat: 'reel' }, { name: 'export_start', cat: 'x' },
+    { name: 'export_ok', cat: 'clip' }, { name: 'export_ok', cat: 'reel' }, { name: 'clip_ask', cat: 'pro' }, { name: 'clip_ask', cat: 'reel' }, { name: 'clip_ask', cat: 'reel' }, { name: 'clip_ask', cat: '<b>' }]) {
+    const r = await call(env, 'POST', '/api/event', { body, ip: '10.62.0.' + (++n) }); assert.equal(r.status, 200, JSON.stringify(r.data));
+  }
+  const r = await adminCall(env, 'GET', '/api/admin/stats?days=7', { token }), f = r.data.usage.funnel;
+  assert.equal(f.exportStart, 4); assert.equal(f.startDev.kind_clip, 2); assert.equal(f.startDev.kind_reel, 1); assert.equal(f.startDev.desktop, 4);
+  assert.equal(f.okDev.kind_clip, 1); assert.equal(f.okDev.kind_reel, 1);
+  assert.deepEqual(f.clipAsk, { pro: 1, reel: 2, none: 1 });
+});
+
 test('test and real payments: rows keep their Paddle environment; real payments ignore the test subscriptions', async () => {
   const env = makeEnv(ADMIN_ENV), token = await accessToken();
   const u = await proUser(env, 'sandboxer@example.com', 'creator');

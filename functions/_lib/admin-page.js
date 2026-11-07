@@ -452,6 +452,11 @@ __DEMO_BANNER__<header class="top"><div class="in">
         <div><h3>Temps avant l’échec</h3><ul class="blist" id="xfTook"></ul></div>
       </div>
     </div>
+    <!-- (7/11, mode Clip) the 16:9 clips: started and made, and the answer when a clip is exported without Pro -->
+    <div class="grid2">
+      <div class="card"><h3>Clips 16:9 et vidéos TikTok</h3><p class="note">Exports lancés et réussis de chaque sorte (compté depuis le 7/11).</p><ul class="blist" id="clipKind"></ul></div>
+      <div class="card"><h3>Clip exporté sans Pro : le choix</h3><p class="note">La question « Le mode Clip est réservé à Pro » : ce que la personne a touché.</p><ul class="blist" id="clipAskL"></ul></div>
+    </div>
     <div class="card hq" id="vppCard">
       <div class="hbest"><span>🎬 Combien de vidéos par personne</span><span class="sp"></span>
         <div class="seg" role="group" aria-label="Période" id="vPer"><button type="button" data-p="7" aria-pressed="true">7 j</button><button type="button" data-p="30" aria-pressed="false">30 j</button></div>
@@ -875,7 +880,7 @@ __DEMO_BANNER__<header class="top"><div class="in">
     });
     var failN = Object.keys(fd).reduce(function (n, k) { return n + fd[k]; }, 0), saved = fu.saved || {}, retry = fu.retry || {}, refused = fu.refused || {};
     var savedN = Object.keys(saved).reduce(function (n, k) { return n + saved[k]; }, 0), retryN = Object.keys(retry).reduce(function (n, k) { return n + retry[k]; }, 0);
-    var refN = Object.keys(refused).reduce(function (n, k) { return n + refused[k]; }, 0), startN = Object.keys(sd).reduce(function (n, k) { return n + sd[k]; }, 0);
+    var refN = Object.keys(refused).reduce(function (n, k) { return n + refused[k]; }, 0), startN = ['ios', 'android', 'desktop'].reduce(function (n, k) { return n + (sd[k] || 0); }, 0);
     set('#xfSum', failN || savedN || refN ? nf.format(failN) + ' ratés sur ' + nf.format(startN) + ' lancés (' + pct(failN, startN) + ' %) · ' + nf.format(savedN) + ' rattrapés tout seuls sur ' + nf.format(retryN) + ' nouveaux essais · ' + nf.format(refN) + ' packs refusés (trop gros pour l’appareil)' : 'Aucun export raté avec le détail pour l’instant (compté depuis le 7/11).');
     var cats = {}, devCat = {};
     for (var k in X) { var m = /^(ios|android|desktop)_([a-z]+)$/.exec(k); if (m) { cats[m[2]] = (cats[m[2]] || 0) + X[k]; devCat[k] = X[k]; } }
@@ -889,6 +894,9 @@ __DEMO_BANNER__<header class="top"><div class="in">
     blist($('#xfMem'), sub('mem_'), NAMES.xmem);
     blist($('#xfDur'), sub('dur_'), NAMES.xdur);
     blist($('#xfTook'), sub('took_'), NAMES.xtook);
+    var ck = { 'Clips lancés': sd.kind_clip || 0, 'Clips réussis': od.kind_clip || 0, 'TikTok / Reels lancés': sd.kind_reel || 0, 'TikTok / Reels réussis': od.kind_reel || 0 };
+    blist($('#clipKind'), ck, function (x) { return x; }, { order: Object.keys(ck), keepZero: true, noPct: true });
+    blist($('#clipAskL'), fu.clipAsk || {}, { pro: 'Passer à Pro', reel: 'Exporter en TikTok / Reels', none: 'Annuler' });
   }
   function blist(ul, obj, names, opts) {
     opts = opts || {}; ul.textContent = '';

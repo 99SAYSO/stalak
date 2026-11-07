@@ -23,7 +23,7 @@ const S = {
   bestTake:true, cuts:[], locks:[], sel:-1, segStart:0, segEnd:0, playing:false, exporting:false, cancel:false, cursor:0, click:false,
   lyrics:{ mode:'paste', lines:[], style:{ pos:'mid', font:'tiktok', color:'#ffffff', deco:'outline', size:'m', anim:'line', hl:'auto' } },
   // effects and transitions (Clip only): level, effects placed by the site, the user's own choices, the one selected
-  fxLevel:'sobre', fxAuto:[], fxUser:[], fxSelT:null, fxVer:0, fxMusic:null, fx:[],
+  fxLevel:'sobre', fxAuto:[], fxUser:[], fxSelT:null, fxVer:0, fxMusic:null, fx:[], frame:'fit', frameUser:false,
   filter:'none',   // video filter of the project (FILTERS), the same for the whole video
   // Pro account (to come with the real site): true = the exported videos end without the 3 s Stalak ending
   pro:false
@@ -197,6 +197,18 @@ const I18N_EN = /*@EN*/{
   "fxl.sobre": "Subtle",
   "fxl.intense": "Intense",
   "p4.fmt": "Format",
+  "p4.kind": "Video",
+  "p4.frame": "Framing",
+  "p4.frame.aria": "Framing of the upright takes",
+  "frame.fit": "Whole + blur",
+  "frame.face": "Fill",
+  "frame.zoom": "Zoom",
+  "frame.fit.tip": "The whole picture, on a blurred copy that fills the sides",
+  "frame.face.tip": "The picture fills the whole screen, centred on your face",
+  "frame.zoom.tip": "In between: bigger, centred on your face, a little blur on the sides",
+  "frame.st.fit": "Framing: the whole upright picture, blurred copy on the sides.",
+  "frame.st.face": "Framing: your takes fill the 16:9 screen, centred on your face.",
+  "frame.st.zoom": "Framing: zoomed in on your face, a little blur on the sides.",
   "p4.takes": "Takes",
   "best": "Auto best take",
   "tl.zoom": "Zoom +",
@@ -309,6 +321,7 @@ const I18N_EN = /*@EN*/{
   "take.n": "Take {n}",
   "broll.n": "B-roll {n}",
   "demo.song": "Demo song",
+  "demo.takeN": "Example take {n}",
   "takes.empty": "No takes yet.",
   "tk.demo": "Example",
   "tk.pending": "Analyzing the sound…",
@@ -642,7 +655,7 @@ const I18N_EN = /*@EN*/{
   "ca.t": "Clip mode is a Pro feature",
   "ca.p": "You can try it in the preview. To export your 16:9 clip, go Pro, or export your video as TikTok / Reels.",
   "ca.reel": "Export as TikTok / Reels",
-  "ca.try": "Clip mode: try it in the preview. Exporting a 16:9 clip is for Pro.",
+  "ca.try": "Clip mode: try everything in the preview, effects and lyrics included. Exporting a 16:9 clip is for Pro.",
   "ly.trHint": "Stalak listens to the voice in the part you picked and writes the lyrics, already synced to your voice. You can fix any word afterwards.",
   "ly.trLang": "Sung language",
   "ly.trAuto": "Auto",
@@ -1171,6 +1184,8 @@ const I18N_EN = /*@EN*/{
   "exps.stay": "Stay on Stalak until it’s done: the screen stays on.",
   "pack.mem": "Too heavy for this device’s memory: {n} videos of {s} s. Pick a pack of {nmax} videos, or a shorter part (up to {smax} s).",
   "pack.mem1": "Too heavy for this device’s memory: {n} videos of {s} s. Pick a shorter part of the song (up to {smax} s).",
+  "exp.mem": "This video of {s} s is too long for this device’s memory: it could close the page halfway. Pick a part of up to {smax} s (step 1), or export it on a computer.",
+  "exp.mem0": "This video is too long for this device’s memory: it could close the page halfway. Export it on a computer.",
   "exp.fab": "Export",
   "post.sharePhotos": "Save to Photos / Share",
   "save.file": "Download the file",
@@ -1223,6 +1238,10 @@ const I18N_FR = /*@FR*/{
   "take.n": "Prise {n}",
   "broll.n": "Ambiance {n}",
   "demo.song": "Son de démo",
+  "demo.takeN": "Prise d’exemple {n}",
+  "frame.st.fit": "Cadrage : toute l’image verticale, copie floutée sur les côtés.",
+  "frame.st.face": "Cadrage : tes prises remplissent l’écran 16:9, centrées sur ton visage.",
+  "frame.st.zoom": "Cadrage : zoom sur ton visage, un peu de flou sur les côtés.",
   "takes.empty": "Pas encore de prise.",
   "tk.demo": "Exemple",
   "tk.pending": "Analyse du son…",
@@ -1555,7 +1574,7 @@ const I18N_FR = /*@FR*/{
   "ca.t": "Le mode Clip est réservé à Pro",
   "ca.p": "Tu peux l’essayer dans l’aperçu. Pour exporter ton clip en 16:9, passe à Pro, ou exporte ta vidéo au format TikTok / Reels.",
   "ca.reel": "Exporter en TikTok / Reels",
-  "ca.try": "Mode Clip : essaie-le dans l’aperçu. L’export d’un clip 16:9 est pour Pro.",
+  "ca.try": "Mode Clip : essaie tout dans l’aperçu, effets et paroles compris. L’export d’un clip 16:9 est pour Pro.",
   "ly.trGo": "Écrire mes paroles",
   "ly.trAgain": "Les réécrire",
   "lyr.busy": "J’écoute…",
@@ -1863,6 +1882,8 @@ const I18N_FR = /*@FR*/{
   "exps.stay": "Reste sur Stalak jusqu’à la fin : l’écran reste allumé.",
   "pack.mem": "Trop lourd pour la mémoire de cet appareil : {n} vidéos de {s} s. Choisis un pack de {nmax} vidéos, ou un passage plus court (jusqu’à {smax} s).",
   "pack.mem1": "Trop lourd pour la mémoire de cet appareil : {n} vidéos de {s} s. Choisis un passage plus court du son (jusqu’à {smax} s).",
+  "exp.mem": "Cette vidéo de {s} s est trop longue pour la mémoire de cet appareil : la page risquerait de se fermer en route. Choisis un passage de {smax} s au plus (étape 1), ou exporte-la sur un ordinateur.",
+  "exp.mem0": "Cette vidéo est trop longue pour la mémoire de cet appareil : la page risquerait de se fermer en route. Exporte-la sur un ordinateur.",
   "exp.fab": "Exporter",
   "post.share": "Partager",
   "save.btn": "Enregistrer sur l'appareil",
@@ -3113,7 +3134,7 @@ function padGrid(sg){
   }
   sg.beats.splice(0, sg.down); sg.down = 0;
 }
-function songMeta(){ const sg = S.song; if (!sg) return; $('#songMeta').innerHTML = `<span><strong>${escapeHtml(sg.demo ? _t('demo.song') : sg.name)}</strong></span><span>${sg.bpm.toFixed(1)} BPM</span><span>${fmt(sg.duration)}</span>`; }
+function songMeta(){ const sg = S.song; if (!sg) return; $('#songMeta').innerHTML = `<span><strong>${escapeHtml(sg.demo && !sg.real ? _t('demo.song') : sg.name)}</strong></span><span>${sg.bpm.toFixed(1)} BPM</span><span>${fmt(sg.duration)}</span>`; }
 function totalBars(){ const sg=S.song; return Math.max(1, Math.floor((sg.beats.length-1-sg.down)/4)); }
 function barsInSnippet(){ if (isClip()) return Math.max(1, clipEndBar() - S.startBar); return S.nBars ? Math.min(S.nBars, totalBars()) : totalBars() - S.startBar; }
 function maxStart(){ if (isClip()) return Math.max(0, clipEndBar() - 1); return Math.max(0, totalBars() - (S.nBars ? Math.min(S.nBars, totalBars()) : 1)); }
@@ -3230,6 +3251,7 @@ function alignTake(tk){
   tk.offset = r.offset; tk.status = r.cands.length > 1 ? 'ambig' : r.conf > 6 ? 'ok' : 'check';
 }
 function renderTakes(){
+  try { frameUI(); } catch(e){}
   const ul = $('#takeList'); ul.innerHTML = '';
   renderBrolls();
   const sung = S.takes.filter(t => !t.broll);
@@ -3591,7 +3613,8 @@ const FX_ICON = {
 };
 const fxSvg = type => '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' + FX_ICON[type] + '</svg>';
 const FX_NONE = [];
-const fxOn = () => isClip() && S.fxLevel !== 'aucun' && !!S.song && can('fx');
+// (7/11, owner's decision on the Clip mode, n° 2) the effects play in the preview for everyone; a clip is exported with Pro (clipGate)
+const fxOn = () => isClip() && S.fxLevel !== 'aucun' && !!S.song;
 /* the effect controls are shown: a clip, effects not turned off */
 const fxUi = () => fxOn() && S.cuts.length > 0;
 function spbNow(){ const bt = S.song.beats; return bt.length > 1 ? bt[1] - bt[0] : 60 / S.song.bpm; }
@@ -4042,9 +4065,10 @@ function fxImg(c, L, pic){
   const tk = L.cut.take;
   if (tk.kind === 'demo'){ drawDemo(c, tk, L.lt + tk.offset); return; }
   const mir = isMirror(tk);
-  if (pic){ drawCover(c, pic.img, pic.w, pic.h, pic.rot, mir); return; }
-  if (!S.exporting && tk.live){ const ls = liveSrc(tk, fxLt(L), 0.25); if (ls) drawCover(c, ls.img, ls.w, ls.h, 0, mir); return; }
-  const ve = S.exporting ? fullEl(tk) : tk.el; if (ve && ve.readyState >= 2) drawCover(c, ve, ve.videoWidth, ve.videoHeight, 0, mir);
+  const fy = faceY(tk, fxLt(L));
+  if (pic){ drawCover(c, pic.img, pic.w, pic.h, pic.rot, mir, fy); return; }
+  if (!S.exporting && tk.live){ const ls = liveSrc(tk, fxLt(L), 0.25); if (ls) drawCover(c, ls.img, ls.w, ls.h, 0, mir, fy); return; }
+  const ve = S.exporting ? fullEl(tk) : tk.el; if (ve && ve.readyState >= 2) drawCover(c, ve, ve.videoWidth, ve.videoHeight, 0, mir, fy);
 }
 function fxLayer(c, L, pic, d, alpha){
   // the whip's blur: the same picture drawn 5 times along the move, each one weighed so they average out
@@ -4831,16 +4855,33 @@ async function trVoxFile(f){
 function cutAt(t){ for (let i=0;i<S.cuts.length;i++) if (t < S.cuts[i].t1) return i; return S.cuts.length-1; }
 /* mir: a selfie take filmed here, flipped left to right as the camera showed it (only the picture: the text is drawn after) */
 const isMirror = tk => !!(tk && baseOf(tk).mirror);
-function drawCover(c, img, sw, sh, rot, mir){
+function drawCover(c, img, sw, sh, rot, mir, fy){
   if (!sw) return;
   const side = rot % 180 !== 0, rw = side ? sh : sw, rh = side ? sw : sh;
-  // a take filmed upright in a landscape frame: cropping it would cut the face, so the whole picture is shown
-  // over a blurred, darker copy of itself that fills the sides
-  if (W > H && rh > rw * 1.05){ drawBlurFill(c, img, sw, sh, rot, rw, rh); placeImg(c, img, sw, sh, rot, Math.min(W/rw, H/rh), mir); return; }
+  // a take filmed upright in a landscape frame (a clip). (7/11, Clip mode n° 4) three framings (S.frame):
+  // « fit »: the whole picture over a blurred, darker copy of itself that fills the sides (as before);
+  // « face »: the picture fills the frame, placed so that the face (fy: its height in the picture, faceY) sits a little
+  // above the middle; « zoom »: in between (1.6 × the whole picture), on the blurred copy, centred on the face too
+  if (W > H && rh > rw * 1.05){
+    const fit = Math.min(W/rw, H/rh), fill = Math.max(W/rw, H/rh), mode = S.frame || 'fit';
+    if (mode === 'fit'){ drawBlurFill(c, img, sw, sh, rot, rw, rh); placeImg(c, img, sw, sh, rot, fit, mir); return; }
+    const sc = mode === 'face' ? fill : Math.min(fill, fit * 1.6), ih = rh * sc, lim = Math.max(0, (ih - H) / 2);
+    if (sc < fill - 1e-6) drawBlurFill(c, img, sw, sh, rot, rw, rh);
+    const y = fy == null || !(fy === fy) ? 0.35 : fy, dy = Math.max(-lim, Math.min(lim, H * 0.42 - H / 2 - (y - 0.5) * ih));
+    placeImg(c, img, sw, sh, rot, sc, mir, dy); return;
+  }
   placeImg(c, img, sw, sh, rot, Math.max(W/rw, H/rh), mir);
 }
-function placeImg(c, img, sw, sh, rot, sc, mir){
-  c.save(); c.translate(W/2, H/2); if (mir) c.scale(-1, 1); if (rot) c.rotate(rot*Math.PI/180);
+/* the face's height in a take at its own time lt (0 = top, 1 = bottom): from the picture analysis (analyseTake), between two
+   half seconds; not yet analysed: a usual height for a face in an upright take */
+function faceY(tk, lt){
+  const q = tk && baseOf(tk).qual; if (!q || !q.fy || !q.fy.length) return 0.35;
+  const x = Math.max(0, lt) / QBIN - 0.5, i = Math.floor(x), a = q.fy[Math.max(0, Math.min(q.fy.length - 1, i))], b = q.fy[Math.max(0, Math.min(q.fy.length - 1, i + 1))];
+  const d = q.fyMed === q.fyMed ? q.fyMed : 0.35, va = a === a ? a : d, vb = b === b ? b : d, f = Math.max(0, Math.min(1, x - i));
+  return va + (vb - va) * f;
+}
+function placeImg(c, img, sw, sh, rot, sc, mir, dy){
+  c.save(); c.translate(W/2, H/2 + (dy || 0)); if (mir) c.scale(-1, 1); if (rot) c.rotate(rot*Math.PI/180);
   c.drawImage(img, -sw*sc/2, -sh*sc/2, sw*sc, sh*sc); c.restore();
 }
 /*@FILTERS*/
@@ -5191,7 +5232,8 @@ function planTag(el, feat, on){
 const packFeat = n => +n >= 30 ? 'pack30' : +n >= 10 ? 'pack10' : 'pack5';
 /* the padlocks drawn again when the account or the pack size changes */
 function planTags(){
-  planTag($('#kindSeg button[data-v="clip"]'), 'clip');
+  planTag($('#kindSeg button[data-v="clip"]'), 'clip'); planTag($('#kindSeg4 button[data-v="clip"]'), 'clip');
+  $$('#frameSeg button').forEach(b => planTag(b, 'clip', !!ACCT && !can('clip') && b.dataset.v !== 'fit'));
   planTag($('#packBtn'), packFeat($('#packSel') ? $('#packSel').value : 10));
   $$('#stSize button, #stAnim button').forEach(b => { const k = b.closest('#stSize') ? 'size' : 'anim'; planTag(b, 'text', !!ACCT && !can('text') && b.dataset.v !== TEXT_FREE[k]); });
   $$('#fxSeg button').forEach(b => planTag(b, 'fx', !!ACCT && !can('fx') && b.dataset.v !== 'aucun'));
@@ -5366,9 +5408,10 @@ function drawFrame(c, cut, t, overlay, src){
     const lt = out && isClip() ? Math.max(0, Math.min(tk.duration - 0.03, lt0)) : lt0;
     if (out && !isClip() && S.exporting){ c.fillStyle='#000'; c.fillRect(0,0,W,H); }
     else if (out && !isClip()){ c.fillStyle='#000'; c.fillRect(0,0,W,H); c.fillStyle='rgba(255,255,255,.7)'; c.textAlign='center'; c.textBaseline='middle'; c.font='500 40px "DM Sans", sans-serif'; c.fillText(_t('cv.nocover'), W/2, H/2); }
-    else if (src){ c.fillStyle='#000'; c.fillRect(0,0,W,H); drawCover(c, src.img, src.w, src.h, src.rot, isMirror(tk)); }
-    else if (!S.exporting && tk.live){ const ls = liveSrc(tk, Math.max(0, lt), 0.25); if (ls){ c.fillStyle='#000'; c.fillRect(0,0,W,H); drawCover(c, ls.img, ls.w, ls.h, 0, isMirror(tk)); } }
-    else { const ve = S.exporting ? fullEl(tk) : tk.el; if (ve.readyState >= 2){ c.fillStyle='#000'; c.fillRect(0,0,W,H); drawCover(c, ve, ve.videoWidth, ve.videoHeight, 0, isMirror(tk)); } }
+    else { const fy = faceY(tk, lt);
+    if (src){ c.fillStyle='#000'; c.fillRect(0,0,W,H); drawCover(c, src.img, src.w, src.h, src.rot, isMirror(tk), fy); }
+    else if (!S.exporting && tk.live){ const ls = liveSrc(tk, Math.max(0, lt), 0.25); if (ls){ c.fillStyle='#000'; c.fillRect(0,0,W,H); drawCover(c, ls.img, ls.w, ls.h, 0, isMirror(tk), fy); } }
+    else { const ve = S.exporting ? fullEl(tk) : tk.el; if (ve.readyState >= 2){ c.fillStyle='#000'; c.fillRect(0,0,W,H); drawCover(c, ve, ve.videoWidth, ve.videoHeight, 0, isMirror(tk), fy); } } }
   }
   filtPass(c, t);
   const l0 = performance.now(); drawLyrics(c, t); lyrMs = performance.now() - l0;
@@ -6310,13 +6353,29 @@ function qualMeasure(px, w, h, prevY){
     if (x >= x0 && x < x1 && y >= y0 && y < y1){ skinN++;
       const cb = 128 - 0.1687*r - 0.3313*gr + 0.5*b, cr = 128 + 0.5*r - 0.4187*gr - 0.0813*b;
       if (yy > 45 && cb >= 77 && cb <= 127 && cr >= 137 && cr <= 173) skin++; }
+
   }
   const lum = sum/n, varY = Math.max(0, sq/n - lum*lum);
   let ls = 0, lq = 0, ln = 0;
   for (let y=1; y<h-1; y++) for (let x=1; x<w-1; x++){ const i = y*w + x, v = 4*Y[i] - Y[i-1] - Y[i+1] - Y[i-w] - Y[i+w]; ls += v; lq += v*v; ln++; }
   const lm = ls/ln, lap = (lq/ln - lm*lm) / (varY + 64);
   let diff = -1; if (prevY){ diff = 0; for (let i=0; i<n; i++) diff += Math.abs(Y[i] - prevY[i]); diff /= n; }
-  return { Y, lap, lum, bright: bright/n, diff, skin: skinN ? clamp01(skin/skinN/0.15) : 0 };
+  return { Y, lap, lum, bright: bright/n, diff, skin: skinN ? clamp01(skin/skinN/0.15) : 0, fy: prevY ? faceRow(px, Y, prevY, w, h) : NaN };
+}
+/* (7/11, Clip mode n° 4) the face's height in a small upright picture (0 = top), or NaN. A take of a rapper: he moves, the
+   room does not (a wooden ceiling, a red jumper have the colours of skin, so colour alone is not enough). The top of what
+   moves is the top of his head; the face is the skin-coloured moving pixels just under it (a quarter of the picture), or
+   a little under that top when no skin is seen. */
+function faceRow(px, Y, prevY, w, h){
+  const x0 = Math.floor(w*0.12), x1 = Math.ceil(w*0.88), rows = new Float32Array(h); let tot = 0;
+  for (let y=0; y<h; y++) for (let x=x0; x<x1; x++){ const i = y*w + x; if (Math.abs(Y[i] - prevY[i]) > 8){ rows[y]++; tot++; } }
+  if (tot < (x1 - x0) * h * 0.01) return NaN;
+  let top = 0; for (let acc = 0; top < h; top++){ acc += rows[top]; if (acc >= tot * 0.03) break; }
+  const y1 = Math.min(h, top + Math.ceil(h * 0.25)); let sy = 0, sn = 0;
+  for (let y=top; y<y1; y++) for (let x=x0; x<x1; x++){ const i = y*w + x; if (Math.abs(Y[i] - prevY[i]) <= 4) continue;
+    const r = px[i*4], gr = px[i*4+1], b = px[i*4+2], cb = 128 - 0.1687*r - 0.3313*gr + 0.5*b, cr = 128 + 0.5*r - 0.4187*gr - 0.0813*b;
+    if (Y[i] > 45 && cb >= 77 && cb <= 127 && cr >= 137 && cr <= 173){ sy += y; sn++; } }
+  return sn >= 6 ? (sy / sn + 0.5) / h : (top + h * 0.08) / h;
 }
 async function analyseTake(tk){
   // the take's own source: its light copy, or its original when that is light (read lazily, turned upright here)
@@ -6328,7 +6387,8 @@ async function analyseTake(tk){
   let fcv = null; const fd = getFaceDet();
   if (fd){ fcv = document.createElement('canvas'); fcv.width = SW*2; fcv.height = SH*2; }
   const n = Math.max(1, Math.floor(Math.max(0, tk.duration - 0.05) / QSTEP) + 1), nb = Math.ceil(n * QSTEP / QBIN);
-  const acc = { lap: new Float32Array(nb), lum: new Float32Array(nb), bright: new Float32Array(nb), diff: new Float32Array(nb), face: new Float32Array(nb), cnt: new Float32Array(nb) };
+  const acc = { lap: new Float32Array(nb), lum: new Float32Array(nb), bright: new Float32Array(nb), diff: new Float32Array(nb), face: new Float32Array(nb), cnt: new Float32Array(nb), fy: new Float32Array(nb), fyn: new Float32Array(nb) };
+  let lastFy = NaN;
   let fs = null, prevY = null, i = 0, faceHow = fd ? 'détecteur de visage' : 'teinte de peau', lastFace = 0, busyMs = 0, slice = performance.now();
   try {
     while (i < n){
@@ -6345,14 +6405,16 @@ async function analyseTake(tk){
       if (faceDet && i % 10 === 0){
         try {
           const found = await faceDet.detect(fcv);
-          lastFace = 0;
+          lastFace = 0; lastFy = NaN; let big = 0;
           for (const d of found){ const bx = d.boundingBox, fx = (bx.x + bx.width/2) / fcv.width, fy = (bx.y + bx.height/2) / fcv.height;
-            lastFace = Math.max(lastFace, fx > 0.2 && fx < 0.8 && fy > 0.08 && fy < 0.65 ? 1 : 0.5); }
+            lastFace = Math.max(lastFace, fx > 0.2 && fx < 0.8 && fy > 0.08 && fy < 0.65 ? 1 : 0.5);
+            if (bx.width * bx.height > big){ big = bx.width * bx.height; lastFy = fy; } }
         } catch(e){ faceDet = null; fcv = null; faceHow = 'teinte de peau'; }
       }
       if (faceDet) face = lastFace;
       const b = Math.min(nb - 1, Math.floor(i * QSTEP / QBIN));
       acc.lap[b] += m.lap; acc.lum[b] += m.lum; acc.bright[b] += m.bright; acc.face[b] += face; acc.cnt[b]++;
+      { const fy = faceDet && lastFy === lastFy ? lastFy : m.fy; if (fy === fy){ acc.fy[b] += fy; acc.fyn[b]++; } }
       if (m.diff >= 0) acc.diff[b] = Math.max(acc.diff[b], m.diff);
       i++; busyMs += performance.now() - w0;
       if (i % 20 === 0){ tk.qualPct = i / n; if (S.step === 2) renderTakes(); }
@@ -6365,6 +6427,10 @@ async function analyseTake(tk){
     q.lap.push(acc.lap[b]/c); q.lum.push(acc.lum[b]/c); q.bright.push(acc.bright[b]/c); q.diff.push(acc.diff[b]); q.face.push(acc.face[b]/c); }
   const ok = q.lap.filter(x => x === x).sort((a, b) => a - b); if (!ok.length) return;
   q.medLap = ok[ok.length >> 1];
+  // the face's height per half second, smoothed over about 3 s (the framing glides, it never jumps)
+  { const raw = Array.from({ length: nb }, (_, b) => acc.fyn[b] ? acc.fy[b] / acc.fyn[b] : NaN), sm = [];
+    for (let b=0; b<nb; b++){ let s0 = 0, n0 = 0; for (let k=b-3; k<=b+3; k++) if (k >= 0 && k < nb && raw[k] === raw[k]){ const wt = 4 - Math.abs(k - b); s0 += raw[k] * wt; n0 += wt; } sm.push(n0 ? s0 / n0 : NaN); }
+    const all = raw.filter(x => x === x).sort((a, b) => a - b); q.fyMed = all.length ? all[all.length >> 1] : NaN; q.fy = sm; }
   tk.qual = q;
   const s = qualSummary(tk);
   diagT(tk, 'image analysée : note ' + s.score.toFixed(2) + ' (netteté ' + s.sharp.toFixed(2) + ', lumière ' + s.expo.toFixed(2) + ' [moyenne ' + Math.round(s.lum) + '], stabilité ' + s.stab.toFixed(2) + ', visage ' + s.face.toFixed(2) + ' par ' + faceHow + ') · ' + s.label + ' · ' + i + ' images en ' + ((performance.now() - T0)/1000).toFixed(1) + ' s (calcul ' + Math.round(busyMs) + ' ms)');
@@ -6924,7 +6990,7 @@ function memBudget(){
 }
 // MB at the busiest moment, for n videos of the passage at this bitrate
 function memNeed(n, bitrate, secs){
-  const vid = (secs == null ? S.segEnd - S.segStart : secs) * (bitrate + 192000) / 8 / 1048576;
+  const vid = (secs == null ? S.segEnd - S.segStart : secs) * (bitrate + AUDIO_BR[0]) / 8 / 1048576;
   const streams = Math.max(1, new Set(S.cuts.map(c => baseOf(c.take))).size);
   return vid * (Math.min(streams, n) + (n > 1 ? n : 1) + 2);
 }
@@ -6939,10 +7005,15 @@ function memPlan(n, bitrate){
   return { ok: false, bitrate: floor, need: memNeed(n, floor), budget, nMax, sMax };
 }
 const plainCfg = cfg => { const c = Object.assign({}, cfg); delete c.hardwareAcceleration; return c; };
+// (7/11, Clip mode n° 5) the sound in YouTube's quality, for everyone: AAC stereo 384 kbit/s (YouTube's advice), else 320, else
+// 256, else the 192 of before (some encoders refuse the highest rates)
+const AUDIO_BR = [384000, 320000, 256000, 192000];
 async function pickAudioConfig(sr){
   if (!window.AudioEncoder) return null;
-  const cfg = { codec:'mp4a.40.2', sampleRate:sr, numberOfChannels:2, bitrate:192000 };
-  try { const r = await AudioEncoder.isConfigSupported(cfg); if (r.supported) return cfg; } catch(e){}
+  for (const bitrate of AUDIO_BR){
+    const cfg = { codec:'mp4a.40.2', sampleRate:sr, numberOfChannels:2, bitrate };
+    try { const r = await AudioEncoder.isConfigSupported(cfg); if (r.supported) return cfg; } catch(e){}
+  }
   return null;
 }
 async function fontsReady(){
@@ -7579,7 +7650,7 @@ async function renderRealtime(){
   const c = audio(); await c.resume(); const dest = c.createMediaStreamDestination();
   setRes(1);
   const stream = new MediaStream([...view.captureStream(30).getVideoTracks(), ...dest.stream.getAudioTracks()]);
-  const rec = new MediaRecorder(stream, mime ? { mimeType:mime, videoBitsPerSecond:8e6 } : undefined);
+  const rec = new MediaRecorder(stream, mime ? { mimeType:mime, videoBitsPerSecond:8e6, audioBitsPerSecond:320000 } : undefined);
   const chunks = []; rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
   const done = new Promise(r => rec.onstop = r);
   // the preview let go of the takes' players (it decodes them itself): they are loaded again for this way of exporting
@@ -7637,7 +7708,7 @@ function expRunClear(){ S.expMarked = null; try { localStorage.removeItem(EXP_RU
 addEventListener('pagehide', () => { if (!S.exporting || S.cancel) return; acctEvent('export_fail', { cat: 'closed', x: expX() }); expRunClear(); });
 // an export that failed is made again once by itself: for these reasons (a cancel or a browser that cannot export are not)
 function expRetryable(cat, e){ return ['hidden', 'decoder', 'encoder', 'memory', 'other'].includes(cat) && !String(e && e.message || '').includes(_t('exp.nosupport')); }
-function beginExport(again){ clearTimeout(ppTimer); ppTimer = 0; ppClose(); if (!again) acctEvent('export_start'); S.expP = 0; S.expX = { t0: performance.now(), st: 'start', path: null }; expOpen(); stop(true); S.exporting = true; S.leftDuring = false; wakeOn(); liveTidy(); nearClear('#expNear'); nearClear('#dvSlot'); nearClear('#packBox');   /* the preview's decoders let go: the export gets the graphics chip to itself */
+function beginExport(again){ clearTimeout(ppTimer); ppTimer = 0; ppClose(); if (!again) acctEvent('export_start', { cat: isClip() ? 'clip' : 'reel' }); S.expP = 0; S.expX = { t0: performance.now(), st: 'start', path: null }; expOpen(); stop(true); S.exporting = true; S.leftDuring = false; wakeOn(); liveTidy(); nearClear('#expNear'); nearClear('#dvSlot'); nearClear('#packBox');   /* the preview's decoders let go: the export gets the graphics chip to itself */
   resultPark();
   S.takes.forEach(t => { if (t.orig && !t.orig.parentNode) $('#vpool').append(t.orig); }); S.cancel = false; setBusy(true); progress(0); $('#cancelBtn').hidden = false; $('#result').hidden = true; }
 /* the video already made, during a new export: stopped and let go of (a video playing behind kept its sound going, and on
@@ -7799,6 +7870,7 @@ $('#clipAsk').addEventListener('click', e => { if (e.target === e.currentTarget)
 async function clipGate(){
   if (!isClip() || can('clip')) return true;
   const c = await clipAsk();
+  acctEvent('clip_ask', { cat: c === 'pro' ? 'pro' : c === 'reel' ? 'reel' : 'none' });   // (7/11) what was chosen: Pro, TikTok / Reels, nothing
   if (c === 'pro'){ lockOpen('clip'); return false; }
   if (c !== 'reel') return false;
   setKind('reel', true); diag('mode Clip sans Pro : export en 9:16');
@@ -7820,6 +7892,12 @@ async function exportOne(again){
   const safe = !!again || !!S.lightNext, light = again === 'memory' || again === 'crash' || S.lightNext === 'crash';
   const keep = { noTiles: S.noTiles, noGl: S.noGl }; let retry = null, made = false;
   if (safe){ S.noTiles = true; S.noGl = true; diag('export : réglages plus sûrs' + (again ? ' (nouvel essai après « ' + again + ' »)' : ' (après un onglet fermé pendant l’export)')); }
+  // (7/11, Clip mode, before n° 1) a video too long for this device's memory even at the lowest bitrate is not started (the
+  // browser would close the tab in the middle): said, with the longest passage that fits, as for a pack
+  { const v0 = await pickVideoConfig(); if (v0){ const mp = memPlan(1, light ? Math.max(3e6, v0.bitrate * 0.6) : v0.bitrate);
+    if (!mp.ok){ S.noTiles = keep.noTiles; S.noGl = keep.noGl; const secs = Math.round(S.segEnd - S.segStart);
+      diag('mémoire : ' + Math.round(mp.need) + ' Mo pour ' + mp.budget + ' Mo sur cet appareil, export refusé (' + secs + ' s, jusqu’à ' + mp.sMax + ' s)');
+      sayNear(expNearAt(), mp.sMax ? 'exp.mem' : 'exp.mem0', { s: secs, smax: mp.sMax }); acctEvent('export_refused', { cat: 'memory' }); return; } } }
   S.lightNext = false; try { localStorage.removeItem('stalak:expLight'); } catch(e){}
   S.packN = 1; S.wm = wmOn(); beginExport(!!again); const TX = performance.now(); await fontsReady();
   if (again){ setT('#expRetry', 'exp.retry'); $('#expRetry').hidden = false; }
@@ -7847,7 +7925,7 @@ async function exportOne(again){
     lastName = 'stalak-' + (isClip() ? 'clip-' : '') + 'v' + S.version + '-' + S.fmt + '.' + ext;
     const rv = $('#resultVideo'); rv.src = URL.createObjectURL(lastBlob); rv.hidden = false;
     $('#result').hidden = false; postShow(); setT('#saveNote', ext === 'mp4' ? (isClip() ? 'save.mp4clip' : 'save.mp4reel') : 'save.webm');
-    say('exp.ready', { mb: (lastBlob.size/1048576).toFixed(1) }); acctEvent('export_ok'); if (again) acctEvent('export_saved', { cat: again });
+    say('exp.ready', { mb: (lastBlob.size/1048576).toFixed(1) }); acctEvent('export_ok', { cat: isClip() ? 'clip' : 'reel' }); if (again) acctEvent('export_saved', { cat: again });
     wmUI();
     // (the example's videos do not count: the offer is for the first video of the person's own)
     if (!S.lastDemo){ S.okCount = (S.okCount || 0) + 1; if (S.okCount === 1) S.okFirst = lastBlob; } proOfferUi();
@@ -7925,7 +8003,7 @@ async function exportPackRun(){
     diag('pack : ' + N + ' vidéos en ' + ((performance.now() - T0) / 1000).toFixed(1) + ' s');
     S.expX.st = 'file'; lastBlob = makeZip(files); lastName = 'pack-' + N + '-videos.zip'; resultDone();
     { const rv = $('#resultVideo'); rv.removeAttribute('src'); rv.hidden = true; } $('#result').hidden = false; postShow(); setT('#saveNote', 'pack.zip', { n: N, mb: (lastBlob.size/1048576).toFixed(0) });
-    say('pack.ready', { n: N }); acctEvent('export_ok'); made = true;
+    say('pack.ready', { n: N }); acctEvent('export_ok', { cat: 'reel' }); made = true;
   } catch(e){ diag('pack : ' + (e && e.message || e)); resultBack(); acctEvent('export_fail', { cat: expFailCat(e), x: expX() }); expFailSay(e, 'pack.cancelled', 'pack.fail'); }
   renderTimeline(); endExport(made);
 }
@@ -8117,7 +8195,7 @@ $('#capCopy').onclick = async () => {
    Escape) and never stands in the way of saving or sharing the video: the page under it is left as it is (no inert). */
 const PP_KEY = 'stalak:proPopSeen';
 /* the example (bips and drawn faces), nothing of the person's own */
-function demoOnly(){ return !!S.song && !!S.song.demo && S.takes.length > 0 && S.takes.every(t => t.kind === 'demo'); }
+function demoOnly(){ return !!S.song && !!S.song.demo && S.takes.length > 0 && S.takes.every(t => t.kind === 'demo' || t.demoReal); }
 let ppTimer = 0, ppBack = null;
 function ppEligible(){
   // (audit 6/11, n° 5) never for the example; on a phone, only once « Enregistrer la vidéo » has been tapped (it is not hidden)
@@ -8366,7 +8444,7 @@ function go(n){
   if (n >= 3){ if (!S.cuts.length) rebuild(false); renderTimeline(); showFrame(n === 3 && S.lyrics.mode !== 'none' ? lyricShowTime() : S.segStart); }
   status(''); updateNav(); window.scrollTo({ top: 0 });
 }
-function setFormat(f){ S.fmt = f; [W, H] = FORMATS[f]; setRes(RES); view.style.aspectRatio = W + '/' + H;
+function setFormat(f){ S.fmt = f; [W, H] = FORMATS[f]; try { frameUI(); } catch(e){} setRes(RES); view.style.aspectRatio = W + '/' + H;
   // landscape: the preview takes the wide column (see .work.wide)
   // the width comes from the style sheet (desktop / phone), from the shape given here
   view.style.width = ''; view.style.setProperty('--ar', String(W / H)); $('#work').classList.toggle('wide', W > H);
@@ -8376,7 +8454,7 @@ function setFormat(f){ S.fmt = f; [W, H] = FORMATS[f]; setRes(RES); view.style.a
 /* ---------- what is being made: a TikTok / Reels (vertical, a few bars) or a clip (the whole song, 16:9 landscape) ---------- */
 function kindUI(){
   const clip = isClip();
-  $$('#kindSeg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === S.kind));
+  $$('#kindSeg button, #kindSeg4 button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === S.kind));
   $('#kindHint').textContent = _t(clip ? 'kind.hint.clip' : 'kind.hint.reel');
   $('#endBox').hidden = false; $('#barsSel').hidden = $('#barsLbl').hidden = clip;
   $('#waveHint').textContent = _t(clip ? 'wave.hint.clip' : 'wave.hint.reel');
@@ -8386,6 +8464,16 @@ function kindUI(){
   $('#packBox').hidden = clip;
   $('#lyClipHint').hidden = !clip || S.lyrics.mode !== 'none';
   $('#exportQ').textContent = _t(clip ? 'exp.q.clip' : 'exp.q');
+  frameUI();
+}
+/* (7/11, Clip mode n° 4) the framing of the upright takes: only for a 16:9 clip (shown in the preview for everyone; a clip is
+   exported with Pro) */
+function frameUI(){
+  const up = t => { const sp = t.live && t.live.spec, side = sp && (sp.rot || 0) % 180 !== 0;
+    const w = sp ? (side ? sp.vH : sp.vW) : t.el && t.el.videoWidth, h = sp ? (side ? sp.vW : sp.vH) : t.el && t.el.videoHeight; return !!w && h > w * 1.05; };
+  const on = isClip() && S.fmt === '169' && S.takes.some(t => !t.broll && t.kind === 'video' && up(t));
+  $('#frameLbl').hidden = $('#frameSeg').hidden = !on;
+  $$('#frameSeg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === S.frame));
 }
 function setKind(k, quiet){
   if (k === S.kind || S.exporting) return;
@@ -8393,7 +8481,7 @@ function setKind(k, quiet){
   if (k === 'clip'){
     S.reelSave = { startBar: S.startBar, nBars: S.nBars, fmt: S.fmt, song: S.song };
     S.kind = 'clip'; S.startBar = 0; S.clipEnd = null;
-    if (!S.lyrUser) S.lyrics.mode = 'none';
+    // (7/11, n° 2) the lyrics stay as they were (they were cut in a clip: the free try of the Clip looked bare)
     setFormat(S.clipFmt || '169');
   } else {
     S.clipFmt = S.fmt; S.kind = 'reel';
@@ -8581,7 +8669,6 @@ function initPickers(){
   });
   bindSeg('#fmtSeg', v => { stop(true); setFormat(v); });
   bindSeg('#fxSeg', v => {
-    if (v !== 'aucun' && !can('fx')){ $$('#fxSeg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === S.fxLevel)); lockOpen('fx'); return; }
     S.fxLevel = v; store.set('stalak:fx', v); const was = S.playing; stop(true); rebuild(false);
     const n = fxItems().filter(it => it.ok).length, mine = S.fxUser.filter(u => u.type !== 'none').length;
     say(() => v === 'aucun' ? _t('fxl.st.none') + (mine ? _t('fxl.st.mine') : '') : _t(v === 'sobre' ? 'fxl.st.sobre' : 'fxl.st.intense') + tn('fxl.st.n', n));
@@ -8635,6 +8722,8 @@ $('#playBtn').onclick = togglePlay;
 $('#songPlay').onclick = listenToggle;
 // (audit 6/11, n° 18) the Clip mode can be tried by everybody, in the preview; only its export asks for Pro (as the filters)
 bindSeg('#kindSeg', k => { setKind(k); if (k === 'clip' && !can('clip')) say('ca.try'); });
+bindSeg('#kindSeg4', k => { setKind(k); if (k === 'clip' && !can('clip')) say('ca.try'); });
+bindSeg('#frameSeg', v => { S.frame = v; S.frameUser = true; store.set('stalak:frame', v); stop(true); showFrame(cursorIn()); say('frame.st.' + v); });
 // the end of the passage, one bar earlier or later (both modes: the same as the end handle)
 $('#endPrev').onclick = () => { if (!S.song) return; if (segMove('r', segEndBar() - 1)){ stop(true); rebuild(false); } };
 $('#endNext').onclick = () => { if (!S.song) return; if (segMove('r', segEndBar() + 1)){ stop(true); rebuild(false); } };
@@ -8865,7 +8954,7 @@ async function loadSongFile(f){
   try {
     if (beatOn) beatTestEnd(); tapReset();
     const buf = await songFromFile(f);
-    if (S.song && S.song.demo){ S.takes = []; S.lyrics.lines = []; }
+    if (S.song && S.song.demo){ for (const tk of S.takes.slice()) if (tk.demoReal) removeTake(tk); S.takes = []; S.lyrics.lines = []; }
     await setSong(buf, f.name.replace(/\.[^.]+$/, ''), false);
     S.song.file = f;   // kept for the online saving (Pro)
     S.takes.forEach(alignTake);
@@ -8894,7 +8983,7 @@ $('#takeFiles').onchange = async e => {
   if (demoLoading){ e.target.value = ''; say('demo.wait'); return; }
   if (S.song && S.song.demo){ e.target.value = ''; go(1); say('demo.songFirst'); return; }
   stop(true); nearClear('#takesNear');
-  if (S.song && S.song.demo) S.takes = S.takes.filter(t => t.kind !== 'demo');
+  if (S.song && S.song.demo) S.takes = S.takes.filter(t => t.kind !== 'demo' && !t.demoReal);
   say('takes.analyse');
   for (const f of files){ await addVideo(f); renderTakes(); await nextFrame(); }
   rebuild(false);
@@ -8913,15 +9002,52 @@ $('#brollFiles').onchange = async e => {
 let demoLoading = false;
 $('#demoBtn').onclick = async () => {
   if (S.exporting || demoLoading) return;
-  if ((S.song && !S.song.demo) || S.takes.some(t => t.kind === 'video')){
+  if ((S.song && !S.song.demo) || S.takes.some(t => t.kind === 'video' && !t.demoReal)){
     if (!(await askSure(_t('demo.askT'), _t('demo.askP'), _t('demo.askYes')))) return;
   }
   stop(true);
   for (const tk of S.takes.slice()) if (tk.kind === 'video') removeTake(tk);
   demoLoading = true; try { await demoLoad(); } finally { demoLoading = false; }
 };
+/* (7/11, Clip mode n° 3) the real example, on stalak.app: 8 bars of « neva die » by 99Sayso and three of his takes filmed in
+   three places (site_src/demo/example/, docs/marketing/DEMO.md; shown with his OK of 6/11). The same in TikTok and in Clip
+   (16:9: his upright takes, filled and centred on his face). The tempo is set from example.json (157 BPM, first downbeat at 0),
+   not detected. The claude.ai page has no /demo/ folder (and no account): it keeps the example made of bips and drawn faces. */
+async function demoRealFiles(){
+  if (!HELP_SITE || !window.fetch) return null;
+  const get = async (n, type) => { const r = await fetch('/demo/example/' + n); if (!r.ok) throw new Error(n + ' ' + r.status); return new File([await r.blob()], n, { type }); };
+  const r = await fetch('/demo/example/example.json'); if (!r.ok) return null;
+  const j = await r.json(), song = await get(j.song, 'audio/mpeg'), takes = [];
+  for (const t of j.takes) takes.push(await get(t.file, 'video/mp4'));
+  return { j, song, takes };
+}
+async function demoLoadReal(R){
+  const j = R.j, buf = await songFromFile(R.song);
+  await setSong(buf, j.title + ' · ' + j.artist, true);
+  const sg = S.song; sg.real = true; sg.file = null;
+  // the grid of example.json: a beat every 0.38217 s from 0
+  sg.beats = []; for (let t = j.firstDownbeat || 0; t <= sg.duration + j.beat; t += j.beat) sg.beats.push(Math.round(t * 1e5) / 1e5);
+  sg.down = 0; sg.bpm = j.bpm; sg.lyr = null; padGrid(sg); songMeta(); musicStart(sg, toMono(buf));
+  S.takes = []; S.lyrics.lines = []; $('#lyText').value = '';
+  for (let i = 0; i < R.takes.length; i++){
+    await addVideo(R.takes[i]); const tk = S.takes[S.takes.length - 1]; if (!tk) continue;
+    tk.demoReal = true; tk.name = _t('demo.takeN', { n: i + 1 });
+    // lined up at 0 with the song (checked by Marketing): never left to the sound matching
+    tk.offset = j.takes[i].offset || 0; tk.status = 'ok'; tk.cands = null; renderTakes();
+  }
+  if (!isClip()){ S.nBars = 8; $('#barsSel').value = '8'; S.startBar = 0; }
+  // a clip of upright takes: filled, centred on the face (n° 4), unless the person chose a framing already
+  if (!S.frameUser) S.frame = 'face';
+  updateSegment(); frameUI();
+  $('#songBox').hidden = false;
+  rebuild(false); go(4);
+  say('demo.loaded');
+  try { $('#playBtn').focus({ preventScroll: true }); } catch(e){}
+}
 async function demoLoad(){
   say('demo.prep');
+  let R = null; try { R = await demoRealFiles(); } catch(e){ diag('exemple réel indisponible (' + (e && e.message || e) + ') : exemple dessiné'); }
+  if (R){ await demoLoadReal(R); return; }
   const buf = await makeDemoSong();
   await setSong(buf, _t('demo.song'), true);
   S.takes = demoTakes(buf.duration);
@@ -8939,6 +9065,7 @@ async function demoLoad(){
 /* ---------- boot ---------- */
 const st = store.get('lyrStyle'); if (st && typeof st === 'object') Object.assign(S.lyrics.style, st);
 { const fl = store.get('stalak:fx'); if (['aucun', 'sobre', 'intense'].includes(fl)) S.fxLevel = fl; }
+{ const fr = store.get('stalak:frame'); if (['fit', 'face', 'zoom'].includes(fr)){ S.frame = fr; S.frameUser = true; } }
 initPickers();
 ['#stPos','#stDeco','#stSize','#stAnim'].forEach((sel, i) => { const key = ['pos','deco','size','anim'][i]; $$(sel + ' button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === S.lyrics.style[key])); });
 setRes(PREV); renderTakes(); drawEmpty(); updateNav(); go(1);
@@ -10949,7 +11076,7 @@ const lpKeys = st => lpReq(st, 'readonly', o => o.getAllKeys());
 // a file's name in this store: given once per file of this visit (the files read back from the store keep theirs)
 async function lpFp(f){ let id = LP.fp.get(f); if (!id){ id = 'f' + Date.now().toString(36) + (++LP.n).toString(36) + Math.random().toString(36).slice(2, 6); LP.fp.set(f, id); } return id; }
 // worth keeping: a song and at least one take of the person (the example alone is not kept)
-function lpWorth(){ return !!S.song && S.takes.length > 0 && !(S.song.demo && S.takes.every(t => t.kind === 'demo')); }
+function lpWorth(){ return !!S.song && S.takes.length > 0 && !demoOnly(); }
 // a quick look at what makes the edit (read at once, when the page is about to go)
 function lpQuick(){
   try { return JSON.stringify([S.kind, S.fmt, S.filter, S.segStart, S.segEnd, S.seed, S.version, S.pace, S.mode, S.brollAmt, S.fxLevel, S.fxUser,

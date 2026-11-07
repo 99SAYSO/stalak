@@ -323,6 +323,12 @@
         <div class="card">
           <h2 data-i18n="p4.title">Ton montage</h2>
           <div class="grid2">
+            <!-- (7/11, Clip mode n° 6) the kind of video, changed here too without going back to step 1 -->
+            <span class="label" data-i18n="p4.kind">Vidéo</span>
+            <div class="seg kindseg" role="group" aria-label="Ce que tu fais" data-i18n-attr="aria-label:p1.kind.aria" id="kindSeg4">
+              <button type="button" data-v="reel" aria-pressed="true">TikTok / Reels</button>
+              <button type="button" data-v="clip" aria-pressed="false" data-i18n="kind.clip">Clip</button>
+            </div>
             <span class="label" data-i18n="p4.cuts">Coupes</span>
             <div class="seg" role="group" aria-label="Où couper" data-i18n-attr="aria-label:p4.cuts.aria" id="modeSeg">
               <button type="button" data-v="auto" aria-pressed="true" title="Le site coupe en suivant la musique, phrase par phrase (réglage Rythme)" data-i18n-attr="title:mode.auto.tip">Auto</button>
@@ -353,6 +359,13 @@
               <button type="button" data-v="916" aria-pressed="true" title="Vertical : TikTok, Reels, Shorts" data-i18n-attr="title:fmt.916">9:16</button>
               <button type="button" data-v="45" aria-pressed="false" title="Fil Instagram" data-i18n-attr="title:fmt.45">4:5</button>
               <button type="button" data-v="11" aria-pressed="false" title="Carré" data-i18n-attr="title:fmt.11">1:1</button>
+            </div>
+            <!-- (7/11, Clip mode n° 4) how an upright take fills a 16:9 clip -->
+            <span class="label" id="frameLbl" hidden data-i18n="p4.frame">Cadrage</span>
+            <div class="seg" role="group" aria-label="Cadrage des prises verticales" data-i18n-attr="aria-label:p4.frame.aria" id="frameSeg" hidden>
+              <button type="button" data-v="fit" aria-pressed="true" title="Toute l’image, sur une copie floutée qui remplit les côtés" data-i18n="frame.fit" data-i18n-attr="title:frame.fit.tip">Entière + flou</button>
+              <button type="button" data-v="face" aria-pressed="false" title="L’image remplit tout l’écran, centrée sur ton visage" data-i18n="frame.face" data-i18n-attr="title:frame.face.tip">Remplir</button>
+              <button type="button" data-v="zoom" aria-pressed="false" title="Entre les deux : plus grande, centrée sur ton visage, un peu de flou sur les côtés" data-i18n="frame.zoom" data-i18n-attr="title:frame.zoom.tip">Zoom</button>
             </div>
             <span class="label" data-i18n="p4.takes">Prises</span>
             <label class="chk best tip" for="bestChk" data-tip="Le site regarde tes prises (netteté, lumière, image qui saute, visage au centre) et met plus souvent la plus belle à chaque moment, en gardant de la variété. Les plans gardés ou exclus passent avant." data-i18n-attr="data-tip:best.tip"><input type="checkbox" id="bestChk" checked> <span data-i18n="best">Meilleure prise auto</span></label>
