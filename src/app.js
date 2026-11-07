@@ -6339,7 +6339,9 @@ async function runQual(){
   } finally { qualBusy = false; }
 }
 function qualApply(){
-  if (!S.bestTake || !S.song || !S.cuts.length || S.keepEdit){ S.qualDirty = false; return; }
+  // (7/11) the real example's edit stays as it was made (its takes are analysed for the framing only: it never changes under
+  // the eyes of someone watching it, and is not saved again)
+  if (!S.bestTake || !S.song || !S.cuts.length || S.keepEdit || demoOnly()){ S.qualDirty = false; return; }
   if (!qualIdle() || scrubBusy || tlDrag || typing(document.activeElement)) return;
   S.qualDirty = false; rebuild(false);
   if (S.step === 4) say('best.done');
