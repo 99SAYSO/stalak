@@ -92,6 +92,20 @@ Tests d'autres domaines adaptés au vrai exemple, sans changer ce qu'ils vérifi
 - `support_ui` et `lyrics_ui` échouent comme sur `main`, pour des causes sans lien avec cette branche : l'envoi d'e-mail de
   test (« Pas envoyés : access ») et le compte Pro de test du serveur.
 
+## Fusion avec `main` (8/11, demandée par le Chef de projet)
+J'ai fusionné `origin/main` (1f19a29, qui contient `compte/donnees-7-11`) dans la branche, en gardant les deux côtés :
+- `metrics.js` : les événements des deux, d'un côté `export_retry`, `export_saved`, `export_refused` et `clip_ask`, de
+  l'autre `checkout_close` et `checkout_done`, la provenance `src` et l'étape `stage` ;
+- `admin.js` : les détails des exports et du Clip, plus `bySource`, `visitCountries`, `checkoutClose` et `optins` ;
+- `admin-page.js` : les cartes des exports ratés et du Clip, plus le tableau par source, les pays, la fenêtre de paiement et
+  les e-mails ;
+- `src/account.js` : il envoie `src` et `stage` (Comptes) et les détails `x` (App) ;
+- `audit_ui.py` : les champs anonymes permis sont `src`, `stage` et `x` ;
+- `admin-demo-data.js` est refait par `node tools/admin_demo_data.mjs`.
+Le site est reconstruit. Le tableau de bord de démo affiche toutes les cartes, sans erreur.
+Tests après la fusion, lancés un par un : serveur **105/105**, `audit_ui` **158/158**, `clip1_ui` **73/73**,
+`exports_rates_ui` **76/76**.
+
 ## Planche contact
 Faite avant la précision de la règle 10 (7/11, 18 h : plus de planche pour les exports de test). Elle a quand même trouvé le
 problème de « Remplir » décrit plus haut. Clip 16:9 de l'exemple, Pro, 12 s, 25 images : la tête reste entière en
