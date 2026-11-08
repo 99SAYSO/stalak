@@ -14,7 +14,8 @@ export const METRICS = ['help_q', 'help_fail', 'cloud_save', 'ticket', 'ticket_m
 // export_retry: an export that failed and that the page made again by itself (safer settings, or once back in Stalak);
 // export_saved: that second go worked (the person got the video); export_refused: a pack not started (too big for the device).
 // clip_ask (7/11, Clip mode): a 16:9 clip exported without Pro, the answer to the question (pro / reel / none)
-export const EVENTS = ['export_start', 'export_ok', 'export_fail', 'export_retry', 'export_saved', 'export_refused', 'clip_ask', 'pro_offer', 'ad_offer', 'ad_shown', 'ad_ok', 'plans_open', 'checkout_open'];
+export const EVENTS = ['export_start', 'export_ok', 'export_fail', 'export_retry', 'export_saved', 'export_refused', 'clip_ask', 'pro_offer', 'ad_offer', 'ad_shown', 'ad_ok', 'plans_open', 'checkout_open',
+  'checkout_close', 'checkout_done'];   // 7/11: the payment window closed without buying ({stage}), or paid
 // why an export failed, as a category only (App sends it): nothing about the person or the video
 // (7/11) + encoder; closed: the page closed during the export; crash: an export that never ended, found at the next visit
 // (the browser closed the tab: usually out of memory on a phone)
@@ -81,6 +82,18 @@ export function deviceOf(request) {
 // where the visit comes from (?ref=…, or the site that sent it, read by the page: src/app.js VISIT_REF)
 export const SOURCE = /^[a-z0-9_-]{1,24}$/;
 
+// Report of 7/11, n°1 and 2: where the visits come from and how far each source goes, in ANONYMOUS totals per day
+// (daily_counts, like the other counters): « vs:<source>:<country> » for each new visit, « fs:<step>:<source> » for each
+// step of the funnel (visit, export_ok, plans_open, checkout_open, checkout_done). The source is worked out by the page
+// (src/app.js VISIT_SRC) from ?ref= / utm_source / the site that sent the visit, only for this tab; nothing ties it to a
+// person, an account or a visit number. A known platform, ref:<code>, site:<domain> or direct.
+export const SRC_PLATFORMS = ['tiktok', 'ig', 'yt', 'google', 'discord', 'triller', 'x', 'reddit', 'facebook', 'bing', 'direct', 'other'];
+export const VISIT_SRC = /^(?:ref:[a-z0-9_-]{1,32}|site:[a-z0-9.-]{3,48})$/;
+export const srcOf = (v) => (typeof v === 'string' && (SRC_PLATFORMS.includes(v) || VISIT_SRC.test(v)) ? v : null);
+export const FUNNEL_STEPS = ['export_ok', 'plans_open', 'checkout_open', 'checkout_done'];
+// where the payment window was closed without buying: right away / after typing the e-mail or country / after trying to pay
+export const CLOSE_STAGES = ['start', 'details', 'payment'];
+
 // POST /api/event {name, cat?, ios?, why?}: one step of the funnel. Unknown names are refused (400), so the table holds
 // only the names above. Limited per connection (hashed, like the visits).
 export async function event(request, env, excluded = null) {
@@ -122,6 +135,10 @@ export async function event(request, env, excluded = null) {
   }
   if (name === 'clip_ask') await bump(env, 'ev_clip_ask_' + (['pro', 'reel', 'none'].includes(body.cat) ? body.cat : 'none'));
   if (name === 'plans_open' && typeof body.why === 'string') await bump(env, 'ev_plans_why_' + (EVENT_REASONS.includes(body.why) ? body.why : 'other'));
+  // 7/11: the step of the funnel for its source (anonymous total), and where the payment window was closed without buying
+  const src = srcOf(body.src);
+  if (src && FUNNEL_STEPS.includes(name)) await bump(env, `fs:${name}:${src}`);
+  if (name === 'checkout_close') await bump(env, 'ev_checkout_close_' + (CLOSE_STAGES.includes(body.stage) ? body.stage : 'start'));
   return json({ ok: true });
 }
 
@@ -149,6 +166,10 @@ export async function presence(request, env) {
       await env.DB.prepare('DELETE FROM visits WHERE day = ?1 AND vid = ?2').bind(day, vid).run();
       throw e;
     }
+    // 7/11: the new visit in the anonymous totals of its source and its country (and the first step of the funnel)
+    const src = srcOf(body.src) || 'direct', c = countryOf(request) || 'XX';
+    await bump(env, `vs:${src}:${/^[A-Z]{2}$/.test(c) ? c : 'XX'}`);
+    await bump(env, `fs:visit:${src}`);
     // old visits go now and then
     if (Math.random() < 0.01) {
       const old = today(now - VISITS_KEEP_DAYS * 864e5);

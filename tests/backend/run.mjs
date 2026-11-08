@@ -3624,7 +3624,7 @@ test('audit 6/11 n°12: lyrics use 90 days and with the account, thank-you hashe
   db.prepare('INSERT INTO webhook_events (event_id, event_type, received_at) VALUES (?, ?, ?)').run('thanks:old', 'thanks', now - 3 * 365 * 864e5 - 864e5);
   db.prepare('INSERT INTO rate_limits (key, window_start, count) VALUES (?, ?, 1)').run('visit:ip:abc', now - 2 * 864e5);
   const r = await dailyRetention(env, now);
-  assert.deepEqual(r, { thanks: 1, lyricsUsage: 1, rateLimits: true });
+  assert.deepEqual(r, { thanks: 1, lyricsUsage: 1, rateLimits: true, optins: 0 });
   assert.deepEqual(db.prepare('SELECT day FROM lyrics_usage').all().map((x) => x.day), [day(10)]);
   assert.equal(db.prepare("SELECT COUNT(*) AS n FROM rate_limits WHERE key = 'visit:ip:abc'").get().n, 0);
   assert.match(readFileSync(join(root, 'functions/_lib/cloud.js'), 'utf8'), /dailyRetention\(env, now\)/);
@@ -3662,6 +3662,87 @@ test('audit 6/11 n°15 and 16: an older Paddle message never overwrites a newer 
 test('audit 6/11 n°14: the help guide says packs from 2 playbacks (as everywhere else)', async () => {
   const g = readFileSync(join(root, 'functions/_lib/help-guide.js'), 'utf8');
   assert.ok(!/3 playbacks/.test(g)); assert.equal((g.match(/2 playbacks/g) || []).length, 4);
+});
+
+// ---- report of 7/11: sources of the visits, funnel per source, payment window closed, e-mails of free users ----
+test('7/11: each new visit counted by source and country, each step by source; anonymous totals only', async () => {
+  const env = makeEnv({ ...ADMIN_ENV }), db = env.DB.raw, d = new Date().toISOString().slice(0, 10);
+  const visit = (vid, src, country) => call(env, 'POST', '/api/presence', { body: { vid, lang: 'en', src }, headers: { 'CF-IPCountry': country } });
+  await visit('v_src_test_0000000001', 'tiktok', 'US'); await visit('v_src_test_0000000002', 'tiktok', 'US');
+  await visit('v_src_test_0000000003', 'ref:seo-triller', 'CA'); await visit('v_src_test_0000000004', 'site:example.org', 'FR');
+  await visit('v_src_test_0000000005', '<script>', 'DE');        // not a source: counted as direct
+  await visit('v_src_test_0000000001', 'tiktok', 'US');          // the same page again: not a new visit
+  const n = (name) => (db.prepare('SELECT n FROM daily_counts WHERE day = ? AND name = ?').get(d, name) || { n: 0 }).n;
+  assert.equal(n('vs:tiktok:US'), 2); assert.equal(n('vs:ref:seo-triller:CA'), 1); assert.equal(n('vs:site:example.org:FR'), 1); assert.equal(n('vs:direct:DE'), 1);
+  assert.equal(n('fs:visit:tiktok'), 2); assert.equal(n('fs:visit:direct'), 1);
+  for (const [name, extra] of [['export_ok', {}], ['plans_open', { why: 'clip' }], ['checkout_open', {}], ['checkout_done', {}], ['export_start', {}]]) {
+    assert.equal((await call(env, 'POST', '/api/event', { body: { name, src: 'tiktok', ...extra } })).status, 200, name);
+  }
+  assert.equal(n('fs:export_ok:tiktok'), 1); assert.equal(n('fs:checkout_done:tiktok'), 1); assert.equal(n('fs:export_start:tiktok'), 0, 'only the funnel steps');
+  await call(env, 'POST', '/api/event', { body: { name: 'export_ok', src: 'x'.repeat(80) } });
+  assert.equal(db.prepare("SELECT COUNT(*) AS c FROM daily_counts WHERE name LIKE 'fs:%xxxx%'").get().c, 0, 'an unknown source is not counted');
+  // the payment window closed without buying, at which step
+  for (const stage of ['start', 'start', 'details', 'payment', 'nonsense']) await call(env, 'POST', '/api/event', { body: { name: 'checkout_close', stage, src: 'tiktok' } });
+  assert.deepEqual([n('ev_checkout_close_start'), n('ev_checkout_close_details'), n('ev_checkout_close_payment')], [3, 1, 1]);
+  // what the counters hold: names and numbers, no visit number, no account
+  assert.ok(db.prepare("SELECT name FROM daily_counts WHERE name LIKE 'vs:%' OR name LIKE 'fs:%'").all().every((r) => !/v_src_test/.test(r.name)));
+  // the dashboard: one line per source, the countries, the closes
+  const r = await adminCall(env, 'GET', '/api/admin/stats?days=7', { token: await accessToken() });
+  const fu = r.data.usage.funnel;
+  assert.deepEqual(fu.bySource.find((x) => x.source === 'tiktok'), { source: 'tiktok', visits: 2, videos: 1, plans: 1, checkout: 1, paid: 1 });
+  assert.ok(fu.bySource.find((x) => x.source === 'other' && x.visits === 2), 'the one-visit sources gathered');
+  assert.deepEqual(fu.visitCountries[0], { country: 'US', n: 2 });
+  assert.deepEqual(fu.checkoutClose, { start: 3, details: 1, payment: 1 }); assert.equal(fu.checkoutDone, 1);
+});
+
+test('7/11: a free user may leave an e-mail for tips: consent required, confirmed by a link (button), unsubscribe erases it', async () => {
+  const env = makeEnv({ ...ADMIN_ENV, RESEND_API_KEY: 're_test' }), db = env.DB.raw;
+  const before = outbound.length;
+  let r = await call(env, 'POST', '/api/optin', { body: { email: 'fan@example.com', lang: 'fr' } });
+  assert.equal(r.status, 400); assert.equal(r.data.error, 'consent_required', 'the box is not ticked by default');
+  r = await call(env, 'POST', '/api/optin', { body: { email: 'not-an-email', consent: true } });
+  assert.equal(r.data.error, 'invalid_email');
+  r = await call(env, 'POST', '/api/optin', { body: { email: 'Fan@Example.com', consent: true, lang: 'fr' } });
+  assert.equal(r.status, 200); assert.equal(r.data.state, 'check_mail');
+  const mails = outbound.slice(before).filter((o) => o.url === 'https://api.resend.com/emails');
+  assert.equal(mails.length, 1); assert.deepEqual(mails[0].body.to, ['fan@example.com']);
+  assert.equal(mails[0].body.subject, 'Confirme ton e-mail pour les conseils Stalak');
+  const token = /optin\/confirm\?t=([0-9a-f]{48})/.exec(mails[0].body.text)[1];
+  assert.match(mails[0].body.text, new RegExp('optin/stop\\?t=' + token));
+  const row = db.prepare('SELECT * FROM email_optins').get();
+  assert.deepEqual(Object.keys(row).sort(), ['confirmed_at', 'consent', 'created_at', 'email', 'id', 'lang', 'token_hash'], 'nothing else about the person');
+  assert.equal(row.confirmed_at, null); assert.equal(row.consent, 'v1-2026-11-07'); assert.notEqual(row.token_hash, token, 'only a hash of the link');
+  // a mail scanner opening the link confirms nothing; the button does
+  let g = await call(env, 'GET', '/api/optin/confirm?t=' + token, {});
+  assert.equal(g.status, 200); assert.match(g.data, /Oui, je confirme/); assert.match(g.headers.get('Content-Security-Policy'), /default-src 'none'/);
+  assert.equal(db.prepare('SELECT confirmed_at FROM email_optins').get().confirmed_at, null);
+  g = await call(env, 'POST', '/api/optin/confirm?t=' + token, {});
+  assert.equal(g.status, 200); assert.match(g.data, /C’est confirmé/);
+  assert.ok(db.prepare('SELECT confirmed_at FROM email_optins').get().confirmed_at > 0);
+  // the same address again: same answer, no new e-mail (nobody learns who is on the list)
+  const b2 = outbound.length;
+  r = await call(env, 'POST', '/api/optin', { body: { email: 'fan@example.com', consent: true, lang: 'en' } });
+  assert.equal(r.data.state, 'check_mail'); assert.equal(outbound.length, b2);
+  // dashboard: counted
+  const st = await adminCall(env, 'GET', '/api/admin/stats?days=7', { token: await accessToken() });
+  assert.deepEqual(st.data.usage.funnel.optins, { confirmed: 1, waiting: 0, week: 1 });
+  // a wrong link; then unsubscribe (button) erases the row
+  g = await call(env, 'GET', '/api/optin/confirm?t=' + 'f'.repeat(48), {});
+  assert.equal(g.status, 410);
+  g = await call(env, 'POST', '/api/optin/stop?t=' + token, {});
+  assert.equal(g.status, 200); assert.equal(db.prepare('SELECT COUNT(*) AS c FROM email_optins').get().c, 0);
+  // limits: 5 a connection an hour
+  for (let k = 0; k < 5; k++) assert.equal((await call(env, 'POST', '/api/optin', { ip: '10.6.6.6', body: { email: `m${k}@example.com`, consent: true } })).status, 200);
+  r = await call(env, 'POST', '/api/optin', { ip: '10.6.6.6', body: { email: 'm9@example.com', consent: true } });
+  assert.equal(r.status, 429);
+  // kept: unconfirmed 7 days, confirmed 3 years
+  const ins = db.prepare('INSERT INTO email_optins (id, email, lang, consent, token_hash, created_at, confirmed_at) VALUES (?, ?, ?, ?, ?, ?, ?)');
+  const now = Date.now();
+  ins.run('o1', 'old-wait@example.com', 'en', 'v1', 'h1', now - 8 * 864e5, null); ins.run('o2', 'old-ok@example.com', 'en', 'v1', 'h2', now - 1200 * 864e5, now - 1100 * 864e5);
+  ins.run('o3', 'recent-ok@example.com', 'en', 'v1', 'h3', now - 30 * 864e5, now - 29 * 864e5);
+  const ret = await dailyRetention(env, now);
+  assert.equal(ret.optins, 2);
+  assert.ok(db.prepare("SELECT COUNT(*) AS c FROM email_optins WHERE email = 'recent-ok@example.com'").get().c === 1);
 });
 
 // ---- runner --------------------------------------------------------------------------

@@ -1288,6 +1288,14 @@ header .stepper{margin-left:auto}
 .result #saveNote:empty{display:none}
 .result .capbox{width:100%}
 .result .capbox[hidden]{display:none}
+/* report of 7/11: the optional e-mail for tips, under the caption */
+.optbox{margin-top:14px;width:100%;display:flex;flex-direction:column;gap:8px;border:2px dashed var(--ink);border-radius:14px;padding:12px 14px;box-sizing:border-box}
+.optbox[hidden]{display:none}
+.optbox form{display:flex;flex-direction:column;gap:8px;margin:0}
+.optbox input[type=email]{width:100%;box-sizing:border-box;font:500 16px/1.4 var(--body);padding:10px 12px;border:2px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink);min-height:44px}
+.optc{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.4;cursor:pointer}
+.optc input{width:22px;height:22px;flex:none;margin:1px 0 0;accent-color:var(--sky,#1f6fd6)}
+.optlegal{font-size:12.5px;margin:0}
 .fa-row{flex-wrap:wrap;gap:10px}
 /* fewer PRO tags at once (audit 30/10): Pro filters behind one tile, one tag per theme; text sizes and appearances show a
    small padlock instead of a PRO pill on every button */
@@ -1416,6 +1424,14 @@ body.isdone > .help-cube{display:none}
   .hero-h1{font-size:clamp(30px,3vw,38px);margin-bottom:10px}
   .hero-s{font-size:16px}
 }
+/* Marketing & croissance (07/11, rapport chiffres) : sous la phrase d'accueil, le bouton « Essaie le mode Clip », qui choisit
+   « Clip » à l'étape 1 ; une pastille blanche à contour encre, avec un petit écran 16:9 */
+.hero-clip{display:inline-block;min-height:38px;margin:10px 0 0;padding:7px 13px 6px 10px;border:2.5px solid var(--ink);border-radius:999px;background:var(--snow);color:var(--ink);box-shadow:0 3px 0 var(--ink);font:600 13.5px/1.25 var(--body);text-align:left;cursor:pointer;transition:transform var(--dur-1,.12s) var(--ease-out,ease-out)}
+.hero-clip b{font-weight:800}
+.hero-clip::before{content:"";display:inline-block;vertical-align:-3px;margin-right:8px;width:24px;height:15px;box-sizing:border-box;border:2px solid var(--ink);border-radius:4px;background:var(--sky-deep) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 15'%3E%3Cpath d='M10 4.2v6.6l5.4-3.3z' fill='%23fff'/%3E%3C/svg%3E") center/100% 100% no-repeat}
+.hero-clip:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+@media (prefers-reduced-motion:reduce){ .hero-clip{transition:none} .hero-clip:active{transform:none} }
+@media (min-width:900px){ .hero-clip{font-size:14.5px;margin-top:4px} }
 
 /* ---- pricing: promo, plan cards, trust line, comparison, FAQ ----
    One component for the Stalak Pro page in the app (#pro, appended to the theme by build.py / build_site.py) and the
@@ -1612,6 +1628,19 @@ body.isdone > .help-cube{display:none}
   .p4-table tfoot tr:last-child .pr-colpro{border-radius:0 0 14px 14px}
 }
 
+/* ---- Marketing & croissance (7/11, rapport chiffres : le mode Clip est la 1re raison d'ouvrir la page Pro) ----
+   page Tarifs : la ligne « Music video mode / Le mode Clip » de la carte Pro, mise en avant, et sa section à elle */
+.pr-feats li.pr-hot{margin:0 -8px;padding:6px 8px 6px 42px;border-radius:12px;background:var(--frost);box-shadow:inset 0 0 0 2px var(--ice-2)}
+.pr-feats li.pr-hot::before{left:8px;top:5px}
+.pr-clip{position:relative;box-sizing:border-box;width:100%;max-width:760px;align-self:center;margin-top:58px;padding:72px 22px 24px;color:var(--ink);background:#fff;border:3px solid var(--ink);border-radius:26px;box-shadow:0 6px 0 var(--ink);text-align:center}
+.pr-clip > .pr-art{top:-64px}
+.pr-clip h3{margin:0 0 6px;font:400 28px/1.1 var(--display);color:var(--ink)}
+.pr-clip-lead{margin:0 auto;max-width:32em;font-weight:600}
+.pr-clip .pr-feats{max-width:560px;margin:16px auto 0}
+.pr-clip-go{margin:18px 0 0;display:flex;flex-direction:column;align-items:center;gap:22px}   /* room for the button's icicles */
+.pr-clip-go span{font-size:14px;line-height:1.4;color:var(--muted)}
+@media (max-width:600px){ .pr-clip{padding:70px 16px 20px} }
+
 /* ---- the footer (src/footer.py, owner 01/11): the same on every page — app, Pricing, legal pages, guides, Triller page.
    A full-width ink band with icicles along its top edge; at the very bottom of the page, never fixed. No animation (motion-design:
    nothing here needs one). In the app's style and in /site.css (static pages, whose own footer{…} rules it overrides). ---- */
@@ -1734,6 +1763,18 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
       <div class="hero-txt">
         <h1 class="hero-h1" data-i18n="hero.h1">Free lip-sync video editor for rappers</h1>
         <p class="hero-s" data-i18n="hero.s">Film a few takes of your song. Stalak cuts them on the beat, lips in sync.</p>
+        <!-- Marketing & croissance (07/11, rapport chiffres : le mode Clip, 1re raison d'ouvrir Pro) : choisit « Clip » à l'étape 1
+             (#kindSeg, le choix qui existe déjà) et l'amène sous les yeux ; rien d'autre ne change -->
+        <button type="button" class="hero-clip" id="heroClip" data-i18n="hero.clip">Try <b>Music video mode</b>: your whole song in 16:9</button>
+        <script>(function (b) { if (!b) return;
+          b.addEventListener('click', function () {
+            var k = document.querySelector('#kindSeg button[data-v="clip"]'); if (!k) return;
+            if (k.getAttribute('aria-pressed') !== 'true') k.click();
+            var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+            (k.closest('.kindpick') || k).scrollIntoView({ block: 'center', behavior: still ? 'auto' : 'smooth' });
+            try { k.focus({ preventScroll: true }); } catch (e) { k.focus(); }
+          });
+        })(document.currentScript.previousElementSibling);</script>
       </div>
     </div>
     <div class="card lpoffer" id="lpOffer" hidden role="region" aria-labelledby="lpOfferT">
@@ -2130,6 +2171,16 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
                 <span class="note" id="capNote" role="status" aria-live="polite"></span>
               </div>
             </div>
+            <!-- report of 7/11: a free user may leave an e-mail for tips (optional, box not ticked, confirmed by a link) -->
+            <div class="optbox" id="optBox" hidden>
+              <p class="label" id="optT" data-i18n="opt.t">📩 Get tips for your next videos by e-mail</p>
+              <form id="optForm" novalidate>
+                <input type="email" id="optEmail" autocomplete="email" inputmode="email" maxlength="254" placeholder="you@email.com" aria-labelledby="optT" data-i18n-attr="placeholder:opt.ph">
+                <label class="optc"><input type="checkbox" id="optOk"> <span data-i18n="opt.ok">I agree to get tips for my videos and Stalak news by e-mail (2 a month at most). I can unsubscribe at any time with the link in each e-mail.</span></label>
+                <div class="row"><button class="btn" type="submit" id="optGo" data-i18n="opt.go">Get the tips</button><span class="note" id="optNote" role="status" aria-live="polite"></span></div>
+                <p class="note optlegal" data-i18n="opt.legal">Optional. We only keep your e-mail and your language. <a href="/privacy">Privacy</a></p>
+              </form>
+            </div>
             <div class="post" id="postBox">
               <p class="label" data-i18n="post.title">Post your video</p>
               <div class="row">
@@ -2177,9 +2228,9 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
     <p><strong>What you can do:</strong></p>
     <ul>
       <li>Auto cuts that land on the beat: phrase by phrase, on your lines and rhymes, or every bar.</li>
+      <li><strong>Music video mode</strong>: your whole song as a 16:9 video for YouTube, with effects (flash, zoom, bursts of shots, shakes, slow-mo) on the big moments: drops, choruses, breaks. Try it free in the preview; exporting the video takes Stalak Pro.</li>
       <li>On-screen lyrics, one line at a time; word-by-word and karaoke styles with Stalak Pro.</li>
       <li>Auto lyrics: Stalak writes and syncs your lyrics from your vocals (Stalak Pro).</li>
-      <li>16:9 music video mode for YouTube, with effects like flash, zoom, shake and slow-mo (Stalak Pro).</li>
       <li>Video packs: 5 to 30 differently cut videos from one song, from just 2 takes (Creator Plus).</li>
       <li>Everything happens in your browser, so your videos stay on your device. The only exceptions: your cloud projects, saved automatically with Creator Plus, and the audio sent for auto lyrics.</li>
     </ul>
@@ -2655,7 +2706,7 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
   <button class="hp-human" id="helpHuman" type="button" data-i18n="help.human" hidden>Talk to a human</button>
   <button class="hp-diag" id="helpDiag" type="button" data-i18n="help.diag">Copy info for the team</button>
 </section>
-<script defer src="/assets/account.91e692c90e.js"></script>
-<script defer src="/assets/app.7fd937da1b.js"></script>
+<script defer src="/assets/account.c9f4369178.js"></script>
+<script defer src="/assets/app.6d01005a2d.js"></script>
 </body>
 </html>

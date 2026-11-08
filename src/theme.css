@@ -1015,6 +1015,14 @@ header .stepper{margin-left:auto}
 .result #saveNote:empty{display:none}
 .result .capbox{width:100%}
 .result .capbox[hidden]{display:none}
+/* report of 7/11: the optional e-mail for tips, under the caption */
+.optbox{margin-top:14px;width:100%;display:flex;flex-direction:column;gap:8px;border:2px dashed var(--ink);border-radius:14px;padding:12px 14px;box-sizing:border-box}
+.optbox[hidden]{display:none}
+.optbox form{display:flex;flex-direction:column;gap:8px;margin:0}
+.optbox input[type=email]{width:100%;box-sizing:border-box;font:500 16px/1.4 var(--body);padding:10px 12px;border:2px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink);min-height:44px}
+.optc{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.4;cursor:pointer}
+.optc input{width:22px;height:22px;flex:none;margin:1px 0 0;accent-color:var(--sky,#1f6fd6)}
+.optlegal{font-size:12.5px;margin:0}
 .fa-row{flex-wrap:wrap;gap:10px}
 /* fewer PRO tags at once (audit 30/10): Pro filters behind one tile, one tag per theme; text sizes and appearances show a
    small padlock instead of a PRO pill on every button */
@@ -1143,3 +1151,11 @@ body.isdone > .help-cube{display:none}
   .hero-h1{font-size:clamp(30px,3vw,38px);margin-bottom:10px}
   .hero-s{font-size:16px}
 }
+/* Marketing & croissance (07/11, rapport chiffres) : sous la phrase d'accueil, le bouton « Essaie le mode Clip », qui choisit
+   « Clip » à l'étape 1 ; une pastille blanche à contour encre, avec un petit écran 16:9 */
+.hero-clip{display:inline-block;min-height:38px;margin:10px 0 0;padding:7px 13px 6px 10px;border:2.5px solid var(--ink);border-radius:999px;background:var(--snow);color:var(--ink);box-shadow:0 3px 0 var(--ink);font:600 13.5px/1.25 var(--body);text-align:left;cursor:pointer;transition:transform var(--dur-1,.12s) var(--ease-out,ease-out)}
+.hero-clip b{font-weight:800}
+.hero-clip::before{content:"";display:inline-block;vertical-align:-3px;margin-right:8px;width:24px;height:15px;box-sizing:border-box;border:2px solid var(--ink);border-radius:4px;background:var(--sky-deep) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 15'%3E%3Cpath d='M10 4.2v6.6l5.4-3.3z' fill='%23fff'/%3E%3C/svg%3E") center/100% 100% no-repeat}
+.hero-clip:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+@media (prefers-reduced-motion:reduce){ .hero-clip{transition:none} .hero-clip:active{transform:none} }
+@media (min-width:900px){ .hero-clip{font-size:14.5px;margin-top:4px} }

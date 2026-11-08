@@ -144,7 +144,20 @@
   }
 
   var loadedWait = null, CHECKOUT_WAIT_MS = 12000;
+  /* report of 7/11, n°8: where the payment window is closed without buying. The furthest step reached is kept while the window
+     is open: 'start' (nothing typed), 'details' (e-mail / country given), 'payment' (a payment way chosen or tried); on
+     « closed » without « completed », one anonymous counter (event 'checkout_close' {stage}). « completed » = 'checkout_done'. */
+  var coStage = null, coDone = false;
+  var CO_DETAILS = ['checkout.customer.created', 'checkout.customer.updated'];
+  var CO_PAYMENT = ['checkout.payment.selected', 'checkout.payment.initiated', 'checkout.payment.failed'];
   function onPaddleEvent(ev) {
+    var n = ev && ev.name;
+    if (n === 'checkout.loaded') { coStage = 'start'; coDone = false; }
+    else if (coStage && CO_DETAILS.indexOf(n) >= 0 && coStage === 'start') coStage = 'details';
+    else if (coStage && CO_PAYMENT.indexOf(n) >= 0) coStage = 'payment';
+    else if (n === 'checkout.completed' && !coDone) { coDone = true; event('checkout_done'); }
+    else if (n === 'checkout.closed' && coStage && !coDone) { event('checkout_close', { stage: coStage }); coStage = null; }
+    if (n === 'checkout.closed') coStage = null;
     if (ev && ev.name === 'checkout.loaded' && loadedWait) loadedWait(true);
     if (ev && ev.name === 'checkout.error' && loadedWait) loadedWait(false, Object.assign(new Error('The payment window did not open.'), { code: 'paddle_blocked' }));
     if (ev && ev.name === 'checkout.closed') { checkoutOpen = false; if (loadedWait) loadedWait(true); }
@@ -155,10 +168,14 @@
 
   /* ---- anonymous counters of the funnel (dashboard): visit → export → ad → plans page → payment window → payment ---- */
   var IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  // report of 7/11, n°2: the source of this visit (the page's VISIT_SRC, for this tab only) goes with each step, for the
+  // anonymous funnel per source of the dashboard
+  var visitSrc = null;
+  function setSource(v) { visitSrc = typeof v === 'string' && v.length <= 60 ? v : null; }
   function event(name, extra) {
     try {
-      var b = { name: String(name) }; if (IOS) b.ios = true;
-      if (extra && typeof extra === 'object') { if (extra.cat) b.cat = String(extra.cat); if (extra.why) b.why = String(extra.why); if (extra.vid) b.vid = String(extra.vid);
+      var b = { name: String(name) }; if (IOS) b.ios = true; if (visitSrc) b.src = visitSrc;
+      if (extra && typeof extra === 'object') { if (extra.cat) b.cat = String(extra.cat); if (extra.why) b.why = String(extra.why); if (extra.vid) b.vid = String(extra.vid); if (extra.stage) b.stage = String(extra.stage);
         // (7/11) the details of a failed export: short words only (the server keeps the ones of its closed lists)
         if (extra.x && typeof extra.x === 'object') { b.x = {}; for (var k in extra.x) if (typeof extra.x[k] === 'string' && extra.x[k].length <= 12 && /^[a-z0-9]+$/.test(k)) b.x[k] = extra.x[k]; } }
       // a finished video (with the visit number): the session goes along so that the owner's and the test accounts are left out
@@ -388,7 +405,7 @@
     removeAvatar: function () { return api('DELETE', 'me/avatar').then(me); },
     logout: function () { return api('POST', 'auth/logout').then(function () { return setState({}); }); },
     checkout: checkout,
-    event: event,
+    event: event, setSource: setSource,
     portal: function () { return api('POST', 'paddle/portal'); },
     // a subscriber moves to another plan (same subscription, the difference billed now): then wait for the webhook
     changePlan: function (plan, interval, preview) {

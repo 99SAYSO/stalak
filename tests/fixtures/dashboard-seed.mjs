@@ -14,6 +14,10 @@ export function seedDashboard(env, { now = Date.now() } = {}) {
   // made-up pseudos (a few accounts have none: shown « — »); not from rnd(), so the other figures stay the same
   const NAMES = ['lilnova', 'beatsbyjay', 'Mira K', 'drill.fr', 'kaïa', 'yungwave', 'Sami', 'noctis', 'Lou B', 'prodbymax', 'zoé', 'blkcherry'];
   const setName = db.prepare('UPDATE users SET display_name = ? WHERE id = ?');
+  // 7/11: sources of the visits (weights) and how well each one goes on to a video and the plans
+  const VSRC = ['tiktok', 'tiktok', 'tiktok', 'tiktok', 'tiktok', 'ig', 'ig', 'yt', 'google', 'google', 'direct', 'direct', 'triller', 'discord', 'ref:wm'];
+  const VQ = { tiktok: 1, ig: 0.8, yt: 1.1, google: 1.3, direct: 0.9, triller: 0.6, discord: 1.4, 'ref:wm': 1.2 };
+  const insOpt = db.prepare('INSERT INTO email_optins (id, email, lang, consent, token_hash, created_at, confirmed_at) VALUES (?, ?, ?, ?, ?, ?, ?)');
   const insVc = db.prepare('INSERT INTO video_counts (day, vid, name, n, ios) VALUES (?, ?, ?, ?, ?)');
   const bump = db.prepare('INSERT INTO daily_counts (day, name, n) VALUES (?, ?, ?) ON CONFLICT(day, name) DO UPDATE SET n = n + excluded.n');
   // the hour of the day (UTC) people come: evenings in the US (0–4 h UTC) and in France (17–21 h UTC); r in [0, 1) → a time
@@ -27,10 +31,23 @@ export function seedDashboard(env, { now = Date.now() } = {}) {
   const bumpH = db.prepare("INSERT INTO hourly_counts (hour, name, n) VALUES (?, 'export_ok', ?) ON CONFLICT(hour, name) DO UPDATE SET n = n + excluded.n");
   for (let i = 40; i >= 0; i--) {
     const t = now - i * 864e5, d = day(t), grow = 1 + (40 - i) / 14, nv = Math.round((40 + rnd() * 30) * grow);
+    const perSrc = {};
     for (let k = 0; k < nv; k++) {
       const c = pick(COUNTRIES);
       const ft = Math.round(atHour(t, rnd())); insV.run(d, 'seed_' + i + '_' + k + '_xxxxxxxx', ft, ft + 60e3, c === 'FR' || c === 'BE' ? 'fr' : 'en', c, pick(DEV), pick(SRC), rnd() < 0.28 ? 1 : 0);
+      // 7/11: the anonymous totals per source and country (not from rnd(): the other figures stay the same)
+      const vs = VSRC[(i * 7 + k * 3) % VSRC.length];
+      bump.run(d, `vs:${vs}:${c}`, 1); perSrc[vs] = (perSrc[vs] || 0) + 1;
     }
+    let co = 0;
+    for (const [vs, v] of Object.entries(perSrc)) {
+      const q = VQ[vs] || 1, vid = Math.round(v * 0.42 * q), pl = Math.round(vid * 0.3 * q), ck = Math.round(pl * 0.35), pd = (i + vs.length) % 4 === 0 && ck ? 1 : 0;
+      for (const [step, n] of [['visit', v], ['export_ok', vid], ['plans_open', pl], ['checkout_open', ck], ['checkout_done', pd]]) if (n) bump.run(d, `fs:${step}:${vs}`, n);
+      co += ck - pd;
+    }
+    co = Math.max(0, Math.round(Math.round(nv * 0.42) * 0.05) - 1);   // about the payment windows opened that day (ev_checkout_open), minus a purchase
+    for (const [stage, part] of [['start', 0.5], ['details', 0.3], ['payment', 0.2]]) { const n = Math.round(co * part); if (n) bump.run(d, 'ev_checkout_close_' + stage, n); }
+    if (i % 3 === 0) insOpt.run('opt_seed' + i, `tips${i}@demo.stalak`, i % 2 ? 'fr' : 'en', 'v1-2026-11-07', 'h' + i, t, i % 9 === 0 ? null : t + 3600e3);
     const ns = Math.round(nv * (0.05 + rnd() * 0.03));
     for (let k = 0; k < ns; k++) {
       const c = pick(COUNTRIES);

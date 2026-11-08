@@ -498,6 +498,7 @@ Pour l'e-mail de remerciement (5/11) : colle de même **tout** `migrations/0012_
 Pour « Heure par heure » (5/11) : colle de même **tout** `migrations/0013_hourly_counts.sql` (1 petite table) **avant** de publier.
 Pour « Combien de vidéos par personne » (5/11) : colle de même **tout** `migrations/0015_video_counts.sql` (1 petite table) **avant** de publier.
 Pour l'audit du 6/11 : colle de même **tout** `migrations/0016_thanks_mail_id.sql` (1 colonne vide) **avant** de publier.
+Pour le rapport du 7/11 : colle de même **tout** `migrations/0017_email_optins.sql` (1 petite table) **avant** de publier.
 
 ### 13.2 L'adresse admin.stalak.app
 **Workers & Pages → stalak-site → Custom domains → Set up a custom domain** → `admin.stalak.app` → **Continue** → **Activate domain**.
@@ -735,6 +736,19 @@ annulé), sur iPhone/iPad, et la raison qui a ouvert la page des formules. À aj
 - **Assistant d'aide** : 6 questions par connexion toutes les 10 minutes et 10 par jour (avant 15 et 60 : une seule connexion
   pouvait prendre tout le budget du jour).
 - **Fenêtre de paiement bloquée** (bloqueur de pub) : message clair « Désactive-le pour stalak.app (ou essaie un autre navigateur) ».
+
+### 15.7 Rapport chiffres du 7/11 (Comptes)
+- **Provenance et pays de chaque visite**, en totaux anonymes par jour (`daily_counts` « vs:<source>:<pays> ») ; et **l'entonnoir
+  par source** (« fs:<étape>:<source> » : visite → vidéo → formules → paiement ouvert → payé). Tableau de bord → Du visiteur à
+  l'abonné → « D'où viennent les gens, et jusqu'où ils vont », « Pays des visites ». La provenance est calculée par la page pour
+  l'onglet (`?ref=`, `utm_source`, site d'origine) ; rien n'est relié à une personne. Liste de tous les compteurs : `docs/stats/compteurs.md`.
+- **Paiement fermé sans acheter** : la page compte les fermetures de la fenêtre Paddle sans achat, et à quel moment (tout de suite /
+  après l'e-mail / en payant). Carte « Paiement fermé sans acheter ».
+- **E-mails des gratuits** (migration `0017_email_optins.sql`) : à la fin d'une vidéo, un encadré facultatif « Reçois des conseils
+  pour tes prochaines vidéos par e-mail », case **non cochée** ; puis un e-mail « Confirme ton e-mail » avec un bouton (double
+  confirmation) et un lien « Me désinscrire » (qui efface l'adresse). Gardé : l'e-mail, la langue, la version du texte accepté et
+  les dates. Non confirmé : effacé après 7 jours ; confirmé : effacé 3 ans après. Carte « E-mails récoltés ». **Pas d'envoi en
+  masse** : seulement la récolte. Les adresses sont dans la table `email_optins` (confirmées : `confirmed_at` rempli).
 
 ## Pour le développeur
 
