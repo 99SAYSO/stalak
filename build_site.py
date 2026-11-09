@@ -36,6 +36,8 @@ SOCIAL = FOOT.SOCIAL
 SITEMAP_PAIRS = [('/fr/tarifs', '/pricing'), ('/fr/conditions', '/terms'), ('/fr/remboursement', '/refunds'),
                  ('/fr/alternative-triller', '/triller-alternative')]
 GUIDES = FOOT.GUIDES   # les 6 guides (anglais seulement) : src/footer.py
+# Marketing & croissance (09/11, A7) : les pages d'aide, en FR et en EN, dans le plan du site avec leurs liens FR / EN (src/footer.py, AIDE)
+SITEMAP_PAIRS += [('/fr/' + fr, '/' + en) for fr, en, _, _ in FOOT.AIDE]
 
 head = (src / 'head.html').read_text(encoding='utf-8')
 css = (src / 'style.css').read_text(encoding='utf-8') + '\n/* ---- theme ---- */\n' + (src / 'theme.css').read_text(encoding='utf-8') + '\n' + (src / 'pricing.css').read_text(encoding='utf-8')

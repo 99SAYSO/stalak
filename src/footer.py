@@ -1,6 +1,6 @@
 """The footer of Stalak: the ONE source of its content (owner, 01/11), for every page, in French and English:
 - the app (/ and /fr/, built by build_site.py from src/markup.html, where <!--FOOTER--> stands for it);
-- the Pricing and legal pages, the 6 guides and the Triller page (site_src/, built by build_site.py: their <footer> is replaced);
+- the Pricing and legal pages, the 6 guides, the Triller page and the help pages (site_src/, built by build_site.py: their <footer> is replaced);
 - the claude.ai version (build.py): a light footer (brand, language, last line), the site's pages do not exist there.
 
     render(lang, page=None, lite=False, i18n=None) -> the whole <footer>
@@ -27,10 +27,13 @@ SOCIAL = {k: v for k, v in SOCIAL.items() if v}
 GUIDES = [('lip-sync-video-editor', 'Lip-sync video editor'), ('music-video-maker-for-rappers', 'Music video maker for rappers'),
           ('rap-snippet-video', 'Rap snippet video'), ('lip-sync-videos-for-singers', 'Performance videos for singers'),
           ('how-to-make-a-lip-sync-video', 'How to make a lip-sync video'), ('edit-video-to-the-beat', 'Edit video to the beat')]
+# Marketing & croissance (09/11, A7) : les pages d'aide (tutos), en français ET en anglais : (page FR, page EN, nom FR, nom EN).
+# Écrites par site_drafts/make_aide.py ; ici pour le pied de page (colonne « Tutos » / « Tutorials »), le plan du site et FR / EN.
+AIDE = [('faire-un-clip-avec-son-telephone', 'how-to-make-a-music-video-on-your-phone', 'Faire un clip avec son téléphone', 'Make a music video on your phone')]
 TXT = {
     'fr': {
         'home': '/fr/', 'tagline': 'Ton playback monté sur le rythme, directement dans ton navigateur.',
-        'product': 'Produit', 'legal': 'Légal', 'choices': 'Tes choix',
+        'product': 'Produit', 'aide': 'Tutos', 'legal': 'Légal', 'choices': 'Tes choix',
         'pricing': ('/fr/tarifs', 'Tarifs'), 'triller': ('/fr/alternative-triller', 'Alternative à Triller'),
         'legal_links': [('/fr/conditions', 'Conditions'), ('/fr/remboursement', 'Remboursement'),
                         ('/fr/confidentialite', 'Confidentialité'), ('/fr/mentions-legales', 'Mentions légales')],
@@ -40,7 +43,7 @@ TXT = {
     },
     'en': {
         'home': '/', 'tagline': 'Lip-sync videos cut to the beat, right in your browser.',
-        'product': 'Product', 'legal': 'Legal', 'choices': 'Your choices',
+        'product': 'Product', 'aide': 'Tutorials', 'legal': 'Legal', 'choices': 'Your choices',
         'pricing': ('/pricing', 'Pricing'), 'triller': ('/triller-alternative', 'Triller alternative'),
         'legal_links': [('/terms', 'Terms'), ('/refunds', 'Refunds'), ('/privacy', 'Privacy'), ('/legal-notice', 'Legal notice')],
         'cookies': ('/privacy#cookies', 'Cookie settings'), 'pc': ('/privacy#choices', 'Your Privacy Choices'),
@@ -50,6 +53,7 @@ TXT = {
 # the same page in the other language (the guides have no French page: their French is the French home)
 PAIRS = [('/fr/', '/'), ('/fr/tarifs', '/pricing'), ('/fr/conditions', '/terms'), ('/fr/remboursement', '/refunds'),
          ('/fr/confidentialite', '/privacy'), ('/fr/mentions-legales', '/legal-notice'), ('/fr/alternative-triller', '/triller-alternative')]
+PAIRS += [('/fr/' + fr, '/' + en) for fr, en, _, _ in AIDE]
 BOTTOM = '© 2026 Stalak · Made by 99Sayso'
 FLAG_FR = ('<svg class="flag" viewBox="0 0 3 2" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path fill="#002654" d="M0 0h1v2H0z"/>'
            '<path fill="#fff" d="M1 0h1v2H1z"/><path fill="#ce1126" d="M2 0h1v2H2z"/></svg>')
@@ -103,9 +107,11 @@ def inner(lang, page=None, lite=False):
         en = ' lang="en"' if lang == 'fr' else ''
         product = ('<div class="ft-col"><h2 class="ft-h">' + T['product'] + '</h2><ul class="ft-list"><li>' + _a(*T['pricing']) + '</li>'
                    + ''.join('<li>' + _a('/' + s, n, en) + '</li>' for s, n in GUIDES) + '<li>' + _a(*T['triller']) + '</li></ul></div>')
+        aide = ('<div class="ft-col"><h2 class="ft-h">' + T['aide'] + '</h2><ul class="ft-list">'
+                + ''.join('<li>' + (_a('/fr/' + fr, nfr) if lang == 'fr' else _a('/' + en, nen)) + '</li>' for fr, en, nfr, nen in AIDE) + '</ul></div>')
         legal = ('<div class="ft-col"><h2 class="ft-h">' + T['legal'] + '</h2><ul class="ft-list">'
                  + ''.join('<li>' + _a(u, n) + '</li>' for u, n in T['legal_links']) + '</ul></div>')
-        cols = brand + product + legal + choices
+        cols = brand + product + aide + legal + choices
     return '<div class="ft-cols' + (' ft-lite' if lite else '') + '">' + cols + '</div><p class="ft-bottom">' + H.escape(BOTTOM) + '</p>'
 
 

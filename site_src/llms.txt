@@ -18,6 +18,9 @@ Stalak is not related to the Dofus game creature of the same name.
 - [How to make a lip-sync video](https://stalak.app/how-to-make-a-lip-sync-video): the 4 steps (song, takes, lyrics, edit), with filming tips.
 - [Edit video to the beat](https://stalak.app/edit-video-to-the-beat): how the automatic cuts on the beat work.
 
+## Tutorials (English and French)
+- [How to make a music video on your phone](https://stalak.app/how-to-make-a-music-video-on-your-phone): what you need, how to plan and film full takes with the song playing, how to edit them together, vertical or horizontal; then the same in Stalak, step by step with screenshots. In French: [Comment faire un clip avec son téléphone](https://stalak.app/fr/faire-un-clip-avec-son-telephone).
+
 ## Facts
 - No download and no sign-up: Stalak runs in the browser. The free plan needs no account.
 - No ads, on any plan (free included).
