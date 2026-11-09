@@ -36,9 +36,9 @@
 @media (hover:hover){ .ft .langsw button:hover:not([aria-pressed="true"]),.ft .langsw a:hover:not([aria-current]){background:var(--ice, #d6ecff);color:var(--ft-ink);text-decoration:none} }
 .ft .langsw .flag{width:22px;height:15px;border-radius:3px;box-shadow:0 0 0 1.5px var(--ft-ink);flex:none}
 .ft-bottom{margin:36px 0 0;padding-top:18px;border-top:1px solid rgba(214,236,255,.22);color:var(--ft-text);font-size:14px;text-align:center}
-/* phone: one column; tablet: two; computer: four */
+/* phone: one column; tablet: two; computer: five (brand, Product, Tutorials, Legal, Your choices; Marketing 09/11: the Tutorials column) */
 @media (min-width:600px){ .ft-cols{grid-template-columns:repeat(2,minmax(0,1fr));gap:34px 40px} }
-@media (min-width:960px){ .ft-cols{grid-template-columns:1.35fr 1.25fr .9fr minmax(244px,1fr);gap:40px} .ft-cols.ft-lite{grid-template-columns:1.5fr 1fr} .ft-bottom{text-align:left} }
+@media (min-width:960px){ .ft-cols{grid-template-columns:1.3fr 1.2fr 1.2fr .85fr minmax(244px,1fr);gap:32px} .ft-cols.ft-lite{grid-template-columns:1.5fr 1fr} .ft-bottom{text-align:left} }
 /* the page ends with the band: no empty space under it */
 body:has(> .ft){padding-bottom:0;margin-bottom:0}
 /* the app: the help ice cube and the Export button float at the bottom of the screen; the band keeps room under its last line

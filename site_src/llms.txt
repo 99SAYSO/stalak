@@ -19,6 +19,19 @@ Stalak is not related to the Dofus game creature of the same name.
 - [How to make a lip-sync video](https://stalak.app/how-to-make-a-lip-sync-video): the 4 steps (song, takes, lyrics, edit), with filming tips.
 - [Edit video to the beat](https://stalak.app/edit-video-to-the-beat): how the automatic cuts on the beat work.
 
+## Tutorials (English and French)
+Each one explains how to do it for real, then shows the same in Stalak step by step, with screenshots of the app.
+- [How to make a music video on your phone](https://stalak.app/how-to-make-a-music-video-on-your-phone): what you need, how to plan and film full takes with the song playing, how to edit them together, vertical or horizontal. In French: [Comment faire un clip avec son téléphone](https://stalak.app/fr/faire-un-clip-avec-son-telephone).
+- [Music video ideas you can shoot on your phone](https://stalak.app/music-video-ideas): low-budget ideas with one location, with friends and outside, and how to turn them into one video. In French: [Idées de clip sans budget](https://stalak.app/fr/idees-de-clip).
+- [How to lip sync perfectly](https://stalak.app/how-to-lip-sync): how to lip sync to your own song, practise it, see why it looks off and fix a take that is out of sync. In French: [Comment faire un playback parfait](https://stalak.app/fr/comment-faire-un-playback).
+- [How to film yourself rapping or singing](https://stalak.app/how-to-film-yourself-rapping): filming yourself alone: framing without a camera person, light at home, recording with the music playing. In French: [Comment se filmer seul en train de rapper](https://stalak.app/fr/se-filmer-en-train-de-rapper).
+- [How to sync your video with your song](https://stalak.app/sync-video-to-music): lining up a video with a song recorded separately, fixing a take a few frames off, keeping the studio track as the sound. In French: [Comment synchroniser ta vidéo avec ton son](https://stalak.app/fr/synchroniser-video-et-musique).
+- [How to add lyrics to a video](https://stalak.app/add-lyrics-to-video): putting lyrics on screen in time with the song, where to place them on TikTok, Reels and Shorts, line by line, word by word or karaoke. In French: [Comment mettre les paroles sur une vidéo](https://stalak.app/fr/mettre-les-paroles-sur-une-video).
+- [How to promote your own music on TikTok](https://stalak.app/promote-your-music-on-tiktok): short videos of you performing the song, the first seconds, how often to post the same song. In French: [Comment promouvoir ta musique sur TikTok](https://stalak.app/fr/promouvoir-sa-musique-sur-tiktok).
+- [How to promote your music on Instagram](https://stalak.app/promote-your-music-on-instagram): Reels, a countdown in your Story, collab posts, the size of a Reel, trial reels. In French: [Comment promouvoir ta musique sur Instagram](https://stalak.app/fr/promouvoir-sa-musique-sur-instagram).
+- [How to tease a new song before it drops](https://stalak.app/how-to-tease-a-song): which part to tease, how long a snippet should be, what to post in the weeks before a release, a week of teasers from one shoot. In French: [Comment teaser un son avant sa sortie](https://stalak.app/fr/teaser-un-son).
+- [Music video format: aspect ratio, size and length](https://stalak.app/music-video-format): 16:9 or 9:16, 1920 × 1080 or 1080 × 1920, and how long, for YouTube, Shorts, Reels and TikTok. In French: [Format d’un clip : forme, taille et durée](https://stalak.app/fr/format-video-clip).
+
 ## Facts
 - No download and no sign-up: Stalak runs in the browser. The free plan needs no account.
 - No ads, on any plan (free included).

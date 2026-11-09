@@ -1,10 +1,10 @@
 """Test of the footer (owner, 01/11; src/footer.py + src/footer.css): the same on every page — the app (/ and /fr/), Pricing,
-the legal pages, the 6 guides, the Triller page, the Clip page (7/11) — in French and English, and its light version in the claude.ai page.
+the legal pages, the 6 guides, the Triller page, the Clip page (7/11), the help pages (Marketing, 09/11) — in French and English, and its light version in the claude.ai page.
 Python Playwright (chromium).
 
     python3 /abs/path/tests/ui/pied_de_page_ui.py <built public/ folder> [claude.ai page (shuffle-lab.html)] [folder for screenshots]
 
-On an iPhone (iPhone 15 Pro emulated) and a computer. Checked: one full-width ink band at the very bottom (never fixed), 4 columns
+On an iPhone (iPhone 15 Pro emulated) and a computer. Checked: one full-width ink band at the very bottom (never fixed), 5 columns
 on a computer and stacked on a phone, the same links on every page of a language and only our own sites, every link leads to a
 page that exists, Français / English to the same page, the bottom line; in the app: the help ice cube and the Export button never
 cover a link, the language switch writes the footer again (and still works), « Gérer les cookies » and « Your Privacy Choices » (links to the privacy page)."""
@@ -17,16 +17,19 @@ LITE = os.path.abspath(sys.argv[2]) if len(sys.argv) > 2 and sys.argv[2] != '-' 
 SHOTS = sys.argv[3] if len(sys.argv) > 3 else None
 results = []
 OURS = ('https://www.instagram.com/stalak_app/', 'https://www.tiktok.com/@stalak_app', 'https://www.youtube.com/@stalak_app')
+# the help pages (Marketing, 09/11, A7), in French and English: the list of src/footer.py (AIDE), the footer's one source
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'src')); import footer as FOOT
+AIDE_FR, AIDE_EN = ['/fr/' + a[0] for a in FOOT.AIDE], ['/' + a[1] for a in FOOT.AIDE]
 EN_PAGES = ['/', '/pricing', '/terms', '/refunds', '/privacy', '/legal-notice', '/triller-alternative', '/lip-sync-video-editor',
             '/music-video-maker-for-rappers', '/rap-snippet-video', '/lip-sync-videos-for-singers', '/how-to-make-a-lip-sync-video', '/edit-video-to-the-beat',
-            '/music-video']
-FR_PAGES = ['/fr/', '/fr/tarifs', '/fr/conditions', '/fr/remboursement', '/fr/confidentialite', '/fr/mentions-legales', '/fr/alternative-triller', '/fr/clip']
+            '/music-video'] + AIDE_EN
+FR_PAGES = ['/fr/', '/fr/tarifs', '/fr/conditions', '/fr/remboursement', '/fr/confidentialite', '/fr/mentions-legales', '/fr/alternative-triller', '/fr/clip'] + AIDE_FR
 OTHER = dict([('/fr/', '/'), ('/fr/tarifs', '/pricing'), ('/fr/conditions', '/terms'), ('/fr/remboursement', '/refunds'), ('/fr/confidentialite', '/privacy'),
-              ('/fr/mentions-legales', '/legal-notice'), ('/fr/alternative-triller', '/triller-alternative'), ('/fr/clip', '/music-video')])
+              ('/fr/mentions-legales', '/legal-notice'), ('/fr/alternative-triller', '/triller-alternative'), ('/fr/clip', '/music-video')] + list(zip(AIDE_FR, AIDE_EN)))
 OTHER.update({v: k for k, v in list(OTHER.items())})
-HEADS = {'fr': ['Produit', 'Légal', 'Tes choix'], 'en': ['Product', 'Legal', 'Your choices']}
-MUST = {'fr': ['/fr/tarifs', '/fr/clip', '/fr/alternative-triller', '/fr/conditions', '/fr/remboursement', '/fr/confidentialite', '/fr/mentions-legales'],
-        'en': ['/pricing', '/music-video', '/triller-alternative', '/terms', '/refunds', '/privacy', '/legal-notice']}
+HEADS = {'fr': ['Produit', 'Tutos', 'Légal', 'Tes choix'], 'en': ['Product', 'Tutorials', 'Legal', 'Your choices']}
+MUST = {'fr': ['/fr/tarifs', '/fr/clip', '/fr/alternative-triller', '/fr/conditions', '/fr/remboursement', '/fr/confidentialite', '/fr/mentions-legales'] + AIDE_FR,
+        'en': ['/pricing', '/music-video', '/triller-alternative', '/terms', '/refunds', '/privacy', '/legal-notice'] + AIDE_EN}
 GUIDES = ['/lip-sync-video-editor', '/music-video-maker-for-rappers', '/rap-snippet-video', '/lip-sync-videos-for-singers',
           '/how-to-make-a-lip-sync-video', '/edit-video-to-the-beat']
 BOTTOM = '© 2026 Stalak · Made by 99Sayso'
@@ -83,7 +86,7 @@ def static_page(b, base, site, url, lang, iphone, ref):
     check(tag + ' : pas fixe, tout en bas de la page, sans animation', d['pos'] in ('relative', 'static') and abs(d['bottom'] - d['doc']) < 2 and d['anim'] == 'none', d)
     check(tag + ' : textes dans la langue de la page', d['heads'] == HEADS[lang] and d['bottomTxt'] == BOTTOM and ('rythme' in d['tag'] if lang == 'fr' else 'beat' in d['tag']), (d['heads'], d['tag']))
     ls = links_of(d)
-    check(tag + ' : Tarifs, le mode Clip, les 6 guides, la page Triller, les 4 pages légales, cookies, Your Privacy Choices, Instagram, TikTok',
+    check(tag + ' : Tarifs, le mode Clip, les 6 guides, la page Triller, les tutos, les 4 pages légales, cookies, Your Privacy Choices, Instagram, TikTok',
           all(m in ls for m in MUST[lang] + GUIDES) and all(o in ls for o in OURS) and d['ck'] and d['pc'] == 'Your Privacy Choices', ls)
     bad = [h for h in d['links'] + [x for x in d['langs'] if x.startswith('/')] if not (h in OURS or (h.startswith('/') and not h.startswith('//') and page_exists(site, h)))]
     check(tag + ' : seulement nos sites, chaque lien mène à une page qui existe', not bad, bad)
@@ -91,8 +94,8 @@ def static_page(b, base, site, url, lang, iphone, ref):
     check(tag + ' : Français / English vers la même page dans l’autre langue', d['langs'] == list(want), (d['langs'], want))
     if ref is not None: check(tag + ' : mêmes liens que le pied de page de l’app', ls == ref, (ls, ref))
     cols = d['cols']
-    if iphone: check(tag + ' : téléphone : colonnes empilées', len(cols) == 4 and len({c[0] for c in cols}) == 1 and all(cols[i][1] < cols[i + 1][1] for i in range(3)), cols)
-    else: check(tag + ' : ordinateur : 4 colonnes côte à côte', len(cols) == 4 and len({c[1] for c in cols}) == 1 and all(cols[i][0] < cols[i + 1][0] for i in range(3)), cols)
+    if iphone: check(tag + ' : téléphone : colonnes empilées', len(cols) == 5 and len({c[0] for c in cols}) == 1 and all(cols[i][1] < cols[i + 1][1] for i in range(4)), cols)
+    else: check(tag + ' : ordinateur : 5 colonnes côte à côte', len(cols) == 5 and len({c[1] for c in cols}) == 1 and all(cols[i][0] < cols[i + 1][0] for i in range(4)), cols)
     check(tag + ' : pas de défilement horizontal', d['sw'] <= d['vw'], (d['sw'], d['vw']))
     check(tag + ' : aucune erreur dans la page', not errs, errs)
     ctx.close()
@@ -117,8 +120,8 @@ def app(b, base, site, lang, iphone):
     bad = [h for h in d['links'] + [x for x in d['langs'] if x.startswith('/')] if not (h in OURS or (h.startswith('/') and page_exists(site, h)))]
     check(tag + ' : seulement nos sites, chaque lien mène à une page qui existe', not bad, bad)
     cols = d['cols']
-    if iphone: check(tag + ' : téléphone : colonnes empilées', len({c[0] for c in cols}) == 1 and all(cols[i][1] < cols[i + 1][1] for i in range(3)), cols)
-    else: check(tag + ' : ordinateur : 4 colonnes côte à côte', len({c[1] for c in cols}) == 1, cols)
+    if iphone: check(tag + ' : téléphone : colonnes empilées', len(cols) == 5 and len({c[0] for c in cols}) == 1 and all(cols[i][1] < cols[i + 1][1] for i in range(4)), cols)
+    else: check(tag + ' : ordinateur : 5 colonnes côte à côte', len(cols) == 5 and len({c[1] for c in cols}) == 1, cols)
     # the help ice cube and the Export button, at the very bottom of the page (video ready, Export button off the screen)
     pg.locator('#demoBtn').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000)
     pg.wait_for_timeout(1500)

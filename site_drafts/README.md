@@ -23,3 +23,21 @@ Marketing & croissance. Écrites le 30/10/2026, publiées le 01/11/2026 sur la b
 - aucun chiffre inventé ;
 - les prix sont ceux de la page Tarifs ;
 - les boutons mènent à l'accueil avec `?ref=seo` (la page comparative : `?ref=seo-triller`).
+
+# Pages d'aide pour Google (A7) : en anglais et en français
+
+Marketing & croissance, depuis le 09/11/2026 (décision du propriétaire du 9/11). Sujets choisis sur de vraies données :
+`docs/marketing/PAGES_AIDE.md`. Contrairement aux 6 guides, chaque page d'aide existe **en anglais (racine) et en français
+(`/fr/`)**, avec les balises FR / EN.
+
+**Pour les modifier ou en ajouter une :**
+1. Le texte est dans `site_drafts/make_aide.py` (liste `PAGES`, une entrée par sujet avec `en` et `fr`).
+2. La même page doit être dans la liste `AIDE` de `src/footer.py` (colonne « Tutorials » / « Tutos » du pied de page, plan du
+   site, lien FR / EN) : `make_aide.py` vérifie que les deux listes sont pareilles.
+3. Les captures de l'app (si l'app a changé) : construire le site, puis `python3 site_drafts/aide_shots.py public en` et
+   `python3 site_drafts/aide_shots.py public fr` (écrit `site_src/aide/`).
+4. `python3 site_drafts/make_aide.py` : écrit les pages dans `site_src/` et `site_src/fr/`, et leurs images de partage dans
+   `site_src/og/` (`--no-og` pour ne pas refaire les images).
+5. Reconstruire le site : `python3 build_site.py --domain stalak.app --email contact@stalak.app`.
+
+Mêmes règles que les guides : aucun concurrent cité, aucun chiffre inventé, prix de la page Tarifs, boutons vers `?ref=seo`.
