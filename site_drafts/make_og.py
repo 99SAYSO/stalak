@@ -19,6 +19,9 @@ GUIDES = [   # slug, title on the picture, the mascot
     ('lip-sync-videos-for-singers', 'Performance videos for singers', 'Several takes, one performance', 'love'),
     ('how-to-make-a-lip-sync-video', 'How to make a lip-sync video', 'Song, takes, lyrics, edit: 4 steps', 'hello'),
     ('edit-video-to-the-beat', 'Edit video to the beat', 'Cuts that land on the beat', 'gg'),
+    # Marketing & croissance (07/11): the « Clip » page (Music video mode, a Pro export: « Try it free », not « Free »)
+    ('music-video', 'Music video mode', 'Your whole song as a YouTube music\u00a0video', 'cool', 'Try it free · in your browser · no sign-up'),
+    ('clip', 'Le mode Clip', 'Tout ton morceau en clip YouTube', 'cool', 'Essai gratuit · dans ton navigateur · sans compte'),
 ]
 PAGE = """<!doctype html><html><head><meta charset="utf-8"><style>
 @font-face{{font-family:'Lilita One';src:url('{lilita}')}}@font-face{{font-family:'Rubik';src:url('{rubik}');font-weight:300 900}}
@@ -34,7 +37,7 @@ p{{margin:0;font-weight:600;font-size:31px;line-height:1.25;color:#24324a}}
 .mascot{{position:absolute;right:58px;bottom:70px;width:330px;height:330px}}
 </style></head><body>{flakes}{logo}
 <div class="card"><h1>{title}</h1><p>{sub}</p></div>
-<div class="url">stalak.app</div><div class="free">Free · in your browser · no sign-up</div>
+<div class="url">stalak.app</div><div class="free">{free}</div>
 <img class="mascot" src="{mascot}" alt=""></body></html>"""
 
 
@@ -49,9 +52,12 @@ def main():
     OUT.mkdir(parents=True, exist_ok=True)
     with sync_playwright() as p:
         b = p.chromium.launch(); pg = b.new_page(viewport={'width': 1200, 'height': 630}, device_scale_factor=1)
-        for slug, title, sub, mascot in GUIDES:
+        only = sys.argv[1:]   # slugs to (re)draw; none = all
+        for slug, title, sub, mascot, *free in GUIDES:
+            if only and slug not in only: continue
+            free = free[0] if free else 'Free · in your browser · no sign-up'
             pg.set_content(PAGE.format(lilita=LILITA, rubik=RUBIK, flakes=flakes(), logo=LOGO, title=H.escape(title).replace('lip-sync', '<span style="white-space:nowrap">lip-sync</span>').replace('Lip-sync', '<span style="white-space:nowrap">Lip-sync</span>'), sub=H.escape(sub),
-                                       mascot=data(ROOT / 'site_src' / 'emoji' / (mascot + '.webp'), 'image/webp')), wait_until='load')
+                                       mascot=data(ROOT / 'site_src' / 'emoji' / (mascot + '.webp'), 'image/webp'), free=H.escape(free)), wait_until='load')
             pg.evaluate('document.fonts.ready.then(() => document.fonts.size)'); pg.wait_for_timeout(250)
             assert pg.evaluate("document.fonts.check('70px \"Lilita One\"')"), 'Lilita One not loaded'
             pg.screenshot(path=str(OUT / (slug + '.jpg')), type='jpeg', quality=86)

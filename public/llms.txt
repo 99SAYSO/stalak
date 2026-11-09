@@ -9,6 +9,7 @@ Stalak is not related to the Dofus game creature of the same name.
 - [Stalak in French](https://stalak.app/fr/): the same app in French.
 - [Pricing](https://stalak.app/pricing): Free, Stalak Pro and Creator Plus.
 - [Pricing in French](https://stalak.app/fr/tarifs): the same in French.
+- [Music video mode](https://stalak.app/music-video): your whole song as a 16:9 YouTube music video, cut on the beat, with effects on the drops, choruses and breaks (Stalak Pro; try it free in the preview). With a real example. In French: [le mode Clip](https://stalak.app/fr/clip).
 
 ## Guides
 - [Lip-sync video editor](https://stalak.app/lip-sync-video-editor): what Stalak does; it edits your real takes (no AI face, no fake mouth).

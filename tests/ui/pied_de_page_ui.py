@@ -1,5 +1,5 @@
 """Test of the footer (owner, 01/11; src/footer.py + src/footer.css): the same on every page — the app (/ and /fr/), Pricing,
-the legal pages, the 6 guides, the Triller page — in French and English, and its light version in the claude.ai page.
+the legal pages, the 6 guides, the Triller page, the Clip page (7/11) — in French and English, and its light version in the claude.ai page.
 Python Playwright (chromium).
 
     python3 /abs/path/tests/ui/pied_de_page_ui.py <built public/ folder> [claude.ai page (shuffle-lab.html)] [folder for screenshots]
@@ -18,14 +18,15 @@ SHOTS = sys.argv[3] if len(sys.argv) > 3 else None
 results = []
 OURS = ('https://www.instagram.com/stalak_app/', 'https://www.tiktok.com/@stalak_app', 'https://www.youtube.com/@stalak_app')
 EN_PAGES = ['/', '/pricing', '/terms', '/refunds', '/privacy', '/legal-notice', '/triller-alternative', '/lip-sync-video-editor',
-            '/music-video-maker-for-rappers', '/rap-snippet-video', '/lip-sync-videos-for-singers', '/how-to-make-a-lip-sync-video', '/edit-video-to-the-beat']
-FR_PAGES = ['/fr/', '/fr/tarifs', '/fr/conditions', '/fr/remboursement', '/fr/confidentialite', '/fr/mentions-legales', '/fr/alternative-triller']
+            '/music-video-maker-for-rappers', '/rap-snippet-video', '/lip-sync-videos-for-singers', '/how-to-make-a-lip-sync-video', '/edit-video-to-the-beat',
+            '/music-video']
+FR_PAGES = ['/fr/', '/fr/tarifs', '/fr/conditions', '/fr/remboursement', '/fr/confidentialite', '/fr/mentions-legales', '/fr/alternative-triller', '/fr/clip']
 OTHER = dict([('/fr/', '/'), ('/fr/tarifs', '/pricing'), ('/fr/conditions', '/terms'), ('/fr/remboursement', '/refunds'), ('/fr/confidentialite', '/privacy'),
-              ('/fr/mentions-legales', '/legal-notice'), ('/fr/alternative-triller', '/triller-alternative')])
+              ('/fr/mentions-legales', '/legal-notice'), ('/fr/alternative-triller', '/triller-alternative'), ('/fr/clip', '/music-video')])
 OTHER.update({v: k for k, v in list(OTHER.items())})
 HEADS = {'fr': ['Produit', 'Légal', 'Tes choix'], 'en': ['Product', 'Legal', 'Your choices']}
-MUST = {'fr': ['/fr/tarifs', '/fr/alternative-triller', '/fr/conditions', '/fr/remboursement', '/fr/confidentialite', '/fr/mentions-legales'],
-        'en': ['/pricing', '/triller-alternative', '/terms', '/refunds', '/privacy', '/legal-notice']}
+MUST = {'fr': ['/fr/tarifs', '/fr/clip', '/fr/alternative-triller', '/fr/conditions', '/fr/remboursement', '/fr/confidentialite', '/fr/mentions-legales'],
+        'en': ['/pricing', '/music-video', '/triller-alternative', '/terms', '/refunds', '/privacy', '/legal-notice']}
 GUIDES = ['/lip-sync-video-editor', '/music-video-maker-for-rappers', '/rap-snippet-video', '/lip-sync-videos-for-singers',
           '/how-to-make-a-lip-sync-video', '/edit-video-to-the-beat']
 BOTTOM = '© 2026 Stalak · Made by 99Sayso'
@@ -82,7 +83,7 @@ def static_page(b, base, site, url, lang, iphone, ref):
     check(tag + ' : pas fixe, tout en bas de la page, sans animation', d['pos'] in ('relative', 'static') and abs(d['bottom'] - d['doc']) < 2 and d['anim'] == 'none', d)
     check(tag + ' : textes dans la langue de la page', d['heads'] == HEADS[lang] and d['bottomTxt'] == BOTTOM and ('rythme' in d['tag'] if lang == 'fr' else 'beat' in d['tag']), (d['heads'], d['tag']))
     ls = links_of(d)
-    check(tag + ' : Tarifs, les 6 guides, la page Triller, les 4 pages légales, cookies, Your Privacy Choices, Instagram, TikTok',
+    check(tag + ' : Tarifs, le mode Clip, les 6 guides, la page Triller, les 4 pages légales, cookies, Your Privacy Choices, Instagram, TikTok',
           all(m in ls for m in MUST[lang] + GUIDES) and all(o in ls for o in OURS) and d['ck'] and d['pc'] == 'Your Privacy Choices', ls)
     bad = [h for h in d['links'] + [x for x in d['langs'] if x.startswith('/')] if not (h in OURS or (h.startswith('/') and not h.startswith('//') and page_exists(site, h)))]
     check(tag + ' : seulement nos sites, chaque lien mène à une page qui existe', not bad, bad)
