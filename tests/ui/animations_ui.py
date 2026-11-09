@@ -110,7 +110,9 @@ def run(b, base, lang, iphone, calm):
     check(tag + ' : changement d’étape : glisse vers l’arrière en 300 ms, ease-out-quart', a is not None and a[0] == 'mo-step-l' and a[1] == 300 and a[2] == 'cubic-bezier(0.165, 0.84, 0.44, 1)', a)
     ev(pg, 'go(4)'); pg.wait_for_timeout(400)
     if iphone:
-        # (the page is let settle before each measure: what is measured is the animation, not the work of the step before)
+        # (the page is let settle before each measure: what is measured is the animation, not the work of the step before;
+        # 7/11: the real example's takes are analysed in the background first, as any person's takes)
+        pg.wait_for_function('() => __ev("S.takes.every(t => t.kind === \'demo\' || t.qual) && !qualBusy && !proxyBusy")', timeout=400000)
         pg.wait_for_timeout(2500)
         cdp = ctx.new_cdp_session(pg); cdp.send('Emulation.setCPUThrottlingRate', {'rate': 4})
         sn = stats(frames(pg, 1500))

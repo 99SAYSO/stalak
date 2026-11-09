@@ -194,6 +194,12 @@ export async function stats(env, days = 30, now = Date.now()) {
         proOffer: ev.ev_pro_offer || 0, adOffer: ev.ev_ad_offer || 0, adShown: ev.ev_ad_shown || 0, adOk: ev.ev_ad_ok || 0, plansOpen: ev.ev_plans_open || 0, checkoutOpen: ev.ev_checkout_open || 0,
         paid: ev.paid_first || 0, exportFailWhy: pick('ev_export_fail_'), plansWhy: pick('ev_plans_why_'),
         ios: { exportOk: ev.ios_export_ok || 0, exportFail: ev.ios_export_fail || 0 },
+        // (7/11) the failed exports in detail (metrics.js EXPORT_X): { dev_ios: n, ios_memory: n, st_frames: n, fmt_916: n, … },
+        // the same for the first go of the exports made again by themselves, and starts / videos made per device
+        exportX: pick('ev_xf_'), retryX: pick('ev_xr_'), startDev: pick('ev_xs_'), okDev: pick('ev_xo_'),
+        retry: pick('ev_export_retry_'), saved: pick('ev_export_saved_'), refused: pick('ev_export_refused_'),
+        // (7/11, Clip mode) exports per kind (startDev.kind_clip / okDev.kind_clip) and the answer to the Clip question without Pro
+        clipAsk: pick('ev_clip_ask_'),
         // report of 7/11: the funnel per source, the visits per country, where the payment window was closed without buying
         bySource: bySource(ev), visitCountries: visitCountries(ev),
         checkoutClose: { start: ev.ev_checkout_close_start || 0, details: ev.ev_checkout_close_details || 0, payment: ev.ev_checkout_close_payment || 0 },
