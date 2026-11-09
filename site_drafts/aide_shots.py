@@ -4,7 +4,7 @@ used with his OK; the 2 lyric lines known for these bars). For the help pages (s
 
     python3 site_drafts/aide_shots.py public en      (then fr)
 
-Writes site_src/aide/<lang>-song.jpg, -takes.jpg, -edit.jpg, -export.jpg (600 px wide, from a 2x screenshot)."""
+Writes site_src/aide/<lang>-song, -takes, -broll, -lyrics, -style, -edit, -export, -pack, -clip .jpg (600 px wide, from a 2x screenshot)."""
 import functools, http.server, json, os, shutil, sys, tempfile, threading
 os.environ.setdefault('PLAYWRIGHT_BROWSERS_PATH', '/opt/pw-browsers')
 from playwright.sync_api import sync_playwright
@@ -26,6 +26,8 @@ def ev(pg, code):
 
 
 def shot(pg, name, sel, top=12, h=H):
+    # the « install Stalak as an app » tip (iPhone) is closed first, as a person would, so it doesn't hide the screen's bottom
+    pg.evaluate("() => { const x = document.querySelector('#installTip'); if (x && !x.hidden) document.querySelector('#installX').click(); }")
     pg.evaluate('([s, t]) => { const e = document.querySelector(s); window.scrollTo(0, e.getBoundingClientRect().top + scrollY - t); }', [sel, top])
     pg.mouse.move(2, 2); pg.wait_for_timeout(700)
     raw = os.path.join(tempfile.gettempdir(), '_%s-%s.png' % (LANG, name)); pg.screenshot(path=raw)
@@ -62,18 +64,32 @@ def main():
         pg.wait_for_function('() => __ev("S.takes.length === 3 && S.takes.every(t => t.status !== \'pending\')")', timeout=600000)
         pg.wait_for_timeout(2500)
         shot(pg, 'takes', '[data-i18n="p2.title"]')
+        shot(pg, 'broll', 'label[for="brollFiles"]', top=300)
         info['takes'] = ev(pg, "S.takes.map(t => [t.name, t.status, +(t.offset || 0).toFixed(3)])")
-        # 3. the lyrics: the 2 known lines of these 8 bars, pasted and synced (as tapping would)
+        # 3. the lyrics: the 2 known lines of these 8 bars, pasted (as a person would type them), then synced (as tapping would)
         ev(pg, 'go(3)'); pg.wait_for_timeout(600)
+        pg.fill('#lyText', "j'ai mis de l'or sur mes plaies,\ncicatrices valent des millions"); pg.wait_for_timeout(400)
+        shot(pg, 'lyrics', '[data-i18n="p3.title"]', top=262)
         ev(pg, """(() => { S.lyrUser = true; S.lyrics.mode = 'paste'; S.lyrics.lines = [
             {text: "j'ai mis de l'or sur mes plaies,", t: 9.115}, {text: "cicatrices valent des millions", t: 10.415}]; saveLyrics && saveLyrics(); })()""")
+        ev(pg, 'go(4)'); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000)
+        ev(pg, 'go(3)'); pg.wait_for_timeout(1200)
+        shot(pg, 'style', '#stSize', top=330)
         # 4. the edit, on a frame with the lyrics
         ev(pg, 'go(4)'); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000)
         pg.wait_for_timeout(2500)
         ev(pg, 'showFrame(9.6)'); pg.wait_for_timeout(1500)
         shot(pg, 'edit', '[data-i18n="p4.title"]', top=16, h=640)
-        # 5. the export
+        # 5. the export, and the pack (Creator Plus)
         shot(pg, 'export', '#exportBtn', top=300, h=600)
+        shot(pg, 'pack', '#packSel', top=330, h=600)
+        # 6. Music video mode (16:9), picked at step 1: the same takes, whole, over a blurred copy of themselves
+        ev(pg, 'go(1)'); pg.wait_for_timeout(500)
+        pg.locator('#kindSeg button[data-v="clip"]').click(); pg.mouse.move(2, 2); pg.wait_for_timeout(800)
+        ev(pg, 'go(4)'); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0 && S.fmt === \'169\'")', timeout=60000)
+        pg.wait_for_timeout(3000)
+        ev(pg, 'showFrame(9.6)'); pg.wait_for_timeout(1500)
+        shot(pg, 'clip', '[data-i18n="p4.title"]', top=16, h=600)
         info['cuts'] = ev(pg, "S.cuts.length")
         info['errors'] = errs
         b.close()

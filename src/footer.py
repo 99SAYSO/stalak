@@ -29,7 +29,17 @@ GUIDES = [('lip-sync-video-editor', 'Lip-sync video editor'), ('music-video-make
           ('how-to-make-a-lip-sync-video', 'How to make a lip-sync video'), ('edit-video-to-the-beat', 'Edit video to the beat')]
 # Marketing & croissance (09/11, A7) : les pages d'aide (tutos), en français ET en anglais : (page FR, page EN, nom FR, nom EN).
 # Écrites par site_drafts/make_aide.py ; ici pour le pied de page (colonne « Tutos » / « Tutorials »), le plan du site et FR / EN.
-AIDE = [('faire-un-clip-avec-son-telephone', 'how-to-make-a-music-video-on-your-phone', 'Faire un clip avec son téléphone', 'Make a music video on your phone')]
+AIDE = [   # the help pages (site_drafts/make_aide.py): fr slug, en slug, fr label, en label
+    ('faire-un-clip-avec-son-telephone', 'how-to-make-a-music-video-on-your-phone', 'Faire un clip avec son téléphone', 'Make a music video on your phone'),
+    ('idees-de-clip', 'music-video-ideas', 'Idées de clip sans budget', 'Music video ideas'),
+    ('comment-faire-un-playback', 'how-to-lip-sync', 'Faire un playback parfait', 'How to lip sync'),
+    ('se-filmer-en-train-de-rapper', 'how-to-film-yourself-rapping', 'Se filmer en train de rapper', 'Film yourself rapping'),
+    ('synchroniser-video-et-musique', 'sync-video-to-music', 'Synchroniser vidéo et son', 'Sync video to music'),
+    ('mettre-les-paroles-sur-une-video', 'add-lyrics-to-video', 'Mettre les paroles sur une vidéo', 'Add lyrics to a video'),
+    ('promouvoir-sa-musique-sur-tiktok', 'promote-your-music-on-tiktok', 'Promouvoir sa musique sur TikTok', 'Promote your music on TikTok'),
+    ('promouvoir-sa-musique-sur-instagram', 'promote-your-music-on-instagram', 'Promouvoir sa musique sur Instagram', 'Promote your music on Instagram'),
+    ('teaser-un-son', 'how-to-tease-a-song', 'Teaser un son avant sa sortie', 'Tease a new song'),
+    ('format-video-clip', 'music-video-format', 'Format et durée d’un clip', 'Music video format')]
 TXT = {
     'fr': {
         'home': '/fr/', 'tagline': 'Ton playback monté sur le rythme, directement dans ton navigateur.',

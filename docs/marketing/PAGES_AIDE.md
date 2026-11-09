@@ -4,8 +4,9 @@ Demande : Chef de projet → Marketing, 9/11/2026 (décision du propriétaire du
 40 clics, 100 % des recherches contiennent « stalak ». Google n'apporte donc aucun nouveau visiteur. Ces pages visent des
 questions **sans le nom Stalak** que les rappeurs et chanteurs tapent dans Google.
 
-Étape 1 (ce document) : la liste, à valider par le propriétaire. Étape 2 : une maquette d'une seule page. Étape 3 : les 10 pages
-(anglais à la racine, français dans `/fr/`).
+Étape 1 (ce document) : la liste, validée par le propriétaire (« oui », 9/11). Étape 2 : une maquette d'une seule page, validée
+(« ok », 9/11). Étape 3, faite : les 10 pages (anglais à la racine, français dans `/fr/`), écrites par `site_drafts/make_aide.py`.
+Compte rendu : `docs/handoff/marketing-pages-aide.md`.
 
 ## Méthode (relevé du 9/11/2026)
 
