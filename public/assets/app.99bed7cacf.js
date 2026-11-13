@@ -6080,22 +6080,28 @@ async function exportOne(again){
     if (filtLocked()){ const c = await filtAsk(); if (c === 'pro'){ lockOpen('filters', 'filters'); return; } if (c !== 'without') return; setFilter('none', true); diag('filtre Pro : export sans ce filtre'); }
   }
   if (!S.cuts.length || S.exporting || exportGate) return;
-  const safe = !!again || !!S.lightNext, light = again === 'memory' || again === 'crash' || S.lightNext === 'crash';
+  // (audit 13/11, n° 4: 2 iPhones closed the tab ~10 s into the pictures of a 9:16 video of more than 60 s) on a phone, a long
+  // video is made the safe way from the start: one take decoded at a time, drawn in 2D. Measured on 4 takes 1080×1920 and
+  // 70 s: +500 MB in the first 5 s of the pictures the usual way (every take open at once), against a slow climb, 300 MB
+  // lower at its top, the safe way (and no slower)
+  const longPhone = PHONE_DEV && S.segEnd - S.segStart > 45;
+  const safe = !!again || !!S.lightNext || longPhone, light = again === 'memory' || again === 'crash' || S.lightNext === 'crash';
   const keep = { noTiles: S.noTiles, noGl: S.noGl }; let retry = null, made = false;
-  if (safe){ S.noTiles = true; S.noGl = true; diag('export : réglages plus sûrs' + (again ? ' (nouvel essai après « ' + again + ' »)' : ' (après un onglet fermé pendant l’export)')); }
+  if (safe){ S.noTiles = true; S.noGl = true; diag('export : réglages plus sûrs' + (again ? ' (nouvel essai après « ' + again + ' »)' : S.lightNext ? ' (après un onglet fermé pendant l’export)' : ' (longue vidéo sur téléphone)')); }
   // (7/11, Clip mode, before n° 1) a video too long for this device's memory even at the lowest bitrate is not started (the
   // browser would close the tab in the middle): said, with the longest passage that fits, as for a pack
   { const v0 = await pickVideoConfig(); if (v0){ const mp = memPlan(1, light ? Math.max(3e6, v0.bitrate * 0.6) : v0.bitrate);
     if (!mp.ok){ S.noTiles = keep.noTiles; S.noGl = keep.noGl; const secs = Math.round(S.segEnd - S.segStart);
       diag('mémoire : ' + Math.round(mp.need) + ' Mo pour ' + mp.budget + ' Mo sur cet appareil, export refusé (' + secs + ' s, jusqu’à ' + mp.sMax + ' s)');
       sayNear(expNearAt(), mp.sMax ? 'exp.mem' : 'exp.mem0', { s: secs, smax: mp.sMax }); acctEvent('export_refused', { cat: 'memory' }); return; } } }
-  S.lightNext = false; try { localStorage.removeItem('stalak:expLight'); } catch(e){}
+  S.lightNextWas = !!S.lightNext; S.lightNext = false; try { localStorage.removeItem('stalak:expLight'); } catch(e){}
   S.packN = 1; S.wm = wmOn(); beginExport(!!again); const TX = performance.now(); await fontsReady();
   if (again){ setT('#expRetry', 'exp.retry'); $('#expRetry').hidden = false; }
   try {
     let vcfg = await pickVideoConfig(); const acfg = vcfg && await pickAudioConfig(S.song.buffer.sampleRate);
     if (S.expX){ S.expX.st = null; S.expX.path = vcfg && acfg ? 'wc' : window.MediaRecorder && view.captureStream ? 'rt' : 'none'; }
-    if (vcfg && safe){ vcfg = plainCfg(vcfg); if (light) vcfg.bitrate = Math.max(3e6, Math.round(vcfg.bitrate * 0.6 / 1e5) * 1e5); }
+    // (a long video on a phone keeps its encoder: only the drawing is made the safe way)
+    if (vcfg && (again || S.lightNextWas)){ vcfg = plainCfg(vcfg); if (light) vcfg.bitrate = Math.max(3e6, Math.round(vcfg.bitrate * 0.6 / 1e5) * 1e5); }
     if (vcfg){ const mp = memPlan(1, vcfg.bitrate);
       if (mp.bitrate < vcfg.bitrate){ vcfg = Object.assign({}, vcfg, { bitrate: mp.bitrate }); diag('mémoire : ' + Math.round(memNeed(1, 10e6)) + ' Mo à 10 Mbit/s pour ' + mp.budget + ' Mo sur cet appareil, débit ' + (mp.bitrate / 1e6).toFixed(1) + ' Mbit/s'); } }
     let ext = 'mp4', blob = null;
