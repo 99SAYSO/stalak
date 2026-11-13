@@ -32,6 +32,9 @@ MUST = {'fr': ['/fr/tarifs', '/fr/clip', '/fr/alternative-triller', '/fr/conditi
         'en': ['/pricing', '/music-video', '/triller-alternative', '/terms', '/refunds', '/privacy', '/legal-notice'] + AIDE_EN}
 GUIDES = ['/lip-sync-video-editor', '/music-video-maker-for-rappers', '/rap-snippet-video', '/lip-sync-videos-for-singers',
           '/how-to-make-a-lip-sync-video', '/edit-video-to-the-beat']
+# the 6 guides are English-only pages: in the English footer, never in the French one (13/11 audit)
+def guides_ok(lang, ls):
+    return all(g in ls for g in GUIDES) if lang == 'en' else not any(g in ls for g in GUIDES)
 BOTTOM = '© 2026 Stalak · Made by 99Sayso'
 
 
@@ -86,8 +89,8 @@ def static_page(b, base, site, url, lang, iphone, ref):
     check(tag + ' : pas fixe, tout en bas de la page, sans animation', d['pos'] in ('relative', 'static') and abs(d['bottom'] - d['doc']) < 2 and d['anim'] == 'none', d)
     check(tag + ' : textes dans la langue de la page', d['heads'] == HEADS[lang] and d['bottomTxt'] == BOTTOM and ('rythme' in d['tag'] if lang == 'fr' else 'beat' in d['tag']), (d['heads'], d['tag']))
     ls = links_of(d)
-    check(tag + ' : Tarifs, le mode Clip, les 6 guides, la page Triller, les tutos, les 4 pages légales, cookies, Your Privacy Choices, Instagram, TikTok',
-          all(m in ls for m in MUST[lang] + GUIDES) and all(o in ls for o in OURS) and d['ck'] and d['pc'] == 'Your Privacy Choices', ls)
+    check(tag + ' : Tarifs, le mode Clip, les 6 guides (en anglais seulement), la page Triller, les tutos, les 4 pages légales, cookies, Your Privacy Choices, Instagram, TikTok',
+          all(m in ls for m in MUST[lang]) and guides_ok(lang, ls) and all(o in ls for o in OURS) and d['ck'] and d['pc'] == 'Your Privacy Choices', ls)
     bad = [h for h in d['links'] + [x for x in d['langs'] if x.startswith('/')] if not (h in OURS or (h.startswith('/') and not h.startswith('//') and page_exists(site, h)))]
     check(tag + ' : seulement nos sites, chaque lien mène à une page qui existe', not bad, bad)
     want = (url, OTHER.get(url, '/fr/')) if lang == 'fr' else (OTHER.get(url, '/fr/'), url)
@@ -116,7 +119,7 @@ def app(b, base, site, lang, iphone):
     ref = links_of(d)
     check(tag + ' : un seul pied de page, bande pleine largeur fond encre, pas fixe, tout en bas', d['n'] == 1 and abs(d['left']) < 1 and abs(d['width'] - d['vw']) < 1
           and d['bg'] == 'rgb(10, 13, 20)' and d['pos'] in ('relative', 'static') and abs(d['bottom'] - d['doc']) < 2, d)
-    check(tag + ' : textes et liens', d['heads'] == HEADS[lang] and d['bottomTxt'] == BOTTOM and all(m in ref for m in MUST[lang] + GUIDES + list(OURS)) and d['ck'] and d['pc'] == 'Your Privacy Choices', (d['heads'], ref))
+    check(tag + ' : textes et liens', d['heads'] == HEADS[lang] and d['bottomTxt'] == BOTTOM and all(m in ref for m in MUST[lang] + list(OURS)) and guides_ok(lang, ref) and d['ck'] and d['pc'] == 'Your Privacy Choices', (d['heads'], ref))
     bad = [h for h in d['links'] + [x for x in d['langs'] if x.startswith('/')] if not (h in OURS or (h.startswith('/') and page_exists(site, h)))]
     check(tag + ' : seulement nos sites, chaque lien mène à une page qui existe', not bad, bad)
     cols = d['cols']
@@ -137,7 +140,7 @@ def app(b, base, site, lang, iphone):
     pg.locator('#siteFoot .langsw button[data-lang="%s"]' % other).click(); pg.wait_for_timeout(300)
     d2 = pg.evaluate(FOOT_JS)
     check(tag + ' : FR / EN du pied de page : tout le pied de page passe dans l’autre langue, le montage reste',
-          d2['heads'] == HEADS[other] and all(m in d2['links'] for m in MUST[other]) and pg.evaluate('location.pathname') == ('/fr/' if other == 'fr' else '/')
+          d2['heads'] == HEADS[other] and all(m in d2['links'] for m in MUST[other]) and guides_ok(other, d2['links']) and pg.evaluate('location.pathname') == ('/fr/' if other == 'fr' else '/')
           and pg.evaluate('document.querySelector(\'#siteFoot .langsw button[aria-pressed="true"]\').dataset.lang') == other and pg.evaluate('() => __ev("S.step === 4 && S.cuts.length > 0")'), d2['heads'])
     pg.locator('#siteFoot .langsw button[data-lang="%s"]' % lang).click(); pg.wait_for_timeout(300)
     check(tag + ' : … et revient (le sélecteur marche encore après avoir été réécrit)', pg.evaluate(FOOT_JS)['heads'] == HEADS[lang] and pg.evaluate('location.pathname') == url)
