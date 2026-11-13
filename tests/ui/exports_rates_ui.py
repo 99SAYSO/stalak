@@ -188,7 +188,11 @@ def run(b, base, lang, iphone, PW):
     # 4. the browser closed the tab (no pagehide): found at the next visit
     del events[:]
     pg.evaluate("""() => localStorage.setItem('stalak:expRun', JSON.stringify({ st: 'frames', fmt: '916', kind: 'one', path: 'wc', dur: 'd30', took: 't60', mem: 'unk', left: false }))""")
-    open_app(pg, base, lang); pg.wait_for_timeout(1200)
+    open_app(pg, base, lang)
+    # (the message comes 0.8 s after the app has started: waited for, up to 6 s, instead of a fixed time)
+    try: pg.wait_for_function('t => document.body.innerText.includes(t)', arg=t['crash'], timeout=6000)
+    except Exception: pass
+    pg.wait_for_timeout(300)
     c = names(events, 'export_fail')
     check(tag + ' : onglet fermé par le navigateur : compté « plantage » à la visite suivante, avec les détails, et dit', [e.get('cat') for e in c] == ['crash'] and x_ok(c[0].get('x')) and t['crash'] in text(pg), (c, text(pg)[-300:]))
     shot(pg, 'plantage-%s-%s.png' % (dev, lang))

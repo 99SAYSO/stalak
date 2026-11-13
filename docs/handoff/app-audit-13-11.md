@@ -28,13 +28,15 @@ Ce n'était ni la vidéo, ni les polices.
 **La mesure avant / après** (Lighthouse 12, téléphone comme PageSpeed, même serveur local compressé comme Cloudflare,
 médiane de 5 passages) :
 
-| | Score | Premier affichage | Plus grand élément | Blocage | Plus grand élément, les 5 passages |
-|---|---|---|---|---|---|
-| Avant (`main`) | 90 | 1,4 s | 2,4 s | 184 ms | 4,0 · 1,5 · 4,4 · 2,4 · 2,4 s |
-| Après | 97 | 1,8 s | 2,1 s | 83 ms | 2,3 · 2,2 · 2,1 · 2,1 · 2,1 s |
+| | Série | Score | Premier affichage | Plus grand élément | Blocage | Plus grand élément, les 5 passages |
+|---|---|---|---|---|---|---|
+| Avant (`main`) | 1 | 90 | 1,4 s | 2,4 s | 184 ms | 4,0 · 1,5 · 4,4 · 2,4 · 2,4 s |
+| Avant (`main`) | 2 | 93 | 1,2 s | 2,3 s | 252 ms | 2,4 · 2,3 · 2,3 · 2,3 · 2,1 s |
+| Après | 1 | 97 | 1,8 s | 2,1 s | 83 ms | 2,3 · 2,2 · 2,1 · 2,1 · 2,1 s |
+| Après (version finale) | 2 | 97 | 1,8 s | 2,1 s | 102 ms | 2,1 · 2,1 · 2,2 · 2,1 · 2,1 s |
 
-- Avant, 2 passages sur 5 basculaient à 4 s et plus : c'est ce que PageSpeed a vu (4,5 s). Après, le résultat ne bascule
-  plus, il reste toujours sous la cible de 2,5 s.
+- Avant, l'élément le plus grand dépasse 4 s pour 2 passages sur 10. C'est ce que PageSpeed a vu (4,5 s).
+- Après, il ne dépasse plus : il reste entre 2,1 et 2,3 s sur les 10 passages, donc sous la cible de 2,5 s.
 - Sur stalak.app avant correction, la même mesure donnait 4,4 s.
 - Le premier affichage calculé par Lighthouse monte un peu (1,4 → 1,8 s), car le script arrive plus tard dans son calcul.
 - Sur un vrai téléphone lent simulé (réseau 1,6 Mbit/s, processeur 4 fois plus lent, médiane de 3), rien ne change pour
@@ -94,5 +96,22 @@ Tests :
 
 Pour le propriétaire : il manque toujours les paroles des 8 premières mesures de « neva die » pour l'exemple.
 
-## Résultats des tests
-(complétés en fin de travail)
+## Résultats des tests (13-14/11, sur la branche)
+- **Série complète**, lancée par deux en même temps :
+  - audit_ui 158/158, son_passage 86/86, projet_local_ui 48/48, export_pub_ui 22/22, filtres_ui 106/106, paroles_suppr 44/44,
+    remux_frag 10/10 ;
+  - animations_ui 44/44, liens_cmp_ui 58/58, pied_de_page_ui 842/842, fluidite_ui 30/30, plans_ui 35/35, gallery_ui 49/49,
+    help_ui 42/42 ;
+  - clip1_ui 87/87, audit611_ui 91/91, serveur 106/106.
+- **Relancés seuls** : exports_rates_ui 80/80, après une attente corrigée (le message après un plantage arrive au bout
+  d'environ 1 s, le test regardait à 1,2 s fixes). formules_ui 137/137 (dans la série, le « filigrane dans chaque image »
+  n'échoue que quand la machine est chargée).
+- **Pareil sur `main`**, donc sans lien avec cette branche :
+  - `support_ui` : l'e-mail de test n'est pas envoyé (« Pas envoyés : access ») ;
+  - `lyrics_ui` : le compte Pro de test du serveur ;
+  - **`fin_export_ui` 82/86 et `partager_ui` 70/74** : sur `main` aussi, « Enregistrer la vidéo » tombe sous le bas de l'écran
+    sur iPhone et Android, à 759 px pour un écran de 664. **Cause** : la case « Reçois des conseils pour tes prochaines
+    vidéos par e-mail » (Comptes, `compte/donnees-7-11`) est maintenant en haut de l'écran de fin, au-dessus de la vidéo et
+    du bouton. Je n'y ai pas touché : c'est un choix d'un autre domaine. **Proposition** : la mettre sous les boutons
+    Enregistrer / Partager, l'écran de fin du 6/11 voulant que « Enregistrer » se voie tout de suite. Décision à prendre
+    avec Comptes et le propriétaire.
