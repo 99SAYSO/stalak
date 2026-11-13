@@ -6680,7 +6680,9 @@ function setFormat(f){ S.fmt = f; [W, H] = FORMATS[f]; try { frameUI(); } catch(
 function kindUI(){
   const clip = isClip();
   $$('#kindSeg button, #kindSeg4 button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === S.kind));
-  $('#kindHint').textContent = _t(clip ? 'kind.hint.clip' : 'kind.hint.reel');
+  // (audit 13/11, n° 1) never written again when it already says that: a text written again is « painted » again, and on the
+  // home page it counted as its biggest picture, only once the app had loaded (4.5 s on a slow phone instead of 1.4)
+  { const t = _t(clip ? 'kind.hint.clip' : 'kind.hint.reel'); if ($('#kindHint').textContent !== t) $('#kindHint').textContent = t; }
   $('#endBox').hidden = false; $('#barsSel').hidden = $('#barsLbl').hidden = clip;
   $('#waveHint').textContent = _t(clip ? 'wave.hint.clip' : 'wave.hint.reel');
   // formats: 16:9 or 9:16 for a clip, the vertical / feed / square ones for TikTok and Reels
@@ -9410,7 +9412,9 @@ window.addEventListener('beforeunload', e => { if (S.exporting || lpUnsaved()){ 
 
 /* ---------- FR / EN: everything on screen is written again in the other language, the work stays as it is ---------- */
 function applyLang(){
-  document.documentElement.lang = LANG;
+  // (audit 13/11, n° 1) set only when it changes: set again to the same value, every text of the page was shaped and painted
+  // again, and on a phone the home page's biggest text counted only then (once the app had loaded: 4.5 s instead of 1.4)
+  if (document.documentElement.lang !== LANG) document.documentElement.lang = LANG;
   applyStatic();
   if (hasT('doc.title')) document.title = _t('doc.title');
   $$('.langsw button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === LANG)));

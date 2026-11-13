@@ -8509,7 +8509,9 @@ function setFormat(f){ S.fmt = f; [W, H] = FORMATS[f]; try { frameUI(); } catch(
 function kindUI(){
   const clip = isClip();
   $$('#kindSeg button, #kindSeg4 button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === S.kind));
-  $('#kindHint').textContent = _t(clip ? 'kind.hint.clip' : 'kind.hint.reel');
+  // (audit 13/11, n° 1) never written again when it already says that: a text written again is « painted » again, and on the
+  // home page it counted as its biggest picture, only once the app had loaded (4.5 s on a slow phone instead of 1.4)
+  { const t = _t(clip ? 'kind.hint.clip' : 'kind.hint.reel'); if ($('#kindHint').textContent !== t) $('#kindHint').textContent = t; }
   $('#endBox').hidden = false; $('#barsSel').hidden = $('#barsLbl').hidden = clip;
   $('#waveHint').textContent = _t(clip ? 'wave.hint.clip' : 'wave.hint.reel');
   // formats: 16:9 or 9:16 for a clip, the vertical / feed / square ones for TikTok and Reels
@@ -8775,8 +8777,11 @@ function togglePlay(){ if (S.exporting) return; if (S.playing) stop(); else play
 $('#playBtn').onclick = togglePlay;
 $('#songPlay').onclick = listenToggle;
 // (audit 6/11, n° 18) the Clip mode can be tried by everybody, in the preview; only its export asks for Pro (as the filters)
-bindSeg('#kindSeg', k => { setKind(k); if (k === 'clip' && !can('clip')) say('ca.try'); });
-bindSeg('#kindSeg4', k => { setKind(k); if (k === 'clip' && !can('clip')) say('ca.try'); });
+// (audit 13/11, n° 3) « opened the Clip mode »: counted once per visit (anonymous), when the person chooses Clip herself
+let clipOpened = false;
+const kindPick = k => { setKind(k); if (k === 'clip' && !clipOpened){ clipOpened = true; acctEvent('clip_open', { cat: can('clip') ? 'pro' : 'free' }); } if (k === 'clip' && !can('clip')) say('ca.try'); };
+bindSeg('#kindSeg', kindPick);
+bindSeg('#kindSeg4', kindPick);
 bindSeg('#frameSeg', v => { S.frame = v; S.frameUser = true; store.set('stalak:frame', v); stop(true); showFrame(cursorIn()); say('frame.st.' + v); });
 // the end of the passage, one bar earlier or later (both modes: the same as the end handle)
 $('#endPrev').onclick = () => { if (!S.song) return; if (segMove('r', segEndBar() - 1)){ stop(true); rebuild(false); } };
@@ -9710,6 +9715,9 @@ const AP_PERSON = '<svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy
 let apView = null, apDepth = 0, apBack = null, apBusy = false, acctWasPro = false, apMsgTimer = 0;
 /* apMode: 'in' (sign in) | 'up' (create an account); apStep: 'form' | 'code' | 'forgot' | 'newpw'; apCodeFor: 'signup' | 'login' | 'reset' */
 let apMode = 'in', apStep = 'form', apCodeFor = 'signup', apMailV = '', apAfter = 'account', apResetCode = '', apForgotKind = 'forgot';
+// (audit 13/11, n° 3) where the plans page was opened from when no paid feature asked for it: the « Tarifs » button or the
+// Tarifs page of the site (tarifs), the account menu (menu); only for the dashboard's anonymous counter
+let plansFrom = null;
 let apWhyK = null, apAvLocal = null, apResendAt = 0, apResendT = 0, apProviders = [], apProvLoaded = false, apAuthLast = null;
 const AP_PROV = { google: 'Google', apple: 'Apple', microsoft: 'Microsoft' };
 /* the passwords the server refuses (the most common ones): told while typing */
@@ -10136,7 +10144,7 @@ function apGo(view, o = {}){
   if (changed || first) page.scrollTop = 0;
   if (v === 'gallery' && (changed || first)) clLoadList();
   if (v === 'pro' && (changed || first)){
-    acctEvent('plans_open', { why: acctWhyCat(apWhyK) });   // funnel (dashboard)
+    acctEvent('plans_open', { why: apWhyK ? acctWhyCat(apWhyK) : plansFrom || 'other' }); plansFrom = null;   // funnel (dashboard)
     $$('#apBuy .pl-why').forEach(x => x.remove());
     // a subscriber sees his own billing first (yearly by default for the others, as on the Tarifs page)
     const sub = ACCT.state.subscription; if (acctPaid() && sub && (sub.interval === 'month' || sub.interval === 'year') && plInt !== sub.interval){ plInt = sub.interval; plConfirm = null; plPreview = null; plRender(); }
@@ -10204,7 +10212,7 @@ function amInit(){
     if (S.exporting || askDone) return;
     if (k === 'gallery') apGo('gallery');
     else if (k === 'account') apGo('account');
-    else if (k === 'pro'){ if (acctPaid() && apPortal) apPortal(); else apGo('pro'); }
+    else if (k === 'pro'){ if (acctPaid() && apPortal) apPortal(); else { plansFrom = 'menu'; apGo('pro'); } }
     else if (k === 'help') helpOpen(true);
     else if (k === 'out') acctLogout();
   });
@@ -10527,7 +10535,7 @@ if (ACCT){
     if (!u) throw Object.assign(new Error('no portal url'), { code: 'other' });
     if (w){ try { w.opener = null; } catch(e){} w.location.href = u; } else location.href = u;
   }).then(() => { if (!u && w) w.close(); }); };
-  $('#priceBtn').onclick = () => { if (!S.exporting && !askDone) apGo('pro'); };
+  $('#priceBtn').onclick = () => { if (!S.exporting && !askDone){ plansFrom = 'tarifs'; apGo('pro'); } };
   $('#apSubGo').onclick = () => { if (acctPaid()) portal(); else apGo('pro'); };
   $('#apManage').onclick = portal; apPortal = portal;
   $('#apGalGo').onclick = () => apGo('gallery');
@@ -10588,6 +10596,7 @@ if (ACCT){
     } catch(e){}
     if (want){
       try { history.replaceState(null, '', location.pathname + location.search); } catch(e){}
+      plansFrom = 'tarifs';   // (a plan chosen on the site's Tarifs page)
       if (ACCT.state.user){ apGo('pro'); plFocus(want.plan); plResume(); }
       else { apAfter = 'pro'; apGo('login', { mode: store.get('stalak:hadAcct') ? 'in' : 'up' }); }
       return;
@@ -11239,7 +11248,9 @@ window.addEventListener('beforeunload', e => { if (S.exporting || lpUnsaved()){ 
 
 /* ---------- FR / EN: everything on screen is written again in the other language, the work stays as it is ---------- */
 function applyLang(){
-  document.documentElement.lang = LANG;
+  // (audit 13/11, n° 1) set only when it changes: set again to the same value, every text of the page was shaped and painted
+  // again, and on a phone the home page's biggest text counted only then (once the app had loaded: 4.5 s instead of 1.4)
+  if (document.documentElement.lang !== LANG) document.documentElement.lang = LANG;
   applyStatic();
   if (hasT('doc.title')) document.title = _t('doc.title');
   $$('.langsw button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === LANG)));

@@ -86,6 +86,8 @@ export function seedDashboard(env, { now = Date.now() } = {}) {
         ['ev_export_retry_hidden', Math.round(fail * 0.8)], ['ev_export_retry_memory', Math.round(fail * 0.5)], ['ev_export_saved_hidden', Math.round(fail * 0.7)], ['ev_export_saved_memory', Math.round(fail * 0.3)],
         ['ev_export_refused_memory', Math.round(fail * 0.2)],
         ['ev_xs_kind_clip', Math.round(starts * 0.18)], ['ev_xo_kind_clip', Math.round(starts * 0.16)], ['ev_xs_kind_reel', starts - Math.round(starts * 0.18)], ['ev_xo_kind_reel', ex - Math.round(starts * 0.16)],
+        ['ev_clip_open', Math.round(starts * 0.3)], ['ev_clip_open_free', Math.round(starts * 0.26)], ['ev_clip_open_pro', Math.round(starts * 0.3) - Math.round(starts * 0.26)],
+        ['ev_plans_why_tarifs', Math.round(ex * 0.04)], ['ev_plans_why_menu', Math.round(ex * 0.01)],
         ['ev_clip_ask_pro', Math.round(ex * 0.03)], ['ev_clip_ask_reel', Math.round(ex * 0.05)], ['ev_clip_ask_none', Math.round(ex * 0.02)]].forEach(([n, v]) => { if (v > 0) bump.run(d, n, v); }); }
     const paid = rnd() < 0.55 ? 1 + Math.round(rnd()) : 0;
     for (let k = 0; k < paid; k++) {

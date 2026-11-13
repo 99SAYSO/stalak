@@ -61,6 +61,11 @@ head = head.replace('https://cdn.jsdelivr.net/npm/mp4box@0.5.2/dist/mp4box.all.m
 # page is read, in their order, before the app's own code, which is « defer » too, see page())
 head = head.replace('<script src="/vendor/', '<script defer src="/vendor/')
 assert head.count('<script defer src="/vendor/') == 2
+# App & montage (audit 13/11, n° 1): not even « defer » any more: the libraries and the app are loaded right after the first
+# picture of the page (APP_LOADER, page()), so that nothing of their 360 KB comes before what the person sees
+VENDOR = re.findall(r'<script defer src="(/vendor/[^"]+)"></script>\n?', head)
+assert len(VENDOR) == 2
+head = re.sub(r'<script defer src="/vendor/[^"]+"></script>\n?', '', head)
 assert 'googleapis' not in head and 'jsdelivr' not in head, 'an outside resource is left in the head'
 head = re.sub(r'<meta charset="utf-8">\n?|<meta name="viewport"[^>]*>\n?', '', head)
 assert '<title>Stalak</title>' in head
@@ -271,7 +276,21 @@ def page(lang, body):
     # visit, the page being « no-cache »): two files whose name carries their version (/assets/…), kept a year by the browser
     h = h.replace('href="/fonts/fonts.css"', 'href="/fonts/fonts.css?v=' + _v['fonts/fonts.css'] + '"')
     return ('<!doctype html>\n<html lang="' + lang + '">\n<head>\n' + h + '<style>' + css + '</style>\n</head>\n<body>\n' + body
-            + '<script defer src="/assets/' + ASSETS['account'] + '"></script>\n<script defer src="/assets/' + ASSETS['app'] + '"></script>\n' + tail + '</body>\n</html>\n')
+            + app_loader() + tail + '</body>\n</html>\n')
+
+def app_loader():
+    """App & montage (audit 13/11, n° 1: on a slow phone the biggest text of the home page showed at 4.5 s, cible 2.5 s).
+    The page is drawn first; the two video libraries and the app (360 KB, kept a year: /assets/… carry their version) are
+    loaded right after that first picture, in their order (async = false). Then the home video starts, unless the person
+    asked her phone for less motion (it stays on its first picture)."""
+    files = VENDOR + ['/assets/' + ASSETS['account'], '/assets/' + ASSETS['app']]
+    return ('<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=' + json.dumps(files) + ';'
+            'function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}'
+            'requestAnimationFrame(function(){setTimeout(go,0);});'
+            'function vid(){var v=document.querySelector("video.hero-v");if(!v)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}'
+            'if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}'
+            'if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});'
+            '})();</script>\n')
 
 if out.exists(): shutil.rmtree(out)
 shutil.copytree(extra, out)

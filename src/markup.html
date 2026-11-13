@@ -45,7 +45,8 @@
     <!-- Marketing & croissance (06/11, audit point 6, « version compacte » choisie par le propriétaire) : le vrai titre de la
          page, une phrase et une petite vidéo (un vrai montage Stalak de ses prises) ; seulement tant qu'aucun son n'est importé -->
     <div class="hero" id="heroPitch">
-      <!--HEROVIDEO--><video class="hero-v" src="/demo/edit.mp4" poster="/demo/edit.jpg" width="432" height="768" autoplay muted loop playsinline preload="metadata" aria-label="Exemple : une vidéo montée par Stalak à partir de trois prises" data-i18n-attr="aria-label:hero.v"></video>
+      <!-- (audit 13/11, n° 1) its picture first; it plays once the page has loaded (build_site.py app_loader; still for less motion) -->
+      <!--HEROVIDEO--><video class="hero-v" src="/demo/edit.mp4" poster="/demo/edit.jpg" width="432" height="768" muted loop playsinline preload="none" aria-label="Exemple : une vidéo montée par Stalak à partir de trois prises" data-i18n-attr="aria-label:hero.v"></video>
       <script>(function (v) { if (!v) return;   // plays only while it can be seen; « reduce motion »: still, with the controls to play it
         if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches){ v.removeAttribute('autoplay'); v.pause(); v.controls = true; return; }
         if ('IntersectionObserver' in window) new IntersectionObserver(function (e) { if (e[0].isIntersecting){ var p = v.play(); if (p && p.catch) p.catch(function () {}); } else v.pause(); }).observe(v);

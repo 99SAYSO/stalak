@@ -458,7 +458,7 @@ __DEMO_BANNER__<header class="top"><div class="in">
     </div>
     <!-- (7/11, mode Clip) the 16:9 clips: started and made, and the answer when a clip is exported without Pro -->
     <div class="grid2">
-      <div class="card"><h3>Clips 16:9 et vidéos TikTok</h3><p class="note">Exports lancés et réussis de chaque sorte (compté depuis le 7/11).</p><ul class="blist" id="clipKind"></ul></div>
+      <div class="card"><h3>Clips 16:9 et vidéos TikTok</h3><p class="note">Visites qui ont ouvert le mode Clip (une fois par visite, depuis le 13/11), puis exports lancés et réussis de chaque sorte (depuis le 7/11).</p><ul class="blist" id="clipKind"></ul></div>
       <div class="card"><h3>Clip exporté sans Pro : le choix</h3><p class="note">La question « Le mode Clip est réservé à Pro » : ce que la personne a touché.</p><ul class="blist" id="clipAskL"></ul></div>
     </div>
     <div class="card hq" id="vppCard">
@@ -553,7 +553,7 @@ __DEMO_BANNER__<header class="top"><div class="in">
     device: { ios: 'iPhone / iPad', android: 'Android', desktop: 'Ordinateur', unknown: 'Inconnu (avant le 1/11)' },
     lang: { en: 'Anglais', fr: 'Français', unknown: 'Inconnue' },
     source: { tiktok: 'TikTok', ig: 'Instagram', instagram: 'Instagram', yt: 'YouTube', youtube: 'YouTube', x: 'X (Twitter)', reddit: 'Reddit', discord: 'Discord', google: 'Google', bing: 'Bing', other: 'Autre site', unknown: 'Direct / sans indication', wm: 'Filigrane d’une vidéo' },
-    why: { filters: 'Filtres', clip: 'Mode Clip 16:9', fx: 'Effets premium', text: 'Paroles karaoké', lyrics: 'Paroles auto', pack: 'Packs', cloud: 'Sauvegarde en ligne', human: 'Parler à un humain', wm: 'Enlever le filigrane', other: 'Autre / menu' },
+    why: { filters: 'Filtres', clip: 'Mode Clip 16:9', fx: 'Effets premium', text: 'Paroles karaoké', lyrics: 'Paroles auto', pack: 'Packs', cloud: 'Sauvegarde en ligne', human: 'Parler à un humain', wm: 'Enlever le filigrane', tarifs: 'Bouton ou page Tarifs', menu: 'Menu du compte', other: 'Autre' },
     fail: { memory: 'Mémoire pleine', decoder: 'Lecture vidéo', encoder: 'Fabrication de la vidéo', hidden: 'Appli quittée pendant l’export', cancel: 'Annulé par la personne',
       closed: 'Page fermée pendant l’export', crash: 'Onglet fermé par le navigateur', other: 'Autre raison' },
     xst: { start: 'Au lancement', prepare: 'Préparation des prises', frames: 'Fabrication des images', assemble: 'Assemblage', file: 'Fichier final', realtime: 'Enregistrement en temps réel' },
@@ -916,7 +916,8 @@ __DEMO_BANNER__<header class="top"><div class="in">
     blist($('#xfMem'), sub('mem_'), NAMES.xmem);
     blist($('#xfDur'), sub('dur_'), NAMES.xdur);
     blist($('#xfTook'), sub('took_'), NAMES.xtook);
-    var ck = { 'Clips lancés': sd.kind_clip || 0, 'Clips réussis': od.kind_clip || 0, 'TikTok / Reels lancés': sd.kind_reel || 0, 'TikTok / Reels réussis': od.kind_reel || 0 };
+    var co = fu.clipOpen || {};
+    var ck = { 'Mode Clip ouvert (visites)': co.all || 0, '… en Gratuit': co.free || 0, '… en Pro': co.pro || 0, 'Clips lancés': sd.kind_clip || 0, 'Clips réussis': od.kind_clip || 0, 'TikTok / Reels lancés': sd.kind_reel || 0, 'TikTok / Reels réussis': od.kind_reel || 0 };
     blist($('#clipKind'), ck, function (x) { return x; }, { order: Object.keys(ck), keepZero: true, noPct: true });
     blist($('#clipAskL'), fu.clipAsk || {}, { pro: 'Passer à Pro', reel: 'Exporter en TikTok / Reels', none: 'Annuler' });
   }

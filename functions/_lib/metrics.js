@@ -14,7 +14,7 @@ export const METRICS = ['help_q', 'help_fail', 'cloud_save', 'ticket', 'ticket_m
 // export_retry: an export that failed and that the page made again by itself (safer settings, or once back in Stalak);
 // export_saved: that second go worked (the person got the video); export_refused: a pack not started (too big for the device).
 // clip_ask (7/11, Clip mode): a 16:9 clip exported without Pro, the answer to the question (pro / reel / none)
-export const EVENTS = ['export_start', 'export_ok', 'export_fail', 'export_retry', 'export_saved', 'export_refused', 'clip_ask', 'pro_offer', 'ad_offer', 'ad_shown', 'ad_ok', 'plans_open', 'checkout_open',
+export const EVENTS = ['export_start', 'export_ok', 'export_fail', 'export_retry', 'export_saved', 'export_refused', 'clip_ask', 'clip_open', 'pro_offer', 'ad_offer', 'ad_shown', 'ad_ok', 'plans_open', 'checkout_open',
   'checkout_close', 'checkout_done'];   // 7/11: the payment window closed without buying ({stage}), or paid
 // why an export failed, as a category only (App sends it): nothing about the person or the video
 // (7/11) + encoder; closed: the page closed during the export; crash: an export that never ended, found at the next visit
@@ -35,7 +35,8 @@ export const EXPORT_X = {
   mem: ['m1', 'm2', 'm4', 'm8', 'unk'],
 };
 export const EVENTS_PER_IP_HOUR = 120;
-export const EVENT_REASONS = ['filters', 'clip', 'fx', 'text', 'lyrics', 'pack', 'cloud', 'human', 'wm', 'other'];
+// (13/11) + tarifs: the « Tarifs » button or a plan chosen on the site's Tarifs page; menu: the account menu (they were « other »)
+export const EVENT_REASONS = ['filters', 'clip', 'fx', 'text', 'lyrics', 'pack', 'cloud', 'human', 'wm', 'tarifs', 'menu', 'other'];
 
 // +1 on today's counter `name`. Never breaks the request that counts (the counter is only for the dashboard).
 export async function bump(env, name, n = 1) {
@@ -134,6 +135,8 @@ export async function event(request, env, excluded = null) {
     if (body.cat === 'clip' || body.cat === 'reel') await bump(env, p + 'kind_' + body.cat);
   }
   if (name === 'clip_ask') await bump(env, 'ev_clip_ask_' + (['pro', 'reel', 'none'].includes(body.cat) ? body.cat : 'none'));
+  // (13/11) « opened the Clip mode », once per visit: by a free or a Pro account (ev_clip_open is bumped above, like every event)
+  if (name === 'clip_open') await bump(env, 'ev_clip_open_' + (body.cat === 'pro' ? 'pro' : 'free'));
   if (name === 'plans_open' && typeof body.why === 'string') await bump(env, 'ev_plans_why_' + (EVENT_REASONS.includes(body.why) ? body.why : 'other'));
   // 7/11: the step of the funnel for its source (anonymous total), and where the payment window was closed without buying
   const src = srcOf(body.src);
