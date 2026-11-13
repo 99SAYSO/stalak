@@ -10136,7 +10136,8 @@ function apGo(view, o = {}){
   if (changed || first) page.scrollTop = 0;
   if (v === 'gallery' && (changed || first)) clLoadList();
   if (v === 'pro' && (changed || first)){
-    acctEvent('plans_open', { why: acctWhyCat(apWhyK) });   // funnel (dashboard)
+    // funnel (dashboard): the feature that opened it, else where from (audit of 13/11: menu, account page, pricing page, a link)
+    acctEvent('plans_open', { why: apWhyK ? acctWhyCat(apWhyK) : (o.from || 'other') });
     $$('#apBuy .pl-why').forEach(x => x.remove());
     // a subscriber sees his own billing first (yearly by default for the others, as on the Tarifs page)
     const sub = ACCT.state.subscription; if (acctPaid() && sub && (sub.interval === 'month' || sub.interval === 'year') && plInt !== sub.interval){ plInt = sub.interval; plConfirm = null; plPreview = null; plRender(); }
@@ -10204,7 +10205,7 @@ function amInit(){
     if (S.exporting || askDone) return;
     if (k === 'gallery') apGo('gallery');
     else if (k === 'account') apGo('account');
-    else if (k === 'pro'){ if (acctPaid() && apPortal) apPortal(); else apGo('pro'); }
+    else if (k === 'pro'){ if (acctPaid() && apPortal) apPortal(); else apGo('pro', { from: 'menu' }); }
     else if (k === 'help') helpOpen(true);
     else if (k === 'out') acctLogout();
   });
@@ -10527,8 +10528,8 @@ if (ACCT){
     if (!u) throw Object.assign(new Error('no portal url'), { code: 'other' });
     if (w){ try { w.opener = null; } catch(e){} w.location.href = u; } else location.href = u;
   }).then(() => { if (!u && w) w.close(); }); };
-  $('#priceBtn').onclick = () => { if (!S.exporting && !askDone) apGo('pro'); };
-  $('#apSubGo').onclick = () => { if (acctPaid()) portal(); else apGo('pro'); };
+  $('#priceBtn').onclick = () => { if (!S.exporting && !askDone) apGo('pro', { from: 'menu' }); };
+  $('#apSubGo').onclick = () => { if (acctPaid()) portal(); else apGo('pro', { from: 'account' }); };
   $('#apManage').onclick = portal; apPortal = portal;
   $('#apGalGo').onclick = () => apGo('gallery');
   $('#galPro').onclick = () => { apGo('pro', { why: 'cloud' }); plFocus('creator'); };
@@ -10588,7 +10589,7 @@ if (ACCT){
     } catch(e){}
     if (want){
       try { history.replaceState(null, '', location.pathname + location.search); } catch(e){}
-      if (ACCT.state.user){ apGo('pro'); plFocus(want.plan); plResume(); }
+      if (ACCT.state.user){ apGo('pro', { from: 'pricing' }); plFocus(want.plan); plResume(); }
       else { apAfter = 'pro'; apGo('login', { mode: store.get('stalak:hadAcct') ? 'in' : 'up' }); }
       return;
     }
@@ -10596,7 +10597,7 @@ if (ACCT){
     if (/^auth-(ok|err)-/.test(h)){ try { history.replaceState(null, '', location.pathname + location.search); } catch(e){} apAuthDone(h); return; }
     const v = apHashView(); if (!v) return;
     try { history.replaceState(null, '', location.pathname + location.search); } catch(e){}
-    apGo(v); };
+    apGo(v, v === 'pro' ? { from: 'link' } : {}); };
   ACCT.me().then(() => { acctKnown = true; acctSync(); boot(); clBoot(); }, e => { diag('compte : serveur injoignable (' + (e && (e.code || e.message)) + ')'); boot(); });
 }
 
