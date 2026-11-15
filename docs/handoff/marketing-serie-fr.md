@@ -24,4 +24,4 @@ Ce qui sert toujours du travail d'avant :
 
 Les dessins de Yanis faits en code (`perso.js`, `maquette.js`) ne servent plus pour la série.
 
-Skills utilisés : `stalak-da`, `stalak-videos-reseaux`, `image`.
+Skills utilisés : `stalak-da`, `stalak-videos-reseaux`.
