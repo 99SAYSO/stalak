@@ -1,0 +1,9 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>T-Crazy — planche de style</title>
+<style>html,body{margin:0;background:#1f6fd6}svg{display:block}</style></head><body>
+<svg id="s" width="1080" height="1920" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="tcrazy.js"></script>
+<script>
+const q = new URLSearchParams(location.search);
+document.getElementById('s').innerHTML = TCRAZY.scene(+(q.get('s') || 1));
+window.ready = true;
+</script></body></html>
