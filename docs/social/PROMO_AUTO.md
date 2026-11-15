@@ -1,5 +1,7 @@
 # Vidéos promo de Stalak : création chaque dimanche, publication après ton « ok »
 
+> **Remplacé le 15/11/2026 par `docs/social/SERIE_FR.md`** (série animée en français, 3 vidéos par jour, programmées par Réseaux sociaux, approuvées par le propriétaire dans Zernio). Gardé pour l'historique.
+
 > Conversation « 4. Réseaux sociaux ». Mis en place le 3/11/2026 à la demande du propriétaire.
 > Le contenu suit le plan de Marketing : `docs/marketing/US_FIRST.md` (partie B) et le document « Stalak — plan de lancement et réseaux ».
 > Comptes publiés : TikTok et Instagram **@stalak_app**, par **Zernio**.

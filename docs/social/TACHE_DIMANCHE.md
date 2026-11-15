@@ -1,5 +1,7 @@
 # Consigne du rappel du dimanche « Stalak — vidéos promo de la semaine »
 
+> **Remplacé le 15/11/2026 par `docs/social/SERIE_FR.md`** (série animée en français, 3 vidéos par jour, programmées par Réseaux sociaux, approuvées par le propriétaire dans Zernio). Gardé pour l'historique.
+
 > Pour la conversation **Marketing & croissance (5)**, qui crée les vidéos, reçoit l'« ok » du propriétaire et programme dans Zernio (décision du propriétaire du 3/11, 23 h 50).
 > Marketing se programme lui-même ce rappel dans **sa** conversation, chaque dimanche après-midi (heure de Paris), pour garder son expérience des promos. Le plus simple : un rappel unique (send_later), qu'il reprogramme à la fin de chaque séance pour le dimanche suivant.
 > Écrit et tenu à jour par Réseaux sociaux (4) : règles de TikTok et d'Instagram, réglages, plan de tests.

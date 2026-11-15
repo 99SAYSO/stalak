@@ -1,5 +1,7 @@
 # Premier essai : une vidéo programmée par Zernio (pour Marketing)
 
+> **Remplacé le 15/11/2026 par `docs/social/SERIE_FR.md`** (série animée en français, 3 vidéos par jour, programmées par Réseaux sociaux, approuvées par le propriétaire dans Zernio). Gardé pour l'historique.
+
 > Préparé par Réseaux sociaux (4) le 4/11/2026. À faire par **Marketing (5)**, avec le propriétaire.
 > But : vérifier tout le circuit sur **une seule vidéo déjà validée**, avant la première semaine (lundi 9/11).
 

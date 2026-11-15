@@ -1,4 +1,4 @@
-Statut : EN COURS
+Statut : PRÊT
 Branche : social/promo-auto
 
 ## Résumé
@@ -29,3 +29,23 @@ Aucun code modifié.
 - Marketing (5) : le premier essai (`docs/social/PREMIER_ESSAI.md`, le premier jour possible après l’« ok », à 16 h 30 heure de New York), puis les modèles avec le propriétaire et le rappel du dimanche (`docs/social/TACHE_DIMANCHE.md`). Programmer dans Zernio seulement après son « ok ».
 - Réseaux sociaux (4) : lire le compte rendu du premier essai et corriger les consignes si besoin. La tâche du samedi tourne déjà.
 - Pour le Chef de projet : rien à fusionner tant que ce compte rendu dit EN COURS (documents seulement).
+
+## Mise à jour du 15/11 : série animée en français (décision du propriétaire)
+**Documents seulement**, rien à mettre en ligne, pas de maquette nécessaire (changements invisibles).
+- `docs/social/SERIE_FR.md` (nouveau) :
+  - programmation de 3 vidéos par jour (12 h 30, 18 h, 21 h, Paris) dans Zernio, en « attente d'approbation » ; le propriétaire approuve chaque lot dans Zernio ;
+  - ce que Marketing livre pour chaque lot ;
+  - les bios françaises ;
+  - le rapport du samedi vidéo par vidéo ;
+  - à décider : YouTube Shorts.
+- `docs/social/BOOST_FR.md` (nouveau) : réglages du boost TikTok et Instagram ciblés France, budget de 100 à 150 $ par mois (200 $ au plus), rien n'est lancé.
+- `docs/social/TACHE_SAMEDI.md` réécrit, et la tâche du samedi mise à jour avec le même texte.
+- `docs/social/serie-journal.csv` (nouveau, en-tête du journal).
+- `PROMO_AUTO.md`, `TACHE_DIMANCHE.md`, `PREMIER_ESSAI.md` : marqués « Remplacé le 15/11 ».
+- `docs/STATUS.md` : section Réseaux sociaux.
+
+Tests : aucun code modifié.
+Reste au propriétaire :
+- coller les bios ;
+- décider pour YouTube Shorts (6 $ par mois chez Zernio) ;
+- approuver le premier lot dans Zernio quand Marketing l'aura livré.
