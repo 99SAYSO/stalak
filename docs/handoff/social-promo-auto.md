@@ -49,3 +49,13 @@ Reste au propriétaire :
 - coller les bios ;
 - décider pour YouTube Shorts (6 $ par mois chez Zernio) ;
 - approuver le premier lot dans Zernio quand Marketing l'aura livré.
+
+## Mise à jour du 15/11, 21 h 30 : Studio Stalak (règles 11 et 12)
+- `docs/social/SERIE_FR.md`, partie 1 réécrite :
+  - on programme seulement les fiches `valide` de la page « Studio Stalak » ;
+  - on télécharge la vidéo depuis la page, puis on l'envoie à Zernio ;
+  - les publications sont créées « en attente d'approbation » ;
+  - la fiche passe ensuite en `programme`, puis en `publie`.
+- `docs/social/TACHE_SAMEDI.md` : nouvelle étape 6, qui passe en `publie` les fiches `programme` déjà publiées. La tâche du samedi a été mise à jour avec ce texte.
+- **Pour le Chef de projet** : Réseaux sociaux ajoute le champ `zernioId` dans les fiches `videos` (identifiant de la publication Zernio). À ajouter au format de `docs/studio/STUDIO_STALAK.md` si tu es d'accord.
+- Aucune fiche n'existe encore dans la page (15/11, 21 h 30), aucune n'a été modifiée. Aucun crédit dépensé.

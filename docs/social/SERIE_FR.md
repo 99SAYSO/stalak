@@ -7,35 +7,46 @@
 
 - **Langue** : `@stalak_app` passe en **français**, sur un seul compte, sur TikTok et sur Instagram.
 - **Contenu** : la série animée de Marketing. Un rappeur enregistre chez lui, veut faire des vidéos de promo, n'y arrive pas, et découvre Stalak ; chaque épisode est une situation de la vie d'un rappeur.
-- **Rythme** : **3 vidéos par jour**, programmées par **Réseaux sociaux** dans Zernio. Marketing fabrique, Réseaux sociaux programme.
+- **Rythme** : **3 vidéos par jour**, programmées par **Réseaux sociaux** dans Zernio. Marketing fabrique, Réseaux sociaux programme. Depuis 21 h 23, tout passe par la page « Studio Stalak » (voir plus bas).
 - **Accord** : le propriétaire **approuve chaque lot dans Zernio**. Rien ne part sans son accord.
 
 ## 1. Programmation : 3 vidéos par jour
 
 **Heures de départ (heure de Paris)** : **12 h 30, 18 h et 21 h**, chaque jour. On les ajustera avec le rapport du samedi : ces trois horaires servent de test d'heure.
 
-**Ce que Marketing (5) livre pour chaque lot** (par exemple 21 épisodes pour une semaine) :
+### Depuis le 15/11 à 21 h 23 : tout passe par « Studio Stalak »
 
-- les vidéos en MP4, 9:16, 1080 × 1920, de 60 s au plus (au-delà, Shorts et TikTok les traitent moins bien) ;
-- un fichier `promo/serie/lots/AAAA-MM-JJ.md` sur sa branche. Pour chaque épisode, une ligne : n°, titre, nom du fichier, légende en français (avec « stalak.app » écrit en toutes lettres), 3 à 5 hashtags, durée, voix IA ou pas ;
-- les fichiers vidéo, au choix :
-  - **(a)** dans un dossier Google Drive « Stalak — série FR / lot AAAA-MM-JJ » ;
-  - **(b)** directement chez Zernio : outil `media_get_media_presigned_url`, puis envoi du fichier. Marketing note alors l'adresse `publicUrl` de chaque épisode dans le fichier du lot. Elle reste valable 7 jours, il faut donc programmer dans la semaine.
+Page privée du propriétaire : https://claude.ai/artifact/UEFPPVbewDG4ATF9nLwJbx. Format des fiches : `docs/studio/STUDIO_STALAK.md`. Skills : `stalak-videos-reseaux` et `stalak-da`.
+Il n'y a plus de fichier de lot ni de dossier Drive : **la fiche `videos` de la page est la seule source**.
 
-**Ce que fait Réseaux sociaux** (dans cette conversation, sur demande du propriétaire ou du Chef de projet quand un lot est prêt) :
+- **Marketing (5)** écrit les fiches (`script`), fabrique après le feu vert du propriétaire, dépose la vidéo dans la page (`videoUrl`) et passe la fiche en `video`.
+- **Le propriétaire** valide : `script_ok`, puis `valide`. Personne ne le fait à sa place.
+- **Réseaux sociaux (4)** programme **seulement les fiches `valide`**, puis les passe en `programme` et en `publie`.
 
-1. Lire le fichier du lot et vérifier chaque légende : français, « stalak.app », aucun concurrent cité, rien d'inventé.
-2. Envoyer les vidéos à Zernio, si Marketing ne l'a pas déjà fait :
-   - adresse d'envoi de Zernio ;
-   - si l'envoi est refusé depuis l'espace de travail : lien de partage Google Drive, retiré une fois la vidéo publiée.
-3. Créer **une publication par épisode** avec `posts_create_post`, en mode **« en attente d'approbation »** (`requires_approval: true`) :
-   - réseaux : TikTok `6aea6c148f6a54a6ec36f683` et Instagram `6aea6a4e8eb8b805f91e01de` (Reel partagé dans le fil), plus YouTube Shorts une fois relié (voir « À décider ») ;
-   - `scheduled_for` : `AAAA-MM-JJT12:30:00`, `T18:00:00` ou `T21:00:00`, avec `timezone` : `Europe/Paris` ;
-   - réglages TikTok : `privacy_level: PUBLIC_TO_EVERYONE` (seule possibilité pour ce compte), commentaires oui, Duo non, Collage non, `commercialContentType: none`, `videoMadeWithAi: false`. Décisions du propriétaire du 4/11 : sans « Ta marque » ni étiquette IA, ni mention « AI voiceover ». Un dessin animé n'est pas une image réaliste : TikTok ne demande l'étiquette IA que pour des scènes ou des personnes réalistes ;
-   - `content_preview_confirmed` et `express_consent_given` : TikTok les demande dès la création. Ils prennent effet seulement quand le propriétaire approuve la publication dans Zernio ; une publication non approuvée ne part jamais ;
-   - étiquettes : `serie-fr`, `lot-AAAA-MM-JJ`, `ep-<n°>`, `heure-1230` / `heure-1800` / `heure-2100`.
-4. Envoyer au propriétaire le tableau du lot (jour, heure, épisode, légende) et lui dire de l'approuver dans Zernio.
-5. **Jamais** de publication immédiate (`publish_now`, `posts_publish_now`), et jamais `posts_review_post` à la place du propriétaire. Une seule exception : il l'écrit lui-même dans cette conversation (« approuve le lot du … »). Dans ce cas, Claude demande encore son accord avant chaque appel.
+**Ce que fait Réseaux sociaux** (dans cette conversation, quand le propriétaire ou le Chef de projet dit que des fiches sont validées) :
+
+1. **Lire les goûts** : collection `da`, toute la liste (skill `stalak-da`). Pour les légendes, deux points comptent surtout :
+   - pas de pub dès la première ligne : la situation d'abord, Stalak à la fin ;
+   - aucun chiffre inventé, aucun concurrent nommé.
+2. **Lire les fiches `valide`** (collection `videos`, `where statut == "valide"`). Pour chacune, vérifier :
+   - la légende : en français, « stalak.app » écrit, aucun concurrent, rien d'inventé ;
+   - la date, l'heure et la durée.
+   Si une légende pose problème, ne pas la corriger soi-même : le dire au propriétaire, car la fiche est validée telle quelle.
+3. **Récupérer la vidéo** : `videoUrl` est un fichier privé de la page, que Zernio ne peut pas lire. Il faut le télécharger avec l'outil `Artifact` (`action: "read"`, `url` de la page, `path` = l'identifiant du fichier), puis l'envoyer à Zernio :
+   - par son adresse d'envoi (`media_get_media_presigned_url`, puis envoi du fichier) ;
+   - si l'envoi est refusé depuis l'espace de travail : le lien de dépôt de Zernio (`media_generate_upload_link`), que le propriétaire ouvre pour déposer les fichiers.
+4. **Créer une publication par fiche** avec `posts_create_post`, en mode **« en attente d'approbation »** (`requires_approval: true`) :
+   - réseaux : TikTok `6aea6c148f6a54a6ec36f683` et Instagram `6aea6a4e8eb8b805f91e01de` (Reel partagé dans le fil), plus YouTube Shorts une fois relié (voir « À décider ») ; on suit le champ `reseaux` de la fiche ;
+   - texte : `legende` de la fiche, suivie des `motsCles` en hashtags ;
+   - `scheduled_for` : la `date` de la fiche et son heure (créneau 1 = 12 h 30, 2 = 18 h, 3 = 21 h, sauf si `heure` dit autre chose), avec `timezone` : `Europe/Paris` ;
+   - réglages TikTok : `privacy_level: PUBLIC_TO_EVERYONE` (seule possibilité pour ce compte), commentaires oui, Duo non, Collage non, `commercialContentType: none`, `videoMadeWithAi: false`. Décisions du propriétaire du 4/11 : sans « Ta marque », sans étiquette IA, sans mention « AI voiceover ». Pour un dessin animé, TikTok ne demande l'étiquette IA que si les scènes ou les personnes sont réalistes ;
+   - `content_preview_confirmed` et `express_consent_given` : TikTok les demande dès la création. Ils ne valent qu'à partir du moment où le propriétaire approuve la publication dans Zernio ; une publication jamais approuvée ne part jamais ;
+   - étiquettes Zernio : `serie-fr`, `fiche-<id de la fiche>`, `heure-1230` / `heure-1800` / `heure-2100`.
+5. **Envoyer au propriétaire le tableau du lot** (jour, heure, titre, légende), puis lui demander d'approuver dans Zernio.
+6. **Passer la fiche en `programme`** une fois le lot approuvé (la publication est `scheduled` dans Zernio), avec `majPar: "reseaux-sociaux"`, `majLe` et `zernioId` (l'identifiant de la publication Zernio ; champ ajouté par Réseaux sociaux, à confirmer par le Chef de projet).
+7. **Passer la fiche en `publie`** quand Zernio la donne publiée sur tous ses réseaux. La tâche du samedi le fait aussi pour celles qu'on aurait oubliées.
+8. **Jamais** de publication immédiate (`publish_now`, `posts_publish_now`), et jamais `posts_review_post` à la place du propriétaire. Une seule exception : il l'écrit lui-même dans cette conversation (« approuve le lot du … »). Dans ce cas, Claude demande encore son accord avant chaque appel.
+9. **Une remarque du propriétaire** sur une vidéo, une légende ou une heure : elle va dans `da` (skill `stalak-da`), puis on corrige.
 
 **Approbation dans Zernio** : chaque publication reste « en attente d'approbation » jusqu'à ce que le propriétaire l'approuve. Approuvée, elle part à son heure ; refusée, elle redevient un brouillon. Zernio ne publie jamais une publication en attente.
 
