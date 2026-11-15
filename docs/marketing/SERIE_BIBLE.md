@@ -1,3 +1,5 @@
+> **Remplacée** par la décision du propriétaire du 15/11 à 22 h 26 : la série devient « T-Crazy » (héros Liam, univers choisi dans Studio Stalak, onglet Univers). La nouvelle bible tiendra en une page et sera écrite quand l'univers sera choisi. Fabrication de l'univers : `docs/marketing/SERIE_UNIVERS.md`.
+
 # « Studio Chambre » : la bible de la série (version française)
 
 > Marketing & croissance, 15/11/2026. Série animée pour @stalak_app (TikTok, Instagram Reels, YouTube Shorts).
