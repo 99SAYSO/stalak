@@ -20,7 +20,7 @@ Le même Liam dans la même chambre-studio, dessiné de 3 façons : `tools/serie
 | Style 3 · BD imprimée | traits irréguliers comme au pinceau, trame de points dans les ombres, grain de papier, bleu nuit, glace et orange |
 
 Liam y porte :
-- des locks courtes (entièrement noires depuis le 16/11) ;
+- des locks courtes (entièrement noires depuis le 16/11, remplacées à 2 h 11 par des vanilles : voir l'étape 2a) ;
 - une doudoune bleu Stalak ouverte sur un tee-shirt blanc ;
 - un jean large et des baskets blanches.
 
@@ -41,18 +41,28 @@ Il tient son casque d'une main et, de l'autre, son téléphone levé : il se fil
 
 **16/11, 2 h 04 : planche validée par le propriétaire** (fiche `style` en `choisi`).
 
-## Étape 2a : les 4 versions de Liam (déposées le 16/11, à choisir)
+## Étape 2a : les 4 versions de Liam (à choisir)
 
 Des planches personnage sont dessinées en code (`tools/serie/engine/liam.js`, page `liam.html?v=1..4`). Sur chacune : Liam de face, de profil et en 4 expressions (frime, colère, panique, fierté). Les 4 planches sont dans la fiche `liam`, en `a_choisir`.
 
-| Version | Visage | Coiffure | Tenue |
-|---|---|---|---|
-| 1 · Le classique | anguleux | locks courtes | doudoune ouverte, tee blanc, jean large, baskets basses |
-| 2 · Le chignon | rond | locks attachées en chignon | doudoune courte sur un sweat gris, cargo beige, montantes |
-| 3 · Le bandeau | long | locks en arrière sous un bandeau blanc | doudoune sans manches sur un tee manches longues glace, jogging noir |
-| 4 · Le deux-tons | large, petite boucle d'oreille | locks longues | doudoune bleue aux épaules glace, tee noir, jean clair |
+**16/11, 2 h 11 : la coupe refaite d'après l'image du propriétaire.** Il trouvait que la coupe « ne va pas du tout », surtout de profil (« on dirait qu'il a pas de cheveux sur le côté »), et a envoyé une image de référence. L'image sert d'inspiration pour la coupe, elle n'est pas recopiée. La coupe est maintenant la même dans les 4 versions :
+- des vanilles (twists) entièrement noires, avec une raie au milieu ;
+- elles tombent tout autour de la tête jusqu'au menton et cachent les oreilles ;
+- de profil, les cheveux couvrent tout le côté de la tête ;
+- la texture des vanilles est en gris très foncé, sans reflet clair, pour que les cheveux restent noirs.
 
-Dans les 4 versions : locks noires, pas de chaîne, le cou visible, les yeux droits, un corps fin, la doudoune bleu Stalak.
+La règle est notée dans « Mes goûts » (`regle-liam-coupe`). Les 4 nouvelles planches remplacent les anciennes dans la fiche `liam`. Les anciennes images sont retirées de la page.
+
+| Version | Visage | Tenue |
+|---|---|---|
+| 1 · Le classique | anguleux | doudoune ouverte, tee blanc, jean large, baskets basses |
+| 2 · Le sweat | rond | doudoune courte sur un sweat gris, cargo beige, baskets montantes |
+| 3 · Le sans-manches | long | doudoune sans manches sur un tee manches longues glace, jogging noir |
+| 4 · Le deux-tons | large, sourcil fendu | doudoune bleue aux épaules glace, tee noir, jean clair |
+
+Dans les 4 versions : la même coupe, pas de chaîne, le cou visible, les yeux droits, un corps fin, la doudoune bleu Stalak.
+
+À noter pour la suite : la planche de style validée (`tcrazy.js`) montre encore les anciennes locks. Les scènes de la série seront redessinées avec la version de Liam choisie et sa nouvelle coupe.
 
 ## Étape 2 : tout l'univers dans le style choisi (après le choix)
 

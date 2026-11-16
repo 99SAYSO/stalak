@@ -1,36 +1,49 @@
 /* Série « T-Crazy » — Liam's character sheets, Style 1 « Anime US » (chosen on 16/11), drawn in code.
-   4 versions (face, hair, outfit), each : front, profile, 4 expressions (frime, colère, panique, fierté).
-   Fixed by the owner (16/11) : all-black locs, no chain, the neck visible above the collar, straight eyes, a slim body,
-   the Stalak-blue puffer he never takes off, spotless sneakers. (Marketing & croissance, 16/11/2026) */
+   4 versions (face, outfit), each : front, profile, 4 expressions (frime, colère, panique, fierté).
+   Fixed by the owner (16/11) : all-black hair, no chain, the neck visible above the collar, straight eyes, a slim body,
+   the Stalak-blue puffer he never takes off, spotless sneakers.
+   The haircut is the same in every version (16/11, 2 h 11, from his reference image) : black twists with a centre part,
+   hanging all around the head to the chin and over the ears, and covering the side of the head in profile.
+   (Marketing & croissance, 16/11/2026) */
 (function () {
   const { STY, render, lerp, pt, r1 } = TCRAZY;
   const S = STY[1], P = S.pal, INK = S.ink;
 
   const VERS = {
-    1: { name: 'LE CLASSIQUE', face: 'angular', brows: 'thick', hair: 'short', inner: '#f6f2ea', innerS: '#d3c8b6', pants: '#2d3b59', pantsS: '#1d283f', shoe: 'low',
-      text: 'Locks courtes, doudoune ouverte sur un tee blanc, jean large.' },
-    2: { name: 'LE CHIGNON', face: 'round', brows: 'thin', hair: 'bun', inner: '#9aa3b2', innerS: '#7b8394', pants: '#c4ad86', pantsS: '#9f8761', shoe: 'high', crop: true, cargo: true,
-      text: 'Locks attachées en chignon, doudoune courte sur un sweat gris, cargo beige, montantes.' },
-    3: { name: 'LE BANDEAU', face: 'long', brows: 'heavy', hair: 'band', inner: '#e3f0ff', innerS: '#bcd3ee', pants: '#1c1e26', pantsS: '#0f1015', shoe: 'low', vest: true,
-      text: 'Locks plaquées en arrière sous un bandeau blanc, doudoune sans manches, jogging noir.' },
-    4: { name: 'LE DEUX-TONS', face: 'wide', brows: 'slit', hair: 'long', inner: '#24262e', innerS: '#14151a', pants: '#7e9dca', pantsS: '#5e7dab', shoe: 'low', yoke: '#e6f2ff', earring: true,
-      text: 'Locks longues, doudoune bleue aux épaules glace, tee noir, jean clair, une petite boucle.' },
+    1: { name: 'LE CLASSIQUE', face: 'angular', brows: 'thick', inner: '#f6f2ea', innerS: '#d3c8b6', pants: '#2d3b59', pantsS: '#1d283f', shoe: 'low',
+      text: 'Visage anguleux. Doudoune ouverte sur un tee blanc, jean large, baskets basses.' },
+    2: { name: 'LE SWEAT', face: 'round', brows: 'thin', inner: '#9aa3b2', innerS: '#7b8394', pants: '#c4ad86', pantsS: '#9f8761', shoe: 'high', crop: true, cargo: true,
+      text: 'Visage rond. Doudoune courte sur un sweat gris, cargo beige, baskets montantes.' },
+    3: { name: 'LE SANS-MANCHES', face: 'long', brows: 'heavy', inner: '#e3f0ff', innerS: '#bcd3ee', pants: '#1c1e26', pantsS: '#0f1015', shoe: 'low', vest: true,
+      text: 'Visage long. Doudoune sans manches sur un tee manches longues glace, jogging noir.' },
+    4: { name: 'LE DEUX-TONS', face: 'wide', brows: 'slit', inner: '#24262e', innerS: '#14151a', pants: '#7e9dca', pantsS: '#5e7dab', shoe: 'low', yoke: '#e6f2ff',
+      text: 'Visage large, sourcil fendu. Doudoune aux épaules glace, tee noir, jean clair.' },
   };
 
-  // ---------------- the head, front view (local coordinates : face centre at 0,0) ----------------
-  function locs(list, into, tf) {
-    list.forEach(([root, end, bend, w], i) => {
+  // twists (vanilles) : a black rope with a plait texture, from root to end (decision of 16/11, 2 h 11)
+  function twists(list, into, tf, w = 23, hand = 1) { // hand -1 : ridges mirrored, for the right side of the face
+    list.forEach(([root, end, bend]) => {
       const c = [(root[0] + end[0]) / 2 + bend, (root[1] + end[1]) / 2];
       const q = (t) => lerp(lerp(root, c, t), lerp(c, end, t), t);
-      let ticks = '';
-      for (let t = 0.2; t < 0.95; t += 0.15) {
-        const a = q(t), b = q(t + 0.02), dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy) || 1, ww = (w || 16) * 0.38;
-        ticks += `M ${pt([a[0] - dy / L * ww, a[1] + dx / L * ww])} L ${pt([a[0] + dy / L * ww, a[1] - dx / L * ww])} `;
+      const L = Math.hypot(end[0] - root[0], end[1] - root[1]) + Math.abs(bend) * 0.5;
+      const n = Math.max(3, Math.round(L / (w * 0.95)));
+      // two strands twisted together : diagonal ridges across the rope, in a dark grey so the hair stays black
+      // (no light flecks : « toute noir, pas de blanc dedans », 16/11)
+      let ridge = '';
+      for (let i = 1; i < n; i++) {
+        const t = i / n, p = q(t), p2 = q(Math.min(1, t + 0.01));
+        let dx = p2[0] - p[0], dy = p2[1] - p[1];
+        const l = Math.hypot(dx, dy) || 1; dx /= l; dy /= l;
+        const nx = -dy * hand, ny = dx * hand, h = w * 0.5;
+        const a = [p[0] + nx * h * 0.86 - dx * h * 0.5, p[1] + ny * h * 0.86 - dy * h * 0.5], m = [p[0] + dx * h * 0.12, p[1] + dy * h * 0.12], z = [p[0] - nx * h * 0.86 + dx * h * 0.5, p[1] - ny * h * 0.86 + dy * h * 0.5];
+        ridge += `M ${pt(a)} Q ${pt(m)} ${pt(z)} `;
       }
-      into.push({ kind: 'stroke', d: `M ${pt(root)} Q ${pt(c)} ${pt(end)}`, w: w || 16, color: P.hair, tf,
-        ticks: `<path d="${ticks}" stroke="${P.hairT}" stroke-width="3" stroke-linecap="round"/>` });
+      into.push({ kind: 'stroke', d: `M ${pt(root)} Q ${pt(c)} ${pt(end)}`, w, color: P.hair, tf,
+        ticks: `<path d="${ridge}" fill="none" stroke="${P.hairT}" stroke-width="2.8" stroke-linecap="round"/>` });
     });
   }
+
+  // ---------------- the head, front view (local coordinates : face centre at 0,0) ----------------
   const FACES = {
     angular: `M -70 -84 C -82 -54 -84 -18 -82 8 C -80 40 -72 62 -60 76 L -28 102 C -12 110 12 110 28 102 L 60 76 C 72 62 80 40 82 8 C 84 -18 82 -54 70 -84 Z`,
     round: `M -72 -80 C -88 -42 -90 14 -80 48 C -68 86 -36 106 0 108 C 36 106 68 86 80 48 C 90 14 88 -42 72 -80 Z`,
@@ -39,33 +52,15 @@
   };
   function head(V, expr, tf, into) {
     const back = [], front = [];
-    // hair behind
-    if (V.hair === 'bun') {
-      back.push({ d: `M -86 -20 C -98 -70 -86 -126 -36 -142 C -10 -150 10 -150 36 -142 C 86 -126 98 -70 86 -20 C 64 -44 -64 -44 -86 -20 Z`, fill: P.hair, tf });
-      back.push({ d: `M -44 -150 C -48 -196 -12 -214 10 -210 C 44 -206 56 -176 46 -150 C 30 -140 -26 -138 -44 -150 Z`, fill: P.hair, tf,
-        extra: `<path d="M -30 -164 q 20 -26 50 -18 M -34 -150 q 30 -16 70 -8 M -16 -192 q 22 -10 46 4" fill="none" stroke="${P.hairT}" stroke-width="3.2" stroke-linecap="round"/>` });
-    } else {
-      back.push({ d: `M -92 -10 C -104 -60 -96 -122 -40 -142 C -10 -152 10 -152 40 -142 C 96 -122 104 -60 92 -10 C 70 -36 -70 -36 -92 -10 Z`, fill: P.hair, tf });
-      const len = V.hair === 'long' ? 70 : V.hair === 'band' ? 24 : 0;
-      locs([[[-84, -60], [-112, 62 + len], -12], [[-94, -24], [-120, 44 + len], -8], [[-70, -96], [-104, 76 + len], -14], [[84, -60], [112, 62 + len], 12], [[94, -24], [120, 44 + len], 8], [[70, -96], [104, 76 + len], 14],
-        [[-40, -120], [-86, 84 + len], -10], [[40, -120], [86, 84 + len], 10]], back, tf);
-    }
-    // the face and its expression
+    back.push({ d: `M -98 -16 C -110 -70 -100 -130 -44 -150 C -14 -160 14 -160 44 -150 C 100 -130 110 -70 98 -16 C 80 -80 40 -96 0 -96 C -40 -96 -80 -80 -98 -16 Z`, fill: P.hair, tf,
+      extra: `<path d="M 0 -156 L 0 -94 M -30 -130 L 30 -130" stroke="${P.skinS}" stroke-width="4.5" stroke-linecap="round"/>` });
+    [-1, 1].forEach(k => twists([[[k * 70, -116], [k * 128, 100], k * 16], [[k * 96, -60], [k * 122, 112], k * 6]], back, tf, 23, -k));
     into.push(...back);
     into.push({ d: FACES[V.face], fill: P.skin, tf, shade: `M -94 -90 L -44 -90 C -60 -40 -66 10 -50 58 C -40 86 -14 100 4 116 L -94 116 Z`, shadeColor: P.skinS, extra: face(V, expr) });
-    // hair in front
-    if (V.hair === 'short' || V.hair === 'long') {
-      locs([[[-8, -138], [-72, -40], -34], [[-30, -132], [-88, -8], -26], [[8, -138], [72, -40], 34], [[30, -132], [88, -8], 26],
-        [[-58, -114], [-98, 44 + (V.hair === 'long' ? 60 : 0)], -14, 17], [[58, -114], [98, 44 + (V.hair === 'long' ? 60 : 0)], 14, 17]], front, tf);
-    } else if (V.hair === 'bun') {
-      locs([[[-44, -126], [-86, 30], -18, 15], [[44, -126], [86, 30], 18, 15]], front, tf);
-      front.push({ d: `M -70 -96 C -40 -134 40 -134 70 -96 C 40 -112 -40 -112 -70 -96 Z`, fill: P.hair, tf, inner: true });
-    } else if (V.hair === 'band') {
-      front.push({ d: `M -72 -96 C -40 -138 40 -138 72 -96 C 40 -116 -40 -116 -72 -96 Z`, fill: P.hair, tf, inner: true,
-        extra: `<path d="M -50 -112 q 20 -14 40 -10 M 10 -122 q 24 -4 40 8" fill="none" stroke="${P.hairT}" stroke-width="3" stroke-linecap="round"/>` });
-      front.push({ d: `M -80 -86 C -40 -104 40 -104 80 -86 L 82 -64 C 40 -82 -40 -82 -82 -64 Z`, fill: '#f4f9ff', tf, shade: `M -90 -80 L -40 -90 L -40 -60 L -90 -60 Z`, shadeColor: '#cfe2f5' });
-    }
-    if (V.earring) front.push({ d: `M -92 34 a 7 7 0 1 0 0.1 0 Z`, fill: '#e8edf5', tf, inner: true });
+    [-1, 1].forEach(k => twists([[[k * 17, -150], [k * 120, 82], k * 48], [[k * 17, -130], [k * 110, 104], k * 42], [[k * 17, -110], [k * 100, 118], k * 34]], front, tf, 23, -k));
+    if (V.earring) front.push({ d: `M -84 70 a 7 7 0 1 0 0.1 0 Z`, fill: '#e8edf5', tf, inner: true });
+    // panic : the sweat drops sit on top of the hair, where they stay visible
+    if (expr === 'panique') front.push({ d: `M 86 -84 q 16 24 0 38 q -16 -14 0 -38 Z M -96 -50 q 11 17 0 27 q -11 -10 0 -27 Z`, fill: '#bfe6ff', tf });
     into.push(...front);
   }
 
@@ -95,13 +90,15 @@
       const inner = [k * 14, yi], outer = [k * 60, yo];
       const mid = [k * 37, Math.min(yi, yo) - (expr === 'panique' ? 6 : 3)];
       s += `<path d="M ${pt(inner)} Q ${pt(mid)} ${pt(outer)}" fill="none" stroke="${INK}" stroke-width="${browW}" stroke-linecap="round"/>`;
-      if (V.brows === 'slit' && k > 0) s += `<path d="M ${k * 44} ${yo - 10} L ${k * 40} ${yo + 10}" stroke="${P.skin}" stroke-width="5"/>`;
+      if (V.brows === 'slit' && k > 0) { // the cut sits on the visible part of the brow, clear of the twists
+        const yc = 0.4225 * yi + 0.455 * mid[1] + 0.1225 * yo;
+        s += `<path d="M ${k * 34} ${r1(yc - 10)} L ${k * 28} ${r1(yc + 10)}" stroke="${P.skin}" stroke-width="5.5"/>`;
+      }
     });
     s += `<path d="M 2 16 L -4 40 L 8 42" fill="none" stroke="${INK}" stroke-width="${lw * 0.9}" stroke-linecap="round" stroke-linejoin="round"/>`;
     if (expr === 'frime') s += `<path d="M -24 66 C -6 72 16 68 32 54" fill="none" stroke="${INK}" stroke-width="${lw * 1.2}" stroke-linecap="round"/><path d="M 10 66 L 28 58 L 26 64 Z" fill="#ffffff"/>`;
     if (expr === 'colere') s += `<path d="M -30 58 L 30 58 C 32 76 -32 76 -30 58 Z" fill="#ffffff" stroke="${INK}" stroke-width="${lw}"/><path d="M -28 66 L 28 66 M -10 58 L -10 74 M 10 58 L 10 74" stroke="${INK}" stroke-width="${lw * 0.6}"/>`;
-    if (expr === 'panique') s += `<path d="M -16 56 C -18 86 18 86 16 56 C 10 50 -10 50 -16 56 Z" fill="#3b1612" stroke="${INK}" stroke-width="${lw}"/><path d="M -8 74 q 8 -6 16 0" fill="none" stroke="#c4535a" stroke-width="5"/>` +
-      `<path d="M 74 -50 q 10 16 0 26 q -10 -10 0 -26 Z" fill="#bfe6ff" stroke="${INK}" stroke-width="2.5"/><path d="M -80 -40 q 8 14 0 22 q -8 -8 0 -22 Z" fill="#bfe6ff" stroke="${INK}" stroke-width="2.5"/>`;
+    if (expr === 'panique') s += `<path d="M -16 56 C -18 86 18 86 16 56 C 10 50 -10 50 -16 56 Z" fill="#3b1612" stroke="${INK}" stroke-width="${lw}"/><path d="M -8 74 q 8 -6 16 0" fill="none" stroke="#c4535a" stroke-width="5"/>`;
     if (expr === 'fierte') s += `<path d="M -32 56 C -14 82 18 82 34 54 Z" fill="#ffffff" stroke="${INK}" stroke-width="${lw * 1.1}" stroke-linejoin="round"/><path d="M -28 60 L 30 60" stroke="${INK}" stroke-width="${lw * 0.5}"/>`;
     return s;
   }
@@ -199,25 +196,15 @@
   }
 
   function headProfile(V, tf, into) {
-    // hair mass at the back
-    if (V.hair === 'bun') {
-      into.push({ d: `M -70 -60 C -84 -110 -40 -150 10 -146 C 48 -142 70 -120 66 -96 C 30 -110 -10 -100 -40 -60 C -50 -40 -60 -30 -70 -60 Z`, fill: P.hair, tf });
-      into.push({ d: `M -64 -150 C -84 -196 -30 -214 -6 -196 C 14 -180 6 -150 -16 -140 C -34 -134 -54 -138 -64 -150 Z`, fill: P.hair, tf,
-        extra: `<path d="M -60 -164 q 18 -22 44 -14 M -50 -146 q 22 -10 40 -2" fill="none" stroke="${P.hairT}" stroke-width="3.2" stroke-linecap="round"/>` });
-    } else {
-      into.push({ d: `M -86 10 C -104 -60 -70 -146 0 -148 C 50 -150 76 -118 70 -86 C 40 -110 -10 -96 -34 -60 C -44 -30 -60 0 -86 10 Z`, fill: P.hair, tf });
-      const len = V.hair === 'long' ? 70 : V.hair === 'band' ? 24 : 0;
-      locs([[[-40, -120], [-96, 70 + len], -20], [[-60, -96], [-110, 50 + len], -12], [[-20, -134], [-78, 86 + len], -24], [[-70, -60], [-112, 30 + len], -8], [[-4, -140], [-54, 96 + len], -20]], into, tf);
-    }
+    into.push({ d: `M 54 -98 C 40 -140 -20 -162 -70 -136 C -108 -110 -112 -50 -100 0 C -80 10 -60 -10 -52 -40 C -40 -80 0 -100 54 -98 Z`, fill: P.hair, tf });
+    twists([[[-88, -86], [-118, 120], -8], [[-98, -44], [-120, 132], -4], [[-70, -120], [-108, 112], -10]], into, tf);
     // the face in profile, facing right
     into.push({ d: `M -40 -96 C 10 -116 56 -96 64 -54 C 68 -36 66 -24 70 -12 L 90 20 C 92 26 86 30 78 30 L 74 36 C 80 42 80 48 74 52 L 68 56 C 76 60 76 68 68 72 C 68 86 62 98 46 104 C 24 110 -2 106 -20 92 C -40 70 -50 30 -50 -10 C -50 -50 -48 -80 -40 -96 Z`,
       fill: P.skin, tf, shade: `M -60 -100 L -10 -100 C -20 -40 -18 20 0 60 C 10 84 20 100 40 112 L -60 112 Z`, shadeColor: P.skinS,
       extra: `<path d="M 34 -6 Q 46 -14 58 -4 Q 48 6 34 -6 Z" fill="#fbf7f1"/><circle cx="52" cy="-5" r="5.5" fill="#1d120c"/><path d="M 30 -10 Q 46 -22 62 -8" fill="none" stroke="${INK}" stroke-width="${S.lw * 1.8}" stroke-linecap="round"/>` +
         `<path d="M 24 -30 Q 44 -38 64 -30" fill="none" stroke="${INK}" stroke-width="${({ thick: 9, thin: 5, heavy: 12, slit: 9 })[V.brows]}" stroke-linecap="round"/>` +
         `<path d="M 58 58 Q 64 62 70 60" fill="none" stroke="${INK}" stroke-width="${S.lw}" stroke-linecap="round"/><path d="M -8 10 C -24 6 -26 30 -12 36" fill="none" stroke="${INK}" stroke-width="${S.lw}"/>` });
-    if (V.hair === 'short' || V.hair === 'long') locs([[[10, -138], [44, -60], 22, 15], [[-14, -132], [8, -40], 16, 15]], into, tf);
-    if (V.hair === 'band') into.push({ d: `M -70 -90 C -20 -112 30 -112 66 -92 L 66 -70 C 30 -90 -20 -90 -72 -66 Z`, fill: '#f4f9ff', tf, shade: `M -80 -90 L -30 -100 L -30 -60 L -80 -60 Z`, shadeColor: '#cfe2f5' });
-    if (V.earring) into.push({ d: `M -14 44 a 7 7 0 1 0 0.1 0 Z`, fill: '#e8edf5', tf, inner: true });
+    twists([[[28, -134], [14, 98], -6], [[2, -148], [-10, 106], -6], [[-26, -150], [-38, 110], -6], [[-52, -140], [-64, 106], -6], [[-76, -120], [-88, 100], -6]], into, tf);
   }
 
   // ---------------- the sheet ----------------
@@ -241,7 +228,7 @@
       head(V, ex, '', parts);
       const r = render(parts, S, P);
       const tilt = ex === 'fierte' ? -6 : ex === 'colere' ? 4 : 0;
-      add(r, `translate(${165 + i * 288} ${1290}) rotate(${tilt}) scale(${V.hair === 'bun' ? 0.88 : 0.98})`);
+      add(r, `translate(${165 + i * 288} ${1290}) rotate(${tilt}) scale(0.9)`);
     });
     s += body;
     ['PROFIL', 'DE FACE'].forEach((t, i) => { s += `<text x="${i ? 310 : 890}" y="1062" text-anchor="middle" font-family="Lilita One" font-size="34" fill="#0a0d14">${i ? 'DE FACE' : 'DE PROFIL'}</text>`; });

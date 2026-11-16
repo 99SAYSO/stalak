@@ -2,6 +2,19 @@
 
 > Marketing & croissance. Rien ne change sur le site : seulement `tools/serie/` et `docs/`.
 
+## 16/11, 2 h 20 : la coupe de Liam refaite d'après l'image du propriétaire
+
+- À 2 h 11, le propriétaire a écrit : « sa coupe ne va pas du tout. Surtout de profil on dirait qu'il a pas de cheveux sur le coté ». Il a joint une image de référence pour la coupe.
+- La coupe est refaite dans `tools/serie/engine/liam.js`, la même dans les 4 versions :
+  - des vanilles (twists) entièrement noires, raie au milieu ;
+  - elles tombent jusqu'au menton et cachent les oreilles ;
+  - de profil, les cheveux couvrent tout le côté de la tête.
+- La règle est notée dans « Mes goûts » (`regle-liam-coupe`).
+- Les 4 versions ne changent plus que le visage et la tenue : Le classique, Le sweat, Le sans-manches, Le deux-tons. Elles sont redéposées dans la fiche `liam`, en `a_choisir`, avec sa description mise à jour. Les 4 anciennes images sont retirées de la page.
+- Coût : 0 $.
+- Ce qui attend : son choix d'une version.
+- **À signaler au propriétaire** : deux anciennes lignes de « Mes goûts » parlent encore de « locks » (`regle-heros`, `regle-liam-look`). La nouvelle ligne (`regle-liam-coupe`) passe avant. C'est lui qui retire ou modifie les anciennes, s'il le veut.
+
 ## 16/11, 2 h 04 : style validé, les 4 versions de Liam déposées
 
 - Le propriétaire a validé la planche du Style 1 (fiche `style` en `choisi`).
