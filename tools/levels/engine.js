@@ -46,7 +46,7 @@ const L2 = (a, len) => [Math.cos(a * Math.PI / 180) * len, Math.sin(a * Math.PI 
 function limb(sx, sy, [a1, a2], len) { const [x1, y1] = L2(a1, len), [x2, y2] = L2(a2, len); return [`M${sx} ${sy} l${x1} ${y1} l${x2} ${y2}`, sx + x1 + x2, sy + y1 + y2]; }
 // o : x, y (pieds), h, color, pose {la, ra, ll, rl}, rot, sx, sy, hat, flip, eyesPop, mouth (0..1, pour le snippet), mask
 function stick(o) {
-  const c = o.color, h = o.h || 520, lw = 6;
+  const c = o.color, h = o.h || 520, lw = o.lw || 6;
   const head = h * 0.17, neckY = -h * 0.66, hipY = -h * 0.30;
   const P = Object.assign({ la: [110, 95], ra: [70, 85], ll: [100, 108], rl: [80, 72] }, o.pose || {});
   const arm = h * 0.20, leg = h * 0.25, limbW = h * 0.078, torsoW = h * 0.15;
@@ -74,10 +74,10 @@ function stick(o) {
     for (const s of [-1, 1]) g += `<line x1="${s * head * 0.3}" y1="${hy}" x2="${s * head * (0.3 + 0.5 * p)}" y2="${hy - head * 0.9 * p}" stroke="${LINE}" stroke-width="5"/><circle cx="${s * head * (0.3 + 0.5 * p)}" cy="${hy - head * 0.9 * p}" r="${head * 0.32}" fill="#fff" stroke="${LINE}" stroke-width="5"/><circle cx="${s * head * (0.3 + 0.5 * p)}" cy="${hy - head * 0.9 * p}" r="${head * 0.11}" fill="${LINE}"/>`;
   }
   if (o.hat) {
-    g += `<path d="M${-head * 1.02} ${hy - head * 0.15} Q ${-head} ${hy - head * 1.35} 0 ${hy - head * 1.3} Q ${head} ${hy - head * 1.35} ${head * 1.02} ${hy - head * 0.15} Z" fill="${BLUE}" stroke="${LINE}" stroke-width="6"/>`;
-    g += `<rect x="${-head * 1.1}" y="${hy - head * 0.4}" width="${head * 2.2}" height="${head * 0.38}" rx="10" fill="${ICE}" stroke="${LINE}" stroke-width="6"/>`;
-    g += `<circle cx="0" cy="${hy - head * 1.42}" r="${head * 0.26}" fill="${ICE}" stroke="${LINE}" stroke-width="6"/>`;
-    g += `<path d="M${-head * 0.7} ${neckY + 8} q ${head * 0.7} ${head * 0.35} ${head * 1.4} 0 l -10 ${head * 0.9} l -22 -6 l 6 -${head * 0.6}" fill="${BLUE}" stroke="${LINE}" stroke-width="6" stroke-linejoin="round"/>`;
+    g += `<path d="M${-head * 1.02} ${hy - head * 0.15} Q ${-head} ${hy - head * 1.35} 0 ${hy - head * 1.3} Q ${head} ${hy - head * 1.35} ${head * 1.02} ${hy - head * 0.15} Z" fill="${BLUE}" stroke="${LINE}" stroke-width="${lw}"/>`;
+    g += `<rect x="${-head * 1.1}" y="${hy - head * 0.4}" width="${head * 2.2}" height="${head * 0.38}" rx="10" fill="${ICE}" stroke="${LINE}" stroke-width="${lw}"/>`;
+    g += `<circle cx="0" cy="${hy - head * 1.42}" r="${head * 0.26}" fill="${ICE}" stroke="${LINE}" stroke-width="${lw}"/>`;
+    g += `<path d="M${-head * 0.7} ${neckY + 8} q ${head * 0.7} ${head * 0.35} ${head * 1.4} 0 l -10 ${head * 0.9} l -22 -6 l 6 -${head * 0.6}" fill="${BLUE}" stroke="${LINE}" stroke-width="${lw}" stroke-linejoin="round"/>`;
   }
   if (o.videur) {
     g += `<rect x="${-head * 0.85}" y="${hy - head * 0.35}" width="${head * 1.7}" height="${head * 0.45}" rx="12" fill="#0a0d14"/><rect x="${-head * 0.7}" y="${hy - head * 0.28}" width="${head * 0.4}" height="${head * 0.1}" rx="4" fill="#5d6890"/>`;

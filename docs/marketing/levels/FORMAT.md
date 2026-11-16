@@ -6,6 +6,68 @@
 
 ---
 
+## 00. NOUVELLE MISE EN SCÈNE (décision du propriétaire du 17/11, 0 h 15) — elle passe avant tout le reste
+
+Elle **remplace le Videur** (et la fille, et la porte « POUR TOI »). Les 10 piliers ci-dessous restent valables : **la jauge HYPE remplace le « juge »** (pilier 6). Les parties marquées « ancienne version » plus bas sont gardées pour l'historique.
+
+### Le titre
+**« Comment faire la promo de ton son … »**, avec une fin qui change d'une vidéo à l'autre : « … quand t'as 0 abonné », « … avec 0 € », « … d'un son drill », « … quand t'es au lycée »… Tout en **blanc classique**, comme la vidéo d'exemple (aucune pastille de couleur).
+
+### Le principe
+Chaque niveau est **une façon de faire la promo**, de la plus nulle à la meilleure. On comprend la scène en **une demi-seconde** (une rue, une conversation de famille, des commentaires…). Les dialogues **parlent de promo** : on reste drôle (surtout au niveau 1), mais on comprend toujours où ça mène.
+
+### Le haut de l'écran (fond uni, rien derrière)
+- Le titre (2 ou 3 lignes), les 5 chiffres, la phrase, la jauge : sur un **fond uni sombre**, sans décor derrière, pour que tout soit très lisible.
+- **La phrase sous les chiffres dit ce qui est mal** (pas ce qu'il fait) : « ✗ personne ne t'a demandé », « ✗ mauvais public », « ✗ c'est du spam », « ✗ rien à regarder », « ✗ mauvaise qualité visuelle »… Au niveau 5, elle dit **le point fort** : « ✓ un snippet qui donne envie ».
+
+### La jauge HYPE (remplace le juge)
+- Toujours **au même endroit**, sous la phrase, avec son pourcentage et **un commentaire sarcastique** dessous : « HYPE : 2 % · même toi t'y crois pas », « 4 % · Tata Josiane a quitté le groupe », « 1 % · 12 vues, dont 3 c'est ta mère ».
+- Elle **bouge après chaque phrase du rappeur** (elle monte un peu : il y croit), et **retombe à chaque échec**, en animation (HyperFrames).
+- Au niveau 4, elle peut **se décrocher et lui tomber dessus** ; au niveau 5, elle **explose** (100 % · « là, ça donne envie »).
+
+### Les coups
+Ils viennent **de la scène elle-même**, façon dessin animé, de plus en plus forts : l'inconnu le gifle, la claquette de sa mère vole à travers la porte, la notification « compte bloqué » lui arrive en pleine face, la jauge lui tombe sur la tête… Jamais réaliste. Le timing du pilier 5 reste : tentative → refus → 0,5 s de silence → coup avec gros bruitage.
+
+### Le niveau 5 (toujours Stalak)
+Il filme ses prises, Stalak coupe sur le rythme (voix off, aucune musique), le snippet est **publié partout**, et **les personnages des niveaux d'avant reviennent** : l'inconnu danse sur son son, Tata Josiane revient dans le groupe (« c'est toi ça ?? »), sa mère partage… La jauge explose.
+
+### Le dessin et l'animation (17/11)
+- **Contours plus larges** pour les personnages **et le décor**, comme la vidéo d'exemple (≈ 13 px pour un personnage de 560 px de haut).
+- **Animation avec HyperFrames** pour toutes les vidéos, avec une **lumière ambiante** (halos des lampes, lumière d'écran, teinte de la scène).
+- **Chaque bulle** a un **petit bruitage** quand elle apparaît, et une **animation d'entrée et de sortie** (HyperFrames).
+- Images fixes de référence (17/11) : Studio Stalak, onglet Univers, fiche `levels-look-2` ; dessinées par `tools/levels/look.html`.
+
+### Le stock de scénarios pour les niveaux 1 à 4 (le niveau 5 est toujours Stalak)
+Chaque vidéo pioche 4 scénarios, du plus absurde au « presque ». Les niveaux 1-2 sont des promos **forcées ou gênantes** (rire facile) ; les niveaux 3-4 sont les **vraies erreurs** des petits rappeurs (on s'y reconnaît).
+
+| # | Scénario (une façon de faire la promo) | Ce qui est mal (la phrase) | Le coup qui vient de la scène | Niveau conseillé |
+|---|---|---|---|---|
+| 1 | Il force un inconnu dans la rue à écouter son son | personne ne t'a demandé | baffe de l'inconnu | 1 |
+| 2 | Il distribue des flyers dans le métro | personne ne lit un flyer | les portes du métro se referment sur lui | 1 |
+| 3 | Il met son son à fond dans le bus | tu déranges tout le monde | coup de frein : il s'écrase contre la vitre | 1 |
+| 4 | Sa sonnerie (son son) part en pleine classe | mauvais moment | l'effaceur de la prof en pleine tête | 1 |
+| 5 | Il chante son son à la caisse du supermarché | mauvais endroit | le tapis roulant l'emporte | 1 |
+| 6 | Il arrive à un concert avec une enceinte et une pancarte « écoutez-moi » | tu voles la scène | la sécurité le soulève comme un sac | 1 |
+| 7 | Il spamme le groupe de la famille (« Tata Josiane a quitté le groupe ») | mauvais public | la claquette volante de sa mère | 2 |
+| 8 | Il tague 50 potes sous chaque post | c'est du forcing | la pile de notifications lui tombe dessus | 2 |
+| 9 | Il envoie un vocal de 4 minutes à son crush | trop long | le « Vu » géant l'écrase | 2 |
+| 10 | Il envoie son son à son patron à 3 h du matin | mauvais public, mauvaise heure | le mug du patron | 2 |
+| 11 | Il envoie son son en DM à un rappeur connu (« Ninho, écoute ») | personne ne t'ouvre | « Vu » qui l'écrase (aucune fausse réponse du rappeur) | 2 |
+| 12 | Il commente « écoutez mon son 🔥 » sous les vidéos de stars | c'est du spam | la notification « compte bloqué » en pleine face | 3 |
+| 13 | Il achète des vues à des robots | fausses vues | les robots débarquent et le jettent | 3 |
+| 14 | Il fait un live 2 h devant 0 spectateur | personne ne te connaît encore | sa batterie explose en confettis | 3 |
+| 15 | Il poste à 4 h du matin quand tout le monde dort | mauvaise heure | le réveil lui saute dessus | 3 |
+| 16 | Il poste son son avec une image fixe (« 12 vues ») | rien à regarder | la jauge lui tombe sur la tête | 4 |
+| 17 | Il filme avec la caméra sale, tout est flou | mauvaise qualité visuelle | il glisse sur sa propre lingette | 4 |
+| 18 | 20 secondes d'intro avant de rapper | trop long avant le son | l'enclume du temps qui passe | 4 |
+| 19 | Montage avec une appli de montage classique : bouche décalée | paroles pas synchro | la poêle géante | 4 |
+| 20 | Snippet de 1 min 30, les gens décrochent | trop long | le pouce géant le fait défiler hors de l'écran | 4 |
+| 21 | Le son enregistré au micro du téléphone, on entend le frigo | mauvais son | le frigo lui tombe dessus | 4 |
+
+Règles : pas de concurrent nommé (« une appli de montage classique ») ; un vrai artiste peut être cité par son nom, jamais dessiné, jamais imité, jamais une fausse déclaration ; WhatsApp ou TikTok peuvent être nommés dans une réplique, mais on ne dessine jamais leur logo ni leur interface exacte.
+
+---
+
 ## 0. Les 10 piliers de chaque vidéo LEVELS (décision du propriétaire du 16/11, 21 h 29)
 
 À respecter dans **chaque** vidéo. Entre crochets : ce que la vidéo de référence ajoute ou corrige.
@@ -20,7 +82,7 @@
    [Référence : le niveau 3 (« il rend ça bizarre ») est le plus long des échecs (6 s) : on s'y reconnaît, alors on supporte qu'il dure. Le niveau 4 (« correct, sans plus ») est le plus court (2 s). Chez nous : niveau 3 en 6 s, niveau 4 plus court, en 4 s.]
 5. **Chaque refus a sa chute**, avec ce timing : tentative, refus sec, **demi-seconde de silence**, coup avec un gros bruitage. Un coup différent à chaque niveau, de plus en plus fort, toujours façon dessin animé.
    [Référence : entre deux niveaux, le son tombe à presque rien pendant environ 0,3 s (mesuré vers 3,0 s). Le silence reste un temps comique, pas une pause dans la voix (goût noté : pas de voix off avec des pauses ajoutées) : on le place **entre** le refus et le coup, jamais au milieu d'une réplique. 0,4 à 0,5 s suffit.]
-6. **Un « juge » récurrent** qui recale le bonhomme. **Choisi le 16/11 : le Videur du « Pour toi »** (lunettes noires, oreillette), toujours devant la porte « POUR TOI » et sa corde rouge. Au niveau 5, il décroche la corde : « … Entre. » Le décor est donc **le même dans toutes les vidéos** (la porte, une rue la nuit), comme dans la référence ; seuls les objets et les lieux des prises changent avec le genre.
+6. **Depuis le 17/11 : la jauge HYPE remplace le juge** (voir « Nouvelle mise en scène »). *Ancienne version :* un « juge » récurrent qui recale le bonhomme. **Choisi le 16/11 : le Videur du « Pour toi »** (lunettes noires, oreillette), toujours devant la porte « POUR TOI » et sa corde rouge. Au niveau 5, il décroche la corde : « … Entre. » Le décor est donc **le même dans toutes les vidéos** (la porte, une rue la nuit), comme dans la référence ; seuls les objets et les lieux des prises changent avec le genre.
    [Référence : le même personnage de refus pendant les 5 niveaux, toujours à la même place à droite. C'est lui qui fait la série : on le reconnaît d'une vidéo à l'autre.]
 7. **Les blagues viennent des clichés du genre** (drill, love song, son sur l'ex…) et des artistes que tout le monde connaît dans ce genre.
 8. **Ton sarcastique et pince-sans-rire** dans les textes. Le bonhomme reste un **loser attachant** : on a envie qu'il réussisse.
