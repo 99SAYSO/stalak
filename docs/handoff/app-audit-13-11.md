@@ -53,22 +53,21 @@ Tous les survols simples de l'appli sont réservés aux appareils avec souris (`
 - Le bouton choisi reste blanc sur bleu, les autres redeviennent normaux.
 - Restent tels quels : les survols partagés avec la touche Tab du clavier (menus) et l'étiquette PRO.
 
-## 3. Compteur du mode Clip (audit n° 3), pour Comptes
-- **Les offres ouvertes depuis l'export du Clip envoient bien la raison `clip`** : vérifié dans le navigateur, avec
-  `clip_ask` « pro » puis `plans_open` « clip ».
-- **Pourquoi `ev_plans_why_clip` est à 0 depuis le 7/11.** Depuis `app/clip-1`, choisir Clip n'ouvre plus les offres : on
-  essaie d'abord tout en aperçu, et les offres ne s'ouvrent qu'à l'export d'un clip sans Pro. Avant, chaque toucher sur
-  « Clip » en Gratuit comptait comme une ouverture des offres pour Clip. Le 0 veut dire qu'aucun compte Gratuit n'a demandé
-  l'export d'un clip. Le compteur `clip_ask` du tableau de bord le confirme.
-- **Les 21 « autre »** sont surtout des ouvertures sans fonction payante derrière : le bouton « Tarifs » de l'en-tête, un
-  forfait choisi sur la page Tarifs du site, et le menu du compte. Ils sont maintenant rangés en `tarifs` et `menu`.
-  « Autre » ne garde que le reste.
-- **Nouvel événement `clip_open`**, « a ouvert le mode Clip » : compté une fois par visite, quand la personne choisit Clip
-  elle-même (à l'étape 1 ou au Montage), en Gratuit ou en Pro.
-- Le tableau de bord, onglet Entonnoir, carte « Clips 16:9 et vidéos TikTok », affiche « Mode Clip ouvert (visites) », en
-  Gratuit et en Pro. La liste « Ce qui ouvre la page des formules » montre « Bouton ou page Tarifs » et « Menu du compte ».
-- Fichiers : `functions/_lib/metrics.js` (`clip_open`, raisons `tarifs` et `menu`), `functions/_lib/admin.js` (`clipOpen`),
-  `functions/_lib/admin-page.js`, les chiffres de démo, un nouveau test serveur. Pas de migration.
+## 3. Compteur du mode Clip (audit n° 3), avec Comptes
+**Mise à jour du 16/11, après le retour du Chef de projet.** Ma branche entrait en conflit avec `compte/audit-13-11`. On garde
+la version de Comptes :
+- les raisons `menu`, `account`, `pricing` et `link` sont passées par `apGo('pro', { from })` ;
+- `clipOpen` est un seul nombre dans le tableau de bord.
+J'ai donc retiré ma version (`plansFrom`, raison `tarifs`, compteurs `clip_open_free` / `clip_open_pro`). L'appli envoie
+`acctEvent('clip_open')` **une fois par page**, quand la personne choisit Clip elle-même (étape 1 ou Montage), sans détail.
+Si on veut un jour séparer Gratuit et Pro pour ce compteur, c'est à demander à Comptes.
+
+Ce qui reste vrai :
+- les offres ouvertes depuis l'export du Clip envoient bien la raison `clip` (vérifié : `clip_ask` « pro » puis `plans_open`
+  « clip ») ;
+- `ev_plans_why_clip` est à 0 depuis le 7/11 parce que choisir Clip n'ouvre plus les offres (`app/clip-1` : on essaie tout en
+  aperçu, les offres ne s'ouvrent qu'à l'export d'un clip sans Pro). Le 0 veut dire qu'aucun compte Gratuit n'a demandé
+  l'export d'un clip.
 
 ## 4. Plantages d'export sur iPhone (2 cas : 9:16, plus de 60 s, étape « frames », après environ 10 s)
 - Je ne peux pas lancer Safari d'iPhone ici. J'ai reproduit la même situation dans Chromium, en suivant la mémoire de
@@ -84,12 +83,39 @@ Tous les survols simples de l'appli sont réservés aux appareils avec souris (`
 - **Ce que je ne peux pas promettre** : c'est mesuré dans Chromium, pas sur un vrai iPhone. Le compteur
   `ev_xf_ios_crash` dira dans les jours qui viennent si ces plantages disparaissent.
 
+## 5. Bug de l'aperçu vu par le propriétaire (16/11)
+**Ce qu'il a vu** : la ligne des coupes passait de la prise 1 à la prise 2, mais l'image restait sur la prise 1 pendant les
+2,3 premières secondes, puis tout repartait.
+
+**La cause**, dans `loop()` de `src/app.js` : l'image était gardée dès qu'**une seule** des prises utilisées cherchait sa place
+en pause, même si ce n'était pas celle à l'écran. Au départ, sur iPhone, toutes les prises cherchent leur place en même temps, et
+le son ne les attendait que 0,9 s au plus. Le son partait donc, et l'image restait figée tant qu'une prise cherchait encore.
+
+**Les corrections** :
+- l'image n'est gardée que si **la prise à l'écran** n'est pas prête (en pause, en recherche, ou pas encore d'image) ;
+- avant de lancer le son, Stalak attend la prise à l'écran et celles des coupes des **3 premières secondes**, jusqu'à 2,5 s.
+  Les autres prises continuent de se préparer pendant que le son joue : on ne les voit que plus tard.
+
+**Vérifié** par un nouveau test, `tests/ui/apercu_depart_ui.py` (iPhone 390 px et ordinateur 1280 px). Les prises y sont
+lues par les lecteurs vidéo du navigateur, comme sur iPhone, et la prise 2 met 2 s à trouver sa place :
+- sur `main`, le défaut est reproduit : l'image reste gardée après le départ du son, et le son ne patiente que 0,9 s ;
+- sur la branche, 10/10 : le son attend la prise 2 quand elle arrive dans les 3 premières secondes, il ne l'attend pas quand
+  elle arrive plus tard, et l'image de la prise 1 avance pendant que la prise 2 cherche encore.
+
+**La boîte noire** de l'appareil du propriétaire n'est pas lisible d'ici (elle reste dans son navigateur). Pour confirmer sur
+son téléphone : refaire le même aperçu sur la maquette, puis « Copier les infos pour l'équipe » et me les envoyer.
+
+**L'export peut-il avoir le même défaut ? Non.**
+- L'export habituel (WebCodecs) décode chaque image exactement au bon moment, prise par prise. Il ne dépend pas des lecteurs
+  vidéo, donc il ne peut pas rester sur l'image d'une autre prise.
+- L'export de secours en temps réel place la prise suivante à l'avance (avant sa coupe) et ne garde jamais l'image d'une autre
+  prise.
+
 ## Fichiers
-`src/app.js`, `src/markup.html`, `src/theme.css`, `src/style.css`, `build_site.py` (Marketing), `functions/_lib/metrics.js`,
-`functions/_lib/admin.js`, `functions/_lib/admin-page.js`, `functions/_lib/admin-demo-data.js` et
-`tests/fixtures/dashboard-seed.mjs` (Comptes).
+`src/app.js` (dont l'aperçu, 16/11), `src/markup.html`, `src/theme.css`, `src/style.css`, `build_site.py` (Marketing), `functions/` et les chiffres de démo : version de Comptes gardée telle
+quelle (fusion du 16/11).
 Tests :
-- `tests/backend/run.mjs` (nouveau test) ;
+- nouveau `tests/ui/apercu_depart_ui.py` (bug de l'aperçu du 16/11) ;
 - `tests/ui/clip1_ui.py` (`clip_open` une fois par visite, survols, bouton après un toucher) ;
 - `tests/ui/exports_rates_ui.py` (vidéo de 70 s sur téléphone de la façon sûre, et sur ordinateur comme d'habitude) ;
 - `tests/ui/audit611_ui.py` (scripts chargés après le premier affichage).
