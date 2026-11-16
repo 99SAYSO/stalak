@@ -257,7 +257,10 @@
 - À décider : la publication directe est-elle réservée à Stalak Pro ou ouverte à tous ? Meta risque de demander une vérification d'entreprise (lien avec la LLC).
 
 ### Marketing & croissance
-- **En cours (branche `marketing/serie-fr`, série « T-Crazy ») — voix des personnages à choisir, 3 scripts pilotes à valider** :
+- **En cours (branche `marketing/serie-fr`, série « T-Crazy ») — 5 scripts à valider (dont 2 sur GTA 6), vitesse de la voix de Liam à choisir** :
+  - **Décision du propriétaire (16/11, 12 h 11)** : chaque épisode finit par un appel à l'action, avec Stalak amené intelligemment. Celui qui regarde doit se reconnaître dans la galère de Liam (`regle-cta-intelligent`). Les 3 pilotes sont réécrits en ce sens.
+  - **Actualité, GTA 6 (sortie le 19/11/2026)** : 2 épisodes (`tcrazy-ep4` le 19/11 au soir, `tcrazy-ep5` le 21/11). Ils n'en gardent que le nom : ni logo, ni image du jeu, aucune imitation, et Liam (15 ans) n'y joue pas. **Pour Juridique** : vérifier cet usage du nom, comme pour BandLab.
+  - Voix choisies : Nadia Pulcherrima, Deuce Schedar, Maya Despina. Pour Liam, c'est Fenrir, avec la vitesse (×1,1 ou ×1,2) encore à choisir.
   - 16/11, 11 h 35 : 12 voix (Liam, Nadia, Deuce, Maya ; 0,156 $) sont dans 4 fiches `voix-*`. Les 3 scripts pilotes (`tcrazy-ep1` à `tcrazy-ep3`, prévus les 18, 19 et 20/11, heure à confirmer par Réseaux sociaux) sont en `script` dans Studio Stalak.
   - 16/11, 4 h 56 : la galère, c'est « Scars », et le narrateur, Algieba à ×1,2. **La bible en une page** : `docs/marketing/SERIE_BIBLE.md`. Les voix de Liam, Nadia, Deuce et Maya (environ 0,16 $) attendent l'accord du propriétaire.
   - 16/11, 4 h 51 : 3 musiques choisies (« Sneeze », « Game Show », « Funk Upbeat ») et la miniature type validée. Galère « trop calme » : 3 beats plus présents sont proposés dans `musique-galere`.

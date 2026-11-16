@@ -2,6 +2,30 @@
 
 > Marketing & croissance. Rien ne change sur le site : seulement `tools/serie/` et `docs/`.
 
+## 16/11, 12 h 30 : voix choisies, scripts réécrits avec un appel à l'action, 2 épisodes GTA 6
+
+- À 12 h 11, le propriétaire a choisi les voix :
+  - Nadia : Pulcherrima ;
+  - Deuce : Schedar ;
+  - Maya : Despina ;
+  - Liam : Fenrir, mais « doit parler un peu plus vite ». La même lecture est accélérée (×1,1 et ×1,2, 0 $) dans la fiche `voix-liam`, en `a_choisir`. Les deux voix de Liam non retenues sont retirées de la page.
+- **Nouvelle règle (`regle-cta-intelligent` dans « Mes goûts »)** : chaque épisode finit par un appel à l'action. Stalak est la solution, amenée intelligemment : celui qui regarde doit se reconnaître dans la galère de Liam et avoir envie de l'utiliser parce que ça lui serait utile.
+  - Les 3 scripts pilotes sont réécrits en ce sens.
+  - La galère est montrée comme celle du spectateur : des vidéos qui dorment dans la galerie, des nuits à recaler sa bouche, pas de manager ni de budget.
+  - À la fin, Liam se tourne vers celui qui regarde.
+  - La carte de fin dit « Gratuit, sans téléchargement ni inscription », comme le site.
+- **GTA 6** (`aime-actualite`) : le jeu sort le 19/11/2026, date vérifiée en ligne. 2 nouveaux scripts sont en `script` :
+  - `tcrazy-ep4`, « Le jour de GTA 6 », le 19/11 au soir ;
+  - `tcrazy-ep5`, « Le clip façon GTA », le 21/11.
+  - Ils n'en gardent que le nom : ni logo, ni image, ni musique, ni personnage du jeu, aucune imitation de jaquette ou de bande-annonce, on ne voit jamais le jeu, et Liam (15 ans) n'y joue pas.
+  - **À faire vérifier par Juridique**, comme le nom de BandLab.
+- La bible (`SERIE_BIBLE.md`) est mise à jour : l'appel à l'action, les voix, la règle sur GTA 6 et les 2 idées d'épisodes.
+- Coût : 0 $.
+- Ce qui attend :
+  - la vitesse de la voix de Liam ;
+  - la validation des 5 scripts ;
+  - pour que « Le jour de GTA 6 » sorte le 19/11, il faut le valider vite, puis faire les images fixes, le feu vert et la production.
+
 ## 16/11, 11 h 35 : les voix des personnages et les 3 scripts pilotes
 
 - À 11 h 18, le propriétaire a dit « oui » pour les voix.

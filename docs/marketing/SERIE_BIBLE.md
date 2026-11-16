@@ -18,7 +18,12 @@ Le ton est celui d'un dessin animé américain inspiré de l'anime, avec le dél
 - **0:00, le cri** : un personnage crie une phrase choc liée à l'épisode. En haut, le bandeau donne le titre en majuscules. C'est la version 4 : la bande bleue penchée, avec de la neige dessus.
 - **Puis le narrateur.** Le bandeau disparaît dès qu'il parle. Il présente vite les personnages et le contexte, puis il alterne avec eux.
 - **Les sous-titres** : tout ce qui est dit est écrit, sur une carte blanche, avec le nom de celui qui parle dans une étiquette à sa couleur.
-- **La fin** : la vidéo faite avec Stalak (toujours synchronisée avec la musique), la mascotte dans le téléphone, puis stalak.app.
+- **La fin, avec un appel à l'action** (décision du 16/11) :
+  - La solution au problème de Liam, c'est Stalak, mais amené intelligemment, jamais un simple « fais tes vidéos avec Stalak ».
+  - Celui qui regarde doit se reconnaître dans la galère de Liam.
+  - On montre la vidéo faite avec Stalak (toujours synchronisée avec la musique) et la mascotte qui réagit dans le téléphone.
+  - Puis Liam se tourne vers celui qui regarde, avec une phrase sur SA galère à lui (« Toi aussi, t'as un son et des vidéos qui dorment dans ta galerie ? »).
+  - Enfin, la carte de fin : stalak.app, « Gratuit, sans téléchargement ni inscription », et le prochain épisode.
 - **Une miniature par vidéo**, dessinée par Claude en même temps qu'elle et déposée avec elle dans Studio Stalak. Elle montre le titre sur la bande bleue et les personnages en grand, au centre de l'image.
 - **Le texte reste dans la zone visible** : rien dans les 8 % du haut, ni dans les 20 % du bas, ni sur le bord droit entre 35 % et 80 % de la hauteur.
 
@@ -35,7 +40,13 @@ Le ton est celui d'un dessin animé américain inspiré de l'anime, avec le dél
 | **Le narrateur** | On ne le voit jamais. Grave, posé, ironique, façon documentaire. | Voix « Algieba » (Gemini), accélérée ×1,2 |
 | **La mascotte** | L'officielle, telle quelle, dans le téléphone de Liam. Elle ne parle pas : elle réagit avec ses autocollants. | `site_src/emoji` |
 
-Les voix de Liam, Nadia, Deuce et Maya restent à choisir de la même façon que celle du narrateur : 3 voix chacun sur la même phrase.
+Les voix (Gemini sur Flora), choisies le 16/11 :
+- Nadia : Pulcherrima ;
+- Deuce : Schedar ;
+- Maya : Despina ;
+- Liam : Fenrir, « un peu plus vite » (×1,1 ou ×1,2, à choisir).
+
+Big Mo et M. Reyes auront leur voix quand un épisode validé les fera parler.
 
 ## Les décors (choisis le 16/11)
 
@@ -58,6 +69,13 @@ Les voix de Liam, Nadia, Deuce et Maya restent à choisir de la même façon que
 - Une vidéo montée qu'on montre est toujours synchronisée avec la musique.
 - Aucun chiffre inventé sur Stalak : les chiffres de l'histoire (abonnés, heures) sont de la fiction sur les personnages. Aucun concurrent nommé, aucune vraie marque.
 - Aucun vrai artiste, ni son image ni son nom : pas de poster de star dans la chambre.
+- L'actualité attire, par exemple la sortie de GTA 6 le 19/11/2026. Mais on n'en garde que le nom :
+  - ni logo, ni image, ni musique, ni personnage du jeu ;
+  - aucune imitation de ses jaquettes ou de ses bandes-annonces ;
+  - on ne voit jamais le jeu ;
+  - Liam, qui a 15 ans, n'y joue pas.
+
+  C'est à faire vérifier par Juridique.
 - Pas de pause ajoutée dans les voix.
 - Tout est dessiné par Claude en code : Flora ne sert qu'aux voix.
 
@@ -76,6 +94,8 @@ Les images, les musiques et le rendu coûtent 0 $. Une génération de voix coû
 | LA VAISSELLE OU LA GLOIRE | Nadia : « T-Crazy mange pas si T-Crazy a pas fait la vaisselle ! » | Il enregistre au lieu de faire la vaisselle. Le cri de sa mère tombe pile sur le temps : c'est sa meilleure accroche. |
 | LE SON DE L'ANNÉE | Liam : « Pourquoi ma bouche est décalée ?! » | Il passe la nuit sur sa vidéo de promo, et rien n'est synchronisé. Maya lui montre Stalak. |
 | LE MANAGER | Deuce : « On va scaler ta street-cred ! » | Le plan promo de Deuce : un tournage devant l'épicerie, que M. Reyes interdit. |
+| LE JOUR DE GTA 6 | Deuce : « Sortir ton son le jour de GTA 6 ?! T'es fou ! » | Tout le quartier joue. Mais entre deux parties, ils scrollent : il lui faut un clip, pas juste un son. (actualité, 19/11) |
+| LE CLIP FAÇON GTA | Deuce : « On va faire un clip comme dans GTA ! » | Un scooter, une plante verte et douze prises ratées, coupées sur le rythme. (actualité) |
 | LE CLASH AU TERRAIN | Big Mo : « Encore toi, le petit ? » | Big Mo poste un clip par jour. Liam veut comprendre comment. |
 | LE SNIPPET POSTÉ TROP TÔT | Liam : « Ils veulent le son en entier ?! » | Il poste un extrait à 3 h du matin, et le son n'est pas fini. |
 | LE CLIP DANS LE COULOIR | Liam : « Tout le monde regarde ! » | Il montre sa vidéo à tout le lycée, mais le son est décalé. |
