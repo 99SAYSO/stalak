@@ -1,6 +1,7 @@
 """The footer of Stalak: the ONE source of its content (owner, 01/11), for every page, in French and English:
 - the app (/ and /fr/, built by build_site.py from src/markup.html, where <!--FOOTER--> stands for it);
 - the Pricing and legal pages, the 6 guides, the Triller page and the help pages (site_src/, built by build_site.py: their <footer> is replaced);
+  the 6 guides exist in English only, so only the English footer links them (13/11 audit);
 - the claude.ai version (build.py): a light footer (brand, language, last line), the site's pages do not exist there.
 
     render(lang, page=None, lite=False, i18n=None) -> the whole <footer>
@@ -23,7 +24,9 @@ ICONS = ROOT / 'site_src' / 'icons'
 # Marketing & croissance : comptes officiels de Stalak (adresse complète du profil ; une case vide n'apparaît nulle part)
 SOCIAL = {'Instagram': 'https://www.instagram.com/stalak_app/', 'TikTok': 'https://www.tiktok.com/@stalak_app', 'YouTube': 'https://www.youtube.com/@stalak_app'}
 SOCIAL = {k: v for k, v in SOCIAL.items() if v}
-# Marketing & croissance : les 6 guides par cas d'usage (anglais seulement, sans page française ; décision du 31/10)
+# Marketing & croissance : les 6 guides par cas d'usage (anglais seulement, sans page française ; décision du 31/10).
+# Dans le pied de page ANGLAIS seulement (audit du 13/11) : une page française ne renvoie pas vers des pages en anglais ;
+# en français, la colonne « Tutos » couvre les mêmes sujets (playback, clip, teaser, synchro, paroles, format).
 GUIDES = [('lip-sync-video-editor', 'Lip-sync video editor'), ('music-video-maker-for-rappers', 'Music video maker for rappers'),
           ('rap-snippet-video', 'Rap snippet video'), ('lip-sync-videos-for-singers', 'Performance videos for singers'),
           ('how-to-make-a-lip-sync-video', 'How to make a lip-sync video'), ('edit-video-to-the-beat', 'Edit video to the beat')]
@@ -117,9 +120,9 @@ def inner(lang, page=None, lite=False):
         brand = brand.replace('<a class="ft-home" href="' + T['home'] + '">', '<span class="ft-home">').replace('</span></a><p', '</span></span><p')
         cols = brand + choices
     else:
-        en = ' lang="en"' if lang == 'fr' else ''
+        guides = GUIDES if lang == 'en' else []   # English-only pages: in the English footer only (13/11 audit)
         product = ('<div class="ft-col"><h2 class="ft-h">' + T['product'] + '</h2><ul class="ft-list"><li>' + _a(*T['pricing']) + '</li><li>' + _a(*T['clip']) + '</li>'
-                   + ''.join('<li>' + _a('/' + s, n, en) + '</li>' for s, n in GUIDES) + '<li>' + _a(*T['triller']) + '</li></ul></div>')
+                   + ''.join('<li>' + _a('/' + s, n) + '</li>' for s, n in guides) + '<li>' + _a(*T['triller']) + '</li></ul></div>')
         aide = ('<div class="ft-col"><h2 class="ft-h">' + T['aide'] + '</h2><ul class="ft-list">'
                 + ''.join('<li>' + (_a('/fr/' + fr, nfr) if lang == 'fr' else _a('/' + en, nen)) + '</li>' for fr, en, nfr, nen in AIDE) + '</ul></div>')
         legal = ('<div class="ft-col"><h2 class="ft-h">' + T['legal'] + '</h2><ul class="ft-list">'

@@ -22,6 +22,15 @@ GUIDES = [   # slug, title on the picture, the mascot
     # Marketing & croissance (07/11): the « Clip » page (Music video mode, a Pro export: « Try it free », not « Free »)
     ('music-video', 'Music video mode', 'Your whole song as a YouTube music\u00a0video', 'cool', 'Try it free · in your browser · no sign-up'),
     ('clip', 'Le mode Clip', 'Tout ton morceau en clip YouTube', 'cool', 'Essai gratuit · dans ton navigateur · sans compte'),
+    # Marketing & croissance (13/11, audit point 8): the legal pages, in their own language (the words of each page's description)
+    ('terms', 'Terms', 'Plans, renewal, payment and refunds', 'think'),
+    ('refunds', 'Refund policy', '14 days to change your mind, full refund', 'money'),
+    ('privacy', 'Privacy and cookies', 'What stays on your device, what an account keeps', 'cool'),
+    ('legal-notice', 'Legal notice', 'Who publishes Stalak, mediation and hosting', 'hello'),
+    ('conditions', 'Conditions', 'Formules, renouvellement, paiement et remboursement', 'think', 'Gratuit · dans ton navigateur · sans compte'),
+    ('remboursement', 'Remboursement', '14 jours pour changer d’avis, remboursement intégral', 'money', 'Gratuit · dans ton navigateur · sans compte'),
+    ('confidentialite', 'Confidentialité et cookies', 'Ce qui reste sur ton appareil, ce que garde un compte', 'cool', 'Gratuit · dans ton navigateur · sans compte'),
+    ('mentions-legales', 'Mentions légales', 'Qui édite Stalak, la médiation et l’hébergement', 'hello', 'Gratuit · dans ton navigateur · sans compte'),
 ]
 PAGE = """<!doctype html><html><head><meta charset="utf-8"><style>
 @font-face{{font-family:'Lilita One';src:url('{lilita}')}}@font-face{{font-family:'Rubik';src:url('{rubik}');font-weight:300 900}}
