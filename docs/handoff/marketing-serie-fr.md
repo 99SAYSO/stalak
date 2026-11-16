@@ -2,6 +2,22 @@
 
 > Marketing & croissance. Rien ne change sur le site : seulement `tools/serie/` et `docs/`.
 
+## 16/11, 5 h 30 : l'univers est complet, la bible est écrite
+
+- À 4 h 56, le propriétaire a choisi :
+  - pour la galère, « Scars » ;
+  - pour le narrateur, la voix Algieba à ×1,2 (`regle-narrateur-vitesse` dans « Mes goûts » ; fiche `narrateur` en `choisi`, d'après sa réponse).
+- **La bible en une page** est dans `docs/marketing/SERIE_BIBLE.md`. Elle remplace celle de « Studio Chambre ». Elle contient :
+  - l'idée et le format, sans générique ;
+  - les personnages, les décors et les musiques choisis ;
+  - les règles ;
+  - le chemin d'un épisode et son coût ;
+  - 7 idées d'épisodes.
+- Coût : 0 $.
+- Ce qui attend :
+  - les voix de Liam, Nadia, Deuce et Maya : 3 voix chacun sur la même phrase, environ 0,16 $ sur Flora, seulement après l'accord du propriétaire ;
+  - les 3 scripts pilotes dans Studio Stalak, en `script`.
+
 ## 16/11, 5 h 25 : 3 musiques choisies, la galère refaite
 
 - À 4 h 51, le propriétaire a choisi 3 ambiances :

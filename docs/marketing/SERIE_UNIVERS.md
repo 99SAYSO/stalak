@@ -248,6 +248,13 @@ Pour la galère, 3 beats hip-hop tristes avec une vraie batterie sont proposés.
 
 Les fichiers des 2 premiers titres de la galère, et des voix Charon et Algenib qui n'ont pas été retenues, sont retirés de la page.
 
+**16/11, 4 h 56 : l'univers est complet.**
+- La galère : B, « Scars » (viavebeatz).
+- Le narrateur : Algieba à ×1,2 (`regle-narrateur-vitesse` dans « Mes goûts »).
+- Le logo reste optionnel.
+
+La bible en une page est écrite : `docs/marketing/SERIE_BIBLE.md`. Les voix de Liam, Nadia, Deuce et Maya restent à choisir, de la même façon que celle du narrateur.
+
 ## Étape 2 : tout l'univers dans le style choisi (après le choix)
 
 - Liam : 4 versions, chacune de face, de profil et avec 4 expressions (frime, colère, panique, fierté).
