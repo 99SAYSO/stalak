@@ -198,6 +198,8 @@
           const k = spring(lt, 0.8, 200, 18);
           P.el.setAttribute('opacity', lt < 0.8 ? 0 : 1);
           P.el.setAttribute('transform', `translate(${((1 - k) * -1150).toFixed(1)} 0)`);
+        } else if (P.el.dataset.cont) { // the banner kept on the next shot (until the narrator speaks) : it does not move at the cut
+          P.el.removeAttribute('transform');
         } else { // the episode's banner is there from the very first image (text on screen at once), with a small punch
           scaleAt(P.el, P.c, 1 + 0.12 * (1 - spring(lt, 0, 260, 14)));
         }

@@ -730,8 +730,9 @@
     { t: '0:00', cap: "L'accroche : « Triller », aucun résultat", set: AFT, criY: 700, chars: [CH('deuce', 1, 880, 1700, 900, 'frime'), CH('maya', 1, 230, 1700, 900, 'frime'), LI(540, 2650, 2100, 'panique')],
       // (16/11, planche contact : the phone held lower, beside him : nothing hides the face of who shouts, rule of the owner)
       over: () => bandeau(2, "TRILLER N'EST PLUS SUR L'APP STORE", 6) + FRAME.cri('liam', 'Ils ont fermé Triller ?!', 700) + `<g transform="translate(800 1330) scale(0.5) translate(-540 -790)">${phoneBig(storeSearch(), 1).replace(/<rect width="1080" height="1920" fill="#0a0d14" opacity="0.5"\/>/, '')}</g>` },
+    // (the banner stays until the narrator's first sentence, rule « regle-bandeau-titre » : here, Liam speaks once more before him)
     { t: '0:02', cap: 'Liam baisse le téléphone, dépité', set: AFT, chars: [CH('deuce', 1, 880, 1700, 900, 'frime'), CH('maya', 1, 230, 1700, 900, 'frime'), LI(540, 1846, 1250, 'colere', P.phone(580, 1130))],
-      over: () => sub(1, 'liam', 'Je faisais toutes mes vidéos de promotion de mes sons dessus… je suis deg.') },
+      over: () => bandeau(2, "TRILLER N'EST PLUS SUR L'APP STORE", 6).replace('class="bandeau"', 'class="bandeau" data-cont="1"') + sub(1, 'liam', 'Je faisais toutes mes vidéos de promotion de mes sons dessus… je suis deg.') },
     { t: '0:06', cap: 'Le narrateur présente Liam', set: AFT, chars: [CH('deuce', 1, 880, 1700, 900, 'frime'), CH('maya', 1, 230, 1700, 900, 'frime'), LI(540, 1846, 1250, 'colere', P.phone(580, 1130))],
       over: () => tag('LIAM, ALIAS T-CRAZY', 640, 600, 3) + sub(1, 'narrateur', "Voici Liam. 15 ans. Zéro abonné. Triller n'est plus disponible sur l'App Store, et c'est là qu'il faisait ses snippets.") },
     { t: '0:11', cap: 'Un ancien snippet se fige et devient gris', set: AFT, chars: [LI(540, 1846, 1250, 'colere', P.phone(606, 760), { pose: { raise: 'r' } })],
