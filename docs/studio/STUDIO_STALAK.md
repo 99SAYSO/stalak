@@ -28,11 +28,14 @@ Une fiche par élément : `{categorie: "personnage" | "decor" | "habillage" | "m
 | `statut` | voir ci-dessous |
 | `note` | la remarque du propriétaire (écrite par lui dans la page) |
 | `visuels` | liste `[{url, nom}]` : les images fixes des personnages et des décors de l'épisode, déposées dans la page |
+| `progression` | pendant la fabrication : `{pct, etape, majLe}` (pourcentage de 0 à 100, étape en clair comme « Animation des plans (5/8) », date ISO). Affiché en barre dans « À valider » ; signalé en orange s'il n'a pas bougé depuis 45 min |
 | `videoUrl` | adresse de la vidéo déposée dans la page (voir « Déposer une vidéo ») |
 | `plancheUrl` | adresse de la planche contact |
 | `majPar`, `majLe` | qui a modifié la fiche et quand |
 | `format` | le nom du format (toujours le même mot pour un même format : « Histoire animée », « POV »…), pour l'onglet Résultats |
 | `resultats` | `{vues, finPct, partages, profil, site}` : vues, part regardée jusqu'au bout en %, partages, visites du profil, visites du site venues de cette vidéo. Rempli par Réseaux sociaux (rapport du samedi) ou par le propriétaire dans la page |
+
+**Pendant la fabrication (décision du propriétaire du 16/11)** : mettre `progression` à jour à chaque étape terminée, et au moins toutes les 15 minutes. Barème conseillé : voix 15 %, images 30 %, animation 30 → 75 % (au prorata des plans), montage, sous-titres et musique 85 %, planche contact 95 %. Dès qu'**une** vidéo est finie, la déposer et passer **sa** fiche en `video`, sans attendre les autres.
 
 Statuts, dans l'ordre : `idee` → `script` (à valider) → `script_ok` ou `script_refaire` → `visuels` (personnages et décors à valider) → `visuels_ok` ou `visuels_refaire` → `production` → `video` (à valider) → `valide` ou `video_refaire` → `programme` → `publie`.
 - Le **propriétaire** passe `script` → `script_ok` / `script_refaire`, `visuels` → `visuels_ok` / `visuels_refaire` et `video` → `valide` / `video_refaire`. Aucune conversation ne le fait à sa place.
