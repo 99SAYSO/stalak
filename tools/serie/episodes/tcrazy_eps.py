@@ -77,7 +77,7 @@ EPISODES = {
         ('ep2-04', [4], dict(music='hustle')),
         ('ep2-05', [5], {}),
         ('ep2-06', [6], dict(lead=0.3, after=1.3, sfx=[('notification.mp3', 0.1, 0.4)])),
-        ('ep2-07', [7, 8, 9], dict(sfx=[('knock.wav', 0.05, 0.55)])),
+        ('ep2-07', [7, 8, 9], dict(lead=0.7, sfx=[('knock.wav', 0.05, 0.55)])),  # the knock is heard before « Coucou »
         ('ep2-08', ['10a'], dict(music='victoire', sfx=[('pop.mp3', 1.2, 0.4)])),
         ('ep2-09', ['10b'], dict(sfx=[('pop.mp3', 0.6, 0.45)])),
         ('ep2-10', [11, 12], {}),

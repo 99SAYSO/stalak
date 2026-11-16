@@ -181,35 +181,40 @@ def envelope(x):
     return [round(float(a), 3) for a in v]
 
 
+# a subtitle line never ends on one of these little words (« le », « de », « qui »…)
+WEAK = set('le la les un une des du de à au aux en et ou sa son ses mon ma mes ton ta tes ce cet cette qui que dans sur pour par avec il elle on je tu ne se y'.split())
+
+
+def split_best(words, maxc):
+    """a sentence too long for one subtitle : cut where both parts stay readable (20 characters at least if possible), as even
+    as possible, rather after a comma or a colon, never after a little word nor before « de »"""
+    s = ' '.join(words)
+    if len(s) <= maxc or len(words) < 2:
+        return [s]
+    best = None
+    for least in (20, 12):  # no piece shorter than 20 characters if it can be helped
+        for i in range(1, len(words)):
+            left, right = ' '.join(words[:i]), ' '.join(words[i:])
+            if len(left) < least or len(right) < least:
+                continue
+            cost = max(len(left), len(right)) + (0 if re.search(r'[.!?,…:;]$', words[i - 1]) else 14) + (40 if words[i - 1].lower() in WEAK else 0) \
+                + (10 if words[i].lower() in ('de', 'du', 'des') else 0)
+            if best is None or cost < best[0]:
+                best = (cost, i)
+        if best:
+            break
+    i = best[1] if best else len(words) // 2
+    return split_best(words[:i], maxc) + split_best(words[i:], maxc)
+
+
 def chunks(text, maxc=62, merge=50, short=20):
-    """subtitles : whole sentences when they fit, cut on punctuation only inside a sentence too long for the screen
+    """subtitles : whole sentences when they fit ; a sentence too long for the screen is cut in readable pieces (split_best)
     (split on plain spaces only, so « décalée ?! » stays whole). Short pieces join their neighbour (since EP4, 16/11 :
     no subtitle of three words flashing for one second, no cut in the middle of a sentence when it fits)."""
     text = re.sub(r' ([?!:;»])', '\u00a0\\1', text).replace('« ', '«\u00a0')  # French typography : no orphan « ?! » at a line start
     units = []
     for sen in sentences(text):
-        if len(sen) <= maxc:
-            units.append(sen); continue
-        words = [w for w in sen.split(' ') if w]
-        phrases, cur = [], []
-        for w in words:
-            cur.append(w)
-            if re.search(r'[.!?,…:;]$', w):
-                phrases.append(cur); cur = []
-        if cur:
-            phrases.append(cur)
-        part = []
-        for ph in phrases:
-            s = ' '.join(ph)
-            if len(s) > maxc:
-                n = math.ceil(len(s) / maxc)
-                per = math.ceil(len(ph) / n)
-                part += [' '.join(ph[k:k + per]) for k in range(0, len(ph), per)]
-            elif part and len(part[-1]) + 1 + len(s) <= merge:
-                part[-1] += ' ' + s
-            else:
-                part.append(s)
-        units += part
+        units += split_best([w for w in sen.split(' ') if w], maxc)
     out = []
     for u in units:
         if out and (len(out[-1]) + 1 + len(u) <= merge or ((len(u) < short or len(out[-1]) < short) and len(out[-1]) + 1 + len(u) <= maxc)):
@@ -398,6 +403,12 @@ def _build(ep, pad):
     subs.sort(key=lambda s: s['t0'])
     for i in range(len(subs) - 1):  # a subtitle never stays over the next one
         subs[i]['t1'] = min(subs[i]['t1'], subs[i + 1]['t0'])
+    for i, s in enumerate(subs):  # a very short one (« Non. ») stays at least 0.9 s, in the silence after it, inside its shot
+        if s.get('kind') == 'cri' or s['t1'] - s['t0'] >= 0.9:
+            continue
+        end = next((sh['t1'] for sh in shots if sh['t0'] <= s['t0'] < sh['t1']), s['t1'])
+        nxt = subs[i + 1]['t0'] if i + 1 < len(subs) else end
+        s['t1'] = round(max(s['t1'], min(s['t0'] + 0.9, nxt, end - 0.05)), 3)
     for sh in shots:  # the beat of the music under each shot : the Stalak screen cuts its clip on it
         cur_m = [m for m in music if m['t'] <= sh['t0'] + 1e-6]
         if cur_m:

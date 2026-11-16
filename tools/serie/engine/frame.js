@@ -45,7 +45,7 @@
     }
     if (style === 2) { // « La bande bleue » : a full-width blue band, a little tilted, snow on its top edge
       // 16/11 (owner) : the accents of the title (CRIÉ, MÈRE) must never touch the « ÉPISODE n » line above them
-      const font = '74px "Lilita One"', lines = wrap(title, font, 900), y = 206, top = (ep !== '' && ep != null) ? 152 : 136, h = top - 40 + lines.length * 80;
+      const font = '74px "Lilita One"', lines = wrap(title, font, ep !== '' && ep != null ? 900 : 740), y = 206, top = (ep !== '' && ep != null) ? 152 : 136, h = top - 40 + lines.length * 80; // the end card's band : narrower, clear of the buttons on the right edge
       s += `<g transform="rotate(-2.5 540 ${y + h / 2})">`;
       s += `<rect x="-60" y="${y + 12}" width="1200" height="${h}" fill="${INK}"/><rect x="-60" y="${y}" width="1200" height="${h}" fill="${BLUE}" stroke="${INK}" stroke-width="10"/>`;
       s += snowCap(-60, 1140, y, 22);

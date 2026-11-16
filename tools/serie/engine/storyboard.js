@@ -235,7 +235,7 @@
     s += `<path d="M 0 0 L 1080 0 L 1080 200 C 980 210 960 290 900 280 C 850 272 860 210 790 210 C 720 210 730 320 660 310 C 600 302 610 220 540 220 C 470 220 480 340 410 330 C 350 322 360 230 290 230 C 220 230 230 300 170 290 C 110 280 110 210 0 210 Z" fill="${ICE}" stroke="${INK}" stroke-width="8"/>`;
     s += `<g class="ec-logo"><circle cx="550" cy="512" r="168" fill="${INK}"/>` + img('/site_src/icons/icon.svg', 380, 340, 330, 330) + '</g>';
     s += `<g class="ec-url">${T(540, 830, 'stalak.app', 150, SNOW, { stroke: INK, sw: 20 })}</g>`;
-    s += `<g class="ec-free">${T(540, 910, 'Gratuit, sans téléchargement ni inscription', 40, ICE, { font: 'Rubik', weight: 800 })}</g>`;
+    s += `<g class="ec-free">${T(520, 910, 'Gratuit, sans téléchargement ni inscription', 34, ICE, { font: 'Rubik', weight: 800 })}</g>`; // clear of the right edge
     s += `<g transform="translate(0 800)">${bandeau(2, 'PROCHAIN ÉPISODE : ' + next, '')}</g>`;
     return s;
   }
@@ -385,7 +385,7 @@
       over: () => carton('CINQ MINUTES PLUS TARD · LA CUISINE') + sub(1, 'narrateur', 'Pour sortir son son, il lui faut un clip. Et des vidéos de lui qui rappe, il en a déjà plein son téléphone.') },
     { t: '0:38', cap: 'Ses vidéos dans sa galerie', set: KITCHEN, over: () => phoneBig(gallery(), 0.92) + sub(1, 'liam', 'J\'ai le son. J\'ai les vidéos. Mais monter un clip, ça prend des heures.') },
     { t: '0:42', cap: 'Toc toc : Maya, la voisine, à la fenêtre', set: KITCHEN, chars: [CH('maya', 1, 545, 1570, 1150, 'frime', '', { clip: [420, 470, 250, 410], after: winPhone() }), LI(800, 1846, 1170, 'frime', P.sponge(612, 742), { pose: { raise: 'r' } })],
-      over: () => knock(560, 360) + tag('MAYA, LA VOISINE', 330, 960, -4) + sub(1, 'maya', 'Coucou Liam ! Je t\'entends râler depuis chez moi. Pas besoin d\'y passer des heures : mets ton son et tes trois vidéos dans Stalak.') },
+      over: () => knock(560, 360) + tag('MAYA, LA VOISINE', 230, 660, -4) + sub(1, 'maya', 'Coucou Liam ! Je t\'entends râler depuis chez moi. Pas besoin d\'y passer des heures : mets ton son et tes trois vidéos dans Stalak.') },
     { t: '0:49', cap: 'Stalak, dessiné : son son et ses 3 vidéos, puis le clip coupé sur le temps', set: KITCHEN, chars: [], shade: true,
       over: () => phoneBig(stalakApp({ takes: [['placard', 'fierte'], ['frigo', 'frime'], ['vaisselle', 'fierte']], count: 3, ti: 2.6, sticker: 'hype', dl: 3.1, lyric: 'le froid dans les veines' }), 0.92) + sub(1, 'narrateur', 'Il met son son et ses trois vidéos dans Stalak. Stalak monte le clip : il coupe sur le rythme et garde la synchro des lèvres.') },
     { t: '0:57', cap: 'Nadia arrive et découvre le clip (la scène du début)', set: KITCHEN, criY: 420, chars: [CH('nadia', 2, 760, 1856, 1250, 'colere', P.phone(580, 1130, '#ffe066')), LI(330, 1846, 1170, 'frime')],
@@ -408,7 +408,7 @@
       over: () => laptopBig(editor()) + headAt('colere+cerne', 300, 1150, 1.9, hp()) + sub(1, 'liam', 'Là, c\'est bon. Non. Là ! Non plus !') },
     { t: '0:25', cap: 'Il poste quand même : un commentaire de « maya »', set: ROOMN, over: () => phoneBig(postScreen('Ta bouche est décalée sur toute la vidéo.', 'maya'), 0.92) + sub(1, 'liam', 'Un commentaire !') },
     { t: '0:32', cap: 'Toc toc : Maya, la voisine, à la fenêtre', set: ROOM, chars: [CH('maya', 1, 865, 1490, 1150, 'frime', '', { clip: [712, 500, 306, 296], after: winPhone(712, 500, 306, 296, 760, 800) }), LI(380, 1846, 1200, 'frime')],
-      over: () => knock(560, 330, -6) + tag('MAYA, LA VOISINE', 690, 900, 4) + sub(1, 'maya', 'Coucou T-Crazy ! Le commentaire, c\'est moi. Ta bouche est décalée sur toute la vidéo.') },
+      over: () => knock(480, 330, -6) + tag('MAYA, LA VOISINE', 830, 450, 4) + sub(1, 'maya', 'Coucou T-Crazy ! Le commentaire, c\'est moi. Ta bouche est décalée sur toute la vidéo.') },
     { t: '0:41', cap: 'Le téléphone de Maya : ses prises et son son entrent dans Stalak', set: ROOM, shade: true,
       over: () => phoneBig(stalakApp({ takes: [['nuit', 'colere'], ['chambre', 'frime'], ['nuit', 'fierte']], count: 3, ti: -1, sticker: 'shock', dl: 1.2, word: 'prises' }), 0.92) + sub(1, 'maya', 'Tu mets ton son et tes prises.') },
     { t: '0:46', cap: 'Le clip de Liam, coupé sur le temps, la bouche synchro', set: ROOM, shade: true,
