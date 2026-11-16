@@ -1,0 +1,219 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:Lilita;src:url(../../public/fonts/lilitaone.ttf)}
+@font-face{font-family:Rubik;src:url(../../public/fonts/rubik.ttf)}
+html,body{margin:0;background:#000}
+svg{display:block}
+</style></head><body>
+<svg id="s" width="1080" height="1920" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg"></svg>
+<script>
+// Planches de style LEVELS (images fixes). ?style=glace|nuit|sticker&scene=n1|n5
+const P=new URLSearchParams(location.search);
+const STYLE=P.get('style')||'glace', SCENE=P.get('scene')||'n1';
+const INK='#0a0d14', BLUE='#1f6fd6', ICE='#d6ecff', NIGHT='#0e3f8f';
+const S=document.getElementById('s');
+let out='';
+const add=s=>out+=s;
+
+// ---------- palettes par style ----------
+const ST={
+ glace:{bg:['#bfe2ff','#eaf6ff'], line:INK, lw:9, body:'none', hero:BLUE, target:INK, glow:false, fill:false},
+ nuit:{bg:['#050a1c','#11204a'], line:'#ffffff', lw:12, body:'none', hero:'#7cc4ff', target:'#ffffff', glow:true, fill:false},
+ sticker:{bg:['#7fc3ff','#d6ecff'], line:INK, lw:7, hero:BLUE, target:'#ffffff', glow:false, fill:true}
+}[STYLE];
+
+// ---------- décor ----------
+function decor(){
+ add(`<defs>
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${ST.bg[0]}"/><stop offset="1" stop-color="${ST.bg[1]}"/></linearGradient>
+  <radialGradient id="halo"><stop offset="0" stop-color="#fff3c4" stop-opacity=".95"/><stop offset=".35" stop-color="#ffd76a" stop-opacity=".35"/><stop offset="1" stop-color="#ffd76a" stop-opacity="0"/></radialGradient>
+  <radialGradient id="haloB"><stop offset="0" stop-color="#bfe2ff" stop-opacity=".9"/><stop offset="1" stop-color="#1f6fd6" stop-opacity="0"/></radialGradient>
+  <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <filter id="soft"><feGaussianBlur stdDeviation="2"/></filter>
+ </defs>
+ <rect width="1080" height="1920" fill="url(#sky)"/>`);
+ if(STYLE==='glace'){
+  // rue enneigée de jour : immeubles simples au trait, neige
+  for(const [x,w,h] of [[-20,260,640],[230,220,820],[440,300,560],[730,370,760]]){
+   add(`<rect x="${x}" y="${1500-h}" width="${w}" height="${h}" fill="#ffffff" stroke="${INK}" stroke-width="7"/>`);
+   for(let yy=1500-h+50; yy<1440; yy+=110) for(let xx=x+35; xx<x+w-60; xx+=85)
+    add(`<rect x="${xx}" y="${yy}" width="46" height="62" fill="${ICE}" stroke="${INK}" stroke-width="5"/>`);
+   // neige sur le toit
+   add(`<path d="M${x-6} ${1500-h} q ${w/4} -26 ${w/2} 0 q ${w/4} -22 ${w/2+12} 0" fill="#fff" stroke="${INK}" stroke-width="6"/>`);
+  }
+  add(`<rect x="0" y="1500" width="1080" height="420" fill="#f4fbff" stroke="${INK}" stroke-width="7"/>`);
+  add(`<line x1="0" y1="1560" x2="1080" y2="1560" stroke="${INK}" stroke-width="4" stroke-dasharray="40 30" opacity=".35"/>`);
+  for(let i=0;i<70;i++){const x=(i*397)%1080,y=(i*733)%1500+380,r=4+(i%4)*2; add(`<circle cx="${x}" cy="${y}" r="${r}" fill="#fff" stroke="${INK}" stroke-width="2"/>`)}
+ } else if(STYLE==='nuit'){
+  // rue la nuit, lampadaire avec halo, vitrines qui brillent
+  for(const [x,w,h,c] of [[-30,300,700,'#0b1736'],[260,250,880,'#0d1b40'],[500,280,620,'#0b1736'],[770,340,820,'#0d1b40']]){
+   add(`<rect x="${x}" y="${1500-h}" width="${w}" height="${h}" fill="${c}"/>`);
+   for(let yy=1500-h+60; yy<1420; yy+=120) for(let xx=x+40; xx<x+w-60; xx+=90){
+    const on=((xx*7+yy*3)%5)<2;
+    add(`<rect x="${xx}" y="${yy}" width="44" height="64" rx="4" fill="${on?'#ffd76a':'#15275a'}" ${on?'filter="url(#glow)"':''}/>`);
+   }
+  }
+  add(`<rect x="0" y="1500" width="1080" height="420" fill="#08112b"/>`);
+  // lampadaire
+  add(`<circle cx="905" cy="900" r="330" fill="url(#halo)"/><ellipse cx="905" cy="1520" rx="260" ry="40" fill="#ffd76a" opacity=".18"/>
+  <line x1="960" y1="905" x2="960" y2="1510" stroke="#2a3b6b" stroke-width="16"/><path d="M960 905 q -10 -40 -55 -30" stroke="#2a3b6b" stroke-width="14" fill="none"/>
+  <ellipse cx="905" cy="890" rx="30" ry="16" fill="#fff6d8" filter="url(#glow)"/>`);
+  for(let i=0;i<40;i++){const x=(i*397)%1080,y=(i*733)%1300+300; add(`<circle cx="${x}" cy="${y}" r="${2+(i%3)}" fill="#cfe6ff" opacity=".7"/>`)}
+ } else {
+  // sticker : terrain de basket, aplats + glaçons en haut
+  add(`<rect x="0" y="1180" width="1080" height="740" fill="#e9874a" stroke="${INK}" stroke-width="8"/>
+  <path d="M-10 1180 L 1090 1180" stroke="${INK}" stroke-width="8"/>
+  <ellipse cx="540" cy="1650" rx="260" ry="90" fill="none" stroke="#fff" stroke-width="10"/>
+  <line x1="0" y1="1650" x2="1080" y2="1650" stroke="#fff" stroke-width="10"/>`);
+  // grillage
+  for(let x=-200;x<1300;x+=60){add(`<line x1="${x}" y1="760" x2="${x+420}" y2="1180" stroke="${INK}" stroke-width="3" opacity=".35"/><line x1="${x+420}" y1="760" x2="${x}" y2="1180" stroke="${INK}" stroke-width="3" opacity=".35"/>`)}
+  add(`<rect x="0" y="752" width="1080" height="16" fill="#9aa7b8" stroke="${INK}" stroke-width="5"/>`);
+  // panier
+  add(`<rect x="850" y="560" width="190" height="130" fill="#fff" stroke="${INK}" stroke-width="8"/><rect x="900" y="610" width="90" height="60" fill="none" stroke="#e44" stroke-width="7"/>
+  <line x1="1030" y1="690" x2="1030" y2="1190" stroke="${INK}" stroke-width="16"/><ellipse cx="945" cy="700" rx="55" ry="12" fill="none" stroke="#e44" stroke-width="8"/>`);
+  // nuages sticker
+  for(const [x,y,s] of [[170,690,.8],[620,650,.7]]) add(`<g transform="translate(${x+8},${y+8}) scale(${s})" fill="${INK}"><ellipse rx="110" ry="50"/><ellipse cx="70" cy="-30" rx="70" ry="50"/></g><g transform="translate(${x},${y}) scale(${s})" fill="#fff" stroke="${INK}" stroke-width="7"><ellipse rx="110" ry="50"/><ellipse cx="70" cy="-30" rx="70" ry="50"/></g>`);
+ }
+}
+
+// ---------- bonhomme ----------
+// pose : angles des membres. o = {x,y(pieds),h, rot, pose, color, cap, hood, eyes}
+function stick(o){
+ const c=o.color, lw=ST.lw*(o.scale||1), h=o.h||520;
+ const head=h*0.17, neckY=-h*0.66, hipY=-h*0.30;
+ const P={...{la:[200,230],ra:[-20,20],ll:[100,110],rl:[80,70]}, ...o.pose};
+ const L=(a,len)=>[Math.cos(a*Math.PI/180)*len, Math.sin(a*Math.PI/180)*len];
+ const arm=h*0.20, leg=h*0.25;
+ const limb=(sx,sy,[a1,a2],len)=>{const [x1,y1]=L(a1,len),[x2,y2]=L(a2,len); return `M${sx} ${sy} l${x1} ${y1} l${x2} ${y2}`};
+ const sh=neckY+h*0.05;
+ let d=[`M0 ${neckY} L0 ${hipY}`, limb(0,sh,P.la,arm), limb(0,sh,P.ra,arm), limb(0,hipY,P.ll,leg), limb(0,hipY,P.rl,leg)].join(' ');
+ let g=`<g transform="translate(${o.x},${o.y}) rotate(${o.rot||0}) scale(${o.flip?-1:1},1)">`;
+ if(ST.fill){
+  // style sticker : membres épais remplis + ombre dure
+  g+=`<path d="${d}" transform="translate(10,10)" stroke="${INK}" stroke-width="${lw*5}" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`;
+  g+=`<path d="${d}" stroke="${INK}" stroke-width="${lw*5}" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`;
+  g+=`<path d="${d}" stroke="${c}" stroke-width="${lw*5-lw*2}" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`;
+  g+=`<circle cx="10" cy="${neckY-head+10}" r="${head}" fill="${INK}"/><circle cx="0" cy="${neckY-head}" r="${head}" fill="${c}" stroke="${INK}" stroke-width="${lw}"/>`;
+ } else {
+  const f=ST.glow?'filter="url(#glow)"':'';
+  g+=`<path d="${d}" stroke="${c}" stroke-width="${lw}" stroke-linecap="round" stroke-linejoin="round" fill="none" ${f}/>`;
+  g+=`<circle cx="0" cy="${neckY-head}" r="${head}" fill="${ST.glow?'#0b1736':'#fff'}" stroke="${c}" stroke-width="${lw}" ${f}/>`;
+ }
+ const hy=neckY-head;
+ // yeux
+ if(o.eyes==='spiral'){
+  for(const ex of [-head*.38, head*.38]) g+=`<path d="M${ex} ${hy-4} m-10 0 a10 10 0 1 1 10 10 a6 6 0 1 1 -6 -6" fill="none" stroke="${ST.glow?'#fff':INK}" stroke-width="4"/>`;
+ } else if(o.eyes!=='none'){
+  const ec=ST.glow?'#fff':INK;
+  for(const ex of [-head*.36, head*.36]) g+=`<ellipse cx="${ex+(o.look||0)}" cy="${hy-6}" rx="${head*.1}" ry="${head*.16}" fill="${ec}"/>`;
+  if(o.mouth) g+=`<path d="${o.mouth==='smile'?`M${-head*.35} ${hy+head*.35} q ${head*.35} ${head*.3} ${head*.7} 0`:`M${-head*.3} ${hy+head*.45} q ${head*.3} ${-head*.25} ${head*.6} 0`}" stroke="${ec}" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+ }
+ // signe distinctif du rappeur : bonnet bleu à pompon + écharpe
+ if(o.hat){
+  const hc=BLUE, ol=ST.glow?'#bfe2ff':INK;
+  g+=`<path d="M${-head*1.02} ${hy-head*0.15} Q ${-head} ${hy-head*1.35} 0 ${hy-head*1.3} Q ${head} ${hy-head*1.35} ${head*1.02} ${hy-head*0.15} Z" fill="${hc}" stroke="${ol}" stroke-width="6" ${ST.glow?'filter="url(#glow)"':''}/>`;
+  g+=`<rect x="${-head*1.1}" y="${hy-head*0.4}" width="${head*2.2}" height="${head*0.38}" rx="10" fill="${ICE}" stroke="${ol}" stroke-width="6"/>`;
+  g+=`<circle cx="0" cy="${hy-head*1.42}" r="${head*0.26}" fill="${ICE}" stroke="${ol}" stroke-width="6"/>`;
+  g+=`<path d="M${-head*0.7} ${neckY+8} q ${head*0.7} ${head*0.35} ${head*1.4} 0 l -10 ${head*0.9} l -22 -6 l 6 -${head*0.6}" fill="${hc}" stroke="${ol}" stroke-width="6" stroke-linejoin="round"/>`;
+ }
+ if(o.phone){
+  // téléphone dans la main gauche
+  const [x1,y1]=L(P.la[0],arm),[x2,y2]=L(P.la[1],arm);
+  g+=`<rect x="${x1+x2-22}" y="${sh+y1+y2-38}" width="44" height="76" rx="8" fill="${INK}" stroke="${ST.glow?'#fff':INK}" stroke-width="4"/><rect x="${x1+x2-16}" y="${sh+y1+y2-30}" width="32" height="56" rx="4" fill="#9fd2ff" ${ST.glow?'filter="url(#glow)"':''}/>`;
+ }
+ g+='</g>';
+ add(g);
+}
+
+// ---------- HUD Stalak ----------
+function hud(genre, lvl, label, ok, hype){
+ add(`<g font-family="Lilita" text-anchor="middle">
+  <text x="540" y="235" font-size="62" fill="${STYLE==='nuit'?'#fff':INK}" stroke="${STYLE==='nuit'?INK:'#fff'}" stroke-width="10" paint-order="stroke">COMMENT POSTER TON SNIPPET</text>
+  <text x="440" y="315" font-size="62" fill="${STYLE==='nuit'?'#fff':INK}" stroke="${STYLE==='nuit'?INK:'#fff'}" stroke-width="10" paint-order="stroke">POUR UN SON</text>
+ </g>`);
+ const gw=genre.length*38+60;
+ add(`<g transform="translate(${640-0},262)"><rect x="8" y="8" width="${gw}" height="74" rx="18" fill="${INK}"/><rect width="${gw}" height="74" rx="18" fill="${BLUE}" stroke="${INK}" stroke-width="6"/>
+  <text x="${gw/2}" y="56" font-family="Lilita" font-size="54" fill="#fff" text-anchor="middle">${genre}</text></g>`);
+ for(let i=1;i<=5;i++){
+  const x=540+(i-3)*92-36, col= i<lvl?'#e5484d': i===lvl?(ok?'#2fb36b':'#e5484d'):'#ffffff';
+  add(`<rect x="${x+6}" y="${375+6}" width="72" height="72" rx="14" fill="${INK}"/><rect x="${x}" y="375" width="72" height="72" rx="14" fill="${col}" stroke="${INK}" stroke-width="6"/>
+  <text x="${x+36}" y="427" font-family="Lilita" font-size="46" text-anchor="middle" fill="${i<=lvl?'#fff':INK}">${i}</text>`);
+ }
+ const lw=label.length*21+110;
+ add(`<g transform="translate(${540-lw/2},475)"><rect x="6" y="6" width="${lw}" height="66" rx="33" fill="${INK}"/><rect width="${lw}" height="66" rx="33" fill="#fff" stroke="${INK}" stroke-width="5"/>
+  <text x="44" y="46" font-family="Rubik" font-weight="700" font-size="40" fill="${ok?'#2fb36b':'#e5484d'}" text-anchor="middle">${ok?'✓':'✗'}</text>
+  <text x="${lw/2+22}" y="45" font-family="Rubik" font-weight="700" font-size="36" fill="${INK}" text-anchor="middle">${label}</text></g>`);
+ // jauge HYPE
+ add(`<g transform="translate(280,575)"><text x="-14" y="34" font-family="Lilita" font-size="34" text-anchor="end" fill="${STYLE==='nuit'?'#fff':INK}" stroke="${STYLE==='nuit'?INK:'#fff'}" stroke-width="6" paint-order="stroke">HYPE</text>
+  <rect width="520" height="40" rx="20" fill="#fff" stroke="${INK}" stroke-width="5"/>
+  <rect x="5" y="5" width="${Math.max(30,510*hype)}" height="30" rx="15" fill="${hype>=1?'#ffc93c':hype>.5?'#2fb36b':'#e5484d'}"/>
+  ${hype>=1?`<text x="540" y="34" font-family="Lilita" font-size="36" fill="#ffc93c" stroke="${INK}" stroke-width="6" paint-order="stroke">MAX</text>`:''}</g>`);
+}
+
+function bubble(x,y,w,text,tailX,big){
+ const h=big?120:96, fs=big?54:42;
+ add(`<g><rect x="${x+8}" y="${y+8}" width="${w}" height="${h}" rx="26" fill="${INK}"/>
+ <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="26" fill="#fff" stroke="${INK}" stroke-width="6"/>
+ <path d="M${tailX-18} ${y+h-3} L${tailX} ${y+h+34} L${tailX+20} ${y+h-3}" fill="#fff" stroke="${INK}" stroke-width="6" stroke-linejoin="round"/>
+ <rect x="${tailX-15}" y="${y+h-9}" width="32" height="10" fill="#fff"/>
+ <text x="${x+w/2}" y="${y+h/2+fs*0.36}" font-family="${big?'Lilita':'Rubik'}" font-weight="700" font-size="${fs}" fill="${INK}" text-anchor="middle">${text}</text></g>`);
+}
+
+function boom(x,y,word,rot){
+ let pts=''; for(let i=0;i<24;i++){const r=i%2?95:180,a=i*Math.PI/12; pts+=`${x+Math.cos(a)*r*1.25},${y+Math.sin(a)*r} `;}
+ add(`<g transform="rotate(${rot} ${x} ${y})"><polygon points="${pts}" transform="translate(10,10)" fill="${INK}"/><polygon points="${pts}" fill="#ffc93c" stroke="${INK}" stroke-width="8" stroke-linejoin="round"/>
+ <text x="${x}" y="${y+30}" font-family="Lilita" font-size="96" fill="#e5484d" stroke="${INK}" stroke-width="8" paint-order="stroke" text-anchor="middle">${word}</text></g>`);
+}
+function stars(cx,cy){
+ add(`<ellipse cx="${cx}" cy="${cy}" rx="110" ry="30" fill="none" stroke="${STYLE==='nuit'?'#fff':INK}" stroke-width="4" stroke-dasharray="10 12"/>`);
+ for(const [dx,dy] of [[-100,-6],[10,28],[95,-10]]){
+  const x=cx+dx,y=cy+dy; let p=''; for(let i=0;i<10;i++){const r=i%2?11:26,a=-Math.PI/2+i*Math.PI/5;p+=`${x+Math.cos(a)*r},${y+Math.sin(a)*r} `}
+  add(`<polygon points="${p}" fill="#ffc93c" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/>`);
+ }
+}
+function speed(x,y){ for(let i=0;i<4;i++) add(`<path d="M${x-40-i*8} ${y-60+i*40} l -110 ${-6+i*4}" stroke="${STYLE==='nuit'?'#fff':INK}" stroke-width="7" stroke-linecap="round"/>`); }
+function ground(){ if(STYLE!=='sticker') return; }
+
+// ---------- scènes ----------
+decor();
+const tgtColor=ST.target;
+if(SCENE==='n1'){
+ hud('TRISTE',1,'il chante dans la rue',false,0.08);
+ // la cible gifle : bras tendu vers la gauche ; le rappeur projeté, penché, yeux en spirale
+ stick({x:760,y:1500,h:560,color:tgtColor,pose:{la:[175,185],ra:[30,80],ll:[105,100],rl:[70,75]},look:-10,mouth:'frown'});
+ stick({x:330,y:1490,h:560,rot:-24,color:ST.hero,hat:true,eyes:'spiral',pose:{la:[230,260],ra:[-40,-80],ll:[115,130],rl:[60,30]}});
+ speed(560,1040);
+ boom(560,930,'BAF !',-8);
+ stars(190,880);
+ bubble(110,690,520,'« Écoute mon son tri…',360,false);
+} else {
+ hud('TRISTE',5,'snippet monté avec Stalak',true,1);
+ // la cible regarde son téléphone : grand téléphone au centre façon fil vidéo, sans logo
+ const px=200,py=690,pw=480,ph=760;
+ add(`<rect x="${px+12}" y="${py+12}" width="${pw}" height="${ph}" rx="46" fill="${INK}"/><rect x="${px}" y="${py}" width="${pw}" height="${ph}" rx="46" fill="${INK}"/>
+  <rect x="${px+18}" y="${py+18}" width="${pw-36}" height="${ph-36}" rx="32" fill="${STYLE==='nuit'?'#1b2f66':'#3c5f9a'}"/>`);
+ if(STYLE==='nuit') add(`<rect x="${px-40}" y="${py-40}" width="${pw+80}" height="${ph+80}" rx="80" fill="url(#haloB)" opacity=".5"/>`);
+ // dans l'écran : le rappeur qui rappe (une prise), bandes de couleur = coupes sur le rythme
+ add(`<clipPath id="scr"><rect x="${px+18}" y="${py+18}" width="${pw-36}" height="${ph-36}" rx="32"/></clipPath><g clip-path="url(#scr)">
+  <rect x="${px+18}" y="${py+18}" width="${pw-36}" height="${ph-36}" fill="${STYLE==='glace'?'#9cc8f2':STYLE==='nuit'?'#203a7a':'#5aa2ef'}"/>
+  <circle cx="${px+pw/2}" cy="${py+250}" r="160" fill="#ffd76a" opacity=".35"/></g>`);
+ stick({x:px+pw/2,y:py+ph-120,h:470,color:STYLE==='nuit'?'#7cc4ff':(ST.fill?BLUE:INK),hat:true,mouth:'smile',pose:{la:[250,280],ra:[-60,-100],ll:[105,95],rl:[75,85]}});
+ // icônes génériques à droite (cœur, bulle, flèche) dessinées, sans logo
+ for(const [i,ic] of [[0,'♥'],[1,'💬'],[2,'➦']]) add(`<g transform="translate(${px+pw-70},${py+300+i*110})"><circle r="34" fill="#ffffff" fill-opacity=".9" stroke="${INK}" stroke-width="4"/><text y="14" font-size="38" text-anchor="middle" fill="#e5484d" font-family="Rubik">${ic}</text></g>`);
+ add(`<text x="${px+50}" y="${py+ph-60}" font-family="Rubik" font-weight="700" font-size="30" fill="#fff">@tonblaze</text>`);
+ // barre de montage Stalak sous l'écran : coupes sur les temps
+ add(`<g transform="translate(110,1530)"><rect x="8" y="8" width="780" height="92" rx="20" fill="${INK}"/><rect width="780" height="92" rx="20" fill="#fff" stroke="${INK}" stroke-width="6"/>`);
+ const cols=['#1f6fd6','#7fb8ff','#0e3f8f','#1f6fd6','#7fb8ff','#0e3f8f','#1f6fd6','#7fb8ff'];
+ for(let i=0;i<8;i++) add(`<rect x="${20+i*93}" y="20" width="86" height="52" rx="8" fill="${cols[i]}" stroke="${INK}" stroke-width="4"/>`);
+ add(`<text x="390" y="-16" font-family="Lilita" font-size="40" text-anchor="middle" fill="${STYLE==='nuit'?'#fff':INK}" stroke="${STYLE==='nuit'?INK:'#fff'}" stroke-width="7" paint-order="stroke">coupé sur le rythme · lèvres synchro</text></g>`);
+ // la cible, à droite, la tête qui bouge
+ stick({x:850,y:1600,h:420,rot:8,color:tgtColor,mouth:'smile',look:-8,pose:{la:[160,200],ra:[20,-30],ll:[100,100],rl:[80,80]}});
+ add(`<text x="830" y="1020" font-family="Lilita" font-size="58" fill="#ffc93c" stroke="${INK}" stroke-width="8" paint-order="stroke" text-anchor="middle" transform="rotate(10 830 1020)">♪ ♪</text>`);
+ bubble(690,1080,290,'C\'est qui ?!',840,false);
+}
+// étiquette de style (planche seulement)
+const names={glace:'STYLE A · GLACE (trait encre, jour, neige)',nuit:'STYLE B · NUIT (trait lumineux, rue, halos)',sticker:'STYLE C · STICKER (membres épais, ombre dure)'};
+add(`<rect x="0" y="1800" width="1080" height="120" fill="${INK}" opacity=".85"/><text x="540" y="1872" font-family="Rubik" font-weight="700" font-size="27" fill="#fff" text-anchor="middle">${names[STYLE]} · ${SCENE==='n1'?'niveau 1, la baffe':'niveau 5, le snippet Stalak'}</text>`);
+S.innerHTML=out;
+</script></body></html>

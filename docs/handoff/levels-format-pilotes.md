@@ -1,0 +1,34 @@
+# Compte rendu — `levels/format-pilotes`
+
+Statut : PRÊT
+
+Conversation « 8. Vidéos LEVELS », 16/11/2026.
+
+## Résumé
+- **Analyse de la vidéo de référence** envoyée par le propriétaire (skill `analyse-format-video`) : 27 s, 5 niveaux de 3,0 / 4,0 / 6,0 / 2,0 / 7,5 s puis 4,4 s de pub ; habillage fixe en haut (titre, 5 cases, étiquette ✗/✓, jauge) ; un seul décor ; bulles écrites au rythme des voix ; pas de musique ; promo intégrée au niveau 5 sous forme de « quête », pub explicite seulement à la fin.
+- **Mode d'emploi du format adapté à Stalak** : `docs/marketing/levels/FORMAT.md` (ce qu'on garde, ce qu'on change, écran, squelette des 5 niveaux, règles des coups de dessin animé, son, texte, règles).
+- **3 styles de bonhomme bâton et de décor** en images fixes (A Glace, B Nuit, C Sticker), dessinés en code (`tools/levels/styles.html`, `tools/levels/render_styles.py`), déposés dans Studio Stalak : collection `univers`, fiche `levels-style` (`statut: a_choisir`, `compte: "levels"`).
+- **5 scripts pilotes** dans Studio Stalak, collection `videos`, `compte: "levels"`, `format: "LEVELS"`, `statut: "script"` : drill (18/11 slot 1), love (18/11 slot 2), triste (19/11 slot 1), sur ton ex (19/11 slot 2), de motivation (20/11 slot 1). Copie : `docs/marketing/levels/pilotes.json`.
+- Aucun crédit dépensé (pas de voix, pas de Flora, pas de rendu vidéo).
+
+## Fichiers touchés
+- `docs/marketing/levels/FORMAT.md` (nouveau)
+- `docs/marketing/levels/pilotes.json` (nouveau)
+- `tools/levels/styles.html`, `tools/levels/render_styles.py` (nouveaux)
+- `docs/STATUS.md` (section « En cours »)
+- `docs/handoff/levels-format-pilotes.md` (ce fichier)
+
+## Migration SQL
+Aucune.
+
+## Tests
+Aucun code du site touché. Rendu des 6 images vérifié à l'œil (textes dans la zone visible, pas de chevauchement important). Pas de planche contact : aucune vidéo fabriquée pour l'instant.
+
+## Maquette
+Aucun changement visible sur le site : pas de maquette nécessaire (règle 9).
+
+## Reste au propriétaire
+1. Choisir le style (Univers → « LEVELS · Le bonhomme bâton et son décor »).
+2. Valider ou faire refaire les 5 scripts (À valider, compte Levels).
+3. Décider : durée (30 à 35 s proposé), voix Flora (≈ 0,10 $ par vidéo) ou sans voix, beats à utiliser par genre, heures des 2 vidéos par jour.
+4. Donner le feu vert (`lots/levels-2026-11-16`) une fois scripts et visuels validés.
