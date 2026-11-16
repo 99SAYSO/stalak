@@ -41,6 +41,9 @@ Statuts, dans l'ordre : `idee` → `script` (à valider) → `script_ok` ou `scr
 - Le **propriétaire** passe `script` → `script_ok` / `script_refaire`, `visuels` → `visuels_ok` / `visuels_refaire` et `video` → `valide` / `video_refaire`. Aucune conversation ne le fait à sa place.
 - **Marketing** écrit `idee`, `script`, `visuels`, `production`, `video`. **Réseaux sociaux** écrit `programme`, `publie`.
 
+### Deux comptes (depuis le 16/11)
+Chaque fiche de `videos` a un champ `compte` : `"principal"` (le compte Stalak habituel, 3 vidéos par jour ; une fiche sans `compte` compte comme principal) ou `"levels"` (le 2e compte TikTok, format LEVELS, 2 vidéos par jour, `slot` 1 et 2). Le calendrier montre un compte à la fois (choix « Compte : Stalak / Levels »). Le feu vert est séparé : `lots/<lundi>` pour le principal, `lots/levels-<lundi>` pour Levels.
+
 ### `lots` — le feu vert de la semaine
 Document `lots/<lundi de la semaine AAAA-MM-JJ>` : `{feuVert: true, le, videos}`. Écrit **seulement par le propriétaire** (bouton « Donner le feu vert », proposé quand tous les scripts **et** tous les visuels de la semaine sont validés).
 
