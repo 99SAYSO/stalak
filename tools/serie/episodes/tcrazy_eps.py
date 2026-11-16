@@ -68,7 +68,7 @@ EPISODES = {
         ('ep1-09', [11], {}),
         ('ep1-10', [12], dict(sfx=[('knock.wav', 0.05, 0.55)])),
         ('ep1-11', [13], dict(music='victoire', sfx=[('pop.mp3', 3.1, 0.45)])),
-        ('ep1-12', [14, 15, 16], {}),
+        ('ep1-12', [14, 15, 16], dict(lead=2.2, fixed=True, sfx=[('steps.wav', 0.3, 0.25)])),  # v5 : Nadia walks in, then speaks
         ('ep1-13', [17], {}),
         ('ep1-14', [], dict(hold=3.4, sfx=[('whoosh-short.mp3', 0.75, 0.25)])),
     ], direction={1: 'shouting, outraged and shocked', 4: 'rapping a punchline into the mic, eyes closed, very inspired', 5: 'shouting through a door, firm',
@@ -101,7 +101,7 @@ EPISODES = {
         ('ep4-05', ['5b', 6], {}),
         ('ep4-06', [7, 8], dict(dip=True, fixed=True, sfx=[('click.mp3', 2.9, 0.35), ('ping.mp3', 3.15, 0.3)])),
         ('ep4-07', [9, 10], dict(dip=True)),
-        ('ep4-08', [11, 12, 13, 14], dict(dip=True)),
+        ('ep4-08', [11, 12, 13, 14], dict(dip=True, lead=2.6, fixed=True, sfx=[('steps.wav', 0.5, 0.25)])),  # v3 : Maya walks in, then speaks
         ('ep4-09', [15], dict(music='victoire', dip=True)),
         ('ep4-10', [16], dict(sfx=[('pop.mp3', 2.9, 0.45)])),
         ('ep4-11', [17], dict(lead=0.6, sfx=[('notification.mp3', 0.2, 0.4)])),

@@ -4,6 +4,13 @@
 
 Statut : EN COURS (fabrication des épisodes dans Studio Stalak ; rien à publier sur le site). Tests : planches contact relues pour chaque vidéo déposée, `npx hyperframes check` passé sur « Le manager ». Rien à faire par le Chef de projet, sauf garder la branche à jour.
 
+## 16/11, 21 h 30 : ses réponses ; épisodes 1, 2 et GTA 6 refaits avec les lumières ; storyboard de l'épisode 6
+
+- **Ses réponses (21 h 21)** : on garde « Le manager » validé (la version aux sous-titres mieux coupés n'est pas utilisée) ; on refait les épisodes 1, 2 et GTA 6 avec les lumières ; on lance l'épisode 6.
+- **Lumières de tous les décors des pilotes** (`lights.js`) : la chambre de Liam (jour : le soleil à travers les stores, des bandes de lumière au sol ; nuit : la bande LED, les écrans et la lune, la nuit tombe aussi sur les personnages), la cuisine (la fenêtre, le robinet, les poignées du frigo, l'horloge), le couloir du lycée (plafonniers, « SORTIE » vert qui grésille). Un décor montré en bande (`band()`) a ses lumières.
+- **Épisodes 1, 2 et GTA 6 refaits** (rendu HyperFrames) : la règle « personne n'apparaît d'un coup » s'applique aussi : dans l'épisode 1, Nadia arrive en marchant avant de parler ; dans l'épisode GTA 6, Maya arrive en marchant. L'épisode 1 passe aussi par le noir à chaque changement de moment (la v4 qui attendait son accord). Durées : épisode 1 1 min 19, épisode 2 1 min 01, GTA 6 1 min 20.
+- **Épisode 6, storyboard** (`storyboard.js`, `ep6`, 17 plans, `univers.py storyboard ep6`) déposé dans Studio Stalak, fiche en `visuels`. Écrans dessinés : la recherche « Triller » sans résultat (aucun logo de magasin ni de Triller), l'ancien snippet qui se fige et devient gris, la caméra de Stalak (« PRISE 1 », point rouge, 3), le clip monté avec le petit logo de la version gratuite (`stalakApp({ wm: true })`), le fil avec les cœurs et le commentaire d'un inconnu. Prises au terrain : `takeScene('terrain')` et `'terrain-maya'`. Deuce et Maya sont debout près de l'épicerie : pas encore de pose assise. La carte de fin laisse le prochain épisode à choisir.
+
 ## 16/11, 20 h : lumières réalistes et HyperFrames pour toute la série, « Le manager » v3, « Le clip façon GTA » v2
 
 - **Sa remarque globale sur « Le manager » (19 h 32), pour toutes les vidéos à venir** : « Je veux que les lumières soient plus réalistes : si y'a une lumière, y'a un halo lumineux, si y'a un truc qui brille… Hésite pas à utiliser internet. Utilise aussi HyperFrames. »

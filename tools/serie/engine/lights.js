@@ -148,6 +148,49 @@
     return { under: layers('', under), over: layers(mul, sun), amb: pm ? 0.18 : 0.1 };
   } };
 
+  // Liam's room (decors.js chambre2 : LED strip along y 118-128, window 722-1008 × 352-800 with its blinds, laptop screen
+  // 532-658 × 1022-1106, old screen 690-780 × 1000-1070, desk lamp near 545, 1030)
+  RIGS.chambre = { 2: (t) => {
+    const blindsGlass = glass(722, 352, 286, 448, { per: 7.5, ph: 2.2, k: 0.7 });
+    if (t === 'nuit') {
+      // the night : the set keeps its own darkness ; the characters get it too, and the lights bloom over everyone
+      const led = neonPath('M 0 123 L 1080 123', '#8fd3ff', 7, 0.75);
+      const screens = halo(595, 1064, 150, '#7cc0ff', 0.55, { hot: 30, ry: 110 }) + halo(735, 1035, 100, '#5a9cff', 0.4, { ry: 80 });
+      const under = led + screens + halo(865, 560, 260, '#9fc4ff', 0.22, { ry: 320 }) + blindsGlass;
+      const mul = wash([[0, '#5a64a8', 0.28], [0.5, '#4a5290', 0.24], [1, '#2a2f60', 0.3]]);
+      const over = halo(540, 123, 700, '#8fd3ff', 0.22, { ry: 260, c1: 0.2, skirt: 0.5 }) + halo(600, 1070, 420, '#57adff', 0.2, { c1: 0.15, skirt: 0.55 }) + halo(865, 560, 380, '#9fc4ff', 0.1, { c1: 0.1 });
+      return { under: layers('', under), over: layers(mul, over), amb: 0.9 };
+    }
+    // the day : the sun comes in through the blinds, in stripes, down to the floor ; the window glows
+    // one soft beam of light from the window down to the floor, and the stripes of the blinds lying on the floor
+    let stripes = '';
+    for (let i = 0; i < 6; i++) { const y = 1560 + i * 58, x = 330 + i * 34; stripes += `M ${x} ${y} L ${x + 330} ${y} L ${x + 350} ${y + 18} L ${x + 20} ${y + 18} Z `; }
+    const g = nid();
+    const sh = `<defs><linearGradient id="${g}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff2cf" stop-opacity="0.16"/><stop offset="1" stop-color="#fff2cf" stop-opacity="0.03"/></linearGradient></defs>` +
+      `<path d="M 1008 352 L 722 352 L 330 1560 L 700 1560 Z" fill="url(#${g})"/><path d="${stripes}" fill="#fff2cf" opacity="0.2"/>`;
+    const under = sh + blindsGlass + halo(865, 576, 300, '#fff4d8', 0.35, { ry: 330 }) + glint(985, 420, 20, { tw: [4.4, 1.1] }) + glint(560, 1022, 14, { tw: [5.1, 2.6] });
+    const over = halo(865, 576, 560, '#fff4d8', 0.2, { c1: 0.15, skirt: 0.55 }) + halo(1060, 300, 500, '#fff1c8', 0.18, { c1: 0.2 });
+    return { under: layers('', under), over: layers(wash([[0, '#ffffff', 0], [0.72, '#ffffff', 0], [1, '#8a6a70', 0.14]]), over), amb: 0.12 };
+  } };
+  // the kitchen by day (decors.js cuisine1 : window pane 402-688 × 452-828, the tap near 600, 1012, fridge handles at x 790,
+  // the clock at 560, 250)
+  RIGS.cuisine = { 1: () => {
+    const g = nid();
+    const patch = `<defs><linearGradient id="${g}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff2cf" stop-opacity="0.22"/><stop offset="1" stop-color="#fff2cf" stop-opacity="0.03"/></linearGradient></defs><path d="M 402 828 L 688 828 L 900 1500 L 560 1500 Z" fill="url(#${g})"/>`;
+    const glints = [[606, 1014, 20, [3.7, 0.4]], [790, 640, 18, [4.6, 1.9]], [790, 960, 16, [5.2, 3.3]], [520, 1098, 16, [4.1, 2.4]], [578, 228, 18, [5.6, 0.9]]].map(([x, y, sz, tw]) => glint(x, y, sz, { tw })).join('');
+    const under = patch + glass(402, 452, 286, 376, { per: 6.8, ph: 1.4, k: 0.8 }) + halo(545, 640, 320, '#fff6dc', 0.32, { ry: 270 }) + glints;
+    const over = halo(545, 640, 620, '#fff6dc', 0.2, { c1: 0.12, skirt: 0.55 });
+    return { under: layers('', under), over: layers(wash([[0, '#ffffff', 0], [0.7, '#ffffff', 0], [1, '#8a6a60', 0.14]]), over), amb: 0.12 };
+  } };
+  // the high school corridor (decors.js lycee1, vanishing point 540, 900 : ceiling panels at y 208, 426, 579, their
+  // reflections on the floor at 1685, 1437, 1264 ; the green « SORTIE » sign at 540, 795, the glass of the far door at 540, 925)
+  RIGS.lycee = { 1: () => {
+    const panels = [[208, 250, 70, 0.55], [426, 170, 48, 0.5], [579, 115, 34, 0.45]].map(([y, r, ry, k]) => halo(540, y, r, '#eef8ff', k, { ry, hot: r * 0.35 })).join('');
+    const floor = [[1685, 300, 40], [1437, 200, 28], [1264, 130, 18]].map(([y, r, ry]) => halo(540, y, r, '#ffffff', 0.2, { ry })).join('');
+    const under = panels + floor + K({ flk: [7, 0.8] }, halo(540, 795, 130, '#5fe08a', 0.55, { ry: 70 })) + halo(540, 925, 170, '#dff3ff', 0.45, { ry: 140 });
+    return { under: layers('', under), over: layers('', halo(540, 208, 560, '#eef8ff', 0.16, { c1: 0.15, skirt: 0.55 })), amb: 0.12 };
+  } };
+
   // ---------------- the characters ----------------
   // a soft shadow under the feet (frame coordinates : feet at x, y ; h : the height of the character)
   function contact(x, y, h) {
