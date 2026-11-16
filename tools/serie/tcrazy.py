@@ -230,8 +230,9 @@ def typo(text):
 
 
 def is_cri(l):
-    """a shouted line : « (crie) » in the script"""
-    return 'crie' in (l.get('note') or '')
+    """the shout of the hook : the first line, « (crie) » in the script. Only that one is written big, word by word ; every
+    other line, even shouted, is a normal subtitle (owner, 16/11 at 16 h 34 : « en sous-titre normal, pas comme celui de l'intro »)"""
+    return l['n'] == 1 and 'crie' in (l.get('note') or '')
 
 
 def word_times(x, a, b, text):

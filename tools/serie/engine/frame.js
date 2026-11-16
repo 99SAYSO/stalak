@@ -212,13 +212,16 @@
     return `<defs>${defs}</defs>${body}`;
   }
 
-  // ---------------- the shouts (owner, 16/11) : when a character shouts, no subtitle card. The words themselves, big, in
-  // the middle or the upper half of the screen, appear one by one as they are said ; then the subtitles come back.
-  // The speaker's name stays next to them (rule of 15/11). cy : the middle of the block (clear of the banner and the faces).
+  // ---------------- the shout of the hook (owner, 16/11) : the opening shout has no subtitle card. The words themselves, big,
+  // in the upper half of the screen, appear one by one as they are said ; then the subtitles come back. Only the hook :
+  // every other line, even shouted, is a normal subtitle (owner, 16/11 at 16 h 34, « pas comme celui de l'intro »).
+  // The speaker's name stays next to them (rule of 15/11). cy : the middle of the block. The character stays centred and
+  // fully visible : the words may pass over him (owner, 16/11 at 16 h 32), so the block is kept short (2 lines when it fits).
   function criLayout(who, text, cy = 660) {
     const maxW = 840;
     let size = 104, font, lines;
-    for (size of [104, 92, 82]) { font = `${size}px "Lilita One"`; lines = wrap(text, font, maxW); if (lines.length <= 3) break; } // 3 lines at most
+    const fit = n => { for (const sz of [104, 92, 82]) { const f = `${sz}px "Lilita One"`, l = wrap(text, f, maxW); if (l.length <= n) return [sz, f, l]; } return null; };
+    [size, font, lines] = fit(2) || fit(3) || [82, '82px "Lilita One"', wrap(text, '82px "Lilita One"', maxW)];
     const lh = Math.round(size * 1.08), sp = width(' ', font), top = cy - (lines.length * lh) / 2, words = [];
     lines.forEach((ln, li) => {
       let x = 500 - width(ln, font) / 2; // centred on x = 500 : clear of the buttons on the right edge

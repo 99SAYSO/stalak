@@ -148,7 +148,7 @@
     s += `<circle cx="560" cy="250" r="56" fill="#f8f4ea" stroke="${INK}" stroke-width="${LW}"/>` + ln('M 560 250 L 560 214 M 560 250 L 586 262', INK, 5);
     s += f(R(30, 300, 320, 330), '#b07a4e') + nf(R(30, 300, 60, 330), '#8f5e3a') + ln('M 190 304 L 190 626', INK, LW) + `<circle cx="170" cy="580" r="7" fill="#efbb31" stroke="${INK}" stroke-width="2.4"/><circle cx="210" cy="580" r="7" fill="#efbb31" stroke="${INK}" stroke-width="2.4"/>`;
     // the window over the sink, a valance and curtains
-    s += windowSky(380, 430, 330, 420, 'jour');
+    s += windowSky(380, 430, 330, 420, 'jour', { cross: false }); // one big pane : Maya stands behind it, no bar across her face (16/11)
     s += f('M 360 404 L 730 404 L 730 470 Q 640 500 545 470 Q 450 500 360 470 Z', '#e86a52') + f('M 360 466 L 420 466 L 404 880 L 360 880 Z', '#e86a52') + f('M 730 466 L 670 466 L 686 880 L 730 880 Z', '#e86a52');
     // tiles, counter, cabinets
     s += `<rect x="-40" y="880" width="780" height="250" fill="${pattern('tile', 46, 46, '<rect width="46" height="46" fill="#f4f1e8"/><path d="M 0 0 L 46 0 L 46 46" fill="none" stroke="#cfc8b6" stroke-width="3"/>')}" stroke="${INK}" stroke-width="${LW}"/>`;

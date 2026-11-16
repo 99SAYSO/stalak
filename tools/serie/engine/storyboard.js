@@ -208,7 +208,8 @@
       opts.forEach((op, i) => { const w = FRAME.width(op, '700 24px Rubik') + 36; s += `<rect x="${x}" y="${y + 12}" width="${w}" height="46" rx="23" fill="${i === sel ? BLUE : SNOW}" stroke="${i === sel ? INK : '#c3cbd8'}" stroke-width="3"/>${T(x + w / 2, y + 44, op, 24, i === sel ? SNOW : INK, { font: 'Rubik', weight: 700 })}`; x += w + 10; });
     });
     s += '</g>';
-    if (o.sticker) s += `<g class="sticker" data-dl="${o.dl != null ? o.dl : 0.55}"><g transform="translate(456 872)"><circle r="86" fill="${SNOW}" stroke="${INK}" stroke-width="6"/>${img(`/site_src/emoji/${o.sticker}.webp`, -76, -76, 152, 152)}</g></g>`;
+    // the sticker sits on the screen's right edge, clear of the « Nerveux » and « Intense » chips (planche, 16/11)
+    if (o.sticker) s += `<g class="sticker" data-dl="${o.dl != null ? o.dl : 0.55}"><g transform="translate(492 872)"><circle r="86" fill="${SNOW}" stroke="${INK}" stroke-width="6"/>${img(`/site_src/emoji/${o.sticker}.webp`, -76, -76, 152, 152)}</g></g>`;
     return s;
   }
   // ---------------- 16/11 (owner) : every change of place or time is said on screen, and who arrives is clear ----------------
@@ -335,6 +336,9 @@
   // the shop of M. Reyes closed : a « FERMÉ » sign over the « OUVERT » one (set coordinates of rue 1)
   const closed = () => `<g transform="rotate(-3 742 1238)"><rect x="660" y="1196" width="164" height="86" rx="14" fill="#c8443a" stroke="${INK}" stroke-width="6"/>${T(742, 1255, 'FERMÉ', 46, SNOW)}</g><path d="M 690 1196 L 742 1150 L 794 1196" fill="none" stroke="${INK}" stroke-width="4"/>`;
   // glare on a shop window, over whoever stands behind it
+  // a character behind a window pane : the glass is in front of her, a light tint and two reflections over her (owner, 16/11 :
+  // « elle est censée être derrière la vitre »). Drawn in her `after`, so the characters in the room stay in front of it.
+  const vitre = (x, y, w, h) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#cfe9ff" opacity="0.22"/>` + glare(x, y, w, h);
   const glare = (x, y, w, h) => `<clipPath id="gl${++UID}"><rect x="${x}" y="${y}" width="${w}" height="${h}"/></clipPath><g clip-path="url(#gl${UID})" opacity="0.28"><path d="M ${x + w * 0.1} ${y + h} L ${x + w * 0.35} ${y} L ${x + w * 0.45} ${y} L ${x + w * 0.2} ${y + h} Z M ${x + w * 0.55} ${y + h} L ${x + w * 0.8} ${y} L ${x + w * 0.85} ${y} L ${x + w * 0.6} ${y + h} Z" fill="#ffffff"/></g>`;
   // his new song posted with a still image : nobody stops on it (our own interface)
   function stillPost() {
@@ -367,14 +371,14 @@
   // the Stalak screen is ours (stalakApp), with Liam's own videos.
   const NB = ' ';
   ep('ep1', 'SA MÈRE A CRIÉ EN PLEINE PRISE', 1, [
-    { t: '0:00', cap: "L'accroche : Nadia a trouvé le clip, elle crie", set: KITCHEN, criY: 740, chars: [CH('nadia', 2, 560, 3040, 2050, 'colere', P.phone(580, 1130, '#ffe066'))],
-      over: () => bandeau(2, 'SA MÈRE A CRIÉ EN PLEINE PRISE', 1) + FRAME.cri('nadia', `Tu m'as enregistrée sans me le dire${NB}?!`, 740) },
+    { t: '0:00', cap: "L'accroche : Nadia a trouvé le clip, elle crie", set: KITCHEN, criY: 700, chars: [CH('nadia', 2, 560, 2610, 2050, 'colere', P.phone(580, 1130, '#ffe066'))],
+      over: () => bandeau(2, 'SA MÈRE A CRIÉ EN PLEINE PRISE', 1) + FRAME.cri('nadia', `Tu m'as enregistrée sans me le dire${NB}?!`, 700) },
     { t: '0:03', cap: 'Le narrateur présente Liam', set: ROOM, chars: [LI(230, 1490, 1000, 'frime', HP)],
       over: () => tag('LIAM, ALIAS T-CRAZY', 650, 640) + sub(1, 'narrateur', 'Voici Liam. 15 ans. Zéro abonné. Persuadé d\'être le prochain rappeur à percer.') },
     { t: '0:09', cap: 'Carton « Une heure plus tôt » : au micro', set: ROOM0, zoom: [290, 900, 1.7], chars: [LI(420, 2250, 1500, 'fierte', HP + P.mic(612, 790))],
       over: () => carton('UNE HEURE PLUS TÔT') + sub(1, 'liam', 'T-Crazy, le froid dans les veines, je glace la scène !') },
-    { t: '0:15', cap: 'La porte du placard s\'ouvre : Nadia crie', set: ROOM, criY: 1060, chars: [LI(200, 1490, 980, 'panique', HP), CH('nadia', 2, 640, 1640, 1240, 'colere', P.sponge(330, 1170))],
-      over: () => tag('NADIA, SA MÈRE', 700, 300, 3) + FRAME.cri('nadia', 'T-Crazy mange pas si T-Crazy a pas fait la vaisselle !', 1060) },
+    { t: '0:15', cap: 'La porte du placard s\'ouvre : Nadia crie', set: ROOM, chars: [LI(200, 1490, 980, 'panique', HP), CH('nadia', 2, 640, 1640, 1240, 'colere', P.sponge(330, 1170))],
+      over: () => tag('NADIA, SA MÈRE', 700, 300, 3) + sub(1, 'nadia', 'T-Crazy mange pas si T-Crazy a pas fait la vaisselle !') },
     { t: '0:20', cap: "L'ordi a tout enregistré", set: ROOM, zoom: [640, 1060, 1.6], dim: 0.45,
       over: () => laptopBig(take()) + headAt('panique', 300, 1150, 1.9, hp()) + sub(1, 'liam', 'Maman, on t\'entend dans mon enregistrement !') },
     { t: '0:26', cap: 'Il réécoute, abattu…', set: ROOM0, zoom: [768, 1000, 1.5], chars: [LI(740, 2940, 2300, 'panique', HP)],
@@ -384,20 +388,20 @@
     { t: '0:33', cap: 'Carton « Cinq minutes plus tard · la cuisine » : la vaisselle, il sort son téléphone', set: KITCHEN, chars: [LI(560, 1846, 1250, 'frime', P.sponge(320, 1170) + P.phone(606, 760), { pose: { raise: 'r' } })],
       over: () => carton('CINQ MINUTES PLUS TARD · LA CUISINE') + sub(1, 'narrateur', 'Pour sortir son son, il lui faut un clip. Et des vidéos de lui qui rappe, il en a déjà plein son téléphone.') },
     { t: '0:38', cap: 'Ses vidéos dans sa galerie', set: KITCHEN, over: () => phoneBig(gallery(), 0.92) + sub(1, 'liam', 'J\'ai le son. J\'ai les vidéos. Mais monter un clip, ça prend des heures.') },
-    { t: '0:42', cap: 'Toc toc : Maya, la voisine, à la fenêtre', set: KITCHEN, chars: [CH('maya', 1, 545, 1570, 1150, 'frime', '', { clip: [420, 470, 250, 410], after: winPhone() }), LI(800, 1846, 1170, 'frime', P.sponge(612, 742), { pose: { raise: 'r' } })],
+    { t: '0:42', cap: 'Toc toc : Maya, la voisine, à la fenêtre', set: KITCHEN, chars: [CH('maya', 1, 545, 1570, 1150, 'frime', '', { clip: [420, 470, 250, 358], after: winPhone(420, 470, 250, 358) + vitre(420, 452, 250, 376) }), LI(800, 1846, 1170, 'frime', P.sponge(612, 742), { pose: { raise: 'r' } })],
       over: () => knock(560, 360) + tag('MAYA, LA VOISINE', 230, 660, -4) + sub(1, 'maya', 'Coucou Liam ! Je t\'entends râler depuis chez moi. Pas besoin d\'y passer des heures : mets ton son et tes trois vidéos dans Stalak.') },
     { t: '0:49', cap: 'Stalak, dessiné : son son et ses 3 vidéos, puis le clip coupé sur le temps', set: KITCHEN, chars: [], shade: true,
       over: () => phoneBig(stalakApp({ takes: [['placard', 'fierte'], ['frigo', 'frime'], ['vaisselle', 'fierte']], count: 3, ti: 2.6, sticker: 'hype', dl: 3.1, lyric: 'le froid dans les veines' }), 0.92) + sub(1, 'narrateur', 'Il met son son et ses trois vidéos dans Stalak. Stalak monte le clip : il coupe sur le rythme et garde la synchro des lèvres.') },
-    { t: '0:57', cap: 'Nadia arrive et découvre le clip (la scène du début)', set: KITCHEN, criY: 420, chars: [CH('nadia', 2, 760, 1856, 1250, 'colere', P.phone(580, 1130, '#ffe066')), LI(330, 1846, 1170, 'frime')],
-      over: () => FRAME.cri('nadia', `Tu m'as enregistrée sans me le dire${NB}?!`, 420) },
+    { t: '0:57', cap: 'Nadia arrive et découvre le clip (la scène du début)', set: KITCHEN, chars: [CH('nadia', 2, 760, 1856, 1250, 'colere', P.phone(580, 1130, '#ffe066')), LI(330, 1846, 1170, 'frime')],
+      over: () => sub(1, 'nadia', `Tu m'as enregistrée sans me le dire${NB}?!`) },
     { t: '1:03', cap: 'Liam parle à celui qui regarde', set: KITCHEN, chars: [LI(540, 2730, 2250, 'frime', P.sponge(612, 742), { pose: { raise: 'r' } })],
       over: () => sub(1, 'liam', 'Toi aussi, t\'as un son et des vidéos de toi qui dorment dans ta galerie ? T\'as déjà un clip.') },
     { t: '1:10', cap: 'La carte de fin', plain: true, over: () => endCard('IL A PASSÉ LA NUIT SUR SA VIDÉO DE PROMO') },
   ], 'Version 2 (16/11) : tes remarques de l\'épisode 1 appliquées.');
 
   ep('ep2', 'IL A PASSÉ LA NUIT SUR SA VIDÉO DE PROMO', 2, [
-    { t: '0:00', cap: "L'accroche : la nuit, devant l'ordi, il crie", set: ROOMN0, zoom: [290, 560, 1.7], criY: 740, chars: [LI(540, 2985, 2300, 'colere+cerne', HP)],
-      over: () => `<rect width="1080" height="1920" fill="#57adff" opacity="0.10"/>` + bandeau(2, 'IL A PASSÉ LA NUIT SUR SA VIDÉO DE PROMO', 2) + FRAME.cri('liam', `Pourquoi ma bouche est décalée${NB}?!`, 740) },
+    { t: '0:00', cap: "L'accroche : la nuit, devant l'ordi, il crie", set: ROOMN0, zoom: [290, 560, 1.7], criY: 700, chars: [LI(540, 2785, 2300, 'colere+cerne', HP)],
+      over: () => `<rect width="1080" height="1920" fill="#57adff" opacity="0.10"/>` + bandeau(2, 'IL A PASSÉ LA NUIT SUR SA VIDÉO DE PROMO', 2) + FRAME.cri('liam', `Pourquoi ma bouche est décalée${NB}?!`, 700) },
     { t: '0:03', cap: 'Le narrateur présente Liam', set: ROOMN, chars: [LI(230, 1490, 1000, 'frime+cerne', HP)],
       over: () => tag('LIAM, ALIAS T-CRAZY', 650, 640) + sub(1, 'narrateur', 'Voici Liam. 15 ans. Zéro abonné. Il vient d\'écrire le son de l\'année.') },
     { t: '0:09', cap: 'Carton « Six heures plus tôt » : sûr de lui', set: ROOM, chars: [LI(560, 1846, 1250, 'frime', P.phone(606, 760), { pose: { raise: 'r' } })],
@@ -407,7 +411,7 @@
     { t: '0:20', cap: 'Il recale sa bouche image par image', set: ROOMN0, zoom: [640, 1060, 1.6], dim: 0.45,
       over: () => laptopBig(editor()) + headAt('colere+cerne', 300, 1150, 1.9, hp()) + sub(1, 'liam', 'Là, c\'est bon. Non. Là ! Non plus !') },
     { t: '0:25', cap: 'Il poste quand même : un commentaire de « maya »', set: ROOMN, over: () => phoneBig(postScreen('Ta bouche est décalée sur toute la vidéo.', 'maya'), 0.92) + sub(1, 'liam', 'Un commentaire !') },
-    { t: '0:32', cap: 'Toc toc : Maya, la voisine, à la fenêtre', set: ROOM, chars: [CH('maya', 1, 865, 1490, 1150, 'frime', '', { clip: [712, 500, 306, 296], after: winPhone(712, 500, 306, 296, 760, 800) }), LI(380, 1846, 1200, 'frime')],
+    { t: '0:32', cap: 'Toc toc : Maya, la voisine, à la fenêtre', set: ROOM, chars: [CH('maya', 1, 865, 1490, 1150, 'frime', '', { clip: [722, 500, 286, 278], after: winPhone(722, 500, 286, 278, 760, 800) + vitre(722, 500, 286, 278) }), LI(380, 1846, 1200, 'frime')],
       over: () => knock(480, 330, -6) + tag('MAYA, LA VOISINE', 830, 450, 4) + sub(1, 'maya', 'Coucou T-Crazy ! Le commentaire, c\'est moi. Ta bouche est décalée sur toute la vidéo.') },
     { t: '0:41', cap: 'Le téléphone de Maya : ses prises et son son entrent dans Stalak', set: ROOM, shade: true,
       over: () => phoneBig(stalakApp({ takes: [['nuit', 'colere'], ['chambre', 'frime'], ['nuit', 'fierte']], count: 3, ti: -1, sticker: 'shock', dl: 1.2, word: 'prises' }), 0.92) + sub(1, 'maya', 'Tu mets ton son et tes prises.') },
@@ -423,8 +427,8 @@
   // the GTA 6 episode comes out on 19/11 in the evening, right after episode 2 : number 3 on screen. GTA 6 : the name only, the game never shown.
   const GTA = 'IL SORT SON SON LE JOUR DE GTA 6';
   ep('ep4', GTA, 3, [
-    { t: '0:00', cap: "L'accroche : Deuce n'en revient pas, il crie", set: ROOM, criY: 740, chars: [CH('deuce', 1, 560, 2960, 2050, 'panique')],
-      over: () => bandeau(2, GTA, 3) + FRAME.cri('deuce', `Sortir ton son le jour de GTA 6${NB}?! T'es fou${NB}!`, 740) },
+    { t: '0:00', cap: "L'accroche : Deuce n'en revient pas, il crie", set: ROOM, criY: 700, chars: [CH('deuce', 1, 560, 2660, 2050, 'panique')],
+      over: () => bandeau(2, GTA, 3) + FRAME.cri('deuce', `Sortir ton son le jour de GTA 6${NB}?! T'es fou${NB}!`, 700) },
     { t: '0:03', cap: 'Le narrateur présente Liam et Deuce', set: ROOM, chars: [LI(230, 1490, 1000, 'frime', HP), CH('deuce', 1, 740, 1846, 1200, 'frime')],
       over: () => tag('LIAM, ALIAS T-CRAZY', 330, 430, -3) + tag('DEUCE, SON POTE', 760, 590, 3) + sub(1, 'narrateur', 'Voici Liam. 15 ans. Zéro abonné. Il a choisi la pire date de l\'année pour sortir son son.') },
     { t: '0:09', cap: 'Liam, sûr de lui', set: ROOM0, zoom: [560, 960, 1.3], chars: [LI(360, 2250, 1500, 'frime', HP), CH('deuce', 1, 820, 2250, 1460, 'colere')],
@@ -480,8 +484,8 @@
 
   const SUNSET = ['rue', 1, 'jour'];
   ep('ep5', 'IL VOULAIT UN CLIP COMME DANS GTA', 5, [
-    { t: '0:00', cap: "L'accroche : ils filent avec la plante, M. Reyes crie", set: SUNSET, setOver: sunset, criY: 1080, chars: [CH('reyes', 1, 900, 1470, 640, 'colere'), CH('deuce', 1, 600, 1640, 1240, 'fierte', P.plant(600, 1080)), LI(470, 1700, 1150, 'panique')],
-      over: () => scooter(470, 1198, 1700) + bandeau(2, 'IL VOULAIT UN CLIP COMME DANS GTA', 5) + FRAME.cri('reyes', 'Rendez-moi ma plante !', 1080) },
+    { t: '0:00', cap: "L'accroche : M. Reyes, au centre, crie", set: SUNSET, setOver: sunset, zoom: [700, 1100, 1.2], criY: 700, chars: [CH('reyes', 1, 540, 2560, 1900, 'colere')],
+      over: () => bandeau(2, 'IL VOULAIT UN CLIP COMME DANS GTA', 5) + FRAME.cri('reyes', 'Rendez-moi ma plante !', 700) },
     { t: '0:03', cap: 'Le narrateur présente Deuce', set: SUNSET, setOver: sunset, chars: [CH('deuce', 1, 380, 1846, 1300, 'fierte'), LI(800, 1846, 1150, 'frime')],
       over: () => tag('DEUCE, SON POTE', 380, 470, -3) + tag('LIAM, ALIAS T-CRAZY', 720, 640, 3) + sub(1, 'narrateur', 'Voici Deuce, le pote de Liam. Il a vu la bande-annonce de GTA 6. Maintenant, il veut un clip pareil.') },
     { t: '0:10', cap: 'Carton « Ce matin » : Deuce décrit son clip', set: SUNSET, setOver: sunset, zoom: [540, 1150, 1.3], chars: [CH('deuce', 1, 540, 2900, 2050, 'fierte')],
@@ -490,8 +494,8 @@
       over: () => `<g transform="translate(540 1480) scale(0.7) translate(-540 -1480)">${scooter(540, 1080, 1700, 0.57)}</g>` + sub(1, 'liam', 'On a un scooter.') },
     { t: '0:18', cap: 'Le tournage : le scooter cale, le ventilateur-hélico', set: SUNSET, setOver: sunset, chars: [LI(420, 1700, 1150, 'panique'), CH('deuce', 1, 880, 1846, 1150, 'fierte', fan(640, 1000))],
       over: () => scooter(420, 1198, 1700) + smoke(170, 1580) + P.plant(120, 1300) + sub(1, 'narrateur', 'Budget du clip : un scooter emprunté et une plante verte.') },
-    { t: '0:26', cap: 'M. Reyes les a retrouvés : il crie', set: SUNSET, setOver: sunset, zoom: [700, 1100, 1.2], criY: 720, chars: [CH('reyes', 1, 640, 2600, 1900, 'colere')],
-      over: () => tag('M. REYES, L\'ÉPICIER', 250, 1280, -4) + FRAME.cri('reyes', 'Rendez-moi ma plante !', 720) },
+    { t: '0:26', cap: 'M. Reyes les a retrouvés : il crie', set: SUNSET, setOver: sunset, zoom: [700, 1100, 1.2], chars: [CH('reyes', 1, 640, 2600, 1900, 'colere')],
+      over: () => tag('M. REYES, L\'ÉPICIER', 250, 1280, -4) + sub(1, 'reyes', 'Rendez-moi ma plante !') },
     { t: '0:30', cap: 'Carton « Le soir » : Liam fait défiler ses douze prises', set: SUNSET, setOver: sunset, over: () => phoneBig(gallery12(), 0.92) + carton('LE SOIR', 200) + sub(1, 'liam', 'C\'est nul. On dirait pas du tout un jeu vidéo.') },
     { t: '0:38', cap: 'Maya arrive et dit bonjour', set: SUNSET, setOver: sunset, chars: [CH('maya', 1, 760, 1846, 1180, 'frime', P.phone(580, 1130)), LI(320, 1846, 1200, 'colere')],
       over: () => tag('MAYA, LA VOISINE', 760, 560, 4) + sub(1, 'maya', 'Salut les garçons ! Les gens veulent pas un jeu vidéo. Ils veulent te voir rapper ton son. Mets tes prises dans Stalak.') },
