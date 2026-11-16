@@ -2,6 +2,13 @@
 
 > Marketing & croissance. Rien ne change sur le site : seulement `tools/serie/` et `docs/`.
 
+## 16/11, 2 h 04 : style validé, les 4 versions de Liam déposées
+
+- Le propriétaire a validé la planche du Style 1 (fiche `style` en `choisi`).
+- Les 4 versions de Liam sont dessinées en code (`tools/serie/engine/liam.js`) et déposées dans la fiche `liam`, en `a_choisir` : Le classique, Le chignon, Le bandeau, Le deux-tons. Chacune montre Liam de face, de profil et en 4 expressions.
+- Coût : 0 $.
+- Ce qui attend : son choix. Ensuite, les autres personnages (2 versions chacun), les décors, le bandeau, le logo, les voix du narrateur et la musique.
+
 ## 16/11, 1 h 52 : Style 1 retenu, Liam corrigé
 
 - Le propriétaire a retenu **Style 1 · Anime US**.

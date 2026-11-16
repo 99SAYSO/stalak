@@ -270,7 +270,7 @@
 
   // ---------------- the whole frame ----------------
   window.TCRAZY = {
-    STY,
+    STY, render, capsule, lerp, pt, r1, room,
     scene(id) {
       const S = STY[id] || STY[1], P = S.pal;
       UID = 0; for (const k in DOTS) delete DOTS[k];

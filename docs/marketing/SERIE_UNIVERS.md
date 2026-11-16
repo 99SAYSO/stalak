@@ -39,6 +39,21 @@ Il tient son casque d'une main et, de l'autre, son téléphone levé : il se fil
 
 À 2 h, nouvelle remarque : « je trouve son corps trop large ». Liam est donc plus fin (doudoune, manches, jean, baskets) : un ado de 15 ans dans une doudoune trop grande. La planche corrigée est redéposée dans la fiche `style` (`a_choisir`). Les planches des styles 2 et 3 sont retirées. Les 4 versions de Liam viennent après sa validation.
 
+**16/11, 2 h 04 : planche validée par le propriétaire** (fiche `style` en `choisi`).
+
+## Étape 2a : les 4 versions de Liam (déposées le 16/11, à choisir)
+
+Des planches personnage sont dessinées en code (`tools/serie/engine/liam.js`, page `liam.html?v=1..4`). Sur chacune : Liam de face, de profil et en 4 expressions (frime, colère, panique, fierté). Les 4 planches sont dans la fiche `liam`, en `a_choisir`.
+
+| Version | Visage | Coiffure | Tenue |
+|---|---|---|---|
+| 1 · Le classique | anguleux | locks courtes | doudoune ouverte, tee blanc, jean large, baskets basses |
+| 2 · Le chignon | rond | locks attachées en chignon | doudoune courte sur un sweat gris, cargo beige, montantes |
+| 3 · Le bandeau | long | locks en arrière sous un bandeau blanc | doudoune sans manches sur un tee manches longues glace, jogging noir |
+| 4 · Le deux-tons | large, petite boucle d'oreille | locks longues | doudoune bleue aux épaules glace, tee noir, jean clair |
+
+Dans les 4 versions : locks noires, pas de chaîne, le cou visible, les yeux droits, un corps fin, la doudoune bleu Stalak.
+
 ## Étape 2 : tout l'univers dans le style choisi (après le choix)
 
 - Liam : 4 versions, chacune de face, de profil et avec 4 expressions (frime, colère, panique, fierté).
