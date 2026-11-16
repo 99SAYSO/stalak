@@ -298,7 +298,7 @@ Les voix de Big Mo et de M. Reyes seront choisies quand un épisode validé les 
   - le passage par le noir (`dip=True`) à chaque changement de moment ou de lieu, avec au moins 1 s avant la première réplique ;
   - les écrans dessinés : l'éditeur où Liam fait glisser sa vidéo (« DÉCALÉ »), la page « Nouvelle vidéo » avec son bouton « Publier », et le fil façon TikTok, sans logo (cœur, commentaires, partage, pseudo), avec la notification qui tombe et les commentaires qui montent ;
   - la boule d'herbes sèches qui roule sur un lieu vide ;
-  - le zoom d'un décor ne dépasse plus ses bords (avant, une bande vide pouvait apparaître sur le côté) ;
+  - le zoom d'un décor ne dépasse plus ses bords (avant, une bande noire pouvait apparaître, comme en bas du plan où Liam tombe dans « Le manager ») ;
   - plus de blanc : `plan` n'ajoute plus que de toutes petites pauses (0,15 s avant une réplique, 0,2 s après), et jamais dans un plan aux actions calées (`fixed=True`).
 - **Voix vérifiées** : une réplique d'un seul mot est comparée au son attendu (la voyelle de la fin), avec le script `formants.py` du dossier de travail. Le « Non. » de Maya (épisode 2), qui disait « ouais », est refait (2 essais, le bon gardé).
 

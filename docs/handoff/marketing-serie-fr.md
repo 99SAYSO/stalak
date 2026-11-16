@@ -42,7 +42,7 @@ Statut : EN COURS (fabrication des épisodes dans Studio Stalak ; rien à publie
     - `feed()` : un fil façon TikTok, sans logo ;
     - `notifTop()`, `comments()`, `tumbleweed()`, `stillPic()`, `myClip()` ;
     - `phoneBig(…, {dl})` : le téléphone arrive après qu'on a vu qui le tient ;
-  - `frame.js` : le zoom d'un décor ne dépasse plus ses bords (des bandes vides de 46 à 248 px existaient dans 9 plans) ;
+  - `frame.js` : le zoom d'un décor ne dépasse plus ses bords (une bande noire de 248 px apparaissait en bas du plan où Liam tombe, dans « Le manager ») ;
   - `tcrazy.py` : petites pauses seulement, et `fixed=True` pour un plan aux actions calées sur la voix.
 - **Épisode 6, « L'appli a fermé » (l'idée du propriétaire du 16/11, 17 h 27)** : le script est dans Studio Stalak (`tcrazy-ep6`, `script`, le 22/11 à confirmer). Choix faits, écrits en tête du script pour sa validation :
   - l'appli qui ferme n'est pas nommée : aucun concurrent cité, et Triller n'a pas fermé officiellement (retiré du Nasdaq, l'appli ne charge plus les vidéos) ;
