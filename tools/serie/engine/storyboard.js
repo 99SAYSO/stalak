@@ -728,7 +728,8 @@
   const steps6 = (x) => `<path d="M ${x - 130} 1400 L ${x + 130} 1400 L ${x + 150} 1460 L ${x - 150} 1460 Z" fill="#b5b0a7" stroke="${INK}" stroke-width="4"/>`;
   ep('ep6', "TRILLER N'EST PLUS SUR L'APP STORE", 6, [
     { t: '0:00', cap: "L'accroche : « Triller », aucun résultat", set: AFT, criY: 700, chars: [CH('deuce', 1, 880, 1700, 900, 'frime'), CH('maya', 1, 230, 1700, 900, 'frime'), LI(540, 2650, 2100, 'panique')],
-      over: () => bandeau(2, "TRILLER N'EST PLUS SUR L'APP STORE", 6) + FRAME.cri('liam', 'Ils ont fermé Triller ?!', 700) + `<g transform="translate(520 1080) scale(0.5) translate(-540 -790)">${phoneBig(storeSearch(), 1).replace(/<rect width="1080" height="1920" fill="#0a0d14" opacity="0.5"\/>/, '')}</g>` },
+      // (16/11, planche contact : the phone held lower, beside him : nothing hides the face of who shouts, rule of the owner)
+      over: () => bandeau(2, "TRILLER N'EST PLUS SUR L'APP STORE", 6) + FRAME.cri('liam', 'Ils ont fermé Triller ?!', 700) + `<g transform="translate(800 1330) scale(0.5) translate(-540 -790)">${phoneBig(storeSearch(), 1).replace(/<rect width="1080" height="1920" fill="#0a0d14" opacity="0.5"\/>/, '')}</g>` },
     { t: '0:02', cap: 'Liam baisse le téléphone, dépité', set: AFT, chars: [CH('deuce', 1, 880, 1700, 900, 'frime'), CH('maya', 1, 230, 1700, 900, 'frime'), LI(540, 1846, 1250, 'colere', P.phone(580, 1130))],
       over: () => sub(1, 'liam', 'Je faisais toutes mes vidéos de promotion de mes sons dessus… je suis deg.') },
     { t: '0:06', cap: 'Le narrateur présente Liam', set: AFT, chars: [CH('deuce', 1, 880, 1700, 900, 'frime'), CH('maya', 1, 230, 1700, 900, 'frime'), LI(540, 1846, 1250, 'colere', P.phone(580, 1130))],
