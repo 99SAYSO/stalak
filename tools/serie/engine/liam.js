@@ -1,47 +1,31 @@
 /* Série « T-Crazy » — Liam's character sheets, Style 1 « Anime US » (chosen on 16/11), drawn in code.
-   4 versions (face, outfit), each : front, profile, 4 expressions (frime, colère, panique, fierté).
-   Fixed by the owner (16/11) : all-black hair, no chain, the neck visible above the collar, straight eyes, a slim body,
+   4 versions (face, cap colour, outfit), each : front, profile, 4 expressions (frime, colère, panique, fierté).
+   Fixed by the owner (16/11) : black hair, no chain, the neck visible above the collar, straight eyes, a slim body,
    the Stalak-blue puffer he never takes off, spotless sneakers.
-   The haircut is the same in every version (16/11, 2 h 11, from his reference image) : black twists with a centre part,
-   hanging all around the head to the chin and over the ears, and covering the side of the head in profile.
+   16/11, 2 h 24 : a cap worn backwards, in the style of his reference (a structured snapback with a flat brim),
+   and a very simple short haircut under it. Our own cap : no team or brand logo, only a small embroidered snowflake.
    (Marketing & croissance, 16/11/2026) */
 (function () {
   const { STY, render, lerp, pt, r1 } = TCRAZY;
   const S = STY[1], P = S.pal, INK = S.ink;
 
-  const VERS = {
-    1: { name: 'LE CLASSIQUE', face: 'angular', brows: 'thick', inner: '#f6f2ea', innerS: '#d3c8b6', pants: '#2d3b59', pantsS: '#1d283f', shoe: 'low',
-      text: 'Visage anguleux. Doudoune ouverte sur un tee blanc, jean large, baskets basses.' },
-    2: { name: 'LE SWEAT', face: 'round', brows: 'thin', inner: '#9aa3b2', innerS: '#7b8394', pants: '#c4ad86', pantsS: '#9f8761', shoe: 'high', crop: true, cargo: true,
-      text: 'Visage rond. Doudoune courte sur un sweat gris, cargo beige, baskets montantes.' },
-    3: { name: 'LE SANS-MANCHES', face: 'long', brows: 'heavy', inner: '#e3f0ff', innerS: '#bcd3ee', pants: '#1c1e26', pantsS: '#0f1015', shoe: 'low', vest: true,
-      text: 'Visage long. Doudoune sans manches sur un tee manches longues glace, jogging noir.' },
-    4: { name: 'LE DEUX-TONS', face: 'wide', brows: 'slit', inner: '#24262e', innerS: '#14151a', pants: '#7e9dca', pantsS: '#5e7dab', shoe: 'low', yoke: '#e6f2ff',
-      text: 'Visage large, sourcil fendu. Doudoune aux épaules glace, tee noir, jean clair.' },
+  // cap colours : c main, s shade, h shine, emb embroidery ; brim / strap / button when they differ from the crown
+  const CAPS = {
+    royal: { c: '#2b49c9', s: '#1c3191', h: '#8094ee', emb: '#ffffff' },
+    navy: { c: '#1b2a4d', s: '#101a33', h: '#5a6d98', emb: '#ffffff' },
+    black: { c: '#2c2f39', s: '#1d1f27', h: '#666b7a', emb: '#d6ecff' }, // charcoal, so the opening and the seams stay readable
+    ice: { c: '#e8f2ff', s: '#bfd4ee', h: '#ffffff', emb: '#1f6fd6', brim: '#1f6fd6', brimS: '#16509f', strap: '#1f6fd6', button: '#1f6fd6' },
   };
-
-  // twists (vanilles) : a black rope with a plait texture, from root to end (decision of 16/11, 2 h 11)
-  function twists(list, into, tf, w = 23, hand = 1) { // hand -1 : ridges mirrored, for the right side of the face
-    list.forEach(([root, end, bend]) => {
-      const c = [(root[0] + end[0]) / 2 + bend, (root[1] + end[1]) / 2];
-      const q = (t) => lerp(lerp(root, c, t), lerp(c, end, t), t);
-      const L = Math.hypot(end[0] - root[0], end[1] - root[1]) + Math.abs(bend) * 0.5;
-      const n = Math.max(3, Math.round(L / (w * 0.95)));
-      // two strands twisted together : diagonal ridges across the rope, in a dark grey so the hair stays black
-      // (no light flecks : « toute noir, pas de blanc dedans », 16/11)
-      let ridge = '';
-      for (let i = 1; i < n; i++) {
-        const t = i / n, p = q(t), p2 = q(Math.min(1, t + 0.01));
-        let dx = p2[0] - p[0], dy = p2[1] - p[1];
-        const l = Math.hypot(dx, dy) || 1; dx /= l; dy /= l;
-        const nx = -dy * hand, ny = dx * hand, h = w * 0.5;
-        const a = [p[0] + nx * h * 0.86 - dx * h * 0.5, p[1] + ny * h * 0.86 - dy * h * 0.5], m = [p[0] + dx * h * 0.12, p[1] + dy * h * 0.12], z = [p[0] - nx * h * 0.86 + dx * h * 0.5, p[1] - ny * h * 0.86 + dy * h * 0.5];
-        ridge += `M ${pt(a)} Q ${pt(m)} ${pt(z)} `;
-      }
-      into.push({ kind: 'stroke', d: `M ${pt(root)} Q ${pt(c)} ${pt(end)}`, w, color: P.hair, tf,
-        ticks: `<path d="${ridge}" fill="none" stroke="${P.hairT}" stroke-width="2.8" stroke-linecap="round"/>` });
-    });
-  }
+  const VERS = {
+    1: { name: 'LE CLASSIQUE', face: 'angular', brows: 'thick', cap: CAPS.royal, inner: '#f6f2ea', innerS: '#d3c8b6', pants: '#2d3b59', pantsS: '#1d283f', shoe: 'low',
+      text: 'Visage anguleux. Casquette bleu roi, tee blanc, jean large, baskets basses.' },
+    2: { name: 'LE SWEAT', face: 'round', brows: 'thin', cap: CAPS.navy, inner: '#9aa3b2', innerS: '#7b8394', pants: '#c4ad86', pantsS: '#9f8761', shoe: 'high', crop: true, cargo: true,
+      text: 'Visage rond. Casquette bleu nuit, doudoune courte, sweat gris, cargo beige.' },
+    3: { name: 'LE SANS-MANCHES', face: 'long', brows: 'heavy', cap: CAPS.black, inner: '#e3f0ff', innerS: '#bcd3ee', pants: '#1c1e26', pantsS: '#0f1015', shoe: 'low', vest: true,
+      text: 'Visage long. Casquette noire, doudoune sans manches, jogging noir.' },
+    4: { name: 'LE DEUX-TONS', face: 'wide', brows: 'slit', cap: CAPS.ice, inner: '#24262e', innerS: '#14151a', pants: '#7e9dca', pantsS: '#5e7dab', shoe: 'low', yoke: '#e6f2ff', earring: true,
+      text: 'Visage large, sourcil fendu, boucle. Casquette glace et bleue, jean clair.' },
+  };
 
   // ---------------- the head, front view (local coordinates : face centre at 0,0) ----------------
   const FACES = {
@@ -50,18 +34,51 @@
     long: `M -66 -86 C -78 -54 -80 -18 -78 10 C -76 44 -66 70 -50 88 L -22 112 C -10 120 10 120 22 112 L 50 88 C 66 70 76 44 78 10 C 80 -18 78 -54 66 -86 Z`,
     wide: `M -72 -84 C -86 -50 -90 -14 -88 10 C -86 38 -76 58 -62 72 L -30 100 C -14 108 14 108 30 100 L 62 72 C 76 58 86 38 88 10 C 90 -14 86 -50 72 -84 Z`,
   };
+  const HW = { angular: 82, round: 86, long: 78, wide: 88 }; // half-width of each face at ear height
+
+  // a small embroidered snowflake (our mark on the cap : no team or brand logo)
+  const flake = (x, y, r, color) => {
+    let d = '';
+    for (let i = 0; i < 6; i++) {
+      const a = i * Math.PI / 3 - Math.PI / 2, ux = Math.cos(a), uy = Math.sin(a), b = r * 0.62, t = r * 0.34;
+      d += `M ${r1(x)} ${r1(y)} L ${r1(x + ux * r)} ${r1(y + uy * r)} `;
+      [-1, 1].forEach(sg => { const c = Math.cos(a + sg * 0.8), s2 = Math.sin(a + sg * 0.8); d += `M ${r1(x + ux * b)} ${r1(y + uy * b)} l ${r1(c * t)} ${r1(s2 * t)} `; });
+    }
+    return `<path d="${d}" fill="none" stroke="${color}" stroke-width="2.6" stroke-linecap="round"/>`;
+  };
+
+  // the cap, front view : worn backwards, so we see its back : the snapback strap and the opening on the forehead
+  function capFront(V, tf, into) {
+    const C = V.cap, lw = S.lw;
+    const crown = `M -104 -34 C -110 -92 -98 -148 -52 -168 C -20 -180 20 -180 52 -168 C 98 -148 110 -92 104 -34 C 70 -52 34 -60 0 -62 C -34 -60 -70 -52 -104 -34 Z`;
+    const seams = `M 0 -174 L 0 -104 M -6 -174 C -48 -158 -70 -112 -72 -50 M 6 -174 C 48 -158 70 -112 72 -50`;
+    into.push({ d: crown, fill: C.c, tf, shade: `M -130 -200 L -64 -200 C -84 -150 -88 -96 -80 -40 L -130 -24 Z`, shadeColor: C.s,
+      extra: `<path d="${seams}" fill="none" stroke="${INK}" stroke-width="${r1(lw * 0.7)}" stroke-linecap="round"/>` +
+        `<path d="M 58 -152 q 24 18 30 54" fill="none" stroke="${C.h}" stroke-width="${r1(lw * 2)}" stroke-linecap="round" opacity="0.85"/>` +
+        [-40, 40].map(x => `<circle cx="${x}" cy="-138" r="4.5" fill="${C.s}" stroke="${INK}" stroke-width="2"/>`).join('') });
+    into.push({ d: `M -12 -177 a 12 7 0 1 0 24 0 a 12 7 0 1 0 -24 0 Z`, fill: C.button || C.c, tf });
+    // the opening above the strap : his short black hair shows through
+    into.push({ d: `M -28 -66 C -29 -90 -15 -103 0 -103 C 15 -103 29 -90 28 -66 C 14 -69 -14 -69 -28 -66 Z`, fill: P.hair, tf, inner: true });
+    // the strap and its snaps
+    into.push({ d: `M -34 -57 C -16 -62 16 -62 34 -57 L 34 -66 C 16 -71 -16 -71 -34 -66 Z`, fill: C.strap || C.s, tf, inner: true,
+      extra: [-18, 0, 18].map(x => `<circle cx="${x}" cy="${x ? -63.5 : -65}" r="2.4" fill="${C.h}"/>`).join('') });
+  }
+
   function head(V, expr, tf, into) {
-    const back = [], front = [];
-    back.push({ d: `M -98 -16 C -110 -70 -100 -130 -44 -150 C -14 -160 14 -160 44 -150 C 100 -130 110 -70 98 -16 C 80 -80 40 -96 0 -96 C -40 -96 -80 -80 -98 -16 Z`, fill: P.hair, tf,
-      extra: `<path d="M 0 -156 L 0 -94 M -30 -130 L 30 -130" stroke="${P.skinS}" stroke-width="4.5" stroke-linecap="round"/>` });
-    [-1, 1].forEach(k => twists([[[k * 70, -116], [k * 128, 100], k * 16], [[k * 96, -60], [k * 122, 112], k * 6]], back, tf, 23, -k));
-    into.push(...back);
+    const hw = HW[V.face];
+    // the ears : visible now, the hair is short
+    [-1, 1].forEach(k => {
+      const x0 = k * (hw - 5);
+      into.push({ d: `M ${x0} -16 C ${x0 + k * 16} -26 ${x0 + k * 26} -8 ${x0 + k * 22} 12 C ${x0 + k * 20} 30 ${x0 + k * 10} 40 ${x0} 34 Z`, fill: P.skin, tf,
+        extra: `<path d="M ${x0 + k * 6} -5 C ${x0 + k * 15} -6 ${x0 + k * 17} 12 ${x0 + k * 9} 22" fill="none" stroke="${P.skinS}" stroke-width="4" stroke-linecap="round"/>` });
+    });
     into.push({ d: FACES[V.face], fill: P.skin, tf, shade: `M -94 -90 L -44 -90 C -60 -40 -66 10 -50 58 C -40 86 -14 100 4 116 L -94 116 Z`, shadeColor: P.skinS, extra: face(V, expr) });
-    [-1, 1].forEach(k => twists([[[k * 17, -150], [k * 120, 82], k * 48], [[k * 17, -130], [k * 110, 104], k * 42], [[k * 17, -110], [k * 100, 118], k * 34]], front, tf, 23, -k));
-    if (V.earring) front.push({ d: `M -84 70 a 7 7 0 1 0 0.1 0 Z`, fill: '#e8edf5', tf, inner: true });
-    // panic : the sweat drops sit on top of the hair, where they stay visible
-    if (expr === 'panique') front.push({ d: `M 86 -84 q 16 24 0 38 q -16 -14 0 -38 Z M -96 -50 q 11 17 0 27 q -11 -10 0 -27 Z`, fill: '#bfe6ff', tf });
-    into.push(...front);
+    // a very simple short haircut : clean sideburns and temples, the rest under the cap
+    [-1, 1].forEach(k => into.push({ d: `M ${k * (hw + 12)} -64 L ${k * (hw - 14)} -64 C ${k * (hw - 12)} -38 ${k * (hw - 10)} -16 ${k * (hw - 8)} 4 L ${k * (hw - 1)} 6 C ${k * hw} -6 ${k * (hw + 2)} -16 ${k * (hw + 4)} -22 C ${k * (hw + 8)} -26 ${k * (hw + 12)} -28 ${k * (hw + 12)} -30 Z`, fill: P.hair, tf }));
+    if (V.earring) into.push({ d: `M ${-(hw + 5)} 30 a 5 5 0 1 0 0.1 0 Z`, fill: '#dff2ff', tf, extra: `<circle cx="${-(hw + 6.5)}" cy="${28.5}" r="1.6" fill="#ffffff"/>` });
+    capFront(V, tf, into);
+    // panic : sweat drops at the temples
+    if (expr === 'panique') into.push({ d: `M 76 -44 q 16 24 0 38 q -16 -14 0 -38 Z M -84 -34 q 11 17 0 27 q -11 -10 0 -27 Z`, fill: '#bfe6ff', tf });
   }
 
   // eyes, brows, nose, mouth for an expression
@@ -177,7 +194,7 @@
         extra: `<path d="M ${x - 60} ${ank + 48} L ${x + 112} ${ank + 48} L ${x + 112} ${ank + 66} L ${x - 60} ${ank + 66} Z" fill="${P.sole}" stroke="${INK}" stroke-width="${S.lw}"/><path d="M ${x - 10} ${ank - 8} l 16 18 M ${x + 10} ${ank - 4} l 14 16" stroke="${INK}" stroke-width="${r1(S.lw * 0.8)}" stroke-linecap="round"/>` });
     });
     // neck
-    parts.push({ d: `M 452 750 L 500 760 L 506 900 L 446 896 Z`, fill: P.skin, shade: `M 440 740 L 470 740 L 470 900 L 440 900 Z`, shadeColor: P.skinS });
+    parts.push({ d: `M 420 750 L 500 760 L 506 900 L 426 896 Z`, fill: P.skin, shade: `M 420 740 L 462 740 L 462 900 L 420 900 Z`, shadeColor: P.skinS });
     if (V.crop) parts.push({ d: `M 384 1110 L 560 1110 L 566 1232 L 380 1232 Z`, fill: V.inner, shade: `M 370 1100 L 420 1100 L 420 1250 L 370 1250 Z`, shadeColor: V.innerS });
     // the puffer from the side : bulky back on the left, chest on the right
     const bottom = V.crop ? 1126 : 1218;
@@ -196,15 +213,31 @@
   }
 
   function headProfile(V, tf, into) {
-    into.push({ d: `M 54 -98 C 40 -140 -20 -162 -70 -136 C -108 -110 -112 -50 -100 0 C -80 10 -60 -10 -52 -40 C -40 -80 0 -100 54 -98 Z`, fill: P.hair, tf });
-    twists([[[-88, -86], [-118, 120], -8], [[-98, -44], [-120, 132], -4], [[-70, -120], [-108, 112], -10]], into, tf);
-    // the face in profile, facing right
-    into.push({ d: `M -40 -96 C 10 -116 56 -96 64 -54 C 68 -36 66 -24 70 -12 L 90 20 C 92 26 86 30 78 30 L 74 36 C 80 42 80 48 74 52 L 68 56 C 76 60 76 68 68 72 C 68 86 62 98 46 104 C 24 110 -2 106 -20 92 C -40 70 -50 30 -50 -10 C -50 -50 -48 -80 -40 -96 Z`,
-      fill: P.skin, tf, shade: `M -60 -100 L -10 -100 C -20 -40 -18 20 0 60 C 10 84 20 100 40 112 L -60 112 Z`, shadeColor: P.skinS,
-      extra: `<path d="M 34 -6 Q 46 -14 58 -4 Q 48 6 34 -6 Z" fill="#fbf7f1"/><circle cx="52" cy="-5" r="5.5" fill="#1d120c"/><path d="M 30 -10 Q 46 -22 62 -8" fill="none" stroke="${INK}" stroke-width="${S.lw * 1.8}" stroke-linecap="round"/>` +
+    const C = V.cap, lw = S.lw;
+    // the flat brim points back : the cap is worn backwards
+    into.push({ d: `M -104 -44 L -204 -52 C -214 -52 -216 -40 -208 -36 L -104 -26 Z`, fill: C.brim || C.c, tf,
+      extra: `<path d="M -120 -39 L -196 -45" fill="none" stroke="${C.brimS || C.s}" stroke-width="2.6" stroke-dasharray="7 5" stroke-linecap="round"/>` });
+    // the head in profile, facing right : face, jaw, back of the skull
+    into.push({ d: `M 64 -54 C 68 -36 66 -24 70 -12 L 90 20 C 92 26 86 30 78 30 L 74 36 C 80 42 80 48 74 52 L 68 56 C 76 60 76 68 68 72 C 68 86 62 98 46 104 C 28 110 6 106 -10 98 L -38 92 C -50 84 -72 74 -92 56 C -110 34 -116 -20 -110 -60 C -102 -110 -60 -130 -10 -128 C 30 -126 58 -100 64 -54 Z`,
+      fill: P.skin, tf, shade: `M -140 -140 L -28 -140 C -34 -50 -28 24 -8 66 C 6 92 24 104 46 112 L -140 114 Z`, shadeColor: P.skinS,
+      extra: `<path d="M 34 -6 Q 46 -14 58 -4 Q 48 6 34 -6 Z" fill="#fbf7f1"/><circle cx="52" cy="-5" r="5.5" fill="#1d120c"/><path d="M 30 -10 Q 46 -22 62 -8" fill="none" stroke="${INK}" stroke-width="${lw * 1.8}" stroke-linecap="round"/>` +
         `<path d="M 24 -30 Q 44 -38 64 -30" fill="none" stroke="${INK}" stroke-width="${({ thick: 9, thin: 5, heavy: 12, slit: 9 })[V.brows]}" stroke-linecap="round"/>` +
-        `<path d="M 58 58 Q 64 62 70 60" fill="none" stroke="${INK}" stroke-width="${S.lw}" stroke-linecap="round"/><path d="M -8 10 C -24 6 -26 30 -12 36" fill="none" stroke="${INK}" stroke-width="${S.lw}"/>` });
-    twists([[[28, -134], [14, 98], -6], [[2, -148], [-10, 106], -6], [[-26, -150], [-38, 110], -6], [[-52, -140], [-64, 106], -6], [[-76, -120], [-88, 100], -6]], into, tf);
+        `<path d="M 58 58 Q 64 62 70 60" fill="none" stroke="${INK}" stroke-width="${lw}" stroke-linecap="round"/>` });
+    // a very simple short haircut : sideburn, above and behind the ear, a clean line at the nape
+    into.push({ d: `M 40 -112 L 40 -62 C 37 -40 34 -20 32 -4 L 17 -2 C 15 -8 14 -12 11 -16 C 2 -26 -24 -28 -38 -14 C -42 4 -44 18 -46 28 C -62 34 -90 34 -115 22 C -119 -6 -119 -30 -112 -60 L -106 -112 Z`, fill: P.hair, tf });
+    // the ear
+    into.push({ d: `M -8 -12 C -22 -24 -40 -16 -40 4 C -40 24 -30 40 -14 40 C -8 40 -5 32 -8 24 C -10 12 -6 0 -8 -12 Z`, fill: P.skin, tf,
+      extra: `<path d="M -16 -4 C -30 -6 -32 18 -20 26" fill="none" stroke="${P.skinS}" stroke-width="4" stroke-linecap="round"/>` });
+    if (V.earring) into.push({ d: `M -18 38 a 5 5 0 1 0 0.1 0 Z`, fill: '#dff2ff', tf, extra: `<circle cx="-19.5" cy="36.5" r="1.6" fill="#ffffff"/>` });
+    // the crown : tall structured front panel at the back, the strap on the forehead
+    const seams = `M -30 -180 C -62 -150 -72 -100 -66 -40 M -24 -180 C 8 -158 26 -112 28 -54`;
+    into.push({ d: `M 64 -60 C 68 -100 54 -142 18 -166 C -20 -188 -84 -186 -112 -150 C -126 -126 -124 -76 -118 -26 C -70 -26 10 -40 64 -60 Z`, fill: C.c, tf,
+      shade: `M -150 -200 L -90 -200 C -106 -150 -110 -96 -100 -20 L -150 -20 Z`, shadeColor: C.s,
+      extra: `<path d="${seams}" fill="none" stroke="${INK}" stroke-width="${r1(lw * 0.7)}" stroke-linecap="round"/>` +
+        `<path d="M 22 -154 q 24 18 32 52" fill="none" stroke="${C.h}" stroke-width="${r1(lw * 2)}" stroke-linecap="round" opacity="0.85"/>` +
+        `<circle cx="-12" cy="-140" r="4.5" fill="${C.s}" stroke="${INK}" stroke-width="2"/>` + flake(-22, -96, 13, C.emb) });
+    into.push({ d: `M 30 -49 L 64 -60 L 66 -70 L 32 -59 Z`, fill: C.strap || C.s, tf, inner: true, extra: `<circle cx="49" cy="-60" r="2.4" fill="${C.h}"/>` });
+    into.push({ d: `M -40 -182 a 12 7 0 1 0 24 0 a 12 7 0 1 0 -24 0 Z`, fill: C.button || C.c, tf });
   }
 
   // ---------------- the sheet ----------------
@@ -220,15 +253,15 @@
     s += panel(30, 150, 560, 930) + panel(610, 150, 560, 930);
     for (let i = 0; i < 4; i++) s += panel(30 + i * 288, 1110, 270, 390);
     // front and profile (local bodies span about x 280-620, y 440-1760)
-    add(bodyFront(V), `translate(310 168) scale(0.66) translate(-450 -450)`);
-    add(bodyProfile(V), `translate(890 168) scale(0.66) translate(-470 -450)`);
+    add(bodyFront(V), `translate(310 180) scale(0.645) translate(-450 -450)`);
+    add(bodyProfile(V), `translate(900 180) scale(0.645) translate(-470 -450)`);
     // 4 expressions : heads
     ['frime', 'colere', 'panique', 'fierte'].forEach((ex, i) => {
       const parts = [];
       head(V, ex, '', parts);
       const r = render(parts, S, P);
       const tilt = ex === 'fierte' ? -6 : ex === 'colere' ? 4 : 0;
-      add(r, `translate(${165 + i * 288} ${1290}) rotate(${tilt}) scale(0.9)`);
+      add(r, `translate(${165 + i * 288} ${1300}) rotate(${tilt}) scale(0.86)`);
     });
     s += body;
     ['PROFIL', 'DE FACE'].forEach((t, i) => { s += `<text x="${i ? 310 : 890}" y="1062" text-anchor="middle" font-family="Lilita One" font-size="34" fill="#0a0d14">${i ? 'DE FACE' : 'DE PROFIL'}</text>`; });

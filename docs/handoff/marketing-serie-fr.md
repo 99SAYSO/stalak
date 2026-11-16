@@ -2,7 +2,25 @@
 
 > Marketing & croissance. Rien ne change sur le site : seulement `tools/serie/` et `docs/`.
 
-## 16/11, 2 h 20 : la coupe de Liam refaite d'après l'image du propriétaire
+## 16/11, 2 h 40 : Liam en casquette à l'envers, coupe courte
+
+- À 2 h 24, le propriétaire a écrit : « j'aime toujours pas du tout sa coupe, fais plutôt une casquette à l'envers dans le style de celle que je t'envoie, et fais une coupe super simple en dessous ». Il a joint deux images de casquettes (des snapbacks à visière plate).
+- Dessiné dans `tools/serie/engine/liam.js`, pareil dans les 4 versions :
+  - une snapback à l'envers : de face, la languette à pressions et l'ouverture sur le front ; de profil, la visière plate vers l'arrière ;
+  - aucun logo d'équipe ni de marque, seulement un petit flocon brodé sur le côté ;
+  - une coupe très simple : cheveux noirs courts, pattes nettes, oreilles dégagées, ligne nette à la nuque.
+- Les 4 versions changent le visage, la couleur de la casquette et la tenue :
+  - 1 · Le classique : bleu roi ;
+  - 2 · Le sweat : bleu nuit ;
+  - 3 · Le sans-manches : noire ;
+  - 4 · Le deux-tons : glace et bleue, avec une petite boucle d'oreille.
+- Les 4 planches sont redéposées dans la fiche `liam`, en `a_choisir`, et sa description est mise à jour. Les images des vanilles sont retirées de la page.
+- Nouvelle règle dans « Mes goûts » : `regle-liam-casquette`. Elle passe avant `regle-liam-coupe` (les vanilles).
+- Coût : 0 $.
+- Ce qui attend : le choix d'une version par le propriétaire. Il peut mélanger les versions.
+- **À signaler au propriétaire** : trois anciennes lignes de « Mes goûts » décrivent encore les cheveux longs (`regle-heros` « à locks », `regle-liam-look` « locks entièrement noires », `regle-liam-coupe` les vanilles). C'est lui qui les retire ou les modifie, s'il le veut.
+
+## 16/11, 2 h 20 : la coupe de Liam refaite d'après l'image du propriétaire (remplacée à 2 h 24)
 
 - À 2 h 11, le propriétaire a écrit : « sa coupe ne va pas du tout. Surtout de profil on dirait qu'il a pas de cheveux sur le coté ». Il a joint une image de référence pour la coupe.
 - La coupe est refaite dans `tools/serie/engine/liam.js`, la même dans les 4 versions :

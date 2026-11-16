@@ -20,7 +20,7 @@ Le même Liam dans la même chambre-studio, dessiné de 3 façons : `tools/serie
 | Style 3 · BD imprimée | traits irréguliers comme au pinceau, trame de points dans les ombres, grain de papier, bleu nuit, glace et orange |
 
 Liam y porte :
-- des locks courtes (entièrement noires depuis le 16/11, remplacées à 2 h 11 par des vanilles : voir l'étape 2a) ;
+- des locks courtes (entièrement noires depuis le 16/11 ; remplacées ensuite par une casquette à l'envers et une coupe courte : voir l'étape 2a) ;
 - une doudoune bleu Stalak ouverte sur un tee-shirt blanc ;
 - un jean large et des baskets blanches.
 
@@ -45,24 +45,26 @@ Il tient son casque d'une main et, de l'autre, son téléphone levé : il se fil
 
 Des planches personnage sont dessinées en code (`tools/serie/engine/liam.js`, page `liam.html?v=1..4`). Sur chacune : Liam de face, de profil et en 4 expressions (frime, colère, panique, fierté). Les 4 planches sont dans la fiche `liam`, en `a_choisir`.
 
-**16/11, 2 h 11 : la coupe refaite d'après l'image du propriétaire.** Il trouvait que la coupe « ne va pas du tout », surtout de profil (« on dirait qu'il a pas de cheveux sur le côté »), et a envoyé une image de référence. L'image sert d'inspiration pour la coupe, elle n'est pas recopiée. La coupe est maintenant la même dans les 4 versions :
-- des vanilles (twists) entièrement noires, avec une raie au milieu ;
-- elles tombent tout autour de la tête jusqu'au menton et cachent les oreilles ;
-- de profil, les cheveux couvrent tout le côté de la tête ;
-- la texture des vanilles est en gris très foncé, sans reflet clair, pour que les cheveux restent noirs.
+La coiffure a changé deux fois le 16/11 :
+1. **2 h 11** : la première coupe (des locks) « ne va pas du tout », surtout de profil. Avec une image de référence, elle devient des vanilles (twists) noires, raie au milieu, jusqu'au menton (`regle-liam-coupe` dans « Mes goûts »).
+2. **2 h 24** : « j'aime toujours pas du tout sa coupe ». Le propriétaire demande **une casquette à l'envers, dans le style des casquettes qu'il envoie** (une snapback à visière plate), **et une coupe super simple en dessous**. La règle est notée dans « Mes goûts » (`regle-liam-casquette`). Elle passe avant `regle-liam-coupe`.
 
-La règle est notée dans « Mes goûts » (`regle-liam-coupe`). Les 4 nouvelles planches remplacent les anciennes dans la fiche `liam`. Les anciennes images sont retirées de la page.
+Ce qui est dessiné maintenant, pareil dans les 4 versions :
+- **La casquette, à l'envers.** C'est une snapback haute et rigide, à visière plate. De face, on voit l'arrière de la casquette : la languette à pressions et l'ouverture sur le front, où on voit ses cheveux. De profil, la visière plate pointe vers l'arrière. On garde la forme des casquettes de référence, sans leurs logos (équipes de baseball, marque) : la nôtre a seulement un petit flocon brodé sur le côté.
+- **La coupe, très simple** : des cheveux noirs courts. On voit des pattes nettes et les tempes de face. De profil, on voit les cheveux au-dessus et derrière l'oreille, avec une ligne nette à la nuque. Les oreilles sont dégagées.
 
-| Version | Visage | Tenue |
-|---|---|---|
-| 1 · Le classique | anguleux | doudoune ouverte, tee blanc, jean large, baskets basses |
-| 2 · Le sweat | rond | doudoune courte sur un sweat gris, cargo beige, baskets montantes |
-| 3 · Le sans-manches | long | doudoune sans manches sur un tee manches longues glace, jogging noir |
-| 4 · Le deux-tons | large, sourcil fendu | doudoune bleue aux épaules glace, tee noir, jean clair |
+| Version | Visage | Casquette | Tenue |
+|---|---|---|---|
+| 1 · Le classique | anguleux | bleu roi (la plus proche de sa référence) | doudoune ouverte, tee blanc, jean large, baskets basses |
+| 2 · Le sweat | rond | bleu nuit | doudoune courte sur un sweat gris, cargo beige, baskets montantes |
+| 3 · Le sans-manches | long | noire (gris anthracite, pour qu'on lise la languette) | doudoune sans manches sur un tee manches longues glace, jogging noir |
+| 4 · Le deux-tons | large, sourcil fendu, petite boucle d'oreille | glace, visière et languette bleues | doudoune bleue aux épaules glace, tee noir, jean clair |
 
-Dans les 4 versions : la même coupe, pas de chaîne, le cou visible, les yeux droits, un corps fin, la doudoune bleu Stalak.
+Dans les 4 versions : la même casquette et la même coupe, pas de chaîne, le cou visible, les yeux droits, un corps fin, la doudoune bleu Stalak. Le propriétaire peut mélanger les versions, par exemple prendre le visage d'une version avec la casquette d'une autre.
 
-À noter pour la suite : la planche de style validée (`tcrazy.js`) montre encore les anciennes locks. Les scènes de la série seront redessinées avec la version de Liam choisie et sa nouvelle coupe.
+Les 4 planches sont redéposées dans la fiche `liam`, en `a_choisir`. Les images des versions précédentes sont retirées de la page.
+
+À noter pour la suite : la planche de style validée (`tcrazy.js`) montre encore Liam avec ses premières locks. Les scènes de la série seront redessinées avec la version de Liam choisie.
 
 ## Étape 2 : tout l'univers dans le style choisi (après le choix)
 
