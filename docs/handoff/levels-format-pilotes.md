@@ -10,6 +10,7 @@ Conversation « 8. Vidéos LEVELS », 16/11/2026.
 - **3 styles de bonhomme bâton et de décor** en images fixes (A Glace, B Nuit, C Sticker), dessinés en code (`tools/levels/styles.html`, `tools/levels/render_styles.py`), déposés dans Studio Stalak : collection `univers`, fiche `levels-style` (`statut: a_choisir`, `compte: "levels"`).
 - **5 scripts pilotes** dans Studio Stalak, collection `videos`, `compte: "levels"`, `format: "LEVELS"`, `statut: "script"` : drill (18/11 slot 1), love (18/11 slot 2), triste (19/11 slot 1), sur ton ex (19/11 slot 2), de motivation (20/11 slot 1). Copie : `docs/marketing/levels/pilotes.json`.
 - Aucun crédit dépensé (pas de voix, pas de Flora, pas de rendu vidéo).
+- **Décisions du propriétaire (16/11, 21 h 25)** : durée 30 à 40 s, voix Flora, **pas de musique**, horaires à tester (plan dans `FORMAT.md`). Les 3 styles ne lui plaisent pas (« le même style de dessin que la vidéo envoyée ») : **style D** ajouté (même rendu, nos personnages et décors). Règles ajoutées dans « Mes goûts » : `levels-duree`, `levels-voix`, `levels-pas-musique`. Fiches pilotes mises à jour (heure, durée, son).
 
 ## Fichiers touchés
 - `docs/marketing/levels/FORMAT.md` (nouveau)
@@ -28,7 +29,6 @@ Aucun code du site touché. Rendu des 6 images vérifié à l'œil (textes dans 
 Aucun changement visible sur le site : pas de maquette nécessaire (règle 9).
 
 ## Reste au propriétaire
-1. Choisir le style (Univers → « LEVELS · Le bonhomme bâton et son décor »).
+1. Choisir le style, sans doute D (Univers → « LEVELS · Le bonhomme bâton et son décor »).
 2. Valider ou faire refaire les 5 scripts (À valider, compte Levels).
-3. Décider : durée (30 à 35 s proposé), voix Flora (≈ 0,10 $ par vidéo) ou sans voix, beats à utiliser par genre, heures des 2 vidéos par jour.
-4. Donner le feu vert (`lots/levels-2026-11-16`) une fois scripts et visuels validés.
+3. Donner le feu vert (`lots/levels-2026-11-16`) une fois scripts et visuels validés.

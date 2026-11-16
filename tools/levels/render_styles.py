@@ -1,6 +1,6 @@
 """Rend les planches de style LEVELS (images fixes, 1080 x 1920) en PNG.
 
-Usage : python3 tools/levels/render_styles.py SORTIE_DOSSIER
+Usage : python3 tools/levels/render_styles.py SORTIE_DOSSIER [glace,nuit,sticker,ref]
 """
 import pathlib
 import sys
@@ -14,7 +14,7 @@ out.mkdir(parents=True, exist_ok=True)
 with sync_playwright() as p:
     b = p.chromium.launch()
     pg = b.new_page(viewport={"width": 1080, "height": 1920})
-    for style in ("glace", "nuit", "sticker"):
+    for style in (sys.argv[2].split(",") if len(sys.argv) > 2 else ("glace", "nuit", "sticker", "ref")):
         for scene in ("n1", "n5"):
             pg.goto(f"file://{HERE / 'styles.html'}?style={style}&scene={scene}")
             pg.evaluate("document.fonts.ready")

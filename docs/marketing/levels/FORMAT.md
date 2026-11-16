@@ -119,7 +119,7 @@ Le squelette ne change pas d'une vidéo à l'autre : c'est ce qui fait la série
 | **5** | Il filme plusieurs prises, met son son dans **Stalak**, qui coupe sur le rythme, **lèvres synchro**. Il poste : la cible s'arrête de faire défiler, hoche la tête, partage | **Pas de coup** : la jauge HYPE passe à **MAX** | 9 – 11 s |
 | Fin | Carte de fin : « Le niveau 5, tu le fais sur **stalak.app** » + « Gratuit, sans téléchargement » | — | 3 – 3,5 s |
 
-**Durée totale visée : 30 à 35 s** (la référence fait 27 s). La règle « 1 min 05 à 1 min 20 » vaut pour la série T-Crazy, pas pour LEVELS : **à confirmer par le propriétaire.**
+**Durée : entre 30 et 40 s** (décision du propriétaire du 16/11 ; la référence fait 27 s). La règle « 1 min 05 à 1 min 20 » vaut pour la série T-Crazy, pas pour LEVELS.
 
 Le niveau 4 ne nomme jamais une appli : on dit « une appli de montage classique », et on ne dessine aucune interface reconnaissable.
 
@@ -139,10 +139,10 @@ Le niveau 4 ne nomme jamais une appli : on dit « une appli de montage classique
 - La cible réagit (elle s'arrête, la tête bouge sur le rythme, « c'est qui ? »), la jauge passe à MAX avec un son de niveau gagné.
 - **Carte de fin** : « Le niveau 5, tu le fais sur stalak.app » ; « Gratuit, sans téléchargement ». Le spectateur doit se dire « moi aussi j'ai ce problème » (règle « appel à l'action intelligent »).
 
-### Le son
+### Le son (décisions du propriétaire du 16/11)
 
-- **Voix** : comme la référence, des bulles **et** des voix courtes. Une voix pour le rappeur (la même dans toutes les vidéos), une ou deux pour les cibles. Voix de synthèse Flora (Gemini), générées **une seule fois** après validation et feu vert. Environ 6 à 8 répliques par vidéo (une génération par réplique), soit **environ 0,10 $ par vidéo** (0,013 $ la génération au 15/11). Option gratuite : pas de voix, seulement bulles + bruitages (à choisir par le propriétaire).
-- **Musique** : contrairement à la référence, on a besoin de musique, puisqu'on fait la promo d'un son. **Le son du rappeur** (un extrait du genre de la vidéo) est **uniquement** un son dont on a les droits : beats du propriétaire ou d'ALASKA en priorité, sinon une musique Pixabay (usage commercial permis) qui colle au genre. Jamais un morceau connu. Il revient à chaque niveau (dans la rue, dans le vocal, sous l'image fixe, dans le mauvais montage) et sonne enfin bien au niveau 5.
+- **Voix Flora** (Gemini), en plus des bulles. Une voix pour le rappeur (la même dans toutes les vidéos), une ou deux pour les cibles. Générées **une seule fois** après validation et feu vert. Environ 6 à 8 répliques par vidéo (une génération par réplique), soit **environ 0,10 $ par vidéo** (0,013 $ la génération au 15/11).
+- **Pas de musique**, comme la référence : seulement les voix et les bruitages. Le son du rappeur passe par ses paroles (voix + bulles) et des notes ♪ à l'écran. Au niveau 5, le rythme se voit : la cible bat la mesure de la tête, les ♪ pulsent, et les coupes du snippet tombent sur ces temps.
 - **Bruitages** : baffe, « bonk », sifflement de chute + « clang », poêle, « ding » à chaque case qui change, son de niveau gagné au MAX. Bruitages libres de droits (Pixabay ou faits en code).
 - Pas de générique, pas de jingle : la vidéo commence directement par le niveau 1.
 
@@ -157,7 +157,7 @@ Le niveau 4 ne nomme jamais une appli : on dit « une appli de montage classique
 
 - Pas de vraie personne : ni rappeur connu, ni son visage, ni sa voix.
 - Pas de concurrent nommé : au niveau 4, « une appli de montage classique », et aucune interface reconnaissable.
-- Seulement des sons dont on a les droits.
+- Pas de musique ; bruitages seulement s'ils sont libres de droits.
 - Les coups restent du dessin animé.
 - Aucun chiffre inventé (pas de « 2 millions de vues » ; la jauge HYPE n'a pas de chiffre).
 - Chaque vidéo a sa miniature, dessinée dans le style de la série.
@@ -167,15 +167,26 @@ Le niveau 4 ne nomme jamais une appli : on dit « une appli de montage classique
 ### Légende et publication
 
 - 2 vidéos par jour (`slot` 1 et 2 dans Studio Stalak, `compte: "levels"`).
+- **Horaires à tester** (le propriétaire veut tester jours de semaine et week-end) : on ne sait pas encore ce qui marche pour ce compte, donc on fait tourner les créneaux et on compare dans l'onglet Résultats (au moins 5 vidéos chiffrées par créneau avant de conclure) :
+  - semaine 1 : en semaine **12 h 30** (pause déjeuner) et **19 h 00** (après les cours / le travail) ; le week-end **11 h 00** et **17 h 30** ;
+  - semaine 2 : en semaine **7 h 45** (trajet du matin) et **21 h 30** (soirée) ; le week-end **14 h 00** et **21 h 00** ;
+  - ensuite on garde les 2 meilleurs créneaux de semaine et du week-end, et on n'en change qu'un à la fois.
+  - Les pilotes : 18/11 12 h 30 et 19 h 00, 19/11 12 h 30 et 19 h 00, 20/11 17 h 30 (vendredi, fin de semaine).
 - Légende : une phrase + 4 à 6 mots-clés (« Le niveau 4 m'a fait mal 💀 #rap #snippet #rappeur #drill »).
 - Champ `format` des fiches : toujours **« LEVELS »**, pour l'onglet Résultats.
 
 ---
 
-## 3. Ce que le propriétaire doit trancher
+## 3. Décisions du propriétaire (16/11, 21 h 25)
 
-1. **Durée** : 30 à 35 s (proposé) au lieu de 1 min 05 – 1 min 20.
-2. **Voix** : voix Flora (≈ 0,10 $ par vidéo) ou seulement bulles + bruitages (gratuit).
-3. **Le style** du bonhomme bâton et du décor : 3 planches (A Glace, B Nuit, C Sticker) dans Studio Stalak, onglet Univers, fiche « LEVELS · Le bonhomme bâton et son décor ». Dessinées en code : `tools/levels/styles.html`, rendu avec `python3 tools/levels/render_styles.py DOSSIER`.
-5. **Les 5 scripts pilotes** (drill, love, triste, sur ton ex, de motivation) : Studio Stalak, onglet À valider, compte Levels, 18 au 20/11. Copie dans `docs/marketing/levels/pilotes.json`.
-4. **Les sons** : quels beats à lui ou d'ALASKA on peut utiliser, genre par genre.
+- Durée : entre 30 et 40 s.
+- Voix : Flora.
+- Musique : aucune sur les vidéos LEVELS.
+- Horaires : à tester (plan ci-dessus).
+- Style : les 3 premières planches ne lui plaisent pas ; il veut le même dessin que la vidéo de référence. **Style D** proposé (bonshommes pleins aux membres épais, sans visage, fond sombre détaillé, lumière douce), avec nos propres personnages et décors. Planches dessinées en code : `tools/levels/styles.html`, rendu avec `python3 tools/levels/render_styles.py DOSSIER ref`. Fiche Univers `levels-style`, à choisir.
+
+## 4. Ce qu'il reste à faire
+
+1. Choix du style (Univers → « LEVELS · Le bonhomme bâton et son décor »).
+2. Validation des 5 scripts pilotes (À valider, compte Levels, 18 au 20/11 ; copie dans `docs/marketing/levels/pilotes.json`).
+3. Puis personnages et décors de chaque pilote en images fixes, puis feu vert (`lots/levels-2026-11-16`), puis voix et vidéo.
