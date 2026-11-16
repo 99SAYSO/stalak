@@ -41,7 +41,7 @@ Il tient son casque d'une main et, de l'autre, son téléphone levé : il se fil
 
 **16/11, 2 h 04 : planche validée par le propriétaire** (fiche `style` en `choisi`).
 
-## Étape 2a : les 4 versions de Liam (à choisir)
+## Étape 2a : les 4 versions de Liam (version 4 choisie le 16/11)
 
 Des planches personnage sont dessinées en code (`tools/serie/engine/liam.js`, page `liam.html?v=1..4`). Sur chacune : Liam de face, de profil et en 4 expressions (frime, colère, panique, fierté). Les 4 planches sont dans la fiche `liam`, en `a_choisir`.
 
@@ -65,6 +65,13 @@ Dans les 4 versions : la même casquette et la même coupe, pas de chaîne, le c
 **2 h 40** : « l'arrière de son crâne en vue de profil est trop long ». De profil, l'arrière de la tête est raccourci, et la casquette, les cheveux, la nuque et la visière suivent. La remarque est notée dans « Mes goûts » (`pas-crane-long`).
 
 Les 4 planches sont redéposées dans la fiche `liam`, en `a_choisir`. Les images des versions précédentes sont retirées de la page.
+
+**16/11, 2 h 44 : Liam est choisi.** Le propriétaire prend la **version 4, « Le deux-tons »** :
+- visage large, sourcil fendu, petite boucle d'oreille ;
+- casquette glace à visière bleue, portée à l'envers ;
+- doudoune bleue aux épaules glace, tee noir, jean clair, baskets basses.
+
+À sa demande (« baisse un peu la hauteur de sa casquette »), le haut de la casquette est descendu, de face comme de profil. La remarque est notée dans « Mes goûts » (`pas-casquette-haute`). La fiche `liam` est en `choisi`, avec la planche corrigée. C'est cette planche qui sert de référence pour toute la série.
 
 À noter pour la suite : la planche de style validée (`tcrazy.js`) montre encore Liam avec ses premières locks. Les scènes de la série seront redessinées avec la version de Liam choisie.
 

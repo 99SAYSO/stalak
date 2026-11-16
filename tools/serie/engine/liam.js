@@ -50,15 +50,15 @@
   // the cap, front view : worn backwards, so we see its back : the snapback strap and the opening on the forehead
   function capFront(V, tf, into) {
     const C = V.cap, lw = S.lw;
-    const crown = `M -104 -34 C -110 -92 -98 -148 -52 -168 C -20 -180 20 -180 52 -168 C 98 -148 110 -92 104 -34 C 70 -52 34 -60 0 -62 C -34 -60 -70 -52 -104 -34 Z`;
-    const seams = `M 0 -174 L 0 -104 M -6 -174 C -48 -158 -70 -112 -72 -50 M 6 -174 C 48 -158 70 -112 72 -50`;
+    const crown = `M -104 -34 C -110 -80 -98 -124 -56 -140 C -24 -150 24 -150 56 -140 C 98 -124 110 -80 104 -34 C 70 -52 34 -60 0 -62 C -34 -60 -70 -52 -104 -34 Z`;
+    const seams = `M 0 -146 L 0 -100 M -6 -146 C -44 -134 -66 -100 -72 -50 M 6 -146 C 44 -134 66 -100 72 -50`;
     into.push({ d: crown, fill: C.c, tf, shade: `M -130 -200 L -64 -200 C -84 -150 -88 -96 -80 -40 L -130 -24 Z`, shadeColor: C.s,
       extra: `<path d="${seams}" fill="none" stroke="${INK}" stroke-width="${r1(lw * 0.7)}" stroke-linecap="round"/>` +
-        `<path d="M 58 -152 q 24 18 30 54" fill="none" stroke="${C.h}" stroke-width="${r1(lw * 2)}" stroke-linecap="round" opacity="0.85"/>` +
-        [-40, 40].map(x => `<circle cx="${x}" cy="-138" r="4.5" fill="${C.s}" stroke="${INK}" stroke-width="2"/>`).join('') });
-    into.push({ d: `M -12 -177 a 12 7 0 1 0 24 0 a 12 7 0 1 0 -24 0 Z`, fill: C.button || C.c, tf });
+        `<path d="M 58 -128 q 22 14 28 44" fill="none" stroke="${C.h}" stroke-width="${r1(lw * 2)}" stroke-linecap="round" opacity="0.85"/>` +
+        [-40, 40].map(x => `<circle cx="${x}" cy="-116" r="4.5" fill="${C.s}" stroke="${INK}" stroke-width="2"/>`).join('') });
+    into.push({ d: `M -12 -148 a 12 7 0 1 0 24 0 a 12 7 0 1 0 -24 0 Z`, fill: C.button || C.c, tf });
     // the opening above the strap : his short black hair shows through
-    into.push({ d: `M -28 -66 C -29 -90 -15 -103 0 -103 C 15 -103 29 -90 28 -66 C 14 -69 -14 -69 -28 -66 Z`, fill: P.hair, tf, inner: true });
+    into.push({ d: `M -28 -66 C -29 -88 -15 -99 0 -99 C 15 -99 29 -88 28 -66 C 14 -69 -14 -69 -28 -66 Z`, fill: P.hair, tf, inner: true });
     // the strap and its snaps
     into.push({ d: `M -34 -57 C -16 -62 16 -62 34 -57 L 34 -66 C 16 -71 -16 -71 -34 -66 Z`, fill: C.strap || C.s, tf, inner: true,
       extra: [-18, 0, 18].map(x => `<circle cx="${x}" cy="${x ? -63.5 : -65}" r="2.4" fill="${C.h}"/>`).join('') });
@@ -230,14 +230,14 @@
       extra: `<path d="M -16 -4 C -30 -6 -32 18 -20 26" fill="none" stroke="${P.skinS}" stroke-width="4" stroke-linecap="round"/>` });
     if (V.earring) into.push({ d: `M -18 38 a 5 5 0 1 0 0.1 0 Z`, fill: '#dff2ff', tf, extra: `<circle cx="-19.5" cy="36.5" r="1.6" fill="#ffffff"/>` });
     // the crown : tall structured front panel at the back, the strap on the forehead
-    const seams = `M -22 -178 C -46 -150 -52 -100 -48 -36 M -16 -178 C 12 -158 26 -112 28 -54`;
-    into.push({ d: `M 64 -60 C 68 -100 54 -142 18 -166 C -10 -184 -56 -184 -78 -152 C -90 -128 -90 -78 -84 -26 C -46 -28 10 -40 64 -60 Z`, fill: C.c, tf,
+    const seams = `M -20 -148 C -42 -126 -50 -90 -48 -36 M -14 -148 C 10 -132 24 -100 28 -54`;
+    into.push({ d: `M 64 -60 C 68 -90 54 -122 22 -140 C -6 -154 -52 -154 -74 -130 C -88 -110 -90 -72 -84 -26 C -46 -28 10 -40 64 -60 Z`, fill: C.c, tf,
       shade: `M -130 -200 L -64 -200 C -78 -150 -80 -96 -72 -20 L -130 -20 Z`, shadeColor: C.s,
       extra: `<path d="${seams}" fill="none" stroke="${INK}" stroke-width="${r1(lw * 0.7)}" stroke-linecap="round"/>` +
-        `<path d="M 22 -154 q 24 18 32 52" fill="none" stroke="${C.h}" stroke-width="${r1(lw * 2)}" stroke-linecap="round" opacity="0.85"/>` +
-        `<circle cx="-2" cy="-140" r="4.5" fill="${C.s}" stroke="${INK}" stroke-width="2"/>` + flake(-10, -98, 13, C.emb) });
+        `<path d="M 26 -128 q 20 14 28 42" fill="none" stroke="${C.h}" stroke-width="${r1(lw * 2)}" stroke-linecap="round" opacity="0.85"/>` +
+        `<circle cx="-2" cy="-118" r="4.5" fill="${C.s}" stroke="${INK}" stroke-width="2"/>` + flake(-10, -86, 13, C.emb) });
     into.push({ d: `M 30 -49 L 64 -60 L 66 -70 L 32 -59 Z`, fill: C.strap || C.s, tf, inner: true, extra: `<circle cx="49" cy="-60" r="2.4" fill="${C.h}"/>` });
-    into.push({ d: `M -32 -180 a 12 7 0 1 0 24 0 a 12 7 0 1 0 -24 0 Z`, fill: C.button || C.c, tf });
+    into.push({ d: `M -32 -150 a 12 7 0 1 0 24 0 a 12 7 0 1 0 -24 0 Z`, fill: C.button || C.c, tf });
   }
 
   // ---------------- the sheet ----------------

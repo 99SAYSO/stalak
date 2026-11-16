@@ -2,7 +2,19 @@
 
 > Marketing & croissance. Rien ne change sur le site : seulement `tools/serie/` et `docs/`.
 
-## 16/11, 2 h 50 : profil de Liam, crâne raccourci
+## 16/11, 2 h 50 : Liam choisi (version 4, « Le deux-tons »), casquette baissée
+
+- À 2 h 44, le propriétaire a choisi la **version 4, « Le deux-tons »** (fiche `liam` : `choix` 3, statut `choisi`) :
+  - visage large, sourcil fendu, petite boucle d'oreille ;
+  - casquette glace à visière bleue, portée à l'envers ;
+  - doudoune bleue aux épaules glace, tee noir, jean clair, baskets basses.
+- Il a demandé : « baisse un peu la hauteur de sa casquette ». Le haut de la casquette est descendu d'environ 30 unités, de face comme de profil (`capFront` et `headProfile` dans `tools/serie/engine/liam.js`). Elle couvre toujours le crâne.
+- La planche de la version 4 est redéposée dans la fiche, qui reste en `choisi`. Les autres versions gardent leurs anciennes images : elles ne servent plus.
+- La remarque est notée dans « Mes goûts » (`pas-casquette-haute`).
+- Coût : 0 $.
+- Ce qui attend : les autres personnages (Nadia, Deuce, Maya, Big Mo, M. Reyes, la mascotte), 2 versions chacun, dans le même style que Liam.
+
+## 16/11, 2 h 45 : profil de Liam, crâne raccourci
 
 - À 2 h 40, le propriétaire a écrit : « l'arrière de son crâne en vue de profil est trop long ».
 - Dans `headProfile` (`tools/serie/engine/liam.js`), l'arrière de la tête est raccourci d'environ 30 unités. La casquette, les cheveux et la nuque suivent, et la visière est un peu plus courte. La tête de profil est maintenant compacte derrière l'oreille. La vue de face ne change pas.
