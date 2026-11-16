@@ -62,6 +62,8 @@ Ce qui est dessiné maintenant, pareil dans les 4 versions :
 
 Dans les 4 versions : la même casquette et la même coupe, pas de chaîne, le cou visible, les yeux droits, un corps fin, la doudoune bleu Stalak. Le propriétaire peut mélanger les versions, par exemple prendre le visage d'une version avec la casquette d'une autre.
 
+**2 h 40** : « l'arrière de son crâne en vue de profil est trop long ». De profil, l'arrière de la tête est raccourci, et la casquette, les cheveux, la nuque et la visière suivent. La remarque est notée dans « Mes goûts » (`pas-crane-long`).
+
 Les 4 planches sont redéposées dans la fiche `liam`, en `a_choisir`. Les images des versions précédentes sont retirées de la page.
 
 À noter pour la suite : la planche de style validée (`tcrazy.js`) montre encore Liam avec ses premières locks. Les scènes de la série seront redessinées avec la version de Liam choisie.

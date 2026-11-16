@@ -215,29 +215,29 @@
   function headProfile(V, tf, into) {
     const C = V.cap, lw = S.lw;
     // the flat brim points back : the cap is worn backwards
-    into.push({ d: `M -104 -44 L -204 -52 C -214 -52 -216 -40 -208 -36 L -104 -26 Z`, fill: C.brim || C.c, tf,
-      extra: `<path d="M -120 -39 L -196 -45" fill="none" stroke="${C.brimS || C.s}" stroke-width="2.6" stroke-dasharray="7 5" stroke-linecap="round"/>` });
+    into.push({ d: `M -74 -44 L -152 -50 C -162 -50 -164 -38 -156 -34 L -74 -26 Z`, fill: C.brim || C.c, tf,
+      extra: `<path d="M -90 -39 L -146 -43" fill="none" stroke="${C.brimS || C.s}" stroke-width="2.6" stroke-dasharray="7 5" stroke-linecap="round"/>` });
     // the head in profile, facing right : face, jaw, back of the skull
-    into.push({ d: `M 64 -54 C 68 -36 66 -24 70 -12 L 90 20 C 92 26 86 30 78 30 L 74 36 C 80 42 80 48 74 52 L 68 56 C 76 60 76 68 68 72 C 68 86 62 98 46 104 C 28 110 6 106 -10 98 L -38 92 C -50 84 -72 74 -92 56 C -110 34 -116 -20 -110 -60 C -102 -110 -60 -130 -10 -128 C 30 -126 58 -100 64 -54 Z`,
+    into.push({ d: `M 64 -54 C 68 -36 66 -24 70 -12 L 90 20 C 92 26 86 30 78 30 L 74 36 C 80 42 80 48 74 52 L 68 56 C 76 60 76 68 68 72 C 68 86 62 98 46 104 C 28 110 6 106 -10 98 L -34 92 C -44 84 -56 72 -66 56 C -78 34 -82 -20 -76 -60 C -68 -108 -40 -130 -2 -128 C 34 -126 58 -100 64 -54 Z`,
       fill: P.skin, tf, shade: `M -140 -140 L -28 -140 C -34 -50 -28 24 -8 66 C 6 92 24 104 46 112 L -140 114 Z`, shadeColor: P.skinS,
       extra: `<path d="M 34 -6 Q 46 -14 58 -4 Q 48 6 34 -6 Z" fill="#fbf7f1"/><circle cx="52" cy="-5" r="5.5" fill="#1d120c"/><path d="M 30 -10 Q 46 -22 62 -8" fill="none" stroke="${INK}" stroke-width="${lw * 1.8}" stroke-linecap="round"/>` +
         `<path d="M 24 -30 Q 44 -38 64 -30" fill="none" stroke="${INK}" stroke-width="${({ thick: 9, thin: 5, heavy: 12, slit: 9 })[V.brows]}" stroke-linecap="round"/>` +
         `<path d="M 58 58 Q 64 62 70 60" fill="none" stroke="${INK}" stroke-width="${lw}" stroke-linecap="round"/>` });
     // a very simple short haircut : sideburn, above and behind the ear, a clean line at the nape
-    into.push({ d: `M 40 -112 L 40 -62 C 37 -40 34 -20 32 -4 L 17 -2 C 15 -8 14 -12 11 -16 C 2 -26 -24 -28 -38 -14 C -42 4 -44 18 -46 28 C -62 34 -90 34 -115 22 C -119 -6 -119 -30 -112 -60 L -106 -112 Z`, fill: P.hair, tf });
+    into.push({ d: `M 40 -112 L 40 -62 C 37 -40 34 -20 32 -4 L 17 -2 C 15 -8 14 -12 11 -16 C 2 -26 -24 -28 -38 -14 C -42 4 -44 18 -46 28 C -54 33 -66 32 -82 22 C -86 -6 -86 -30 -79 -60 L -72 -112 Z`, fill: P.hair, tf });
     // the ear
     into.push({ d: `M -8 -12 C -22 -24 -40 -16 -40 4 C -40 24 -30 40 -14 40 C -8 40 -5 32 -8 24 C -10 12 -6 0 -8 -12 Z`, fill: P.skin, tf,
       extra: `<path d="M -16 -4 C -30 -6 -32 18 -20 26" fill="none" stroke="${P.skinS}" stroke-width="4" stroke-linecap="round"/>` });
     if (V.earring) into.push({ d: `M -18 38 a 5 5 0 1 0 0.1 0 Z`, fill: '#dff2ff', tf, extra: `<circle cx="-19.5" cy="36.5" r="1.6" fill="#ffffff"/>` });
     // the crown : tall structured front panel at the back, the strap on the forehead
-    const seams = `M -30 -180 C -62 -150 -72 -100 -66 -40 M -24 -180 C 8 -158 26 -112 28 -54`;
-    into.push({ d: `M 64 -60 C 68 -100 54 -142 18 -166 C -20 -188 -84 -186 -112 -150 C -126 -126 -124 -76 -118 -26 C -70 -26 10 -40 64 -60 Z`, fill: C.c, tf,
-      shade: `M -150 -200 L -90 -200 C -106 -150 -110 -96 -100 -20 L -150 -20 Z`, shadeColor: C.s,
+    const seams = `M -22 -178 C -46 -150 -52 -100 -48 -36 M -16 -178 C 12 -158 26 -112 28 -54`;
+    into.push({ d: `M 64 -60 C 68 -100 54 -142 18 -166 C -10 -184 -56 -184 -78 -152 C -90 -128 -90 -78 -84 -26 C -46 -28 10 -40 64 -60 Z`, fill: C.c, tf,
+      shade: `M -130 -200 L -64 -200 C -78 -150 -80 -96 -72 -20 L -130 -20 Z`, shadeColor: C.s,
       extra: `<path d="${seams}" fill="none" stroke="${INK}" stroke-width="${r1(lw * 0.7)}" stroke-linecap="round"/>` +
         `<path d="M 22 -154 q 24 18 32 52" fill="none" stroke="${C.h}" stroke-width="${r1(lw * 2)}" stroke-linecap="round" opacity="0.85"/>` +
-        `<circle cx="-12" cy="-140" r="4.5" fill="${C.s}" stroke="${INK}" stroke-width="2"/>` + flake(-22, -96, 13, C.emb) });
+        `<circle cx="-2" cy="-140" r="4.5" fill="${C.s}" stroke="${INK}" stroke-width="2"/>` + flake(-10, -98, 13, C.emb) });
     into.push({ d: `M 30 -49 L 64 -60 L 66 -70 L 32 -59 Z`, fill: C.strap || C.s, tf, inner: true, extra: `<circle cx="49" cy="-60" r="2.4" fill="${C.h}"/>` });
-    into.push({ d: `M -40 -182 a 12 7 0 1 0 24 0 a 12 7 0 1 0 -24 0 Z`, fill: C.button || C.c, tf });
+    into.push({ d: `M -32 -180 a 12 7 0 1 0 24 0 a 12 7 0 1 0 -24 0 Z`, fill: C.button || C.c, tf });
   }
 
   // ---------------- the sheet ----------------

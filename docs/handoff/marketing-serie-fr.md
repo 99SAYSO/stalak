@@ -2,6 +2,14 @@
 
 > Marketing & croissance. Rien ne change sur le site : seulement `tools/serie/` et `docs/`.
 
+## 16/11, 2 h 50 : profil de Liam, crâne raccourci
+
+- À 2 h 40, le propriétaire a écrit : « l'arrière de son crâne en vue de profil est trop long ».
+- Dans `headProfile` (`tools/serie/engine/liam.js`), l'arrière de la tête est raccourci d'environ 30 unités. La casquette, les cheveux et la nuque suivent, et la visière est un peu plus courte. La tête de profil est maintenant compacte derrière l'oreille. La vue de face ne change pas.
+- La remarque est notée dans « Mes goûts » (`pas-crane-long`).
+- Les 4 planches sont redéposées dans la fiche `liam`, en `a_choisir`. Les précédentes sont retirées de la page.
+- Coût : 0 $.
+
 ## 16/11, 2 h 40 : Liam en casquette à l'envers, coupe courte
 
 - À 2 h 24, le propriétaire a écrit : « j'aime toujours pas du tout sa coupe, fais plutôt une casquette à l'envers dans le style de celle que je t'envoie, et fais une coupe super simple en dessous ». Il a joint deux images de casquettes (des snapbacks à visière plate).
