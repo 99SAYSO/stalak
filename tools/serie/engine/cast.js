@@ -345,6 +345,7 @@
   });
 
   function headF(K, expr, tf, into) {
+    if (K._expr) expr = K._expr; // a scene can ask for another expression than the sheet's
     const H = K.head, hw = HWF[H.face], HS = HAIR[H.hair] || {};
     const add = (arr) => arr.forEach(p => into.push(Object.assign({ tf }, p)));
     if (HS.fbehind && !K._body) add(HS.fbehind(K, hw));
@@ -880,5 +881,18 @@
     return `<defs>${PAT}<linearGradient id="scr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f6fd6"/><stop offset="1" stop-color="#0e3f8f"/></linearGradient>${defs}</defs>` + s;
   }
 
-  window.CAST = { sheet, CAST, smooth, sym, fluffy, braid, HAIR, BEARD, BEARDP, FACE, HWF, features };
+  // for the scenes (frame.js) : one character, full body, front view, with an expression ; returns { defs, svg }
+  function figure(cid, v, expr) {
+    const K = Object.assign({ id: cid + v + 'x' }, CAST[cid][v]);
+    K.P = { skinS: K.skinS, hairS: K.hairS };
+    const hs = K.hs || 1.22, HSb = HAIR[K.head.hair] || {}, ftf = `translate(450 ${r1(846 - 124 * hs)}) scale(${hs})`;
+    const parts = [];
+    if (HSb.fbehind) HSb.fbehind(K).forEach(p => parts.push(Object.assign({ tf: ftf }, p)));
+    K._body = true; K._expr = expr;
+    K.front(K, parts, ftf);
+    const r = render(parts, S, K.P);
+    return { defs: PAT + r.defs, svg: r.svg };
+  }
+
+  window.CAST = { sheet, figure, CAST, smooth, sym, fluffy, braid, HAIR, BEARD, BEARDP, FACE, HWF, features };
 })();

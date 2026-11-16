@@ -85,7 +85,7 @@ def board(out, title, scene, face_box, traits, label):
     return p
 
 
-def decor_board(out, title, subtitle, scenes, traits, crop=None):
+def decor_board(out, title, subtitle, scenes, traits, crop=None, crop_src=None, crop_label='GROS PLAN'):
     """3:4 board for a set. Two scenes (day, night) side by side ; or one scene with a close-up and its traits."""
     W, H = 1200, 1600
     nb = lambda t: t.replace('« ', '«\u00a0').replace(' »', '\u00a0»')  # never a lone guillemet at a line start
@@ -115,8 +115,9 @@ def decor_board(out, title, subtitle, scenes, traits, crop=None):
         sc = src.resize((770, 1369), Image.LANCZOS)
         framed(img, sc, 34, 170)
         if crop:
-            framed(img, src.crop(crop).resize((322, 322), Image.LANCZOS), 846, 170)
-            d.text((846, 520), 'GROS PLAN', font=font(FONT_TEXT, 26, 800), fill=ICE)
+            csrc = Image.open(crop_src).convert('RGB') if crop_src else src
+            framed(img, csrc.crop(crop).resize((322, 322), Image.LANCZOS), 846, 170)
+            d.text((846, 520), crop_label, font=font(FONT_TEXT, 26, 800), fill=ICE)
         y = 572
         for t in traits:
             for j, line in enumerate(wrap(d, t, ft, 322 - 30)):
@@ -206,9 +207,65 @@ def decors(names):
     return out
 
 
+# The series dressing (fiches bandeau and logo-serie) : frames made by engine/frame.html?f=<id> (frame.js).
+EXAMPLE = 'Exemple de texte seulement : aucun script n\'est encore écrit.'
+HABILLAGE_BOARDS = {
+    'bandeau-v1': ('LE BANDEAU · VERSION 1 : LA CARTE GLACÉE', "À gauche l'accroche, à droite le narrateur (le bandeau est parti).",
+                   [("L'ACCROCHE", 'bandeau-1-accroche'), ('LE NARRATEUR', 'bandeau-1-narrateur')],
+                   ["Le titre de l'épisode sur la carte blanche de Stalak : gros contour noir, ombre dure, glaçons dessous.",
+                    'Les sous-titres sur une carte blanche, le nom de celui qui parle dans une étiquette à sa couleur.', EXAMPLE]),
+    'bandeau-v2': ('LE BANDEAU · VERSION 2 : LA BANDE BLEUE', "À gauche l'accroche, à droite le narrateur (le bandeau est parti).",
+                   [("L'ACCROCHE", 'bandeau-2-accroche'), ('LE NARRATEUR', 'bandeau-2-narrateur')],
+                   ['Le titre sur une bande bleue penchée, de bord à bord, avec de la neige posée dessus.',
+                    'Les sous-titres en grosses lettres blanches cernées de noir, le nom au-dessus, à sa couleur.', EXAMPLE]),
+    'bandeau-v3': ("LE BANDEAU · VERSION 3 : L'ÉTIQUETTE GLACE", "À gauche l'accroche, à droite le narrateur (le bandeau est parti).",
+                   [("L'ACCROCHE", 'bandeau-3-accroche'), ('LE NARRATEUR', 'bandeau-3-narrateur')],
+                   ["Le titre sur une étiquette glace, avec le numéro de l'épisode à gauche, en bleu nuit.",
+                    'Les sous-titres dans un cadre bleu nuit bordé de glace, le nom dans une pastille à sa couleur.', EXAMPLE]),
+    'logo-v1': ('LE LOGO · VERSION 1 : T-CRAZY', 'Le badge rond, ici sur une miniature.', [('', 'logo-1')],
+                ['Le nom de rappeur de Liam dans un badge rond bleu, glacé en haut.',
+                 'Sa casquette posée dessus : on le reconnaît tout de suite.',
+                 "Pas de nom de Stalak dans le logo : Stalak n'arrive qu'à la fin."], ('logo-1-seul', (90, 510, 990, 1410))),
+    'logo-v2': ('LE LOGO · VERSION 2 : LE PROCHAIN', 'Le titre glacé, ici sur une miniature.', [('', 'logo-2')],
+                ['« Le prochain », ce que Liam croit être, en grosses lettres bleues nappées de glace.',
+                 "Dessous, l'accroche du narrateur : « 15 ans · 0 abonné ».",
+                 "Pas de nom de Stalak dans le logo : Stalak n'arrive qu'à la fin."], ('logo-2-seul', (90, 510, 990, 1410))),
+    'logo-v3': ('LE LOGO · VERSION 3 : 0 ABONNÉ', 'Le compteur gelé, ici sur une miniature.', [('', 'logo-3')],
+                ['Un gros « 0 » en glace, avec ses glaçons, et « ABONNÉ » sur une étiquette bleue.',
+                 "Le gag de la série en un coup d'œil : il n'a encore personne.",
+                 "Pas de nom de Stalak dans le logo : Stalak n'arrive qu'à la fin."], ('logo-3-seul', (90, 510, 990, 1410))),
+}
+WAIT = 'new Promise(r => { const t = setInterval(() => { if (window.ready) { clearInterval(t); r(1); } }, 50); })'
+
+
+def habillage(names):
+    """Render the frames a board needs (if missing) and lay out the banner and logo boards : python3 tools/serie/univers.py habillage [logo-v2 …]"""
+    import subprocess
+
+    def frame(f):
+        p = os.path.join(WORK, 'frames', f + '.png')
+        if not os.path.exists(p):
+            os.makedirs(os.path.dirname(p), exist_ok=True)
+            subprocess.run([sys.executable, os.path.join(ROOT, 'tools/serie/shot.py'), 'tools/serie/engine/frame.html?f=' + f, p, '1080', '1920', WAIT], check=True)
+        return p
+    out = []
+    for name in names or HABILLAGE_BOARDS:
+        title, sub, scenes, traits, *close = HABILLAGE_BOARDS[name]
+        paths = [(label, frame(f)) for label, f in scenes]
+        if close:
+            src, box = close[0]
+            out.append(decor_board(name, title, sub, paths, traits, crop=box, crop_src=frame(src), crop_label='LE LOGO'))
+        else:
+            out.append(decor_board(name, title, sub, paths, traits))
+    return out
+
+
 if __name__ == '__main__':
+    if sys.argv[1:2] == ['habillage']:
+        print(*habillage(sys.argv[2:]), sep='\n')
+        sys.exit(0)
     if sys.argv[1:2] == ['decors']:
         print(*decors(sys.argv[2:]), sep='\n')
         sys.exit(0)
-    print('usage : SERIE_WORK=<dir> python3 tools/serie/univers.py decors [chambre-v1 rue-v2 …]  (all the set boards by default)')
+    print('usage : SERIE_WORK=<dir> python3 tools/serie/univers.py decors|habillage [board …]  (all the boards by default)')
     sys.exit(0)

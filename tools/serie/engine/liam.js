@@ -121,7 +121,7 @@
   }
 
   // ---------------- full body, front, neutral pose ----------------
-  function bodyFront(V) {
+  function bodyFront(V, expr) {
     const hs = 1.3, N = [450, 846], F = [450, 846 - 124 * hs], hip = 1206, ank = hip + 490 * 0.96;
     const htf = `translate(${F[0]} ${r1(F[1])}) scale(${hs})`;
     const parts = [];
@@ -171,7 +171,7 @@
     arm([548, 910], [578, 1040], [580, 1150]);
     [[320, 1186], [580, 1186]].forEach(([x, y]) => parts.push({ d: `M ${x - 26} ${y - 24} C ${x - 32} ${y + 10} ${x - 20} ${y + 34} ${x} ${y + 34} C ${x + 20} ${y + 34} ${x + 32} ${y + 10} ${x + 26} ${y - 24} Z`, fill: P.skin,
       shade: `M ${x - 40} ${y - 30} L ${x - 6} ${y - 30} L ${x - 6} ${y + 40} L ${x - 40} ${y + 40} Z`, shadeColor: P.skinS }));
-    head(V, 'frime', htf, parts);
+    head(V, expr || 'frime', htf, parts);
     return render(parts, S, P);
   }
 
@@ -269,5 +269,9 @@
     return `<defs>${defs}</defs>` + s;
   }
 
-  window.LIAM = { VERS, sheet };
+  // for the scenes (frame.js) : the full body, the head alone, the cap alone ; each returns { defs, svg }
+  const figure = (v, expr) => bodyFront(VERS[v], expr);
+  const headOnly = (v, expr) => { const p = []; head(VERS[v], expr || 'frime', '', p); return render(p, S, P); };
+  const capOnly = (v) => { const p = []; capFront(VERS[v], '', p); return render(p, S, P); };
+  window.LIAM = { VERS, sheet, figure, headOnly, capOnly };
 })();

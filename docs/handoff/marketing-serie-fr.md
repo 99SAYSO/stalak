@@ -2,6 +2,36 @@
 
 > Marketing & croissance. Rien ne change sur le site : seulement `tools/serie/` et `docs/`.
 
+## 16/11, 4 h 40 : décors choisis (poster de la chambre en attente), bandeau et logo déposés
+
+- Vers 4 h, le propriétaire a choisi ses décors :
+  - le placard-studio (chambre, version 2), **à refaire** pour le poster ;
+  - la cuisine ;
+  - la rue pavillonnaire ;
+  - le terrain grillagé ;
+  - le couloir du lycée ;
+  - le toit aménagé.
+- **Le poster de la chambre est en attente.**
+  - Le propriétaire veut un poster de Pop Smoke : c'est sa note sur la fiche, ajoutée automatiquement dans « Mes goûts ».
+  - Il a ensuite envoyé dans la conversation une photo retravaillée de l'artiste, avec le titre de son album.
+  - Marketing ne l'a ni dessinée ni intégrée : c'est l'image d'un vrai artiste sur le compte de la marque, sans les droits, comme les vrais morceaux connus.
+  - Le propriétaire a répondu qu'il décide et qu'il en prend la responsabilité. Marketing a maintenu qu'il ne le ferait pas lui-même.
+  - 3 idées proposées : un rappeur inventé, T-Crazy lui-même, ou une pochette du propriétaire (son image à lui). On attend son choix.
+- **Le bandeau et le logo, 3 versions chacun**, sont dans les fiches `bandeau` et `logo-serie`, en `a_choisir`.
+  - Nouveau fichier `tools/serie/engine/frame.js` (page `frame.html?f=…`) : il compose une vraie image de la série (décor, personnages placés par leurs pieds, habillage).
+  - `liam.js` et `cast.js` donnent maintenant un personnage entier avec l'expression voulue : `LIAM.figure()` et `CAST.figure()`.
+  - Les planches sont faites par `python3 tools/serie/univers.py habillage`.
+  - Le détail est dans `docs/marketing/SERIE_UNIVERS.md`, étape 2d.
+  - Les textes sont des exemples.
+  - Tout reste dans la zone visible des réseaux.
+  - Aucun logo ne porte le nom de Stalak.
+- La mascotte officielle attend toujours la validation du propriétaire.
+- Coût : 0 $.
+- Ce qui attend :
+  - le choix du poster, du bandeau et du logo, et la validation de la mascotte ;
+  - ensuite, les 3 voix du narrateur (Flora, environ 0,04 $, seulement après son accord) et la musique (ses beats, sinon Pixabay) ;
+  - puis la bible en une page et les scripts.
+
 ## 16/11, 3 h 55 : personnages choisis, mascotte officielle, les 6 décors déposés
 
 - À 3 h 27, le propriétaire a écrit « c'est bon j'ai fait mes choix ». Ses choix dans l'onglet Univers :

@@ -138,6 +138,51 @@ Chaque fiche de l'onglet Univers a 2 versions, en `a_choisir`. Toutes les enseig
 
 Pour le lycée, les 2 versions sont 2 lieux différents : le propriétaire peut garder les deux.
 
+**16/11, vers 4 h : les choix du propriétaire.**
+
+| Décor | Version choisie |
+|---|---|
+| La chambre | 2 · Le placard-studio, **à refaire** (voir le poster ci-dessous) |
+| La cuisine et le salon | 1 · La cuisine |
+| La rue | 1 · La rue pavillonnaire |
+| Le terrain | 1 · Le terrain grillagé |
+| Le lycée | 1 · Le couloir |
+| Le toit | 2 · Le toit aménagé |
+
+**Le poster de la chambre est en attente.** Sur la fiche, le propriétaire a demandé que le poster du haut soit un poster de Pop Smoke. Sa note a été ajoutée automatiquement dans « Mes goûts ». Il a ensuite envoyé dans la conversation une photo retravaillée de l'artiste, avec le titre de son album.
+
+Marketing n'a dessiné ni intégré ce poster : c'est l'image d'un vrai artiste, sur le compte de la marque, sans les droits. C'est la même règle que pour les vrais morceaux connus. Le propriétaire a répondu qu'il décide et qu'il prend la responsabilité. Marketing a maintenu qu'il ne le ferait pas lui-même.
+
+3 idées sont proposées à la place :
+- un rappeur inventé ;
+- T-Crazy lui-même ;
+- une pochette du propriétaire, avec son image à lui.
+
+On attend son choix.
+
+## Étape 2d : le bandeau et le logo (déposés le 16/11, à choisir)
+
+Dessinés en code dans `tools/serie/engine/frame.js` (page `frame.html?f=<image>`). Ce fichier compose aussi une vraie image de la série : un décor, les personnages placés par leurs pieds, puis l'habillage.
+- Les personnages sont dessinés par `LIAM.figure()` et `CAST.figure()`, avec l'expression voulue.
+- Les planches sont faites par `python3 tools/serie/univers.py habillage`.
+
+Tout reste dans la zone visible de TikTok, Reels et Shorts. Rien n'est placé :
+- dans les 8 % du haut ;
+- dans les 20 % du bas ;
+- sur le bord droit, entre 35 % et 80 % de la hauteur.
+
+Les textes sont des exemples, puisqu'aucun script n'est encore écrit :
+- le titre « LA VAISSELLE OU LA GLOIRE » ;
+- la phrase de Nadia ;
+- la phrase du narrateur reprise de sa fiche.
+
+| Fiche | Version 1 | Version 2 | Version 3 |
+|---|---|---|---|
+| Le bandeau et les sous-titres (dans la cuisine : l'accroche avec le bandeau, puis le narrateur sans le bandeau) | La carte glacée : carte blanche de Stalak, gros contour, ombre dure, glaçons dessous ; sous-titres sur une carte blanche, le nom dans une étiquette à sa couleur | La bande bleue : bande penchée de bord à bord, neige posée dessus ; sous-titres en grosses lettres blanches cernées de noir, le nom au-dessus | L'étiquette glace : ticket glace, numéro de l'épisode à gauche en bleu nuit ; sous-titres dans un cadre bleu nuit bordé de glace, le nom dans une pastille |
+| Le logo de la série (seul et sur une miniature) | « T-CRAZY » : badge rond bleu glacé en haut, la casquette de Liam posée dessus | « LE PROCHAIN » : lettres bleues nappées de glace, « 15 ans · 0 abonné » dessous | « 0 ABONNÉ » : un gros « 0 » en glace avec ses glaçons, « ABONNÉ » sur une étiquette bleue |
+
+Les logos ne portent pas le nom de Stalak : Stalak n'arrive qu'à la fin de l'épisode (`pas-pub-debut`). Le propriétaire peut mélanger le dessin d'un logo avec le titre d'un autre. La piste « Hustle d'hiver » reste possible s'il la préfère.
+
 ## Étape 2 : tout l'univers dans le style choisi (après le choix)
 
 - Liam : 4 versions, chacune de face, de profil et avec 4 expressions (frime, colère, panique, fierté).
