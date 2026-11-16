@@ -2,6 +2,22 @@
 
 > Marketing & croissance. Rien ne change sur le site : seulement `tools/serie/` et `docs/`.
 
+## 16/11, 3 h 30 : les 6 autres personnages, 2 versions chacun
+
+- À 2 h 54, le propriétaire a écrit « ok suivant ». Les autres personnages sont dessinés en code :
+  - Nadia, Deuce, Maya, Big Mo, M. Reyes et la mascotte ;
+  - le dessin vient d'un nouveau moteur, `tools/serie/engine/cast.js`, page `cast.html?c=…&v=1|2` ;
+  - chaque planche montre le personnage de face, de profil et en 4 expressions.
+- Les planches sont déposées dans les fiches de l'onglet Univers, en `a_choisir`, au fur et à mesure. Le détail des versions est dans `docs/marketing/SERIE_UNIVERS.md`, étape 2b.
+- **Nadia est déjà choisie** par le propriétaire (3 h 09) : version 2, « Le chignon » (fiche `nadia` en `choisi`).
+- Mascotte : elle reste fidèle aux autocollants officiels de `site_src/emoji` :
+  - capuche fourrée, locks à perles blanches, moufles, logo AA ;
+  - ses expressions reprennent les signes des autocollants.
+- Coût : 0 $.
+- Ce qui attend :
+  - les choix du propriétaire pour Deuce, Maya, Big Mo, M. Reyes et la mascotte ;
+  - ensuite, les décors (2 versions chacun, plus la chambre de nuit), le bandeau, le logo, les voix du narrateur et la musique.
+
 ## 16/11, 2 h 50 : Liam choisi (version 4, « Le deux-tons »), casquette baissée
 
 - À 2 h 44, le propriétaire a choisi la **version 4, « Le deux-tons »** (fiche `liam` : `choix` 3, statut `choisi`) :

@@ -1,0 +1,24 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>T-Crazy — personnages</title>
+<style>@font-face{font-family:'Lilita One';src:url(/site_src/fonts/lilitaone.ttf)}@font-face{font-family:'Rubik';src:url(/site_src/fonts/rubik.ttf);font-weight:300 900}
+html,body{margin:0;background:#1f6fd6}svg{display:block}</style></head><body>
+<svg id="s" width="1200" height="1600" viewBox="0 0 1200 1600" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"></svg>
+<script src="tcrazy.js"></script><script src="cast.js"></script>
+<script>
+// ?c=nadia&v=1 : one character sheet (1200 × 1600), the figures fitted into their panels
+const q = new URLSearchParams(location.search);
+document.fonts.load('62px "Lilita One"').then(() => document.fonts.load('700 25px Rubik')).then(() => {
+  const svg = document.getElementById('s');
+  svg.innerHTML = CAST.sheet(q.get('c') || 'nadia', +(q.get('v') || 1));
+  // fit each figure into its box : data-fit="x y w h" (bottom-aligned for bodies, centred for heads)
+  svg.querySelectorAll('[data-fit]').forEach(g => {
+    const [x, y, w, h, mode] = g.getAttribute('data-fit').split(' ');
+    const inner = g.firstElementChild, b = inner.getBBox(), pad = 14;
+    const s = Math.min((+w - 2 * pad) / b.width, (+h - 2 * pad) / b.height, +(g.getAttribute('data-max') || 9));
+    const tx = +x + +w / 2 - (b.x + b.width / 2) * s;
+    const ty = mode === 'bottom' ? +y + +h - pad - (b.y + b.height) * s : +y + +h / 2 - (b.y + b.height / 2) * s;
+    g.setAttribute('transform', `translate(${tx.toFixed(1)} ${ty.toFixed(1)}) scale(${s.toFixed(4)})`);
+  });
+  const imgs = [...svg.querySelectorAll('image')];
+  Promise.all(imgs.map(im => new Promise(r => { const i = new Image(); i.onload = i.onerror = r; i.src = im.getAttribute('href'); }))).then(() => setTimeout(() => { window.ready = true; }, 150));
+});
+</script></body></html>

@@ -75,6 +75,36 @@ Les 4 planches sont redéposées dans la fiche `liam`, en `a_choisir`. Les image
 
 À noter pour la suite : la planche de style validée (`tcrazy.js`) montre encore Liam avec ses premières locks. Les scènes de la série seront redessinées avec la version de Liam choisie.
 
+## Étape 2b : les autres personnages (déposés le 16/11, à choisir)
+
+Après « ok suivant » (16/11, 2 h 54), les 6 autres personnages sont dessinés en code, 2 versions chacun.
+- Le dessin est fait par `tools/serie/engine/cast.js`, page `cast.html?c=nadia|deuce|maya|bigmo|reyes|mascotte&v=1|2`.
+- Chaque planche montre le personnage de face, de profil et en 4 expressions (frime, colère, panique, fierté).
+- Les planches sont dans les fiches de l'onglet Univers, en `a_choisir`.
+
+| Personnage | Version 1 | Version 2 |
+|---|---|---|
+| Nadia | L'infirmière : puff et bandeau corail, tenue bleu-vert, long gilet beige, sabots, mug | **Le chignon (choisie le 16/11 à 3 h 09)** : chignon et pince glace, tenue lilas, longue doudoune bleu nuit, café à emporter |
+| Deuce | Le manager : dégradé avec raie rasée, blazer sur sweat à capuche, sacoche, oreillette | Le revendeur : bob beige, survêtement vert à liseré blanc, boîte de baskets |
+| Maya | Les tresses : queue haute et chouchou lilas, créoles, sweat lilas, casque au cou | Le carré : carré noir à frange, lunettes rondes, pull moutarde, jean droit |
+| Big Mo | Le boss du quartier : coupe rase, barbe, lunettes noires, doudoune noire, pendentif flocon | Le flashy : crâne rasé, grosse barbe, lunettes violettes, blouson universitaire « M » |
+| M. Reyes | L'épicier : dégarni, moustache, lunettes de lecture, chemise à carreaux, tablier vert | Le vétéran des 90s : casquette plate, bouc gris, coupe-vent rétro, cure-dent |
+| La mascotte | Taille personnage, fidèle à ses autocollants (capuche fourrée, locks à perles, moufles, logo AA) | Dans le téléphone : ronde et petite comme ses autocollants, elle fait coucou parmi des flocons et des glaçons |
+
+Ce qui a compté dans « Mes goûts » :
+- tout est dessiné en code ;
+- les têtes de profil restent compactes (`pas-crane-long`) ;
+- aucun logo de marque ni d'équipe : le « M » de Big Mo est inventé, et le logo AA est la marque du propriétaire, déjà sur la mascotte officielle ;
+- rien n'est repris de « The Boondocks ».
+
+Les expressions de la mascotte reprennent les signes de ses autocollants :
+- frime : les lunettes et l'étincelle ;
+- colère : le signe de colère ;
+- panique : « !! » ;
+- fierté : des traits de joie.
+
+Ses locks gardent les perles blanches de l'officielle. La remarque « pas de blanc » concernait Liam.
+
 ## Étape 2 : tout l'univers dans le style choisi (après le choix)
 
 - Liam : 4 versions, chacune de face, de profil et avec 4 expressions (frime, colère, panique, fierté).
