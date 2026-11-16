@@ -231,12 +231,14 @@ Le niveau 4 ne nomme jamais une appli : on dit « une appli de montage classique
 - Voix : Flora.
 - Musique : aucune, sauf le son du snippet du niveau 5 (précisé à 21 h 42).
 - Juge : le Videur du « Pour toi » (21 h 42).
+- Style : D, comme la vidéo de référence (choisi dans l'onglet Univers, 22 h).
+- Scripts : drill, triste et motivation validés ; love et ex réécrits avec ses répliques (22 h 10).
 - Horaires : à tester (plan ci-dessus).
 - Style : les 3 premières planches ne lui plaisent pas ; il veut le même dessin que la vidéo de référence. **Style D** proposé (bonshommes pleins aux membres épais, sans visage, fond sombre détaillé, lumière douce), avec nos propres personnages et décors. Planches dessinées en code : `tools/levels/styles.html`, rendu avec `python3 tools/levels/render_styles.py DOSSIER ref`. Fiche Univers `levels-style`, à choisir.
 
 ## 4. Ce qu'il reste à faire
 
-1. Choix du style (Univers → « LEVELS · Le bonhomme bâton et son décor » ; D proposé, dessiné comme la référence).
-2. Validation des 5 scripts pilotes réécrits selon les piliers, avec le Videur (Studio Stalak, À valider, compte Levels, 18 au 20/11).
+1. Valider les visuels de drill, triste et motivation : le plateau commun et les accessoires de chaque vidéo (`python3 tools/levels/render_visuels.py DOSSIER`).
+2. Valider les scripts love et ex (version 2).
 3. Le propriétaire dit quels sons (les siens ou ceux d'ALASKA) servent aux snippets : drill, love, triste, sur l'ex, motivation.
 4. Puis personnages et décors de chaque pilote en images fixes, puis feu vert (`lots/levels-2026-11-16`), puis voix et vidéo.

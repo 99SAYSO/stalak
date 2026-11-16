@@ -64,6 +64,32 @@ function decor(){
   <line x1="960" y1="905" x2="960" y2="1510" stroke="#2a3b6b" stroke-width="16"/><path d="M960 905 q -10 -40 -55 -30" stroke="#2a3b6b" stroke-width="14" fill="none"/>
   <ellipse cx="905" cy="890" rx="30" ry="16" fill="#fff6d8" filter="url(#glow)"/>`);
   for(let i=0;i<40;i++){const x=(i*397)%1080,y=(i*733)%1300+300; add(`<circle cx="${x}" cy="${y}" r="${2+(i%3)}" fill="#cfe6ff" opacity=".7"/>`)}
+ } else if(STYLE==='ref' && P.get('decor')==='porte'){
+  add(`<rect width="1080" height="1920" fill="#0d1328"/>`);
+  const bc=['#3a2a35','#43303a','#2f2836','#4a3540','#352c3d','#3e2f2f','#2a2533'];
+  for(let r=0;r<44;r++){ const y=640+r*26, off=(r%2)*38;
+   for(let x=-40;x<1100;x+=76){ const c=bc[(r*7+((x+off)/76|0)*3)%bc.length];
+    add(`<rect x="${x+off}" y="${y}" width="72" height="22" rx="3" fill="${c}"/>`);} }
+  // la porte
+  add(`<rect x="560" y="820" width="380" height="690" rx="12" fill="#0a0e1d"/>
+   <rect x="585" y="845" width="330" height="665" rx="8" fill="#141a33" stroke="#232b4a" stroke-width="6"/>
+   <rect x="610" y="880" width="130" height="590" rx="6" fill="#1a2140"/><rect x="760" y="880" width="130" height="590" rx="6" fill="#1a2140"/>
+   <circle cx="745" cy="1200" r="9" fill="#c9a24a"/><circle cx="775" cy="1200" r="9" fill="#c9a24a"/>`);
+  // enseigne néon POUR TOI
+  add(`<rect x="560" y="700" width="380" height="100" rx="18" fill="#1b0c14" stroke="#0a0e1d" stroke-width="8"/>
+   <text x="750" y="772" font-family="Lilita" font-size="66" fill="#ff5a6a" text-anchor="middle" filter="url(#glow)">POUR TOI</text>
+   <ellipse cx="750" cy="760" rx="300" ry="120" fill="#ff3b5c" opacity=".10"/>`);
+  // applique murale + halo
+  for(const x of [470,1030]) add(`<circle cx="${x}" cy="900" r="170" fill="url(#halo)" opacity=".45"/><rect x="${x-18}" y="880" width="36" height="46" rx="8" fill="#fff1c2" stroke="#0a0e1d" stroke-width="6"/>`);
+  // trottoir et reflets
+  add(`<rect x="0" y="1500" width="1080" height="420" fill="#141a30"/><rect x="0" y="1500" width="1080" height="18" fill="#232b4a"/>
+   <ellipse cx="750" cy="1600" rx="240" ry="26" fill="#ff5a6a" opacity=".12"/>`);
+  for(let x=0;x<1080;x+=160) add(`<line x1="${x}" y1="1518" x2="${x-60}" y2="1920" stroke="#1b2240" stroke-width="5"/>`);
+  // corde rouge et poteaux dorés
+  add(`<path d="M560 1395 q 90 70 180 0" stroke="#7a1420" stroke-width="22" fill="none" stroke-linecap="round"/><path d="M560 1395 q 90 70 180 0" stroke="#c9303e" stroke-width="12" fill="none" stroke-linecap="round"/>
+   ${[560,740].map(x=>`<rect x="${x-9}" y="1380" width="18" height="130" fill="#c9a24a" stroke="#0a0e1d" stroke-width="4"/><circle cx="${x}" cy="1378" r="16" fill="#e8c46a" stroke="#0a0e1d" stroke-width="4"/><ellipse cx="${x}" cy="1512" rx="34" ry="10" fill="#c9a24a" stroke="#0a0e1d" stroke-width="4"/>`).join('')}`);
+  for(let i=0;i<50;i++){const x=(i*397)%1080,y=(i*733)%1250+640; add(`<circle cx="${x}" cy="${y}" r="${2+(i%3)}" fill="#dfe8ff" opacity=".5"/>`)}
+  add(`<rect width="1080" height="1920" fill="url(#vig)"/>`);
  } else if(STYLE==='ref'){
   // fond sombre et détaillé : façade de briques + vitrine, arrêt de bus, neige, lampes qui pendent
   add(`<rect width="1080" height="1920" fill="#0d1328"/>`);
@@ -220,6 +246,20 @@ function stars(cx,cy){
 function speed(x,y){ for(let i=0;i<4;i++) add(`<path d="M${x-40-i*8} ${y-60+i*40} l -110 ${-6+i*4}" stroke="${STYLE==='nuit'?'#fff':INK}" stroke-width="7" stroke-linecap="round"/>`); }
 function ground(){ if(STYLE!=='sticker') return; }
 
+
+function videur(x,y,h){
+ stick({x,y,h,color:'#4a5275',pose:{la:[160,100],ra:[20,80],ll:[100,105],rl:[80,75]}});
+ const hx=x, hy=y-h*0.66-h*0.17*0.9, r=h*0.17;
+ add(`<rect x="${hx-r*0.85}" y="${hy-r*0.35}" width="${r*1.7}" height="${r*0.45}" rx="12" fill="#0a0d14"/><rect x="${hx-r*0.7}" y="${hy-r*0.28}" width="${r*0.4}" height="${r*0.1}" rx="4" fill="#5d6890"/>
+ <path d="M${hx+r*0.95} ${hy+r*0.1} q 22 30 6 70" stroke="#0a0d14" stroke-width="6" fill="none"/>`);
+}
+function bigLevel(n){
+ add(`<g transform="rotate(-6 540 1230)"><text x="550" y="1260" font-family="Lilita" font-size="190" fill="${INK}" text-anchor="middle" opacity=".9">NIVEAU ${n}</text>
+ <text x="540" y="1250" font-family="Lilita" font-size="190" fill="#ffc93c" stroke="${INK}" stroke-width="14" paint-order="stroke" text-anchor="middle">NIVEAU ${n}</text></g>`);
+}
+function lbl(x,y,t,u){ add(`<text x="${x}" y="${y}" font-family="Lilita" font-size="44" fill="#fff" stroke="${INK}" stroke-width="8" paint-order="stroke" text-anchor="middle">${t}</text>${u?`<text x="${x}" y="${y+44}" font-family="Rubik" font-weight="700" font-size="28" fill="#dfe6ff" text-anchor="middle">${u}</text>`:''}`); }
+function card(x,y,w,h){ add(`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="28" fill="#141a33" stroke="#2b3566" stroke-width="5"/>`); }
+
 // ---------- scènes ----------
 decor();
 const tgtColor=ST.target;
@@ -232,6 +272,50 @@ if(SCENE==='n1'){
  boom(560,930,'BAF !',-8);
  stars(STYLE==='ref'?170:190, STYLE==='ref'?955:880);
  bubble(110,690,520,'« Écoute mon son tri…',360,false);
+} else if(SCENE==='plateau'){
+ hud('DRILL',1,'il veut un feat avec Pop Smoke',false,0.08);
+ stick({x:290,y:1500,h:560,color:'#f7f8fc',hat:true,pose:{la:[120,100],ra:[-20,-60],ll:[100,110],rl:[80,70]}});
+ videur(830,1505,600);
+ bubble(20,690,520,'Bouge, je vais chercher…',290,false);
+ bigLevel(1);
+} else if(SCENE.startsWith('props_')){
+ const g=SCENE.slice(6);
+ const T={drill:'SON DRILL',triste:'SON TRISTE',motivation:'SON DE MOTIVATION'}[g];
+ add(`<text x="540" y="230" font-family="Lilita" font-size="62" fill="#fff" stroke="${INK}" stroke-width="10" paint-order="stroke" text-anchor="middle">ACCESSOIRES · ${T}</text>`);
+ const cells=[[40,300],[560,300],[40,1050],[560,1050]];
+ cells.forEach(([x,y])=>card(x,y,480,700));
+ const C=(i)=>({x:cells[i][0]+240,y:cells[i][1]+350});
+ if(g==='drill'){
+  // 1 échelle vers les nuages
+  {const {x,y}=C(0); for(let k=0;k<9;k++) add(`<rect x="${x-60}" y="${y+250-k*62}" width="120" height="10" rx="4" fill="#c9a24a" stroke="#151a2c" stroke-width="3"/>`);
+   add(`<rect x="${x-70}" y="${y-310}" width="14" height="580" rx="6" fill="#c9a24a" stroke="#151a2c" stroke-width="4"/><rect x="${x+56}" y="${y-310}" width="14" height="580" rx="6" fill="#c9a24a" stroke="#151a2c" stroke-width="4"/>
+   <ellipse cx="${x}" cy="${y-300}" rx="150" ry="50" fill="#e8ecf8" stroke="#151a2c" stroke-width="5"/><ellipse cx="${x+70}" cy="${y-330}" rx="80" ry="45" fill="#e8ecf8" stroke="#151a2c" stroke-width="5"/>`); lbl(x,y+290,'L\'ÉCHELLE','niveau 1');}
+  // 2 enclume
+  {const {x,y}=C(1); add(`<g filter="url(#rim)"><path d="M${x-170} ${y-60} h340 q -40 0 -70 50 h -40 v 80 h 90 v 50 h -260 v -50 h 90 v -80 h -40 q -30 -50 -70 -50 z" fill="#5b6378" stroke="#151a2c" stroke-width="6"/></g>
+   ${[0,1,2].map(k=>`<line x1="${x-120+k*120}" y1="${y-220}" x2="${x-120+k*120}" y2="${y-110}" stroke="#fff" stroke-width="6" stroke-linecap="round" opacity=".7"/>`).join('')}`); lbl(x,y+290,'L\'ENCLUME','niveau 3 · « CLANG ! »');}
+  // 3 poêle géante
+  {const {x,y}=C(2); add(`<g filter="url(#rim)"><rect x="${x+60}" y="${y-30}" width="200" height="44" rx="20" fill="#3b2a22" stroke="#151a2c" stroke-width="6" transform="rotate(-25 ${x} ${y})"/><circle cx="${x-40}" cy="${y+20}" r="150" fill="#2b2f3a" stroke="#151a2c" stroke-width="6"/><circle cx="${x-40}" cy="${y+20}" r="110" fill="#3b4150"/></g>`); lbl(x,y+290,'LA POÊLE GÉANTE','niveau 4 · « BONG ! »');}
+  // 4 lieux des prises
+  {const {x,y}=C(3); add(`<rect x="${x-200}" y="${y-260}" width="180" height="260" fill="#232b4a" stroke="#151a2c" stroke-width="5"/>${[0,1,2].map(k=>`<rect x="${x-180+k*55}" y="${y-230}" width="38" height="50" fill="#ffd76a" opacity=".8"/>`).join('')}
+   <path d="M${x+10} ${y-40} q 20 -90 110 -90 h 60 q 40 0 60 60 v 70 h -230 z" fill="#c43b4a" stroke="#151a2c" stroke-width="6"/><circle cx="${x+60}" cy="${y+30}" r="34" fill="#151a2c"/><circle cx="${x+200}" cy="${y+30}" r="34" fill="#151a2c"/>`); lbl(x,y+290,'LES PRISES DU NIVEAU 5','capot, bas d\'immeuble, la porte');}
+ } else if(g==='triste'){
+  {const {x,y}=C(0); add(`<path d="M${x-200} ${y+120} q 100 -30 200 0 t 200 0 v 140 h -400 z" fill="#4f7fd9" opacity=".85"/><path d="M${x-30} ${y-180} q -80 40 -120 160 M${x+30} ${y-180} q 80 40 120 160" stroke="#8fc0ff" stroke-width="18" fill="none" stroke-linecap="round"/>
+   <rect x="${x+90}" y="${y+190}" width="100" height="24" rx="6" fill="#151a2c"/>`); lbl(x,y+290,'L\'INONDATION','niveau 1 · « glouglou »');}
+  {const {x,y}=C(1); add(`<ellipse cx="${x}" cy="${y-230}" rx="110" ry="50" fill="#5b6378" stroke="#151a2c" stroke-width="5"/>${[0,1,2,3].map(k=>`<line x1="${x-60+k*40}" y1="${y-170}" x2="${x-70+k*40}" y2="${y-130}" stroke="#8fc0ff" stroke-width="6" stroke-linecap="round"/>`).join('')}
+   <g filter="url(#rim)"><path d="M${x-180} ${y+20} q 180 -200 360 0 q -45 -30 -90 0 q -45 -30 -90 0 q -45 -30 -90 0 q -45 -30 -90 0 z" fill="#1f6fd6" stroke="#151a2c" stroke-width="6"/><path d="M${x} ${y+20} v 200 q 0 40 -40 30" stroke="#151a2c" stroke-width="10" fill="none" stroke-linecap="round"/></g>`); lbl(x,y+290,'LE PARAPLUIE GÉANT','niveau 3 · « POC ! »');}
+  {const {x,y}=C(2); add(`<g filter="url(#rim)"><circle cx="${x}" cy="${y+20}" r="170" fill="#f4f8ff" stroke="#151a2c" stroke-width="6"/></g>${[[-60,-40],[50,30],[-20,90],[80,-70]].map(([a,b])=>`<circle cx="${x+a}" cy="${y+20+b}" r="14" fill="#d6e2f5"/>`).join('')}`); lbl(x,y+290,'LA BOULE DE NEIGE','niveau 4 · « SPLOTCH ! »');}
+  {const {x,y}=C(3); add(`<g filter="url(#rim)"><circle cx="${x}" cy="${y+110}" r="110" fill="#f4f8ff" stroke="#151a2c" stroke-width="6"/><circle cx="${x}" cy="${y-40}" r="80" fill="#f4f8ff" stroke="#151a2c" stroke-width="6"/></g>
+   <path d="M${x-80} ${y-80} Q ${x-80} ${y-190} ${x} ${y-185} Q ${x+80} ${y-190} ${x+80} ${y-80} Z" fill="#1f6fd6" stroke="#151a2c" stroke-width="6"/><rect x="${x-88}" y="${y-100}" width="176" height="30" rx="10" fill="#d6ecff" stroke="#151a2c" stroke-width="6"/><circle cx="${x}" cy="${y-195}" r="20" fill="#d6ecff" stroke="#151a2c" stroke-width="6"/>
+   <path d="M${x-30} ${y-30} l 14 14 m 0 -14 l -14 14 M${x+16} ${y-30} l 14 14 m 0 -14 l -14 14" stroke="#151a2c" stroke-width="5"/>`); lbl(x,y+290,'LE BONHOMME DE NEIGE','le rappeur après le niveau 4');}
+ } else {
+  {const {x,y}=C(0); add(`<g filter="url(#rim)"><rect x="${x-190}" y="${y-20}" width="380" height="40" rx="12" fill="#9aa3b8" stroke="#151a2c" stroke-width="6"/>${[-1,1].map(sg=>`<rect x="${x+sg*150-(sg<0?60:0)}" y="${y-110}" width="60" height="220" rx="16" fill="#2b2f3a" stroke="#151a2c" stroke-width="6"/>`).join('')}</g>`); lbl(x,y+290,'L\'HALTÈRE GÉANT','niveau 3 · « CLANG ! »');}
+  {const {x,y}=C(1); add(`<g filter="url(#rim)"><rect x="${x-180}" y="${y}" width="360" height="50" rx="14" fill="#c43b4a" stroke="#151a2c" stroke-width="6"/>${[-140,140].map(d=>`<rect x="${x+d-12}" y="${y+50}" width="24" height="140" fill="#5b6378" stroke="#151a2c" stroke-width="5"/>`).join('')}
+   <rect x="${x+100}" y="${y-220}" width="24" height="220" fill="#5b6378" stroke="#151a2c" stroke-width="5"/><rect x="${x-60}" y="${y-230}" width="260" height="18" rx="9" fill="#9aa3b8" stroke="#151a2c" stroke-width="5"/></g>`); lbl(x,y+290,'LE BANC DE MUSCU','niveau 4 · « BADABOUM ! »');}
+  {const {x,y}=C(2); add(`<rect x="${x-180}" y="${y-250}" width="20" height="460" fill="#5b6378" stroke="#151a2c" stroke-width="5"/><rect x="${x+160}" y="${y-250}" width="20" height="460" fill="#5b6378" stroke="#151a2c" stroke-width="5"/><rect x="${x-180}" y="${y-250}" width="360" height="20" rx="10" fill="#9aa3b8" stroke="#151a2c" stroke-width="5"/>`);
+   stick({x,y:y+160,h:360,color:'#f7f8fc',hat:true,pose:{la:[-120,-90],ra:[-60,-90],ll:[95,95],rl:[85,85]}}); lbl(x,y+290,'LA BARRE DE TRACTION','une des 3 prises du niveau 5');}
+  {const {x,y}=C(3); add(`<g filter="url(#rim)"><path d="M${x-150} ${y-120} q -80 160 0 260 h 120 q 30 -40 0 -80 q 40 -10 30 -60 q 30 -30 0 -70 q 20 -40 -20 -60 z" fill="#f7f8fc" stroke="#151a2c" stroke-width="6"/></g>
+   <path d="M${x+20} ${y-60} q 120 -20 150 60" stroke="#ffc93c" stroke-width="10" fill="none" stroke-linecap="round"/><text x="${x+120}" y="${y-110}" font-family="Lilita" font-size="80" fill="#e5484d" stroke="${INK}" stroke-width="8" paint-order="stroke" text-anchor="middle">BAF !</text>`); lbl(x,y+290,'LA MAIN DU VIDEUR','niveau 1 · plus grande que lui');}
+ }
 } else if(SCENE==='juges'){
  // 3 idées de juge récurrent, dans le style D
  add(`<g font-family="Lilita" text-anchor="middle"><text x="540" y="250" font-size="66" fill="#fff" stroke="${INK}" stroke-width="10" paint-order="stroke">LE JUGE QUI TE RECALE</text>
@@ -293,6 +377,6 @@ if(SCENE==='n1'){
 }
 // étiquette de style (planche seulement)
 const names={glace:'STYLE A · GLACE (trait encre, jour, neige)',nuit:'STYLE B · NUIT (trait lumineux, rue, halos)',sticker:'STYLE C · STICKER (membres épais, ombre dure)',ref:'STYLE D · COMME TA VIDÉO (bonhommes pleins, nuit douce)'};
-add(`<rect x="0" y="1800" width="1080" height="120" fill="${INK}" opacity=".85"/><text x="540" y="1872" font-family="Rubik" font-weight="700" font-size="27" fill="#fff" text-anchor="middle">${names[STYLE]} · ${SCENE==='n1'?'niveau 1, la baffe':SCENE==='juges'?'idées de juge':'niveau 5, le snippet Stalak'}</text>`);
+add(`<rect x="0" y="1800" width="1080" height="120" fill="${INK}" opacity=".85"/><text x="540" y="1872" font-family="Rubik" font-weight="700" font-size="27" fill="#fff" text-anchor="middle">${names[STYLE]} · ${SCENE==='n1'?'niveau 1, la baffe':SCENE==='juges'?'idées de juge':SCENE==='plateau'?'le plateau, niveau 1':SCENE.startsWith('props_')?'accessoires':'niveau 5, le snippet Stalak'}</text>`);
 S.innerHTML=out;
 </script></body></html>
