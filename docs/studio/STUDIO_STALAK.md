@@ -47,6 +47,14 @@ Document `lots/<lundi de la semaine AAAA-MM-JJ>` : `{feuVert: true, le, videos}`
 ### `da` — les goûts du propriétaire
 `{type: "aime" | "aimepas" | "regle", texte, source, le}`. Le propriétaire en ajoute dans l'onglet « Mes goûts » ; chaque « à refaire » avec sa remarque y est ajouté automatiquement. Les conversations peuvent en ajouter quand il donne un avis dans une conversation (avec `source` = la date et le contexte), jamais en retirer.
 
+### `remarques` — les remarques de la salle de visionnage (depuis le 16/11)
+Le propriétaire ouvre chaque vidéo déposée en « salle de visionnage » (bouton dans « À valider »). Une remarque par point :
+`{video: <id de la fiche>, videoUrl, tour, scope: "image" | "global", t, frame, t1, text, kind: "image"|"texte"|"son"|"rythme"|"autre", strokes: [{c, w, xy: [x0,y0,x1,y1,…]}], thumb, status: "ouverte" | "envoyée" | "traitée", reply, le, majLe}`.
+- `t` et `t1` en secondes (`t1` = fin d'un passage, facultatif) ; `frame` = numéro d'image (`fps` de la fiche, 30 par défaut). `scope: "global"` = remarque sur toute la vidéo, sans temps.
+- `strokes` : ce qu'il a entouré, en coordonnées de 0 à 1 sur l'image (`xy` à plat). `thumb` : l'image avec son dessin (JPEG en data URL), à regarder pour comprendre.
+- « À refaire avec mes remarques » passe la fiche en `video_refaire`, écrit le résumé numéroté dans `note` et met ses remarques en `envoyée`.
+- **Marketing**, après correction : chaque remarque traitée passe en `status: "traitée"` avec `reply` (une phrase : ce qui a été changé), puis la nouvelle vidéo est redéposée dans `videoUrl`, `tour` augmente de 1 et la fiche repasse en `video`. Ne jamais supprimer ni réécrire le `text` d'une remarque.
+
 ## Déposer une vidéo dans la page
 `Artifact` avec `url` = la page, `asset: true` et `file_path` = le fichier (20 Mo au plus par fichier : pour une vidéo de 1 min 05 à 1 min 20, déposer une version allégée, par exemple 720 × 1280 ; la version pleine qualité sert à la publication). Mettre l'`url` renvoyée dans `videoUrl` de la fiche, puis `statut: "video"`. Même chose pour la planche contact (`plancheUrl`).
 
