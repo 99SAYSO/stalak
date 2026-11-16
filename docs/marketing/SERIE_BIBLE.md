@@ -82,7 +82,9 @@ Big Mo et M. Reyes auront leur voix quand un épisode validé les fera parler.
 
 ## Comment un épisode avance (Studio Stalak)
 
-Script à valider → images fixes des nouveaux plans à valider → feu vert de la semaine → production (voix générée une seule fois sur le texte validé, rendu, planche contact, miniature) → vidéo à valider → programmation par Réseaux sociaux.
+Script à valider → storyboard à valider (une image par moment du script, dessinée en code) → feu vert de la semaine → production, vidéo par vidéo, avec la barre de progression à jour (voix générée une seule fois sur le texte validé, rendu, planche contact, miniature) → vidéo à valider → programmation par Réseaux sociaux.
+
+**Le numéro et le « prochain épisode » suivent l'ordre de sortie, pas l'ordre d'écriture** (proposé le 16/11, à confirmer par le propriétaire). Par exemple, l'épisode GTA 6 sort le 19 au soir : il porte le n° 3, et l'épisode 2 l'annonce.
 
 ## Coût
 

@@ -2,7 +2,7 @@
 <style>@font-face{font-family:'Lilita One';src:url(/site_src/fonts/lilitaone.ttf)}@font-face{font-family:'Rubik';src:url(/site_src/fonts/rubik.ttf);font-weight:300 900}
 html,body{margin:0;background:#000}svg{display:block}</style></head><body>
 <svg id="s" width="1080" height="1920" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg"></svg>
-<script src="tcrazy.js"></script><script src="decors.js"></script><script src="liam.js"></script><script src="cast.js"></script><script src="frame.js"></script>
+<script src="tcrazy.js"></script><script src="decors.js"></script><script src="liam.js"></script><script src="cast.js"></script><script src="frame.js"></script><script src="storyboard.js"></script>
 <script>
 // ?f=bandeau-1-accroche | bandeau-2-narrateur | logo-3 | logo-3-seul … : one frame of the series, 1080 × 1920
 const q = new URLSearchParams(location.search);
@@ -12,9 +12,11 @@ document.fonts.load('66px "Lilita One"').then(() => document.fonts.load('800 44p
   // place each character by its feet : data-place="x y h" (feet centre, height in px)
   svg.querySelectorAll('[data-place]').forEach(g => {
     const [x, y, h] = g.getAttribute('data-place').split(' ').map(Number);
-    const b = g.firstElementChild.getBBox(), s = h / b.height;
+    const fig = g.querySelector('.fig') || g.firstElementChild, b = fig.getBBox(), s = h / b.height;
     g.setAttribute('transform', `translate(${(x - (b.x + b.width / 2) * s).toFixed(1)} ${(y - (b.y + b.height) * s).toFixed(1)}) scale(${s.toFixed(4)})`);
   });
-  setTimeout(() => { window.ready = true; }, 100);
+  // wait for the real captures and the stickers before the picture is taken
+  const imgs = [...svg.querySelectorAll('image')];
+  Promise.all(imgs.map(im => new Promise(r => { const i = new Image(); i.onload = i.onerror = r; i.src = im.getAttribute('href'); }))).then(() => setTimeout(() => { window.ready = true; }, 150));
 });
 </script></body></html>

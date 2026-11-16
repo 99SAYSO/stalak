@@ -2,6 +2,38 @@
 
 > Marketing & croissance. Rien ne change sur le site : seulement `tools/serie/` et `docs/`.
 
+## 16/11, 14 h 15 : les storyboards des 5 épisodes
+
+- À 13 h 40, le propriétaire a validé les 5 scripts (« j'ai validé c'est bon », fiches en `script_ok`).
+- **Étape « visuels » faite pour les 5 épisodes.** Chaque storyboard montre une image par moment du script (12 ou 13 plans), avec les personnages, les décors, le bandeau et les sous-titres choisis. Une planche par épisode est déposée dans le champ `visuels` de sa fiche, en statut `visuels`.
+  - Dessin : `tools/serie/engine/storyboard.js`, chargé par `frame.html` (`?f=ep1-01`…).
+  - Planches : `SERIE_WORK=<dossier> python3 tools/serie/univers.py storyboard ep1 [ep2 …]`.
+  - Rendus et planches : dans le dossier de travail, jamais dans le dépôt.
+- **À 14 h, le propriétaire a validé les épisodes 1 et 2** (`visuels_ok`). Les épisodes GTA 6, manager et clip façon GTA sont en `visuels` et attendent sa validation.
+- **Ajouts au moteur, tous dessinés en code :**
+  - un bras levé pour Liam (`pose: {raise: 'r'}`) qui tient l'éponge ou le téléphone ;
+  - Liam fatigué (`+cerne`) et ému (`+larme`) ;
+  - pour les plans : zoom sur un décor (`zoom`), assombrir (`dim`), un personnage vu par une fenêtre (`clip`), des silhouettes anonymes (`sil`), un décor sans le micro du placard (`nomic`), un écran partagé entre deux décors (`band`) ;
+  - les accessoires : casque, micro, éponge, sachets de glaçons, scooter vu de face, ventilateur, chien, bus, clap « PRISE n », pancarte « FERMÉ », lumière d'écran sur le mur (le jeu n'est jamais montré), le rêve de Deuce (voiture, palmiers, hélicoptère : nos dessins), le téléphone de dos ;
+  - les écrans de notre interface : l'enregistrement, le montage, le post avec commentaire, le son avec une image fixe, la galerie de 12 prises ;
+  - les écrans Stalak : les vraies captures de `site_src/aide` et les autocollants officiels de la mascotte ;
+  - la carte de fin avec le logo rond officiel (`site_src/icons/icon.svg`). Son texte est celui du script, sans phrase ajoutée.
+- **L'ordre de sortie : question posée au propriétaire (14 h 05).** L'épisode GTA 6 sort le 19 au soir, avant celui du manager (20/11). Or, les cartes de fin validées suivent l'ordre des scripts (1 → 2 → 3 → 4 → 5). Marketing propose de suivre l'ordre de sortie :
+  - l'épisode 2 annonce GTA 6 ;
+  - l'épisode GTA 6 porte le n° 3 à l'écran et annonce le manager ;
+  - le manager porte le n° 4 et annonce « Il voulait un clip comme dans GTA ».
+  - Les storyboards GTA 6 et manager sont faits ainsi. L'épisode 2 a été validé avec son ancienne carte de fin, et sa fiche n'est pas touchée : la carte ne changera à la fabrication que si le propriétaire le confirme.
+- **Une erreur de méthode, signalée au propriétaire.** Avant cette étape, Marketing a posé `choix` sur deux fiches de l'Univers (`narrateur`, `decor-chambre`) d'après ses réponses dans la conversation. Il a aussi effacé `choix` en reproposant `bandeau`, `decor-chambre` et `voix-liam`. Or, `choix` est réservé au propriétaire. Désormais, Marketing n'y touche plus.
+- **Décision du 16/11, 13 h 42 (Chef de projet)** : pendant la fabrication, mettre à jour `progression` à chaque étape et toutes les 15 minutes au plus tard, puis déposer chaque vidéo dès qu'elle est finie. Ce sera appliqué dès le feu vert.
+- Coût : 0 $. Date de GTA 6 revérifiée en ligne : 19/11/2026.
+- Ce qui attend :
+  - la validation des visuels GTA 6, manager et clip façon GTA ;
+  - la réponse sur l'ordre de sortie ;
+  - la vitesse de la voix de Liam (×1,1 ou ×1,2, fiche `voix-liam`) ;
+  - le feu vert de la semaine (`lots/2026-11-16`) ;
+  - puis la fabrication, vidéo par vidéo (épisode 1 pour le 18/11).
+- Skills utilisés : `stalak-da`, `stalak-videos-reseaux`.
+
 ## 16/11, 13 h 30 : un narrateur plus clair
 
 - À 13 h 23, le propriétaire a écrit : « persuadé d'être le prochain », ce n'est pas assez clair, il faut dire « le prochain rappeur qui va percer ». C'est noté dans « Mes goûts » comme une règle générale (`regle-narrateur-clair`) : les phrases du narrateur sont claires tout de suite, sans sous-entendu.

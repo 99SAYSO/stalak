@@ -47,7 +47,7 @@
       s += `<g transform="rotate(-2.5 540 ${y + h / 2})">`;
       s += `<rect x="-60" y="${y + 12}" width="1200" height="${h}" fill="${INK}"/><rect x="-60" y="${y}" width="1200" height="${h}" fill="${BLUE}" stroke="${INK}" stroke-width="10"/>`;
       s += snowCap(-60, 1140, y, 22);
-      s += T(540, y + 64, 'ÉPISODE ' + ep, 28, ICE, { font: 'Rubik', weight: 800, ls: 3 });
+      if (ep !== '' && ep != null) s += T(540, y + 64, 'ÉPISODE ' + ep, 28, ICE, { font: 'Rubik', weight: 800, ls: 3 });
       lines.forEach((ln, i) => { s += T(540, y + 136 + i * 80, ln, 74, SNOW, { stroke: INK, sw: 14 }); });
       s += flake(130, y + 52, 22, ICE, 5) + flake(950, y + 52, 22, ICE, 5);
       s += '</g>';
@@ -143,9 +143,16 @@
   }
 
   // ---------------- a character, placed by its feet : x, y (feet), h (height in px) ----------------
+  let CLIPN = 0;
   function who(c) {
-    const r = c.who === 'liam' ? LIAM.figure(c.v || 4, c.expr) : CAST.figure(c.who, c.v, c.expr);
-    return { defs: r.defs, svg: `<g data-place="${c.x} ${c.y} ${c.h}"><g>${c.flip ? `<g transform="scale(-1 1)">${r.svg}</g>` : r.svg}</g></g>` };
+    const r = c.who === 'liam' ? LIAM.figure(c.v || 4, c.expr, c.pose) : CAST.figure(c.who, c.v, c.expr);
+    const inner = `<g class="fig">${r.svg}</g>${c.props || ''}`; // props are drawn in the character's own coordinates ; only the figure is measured
+    let defs = r.defs, svg = `<g data-place="${c.x} ${c.y} ${c.h}"><g>${c.flip ? `<g transform="scale(-1 1)">${inner}</g>` : inner}</g></g>`;
+    // clip : [x, y, w, h] in frame coordinates (a character seen through a window) ; after : drawn over him, in frame coordinates
+    // sil : an anonymous silhouette (followers in the background)
+    if (c.sil) { defs += `<filter id="silf"><feFlood flood-color="#2a2d36"/><feComposite in2="SourceAlpha" operator="in"/></filter>`; svg = `<g filter="url(#silf)" opacity="0.92">${svg}</g>`; }
+    if (c.clip) { const id = 'cc' + (++CLIPN); defs += `<clipPath id="${id}"><rect x="${c.clip[0]}" y="${c.clip[1]}" width="${c.clip[2]}" height="${c.clip[3]}"/></clipPath>`; svg = `<g clip-path="url(#${id})">${svg}</g>`; }
+    return { defs, svg: svg + (c.after || '') };
   }
 
   // ---------------- the frames shown on the boards ----------------
@@ -176,14 +183,20 @@
     if (F.plain) {
       defs += `<radialGradient id="bgp" cx="0.5" cy="0.5" r="0.6"><stop offset="0" stop-color="#3a86e8"/><stop offset="1" stop-color="${BLUE}"/></radialGradient>`;
       body += `<rect width="1080" height="1920" fill="url(#bgp)"/>`;
+    } else if (F.zoom) { // zoom : [cx, cy, k], the set seen closer around (cx, cy)
+      const [zx, zy, zk] = F.zoom;
+      body += `<g transform="translate(540 960) scale(${zk}) translate(${-zx} ${-zy})">${DECORS.scene(...F.set)}${F.setOver ? F.setOver() : ''}</g>`;
     } else {
-      body += DECORS.scene(...F.set);
+      body += DECORS.scene(...F.set) + (F.setOver ? F.setOver() : ''); // setOver : drawn on the set, in its own coordinates (a sign on a shop)
     }
     (F.chars || []).forEach(c => { const r = who(c); defs += r.defs; body += r.svg; });
+    // front : drawn in the set's coordinates but over the characters (a sign stuck on the glass of a shop window)
+    if (F.front) body += F.zoom ? `<g transform="translate(540 960) scale(${F.zoom[2]}) translate(${-F.zoom[0]} ${-F.zoom[1]})">${F.front()}</g>` : F.front();
     if (F.shade) {
       defs += `<linearGradient id="topsh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${INK}" stop-opacity="0.55"/><stop offset="1" stop-color="${INK}" stop-opacity="0"/></linearGradient>`;
       body += `<rect width="1080" height="900" fill="url(#topsh)"/>`;
     }
+    if (F.dim) body += `<rect width="1080" height="1920" fill="${INK}" opacity="${F.dim}"/>`;
     if (F.over) body += F.over();
     if (F.logo) { const [n, x, y, k] = F.logo, L = logo(n); defs += L.defs; body += `<g transform="translate(${x} ${y}) scale(${k})">${L.svg}</g>`; }
     return `<defs>${defs}</defs>${body}`;

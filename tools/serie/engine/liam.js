@@ -65,6 +65,7 @@
   }
 
   function head(V, expr, tf, into) {
+    const plain = String(expr).replace('+larme', '').replace('+cerne', '');
     const hw = HW[V.face];
     // the ears : visible now, the hair is short
     [-1, 1].forEach(k => {
@@ -78,13 +79,21 @@
     if (V.earring) into.push({ d: `M ${-(hw + 5)} 30 a 5 5 0 1 0 0.1 0 Z`, fill: '#dff2ff', tf, extra: `<circle cx="${-(hw + 6.5)}" cy="${28.5}" r="1.6" fill="#ffffff"/>` });
     capFront(V, tf, into);
     // panic : sweat drops at the temples
-    if (expr === 'panique') into.push({ d: `M 76 -44 q 16 24 0 38 q -16 -14 0 -38 Z M -84 -34 q 11 17 0 27 q -11 -10 0 -27 Z`, fill: '#bfe6ff', tf });
+    if (plain === 'panique') into.push({ d: `M 76 -44 q 16 24 0 38 q -16 -14 0 -38 Z M -84 -34 q 11 17 0 27 q -11 -10 0 -27 Z`, fill: '#bfe6ff', tf });
   }
 
   // eyes, brows, nose, mouth for an expression
   function face(V, expr) {
     const lw = S.lw;
     let s = '';
+    // « …+cerne » : the same expression after a sleepless night, dark circles under the eyes
+    // « …+larme » : moved, a tear on the cheek
+    if (/\+larme/.test(expr)) { expr = expr.replace('+larme', ''); s += `<path d="M 44 26 C 34 44 36 58 46 58 C 56 58 58 44 44 26 Z" fill="#bfe6ff" stroke="${INK}" stroke-width="${lw * 0.7}"/>`; }
+    const tired = /\+cerne$/.test(expr);
+    if (tired) {
+      expr = expr.replace('+cerne', '');
+      [-1, 1].forEach(k => { const x = k * 36; s += `<path d="M ${x - 24} 24 Q ${x} 38 ${x + 24} 24" fill="none" stroke="#7b5a8c" stroke-width="${lw * 0.9}" stroke-linecap="round" opacity="0.8"/><path d="M ${x - 18} 33 Q ${x} 42 ${x + 18} 33" fill="none" stroke="#7b5a8c" stroke-width="${lw * 0.6}" stroke-linecap="round" opacity="0.55"/>`; });
+    }
     const eyeShape = (x, k, h) => (k < 0 ? `M ${x - 24} 6 Q ${x} ${6 - h} ${x + 24} 4 Q ${x} ${6 + h * 0.8} ${x - 24} 6 Z` : `M ${x - 24} 4 Q ${x} ${6 - h} ${x + 24} 6 Q ${x} ${6 + h * 0.8} ${x - 24} 4 Z`);
     const browW = { thick: 9, thin: 5, heavy: 12, slit: 9 }[V.brows];
     // brows by expression : [inner y, outer y] for each side
@@ -121,7 +130,8 @@
   }
 
   // ---------------- full body, front, neutral pose ----------------
-  function bodyFront(V, expr) {
+  // pose (optional) : { raise: 'r' } lifts the arm on the right of the picture, the hand up, to hold a prop near the face
+  function bodyFront(V, expr, pose) {
     const hs = 1.3, N = [450, 846], F = [450, 846 - 124 * hs], hip = 1206, ank = hip + 490 * 0.96;
     const htf = `translate(${F[0]} ${r1(F[1])}) scale(${hs})`;
     const parts = [];
@@ -167,9 +177,12 @@
     // arms down, relaxed
     const arm = (sh, el, wr) => parts.push({ kind: 'stroke', d: `M ${pt(sh)} L ${pt(el)} L ${pt(wr)}`, w: V.vest ? 46 : 64, color: V.vest ? V.inner : P.jacket,
       tip: V.vest ? null : `M ${pt(lerp(sh, el, 0.15))} L ${pt(lerp(sh, el, 0.75))}`, tipColor: P.jacketH, tipW: 9 });
+    const up = pose && pose.raise === 'r';
     arm([352, 910], [322, 1040], [320, 1150]);
-    arm([548, 910], [578, 1040], [580, 1150]);
-    [[320, 1186], [580, 1186]].forEach(([x, y]) => parts.push({ d: `M ${x - 26} ${y - 24} C ${x - 32} ${y + 10} ${x - 20} ${y + 34} ${x} ${y + 34} C ${x + 20} ${y + 34} ${x + 32} ${y + 10} ${x + 26} ${y - 24} Z`, fill: P.skin,
+    if (up) arm([548, 910], [650, 990], [606, 836]);
+    else arm([548, 910], [578, 1040], [580, 1150]);
+    [[320, 1186, 0], up ? [606, 800, 180] : [580, 1186, 0]].forEach(([x, y, rot]) => parts.push({ d: `M ${x - 26} ${y - 24} C ${x - 32} ${y + 10} ${x - 20} ${y + 34} ${x} ${y + 34} C ${x + 20} ${y + 34} ${x + 32} ${y + 10} ${x + 26} ${y - 24} Z`, fill: P.skin,
+      tf: rot ? `rotate(${rot} ${x} ${y + 5})` : undefined,
       shade: `M ${x - 40} ${y - 30} L ${x - 6} ${y - 30} L ${x - 6} ${y + 40} L ${x - 40} ${y + 40} Z`, shadeColor: P.skinS }));
     head(V, expr || 'frime', htf, parts);
     return render(parts, S, P);
@@ -270,7 +283,7 @@
   }
 
   // for the scenes (frame.js) : the full body, the head alone, the cap alone ; each returns { defs, svg }
-  const figure = (v, expr) => bodyFront(VERS[v], expr);
+  const figure = (v, expr, pose) => bodyFront(VERS[v], expr, pose);
   const headOnly = (v, expr) => { const p = []; head(VERS[v], expr || 'frime', '', p); return render(p, S, P); };
   const capOnly = (v) => { const p = []; capFront(VERS[v], '', p); return render(p, S, P); };
   window.LIAM = { VERS, sheet, figure, headOnly, capOnly };

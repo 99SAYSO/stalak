@@ -270,9 +270,64 @@ def habillage(names):
     return out
 
 
+def storyboard(eps):
+    """The storyboard of each validated script (Studio Stalak, step « visuels ») : every shot drawn by engine/frame.html?f=<ep>-NN
+    (storyboard.js), then one board per episode : python3 tools/serie/univers.py storyboard ep1 [ep2 …]"""
+    import functools, http.server, threading
+    os.environ.setdefault('PLAYWRIGHT_BROWSERS_PATH', '/opt/pw-browsers')
+    from playwright.sync_api import sync_playwright
+
+    class Quiet(http.server.SimpleHTTPRequestHandler):
+        def log_message(self, *a): pass
+    srv = http.server.ThreadingHTTPServer(('127.0.0.1', 0), functools.partial(Quiet, directory=ROOT))
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    base = 'http://127.0.0.1:%d/tools/serie/engine/frame.html' % srv.server_address[1]
+    out = []
+    with sync_playwright() as pw:
+        b = pw.chromium.launch()
+        pg = b.new_page(viewport={'width': 1080, 'height': 1920})
+        pg.goto(base + '?f=bandeau-1-accroche')
+        pg.wait_for_function('window.ready === true', timeout=30000)
+        boards = pg.evaluate('JSON.parse(JSON.stringify(STORYBOARD.BOARDS))')
+        for ep in eps:
+            B = boards[ep]
+            for sh in B['shots']:
+                path = os.path.join(WORK, 'frames', sh['id'] + '.png')
+                os.makedirs(os.path.dirname(path), exist_ok=True)
+                pg.goto(base + '?f=' + sh['id'])
+                pg.wait_for_function('window.ready === true', timeout=30000)
+                pg.screenshot(path=path)
+                sh['path'] = path
+            # the board : 4 shots per row ; under each, the time, then the moment (two lines at most)
+            n = len(B['shots']); cols = 4; rows = (n + cols - 1) // cols; tw, th = 270, 480
+            W, H = 1200, 170 + rows * (th + 112) + 20
+            img = Image.new('RGB', (W, H), SKY); d = ImageDraw.Draw(img)
+            title = 'ÉPISODE %d · %s' % (B['num'], B['title'])
+            f = font(FONT_TITLE, 52)
+            while d.textlength(title, font=f) > W - 60: f = font(FONT_TITLE, f.size - 2)
+            d.text((W // 2, 34), title, font=f, fill=SNOW, anchor='ma', stroke_width=7, stroke_fill=INK)
+            d.text((W // 2, 112), B.get('note') or "Une image par moment du script. Les voix et l'animation viendront après ta validation.", font=font(FONT_TEXT, 24, 700), fill=ICE, anchor='ma')
+            fc = font(FONT_TEXT, 21, 700)
+            for i, sh in enumerate(B['shots']):
+                x = 24 + (i % cols) * (tw + 24); y = 170 + (i // cols) * (th + 112)
+                framed(img, Image.open(sh['path']).convert('RGB').resize((tw, th), Image.LANCZOS), x, y)
+                d.text((x + tw // 2, y + th + 16), sh['t'], font=font(FONT_TITLE, 28), fill=ICE, anchor='ma', stroke_width=4, stroke_fill=INK)
+                for k, ln in enumerate(wrap(d, sh['cap'], fc, tw + 10)[:2]):
+                    d.text((x + tw // 2, y + th + 52 + k * 26), ln, font=fc, fill=SNOW, anchor='ma')
+            dst = os.path.join(WORK, 'planches', 'storyboard-%s.jpg' % ep)
+            img.save(dst, quality=90)
+            out.append(dst)
+        b.close()
+    srv.shutdown()
+    return out
+
+
 if __name__ == '__main__':
     if sys.argv[1:2] == ['habillage']:
         print(*habillage(sys.argv[2:]), sep='\n')
+        sys.exit(0)
+    if sys.argv[1:2] == ['storyboard']:
+        print(*storyboard(sys.argv[2:]), sep='\n')
         sys.exit(0)
     if sys.argv[1:2] == ['decors']:
         print(*decors(sys.argv[2:]), sep='\n')

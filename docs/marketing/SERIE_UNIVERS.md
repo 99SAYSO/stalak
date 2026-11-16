@@ -277,6 +277,19 @@ Les voix de Big Mo et de M. Reyes seront choisies quand un épisode validé les 
 - Le narrateur : 3 voix sur la même phrase (Flora).
 - Les musiques : les 4 ambiances, 2 ou 3 propositions chacune (`type: "audio"`). Plus de générique depuis le 16/11 (décision du propriétaire). D'abord les beats du propriétaire ou d'ALASKA (demandés le 15/11). Sinon, Pixabay (usage commercial permis), sans les titres marqués d'un bouclier, avec la source notée pour chaque titre. Jamais de morceau connu.
 
+## Étape 3 : les storyboards des épisodes (après les scripts validés, 16/11)
+
+- Une image par moment du script, dessinée avec l'univers choisi : personnages, décors, bandeau v4 et sous-titres v1.
+- Le code : `tools/serie/engine/storyboard.js`, chargé par `frame.html`.
+  - Chaque plan est une entrée de `FRAMES` : `set`, `chars`, `over`.
+  - Les options d'un plan : `zoom`, `dim`, `shade`, `setOver`, `front`, `plain`.
+  - Les options d'un personnage : `pose`, `clip`, `after`, `sil`, `flip`.
+- Les planches : `SERIE_WORK=<dossier> python3 tools/serie/univers.py storyboard ep1 [ep2 …]`. Elles sont déposées dans le champ `visuels` de la fiche de l'épisode.
+- Les écrans de téléphone montrent les vraies captures de Stalak (`site_src/aide/fr-*.jpg`) et les autocollants officiels de la mascotte.
+- Les autres écrans sont notre propre interface : jamais celle d'une vraie application.
+- GTA 6 : le nom seulement. Le jeu n'est jamais montré (une lumière d'écran sur le mur suffit).
+- Le numéro à l'écran et le « prochain épisode » suivent l'ordre de sortie (proposé le 16/11, à confirmer par le propriétaire).
+
 ## Coûts
 
 - **Visuels : 0 $** (dessinés en code).

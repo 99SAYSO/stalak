@@ -101,7 +101,7 @@
     s += f(R(40, 360, 400, 1140), N ? '#3a3552' : '#8b6a52') + f(R(66, 386, 348, 1114), N ? '#24203a' : '#5a4436');
     s += quilt(82, 400, 150, 620, N ? '#3e5a8a' : '#6f93c8', N ? '#2c4268' : '#4f74a8', -2) + quilt(236, 404, 160, 640, N ? '#5a5f78' : '#9aa1b2', N ? '#41465c' : '#7b8293', 2);
     s += f(R(84, 1060, 312, 440), N ? '#2c2a40' : '#6b5442') + ln('M 90 1200 L 390 1200 M 90 1340 L 390 1340', N ? '#1c1a2c' : '#4a3a2e', 5);
-    s += micStand(270, 830, 1480);
+    if (!OPT.nomic) s += micStand(270, 830, 1480);
     s += f('M 440 360 L 520 380 L 520 1480 L 440 1500 Z', N ? '#4a4566' : '#a07c5e') + `<g transform="rotate(4 482 560)">${f(R(452, 520, 60, 80), '#f4f1ea')}${txt(482, 568, 'STUDIO', 15, '#c8443a')}</g>`;
     // no poster on this wall (owner, 16/11 : « pas de poster »)
     // the window with blinds, the bed under it
@@ -415,8 +415,15 @@
     return s;
   }
 
+  let OPT = {};
   const SCENES = { chambre: { 1: chambre1, 2: chambre2 }, cuisine: { 1: cuisine1, 2: cuisine2 }, rue: { 1: rue1, 2: rue2 }, terrain: { 1: terrain1, 2: terrain2 }, lycee: { 1: lycee1, 2: lycee2 }, toit: { 1: toit1, 2: toit2 } };
   window.DECORS = {
-    scene(id, v, t) { DEFS = []; GID = 0; const body = SCENES[id][v](t); return `<defs>${DEFS.join('')}</defs>` + body; },
+    // o (optional) : { nomic: true } leaves the closet mic out, when a character stands at his own mic in a close shot
+    // o.ns : a prefix for the ids, when several sets share one frame (a split screen)
+    scene(id, v, t, o = {}) {
+      DEFS = []; GID = 0; OPT = o; const body = SCENES[id][v](t);
+      const out = `<defs>${DEFS.join('')}</defs>` + body;
+      return o.ns ? out.replace(/id="([^"]+)"/g, `id="${o.ns}$1"`).replace(/url\(#([^)]+)\)/g, `url(#${o.ns}$1)`) : out;
+    },
   };
 })();
