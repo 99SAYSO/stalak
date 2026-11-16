@@ -189,6 +189,19 @@ Les logos ne portent pas le nom de Stalak : Stalak n'arrive qu'à la fin de l'é
 - **Pas de générique** : « je veux pas de générique ». Les épisodes commencent directement par l'accroche, sans intro ni musique de générique. C'est noté dans « Mes goûts » (`pas-generique`), et la fiche « Le générique » est marquée comme abandonnée.
 - Le logo n'est pas choisi. On lui demande s'il en veut un pour les miniatures, maintenant qu'il n'y a pas de générique.
 
+**16/11, 4 h 28 : ses réponses.**
+1. **Les miniatures** : « je veux que tu me crées les miniatures des TikTok à chaque fois en même temps que tu génères la vidéo, et je pourrai les retrouver dans Studio Stalak ». La règle est notée dans « Mes goûts » (`regle-miniatures`). Chaque vidéo aura donc sa miniature, faite en même temps qu'elle et déposée avec elle dans la page. Le logo devient optionnel : la fiche le dit, et il ne sert que si le propriétaire veut le voir sur les miniatures.
+2. **Pas de poster** dans la chambre. C'est noté dans « Mes goûts » (`pas-poster-chambre`), et ça remplace sa note précédente sur le poster. Le poster est retiré du placard-studio (`decors.js`). La planche est redéposée dans la fiche `decor-chambre`, en `a_choisir`.
+3. **Les voix du narrateur : « oui ».** Les 3 voix sont générées sur Flora avec Gemini 3.1 Flash TTS, en français, sur la même phrase : « Voici Liam. 15 ans. Zéro abonné. Persuadé d'être le prochain. » Elles coûtent 0,039 $ pour les 3.
+
+| Voix | Ce que Google en dit | Durée | Pauses entre les phrases |
+|---|---|---|---|
+| 1 · Charon | informative | 6,7 s | environ 0,6 s |
+| 2 · Algenib | rocailleuse | 7,1 s | environ 0,4 s, la plus fluide |
+| 3 · Algieba | douce | 7,7 s | environ 0,75 s |
+
+Elles sont dans la fiche `narrateur`, en `a_choisir`. Aucune pause n'a été ajoutée (`pas-voix-pauses`). La page n'accepte pas les fichiers .mp3 : les voix sont donc déposées en .mp4 audio (AAC), que le lecteur de la page lit.
+
 ## Étape 2 : tout l'univers dans le style choisi (après le choix)
 
 - Liam : 4 versions, chacune de face, de profil et avec 4 expressions (frime, colère, panique, fierté).
@@ -202,8 +215,9 @@ Les logos ne portent pas le nom de Stalak : Stalak n'arrive qu'à la fin de l'é
 
 - **Visuels : 0 $** (dessinés en code).
 - **Voix (Flora, Gemini), 0,013 $ par génération** :
-  - narrateur : 3 essais, 0,04 $ ;
+  - narrateur : 3 essais, 0,039 $ (dépensés le 16/11) ;
   - voix de Liam, Nadia, Deuce et Maya : 0,16 $ ;
   - ensuite, environ 0,05 à 0,08 $ par épisode (une génération par personnage et par façon de parler, découpée ensuite).
 - **Musique : 0 $** (beats du propriétaire ou Pixabay).
 - Solde Flora au 15/11 : 2,76 $, après les 0,42 $ des planches générées puis retirées.
+- 16/11 : 0,039 $ pour les 3 voix du narrateur ; solde Flora environ 2,72 $.

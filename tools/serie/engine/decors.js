@@ -103,8 +103,7 @@
     s += f(R(84, 1060, 312, 440), N ? '#2c2a40' : '#6b5442') + ln('M 90 1200 L 390 1200 M 90 1340 L 390 1340', N ? '#1c1a2c' : '#4a3a2e', 5);
     s += micStand(270, 830, 1480);
     s += f('M 440 360 L 520 380 L 520 1480 L 440 1500 Z', N ? '#4a4566' : '#a07c5e') + `<g transform="rotate(4 482 560)">${f(R(452, 520, 60, 80), '#f4f1ea')}${txt(482, 568, 'STUDIO', 15, '#c8443a')}</g>`;
-    // a poster
-    s += poster(560, 200, 170, 230, 2, C.p2, C.p2b, C.gold);
+    // no poster on this wall (owner, 16/11 : « pas de poster »)
     // the window with blinds, the bed under it
     s += windowSky(700, 330, 330, 470, t, { cross: false });
     for (let i = 0; i < 6; i++) s += f(R(722, 352 + i * 26, 286, 16), N ? '#8a8fb8' : '#f1e6d6', 2.4);

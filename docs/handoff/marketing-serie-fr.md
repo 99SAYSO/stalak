@@ -2,6 +2,19 @@
 
 > Marketing & croissance. Rien ne change sur le site : seulement `tools/serie/` et `docs/`.
 
+## 16/11, 4 h 45 : miniatures avec chaque vidéo, pas de poster, les 3 voix du narrateur
+
+- À 4 h 28, le propriétaire a répondu.
+  1. **Les miniatures** : « je veux que tu me crées les miniatures des TikTok à chaque fois en même temps que tu génères la vidéo, et je pourrai les retrouver dans Studio Stalak ». C'est la règle `regle-miniatures` dans « Mes goûts ». Le logo devient optionnel : il ne sert que s'il veut le voir sur les miniatures (c'est écrit dans la fiche `logo-serie`).
+  2. **Pas de poster** dans la chambre (`pas-poster-chambre` dans « Mes goûts »). Le poster est retiré du placard-studio dans `decors.js`. La planche est redéposée, et la fiche `decor-chambre` est en `a_choisir`. Son ancienne note sur Pop Smoke reste dans « Mes goûts » : c'est lui qui la retire.
+  3. **Les voix du narrateur : « oui ».** 3 voix sur la même phrase (Flora, Gemini 3.1 Flash TTS, en français) : Charon, Algenib et Algieba. Elles coûtent 0,039 $, et le solde Flora est d'environ 2,72 $. Elles sont dans la fiche `narrateur`, en `a_choisir`.
+- La page n'accepte pas les .mp3 : les voix sont déposées en .mp4 audio (AAC). Le lecteur `<audio>` de la page les lit.
+- **Pour le Chef de projet (miniatures)** : il faut une place pour la miniature dans les fiches vidéo de la page, par exemple un champ `miniatureUrl` affiché à côté de `videoUrl` et `plancheUrl`. Il faut aussi la mentionner dans `docs/studio/STUDIO_STALAK.md` et dans l'étape 5 du skill `stalak-videos-reseaux`.
+- Ce qui attend :
+  - les choix du propriétaire : le bandeau (version 4), la chambre sans poster et la voix du narrateur ;
+  - ensuite, les 4 ambiances musicales (ses beats, sinon Pixabay) ;
+  - puis la bible en une page et les scripts.
+
 ## 16/11, 4 h 35 : pas de générique, le bandeau en version mélangée
 
 - À 4 h 24, le propriétaire a écrit « c'est bon j'ai fait mes choix, par contre je veux pas de générique ».

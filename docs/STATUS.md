@@ -257,7 +257,9 @@
 - À décider : la publication directe est-elle réservée à Stalak Pro ou ouverte à tous ? Meta risque de demander une vérification d'entreprise (lien avec la LLC).
 
 ### Marketing & croissance
-- **En cours (branche `marketing/serie-fr`, série « T-Crazy », l'univers d'abord) — personnages, décors et mascotte choisis ; bandeau à valider, logo et poster en attente** :
+- **En cours (branche `marketing/serie-fr`, série « T-Crazy », l'univers d'abord) — personnages, décors et mascotte choisis ; bandeau, chambre sans poster et voix du narrateur à choisir** :
+  - **Décision du propriétaire (16/11, 4 h 28) : chaque vidéo a sa miniature**, faite en même temps qu'elle et déposée avec elle dans Studio Stalak (`regle-miniatures` dans « Mes goûts »). **Pour le Chef de projet** : ajouter à la page une place pour la miniature dans les fiches vidéo (par exemple `miniatureUrl`), puis la mentionner dans `docs/studio/STUDIO_STALAK.md` et dans l'étape 5 du skill `stalak-videos-reseaux`. Le logo de la série devient optionnel.
+  - 16/11, 4 h 28 : pas de poster dans la chambre (retiré). Les 3 voix du narrateur (Charon, Algenib, Algieba) sont générées sur Flora pour 0,039 $ et sont dans la fiche `narrateur`. La page refuse les .mp3 : l'audio est déposé en .mp4 (AAC).
   - **Décision du propriétaire (16/11, 4 h 24) : pas de générique.** Les épisodes commencent directement par l'accroche, sans intro ni musique de générique. Règle `pas-generique` dans « Mes goûts » ; la fiche « Le générique » est marquée abandonnée (à retirer de la page par le Chef de projet s'il le souhaite).
   - 16/11, 4 h 24 : mascotte officielle validée. Bandeau : la version 4, « Ton mélange » (bande de titre de la v2, sous-titres de la v1), est à valider. Logo pas choisi : on lui demande s'il en veut un pour les miniatures.
   - 16/11, vers 4 h : décors choisis par le propriétaire : le placard-studio (à refaire pour le poster), la cuisine, la rue pavillonnaire, le terrain grillagé, le couloir du lycée, le toit aménagé.
