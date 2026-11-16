@@ -183,6 +183,12 @@ Les textes sont des exemples, puisqu'aucun script n'est encore écrit :
 
 Les logos ne portent pas le nom de Stalak : Stalak n'arrive qu'à la fin de l'épisode (`pas-pub-debut`). Le propriétaire peut mélanger le dessin d'un logo avec le titre d'un autre. La piste « Hustle d'hiver » reste possible s'il la préfère.
 
+**16/11, 4 h 24 : les retours du propriétaire.**
+- La mascotte officielle est validée (fiche `mascotte` en `choisi`).
+- Le bandeau : « les sous-titres sont bons, mais je veux la bande de titre de la version 2 ». Sa note a été ajoutée automatiquement dans « Mes goûts ». La version 4, « Ton mélange », réunit la bande bleue de la version 2 et les sous-titres de la version 1. Elle est dans la fiche `bandeau`, en `a_choisir`.
+- **Pas de générique** : « je veux pas de générique ». Les épisodes commencent directement par l'accroche, sans intro ni musique de générique. C'est noté dans « Mes goûts » (`pas-generique`), et la fiche « Le générique » est marquée comme abandonnée.
+- Le logo n'est pas choisi. On lui demande s'il en veut un pour les miniatures, maintenant qu'il n'y a pas de générique.
+
 ## Étape 2 : tout l'univers dans le style choisi (après le choix)
 
 - Liam : 4 versions, chacune de face, de profil et avec 4 expressions (frime, colère, panique, fierté).
@@ -190,7 +196,7 @@ Les logos ne portent pas le nom de Stalak : Stalak n'arrive qu'à la fin de l'é
 - Les 6 décors : 2 versions chacun, plus la chambre de nuit.
 - Le bandeau et les sous-titres, le logo de la série : 3 versions chacun.
 - Le narrateur : 3 voix sur la même phrase (Flora).
-- Les musiques : le générique et les 4 ambiances, 2 ou 3 propositions chacune (`type: "audio"`). D'abord les beats du propriétaire ou d'ALASKA (demandés le 15/11). Sinon, Pixabay (usage commercial permis), sans les titres marqués d'un bouclier, avec la source notée pour chaque titre. Jamais de morceau connu.
+- Les musiques : les 4 ambiances, 2 ou 3 propositions chacune (`type: "audio"`). Plus de générique depuis le 16/11 (décision du propriétaire). D'abord les beats du propriétaire ou d'ALASKA (demandés le 15/11). Sinon, Pixabay (usage commercial permis), sans les titres marqués d'un bouclier, avec la source notée pour chaque titre. Jamais de morceau connu.
 
 ## Coûts
 

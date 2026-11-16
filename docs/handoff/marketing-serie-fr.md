@@ -2,6 +2,17 @@
 
 > Marketing & croissance. Rien ne change sur le site : seulement `tools/serie/` et `docs/`.
 
+## 16/11, 4 h 35 : pas de générique, le bandeau en version mélangée
+
+- À 4 h 24, le propriétaire a écrit « c'est bon j'ai fait mes choix, par contre je veux pas de générique ».
+  - **La mascotte officielle est validée** (fiche `mascotte` en `choisi`).
+  - **Le bandeau** : il garde les sous-titres de la version 1 et veut la bande de titre de la version 2 (sa note, ajoutée automatiquement dans « Mes goûts »). La version 4, « Ton mélange », est dessinée (`frame.js`, images `bandeau-4-*`) et déposée dans la fiche `bandeau`, en `a_choisir`.
+  - **Pas de générique** : c'est noté dans « Mes goûts » (`pas-generique`). Les épisodes commencent directement par l'accroche. La fiche « Le générique » (`musique-generique`) est marquée « abandonné ». Le Chef de projet peut la retirer de la page s'il le souhaite.
+  - **Le logo** n'est pas choisi : on lui demande s'il en veut un pour les miniatures.
+  - **Le poster de la chambre** attend toujours son choix (un rappeur inventé, T-Crazy lui-même ou une de ses pochettes).
+- Coût : 0 $.
+- Ce qui attend : son choix du bandeau et sa réponse pour le logo et le poster. Ensuite, les voix du narrateur (Flora, environ 0,04 $, seulement après son accord) et les 4 ambiances musicales (ses beats, sinon Pixabay).
+
 ## 16/11, 4 h 40 : décors choisis (poster de la chambre en attente), bandeau et logo déposés
 
 - Vers 4 h, le propriétaire a choisi ses décors :

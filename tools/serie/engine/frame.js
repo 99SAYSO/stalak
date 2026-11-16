@@ -157,6 +157,9 @@
     FRAMES[`bandeau-${n}-accroche`] = { set: ['cuisine', 1, 'jour'], chars: [{ who: 'liam', v: 4, expr: 'panique', x: 330, y: 1846, h: 1170 }, { who: 'nadia', v: 2, expr: 'colere', x: 770, y: 1856, h: 1250 }], over: () => bandeau(n, TITLE, EP) + sub(n, ...HOOK) };
     FRAMES[`bandeau-${n}-narrateur`] = { set: ['cuisine', 1, 'jour'], chars: [{ who: 'liam', v: 4, expr: 'frime', x: 540, y: 1880, h: 1300 }], over: () => sub(n, ...NARR) };
   });
+  // version 4, the owner's mix (16/11) : the title band of version 2, the subtitles of version 1
+  FRAMES['bandeau-4-accroche'] = Object.assign({}, FRAMES['bandeau-1-accroche'], { over: () => bandeau(2, TITLE, EP) + sub(1, ...HOOK) });
+  FRAMES['bandeau-4-narrateur'] = Object.assign({}, FRAMES['bandeau-1-narrateur'], { over: () => sub(1, ...NARR) });
   const COVERS = { 1: [['rue', 1, 'jour'], 'frime'], 2: [['toit', 2, 'soir'], 'fierte'], 3: [['terrain', 1, 'jour'], 'panique'] };
   [1, 2, 3].forEach(n => {
     FRAMES[`logo-${n}`] = { set: COVERS[n][0], chars: [{ who: 'liam', v: 4, expr: COVERS[n][1], x: 540, y: 3330, h: 2560 }], shade: true, logo: [n, 540, 505, 0.85] };

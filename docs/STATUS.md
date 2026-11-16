@@ -257,7 +257,9 @@
 - À décider : la publication directe est-elle réservée à Stalak Pro ou ouverte à tous ? Meta risque de demander une vérification d'entreprise (lien avec la LLC).
 
 ### Marketing & croissance
-- **En cours (branche `marketing/serie-fr`, série « T-Crazy », l'univers d'abord) — personnages et décors choisis ; bandeau et logo à choisir** :
+- **En cours (branche `marketing/serie-fr`, série « T-Crazy », l'univers d'abord) — personnages, décors et mascotte choisis ; bandeau à valider, logo et poster en attente** :
+  - **Décision du propriétaire (16/11, 4 h 24) : pas de générique.** Les épisodes commencent directement par l'accroche, sans intro ni musique de générique. Règle `pas-generique` dans « Mes goûts » ; la fiche « Le générique » est marquée abandonnée (à retirer de la page par le Chef de projet s'il le souhaite).
+  - 16/11, 4 h 24 : mascotte officielle validée. Bandeau : la version 4, « Ton mélange » (bande de titre de la v2, sous-titres de la v1), est à valider. Logo pas choisi : on lui demande s'il en veut un pour les miniatures.
   - 16/11, vers 4 h : décors choisis par le propriétaire : le placard-studio (à refaire pour le poster), la cuisine, la rue pavillonnaire, le terrain grillagé, le couloir du lycée, le toit aménagé.
   - **Poster de la chambre en attente.** Le propriétaire voulait un poster de Pop Smoke (une photo retravaillée envoyée dans la conversation). Marketing ne l'a ni dessiné ni intégré : c'est l'image d'un vrai artiste sur le compte de la marque, sans les droits. Le propriétaire dit en prendre la responsabilité, et Marketing a maintenu sa position. 3 idées sont proposées à la place : un rappeur inventé, T-Crazy lui-même, ou une pochette du propriétaire.
   - 16/11, 4 h 40 : le bandeau (avec les sous-titres) et le logo de la série, 3 versions chacun, sont dans les fiches `bandeau` et `logo-serie`, en `a_choisir`. Ils sont dessinés en code (`tools/serie/engine/frame.js`), sur de vraies images de la série. Aucun logo ne porte le nom de Stalak. Coût : 0 $.
