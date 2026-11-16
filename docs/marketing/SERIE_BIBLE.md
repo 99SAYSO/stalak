@@ -15,7 +15,8 @@ Le ton est celui d'un dessin animé américain inspiré de l'anime, avec le dél
 ## Le format
 
 - **Durée** : entre 1 min 05 et 1 min 20, en vertical 9:16. **Pas de générique.**
-- **0:00, le cri** : un personnage crie une phrase choc liée à l'épisode. En haut, le bandeau donne le titre en majuscules. C'est la version 4 : la bande bleue penchée, avec de la neige dessus.
+- **0:00, le cri** : un personnage crie une phrase liée à l'épisode, qui **choque ou fait tout de suite se poser une question** (16/11). Exemple : « Tu m'as enregistrée sans me le dire ?! ». La même phrase revient au milieu ou à la fin, et c'est là qu'on comprend la scène.
+- **Le bandeau** : en haut, en majuscules, sur la bande bleue penchée avec de la neige dessus (version 4). Le titre est **une phrase qui donne le contexte**, pas un nom d'épisode (16/11). Par exemple « SA MÈRE A CRIÉ EN PLEINE PRISE », dans l'esprit de « IL A RENCONTRÉ UN GROS PROBLÈME » ou « ELLE EST TOUJOURS SUR SON TÉLÉPHONE ».
 - **Puis le narrateur.** Le bandeau disparaît dès qu'il parle. Il présente vite les personnages et le contexte, puis il alterne avec eux.
 - **Les sous-titres** : tout ce qui est dit est écrit, sur une carte blanche, avec le nom de celui qui parle dans une étiquette à sa couleur.
 - **La fin, avec un appel à l'action** (décision du 16/11) :
@@ -91,12 +92,12 @@ Les images, les musiques et le rendu coûtent 0 $. Une génération de voix coû
 
 | Bandeau | Le cri d'ouverture | L'histoire |
 |---|---|---|
-| LA VAISSELLE OU LA GLOIRE | Nadia : « T-Crazy mange pas si T-Crazy a pas fait la vaisselle ! » | Il enregistre au lieu de faire la vaisselle. Le cri de sa mère tombe pile sur le temps : c'est sa meilleure accroche. |
-| LE SON DE L'ANNÉE | Liam : « Pourquoi ma bouche est décalée ?! » | Il passe la nuit sur sa vidéo de promo, et rien n'est synchronisé. Maya lui montre Stalak. |
-| LE MANAGER | Deuce : « On va scaler ta street-cred ! » | Le plan promo de Deuce : un tournage devant l'épicerie, que M. Reyes interdit. |
-| LE JOUR DE GTA 6 | Deuce : « Sortir ton son le jour de GTA 6 ?! T'es fou ! » | Tout le quartier joue. Mais entre deux parties, ils scrollent : il lui faut un clip, pas juste un son. (actualité, 19/11) |
-| LE CLIP FAÇON GTA | Deuce : « On va faire un clip comme dans GTA ! » | Un scooter, une plante verte et douze prises ratées, coupées sur le rythme. (actualité) |
-| LE CLASH AU TERRAIN | Big Mo : « Encore toi, le petit ? » | Big Mo poste un clip par jour. Liam veut comprendre comment. |
-| LE SNIPPET POSTÉ TROP TÔT | Liam : « Ils veulent le son en entier ?! » | Il poste un extrait à 3 h du matin, et le son n'est pas fini. |
-| LE CLIP DANS LE COULOIR | Liam : « Tout le monde regarde ! » | Il montre sa vidéo à tout le lycée, mais le son est décalé. |
-| LE TOIT | Maya : « Tu rêves encore ? » | Un épisode « lifestyle » : Liam et Maya sur le toit, il raconte sa future carrière. |
+| SA MÈRE A CRIÉ EN PLEINE PRISE | Nadia : « Tu m'as enregistrée sans me le dire ?! » | Le cri de sa mère sur la vaisselle tombe pile sur le temps : c'est son refrain. (pilote 1) |
+| IL A PASSÉ LA NUIT SUR SA VIDÉO DE PROMO | Liam : « Pourquoi ma bouche est décalée ?! » | Six heures de montage, la bouche décalée. Maya lui montre Stalak. (pilote 2) |
+| SON POTE S'EST NOMMÉ SON MANAGER | Liam : « Mon manager m'a fait acheter douze sachets de glaçons ! » | Douze prises devant l'épicerie, un sachet de glaçons par prise. (pilote 3) |
+| IL SORT SON SON LE JOUR DE GTA 6 | Deuce : « Sortir ton son le jour de GTA 6 ?! T'es fou ! » | Tout le quartier joue. Mais entre deux parties, ils scrollent : il lui faut un clip, pas juste un son. (actualité, 19/11) |
+| IL VOULAIT UN CLIP COMME DANS GTA | M. Reyes : « Rendez-moi ma plante ! » | Un scooter, une plante verte et douze prises ratées, coupées sur le rythme. (actualité) |
+| LE RIVAL POSTE UN CLIP PAR JOUR | Big Mo : « T'as zéro abonné et tu me clashes ?! » | Big Mo poste tous les jours. Liam veut comprendre comment. |
+| IL A POSTÉ SON SON AVANT DE LE FINIR | Liam : « Ils veulent le son en entier ?! » | Il poste un extrait à 3 h du matin, et le son n'est pas fini. |
+| TOUT LE LYCÉE A VU SA VIDÉO DÉCALÉE | Maya : « Toute l'école a vu ta bouche décalée. » | Il montre sa vidéo dans le couloir, et le son est décalé. |
+| IL RACONTE SA CARRIÈRE AVANT DE L'AVOIR | Liam : « Dans un an, je remplis un stade. » | Un épisode « lifestyle » : Liam et Maya sur le toit, il raconte sa future carrière. |

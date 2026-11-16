@@ -258,6 +258,7 @@
 
 ### Marketing & croissance
 - **En cours (branche `marketing/serie-fr`, série « T-Crazy ») — 5 scripts à valider (dont 2 sur GTA 6), vitesse de la voix de Liam à choisir** :
+  - 16/11, 13 h 18 : bandeaux plus descriptifs (une phrase qui donne le contexte, `regle-bandeau-descriptif`) et cris d'ouverture qui choquent ou font se poser une question (note du propriétaire sur le script 1). Les 5 scripts sont corrigés et repassés en `script`.
   - **Décision du propriétaire (16/11, 12 h 11)** : chaque épisode finit par un appel à l'action, avec Stalak amené intelligemment. Celui qui regarde doit se reconnaître dans la galère de Liam (`regle-cta-intelligent`). Les 3 pilotes sont réécrits en ce sens.
   - **Actualité, GTA 6 (sortie le 19/11/2026)** : 2 épisodes (`tcrazy-ep4` le 19/11 au soir, `tcrazy-ep5` le 21/11). Ils n'en gardent que le nom : ni logo, ni image du jeu, aucune imitation, et Liam (15 ans) n'y joue pas. **Pour Juridique** : vérifier cet usage du nom, comme pour BandLab.
   - Voix choisies : Nadia Pulcherrima, Deuce Schedar, Maya Despina. Pour Liam, c'est Fenrir, avec la vitesse (×1,1 ou ×1,2) encore à choisir.

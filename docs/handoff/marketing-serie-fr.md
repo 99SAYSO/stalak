@@ -2,6 +2,24 @@
 
 > Marketing & croissance. Rien ne change sur le site : seulement `tools/serie/` et `docs/`.
 
+## 16/11, 13 h 30 : bandeaux descriptifs, cris d'ouverture plus forts
+
+- À 13 h 18, le propriétaire a écrit : « retiens que les titres sur le bandeau doivent être plus descriptifs, donner plus de contexte ». Ses exemples : « il a rencontré un gros problème », « LUI IL A LE DROIT, PAS ELLE », « ELLE DOUTE APRÈS L'ENTERREMENT », « ELLE EST TOUJOURS SUR SON TÉLÉPHONE ». C'est noté dans « Mes goûts » (`regle-bandeau-descriptif`).
+- Sur le script 1, il avait aussi écrit, en `script_refaire` : « la phrase du hook n'est pas assez accrocheuse, il faut quelque chose qui choque ou qui fait directement se poser des questions ». Sa note a été ajoutée automatiquement dans « Mes goûts ».
+- Les 5 scripts sont corrigés et repassés en `script` :
+
+| Épisode | Nouveau bandeau | Cri d'ouverture |
+|---|---|---|
+| 1 | SA MÈRE A CRIÉ EN PLEINE PRISE | Nadia : « Tu m'as enregistrée sans me le dire ?! » (la scène de la fin, montrée d'abord) |
+| 2 | IL A PASSÉ LA NUIT SUR SA VIDÉO DE PROMO | Liam : « Pourquoi ma bouche est décalée ?! » (gardé) |
+| 3 | SON POTE S'EST NOMMÉ SON MANAGER | Liam : « Mon manager m'a fait acheter douze sachets de glaçons ! » |
+| 4 | IL SORT SON SON LE JOUR DE GTA 6 | Deuce : « Sortir ton son le jour de GTA 6 ?! T'es fou ! » (gardé) |
+| 5 | IL VOULAIT UN CLIP COMME DANS GTA | M. Reyes : « Rendez-moi ma plante ! » |
+
+- Chaque cri revient plus tard dans l'épisode, avec le même enregistrement : c'est là qu'on comprend la scène. Les cartes de fin annoncent l'épisode suivant avec son nouveau bandeau.
+- La bible est mise à jour : la règle du cri, la règle du bandeau, et le tableau d'idées avec des bandeaux descriptifs.
+- Coût : 0 $.
+
 ## 16/11, 12 h 30 : voix choisies, scripts réécrits avec un appel à l'action, 2 épisodes GTA 6
 
 - À 12 h 11, le propriétaire a choisi les voix :
