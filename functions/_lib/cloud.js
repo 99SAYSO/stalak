@@ -334,6 +334,35 @@ async function putPart(request, env, user, projectId, fileId, nRaw) {
   return json({ ok: true, part: n });
 }
 
+// Audit of 13/11 (500 of 12/11 on …/complete): R2's complete() can fail. Three cases, each with a clear answer the page
+// already knows how to follow (src/account.js upload: « parts_missing » → it starts again from the parts the server has):
+//   - already put together (the first answer was lost, the page tries again): the file is there with the right size → done;
+//   - the upload is gone at R2 (too old, about 7 days, or aborted: NoSuchUpload) → a new one, no part kept → 409 parts_missing;
+//   - a part is refused (InvalidPart, wrong size…) → the parts are forgotten, the same upload goes on → 409 parts_missing;
+//   - anything else (R2 busy) → 503 « try again » (the page tries again by itself). Never a 500.
+async function completeFailed(env, row, key, e) {
+  const msg = String((e && e.message) || e || '');
+  const done = await env.MEDIA.head(key).catch(() => null);
+  if (done && done.size === row.size) return done;
+  const forgetParts = () => env.DB.prepare('DELETE FROM file_parts WHERE user_id = ?1 AND project_id = ?2 AND file_id = ?3').bind(row.user_id, row.project_id, row.id).run();
+  const all = Array.from({ length: Math.min(50, partsCount(row.size)) }, (_, i) => i + 1);
+  if (/NoSuchUpload|no such upload|does not exist|not found|expired/i.test(msg)) {
+    console.warn('[stalak] cloud complete: upload gone at R2, starting it again');
+    const mpu = await env.MEDIA.createMultipartUpload(key, { httpMetadata: { contentType: row.type || 'application/octet-stream' } });
+    await forgetParts();
+    await env.DB.prepare('UPDATE project_files SET upload_id = ?4, updated_at = ?5 WHERE user_id = ?1 AND project_id = ?2 AND id = ?3')
+      .bind(row.user_id, row.project_id, row.id, mpu.uploadId, Date.now()).run();
+    throw new HttpError(409, 'parts_missing', 'The upload was too old: send the file again.', { missing: all, restarted: true });
+  }
+  if (/InvalidPart|EntityTooSmall|part/i.test(msg)) {
+    console.warn('[stalak] cloud complete: a part was refused by R2, sending the parts again');
+    await forgetParts();
+    throw new HttpError(409, 'parts_missing', 'A part was not received well: send the file again.', { missing: all });
+  }
+  console.error('[stalak] cloud complete failed', msg.slice(0, 120));
+  throw new HttpError(503, 'storage_busy', 'The online storage did not answer, try again in a moment.', { retryAfter: 5 });
+}
+
 async function complete(env, user, projectId, fileId) {
   const row = await uploadingRow(env, user, projectId, fileId);
   if (!row.upload_id) throw new HttpError(409, 'not_multipart', 'Send this file in one go.');
@@ -344,7 +373,12 @@ async function complete(env, user, projectId, fileId) {
   for (let i = 1; i <= count; i++) if (!results.some((r) => r.part_number === i)) missing.push(i);
   if (missing.length) throw new HttpError(409, 'parts_missing', 'Some parts are missing.', { missing: missing.slice(0, 50) });
   const key = keyOf(user.id, projectId, fileId);
-  const obj = await env.MEDIA.resumeMultipartUpload(key, row.upload_id).complete(results.map((r) => ({ partNumber: r.part_number, etag: r.etag })));
+  let obj;
+  try {
+    obj = await env.MEDIA.resumeMultipartUpload(key, row.upload_id).complete(results.map((r) => ({ partNumber: r.part_number, etag: r.etag })));
+  } catch (e) {
+    obj = await completeFailed(env, row, key, e);   // audit of 13/11: R2 refused to put the parts together
+  }
   if (!obj || obj.size !== row.size) {
     await dropFile(env, row);
     throw new HttpError(400, 'size_mismatch', 'The saved file does not have the expected size: send it again.');

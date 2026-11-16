@@ -85,8 +85,8 @@ def run(b, base, lang, iphone, PW):
     pg.locator('#kindSeg4 button[data-v="clip"]').click(); pg.wait_for_timeout(1500)
     st = ev(pg, "[S.step, S.kind, S.fmt, $('#kindSeg button[data-v=\"clip\"]').getAttribute('aria-pressed'), $('#kindSeg4 button[data-v=\"clip\"]').getAttribute('aria-pressed'), S.cuts.length > 0]")
     check(tag + ' : passé en Clip sans quitter l’étape 4 (16:9, les deux sélecteurs à jour)', st == [4, 'clip', '169', 'true', 'true', True], st)
-    co = [e.get('cat') for e in events if e.get('name') == 'clip_open']
-    check(tag + ' : « a ouvert le mode Clip » compté (Gratuit), une fois', co == ['free'], co)
+    co = [e for e in events if e.get('name') == 'clip_open']
+    check(tag + ' : « a ouvert le mode Clip » envoyé une fois (un seul nombre, compté par Comptes)', len(co) == 1 and 'cat' not in co[0], co)
 
     # n° 2: the effects and the lyrics in Free, with the watermark
     ev(pg, "S.lyrics.lines = [{ text: 'Ligne de test', t: 0.5 }, { text: 'Deuxième ligne', t: 4 }], S.lyrics.mode = 'paste', rebuild(false)")

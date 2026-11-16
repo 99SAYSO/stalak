@@ -200,8 +200,7 @@ export async function stats(env, days = 30, now = Date.now()) {
         retry: pick('ev_export_retry_'), saved: pick('ev_export_saved_'), refused: pick('ev_export_refused_'),
         // (7/11, Clip mode) exports per kind (startDev.kind_clip / okDev.kind_clip) and the answer to the Clip question without Pro
         clipAsk: pick('ev_clip_ask_'),
-        // (13/11) visits that opened the Clip mode (once per visit), by a free or a Pro account
-        clipOpen: { all: ev.ev_clip_open || 0, free: ev.ev_clip_open_free || 0, pro: ev.ev_clip_open_pro || 0 },
+        clipOpen: ev.ev_clip_open || 0,   // audit of 13/11: « a ouvert le mode Clip » (App)
         // report of 7/11: the funnel per source, the visits per country, where the payment window was closed without buying
         bySource: bySource(ev), visitCountries: visitCountries(ev),
         checkoutClose: { start: ev.ev_checkout_close_start || 0, details: ev.ev_checkout_close_details || 0, payment: ev.ev_checkout_close_payment || 0 },
