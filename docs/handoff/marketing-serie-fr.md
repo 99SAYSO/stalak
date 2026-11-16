@@ -2,7 +2,7 @@
 
 > Marketing & croissance. Rien ne change sur le site : seulement `tools/serie/` et `docs/`.
 
-Statut : EN COURS (fabrication des épisodes dans Studio Stalak ; rien à publier sur le site). Tests : planches contact relues pour chaque vidéo déposée. Rien à faire par le Chef de projet, sauf garder la branche à jour.
+Statut : EN COURS (fabrication des épisodes dans Studio Stalak ; rien à publier sur le site). Tests : planches contact relues pour chaque vidéo déposée, `npx hyperframes check` passé sur « Le manager ». Rien à faire par le Chef de projet, sauf garder la branche à jour.
 
 ## 16/11, 20 h : lumières réalistes et HyperFrames pour toute la série, « Le manager » v3, « Le clip façon GTA » v2
 
@@ -11,13 +11,19 @@ Statut : EN COURS (fabrication des épisodes dans Studio Stalak ; rien à publie
   - Ce qui brille porte la classe `shiny` (boucles d'oreilles, lunettes de soleil, chaîne de Big Mo, sachets de glaçons, objectif du téléphone, vitres du bus), un écran la classe `screen` : `LIGHTS.attach` y pose un scintillement à la bonne taille. Ombre douce sous les pieds de chaque personnage.
   - La rue a un lampadaire (éteint le jour, allumé le soir) et une heure `coucher` : soleil derrière les maisons, vitrine et fenêtres allumées.
   - `anim.js` : nouvelles actions `tw` (scintille), `flk` (grésille), `sweep` (reflet qui passe), `walk` (marche, avec le corps qui balance), `tilt` (chute).
-  - **HyperFrames** : étape `hf` de `tcrazy.py`. Le projet est construit dans le dossier de travail (`<ep>/hf/`), notre moteur en est le runtime (`hf-seek`, timeline GSAP enregistrée), avec deux éléments du catalogue installés à la volée (jamais dans le dépôt) : `organic-light-leak-overlay` à chaque passage par le noir et `vignette` le soir. Rendu avec `HYPERFRAMES_BROWSER_PATH` pointé sur le Chrome de Playwright (HyperFrames ne peut pas télécharger le sien ici). `npx hyperframes check` passe (restent des alertes de contraste sur les textes du décor et des ombres de texte voulues).
+  - **HyperFrames** : étape `hf` de `tcrazy.py`. Le projet est construit dans le dossier de travail (`<ep>/hf/`), notre moteur en est le runtime (`hf-seek`, timeline GSAP enregistrée), avec deux éléments du catalogue installés à la volée (jamais dans le dépôt) : `organic-light-leak-overlay` à chaque passage par le noir et `vignette` le soir. Rendu avec `HYPERFRAMES_BROWSER_PATH` pointé sur le Chrome de Playwright (HyperFrames ne peut pas télécharger le sien ici), environ 12 à 15 min par épisode. `npx hyperframes check` passe (restent des alertes de contraste sur les textes du décor et des ombres de texte voulues).
   - Internet : rien de plus n'a été nécessaire (tout est dessiné en code, GSAP vient du CDN pour les éléments du catalogue).
 - **« Le manager » v3 (ses 2 remarques)** : Big Mo arrive en marchant avec ses suiveurs, Liam (d'abord tranquille, puis tout content) dit « Wouah, c'est Big Mo, le rappeur le plus connu de chez moi ! », ils échangent, Big Mo repart en marchant. Liam, seul et dégoûté : « Trois clips en un matin… Mais comment il fait ? » (réplique ajoutée par Marketing pour qu'on comprenne, à valider avec la vidéo), puis il s'effondre. Maya arrive en marchant, s'arrête, son étiquette apparaît, puis elle parle. 1 min 14. Script de la fiche passé en version 3, voix renumérotées (rien n'est repayé), 2 voix nouvelles : 0,026 $.
 - **« Le clip façon GTA » v2 (ses 2 remarques)** : le rêve de Deuce est plus petit et coupé au bord de la bulle ; les 12 cases de la galerie montrent chaque prise dans son décor ; le soir est la rue au coucher du soleil (lumière sur les personnages aussi) ; Maya arrive en marchant (sa remarque sur « Le manager » vaut pour toute la série). 1 min 05.
 - Sous-titres : un morceau trop court (« Pas mal. », 0,3 s) est recoupé avec son voisin ; sur une carte, plus de mot seul sur la dernière ligne (« de GTA » / « 6. » devient « Il a vu la bande-annonce » / « de GTA 6. »).
 - Planches contact : relues en entier pour les deux vidéos (une image toutes les 0,5 s) ; les mots seuls en fin de carte relevés sur la première version sont corrigés et les deux vidéos refaites, 0 problème restant.
-- **À décider par le propriétaire** : refaire avec les lumières les épisodes déjà validés (1, 2 et GTA 6) ? (0 $, environ 30 min de rendu chacun.)
+- **Studio Stalak** : « Le manager » déposé en v2 (tour 2) à 20 h 40, **validé par le propriétaire à 21 h 05**. « Le clip façon GTA » déposé en v2 (tour 2) à 21 h 16, en `video`. Les 4 remarques sont `traitée`, chacune avec sa réponse. L'ancienne version de chaque vidéo est gardée dans `videoV1`.
+- Après sa validation, une version de « Le manager » aux sous-titres mieux coupés a été rendue (même image, seules les cartes changent : « Voici Deuce, le meilleur / pote de Liam. » au lieu de « … pote de / Liam. »). Elle est dans le stockage de la page, mais **ne remplace pas la vidéo validée** : à lui de dire.
+- **À décider par le propriétaire** :
+  - remplacer « Le manager » validé par la version aux sous-titres mieux coupés ?
+  - refaire avec les lumières les épisodes déjà validés (1, 2 et GTA 6) ? (0 $, environ 15 min de rendu chacun) ;
+  - la réplique ajoutée de Liam (« Trois clips en un matin… Mais comment il fait ? ») : validée avec la vidéo ;
+  - la suite : le storyboard de l'épisode 6 (script validé à 19 h 37).
 
 ## 16/11, 18 h 45 : version 3 (ses remarques sur les épisodes 1, 2 et GTA 6), « Le manager » et « Le clip façon GTA » fabriqués, script de l'épisode 6
 

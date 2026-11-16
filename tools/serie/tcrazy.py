@@ -10,7 +10,7 @@ The order of the steps :
   frames  : every image, drawn by engine/anim.html (Playwright, 30 images/s) → <work>/<ep>/video.mp4 (no sound) : quick checks
   hf      : the same images through HyperFrames (owner, 16/11 : « utilise aussi hyperframes ») : the engine is the runtime of a
             HyperFrames composition, with the registry's light leak on each change of time and a vignette in the evening
-            → <work>/<ep>/video.mp4 (no sound ; about 25-30 min per episode ; HYPERFRAMES_BROWSER_PATH = an installed Chrome)
+            → <work>/<ep>/video.mp4 (no sound ; about 12-15 min per episode on 2 processors ; HYPERFRAMES_BROWSER_PATH = an installed Chrome)
   audio   : the 4 Pixabay ambiences under the voices, a few sound effects, -14 LUFS → <work>/<ep>/mix.wav
   mux     : → <work>/<ep>/<ep>.mp4 (publication) and <ep>-720.mp4 (for Studio Stalak, under 20 MB)
   sheet   : the contact sheet, one image every 0.5 s (tools/contact_sheet.py)
