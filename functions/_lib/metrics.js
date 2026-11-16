@@ -15,7 +15,8 @@ export const METRICS = ['help_q', 'help_fail', 'cloud_save', 'ticket', 'ticket_m
 // export_saved: that second go worked (the person got the video); export_refused: a pack not started (too big for the device).
 // clip_ask (7/11, Clip mode): a 16:9 clip exported without Pro, the answer to the question (pro / reel / none)
 export const EVENTS = ['export_start', 'export_ok', 'export_fail', 'export_retry', 'export_saved', 'export_refused', 'clip_ask', 'pro_offer', 'ad_offer', 'ad_shown', 'ad_ok', 'plans_open', 'checkout_open',
-  'checkout_close', 'checkout_done'];   // 7/11: the payment window closed without buying ({stage}), or paid
+  'checkout_close', 'checkout_done',   // 7/11: the payment window closed without buying ({stage}), or paid
+  'clip_open'];   // audit of 13/11: the Clip mode opened (App sends it once per page, when the person chooses Clip)
 // why an export failed, as a category only (App sends it): nothing about the person or the video
 // (7/11) + encoder; closed: the page closed during the export; crash: an export that never ended, found at the next visit
 // (the browser closed the tab: usually out of memory on a phone)
@@ -35,7 +36,9 @@ export const EXPORT_X = {
   mem: ['m1', 'm2', 'm4', 'm8', 'unk'],
 };
 export const EVENTS_PER_IP_HOUR = 120;
-export const EVENT_REASONS = ['filters', 'clip', 'fx', 'text', 'lyrics', 'pack', 'cloud', 'human', 'wm', 'other'];
+// audit of 13/11: the plans opened without a feature are no longer all « other »: from the account menu or the header (menu),
+// from the account page (account), from the pricing page's « Choose Pro » (pricing), from a #pro link (link)
+export const EVENT_REASONS = ['filters', 'clip', 'fx', 'text', 'lyrics', 'pack', 'cloud', 'human', 'wm', 'menu', 'account', 'pricing', 'link', 'other'];
 
 // +1 on today's counter `name`. Never breaks the request that counts (the counter is only for the dashboard).
 export async function bump(env, name, n = 1) {
