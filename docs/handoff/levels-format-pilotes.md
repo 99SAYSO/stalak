@@ -11,6 +11,7 @@ Conversation « 8. Vidéos LEVELS », 16/11/2026.
 - **5 scripts pilotes** dans Studio Stalak, collection `videos`, `compte: "levels"`, `format: "LEVELS"`, `statut: "script"` : drill (18/11 slot 1), love (18/11 slot 2), triste (19/11 slot 1), sur ton ex (19/11 slot 2), de motivation (20/11 slot 1). Copie : `docs/marketing/levels/pilotes.json`.
 - Aucun crédit dépensé (pas de voix, pas de Flora, pas de rendu vidéo).
 - **Décisions du propriétaire (16/11, 21 h 25)** : durée 30 à 40 s, voix Flora, **pas de musique**, horaires à tester (plan dans `FORMAT.md`). Les 3 styles ne lui plaisent pas (« le même style de dessin que la vidéo envoyée ») : **style D** ajouté (même rendu, nos personnages et décors). Règles ajoutées dans « Mes goûts » : `levels-duree`, `levels-voix`, `levels-pas-musique`. Fiches pilotes mises à jour (heure, durée, son).
+- **Les 10 piliers du propriétaire (16/11, 21 h 29)** en tête de `FORMAT.md`, complétés par l'analyse de la référence, avec le minutage corrigé (niveau 1 en 4,5 s, niveau 4 le plus court, niveau 5 en 11,5 s, promo 2,5 s, question 2 s). **Vrais noms d'artistes autorisés dans les blagues** (ni visage, ni voix imitée, ni fausse déclaration). 3 idées de juge récurrent dessinées en style D (fiche Univers `levels-juge`). Règles `levels-piliers` et `levels-vrais-noms` dans « Mes goûts ». Les 5 pilotes repassent en `idee` : ils seront réécrits selon les piliers une fois le juge choisi.
 
 ## Fichiers touchés
 - `docs/marketing/levels/FORMAT.md` (nouveau)
@@ -30,5 +31,5 @@ Aucun changement visible sur le site : pas de maquette nécessaire (règle 9).
 
 ## Reste au propriétaire
 1. Choisir le style, sans doute D (Univers → « LEVELS · Le bonhomme bâton et son décor »).
-2. Valider ou faire refaire les 5 scripts (À valider, compte Levels).
+2. Choisir le juge (Univers → « LEVELS · Le juge qui recale ») ; les 5 scripts seront alors réécrits selon les piliers, puis à valider.
 3. Donner le feu vert (`lots/levels-2026-11-16`) une fois scripts et visuels validés.

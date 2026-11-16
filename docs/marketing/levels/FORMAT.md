@@ -2,7 +2,51 @@
 
 > Conversation « 8. Vidéos LEVELS », branche `levels/format-pilotes`, 16/11/2026.
 > 2e compte TikTok de Stalak, en français, **un seul format**, 2 vidéos par jour.
-> Ce document reprend la **mécanique** d'une vidéo de référence américaine (envoyée par le propriétaire le 16/11), **pas son contenu ni son dessin**. Rien n'est recopié : ni le texte, ni les personnages, ni le décor, ni la musique.
+> Ce document reprend la **mécanique** d'une vidéo de référence américaine (envoyée par le propriétaire le 16/11) et, à sa demande, son **style de dessin** (bonshommes pleins, fond sombre détaillé). Rien n'est recopié : ni le texte, ni les personnages, ni le décor.
+
+---
+
+## 0. Les 10 piliers de chaque vidéo LEVELS (décision du propriétaire du 16/11, 21 h 29)
+
+À respecter dans **chaque** vidéo. Entre crochets : ce que la vidéo de référence ajoute ou corrige.
+
+1. **Pas d'intro** : le titre et le niveau 1 arrivent dans la première seconde.
+   [Référence : à 0,0 s, le titre, les 5 cases et la première bulle sont déjà à l'écran ; la première réplique commence à 0,0 s. Chez nous : le titre, « NIVEAU 1 » et la première image du niveau sur la toute première image, le bonhomme qui parle avant 0,3 s.]
+2. **Le même squelette à chaque fois** : 5 niveaux, un gros « NIVEAU X », la même chute, la même fin. Seul le genre du son change.
+   [Référence : seuls l'étiquette, la case et la jauge changent d'un niveau à l'autre ; aucune coupe de plan, même décor, mêmes places. Correction : la référence n'a pas de gros « NIVEAU X ». Pour ne pas casser le rythme, le « NIVEAU X » apparaît **0,6 s par-dessus l'action**, sans arrêter la scène et sans écran à part : le niveau commence en même temps.]
+3. **Niveau 1 = le plus absurde** (rire facile ; les références à de vrais artistes marchent très bien ici). **Niveau 2 = la gêne que tout le monde reconnaît.** Les deux doivent vraiment faire rire, sinon personne n'arrive au niveau 5.
+   [Référence : le premier rire tombe avant 3 s (la réplique coupée au milieu d'un mot à 2,9 s). Le niveau 1 doit donc être **court** et sa chute doit arriver avant 4,5 s.]
+4. **Niveaux 3 et 4 = « presque »** : les vraies erreurs des petits rappeurs (longue intro, paroles décalées, vidéo floue…), pour que le spectateur se reconnaisse.
+   [Référence : le niveau 3 (« il rend ça bizarre ») est le plus long des échecs (6 s) : on s'y reconnaît, alors on supporte qu'il dure. Le niveau 4 (« correct, sans plus ») est le plus court (2 s). Chez nous : niveau 3 en 6 s, niveau 4 plus court, en 4 s.]
+5. **Chaque refus a sa chute**, avec ce timing : tentative, refus sec, **demi-seconde de silence**, coup avec un gros bruitage. Un coup différent à chaque niveau, de plus en plus fort, toujours façon dessin animé.
+   [Référence : entre deux niveaux, le son tombe à presque rien pendant environ 0,3 s (mesuré vers 3,0 s). Le silence reste un temps comique, pas une pause dans la voix (goût noté : pas de voix off avec des pauses ajoutées) : on le place **entre** le refus et le coup, jamais au milieu d'une réplique. 0,4 à 0,5 s suffit.]
+6. **Un « juge » récurrent** qui recale le bonhomme. 3 idées dessinées dans Studio Stalak (onglet Univers, fiche `levels-juge`) : le Videur du « Pour toi », Mamie Gisèle, le Pouce.
+   [Référence : le même personnage de refus pendant les 5 niveaux, toujours à la même place à droite. C'est lui qui fait la série : on le reconnaît d'une vidéo à l'autre.]
+7. **Les blagues viennent des clichés du genre** (drill, love song, son sur l'ex…) et des artistes que tout le monde connaît dans ce genre.
+8. **Ton sarcastique et pince-sans-rire** dans les textes. Le bonhomme reste un **loser attachant** : on a envie qu'il réussisse.
+   [Référence : le juge ne crie jamais, il répond par 2 ou 3 mots secs (« Toujours non. », « … Okay. ») ; c'est le décalage avec le bonhomme qui fait rire.]
+9. **Niveau 5 = le « waouh »** : un vrai snippet Stalak, joli, **plusieurs secondes** à l'écran ; le juge dit enfin oui.
+   [Référence : le niveau 5 est le plus long (7,5 s) et il finit mieux qu'attendu (le refus se retourne en oui). Chez nous : 10 à 12 s, dont 5 s de snippet plein écran.]
+10. **Promo de 2 ou 3 secondes** (« Le niveau 5, tu le fais sur stalak.app »), puis **une question pour faire commenter**.
+    [Référence : 4,4 s de pub, mais l'appli était déjà annoncée par la « quête » du niveau 5. Chez nous le niveau 5 montre déjà Stalak en action : 2,5 s de promo suffisent, puis 2 s de question (exemples : « Tu t'es arrêté à quel niveau, toi ? », « On fait quel genre la prochaine fois ? »). La question reste à l'écran jusqu'à la fin pour que la vidéo boucle.]
+
+**Technique** : tout ce qui est dit est aussi écrit à l'écran ; la vidéo marche sans le son ; rien d'important dans les zones cachées par TikTok ; planche contact (skill `planche-contact`) avant chaque envoi. Pas de concurrent nommé ; seulement des sons dont on a les droits (on cite un artiste, on ne passe pas sa musique).
+
+**Vrais noms (décision du 16/11, 21 h 29)** : on peut citer de vrais rappeurs, morts ou vivants, dans les blagues (par exemple, au niveau 1 d'un son drill : « aller chercher Pop Smoke au paradis »). Trois limites : on ne dessine pas leur visage (un personnage à nous, ou juste le nom écrit), on n'imite pas leur voix, et on ne leur prête pas de fausses déclarations.
+
+### Le minutage (30 à 40 s, d'après la référence)
+
+| Temps | Partie | Durée | Ce qui compte |
+|---|---|---|---|
+| 0,0 → 4,5 s | Niveau 1, l'absurde | 4,5 s | chute avant 4,5 s |
+| 4,5 → 9,5 s | Niveau 2, la gêne | 5 s | |
+| 9,5 → 15,5 s | Niveau 3, presque | 6 s | le plus long des échecs |
+| 15,5 → 19,5 s | Niveau 4, presque | 4 s | le plus court |
+| 19,5 → 31 s | Niveau 5, le waouh | 11,5 s | dont 5 s de snippet ; le juge dit oui |
+| 31 → 33,5 s | Promo | 2,5 s | « Le niveau 5, tu le fais sur stalak.app » |
+| 33,5 → 35,5 s | Question | 2 s | reste à l'écran, la vidéo boucle |
+
+Chaque refus (niveaux 1 à 4) : tentative → refus sec (2 ou 3 mots) → 0,4 à 0,5 s de silence → coup (0,6 à 0,9 s, gros bruitage) → « NIVEAU X » suivant en surimpression.
 
 ---
 
@@ -102,9 +146,10 @@ Personnages entre 35 % et 80 % de la hauteur ; rien d'important dans les 20 % du
 
 ### Les personnages
 
-- **Le rappeur** (héros, le même dans toutes les vidéos) : bonhomme bâton, un signe distinctif qui le rend reconnaissable (à choisir dans les styles proposés). Pas de nom de vrai rappeur, pas de visage ni de tenue d'une vraie personne.
-- **La cible** de chaque niveau : un passant, son pote, une fille, son ex, « le public » qui fait défiler son téléphone… Selon le genre. Bonhommes bâton aussi, dans une autre couleur.
-- Aucune vraie personne, aucun rappeur connu, ni son visage ni sa voix.
+- **Le rappeur** (héros, le même dans toutes les vidéos) : bonhomme bâton au bonnet bleu à pompon et à l'écharpe. Un loser attachant. Ce n'est pas une vraie personne.
+- **Le juge** (pilier 6), le même dans toutes les vidéos, toujours à droite : c'est lui qui recale le bonhomme aux niveaux 1 à 4 et qui dit enfin oui au niveau 5. À choisir parmi 3 idées (fiche Univers `levels-juge`).
+- **Des figurants** selon le genre (une ex, un pote…), seulement si la blague en a besoin.
+- **Vrais artistes** : on peut citer leur nom dans les blagues ; jamais leur visage dessiné, jamais leur voix imitée, jamais de fausse déclaration.
 
 ### Les 5 niveaux (squelette commun)
 
@@ -112,12 +157,13 @@ Le squelette ne change pas d'une vidéo à l'autre : c'est ce qui fait la série
 
 | Niveau | Ce que fait le rappeur (idée de base) | Fin | Durée visée |
 |---|---|---|---|
-| **1** | Il fait sa promo **en vrai**, à la mauvaise personne ou au mauvais moment (il chante son son à quelqu'un) | **Grosse baffe** | 3,5 – 4 s |
-| **2** | Il **force** : spam de messages, vocal de 3 min, « écoute juste 30 s » | **Coup de pied mal placé** (hors champ ou caché par une étoile « BONK ») | 4 – 5 s |
-| **3** | Il poste son son **sur une image fixe** (photo floue, écran noir) : personne ne s'arrête | **Un objet tombe du ciel** (enclume, piano, pot de fleurs) — le gag le plus long | 5 – 6 s |
-| **4** | Il monte un snippet **avec « une appli de montage classique »** : coupes au hasard, **lèvres pas synchro**, ça se voit | **Coup de poêle** (ou tarte, ou boule de neige géante, dans l'esprit glace de Stalak) | 4 – 5 s |
-| **5** | Il filme plusieurs prises, met son son dans **Stalak**, qui coupe sur le rythme, **lèvres synchro**. Il poste : la cible s'arrête de faire défiler, hoche la tête, partage | **Pas de coup** : la jauge HYPE passe à **MAX** | 9 – 11 s |
-| Fin | Carte de fin : « Le niveau 5, tu le fais sur **stalak.app** » + « Gratuit, sans téléchargement » | — | 3 – 3,5 s |
+| **1** | **L'absurde** : un plan impossible, souvent avec un vrai artiste du genre (« aller chercher Pop Smoke au paradis ») | **Grosse baffe** | 4,5 s |
+| **2** | **La gêne que tout le monde connaît** : il force (spam de messages, vocal de 4 min, « écoute juste 30 s », il identifie tout le monde) | **Coup de pied mal placé** (caché par une étoile « BONK ! ») | 5 s |
+| **3** | **Presque (1)** : une vraie erreur de petit rappeur : longue intro avant de rapper, vidéo floue ou image fixe | **Un objet tombe du ciel** (enclume, piano, pot de fleurs) | 6 s |
+| **4** | **Presque (2)** : monté avec « une appli de montage classique » : **paroles décalées**, coupes au hasard | **Le plus gros coup** (poêle, boule de neige géante…) | 4 s |
+| **5** | **Le waouh** : un vrai snippet monté avec **Stalak**, coupé sur le rythme, **lèvres synchro**, plusieurs secondes à l'écran ; le juge dit enfin **oui** | **Pas de coup** : la jauge HYPE passe à **MAX** | 11,5 s |
+| Promo | « Le niveau 5, tu le fais sur **stalak.app** » | — | 2,5 s |
+| Question | Une question pour faire commenter, qui reste jusqu'à la fin | — | 2 s |
 
 **Durée : entre 30 et 40 s** (décision du propriétaire du 16/11 ; la référence fait 27 s). La règle « 1 min 05 à 1 min 20 » vaut pour la série T-Crazy, pas pour LEVELS.
 
@@ -126,8 +172,7 @@ Le niveau 4 ne nomme jamais une appli : on dit « une appli de montage classique
 ### Les coups de dessin animé (règles)
 
 - Toujours **dessin animé** : étoiles qui tournent autour de la tête, oiseaux, yeux en spirale, onomatopée en grosses lettres (« BAF ! », « BONK ! », « CLANG ! »), le bonhomme qui s'aplatit puis reprend sa forme. **Jamais** de sang, de blessure, d'os, de réalisme.
-- Le coup tombe **sur la chute de la blague**, comme la coupe au milieu du mot dans la référence : il remplace la fin de la phrase.
-- Durée du coup : **0,6 à 0,9 s** (anticipation 0,15 s, impact avec petit tremblement de l'écran, 0,4 s d'étoiles), puis passage direct au niveau suivant.
+- Timing (pilier 5) : tentative → refus sec → **0,4 à 0,5 s de silence** → coup de **0,6 à 0,9 s** (anticipation 0,15 s, impact avec petit tremblement de l'écran et gros bruitage, 0,4 s d'étoiles) → « NIVEAU X » suivant en surimpression.
 - Le coup du niveau 2 (« mal placé ») se fait **caché** : l'impact est couvert par l'étoile « BONK ! », on voit seulement la réaction (yeux qui sortent, voix aiguë). Rien de vulgaire.
 - La gradation fait rire : chaque coup est plus gros que le précédent.
 
@@ -136,8 +181,9 @@ Le niveau 4 ne nomme jamais une appli : on dit « une appli de montage classique
 - Pas de pub avant le niveau 5 (goût du propriétaire : « pas de pub dès la première seconde »).
 - Au niveau 5, l'écran de **Stalak dessiné** (son, prises, coupes sur le rythme), 2 secondes, pour qu'on comprenne **ce que fait l'appli** : pas un logo, une démonstration.
 - Puis le **snippet lui-même**, 4 à 5 s, dans un téléphone dessiné façon fil TikTok (sans logo TikTok) : le rappeur rappe en playback, les coupes tombent **exactement sur les temps**, les lèvres sont **synchro** (règle « Mes goûts » : toute vidéo montée montrée est synchro avec la musique). C'est la preuve.
-- La cible réagit (elle s'arrête, la tête bouge sur le rythme, « c'est qui ? »), la jauge passe à MAX avec un son de niveau gagné.
-- **Carte de fin** : « Le niveau 5, tu le fais sur stalak.app » ; « Gratuit, sans téléchargement ». Le spectateur doit se dire « moi aussi j'ai ce problème » (règle « appel à l'action intelligent »).
+- Le juge réagit (il s'arrête, sa tête bat la mesure) et **dit enfin oui** ; la jauge passe à MAX avec un son de niveau gagné.
+- **Promo, 2,5 s** : « Le niveau 5, tu le fais sur stalak.app ». Le spectateur doit se dire « moi aussi j'ai ce problème » (règle « appel à l'action intelligent »).
+- **Question, 2 s**, jusqu'à la fin : « Tu t'es arrêté à quel niveau, toi ? », « On fait quel genre la prochaine fois ? »…
 
 ### Le son (décisions du propriétaire du 16/11)
 
@@ -151,11 +197,11 @@ Le niveau 4 ne nomme jamais une appli : on dit « une appli de montage classique
 - Titre : « Comment poster ton snippet pour un son **[genre]** ». Seul le genre change. Formes retenues : « drill », « love », « triste », « sur ton ex », « de motivation »…
 - Étiquettes de niveau : 6 mots au plus, au présent, en français parlé (« ✗ il chante dans le bus »).
 - Bulles : une phrase courte à la fois, écrite au rythme de la voix ; un cri s'écrit en grand, mot par mot, au milieu de l'écran (goût du propriétaire).
-- Ton : « tu », français parlé, pas de gros mots (les coupes au milieu des mots font le travail, comme dans la référence).
+- Ton : sarcastique et pince-sans-rire ; « tu », français parlé ; pas de gros mots (les coupes au milieu des mots font le travail, comme dans la référence). Le juge répond en 2 ou 3 mots secs.
 
 ### Les règles à ne jamais oublier
 
-- Pas de vraie personne : ni rappeur connu, ni son visage, ni sa voix.
+- Vrais artistes : le nom dans les blagues, oui ; leur visage dessiné, leur voix imitée ou une fausse déclaration, non.
 - Pas de concurrent nommé : au niveau 4, « une appli de montage classique », et aucune interface reconnaissable.
 - Pas de musique ; bruitages seulement s'ils sont libres de droits.
 - Les coups restent du dessin animé.
