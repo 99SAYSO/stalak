@@ -122,6 +122,14 @@ Tests :
 
 Pour le propriétaire : il manque toujours les paroles des 8 premières mesures de « neva die » pour l'exemple.
 
+## Résultats des tests (16/11, après la fusion de `origin/main` et la correction de l'aperçu, lancés un par un)
+- serveur `tests/backend/run.mjs` : **107/107**
+- `apercu_depart_ui` (nouveau) : **10/10**. Sur `main`, il échoue (7/10) : le défaut y est bien reproduit.
+- `audit_ui` **158/158**, `clip1_ui` **87/87**, `audit611_ui` **91/91**, `exports_rates_ui` **80/80**, `fluidite_ui` **30/30**,
+  `pied_de_page_ui` **836/836**, `formules_ui` **137/137**.
+- `fin_export_ui` 82/86 : ce sont les 4 mêmes échecs que sur `main`. La case e-mail en haut de l'écran de fin pousse
+  « Enregistrer » plus bas (voir plus bas). Ça n'a pas de lien avec cette branche.
+
 ## Résultats des tests (13-14/11, sur la branche)
 - **Série complète**, lancée par deux en même temps :
   - audit_ui 158/158, son_passage 86/86, projet_local_ui 48/48, export_pub_ui 22/22, filtres_ui 106/106, paroles_suppr 44/44,
