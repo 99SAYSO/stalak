@@ -2,6 +2,17 @@
 
 > Marketing & croissance. Rien ne change sur le site : seulement `tools/serie/` et `docs/`.
 
+## 16/11, 13 h 30 : un narrateur plus clair
+
+- À 13 h 23, le propriétaire a écrit : « persuadé d'être le prochain », ce n'est pas assez clair, il faut dire « le prochain rappeur qui va percer ». C'est noté dans « Mes goûts » comme une règle générale (`regle-narrateur-clair`) : les phrases du narrateur sont claires tout de suite, sans sous-entendu.
+- Les phrases corrigées dans les scripts (fiches restées en `script`) :
+  - épisode 1 : « Persuadé d'être le prochain rappeur à percer. » ;
+  - épisode 2 : « il découvre le vrai boss de fin : caler sa bouche sur son son » (au lieu de « la synchro ») ;
+  - épisode 4 : « Le 19 novembre, jour de la sortie de GTA 6, tout le quartier a disparu » ;
+  - épisode 5 : « Il a vu la bande-annonce de GTA 6 ».
+- Même correction dans la bible et dans la phrase d'exemple de `frame.js`. Les planches déjà choisies ne sont pas refaites.
+- Coût : 0 $.
+
 ## 16/11, 13 h 30 : bandeaux descriptifs, cris d'ouverture plus forts
 
 - À 13 h 18, le propriétaire a écrit : « retiens que les titres sur le bandeau doivent être plus descriptifs, donner plus de contexte ». Ses exemples : « il a rencontré un gros problème », « LUI IL A LE DROIT, PAS ELLE », « ELLE DOUTE APRÈS L'ENTERREMENT », « ELLE EST TOUJOURS SUR SON TÉLÉPHONE ». C'est noté dans « Mes goûts » (`regle-bandeau-descriptif`).

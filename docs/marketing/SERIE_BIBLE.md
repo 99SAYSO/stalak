@@ -6,7 +6,7 @@
 
 ## L'idée
 
-Liam a 15 ans, et son nom de rappeur est T-Crazy. Il enregistre dans le placard de sa chambre, avec un micro à 15 $, et il est persuadé d'être « le prochain ». Chaque épisode raconte une galère que tout rappeur qui enregistre chez lui reconnaît. Il y a aussi des moments « lifestyle » (le toit, le quartier).
+Liam a 15 ans, et son nom de rappeur est T-Crazy. Il enregistre dans le placard de sa chambre, avec un micro à 15 $, et il est persuadé d'être le prochain rappeur à percer. Chaque épisode raconte une galère que tout rappeur qui enregistre chez lui reconnaît. Il y a aussi des moments « lifestyle » (le toit, le quartier).
 
 Le ton est celui d'un dessin animé américain inspiré de l'anime, avec le délire hustler, dans l'univers glacé de Stalak. On ne reprend aucun personnage, aucune tenue et aucun décor d'une autre série.
 

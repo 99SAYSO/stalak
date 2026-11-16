@@ -151,7 +151,7 @@
   // ---------------- the frames shown on the boards ----------------
   const TITLE = 'LA VAISSELLE OU LA GLOIRE', EP = 1;
   const HOOK = ['nadia', 'T-Crazy mange pas si T-Crazy a pas fait la vaisselle !'];
-  const NARR = ['narrateur', 'Voici Liam. 15 ans. Zéro abonné. Persuadé d\'être le prochain.'];
+  const NARR = ['narrateur', 'Voici Liam. 15 ans. Zéro abonné. Persuadé d\'être le prochain rappeur à percer.'];
   const FRAMES = {};
   [1, 2, 3].forEach(n => {
     FRAMES[`bandeau-${n}-accroche`] = { set: ['cuisine', 1, 'jour'], chars: [{ who: 'liam', v: 4, expr: 'panique', x: 330, y: 1846, h: 1170 }, { who: 'nadia', v: 2, expr: 'colere', x: 770, y: 1856, h: 1250 }], over: () => bandeau(n, TITLE, EP) + sub(n, ...HOOK) };
