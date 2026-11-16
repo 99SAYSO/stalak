@@ -2,6 +2,27 @@
 
 > Marketing & croissance. Rien ne change sur le site : seulement `tools/serie/` et `docs/`.
 
+## 16/11, 11 h 35 : les voix des personnages et les 3 scripts pilotes
+
+- À 11 h 18, le propriétaire a dit « oui » pour les voix.
+- **Les voix des 4 personnages** : 12 voix sur Flora (3 par personnage, sur une phrase qui lui ressemble), pour 0,156 $. Le solde Flora est d'environ 2,57 $. Elles sont dans 4 nouvelles fiches, `voix-liam`, `voix-nadia`, `voix-deuce` et `voix-maya`, en `a_choisir`. Le détail est dans `SERIE_UNIVERS.md`.
+- **Les 3 scripts pilotes** sont dans Studio Stalak (collection `videos`), en `script`, à valider :
+  1. `tcrazy-ep1`, « La vaisselle ou la gloire », le 18/11 : Nadia, Liam, Maya ; le cri de sa mère devient son refrain.
+  2. `tcrazy-ep2`, « Le son de l'année », le 19/11 : la vidéo de promo décalée ; Maya lui montre Stalak.
+  3. `tcrazy-ep3`, « Le manager », le 20/11 : Deuce, M. Reyes et Big Mo ; douze prises devant l'épicerie.
+- Les scripts suivent les règles :
+  - environ 1 min 10 chacun ;
+  - pas de générique ;
+  - le cri et le bandeau à 0:00 ;
+  - le narrateur ensuite ;
+  - Stalak seulement dans le dernier tiers, avec les vraies captures et ce que dit le site : « importe ton son et tes prises, Stalak coupe sur le rythme en gardant la synchro des lèvres » ;
+  - le clip montré est synchronisé ;
+  - une fin qui annonce l'épisode suivant.
+- Les heures de publication sont « 12 h 30 (à confirmer) ». C'est Réseaux sociaux qui décide.
+- Ce qui attend :
+  - le choix des 4 voix et la validation des 3 scripts par le propriétaire ;
+  - ensuite, les images fixes des nouveaux plans (étape `visuels`), puis le feu vert, puis la production : voix générées une seule fois, vidéo, planche contact, miniature.
+
 ## 16/11, 5 h 30 : l'univers est complet, la bible est écrite
 
 - À 4 h 56, le propriétaire a choisi :

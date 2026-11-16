@@ -257,7 +257,8 @@
 - À décider : la publication directe est-elle réservée à Stalak Pro ou ouverte à tous ? Meta risque de demander une vérification d'entreprise (lien avec la LLC).
 
 ### Marketing & croissance
-- **En cours (branche `marketing/serie-fr`, série « T-Crazy ») — l'univers est complet, la bible est écrite ; ensuite, les voix des personnages et les 3 scripts pilotes** :
+- **En cours (branche `marketing/serie-fr`, série « T-Crazy ») — voix des personnages à choisir, 3 scripts pilotes à valider** :
+  - 16/11, 11 h 35 : 12 voix (Liam, Nadia, Deuce, Maya ; 0,156 $) sont dans 4 fiches `voix-*`. Les 3 scripts pilotes (`tcrazy-ep1` à `tcrazy-ep3`, prévus les 18, 19 et 20/11, heure à confirmer par Réseaux sociaux) sont en `script` dans Studio Stalak.
   - 16/11, 4 h 56 : la galère, c'est « Scars », et le narrateur, Algieba à ×1,2. **La bible en une page** : `docs/marketing/SERIE_BIBLE.md`. Les voix de Liam, Nadia, Deuce et Maya (environ 0,16 $) attendent l'accord du propriétaire.
   - 16/11, 4 h 51 : 3 musiques choisies (« Sneeze », « Game Show », « Funk Upbeat ») et la miniature type validée. Galère « trop calme » : 3 beats plus présents sont proposés dans `musique-galere`.
   - 16/11, 5 h 10 : pas de beats du propriétaire (« cherche par toi-même »). Les 4 ambiances musicales ont 2 titres Pixabay chacune, sans Content ID et faits par des humains. Elles sont dans 4 nouvelles fiches (`musique-galere`, `musique-plan`, `musique-hustle`, `musique-victoire`). Coût : 0 $. **Pour le Chef de projet** : `musique-fonds` (remplacée) et `musique-generique` (abandonnée) peuvent être retirées de la page.

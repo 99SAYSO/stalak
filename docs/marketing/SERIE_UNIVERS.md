@@ -255,6 +255,19 @@ Les fichiers des 2 premiers titres de la galère, et des voix Charon et Algenib 
 
 La bible en une page est écrite : `docs/marketing/SERIE_BIBLE.md`. Les voix de Liam, Nadia, Deuce et Maya restent à choisir, de la même façon que celle du narrateur.
 
+**16/11, 11 h 18 : « oui » pour les voix des personnages.**
+
+12 voix sont générées sur Flora (Gemini 3.1 Flash TTS, en français) : 3 par personnage, sur une phrase qui lui ressemble. Elles coûtent 0,156 $, et le solde Flora est d'environ 2,57 $. Elles sont dans 4 nouvelles fiches, en `a_choisir`. Aucune pause n'a été ajoutée.
+
+| Fiche | Phrase | Voix proposées (ce que Google en dit) |
+|---|---|---|
+| `voix-liam` | « Moi, c'est T-Crazy. Retiens bien ce nom, parce que l'année prochaine, tout le monde va le crier. » | Puck (enjouée), Fenrir (excitée), Zubenelgenubi (décontractée) |
+| `voix-nadia` | « T-Crazy mange pas si T-Crazy a pas fait la vaisselle ! » | Kore (ferme), Gacrux (mature), Pulcherrima (directe) |
+| `voix-deuce` | « Écoute-moi bien, frérot : on va scaler ta street-cred. » | Umbriel (tranquille), Schedar (posée), Enceladus (soufflée) |
+| `voix-maya` | « Tu sais que ta bouche est décalée sur toute la vidéo, là ? » | Leda (jeune), Callirrhoe (décontractée), Despina (douce) |
+
+Les voix de Big Mo et de M. Reyes seront choisies quand un épisode validé les fera parler.
+
 ## Étape 2 : tout l'univers dans le style choisi (après le choix)
 
 - Liam : 4 versions, chacune de face, de profil et avec 4 expressions (frime, colère, panique, fierté).
@@ -269,7 +282,7 @@ La bible en une page est écrite : `docs/marketing/SERIE_BIBLE.md`. Les voix de 
 - **Visuels : 0 $** (dessinés en code).
 - **Voix (Flora, Gemini), 0,013 $ par génération** :
   - narrateur : 3 essais, 0,039 $ (dépensés le 16/11) ;
-  - voix de Liam, Nadia, Deuce et Maya : 0,16 $ ;
+  - voix de Liam, Nadia, Deuce et Maya : 0,156 $ (dépensés le 16/11) ;
   - ensuite, environ 0,05 à 0,08 $ par épisode (une génération par personnage et par façon de parler, découpée ensuite).
 - **Musique : 0 $** (Pixabay, choisie le 16/11 faute de beats du propriétaire).
 - Solde Flora au 15/11 : 2,76 $, après les 0,42 $ des planches générées puis retirées.
