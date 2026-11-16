@@ -76,7 +76,7 @@
     into.push({ d: FACES[V.face], fill: P.skin, tf, shade: `M -94 -90 L -44 -90 C -60 -40 -66 10 -50 58 C -40 86 -14 100 4 116 L -94 116 Z`, shadeColor: P.skinS, extra: face(V, expr) });
     // a very simple short haircut : clean sideburns and temples, the rest under the cap
     [-1, 1].forEach(k => into.push({ d: `M ${k * (hw + 12)} -64 L ${k * (hw - 14)} -64 C ${k * (hw - 12)} -38 ${k * (hw - 10)} -16 ${k * (hw - 8)} 4 L ${k * (hw - 1)} 6 C ${k * hw} -6 ${k * (hw + 2)} -16 ${k * (hw + 4)} -22 C ${k * (hw + 8)} -26 ${k * (hw + 12)} -28 ${k * (hw + 12)} -30 Z`, fill: P.hair, tf }));
-    if (V.earring) into.push({ d: `M ${-(hw + 5)} 30 a 5 5 0 1 0 0.1 0 Z`, fill: '#dff2ff', tf, extra: `<circle cx="${-(hw + 6.5)}" cy="${28.5}" r="1.6" fill="#ffffff"/>` });
+    if (V.earring) into.push({ d: `M ${-(hw + 5)} 30 a 5 5 0 1 0 0.1 0 Z`, fill: '#dff2ff', tf, cls: 'shiny', extra: `<circle cx="${-(hw + 6.5)}" cy="${28.5}" r="1.6" fill="#ffffff"/>` });
     capFront(V, tf, into);
     // panic : sweat drops at the temples
     if (plain === 'panique') into.push({ d: `M 76 -44 q 16 24 0 38 q -16 -14 0 -38 Z M -84 -34 q 11 17 0 27 q -11 -10 0 -27 Z`, fill: '#bfe6ff', tf });
@@ -256,7 +256,7 @@
     // the ear
     into.push({ d: `M -8 -12 C -22 -24 -40 -16 -40 4 C -40 24 -30 40 -14 40 C -8 40 -5 32 -8 24 C -10 12 -6 0 -8 -12 Z`, fill: P.skin, tf,
       extra: `<path d="M -16 -4 C -30 -6 -32 18 -20 26" fill="none" stroke="${P.skinS}" stroke-width="4" stroke-linecap="round"/>` });
-    if (V.earring) into.push({ d: `M -18 38 a 5 5 0 1 0 0.1 0 Z`, fill: '#dff2ff', tf, extra: `<circle cx="-19.5" cy="36.5" r="1.6" fill="#ffffff"/>` });
+    if (V.earring) into.push({ d: `M -18 38 a 5 5 0 1 0 0.1 0 Z`, fill: '#dff2ff', tf, cls: 'shiny', extra: `<circle cx="-19.5" cy="36.5" r="1.6" fill="#ffffff"/>` });
     // the crown : tall structured front panel at the back, the strap on the forehead
     const seams = `M -20 -148 C -42 -126 -50 -90 -48 -36 M -14 -148 C 10 -132 24 -100 28 -54`;
     into.push({ d: `M 64 -60 C 68 -90 54 -122 22 -140 C -6 -154 -52 -154 -74 -130 C -88 -110 -90 -72 -84 -26 C -46 -28 10 -40 64 -60 Z`, fill: C.c, tf,

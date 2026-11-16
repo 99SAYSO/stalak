@@ -61,6 +61,7 @@
     svg.innerHTML = `<g id="cam">${FRAME.compose(S.frame)}</g><g id="ui"></g><g id="subs"></g><g id="cri"></g><rect id="dip" width="1080" height="1920" fill="#0a0d14" opacity="0"/>`;
     FRAME.MUTE_SUB = false;
     place();
+    if (window.LIGHTS) LIGHTS.attach(svg); // the glints on what shines, the glow of the screens (lights.js)
     const cam = svg.querySelector('#cam'), ui = svg.querySelector('#ui');
     // the banner, the name labels, the captions, the notification and the clapperboard stay still : out of the camera
     // (only those drawn straight on the frame : the band of the end card keeps its place)
@@ -122,10 +123,41 @@
     if (o.fadein) op *= eout(seg(lt, T(o.fadein[0]), T(o.fadein[1])));
     if (o.fade) op *= 1 - seg(lt, T(o.fade[0]), T(o.fade[1]));
     if (o.ripple) { const p = seg(lt, T(o.ripple[0]), T(o.ripple[1])); k *= 0.4 + 1.3 * eout(p); if (p <= 0 || p >= 1) vis = false; op *= 1 - p; }
+    // the lights (lights.js) : tw = [period, phase, length, min] a glint that swells and turns once per period ;
+    // flk = [seed, rate] a neon that flickers now and then ; sweep = [period, phase, length, dx, dy] a shine across a glass
+    if (o.tw) {
+      const [per, ph, len, mn] = o.tw, L = len || 0.6, m = mn == null ? 0.15 : mn, u = (((lt + ph) % per) + per) % per, p = u < L ? Math.sin(Math.PI * u / L) : 0;
+      k *= m + (1 - m) * p; op *= 0.35 + 0.65 * p; if (u < L) rot += 50 * u / L;
+    }
+    if (o.flk) { const [sd, rate] = o.flk, n = noise(lt * 7, sd), r = rate == null ? 0.6 : rate; op *= n > r ? 0.3 + 0.2 * Math.sin(lt * 61 + sd) : 0.94 + 0.06 * Math.sin(lt * 9 + sd); }
+    if (o.sweep) { const [per, ph, len, dx, dy] = o.sweep, u = (((lt + ph) % per) + per) % per; if (u > len) vis = false; else { const p = eio(u / len); tx += dx * p; ty += (dy || 0) * p; op *= Math.sin(Math.PI * u / len); } }
+    // walk = [[t, dx, dy]...] : a character walks between the keys at a steady pace, his body bobbing at each step
+    if (o.walk) {
+      const P = o.walk.map(q => [T(q[0]), q[1] || 0, q[2] || 0]);
+      let q = P[P.length - 1], u = -1;
+      if (lt <= P[0][0]) q = P[0];
+      else for (let j = 0; j < P.length - 1; j++) if (lt < P[j + 1][0]) {
+        const a = P[j][0], b = P[j + 1][0], x = seg(lt, a, b), p = x + (eio(x) - x) * 0.45;
+        q = [lt, P[j][1] + (P[j + 1][1] - P[j][1]) * p, P[j][2] + (P[j + 1][2] - P[j][2]) * p];
+        if (P[j][1] !== P[j + 1][1] || P[j][2] !== P[j + 1][2]) u = lt - a;
+        break;
+      }
+      tx += q[1]; ty += q[2];
+      if (u >= 0) { const st = o.step || 2.2; ty -= (o.bob == null ? 16 : o.bob) * Math.abs(Math.sin(Math.PI * st * u)); rot += (o.sway == null ? 1.4 : o.sway) * Math.sin(Math.PI * st * u); }
+    }
+    // tilt = [[t, degrees]...] : a keyed rotation that speeds up (a fall), around pv = [x, y] (the feet) or the centre
+    if (o.tilt) {
+      const P = o.tilt.map(q => [T(q[0]), q[1]]);
+      let r = P[P.length - 1][1];
+      if (lt <= P[0][0]) r = P[0][1];
+      else for (let j = 0; j < P.length - 1; j++) if (lt < P[j + 1][0]) { const x = seg(lt, P[j][0], P[j + 1][0]); r = P[j][1] + (P[j + 1][1] - P[j][1]) * x * x; break; }
+      rot += r;
+    }
     K.el.setAttribute('display', vis ? 'inline' : 'none');
     if (!vis) return;
     K.el.setAttribute('opacity', op.toFixed(3));
-    scaleAt(K.el, K.c, Math.max(0.001, k), `translate(${tx.toFixed(1)} ${ty.toFixed(1)})` + (rot ? ` rotate(${(rot % 360).toFixed(2)} ${K.c[0].toFixed(1)} ${K.c[1].toFixed(1)})` : ''));
+    const rc = o.pv || K.c;
+    scaleAt(K.el, K.c, Math.max(0.001, k), `translate(${tx.toFixed(1)} ${ty.toFixed(1)})` + (rot ? ` rotate(${(rot % 360).toFixed(2)} ${rc[0].toFixed(1)} ${rc[1].toFixed(1)})` : ''));
   }
 
   // the pop of each kind of element : [delay after the shot starts, spring stiffness, damping, start scale]
@@ -244,7 +276,15 @@
     justComposed = false;
     seek(t);
     if (justComposed) await Promise.all([...svg.querySelectorAll('image')].map(im => new Promise(r => { const i2 = new Image(); i2.onload = i2.onerror = r; i2.src = im.getAttribute('href'); })));
-    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+    if (window.__afterPaint) await window.__afterPaint(); // (anim.html : two painted frames before the screenshot)
+  };
+
+  // for HyperFrames (tcrazy.py hf : the engine is the runtime of a HyperFrames composition, seeked with hf-seek) : the same
+  // picture, ready once the pictures of a new shot are decoded ; HyperFrames takes the picture itself
+  window.seekReady = async function (t) {
+    justComposed = false;
+    seek(t);
+    if (justComposed) await Promise.all([...svg.querySelectorAll('image')].map(im => new Promise(r => { const i2 = new Image(); i2.onload = i2.onerror = r; i2.src = im.getAttribute('href'); })));
   };
 
   // fonts and pictures first, then the first frame

@@ -4,6 +4,20 @@
 
 Statut : EN COURS (fabrication des épisodes dans Studio Stalak ; rien à publier sur le site). Tests : planches contact relues pour chaque vidéo déposée. Rien à faire par le Chef de projet, sauf garder la branche à jour.
 
+## 16/11, 20 h : lumières réalistes et HyperFrames pour toute la série, « Le manager » v3, « Le clip façon GTA » v2
+
+- **Sa remarque globale sur « Le manager » (19 h 32), pour toutes les vidéos à venir** : « Je veux que les lumières soient plus réalistes : si y'a une lumière, y'a un halo lumineux, si y'a un truc qui brille… Hésite pas à utiliser internet. Utilise aussi HyperFrames. »
+  - `engine/lights.js` (nouveau) : un réglage de lumière par décor et par heure. `under` est dessiné avec le décor, derrière les personnages (soleil, lampes, enseigne qui grésille, reflets des vitres, scintillements du décor) ; `over` passe par-dessus tout le monde (couleur de l'heure, lueur large des lumières fortes, rayons, reflets de l'objectif). Fait pour la rue (jour, après-midi, coucher) et le terrain (jour, après-midi).
+  - Ce qui brille porte la classe `shiny` (boucles d'oreilles, lunettes de soleil, chaîne de Big Mo, sachets de glaçons, objectif du téléphone, vitres du bus), un écran la classe `screen` : `LIGHTS.attach` y pose un scintillement à la bonne taille. Ombre douce sous les pieds de chaque personnage.
+  - La rue a un lampadaire (éteint le jour, allumé le soir) et une heure `coucher` : soleil derrière les maisons, vitrine et fenêtres allumées.
+  - `anim.js` : nouvelles actions `tw` (scintille), `flk` (grésille), `sweep` (reflet qui passe), `walk` (marche, avec le corps qui balance), `tilt` (chute).
+  - **HyperFrames** : étape `hf` de `tcrazy.py`. Le projet est construit dans le dossier de travail (`<ep>/hf/`), notre moteur en est le runtime (`hf-seek`, timeline GSAP enregistrée), avec deux éléments du catalogue installés à la volée (jamais dans le dépôt) : `organic-light-leak-overlay` à chaque passage par le noir et `vignette` le soir. Rendu avec `HYPERFRAMES_BROWSER_PATH` pointé sur le Chrome de Playwright (HyperFrames ne peut pas télécharger le sien ici). `npx hyperframes check` passe (restent des alertes de contraste sur les textes du décor et des ombres de texte voulues).
+  - Internet : rien de plus n'a été nécessaire (tout est dessiné en code, GSAP vient du CDN pour les éléments du catalogue).
+- **« Le manager » v3 (ses 2 remarques)** : Big Mo arrive en marchant avec ses suiveurs, Liam (d'abord tranquille, puis tout content) dit « Wouah, c'est Big Mo, le rappeur le plus connu de chez moi ! », ils échangent, Big Mo repart en marchant. Liam, seul et dégoûté : « Trois clips en un matin… Mais comment il fait ? » (réplique ajoutée par Marketing pour qu'on comprenne, à valider avec la vidéo), puis il s'effondre. Maya arrive en marchant, s'arrête, son étiquette apparaît, puis elle parle. 1 min 14. Script de la fiche passé en version 3, voix renumérotées (rien n'est repayé), 2 voix nouvelles : 0,026 $.
+- **« Le clip façon GTA » v2 (ses 2 remarques)** : le rêve de Deuce est plus petit et coupé au bord de la bulle ; les 12 cases de la galerie montrent chaque prise dans son décor ; le soir est la rue au coucher du soleil (lumière sur les personnages aussi) ; Maya arrive en marchant (sa remarque sur « Le manager » vaut pour toute la série). 1 min 05.
+- Sous-titres : un morceau trop court (« Pas mal. », 0,3 s) est recoupé avec son voisin.
+- **À décider par le propriétaire** : refaire avec les lumières les épisodes déjà validés (1, 2 et GTA 6) ? (0 $, environ 30 min de rendu chacun.)
+
 ## 16/11, 18 h 45 : version 3 (ses remarques sur les épisodes 1, 2 et GTA 6), « Le manager » et « Le clip façon GTA » fabriqués, script de l'épisode 6
 
 - **Épisode 1 : validé par le propriétaire (v3, 16 h 52).** Ses 3 remarques du 2e tour sont faites : Nadia au centre dès la première image, le texte de 0:18 en sous-titre normal, Maya derrière la vitre. Une v4 existe aussi, avec le passage par le noir à chaque changement de moment, mais **elle n'est pas déposée**. On ne remplace pas une vidéo validée sans son accord (question posée).

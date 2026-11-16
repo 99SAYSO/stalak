@@ -7,7 +7,10 @@ The order of the steps :
             ONCE, line by line, on the validated text (owner, 16/11 : « réplique par réplique mais faut que ça reste réaliste »).
   voices  : <work>/voice/<ep>/raw/LNN.wav (downloaded) → trimmed, faster for Liam (×1,1) and the narrator (×1,2) → <work>/voice/<ep>/LNN.wav
   plan    : the timeline (shots, lines, subtitles, music) → <work>/<ep>/ep.json
-  frames  : every image, drawn by engine/anim.html (Playwright, 30 images/s) → <work>/<ep>/video.mp4 (no sound)
+  frames  : every image, drawn by engine/anim.html (Playwright, 30 images/s) → <work>/<ep>/video.mp4 (no sound) : quick checks
+  hf      : the same images through HyperFrames (owner, 16/11 : « utilise aussi hyperframes ») : the engine is the runtime of a
+            HyperFrames composition, with the registry's light leak on each change of time and a vignette in the evening
+            → <work>/<ep>/video.mp4 (no sound ; about 25-30 min per episode ; HYPERFRAMES_BROWSER_PATH = an installed Chrome)
   audio   : the 4 Pixabay ambiences under the voices, a few sound effects, -14 LUFS → <work>/<ep>/mix.wav
   mux     : → <work>/<ep>/<ep>.mp4 (publication) and <ep>-720.mp4 (for Studio Stalak, under 20 MB)
   sheet   : the contact sheet, one image every 0.5 s (tools/contact_sheet.py)
@@ -221,6 +224,18 @@ def chunks(text, maxc=62, merge=50, short=20):
             out[-1] += ' ' + u
         else:
             out.append(u)
+    # a piece still very short (« Pas mal. » before a long sentence : 0.3 s on screen, unreadable) is cut again with its
+    # neighbour into two readable halves (HyperFrames check, 16/11 : « line_unread »)
+    i = 0
+    while i < len(out):
+        if len(out[i]) < 14 and len(out) > 1:
+            a = i if i + 1 < len(out) else i - 1
+            both = (out[a] + ' ' + out[a + 1]).split(' ')
+            parts = split_best(both, maxc) if len(' '.join(both)) > maxc else [' '.join(both)]
+            out[a:a + 2] = parts
+            i = a + len(parts)
+        else:
+            i += 1
     return out
 
 
@@ -364,7 +379,8 @@ def _build(ep, pad):
         if 'music' in opt:
             music.append(dict(track=opt['music'], t=round(t0, 3)))
         for name, at, gain in opt.get('sfx', []):
-            sfx.append(dict(name=name, t=round(t0 + at, 3), gain=gain))
+            if at >= 0:  # from the start of the shot ; a negative time counts from its end (placed below)
+                sfx.append(dict(name=name, t=round(t0 + at, 3), gain=gain))
         pl, pa = pad.get(k, (0.0, 0.0))
         lead = opt.get('lead', 0.0) + pl
         if opt.get('dip'):  # a change of time or place : the picture comes out of the dark and its caption is read before
@@ -405,6 +421,9 @@ def _build(ep, pad):
         else:
             t = cur + (0.0 if mid else CUT + opt.get('after', 0.0) + pa)
         shots.append(dict(frame=frame, t0=round(t0, 3), t1=round(t, 3), dip=bool(opt.get('dip'))))
+        for name, at, gain in opt.get('sfx', []):
+            if at < 0:
+                sfx.append(dict(name=name, t=round(t + at, 3), gain=gain))
         nat.append(dict(dur=t - t0, mid=mid))
     subs.sort(key=lambda s: s['t0'])
     for i in range(len(subs) - 1):  # a subtitle never stays over the next one
@@ -483,6 +502,158 @@ def frames(ep, a=None, b=None, procs=2):
         encode(ep)
 
 
+# ---------------------------------------------------------------- the images through HyperFrames
+# Owner, 16/11 at 19 h 32 : « utilise aussi hyperframes ». The episode becomes a HyperFrames composition : the series engine
+# (engine/anim.js) is its runtime, seeked by HyperFrames (hf-seek) for each picture ; over it, finishing layers from the
+# HyperFrames registry : the warm light leak « organic-light-leak-overlay » across every change of time or place, and the
+# « vignette » in the evening (the lens darkens the corners when the light is low). npx hyperframes render makes the video.
+HF_CACHE = os.path.join(WORK, 'hfcache')
+GSAP_CDN = 'https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js'
+
+
+def _hf_blocks():
+    """the registry items, installed once (npx hyperframes add) in the work folder, never in the repo ; GSAP saved next to them"""
+    blk = os.path.join(HF_CACHE, 'compositions', 'organic-light-leak-overlay.html')
+    if not os.path.exists(blk):
+        os.makedirs(HF_CACHE, exist_ok=True)
+        subprocess.run(['npx', '-y', 'hyperframes', 'add', 'organic-light-leak-overlay', '--json'], cwd=HF_CACHE, check=True, capture_output=True)
+        subprocess.run(['npx', '-y', 'hyperframes', 'add', 'vignette', '--json'], cwd=HF_CACHE, check=True, capture_output=True)
+    if not os.path.exists(os.path.join(HF_CACHE, 'gsap.min.js')):
+        run(['curl', '-sS', '-f', '-o', os.path.join(HF_CACHE, 'gsap.min.js'), GSAP_CDN])
+    return open(blk, encoding='utf-8').read()
+
+
+def hf_project(ep):
+    """<work>/<ep>/hf : index.html (the engine as the runtime, the data of the episode, the finishing layers), the engine,
+    the fonts and pictures it uses, the registry blocks"""
+    D = json.load(open(os.path.join(WORK, ep, 'ep.json'), encoding='utf-8'))
+    E = T.EPISODES[ep]
+    leak = _hf_blocks()
+    proj = os.path.join(WORK, ep, 'hf')
+    shutil.rmtree(proj, ignore_errors=True)
+    os.makedirs(os.path.join(proj, 'compositions'))
+    shutil.copytree(os.path.join(HERE, 'engine'), os.path.join(proj, 'engine'), ignore=shutil.ignore_patterns('*.html'))
+    for sub in ('icons', 'emoji'):
+        shutil.copytree(os.path.join(ROOT, 'site_src', sub), os.path.join(proj, 'site_src', sub))
+    os.makedirs(os.path.join(proj, 'assets', 'fonts'))
+    for fnt in ('lilitaone.ttf', 'rubik.ttf'):
+        shutil.copy(os.path.join(ROOT, 'site_src', 'fonts', fnt), os.path.join(proj, 'assets', 'fonts', fnt))
+    shutil.copy(os.path.join(HF_CACHE, 'gsap.min.js'), os.path.join(proj, 'assets', 'gsap.min.js'))
+    mounts = []
+    # a light leak across each change of time or place (the dip to black) : from 0.7 s before the cut to 1.5 s after it.
+    # One copy of the block per passage, its ids and classes made unique, so that the passages never touch each other.
+    k = 0
+    for i, sh in enumerate(D['shots']):
+        if not sh['dip'] or i == 0:
+            continue
+        k += 1
+        cid = 'leak%d' % k
+        src = leak.replace('organic-light-leak-overlay', cid).replace('hf-light-leak', cid + '-light').replace('hf-leak-', cid + '-').replace(GSAP_CDN, 'assets/gsap.min.js')
+        open(os.path.join(proj, 'compositions', cid + '.html'), 'w', encoding='utf-8').write(src)
+        t0 = max(0.0, sh['t0'] - 0.7)
+        # (softer than the block's own peak : the caption of the new moment must stay readable through it)
+        mounts.append('<div id="%s" class="clip" data-composition-id="%s" data-composition-src="compositions/%s.html" data-start="%.3f" data-duration="2.0" data-width="1080" data-height="1920" data-track-index="%d" data-track-kind="graphics" style="position:absolute;left:0;top:0;width:1080px;height:1920px;z-index:5;opacity:0.6"></div>' % (cid, cid, cid, t0, 1 + k))
+    # the vignette over the evening shots (the sets at sunset or at night : lights.js), one stretch per run of such shots
+    eve = [sh for sh in D['shots'] if _set_hour(sh['frame']) in ('coucher', 'soir', 'nuit')]
+    runs, cur = [], None
+    for sh in eve:
+        if cur and abs(cur[1] - sh['t0']) < 0.01:
+            cur[1] = sh['t1']
+        else:
+            cur = [sh['t0'], sh['t1']]; runs.append(cur)
+    for j, (a, b) in enumerate(runs):
+        mounts.append('<div id="vig%d" class="clip vig" data-start="%.3f" data-duration="%.3f" data-track-index="%d" data-track-kind="graphics"></div>' % (j + 1, a, b - a, 20 + j))
+    data = json.dumps(D, ensure_ascii=False).replace('</', '<\\/')
+    html = """<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1080, height=1920">
+<title>T-Crazy, %(ep)s</title>
+<style>
+@font-face{font-family:'Lilita One';src:url(assets/fonts/lilitaone.ttf)}
+@font-face{font-family:'Rubik';src:url(assets/fonts/rubik.ttf);font-weight:300 900}
+html,body{margin:0;background:#000;overflow:hidden}
+#root{position:relative;width:1080px;height:1920px;overflow:hidden;background:#000}
+#s{position:absolute;left:0;top:0;display:block}
+/* the registry block « vignette » : the corners darken in the evening (soft, the faces stay clear) */
+.vig{position:absolute;left:0;top:0;width:1080px;height:1920px;pointer-events:none;z-index:4;background:radial-gradient(ellipse at 50%% 46%%,transparent 52%%,rgba(10,13,20,0.34) 100%%)}
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="tcrazy-%(ep)s" data-width="1080" data-height="1920" data-duration="%(dur).3f" data-fps="30">
+<svg id="s" width="1080" height="1920" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg"></svg>
+%(mounts)s
+</div>
+<script>window.__DATA = %(data)s;</script>
+<script src="engine/tcrazy.js"></script><script src="engine/decors.js"></script><script src="engine/lights.js"></script><script src="engine/liam.js"></script><script src="engine/cast.js"></script><script src="engine/frame.js"></script><script>FRAME.ANIM = true;</script><script src="engine/storyboard.js"></script><script src="engine/anim.js"></script>
+<script src="assets/gsap.min.js"></script>
+<script>
+  // the series engine is the runtime : HyperFrames asks for the picture at a time, the engine draws it (no clock).
+  // Its paused timeline drives the engine from a property setter (a seek sets the time, the setter draws that picture) ;
+  // hf-seek waits for the pictures of a new shot to be decoded before the capture.
+  window.__hf = window.__hf || {}; window.__hf.buildReady = window.__hf.buildReady || {};
+  window.__hf.buildReady.tcrazy = new Promise(function (res) { (function w() { if (window.ready) res(); else setTimeout(w, 25); })(); });
+  window.__timelines = window.__timelines || {};
+  var DUR = %(dur).3f, driver = { _t: 0 };
+  Object.defineProperty(driver, 't', { get: function () { return this._t; }, set: function (v) { this._t = v; if (window.ready) window.seek(v); } });
+  var tl = gsap.timeline({ paused: true });
+  tl.to(driver, { t: DUR, duration: DUR, ease: 'none' }, 0);
+  window.__timelines['tcrazy-%(ep)s'] = tl;
+  window.addEventListener('hf-seek', function (e) { e.detail.waitUntil(window.seekReady(e.detail.time)); });
+</script>
+</body>
+</html>
+""" % dict(ep=ep, dur=D['duration'], mounts='\n'.join(mounts), data=data)
+    open(os.path.join(proj, 'index.html'), 'w', encoding='utf-8').write(html)
+    return proj
+
+
+def _set_hour(frame):
+    """the hour of the set of a storyboard frame ('jour', 'coucher', 'nuit'…), read in the page itself"""
+    return _HOURS().get(frame, 'jour')
+
+
+_HOURS_CACHE = {}
+
+
+def _HOURS():
+    """frame id → hour, measured once in the page itself (FRAMES[id].set[2])"""
+    if _HOURS_CACHE:
+        return _HOURS_CACHE
+    from playwright.sync_api import sync_playwright
+    srv = serve()
+    with sync_playwright() as p:
+        br = p.chromium.launch()
+        pg = br.new_page()
+        pg.goto('http://127.0.0.1:%d/tools/serie/engine/frame.html?f=set-rue1' % srv.server_address[1])
+        pg.wait_for_function('window.FRAME && window.FRAME.FRAMES')
+        _HOURS_CACHE.update(pg.evaluate("() => Object.fromEntries(Object.entries(FRAME.FRAMES).map(([k, F]) => [k, F.set ? F.set[2] : (F.plain ? 'plain' : 'jour')]))"))
+        br.close()
+    srv.shutdown()
+    return _HOURS_CACHE
+
+
+def hf(ep, a=None, b=None):
+    """the images through HyperFrames → <work>/<ep>/video.mp4 (no sound : the mix is laid under it by mux)"""
+    proj = hf_project(ep)
+    out = os.path.join(WORK, ep, 'video_hf.mp4')
+    cmd = ['npx', '-y', 'hyperframes', 'render', proj, '-o', out, '--quality', 'high', '--fps', '30', '--quiet']
+    if a is not None:
+        cmd += ['--start', str(a)]
+    if b is not None:
+        cmd += ['--end', str(b)]
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    if r.returncode != 0:
+        print(r.stdout[-3000:], r.stderr[-3000:])
+        raise SystemExit('hyperframes render failed')
+    if a is None and b is None:
+        # the published video : no sound in it yet (the mix comes with mux), the same encoding as before
+        run(['ffmpeg', '-nostdin', '-y', '-v', 'error', '-i', out, '-map', '0:v', '-c:v', 'libx264', '-preset', 'medium', '-crf', '17', '-pix_fmt', 'yuv420p',
+             '-vf', 'scale=in_range=pc:out_range=tv:out_color_matrix=bt709', '-colorspace', 'bt709', '-color_range', 'tv', os.path.join(WORK, ep, 'video.mp4')])
+    print('hyperframes :', out)
+
+
 def encode(ep):
     """the images already drawn → video.mp4 (after redrawing only a part of them : frames <ep> <from> <to>)"""
     D = json.load(open(os.path.join(WORK, ep, 'ep.json'), encoding='utf-8'))
@@ -508,6 +679,20 @@ def sfx_path(name):
                 thump = np.sin(2 * np.pi * 150 * tt) * np.exp(-tt * 55) + 0.5 * np.sin(2 * np.pi * 420 * tt) * np.exp(-tt * 90)
                 click = np.random.RandomState(7).randn(n) * np.exp(-tt * 400) * 0.35
                 a0 = int(at * SR); out[a0:a0 + n] += (thump + click).astype(np.float32)
+            write_wav(p, out / np.abs(out).max() * 0.9)
+        return p
+    if name == 'steps.wav':  # five soft steps of sneakers on the pavement, one every 0.45 s (a character walks in or out)
+        p = os.path.join(WORK, 'sfx', 'steps.wav')
+        if not os.path.exists(p):
+            os.makedirs(os.path.dirname(p), exist_ok=True)
+            rs = np.random.RandomState(11)
+            out = np.zeros(int(2.4 * SR), np.float32)
+            for i in range(5):
+                n = int(0.12 * SR); tt = np.arange(n) / SR
+                noise = rs.randn(n)
+                lp = np.convolve(noise, np.ones(18) / 18, mode='same')  # a dull scuff, not a hiss
+                step = (lp * 2.2 * np.exp(-tt * 38) + 0.6 * np.sin(2 * np.pi * (95 + 10 * i) * tt) * np.exp(-tt * 45)) * (0.8 + 0.2 * (i % 2))
+                a0 = int((0.02 + i * 0.45) * SR); out[a0:a0 + n] += step.astype(np.float32)
             write_wav(p, out / np.abs(out).max() * 0.9)
         return p
     p = os.path.join(SFX, name)
@@ -636,4 +821,4 @@ def thumb(ep):
 
 if __name__ == '__main__':
     ep, step = sys.argv[1], sys.argv[2]
-    {'prompts': prompts, 'voices': voices, 'plan': plan, 'frames': lambda e: frames(e, *sys.argv[3:5]), 'encode': encode, 'audio': audio, 'mux': mux, 'sheet': sheet, 'thumb': thumb, 'deliver': deliver}[step](ep)
+    {'prompts': prompts, 'voices': voices, 'plan': plan, 'frames': lambda e: frames(e, *sys.argv[3:5]), 'hf': lambda e: hf(e, *sys.argv[3:5]), 'hfproject': hf_project, 'encode': encode, 'audio': audio, 'mux': mux, 'sheet': sheet, 'thumb': thumb, 'deliver': deliver}[step](ep)

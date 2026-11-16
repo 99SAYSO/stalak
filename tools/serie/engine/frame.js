@@ -158,10 +158,14 @@
     }
     const inner = figs + (c.props || ''); // props are drawn in the character's own coordinates ; only the figure is measured
     let svg = `<g data-place="${c.x} ${c.y} ${c.h}" data-who="${c.who}"><g>${c.flip ? `<g transform="scale(-1 1)">${inner}</g>` : inner}</g></g>`;
+    // the lights (16/11, 19 h 32) : a soft shadow under the feet when they are in the picture
     // clip : [x, y, w, h] in frame coordinates (a character seen through a window) ; after : drawn over him, in frame coordinates
     // sil : an anonymous silhouette (followers in the background)
     if (c.sil) { defs += `<filter id="silf"><feFlood flood-color="#2a2d36"/><feComposite in2="SourceAlpha" operator="in"/></filter>`; svg = `<g filter="url(#silf)" opacity="0.92">${svg}</g>`; }
     if (c.clip) { const id = 'cc' + (++CLIPN); defs += `<clipPath id="${id}"><rect x="${c.clip[0]}" y="${c.clip[1]}" width="${c.clip[2]}" height="${c.clip[3]}"/></clipPath>`; svg = `<g clip-path="url(#${id})">${svg}</g>`; }
+    else if (window.LIGHTS && c.y < 1960 && !c.noShadow) svg = LIGHTS.contact(c.x, c.y, c.h) + svg;
+    // k : the character moves during the shot (anim.js kf : walk, path…), with his shadow
+    if (c.k) svg = `<g data-k='${JSON.stringify(c.k)}'>${svg}</g>`;
     return { defs, svg: svg + (c.after || '') };
   }
 
@@ -193,16 +197,21 @@
     if (F.plain) {
       defs += `<radialGradient id="bgp" cx="0.5" cy="0.5" r="0.6"><stop offset="0" stop-color="#3a86e8"/><stop offset="1" stop-color="${BLUE}"/></radialGradient>`;
       body += `<rect width="1080" height="1920" fill="url(#bgp)"/>`;
-    } else if (F.zoom) { // zoom : [cx, cy, k], the set seen closer around (cx, cy) ; never past its edges (16/11 : no empty band)
+    }
+    // the lights of the set at its hour (lights.js, 16/11 at 19 h 32) : `under` with the set, `over` on top of the characters
+    const L = !F.plain && F.set && window.LIGHTS && !F.noLight ? LIGHTS.rig(...F.set) : null;
+    if (F.plain) { /* the plain blue background above */ } else if (F.zoom) { // zoom : [cx, cy, k], the set seen closer around (cx, cy) ; never past its edges (16/11 : no empty band)
       const zk = F.zoom[2], zx = Math.min(Math.max(F.zoom[0], 540 / zk), 1080 - 540 / zk), zy = Math.min(Math.max(F.zoom[1], 960 / zk), 1920 - 960 / zk);
       F.zoomUsed = [zx, zy, zk];
-      body += `<g transform="translate(540 960) scale(${zk}) translate(${-zx} ${-zy})">${DECORS.scene(...F.set)}${F.setOver ? F.setOver() : ''}</g>`;
+      body += `<g transform="translate(540 960) scale(${zk}) translate(${-zx} ${-zy})">${DECORS.scene(...F.set)}${L ? L.under : ''}${F.setOver ? F.setOver() : ''}</g>`;
     } else {
-      body += DECORS.scene(...F.set) + (F.setOver ? F.setOver() : ''); // setOver : drawn on the set, in its own coordinates (a sign on a shop)
+      body += DECORS.scene(...F.set) + (L ? L.under : '') + (F.setOver ? F.setOver() : ''); // setOver : drawn on the set, in its own coordinates (a sign on a shop)
     }
     (F.chars || []).forEach(c => { const r = who(c); defs += r.defs; body += r.svg; });
     // front : drawn in the set's coordinates but over the characters (a sign stuck on the glass of a shop window)
-    if (F.front) body += F.zoom ? `<g transform="translate(540 960) scale(${F.zoomUsed[2]}) translate(${-F.zoomUsed[0]} ${-F.zoomUsed[1]})">${F.front()}</g>` : F.front();
+    const inSet = (svg) => F.zoom ? `<g transform="translate(540 960) scale(${F.zoomUsed[2]}) translate(${-F.zoomUsed[0]} ${-F.zoomUsed[1]})">${svg}</g>` : svg;
+    if (F.front) body += inSet(F.front());
+    if (L) body += `<g class="lt-rig" data-amb="${L.amb}">${inSet(L.over)}</g>`;
     if (F.shade) {
       defs += `<linearGradient id="topsh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${INK}" stop-opacity="0.55"/><stop offset="1" stop-color="${INK}" stop-opacity="0"/></linearGradient>`;
       body += `<rect width="1080" height="900" fill="url(#topsh)"/>`;

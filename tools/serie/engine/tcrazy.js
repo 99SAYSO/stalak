@@ -62,14 +62,14 @@
         if (S.sticker) p0.push(`<path ${base} fill="#ffffff" stroke="#ffffff" stroke-width="${r1(2 * S.outer + 2 * S.sticker)}"/>`);
         p1.push(`<path ${base} fill="${S.ink}" stroke="${S.ink}" stroke-width="${r1(2 * S.outer)}"/>`);
       }
-      p2.push(`<path ${base} fill="${q.fill}" ${q.noLine ? '' : `stroke="${S.ink}" stroke-width="${r1(q.lw || S.lw)}"`}/>`);
+      p2.push(`<path ${base} fill="${q.fill}" ${q.noLine ? '' : `stroke="${S.ink}" stroke-width="${r1(q.lw || S.lw)}"`}${q.cls ? ` class="${q.cls}"` : ''}/>`);
       if (q.shade) {
         const flat = q.shadeColor === P.skinS || q.shadeColor === P.hairS;
         const id = 'c' + (++UID);
         defs.push(`<clipPath id="${id}"><path d="${q.d}"${tf}/></clipPath>`);
         p2.push(`<g clip-path="url(#${id})"><path d="${q.shade}" fill="${flat ? q.shadeColor : shadeFill(q.shadeColor, S)}"${tf}/></g>`);
       }
-      if (q.extra) p2.push(q.tf ? `<g transform="${q.tf}">${q.extra}</g>` : q.extra);
+      if (q.extra) { const ex = q.cls ? `<g class="${q.cls}">${q.extra}</g>` : q.extra; p2.push(q.tf ? `<g transform="${q.tf}">${ex}</g>` : ex); }
     });
     return { defs: defs.join(''), svg: `<g>${p0.join('')}</g><g>${p1.join('')}</g><g>${p2.join('')}</g>` };
   }

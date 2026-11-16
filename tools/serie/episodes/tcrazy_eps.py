@@ -45,7 +45,7 @@ TIMES = {
     'ep1': [0, 3, 9, 15, 20, 26, 30, 33, 38, 42, 49, 57, 63, 70],
     'ep2': [0, 3, 9, 14, 20, 25, 32, 41, 46, 53, 59, 67],
     'ep4': [0, 3, 9, 16, 22, 26, 32, 37, 47, 51, 58, 62, 70],
-    'ep3': [0, 3, 10, 18, 25, 28, 30, 35, 43, 50, 58, 62, 70],
+    'ep3': [0, 3, 10, 18, 25, 28, 30, 35, 41, 48, 52, 60, 67, 71, 79],
     'ep5': [0, 3, 10, 15, 18, 26, 30, 38, 46, 52, 58, 62, 70],
 }
 TARGET = 65.0  # seconds : the rule says 65 s at least. The pauses added to get there are small (tcrazy.py plan) : the owner
@@ -118,27 +118,32 @@ EPISODES = {
         ('ep3-05', ['7a'], dict(music='hustle')),
         ('ep3-06', ['7b'], {}),
         ('ep3-07', ['7c'], {}),
-        ('ep3-08', [8, 9], {}),
-        ('ep3-09', [10], {}),
-        ('ep3-10', [11], dict(music='victoire', lead=0.5, after=1.0, fixed=True, sfx=[('pop.mp3', 3.4, 0.45)])),  # v2 : Liam takes his phone first ; the clip plays on a moment
-        ('ep3-11', [12], {}),
-        ('ep3-12', [13], {}),
-        ('ep3-13', [], dict(hold=3.4, sfx=[('whoosh-short.mp3', 0.75, 0.25)])),
+        # v3 (owner, 16/11 : « l'entrée de Big Mo et Maya sont trop rapides ») : Big Mo walks in while Liam recognises him,
+        # they talk, Big Mo walks away ; Liam alone, disgusted, collapses ; Maya walks in before she speaks
+        ('ep3-08', [8], dict(lead=1.3, after=0.5, fixed=True, sfx=[('steps.wav', 0.0, 0.25)])),
+        ('ep3-09', [9, 10], dict(after=2.0, fixed=True, sfx=[('steps.wav', -2.25, 0.25)])),
+        ('ep3-10', [11], dict(after=0.9, fixed=True, sfx=[('whoosh-short.mp3', -0.85, 0.2), ('thud.wav', -0.36, 0.3)])),
+        ('ep3-11', [12], dict(lead=2.5, fixed=True, sfx=[('steps.wav', 0.3, 0.25)])),
+        ('ep3-12', [13], dict(music='victoire', lead=0.5, after=1.0, fixed=True, sfx=[('pop.mp3', 3.4, 0.45)])),  # v2 : Liam takes his phone first ; the clip plays on a moment
+        ('ep3-13', [14], {}),
+        ('ep3-14', [15], {}),
+        ('ep3-15', [], dict(hold=3.4, sfx=[('whoosh-short.mp3', 0.75, 0.25)])),
     ], direction={1: 'shouting, out of breath, annoyed', 3: 'very serious, like a businessman presenting a plan', 4: 'surprised', 5: 'proud',
-                  7: 'ironic', 9: 'shocked', 10: 'friendly, matter-of-fact', 12: 'impressed, then like a salesman', 13: CTA}),
+                  7: 'ironic', 8: 'amazed and starstruck, half to himself', 10: 'shocked', 11: 'disgusted and discouraged, to himself',
+                  12: 'friendly, matter-of-fact', 14: 'impressed, then like a salesman', 15: CTA}),
     'ep5': dict(card='tcrazy-ep5', same={7: 1}, shots=[
         ('ep5-01', [1], dict(music='plan', sfx=[('whoosh-short.mp3', 0.0, 0.3)])),
         ('ep5-02', [2], {}),
         ('ep5-03', [3], dict(dip=True)),
-        ('ep5-04', [4, 5], {}),
-        ('ep5-05', [6], dict(music='hustle')),
+        ('ep5-04', [4, 5], dict(after=0.3)),
+        ('ep5-05', [6], dict(music='hustle', after=0.6)),  # v2 : a beat to see the scooter stall
         ('ep5-06', [7], {}),
         ('ep5-07', [8], dict(dip=True, lead=1.7, fixed=True)),  # v2 : Liam with his phone, then his twelve takes, then he speaks
-        ('ep5-08', [9], {}),
+        ('ep5-08', [9], dict(lead=2.4, fixed=True, sfx=[('steps.wav', 0.2, 0.25)])),  # v2 : Maya walks in before she speaks
         ('ep5-09', ['10a'], dict(music='victoire', lead=0.5)),  # v2 : his phone comes up, then the narrator
-        ('ep5-10', ['10b'], dict(after=1.0, sfx=[('pop.mp3', 0.6, 0.45)])),  # v2 : the clip plays on a moment, cut on the beat
+        ('ep5-10', ['10b'], dict(after=2.6, sfx=[('pop.mp3', 0.6, 0.45)])),  # v2 : the clip plays on a moment, cut on the beat (longer : the result is the point)
         ('ep5-11', [11, 12], {}),
-        ('ep5-12', [13], {}),
+        ('ep5-12', [13], dict(after=0.4)),
         ('ep5-13', [], dict(hold=3.4, sfx=[('whoosh-short.mp3', 0.75, 0.25)])),
     ], direction={1: 'shouting, running after someone', 2: 'ironic', 3: 'dreamy, eyes lost in the distance', 4: 'flat, unimpressed', 5: 'proud',
                   6: 'ironic', 8: 'disappointed', 9: 'friendly, then convincing', 11: 'very proud', 12: 'dry, ironic', 13: CTA}),

@@ -220,14 +220,21 @@
     s += f(R(x + 50, 1300, 230, 160), '#f4f8fc') + f(R(x + 44, 1286, 242, 30), '#d6ecff') + txt(x + 165, 1390, 'GLAÇONS', 38, '#1f6fd6') + snowflake(x + 90, 1432, 14, '#1f6fd6', 3) + snowflake(x + 240, 1432, 14, '#1f6fd6', 3);
     return s;
   }
-  function rue1() {
-    let s = sky([[0, '#8fc3ec'], [0.55, '#cfe3f0'], [1, '#ffd7a8']], 1500);
-    s += cloud(80, 260, 1.1) + cloud(640, 180, 0.8) + cloud(420, 420, 0.6, '#ffffff', 0.8);
-    s += house(-30, 900, 300, 420, '#9fc1d8', '#6b4f52', '#ffe9b0') + house(250, 960, 230, 360, '#e8c9a0', '#7a4e45', '#ffe9b0') + tree(420, 1100, 90, '#5f9a4f', '#477a3a');
+  // t : 'jour' (and 'apres-midi'), or 'coucher' / 'soir' : the sun goes down behind the houses, the street lamp, the windows
+  // and the shop light up (the lights themselves, halos and grade, are in lights.js)
+  function rue1(t) {
+    const eve = t === 'coucher' || t === 'soir';
+    let s = eve ? sky([[0, '#2f3a86'], [0.36, '#b0577f'], [0.66, '#ff7a52'], [0.88, '#ffb36a'], [1, '#ffd08a']], 1500) : sky([[0, '#8fc3ec'], [0.55, '#cfe3f0'], [1, '#ffd7a8']], 1500);
+    if (eve) s += `<circle cx="330" cy="865" r="84" fill="#fff0c8"/>`;
+    s += eve ? cloud(80, 260, 1.1, '#ffc6b4', 0.9) + cloud(640, 180, 0.8, '#ffb8b0', 0.9) + cloud(420, 420, 0.6, '#ffd2a8', 0.75) : cloud(80, 260, 1.1) + cloud(640, 180, 0.8) + cloud(420, 420, 0.6, '#ffffff', 0.8);
+    const win = eve ? '#ffcf6b' : '#ffe9b0';
+    s += house(-30, 900, 300, 420, '#9fc1d8', '#6b4f52', win) + house(250, 960, 230, 360, '#e8c9a0', '#7a4e45', win) + tree(420, 1100, 90, '#5f9a4f', '#477a3a');
     s += f(R(-40, 1320, 520, 140), '#8fbf6f') + ln('M -40 1320 L 480 1320', INK, LW);
-    s += shopFront(470, 580, 610, { wall: '#e9d2b0', wallS: '#cdb38f', sign: '#c8443a', awning: '#3f7a55', glass: '#9fc4d8', neon: '#ff8a7a' });
+    s += shopFront(470, 580, 610, { wall: '#e9d2b0', wallS: '#cdb38f', sign: '#c8443a', awning: '#3f7a55', glass: eve ? '#ffdca4' : '#9fc4d8', neon: '#ff8a7a' });
     // the power pole and the wires
     s += f(R(118, 160, 26, 1300), '#7a5a40') + f(R(60, 230, 140, 18), '#6b4a35') + f(R(70, 300, 120, 16), '#6b4a35') + f('M 150 360 C 150 340 190 340 190 360 L 190 420 C 190 440 150 440 150 420 Z', '#9aa1ad');
+    // the street lamp on the pole (16/11, 19 h 32 : the lights) : off by day, lit in the evening
+    s += ln('M 140 500 C 170 470 220 466 248 472', INK, 14) + ln('M 140 500 C 170 470 220 466 248 472', '#5a5f6b', 7) + f('M 226 466 C 236 452 290 452 300 468 L 296 486 L 230 486 Z', '#4a4f5c') + `<ellipse cx="263" cy="489" rx="30" ry="7" fill="${eve ? '#fff3c4' : '#cfd6e0'}" stroke="${INK}" stroke-width="3"/>`;
     s += wire(66, 232, 1120, 300, 90) + wire(130, 232, 1120, 340, 120) + wire(194, 232, 1120, 260, 70) + wire(80, 302, 1120, 470, 160) + wire(186, 302, 700, 580, 40);
     // sidewalk, curb, street, hydrant, trash can
     s += f(R(-40, 1460, 1160, 170), '#cfcbc4') + ln('M 200 1460 L 160 1630 M 520 1460 L 500 1630 M 860 1460 L 860 1630', '#a9a49b', 4);

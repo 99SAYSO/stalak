@@ -301,6 +301,14 @@ Les voix de Big Mo et de M. Reyes seront choisies quand un épisode validé les 
   - le zoom d'un décor ne dépasse plus ses bords (avant, une bande noire pouvait apparaître, comme en bas du plan où Liam tombe dans « Le manager ») ;
   - plus de blanc : `plan` n'ajoute plus que de toutes petites pauses (0,15 s avant une réplique, 0,2 s après), et jamais dans un plan aux actions calées (`fixed=True`).
 - **Voix vérifiées** : une réplique d'un seul mot est comparée au son attendu (la voyelle de la fin), avec le script `formants.py` du dossier de travail. Le « Non. » de Maya (épisode 2), qui disait « ouais », est refait (2 essais, le bon gardé).
+- **Version 4 (16/11, 20 h)**, d'après la remarque du propriétaire sur « Le manager » (« des lumières plus réalistes… utilise aussi hyperframes »), pour toutes les vidéos à venir :
+  - `engine/lights.js` : le réglage de lumière de chaque décor, à chaque heure. La partie `under` est dessinée avec le décor, derrière les personnages (le soleil, le cœur des lampes, l'enseigne « OUVERT » qui grésille, les reflets des vitres, les scintillements du décor) ; la partie `over` passe par-dessus le décor et les personnages (la couleur de l'heure, la lueur large des lumières fortes, les rayons, les reflets de l'objectif). Fait pour la rue (jour, après-midi, coucher de soleil) et le terrain de basket (jour, après-midi). Les autres décors gardent leurs lueurs d'avant tant qu'ils n'ont pas leur réglage ;
+  - ce qui brille porte la classe `shiny` dans le dessin (boucles d'oreilles, lunettes de soleil, chaîne et pendentif, sachets de glaçons, objectif d'un téléphone, vitres du bus) et un écran la classe `screen` : `LIGHTS.attach` y pose un scintillement, à la bonne taille, qui suit le personnage ;
+  - `anim.js` : de nouvelles petites actions (`tw` scintille, `flk` grésille, `sweep` fait passer un reflet, `walk` fait marcher un personnage avec ses pas, `tilt` le fait tomber) ;
+  - la rue a un lampadaire sur son poteau, éteint le jour, allumé le soir ; `rue` à l'heure `coucher` : le soleil se couche derrière les maisons, la vitrine et les fenêtres s'allument ;
+  - l'étape `hf` : l'épisode devient un projet HyperFrames (`<travail>/<ep>/hf/index.html`) dont notre moteur est le runtime (HyperFrames demande l'image d'un instant avec `hf-seek`, le moteur la dessine), plus deux éléments du catalogue HyperFrames, installés à la volée et jamais dans le dépôt : `organic-light-leak-overlay` sur chaque passage par le noir et `vignette` le soir. Le rendu : `npx hyperframes render` avec `HYPERFRAMES_BROWSER_PATH` sur le Chrome déjà installé (le téléchargement de Chrome par HyperFrames est bloqué ici). Environ 25 à 30 min par épisode, contre 5 min avec `frames` ;
+  - un sous-titre trop court (« Pas mal. » restait 0,3 s) est recoupé avec son voisin en deux moitiés lisibles (relevé par la vérification HyperFrames) ;
+  - les bruits de pas (`steps.wav`) sont fabriqués par le pipeline ; un bruitage peut se placer depuis la fin d'un plan (temps négatif).
 
 ## Coûts
 
@@ -313,3 +321,4 @@ Les voix de Big Mo et de M. Reyes seront choisies quand un épisode validé les 
 - Solde Flora au 15/11 : 2,76 $, après les 0,42 $ des planches générées puis retirées.
 - 16/11 : 0,039 $ pour les 3 voix du narrateur ; solde Flora environ 2,72 $.
 - 16/11, fabrication : épisode 1 v2 0,091 $, épisode GTA 6 0,169 $ puis 0,078 $, épisode 2 0,039 $ puis 0,026 $ (le « Non » de Maya, 2 essais), « Le manager » 0,143 $, « Le clip façon GTA » 0,156 $.
+- 16/11 à 20 h : « Le manager » v3, 2 répliques ajoutées pour Liam, 0,026 $. Les lumières et HyperFrames : 0 $.

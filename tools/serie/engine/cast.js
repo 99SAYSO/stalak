@@ -197,9 +197,9 @@
     }
     // glasses
     if (H.glasses === 'sun') s += `<path d="M -68 -12 C -68 -20 -10 -20 -8 -12 L -12 16 C -14 28 -60 28 -64 16 Z M 68 -12 C 68 -20 10 -20 8 -12 L 12 16 C 14 28 60 28 64 16 Z" fill="${H.lens || '#15161c'}" stroke="${INK}" stroke-width="${LW}"/>` +
-      ln('M -8 -10 Q 0 -15 8 -10 M -68 -10 L -84 -8 M 68 -10 L 84 -8', INK, LW * 1.2) + ln('M -54 -8 l 16 0 M 22 -8 l 16 0', '#ffffff', 4, ' opacity="0.75"');
+      ln('M -8 -10 Q 0 -15 8 -10 M -68 -10 L -84 -8 M 68 -10 L 84 -8', INK, LW * 1.2) + ln('M -54 -8 l 16 0 M 22 -8 l 16 0', '#ffffff', 4, ' opacity="0.75"') + '<circle class="shiny" cx="52" cy="-6" r="13" fill="none"/>';
     if (H.glasses === 'aviator') s += `<path d="M -68 -12 L -10 -12 C -6 6 -16 28 -40 28 C -62 28 -72 8 -68 -12 Z M 68 -12 L 10 -12 C 6 6 16 28 40 28 C 62 28 72 8 68 -12 Z" fill="${H.lens || '#5b3d8f'}" stroke="${H.frame || '#efbb31'}" stroke-width="3.6"/>` +
-      ln('M -10 -10 L 10 -10 M -10 -2 Q 0 -6 10 -2 M -68 -10 L -86 -8 M 68 -10 L 86 -8', H.frame || '#efbb31', 3.6) + ln('M -56 -4 l 16 0 M 24 -4 l 16 0', '#ffffff', 4, ' opacity="0.6"');
+      ln('M -10 -10 L 10 -10 M -10 -2 Q 0 -6 10 -2 M -68 -10 L -86 -8 M 68 -10 L 86 -8', H.frame || '#efbb31', 3.6) + ln('M -56 -4 l 16 0 M 24 -4 l 16 0', '#ffffff', 4, ' opacity="0.6"') + '<circle class="shiny" cx="54" cy="-4" r="13" fill="none"/>';
     if (H.glasses === 'round') s += [-1, 1].map(k => `<circle cx="${k * 36}" cy="5" r="25" fill="#ffffff" fill-opacity="0.12" stroke="${H.frame || INK}" stroke-width="3.6"/>`).join('') + ln('M -11 2 Q 0 -4 11 2 M -61 2 L -80 -2 M 61 2 L 80 -2', H.frame || INK, 3.6);
     if (H.glasses === 'reading') s += [-1, 1].map(k => `<path d="M ${k * 36 - 24} 14 L ${k * 36 + 24} 14 Q ${k * 36 + 22} 34 ${k * 36} 34 Q ${k * 36 - 22} 34 ${k * 36 - 24} 14 Z" fill="#ffffff" fill-opacity="0.18" stroke="${H.frame || INK}" stroke-width="3.4"/>`).join('') + ln('M -12 14 Q 0 8 12 14 M -60 14 L -80 4 M 60 14 L 80 4', H.frame || INK, 3.4);
     return s;
@@ -375,9 +375,9 @@
     if (H.earpiece) into.push(part(`M ${hw + 4} 0 a 7 9 0 1 0 0.1 0 Z`, H.earpiece, { tf, inner: true }));
     if (H.beard) add(BEARD[H.beard](K, hw));
     if (HS.ffront) add(HS.ffront(K, hw));
-    if (H.earring) [-1, 1].forEach(k => into.push(part(`M ${k * (hw + 6) - 6} 32 a 6 6 0 1 0 12 0 a 6 6 0 1 0 -12 0 Z`, H.earring, { tf, inner: true })));
+    if (H.earring) [-1, 1].forEach(k => into.push(part(`M ${k * (hw + 6) - 6} 32 a 6 6 0 1 0 12 0 a 6 6 0 1 0 -12 0 Z`, H.earring, { tf, inner: true, cls: 'shiny' })));
     if (HS.fover) add(HS.fover(K, hw));
-    if (H.hoop) [-1, 1].forEach(k => into.push(overlay(`<circle cx="${k * (hw + 6)}" cy="44" r="8" fill="none" stroke="${INK}" stroke-width="6"/><circle cx="${k * (hw + 6)}" cy="44" r="8" fill="none" stroke="${H.hoop}" stroke-width="3"/>`, tf)));
+    if (H.hoop) [-1, 1].forEach(k => into.push(Object.assign(overlay(`<circle cx="${k * (hw + 6)}" cy="44" r="8" fill="none" stroke="${INK}" stroke-width="6"/><circle cx="${k * (hw + 6)}" cy="44" r="8" fill="none" stroke="${H.hoop}" stroke-width="3"/>`, tf), { cls: 'shiny' })));
     if (expr === 'panique') into.push(part('M 70 -60 q 16 24 0 38 q -16 -14 0 -38 Z M -80 -48 q 11 17 0 27 q -11 -10 0 -27 Z', '#bfe6ff', { tf }));
     if (H.pick && expr !== 'panique' && expr !== 'colere') into.push(overlay(ln('M 22 64 L 58 52', '#d9c8ad', 4) + ln('M 22 64 L 58 52', INK, 1.4, ' opacity="0.5"'), tf));
   }
@@ -390,7 +390,7 @@
     if (H.beard) add(BEARDP[H.beard](K));
     if (HS.pfront) add(HS.pfront(K));
     if (!HS.hideEarP) into.push(part(EARP, K.skin, { tf, extra: ln('M -16 -4 C -30 -6 -32 18 -20 26', K.skinS, 4) }));
-    if (H.earring) into.push(part('M -24 38 a 6 6 0 1 0 12 0 a 6 6 0 1 0 -12 0 Z', H.earring, { tf, inner: true }));
+    if (H.earring) into.push(part('M -24 38 a 6 6 0 1 0 12 0 a 6 6 0 1 0 -12 0 Z', H.earring, { tf, inner: true, cls: 'shiny' }));
     if (H.earpiece) into.push(part('M -22 8 a 9 11 0 1 0 0.1 0 Z', H.earpiece, { tf, inner: true }));
     if (H.hoop && !HS.hideEarP) into.push(overlay(`<circle cx="-20" cy="48" r="8" fill="none" stroke="${INK}" stroke-width="6"/><circle cx="-20" cy="48" r="8" fill="none" stroke="${H.hoop}" stroke-width="3"/>`, tf));
     if (HS.ptop) add(HS.ptop(K));
@@ -681,7 +681,8 @@
         neckF(parts, K, 32);
         parts.push(part(sym([[0, 874], [44, 868], [110, 882], [140, 916], [148, 1000], [150, 1120], [144, 1244, 1], [0, 1250]]), c.red, { extra: ln('M 434 904 L 430 976 M 466 904 L 470 972', '#f2efe8', 4) }));
         // the chain and the ice pendant
-        parts.push(overlay(ln('M 416 880 C 420 940 436 984 450 1000 C 464 984 480 940 484 880', '#c9d6e6', 4) + `<circle cx="450" cy="1016" r="20" fill="${c.ice}" stroke="${INK}" stroke-width="${LW}"/>` + flake(450, 1016, 13, '#1f6fd6', 3), undefined, [450, 1000]));
+        parts.push(overlay(ln('M 416 880 C 420 940 436 984 450 1000 C 464 984 480 940 484 880', '#c9d6e6', 4) + `<circle cx="450" cy="1016" r="20" fill="${c.ice}" stroke="${INK}" stroke-width="${LW}"/>` + flake(450, 1016, 13, '#1f6fd6', 3) +
+          '<circle class="shiny" cx="458" cy="1008" r="22" fill="none"/><circle class="shiny" cx="424" cy="930" r="9" fill="none"/>', undefined, [450, 1000]));
         [-1, 1].forEach(k => parts.push(part(smooth(at([[48, 872, 1], [102, 866], [146, 900], [160, 960], [154, 1040], [162, 1120], [154, 1200], [158, 1264, 1], [74, 1268, 1], [70, 1150], [64, 1000], [48, 872, 1]], 450, 0, k)), c.pf,
           { shade: k < 0 ? 'M 280 860 L 330 860 C 322 1000 326 1150 336 1280 L 280 1280 Z' : null, shadeColor: c.pfS,
             extra: ln([960, 1040, 1120, 1200].map(y => `M ${450 + k * 72} ${y} q ${k * 40} 12 ${k * 84} 0`).join(' '), INK, LW) + ln(`M ${450 + k * 92} 930 q ${k * 22} -8 ${k * 44} 0 M ${450 + k * 96} 1090 q ${k * 22} -8 ${k * 44} 0`, c.pfH, 8, ' opacity="0.8"') })));

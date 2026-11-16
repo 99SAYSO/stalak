@@ -16,7 +16,7 @@ Le ton est celui d'un dessin animé américain inspiré de l'anime, avec le dél
 
 ## Le format
 
-- **Durée** : entre 1 min 05 et 1 min 20 (règle du 15/11), en vertical 9:16. **Pas de générique.** Depuis qu'on coupe tous les blancs (16/11), les épisodes déjà écrits durent entre 1 min 00 et 1 min 02 (l'épisode GTA 6 : 1 min 18). Pour remonter à 1 min 05, il faudrait ajouter une ou deux répliques par épisode : c'est au propriétaire de choisir (question posée le 16/11).
+- **Durée** : entre 1 min 05 et 1 min 20 (règle du 15/11), en vertical 9:16. **Pas de générique.** Depuis qu'on coupe tous les blancs (16/11), les épisodes déjà écrits durent entre 1 min 00 et 1 min 02 (l'épisode GTA 6 : 1 min 18). Pour remonter à 1 min 05, il faudrait ajouter une ou deux répliques par épisode : c'est au propriétaire de choisir (question posée le 16/11). Les arrivées en marchant (voir plus bas) rallongent naturellement : « Le manager » v3 dure 1 min 14, « Le clip façon GTA » v2 1 min 05.
 - **0:00, le cri** : un personnage crie une phrase liée à l'épisode, qui **choque ou fait tout de suite se poser une question** (16/11). Exemple : « Tu m'as enregistrée sans me le dire ?! ». La même phrase revient au milieu ou à la fin, et c'est là qu'on comprend la scène.
 - **Celui qui crie est au centre, en grand, bien visible dès la première image** (16/11, remarque sur l'épisode 1). Le texte peut passer sur lui, ce n'est pas grave. Rien ne cache son visage (les sachets de glaçons sont portés plus bas, par exemple).
 - **Seul le cri de l'accroche s'écrit en grand** (16/11) : pas de carte de sous-titre, mais les mots eux-mêmes, en blanc cerné de noir, qui apparaissent un par un pendant qu'ils sont criés, vers le milieu ou le haut de l'écran, de préférence sur 2 lignes. Le nom de celui qui crie est à côté. Toutes les autres répliques, même criées plus tard, sont en sous-titre normal.
@@ -31,6 +31,20 @@ Le ton est celui d'un dessin animé américain inspiré de l'anime, avec le dél
   - **on voit qui prend le téléphone** avant que son écran remplisse l'image, et une publication se montre étape par étape : « Publier », un doigt qui appuie, « Vidéo publiée ! », puis la vidéo dans le fil ;
   - **un fil de vidéos ressemble à TikTok**, dessiné par Claude et sans logo : le cœur, les commentaires et le partage à droite, avec leurs chiffres, le pseudo, la légende et le son en bas ;
   - un personnage derrière une fenêtre a la vitre devant lui (teinte et reflets). La fenêtre de la cuisine n'a qu'un seul carreau.
+- **Personne n'apparaît d'un coup** (16/11, remarque sur « Le manager » : « l'entrée de Big Mo et Maya sont trop rapides… il pourrait arriver en marchant ») :
+  - un personnage qui arrive **entre en marchant** par le côté (environ 2 s, son corps qui balance à chaque pas, des bruits de pas), s'arrête, et seulement ensuite on voit son étiquette et il parle ;
+  - un personnage qui s'en va **repart en marchant** ;
+  - entre deux arrivées, un temps : on voit la réaction de celui qui reste (Liam, dégoûté, qui ne comprend pas comment Big Mo fait trois clips, puis qui s'effondre) avant que le suivant arrive ;
+  - dans le storyboard : `k: { walk: [[t, dx, dy]...] }` sur le personnage (`anim.js`), et l'étiquette avec `data-dl` pour qu'elle arrive quand il s'arrête.
+- **Les lumières sont réalistes** (16/11 à 19 h 32, remarque sur « Le manager », pour toutes les vidéos à venir : « si y'a une lumière, y'a un halo lumineux, si y'a un truc qui brille… ») :
+  - chaque source de lumière a son **halo** : le soleil, le lampadaire, l'enseigne « OUVERT », les fenêtres et la vitrine allumées le soir, les phares, les écrans de téléphone. Un cœur très clair, puis une lueur douce qui déborde sur ce qui est devant (comme dans une vraie caméra), et un fin trait horizontal à travers les lumières fortes ;
+  - la lumière de l'heure **tombe sur les personnages aussi** : le soir, ils prennent la couleur chaude et violette du coucher de soleil, comme le décor ; à contre-jour, le soleil déborde autour d'eux ;
+  - ce qui brille **scintille** de temps en temps : les glaçons, la chaîne et les lunettes de Big Mo, les boucles d'oreilles, les téléphones, les vitres du bus ; sur les vitres, un reflet passe de temps en temps ; le logo de la carte de fin aussi ;
+  - une ombre douce sous les pieds de chaque personnage ;
+  - le soir, la rue a son coucher de soleil derrière les maisons, son lampadaire allumé, la vitrine et les fenêtres éclairées ;
+  - tout est dessiné en code dans `tools/serie/engine/lights.js` (pour chaque décor et chaque heure : `under` derrière les personnages, `over` par-dessus) : ajouter le réglage d'un décor avant de l'utiliser dans un épisode.
+- **HyperFrames fait le rendu** (16/11, « utilise aussi hyperframes ») : l'épisode devient une composition HyperFrames dont notre moteur est le « runtime » (étape `hf` du pipeline, `npx hyperframes render`). Par-dessus, des éléments du catalogue HyperFrames : la lumière chaude « organic-light-leak-overlay » qui traverse chaque passage par le noir (le temps passe), et un « vignette » qui assombrit doucement les coins le soir. Le rendu prend environ 25 à 30 min par épisode.
+- **Internet** : on peut s'en servir pour une image ou une ressource extérieure si elle aide (16/11), seulement avec une licence qui permet l'usage commercial, sans personne réelle ni marque.
 - **Pas de blanc** (16/11, remarques sur l'épisode 2 : « il faut cut à ce moment la séquence, il y a un blanc trop long sinon ») : on coupe dès que la phrase est finie. Un plan ne reste sans parole que s'il s'y passe quelque chose qu'on doit voir (une publication, le clip qui joue sur le rythme, une boule d'herbes qui roule). Sans blancs, un épisode dure environ 1 min (voir « Durée »).
 - **On comprend toujours où on est et qui arrive** (16/11) :
   - chaque changement de lieu ou de moment a un carton en haut de l'écran (« UNE HEURE PLUS TÔT », « CINQ MINUTES PLUS TARD · LA CUISINE ») ;
@@ -90,7 +104,7 @@ Chaque réplique est générée à part, avec son émotion, mais reste réaliste
 
 - Stalak seulement à la fin, jamais de pub dès la première seconde.
 - Une vidéo montée qu'on montre est toujours synchronisée avec la musique.
-- Aucun chiffre inventé sur Stalak : les chiffres de l'histoire (abonnés, heures) sont de la fiction sur les personnages. Aucun concurrent nommé, aucune vraie marque.
+- Aucun chiffre inventé sur Stalak : les chiffres de l'histoire (abonnés, heures) sont de la fiction sur les personnages. Aucun concurrent nommé, aucune vraie marque. **Seule exception : l'épisode « L'appli a fermé » nomme Triller**, décision du propriétaire du 16/11 (« je veux que tu cites Triller, tu dis que Triller n'est plus disponible sur l'App Store, c'est vrai »). Le fait est vérifié (Wikipédia, août 2026 ; article du 1er novembre 2026) ; ni le logo de Triller ni celui de l'App Store ne sont dessinés. Juridique peut relire.
 - Aucun vrai artiste, ni son image ni son nom : pas de poster de star dans la chambre.
 - L'actualité attire, par exemple la sortie de GTA 6 le 19/11/2026. Mais on n'en garde que le nom :
   - ni logo, ni image, ni musique, ni personnage du jeu ;
@@ -112,7 +126,7 @@ Script à valider → storyboard à valider (une image par moment du script, des
 
 ## Coût
 
-Les images, les musiques et le rendu coûtent 0 $. Une génération de voix coûte 0,013 $, et on en fait une par réplique (16/11), soit environ 0,17 à 0,23 $ par épisode. Une réplique déjà enregistrée et inchangée est gardée : on ne la paie jamais deux fois.
+Les images, les musiques, les lumières et le rendu (HyperFrames compris, sur notre machine) coûtent 0 $. Une génération de voix coûte 0,013 $, et on en fait une par réplique (16/11), soit environ 0,17 à 0,23 $ par épisode. Une réplique déjà enregistrée et inchangée est gardée : on ne la paie jamais deux fois. Quand on ajoute une réplique au milieu d'un script, les voix déjà faites sont renumérotées, pas refaites (« Le manager » v3 : 2 répliques ajoutées, 0,026 $).
 
 ## Idées d'épisodes (à valider une par une)
 

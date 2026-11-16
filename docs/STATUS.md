@@ -277,7 +277,13 @@
   - **15/11, 21 h 30 : branché sur « Studio Stalak »** (règles 11 et 12). Réseaux sociaux programme seulement les fiches `videos` au statut `valide` (légende, mots-clés, date, heure et vidéo pris dans la fiche), puis les passe en `programme` (avec `zernioId`, champ ajouté, à confirmer par le Chef de projet) et en `publie`. La tâche du samedi passe aussi en `publie` les fiches publiées. Goûts (`da`) lus avant chaque lot ; chaque remarque du propriétaire y va. Le fichier de lot et le dossier Drive de Marketing sont abandonnés.
 
 ### Marketing & croissance
-- **En cours (branche `marketing/serie-fr`, série « T-Crazy ») — fabrication : épisode 1 validé ; épisodes 2 (v3) et GTA 6 (v2) refaits avec ses remarques ; « Le manager » et « Le clip façon GTA » fabriqués ; épisode 6 (« L'appli a fermé », son idée) en script** :
+- **En cours (branche `marketing/serie-fr`, série « T-Crazy ») — fabrication : épisodes 1, 2 et GTA 6 validés ; « Le manager » (v3) et « Le clip façon GTA » (v2) refaits avec ses remarques et les nouvelles lumières ; épisode 6 (« L'appli a fermé ») : script validé, storyboard à faire** :
+  - 16/11, 20 h : **sa remarque sur « Le manager », pour toutes les vidéos à venir : des lumières réalistes, HyperFrames, internet si besoin.**
+    - Chaque source de lumière a son halo (soleil, lampadaire, enseigne, fenêtres, écrans, phares), la lumière de l'heure tombe aussi sur les personnages, ce qui brille scintille (chaîne, lunettes, glaçons, téléphones, vitres), une ombre douce sous les pieds. Moteur : `tools/serie/engine/lights.js`.
+    - Le rendu passe par HyperFrames (étape `hf`) : notre moteur est le runtime de la composition, avec la lumière chaude du catalogue HyperFrames à chaque passage par le noir et un léger vignettage le soir. Environ 25 à 30 min de rendu par épisode.
+    - **Personne n'apparaît d'un coup** : un personnage qui arrive entre en marchant, s'arrête, puis parle ; un temps entre deux arrivées. « Le manager » v3 : Big Mo arrive en marchant, Liam dit la phrase du propriétaire (« Wouah, c'est Big Mo… »), Big Mo repart, Liam dit qu'il ne comprend pas (réplique ajoutée par Marketing, à valider avec la vidéo), s'effondre, puis Maya arrive. Le Maya du « Clip façon GTA » marche aussi.
+    - « Le clip façon GTA » v2 : le rêve reste dans sa bulle, les 12 cases des prises montrent leur décor (scooter, plante, épicerie, ventilateur), le soir est un vrai coucher de soleil.
+    - Durées : « Le manager » 1 min 14, « Le clip façon GTA » 1 min 05. Voix : 0,026 $ (2 répliques). Les épisodes déjà validés ne sont pas refaits avec les lumières sans son accord (question posée).
   - 16/11, 18 h 45 : **ses remarques et sa règle « un enfant doit pouvoir comprendre » appliquées à toute la série** :
     - chaque changement de moment ou de lieu passe par le noir, avec son carton ;
     - la lumière reste celle du moment ;

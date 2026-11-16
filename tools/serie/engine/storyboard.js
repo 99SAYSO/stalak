@@ -11,10 +11,10 @@
 
   // ---------------- props, in a character's own coordinates (front figures : hands near 320/580, 1170) ----------------
   const P = {
-    phone: (x, y, glow = '#8fd3ff') => `<g transform="translate(${x} ${y})"><rect x="-26" y="-50" width="52" height="96" rx="10" fill="#2a2d36" stroke="${INK}" stroke-width="5"/><rect x="-19" y="-42" width="38" height="78" rx="5" fill="${glow}"/><rect x="-12" y="-36" width="24" height="5" rx="2.5" fill="#ffffff" opacity="0.7"/></g>`,
+    phone: (x, y, glow = '#8fd3ff') => `<g transform="translate(${x} ${y})"><rect x="-26" y="-50" width="52" height="96" rx="10" fill="#2a2d36" stroke="${INK}" stroke-width="5"/><rect x="-19" y="-42" width="38" height="78" rx="5" fill="${glow}" class="screen" data-glow="${glow}"/><rect x="-12" y="-36" width="24" height="5" rx="2.5" fill="#ffffff" opacity="0.7"/></g>`,
     sponge: (x, y) => `<g transform="translate(${x} ${y}) rotate(-10)"><rect x="-38" y="-22" width="76" height="44" rx="10" fill="#f2d24b" stroke="${INK}" stroke-width="5"/><rect x="-38" y="-22" width="76" height="16" rx="8" fill="#3fa34d" stroke="${INK}" stroke-width="5"/><circle cx="-14" cy="10" r="3" fill="#c9a52c"/><circle cx="10" cy="6" r="2.5" fill="#c9a52c"/><circle cx="22" cy="14" r="2" fill="#c9a52c"/></g>`,
     // a bag of ice cubes, our own design (« GLAÇONS », no brand)
-    icebag: (x, y, r = 0) => `<g transform="translate(${x} ${y}) rotate(${r})"><path d="M -40 -50 L 40 -50 L 46 50 C 20 60 -20 60 -46 50 Z" fill="#eef7ff" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/><rect x="-30" y="-14" width="60" height="26" rx="5" fill="${BLUE}"/>${T(0, 7, 'GLAÇONS', 15, SNOW)}<path d="M -40 -50 L 40 -50 L 34 -64 L -34 -64 Z" fill="#cfe6fb" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/></g>`,
+    icebag: (x, y, r = 0) => `<g transform="translate(${x} ${y}) rotate(${r})"><path d="M -40 -50 L 40 -50 L 46 50 C 20 60 -20 60 -46 50 Z" fill="#eef7ff" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/><rect x="-30" y="-14" width="60" height="26" rx="5" fill="${BLUE}"/>${T(0, 7, 'GLAÇONS', 15, SNOW)}<path d="M -40 -50 L 40 -50 L 34 -64 L -34 -64 Z" fill="#cfe6fb" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/><circle class="shiny" cx="-24" cy="-30" r="8" fill="none"/></g>`,
     // over-ear headphones on Liam's head (front figure : head centre 450, 684.8, scale 1.3)
     headphones: () => `<g transform="translate(450 684.8) scale(1.3)">${hp()}</g>`,
     // a studio mic on its stand, the capsule at x, y ; floor = the figure's floor line
@@ -27,7 +27,7 @@
         `<rect x="-46" y="40" width="92" height="24" rx="9" fill="#2a2d36" stroke="${INK}" stroke-width="6"/><path d="M -18 -80 q 12 -6 26 -2" stroke="#ffffff" stroke-width="6" fill="none" stroke-linecap="round"/></g>`;
     },
     // the back of a phone held up (he films himself) : dark, two lenses
-    phoneBack: (x, y) => `<g transform="translate(${x} ${y})"><rect x="-28" y="-52" width="56" height="100" rx="11" fill="#1d1f27" stroke="${INK}" stroke-width="5"/><rect x="-18" y="-42" width="22" height="34" rx="7" fill="#2f323d"/><circle cx="-7" cy="-33" r="6" fill="#0b0d12" stroke="#4a4f5c" stroke-width="2"/><circle cx="-7" cy="-17" r="6" fill="#0b0d12" stroke="#4a4f5c" stroke-width="2"/></g>`,
+    phoneBack: (x, y) => `<g transform="translate(${x} ${y})"><rect x="-28" y="-52" width="56" height="100" rx="11" fill="#1d1f27" stroke="${INK}" stroke-width="5"/><rect x="-18" y="-42" width="22" height="34" rx="7" fill="#2f323d"/><circle cx="-7" cy="-33" r="6" fill="#0b0d12" stroke="#4a4f5c" stroke-width="2"/><circle cx="-7" cy="-17" r="6" fill="#0b0d12" stroke="#4a4f5c" stroke-width="2"/><circle class="shiny" cx="-7" cy="-33" r="7" fill="none"/></g>`,
     plant: (x, y) => `<g transform="translate(${x} ${y})"><path d="M -40 0 L 40 0 L 30 70 L -30 70 Z" fill="#c4683a" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/>${[[-60, -120, -30], [0, -170, 0], [55, -125, 30], [-30, -80, -60], [35, -85, 55]].map(([dx, dy, r]) => `<path d="M 0 0 Q ${dx * 0.4} ${dy * 0.5} ${dx} ${dy} Q ${dx * 0.7 + 18} ${dy * 0.6} 0 0 Z" fill="#3f9a5a" stroke="${INK}" stroke-width="4" stroke-linejoin="round"/>`).join('')}</g>`,
   };
 
@@ -52,10 +52,13 @@
   function phoneBig(inner, k = 1, o = {}) {
     const W = 600, H = 1080, x = 540 - W / 2, y = 250, dim = `<rect width="1080" height="1920" fill="${INK}" opacity="0.5"/>`;
     return (o.dl != null ? K({ fadein: [o.dl, o.dl + 0.25] }, dim) : dim) + `<g class="phone"${o.dl != null ? ` data-dl="${o.dl}"` : ''}><g transform="translate(540 ${y + H / 2}) scale(${k}) translate(-540 ${-(y + H / 2)})">` +
+      (window.LIGHTS ? `<g style="mix-blend-mode:screen">${LIGHTS.halo(540, y + H / 2, 470, '#8fd3ff', 0.3, { ry: 760, c1: 0.2, skirt: 0.55 })}</g>` : '') +
       `<rect x="${x + 12}" y="${y + 16}" width="${W}" height="${H}" rx="64" fill="${INK}" opacity="0.55"/>` +
       `<rect x="${x}" y="${y}" width="${W}" height="${H}" rx="64" fill="#2a2d36" stroke="${INK}" stroke-width="12"/>` +
       `<clipPath id="scr${++UID}"><rect x="${x + 20}" y="${y + 40}" width="${W - 40}" height="${H - 80}" rx="40"/></clipPath>` +
-      `<g clip-path="url(#scr${UID})"><rect x="${x + 20}" y="${y + 40}" width="${W - 40}" height="${H - 80}" fill="${NIGHT}"/><g transform="translate(${x + 20} ${y + 40})">${inner}</g></g>` +
+      `<g clip-path="url(#scr${UID})"><rect x="${x + 20}" y="${y + 40}" width="${W - 40}" height="${H - 80}" fill="${NIGHT}"/><g transform="translate(${x + 20} ${y + 40})">${inner}</g>` +
+      // the lights (16/11, 19 h 32) : the glass of the screen catches the light, a shine crosses it now and then
+      `<path d="M ${x + 20} ${y + 520} L ${x + 330} ${y + 40} L ${x + 400} ${y + 40} L ${x + 20} ${y + 630} Z" fill="#ffffff" opacity="0.05"/>` + K({ sweep: [7, 1.2, 1.1, 900, 0] }, `<path d="M ${x - 420} ${y + 1040} L ${x - 40} ${y + 40} L ${x + 30} ${y + 40} L ${x - 350} ${y + 1040} Z" fill="#ffffff" opacity="0.16"/>`) + `</g>` +
       `<rect x="${540 - 50}" y="${y + 14}" width="100" height="12" rx="6" fill="#4a4f5c"/></g></g>`;
   }
   let UID = 0;
@@ -315,7 +318,11 @@
   function endCard(next) {
     let s = `<rect width="1080" height="1920" fill="${BLUE}"/>`;
     s += `<path d="M 0 0 L 1080 0 L 1080 200 C 980 210 960 290 900 280 C 850 272 860 210 790 210 C 720 210 730 320 660 310 C 600 302 610 220 540 220 C 470 220 480 340 410 330 C 350 322 360 230 290 230 C 220 230 230 300 170 290 C 110 280 110 210 0 210 Z" fill="${ICE}" stroke="${INK}" stroke-width="8"/>`;
-    s += `<g class="ec-logo"><circle cx="550" cy="512" r="168" fill="${INK}"/>` + img('/site_src/icons/icon.svg', 380, 340, 330, 330) + '</g>';
+    // the logo catches the light : a shine sweeps across it now and then (16/11, 19 h 32 : « un truc qui brille »)
+    const lc = 'ecl' + (++UID);
+    s += `<g class="ec-logo"><circle cx="550" cy="512" r="168" fill="${INK}"/>` + img('/site_src/icons/icon.svg', 380, 340, 330, 330) +
+      `<clipPath id="${lc}"><circle cx="545" cy="505" r="160"/></clipPath><g clip-path="url(#${lc})">` + K({ sweep: [2.6, 1.6, 0.8, 560, 0] }, `<path d="M 230 700 L 370 300 L 430 300 L 290 700 Z" fill="#ffffff" opacity="0.5"/>`) + '</g>' +
+      (window.LIGHTS ? LIGHTS.glint(668, 400, 34, { tw: [2.6, 0.6, 0.7, 0] }) : '') + '</g>';
     s += `<g class="ec-url">${T(540, 830, 'stalak.app', 150, SNOW, { stroke: INK, sw: 20 })}</g>`;
     s += `<g class="ec-free">${T(520, 910, 'Gratuit, sans téléchargement ni inscription', 34, ICE, { font: 'Rubik', weight: 800 })}</g>`; // clear of the right edge
     s += `<g transform="translate(0 800)">${bandeau(2, 'PROCHAIN ÉPISODE : ' + next, '')}</g>`;
@@ -337,8 +344,13 @@
     const h = 360;
     let s = [0, 1, 2].map(i => `<path d="M ${x - 60 - i * 40} ${y - 260 + i * 80} L ${x - 200 - i * 60} ${y - 260 + i * 80}" stroke="${INK}" stroke-width="10" stroke-linecap="round" opacity="0.6"/>`).join('');
     s += `<rect x="${x}" y="${y - h}" width="${w}" height="${h - 40}" rx="44" fill="#e8b43a" stroke="${INK}" stroke-width="9"/><rect x="${x + 6}" y="${y - 140}" width="${w - 12}" height="44" fill="#c98a06"/>`;
-    for (let i = 0; i < 6; i++) s += `<rect x="${x + 50 + i * 150}" y="${y - h + 40}" width="118" height="120" rx="16" fill="#9fc4d8" stroke="${INK}" stroke-width="6"/>`;
-    [x + 180, x + w - 180].forEach(cx => { s += `<circle cx="${cx}" cy="${y - 40}" r="62" fill="#2a2d36" stroke="${INK}" stroke-width="8"/><circle cx="${cx}" cy="${y - 40}" r="24" fill="#9aa1ad"/>`; });
+    for (let i = 0; i < 6; i++) s += `<rect x="${x + 50 + i * 150}" y="${y - h + 40}" width="118" height="120" rx="16" fill="#9fc4d8" stroke="${INK}" stroke-width="6"/>` +
+      // the lights (16/11, 19 h 32) : the sky in each window, a glint on the last one
+      `<path d="M ${x + 62 + i * 150} ${y - h + 148} L ${x + 104 + i * 150} ${y - h + 52} L ${x + 126 + i * 150} ${y - h + 52} L ${x + 84 + i * 150} ${y - h + 148} Z" fill="#ffffff" opacity="0.35"/>`;
+    s += `<circle class="shiny" cx="${x + 50 + 5 * 150 + 96}" cy="${y - h + 62}" r="12" fill="none"/>`;
+    [x + 180, x + w - 180].forEach(cx => { s += `<circle cx="${cx}" cy="${y - 40}" r="62" fill="#2a2d36" stroke="${INK}" stroke-width="8"/><circle cx="${cx}" cy="${y - 40}" r="24" fill="#9aa1ad"/><circle class="shiny" cx="${cx - 8}" cy="${y - 50}" r="9" fill="none"/>`; });
+    // its headlight, lit, with its halo
+    s += `<rect x="${x + w - 40}" y="${y - 120}" width="30" height="40" rx="10" fill="#fff4c8" stroke="${INK}" stroke-width="6"/>` + (window.LIGHTS ? `<g style="mix-blend-mode:screen">${LIGHTS.halo(x + w - 25, y - 100, 170, '#fff1c0', 0.75, { hot: 28, streak: 220 })}</g>` : '');
     return s;
   }
   // a small dog barking, side view, facing left ; x, y : under its paws
@@ -385,7 +397,11 @@
   function dream0(cx, cy) {
     let s = [[-300, 20, 120], [-160, -90, 140], [40, -110, 150], [220, -60, 130], [320, 40, 110], [150, 110, 130], [-80, 110, 130], [-260, 120, 100]].map(([dx, dy, r]) => `<circle cx="${cx + dx}" cy="${cy + dy}" r="${r}" fill="${INK}"/>`).join('');
     s += [[-300, 20, 112], [-160, -90, 132], [40, -110, 142], [220, -60, 122], [320, 40, 102], [150, 110, 122], [-80, 110, 122], [-260, 120, 92]].map(([dx, dy, r]) => `<circle cx="${cx + dx}" cy="${cy + dy}" r="${r}" fill="${SNOW}"/>`).join('');
-    s += `<rect x="${cx - 380}" y="${cy - 190}" width="760" height="380" rx="150" fill="#ffe2c4"/>`;
+    // v2 (owner, 16/11 : « des bouts sortent de la bulle d'idées ») : the dream is drawn smaller, inside a window that stays
+    // within the white of the cloud, and clipped to it : nothing pokes out
+    const cid = 'drm' + (++UID);
+    s += `<rect x="${cx - 310}" y="${cy - 150}" width="620" height="300" rx="130" fill="#ffe2c4"/><clipPath id="${cid}"><rect x="${cx - 310}" y="${cy - 150}" width="620" height="300" rx="130"/></clipPath>`;
+    s += `<g clip-path="url(#${cid})"><g transform="translate(${cx} ${cy}) scale(0.8) translate(${-cx} ${-cy})">`;
     // two palm trees
     [[cx - 250, cy + 150, 1], [cx + 290, cy + 150, -1]].forEach(([x, y, sg]) => {
       s += `<path d="M ${x} ${y} C ${x + sg * 10} ${y - 90} ${x + sg * 30} ${y - 170} ${x + sg * 20} ${y - 250}" fill="none" stroke="${INK}" stroke-width="26" stroke-linecap="round"/><path d="M ${x} ${y} C ${x + sg * 10} ${y - 90} ${x + sg * 30} ${y - 170} ${x + sg * 20} ${y - 250}" fill="none" stroke="#a0703c" stroke-width="15" stroke-linecap="round"/>`;
@@ -396,17 +412,27 @@
       [cx - 90, cx + 110].map(x => `<circle cx="${x}" cy="${cy + 122}" r="30" fill="#2a2d36" stroke="${INK}" stroke-width="6"/><circle cx="${x}" cy="${cy + 122}" r="11" fill="#c9ccd6"/>`).join('');
     // a helicopter
     s += `<g transform="translate(${cx + 40} ${cy - 120})"><path d="M -150 -50 L 150 -50" stroke="${INK}" stroke-width="10" stroke-linecap="round"/><path d="M 0 -50 L 0 -30" stroke="${INK}" stroke-width="8"/><ellipse cx="0" cy="0" rx="78" ry="44" fill="#2b49c9" stroke="${INK}" stroke-width="7"/><path d="M 60 -6 L 170 -20 L 176 -46 L 190 -46 L 186 10 L 64 18 Z" fill="#2b49c9" stroke="${INK}" stroke-width="6" stroke-linejoin="round"/><path d="M -60 -10 C -50 -36 -10 -40 10 -30 L 10 4 L -62 4 Z" fill="#9fc4d8" stroke="${INK}" stroke-width="5"/><path d="M -60 56 L 60 56 M -40 40 L -40 56 M 40 40 L 40 56" stroke="${INK}" stroke-width="7" stroke-linecap="round"/></g>`;
+    s += '</g></g>';
     return s;
   }
-  // the 12 takes in Liam's phone : all a bit failed, but he raps well in each (our own interface)
+  // the 12 takes in Liam's phone : all a bit failed, but he raps well in each (our own interface). v2 (owner, 16/11 : « sur
+  // les cases des vidéos, il faut qu'on voie le décor, le scooter, la plante, devant la supérette ») : each thumbnail is a
+  // little picture of the take, Liam where he filmed it : on the scooter, with the plant, in front of the shop, with the fan
+  function takeTile(i, x, y) {
+    const kind = ['superette', 'scooter', 'plante', 'ventilo'][i % 4], cid = 'gt' + (++UID), cx = x + 82;
+    let s = `<clipPath id="${cid}"><rect x="${x}" y="${y}" width="164" height="184" rx="12"/></clipPath><g clip-path="url(#${cid})">`;
+    s += `<g transform="translate(${x - 38} ${y}) scale(0.46)">${takeScene('rue')}</g>`;
+    const ex = ['fierte', 'frime', 'colere', 'fierte'][(i >> 2) % 4];
+    if (kind === 'superette') s += headAt(ex, cx, y + 128, 0.3, '', false);
+    if (kind === 'scooter') s += headAt(ex, cx, y + 70, 0.24, '', false) + `<g transform="translate(${cx} ${y + 104}) scale(0.28)">${scooter0(0, 0, 330, 0.57, '#5fc4b3')}</g>`;
+    if (kind === 'plante') s += headAt(ex, x + 58, y + 116, 0.26, '', false) + `<g transform="translate(${x + 124} ${y + 136}) scale(0.5)">${P.plant(0, 0)}</g>`;
+    if (kind === 'ventilo') s += headAt(ex, x + 60, y + 118, 0.26, '', false) + `<g transform="translate(${x + 126} ${y + 104}) scale(0.32)">${fan(0, 0)}</g>`;
+    return s + `</g><rect x="${x}" y="${y}" width="164" height="184" rx="12" fill="none" stroke="${INK}" stroke-width="4"/>` +
+      `<path d="M ${x + 128} ${y + 150} l 22 12 l -22 12 Z" fill="${SNOW}" stroke="${INK}" stroke-width="3"/>`;
+  }
   function gallery12() {
     let s = `<rect width="560" height="1000" fill="#f3f6fb"/>` + T(30, 70, 'Vidéos', 44, INK, { anchor: 'start' });
-    const bgs = ['#ffb27a', '#9fc4d8', '#7fd1c1', '#f2d7c4'];
-    for (let i = 0; i < 12; i++) {
-      const x = 22 + (i % 3) * 176, y = 100 + Math.floor(i / 3) * 196;
-      s += `<rect x="${x}" y="${y}" width="164" height="184" rx="12" fill="${bgs[i % 4]}" stroke="${INK}" stroke-width="4"/>` + headAt(i % 4 === 1 ? 'fierte' : 'frime', x + 82, y + 102, 0.42, '', false) +
-        `<path d="M ${x + 120} ${y + 150} l 22 12 l -22 12 Z" fill="${SNOW}" stroke="${INK}" stroke-width="3"/>`;
-    }
+    for (let i = 0; i < 12; i++) s += takeTile(i, 22 + (i % 3) * 176, 100 + Math.floor(i / 3) * 196);
     return s;
   }
   // a phone held sideways (Deuce films in landscape : the joke)
@@ -577,20 +603,41 @@
       over: () => `<g transform="translate(860 1520) scale(1.5) translate(-860 -1520)">${dog(860, 1520)}</g>` + clap(820, 330, 12, 5) + sub(1, 'narrateur', 'Prise douze : douze sachets.') },
     { t: '0:30', cap: 'M. Reyes tend la main : un sachet de plus', set: STREET, chars: [LI(330, 1846, 1200, 'panique', BAGS(6)), CH('reyes', 1, 820, 1856, 1250, 'frime', bigBag(590, 1150, 8, 1.5))],
       over: () => sub(1, 'narrateur', 'Et toujours pas de clip.') },
-    { t: '0:35', cap: 'Big Mo passe, avec ses deux suiveurs', set: STREET, chars: [CH('deuce', 2, 360, 1700, 1050, 'frime', '', { sil: true }), CH('bigmo', 2, 860, 1700, 1080, 'frime', '', { sil: true }), CH('bigmo', 1, 620, 1846, 1350, 'frime'), LI(170, 1846, 1100, 'panique', BAGS(2))],
-      over: () => tag('BIG MO, LA STAR DU QUARTIER', 520, 400, -3) + sub(1, 'bigmo', 'Encore toi, le petit ? Moi, j\'ai posté trois clips ce matin.') },
-    { t: '0:43', cap: "Liam s'effondre sur le trottoir. Maya arrive et dit bonjour", set: STREET, zoom: [540, 1150, 1.25], chars: [CH('maya', 1, 880, 1900, 1420, 'frime', P.phone(580, 1130))],
-      over: () => tag('MAYA, LA VOISINE', 640, 520, 3) + lying('panique', 420, 1610, 0.55) + bigBag(470, 1610, -18, 1.25) + bigBag(690, 1650, 14, 1.3) + bigBag(590, 1560, -6, 1.25) + sub(1, 'maya', 'Salut T-Crazy. Big Mo, il fait pas trois tournages : il filme ses prises, et Stalak fait le montage.') },
-    { t: '0:50', cap: 'Liam, relevé, sort son téléphone : Stalak, dessiné, ses douze prises et son son, puis le clip', set: STREET, chars: [LI(540, 1846, 1250, 'fierte', P.phone(606, 760), { pose: { raise: 'r' } })],
+    // v3 (owner, 16/11 : « l'entrée de Big Mo et Maya sont trop rapides… il pourrait arriver en marchant, Liam se dit
+    // "wouah c'est Big Mo", ils échangent, à la fin Big Mo part, ensuite Liam est dégoûté, et là Maya arrive ») :
+    // Big Mo walks in, his followers behind him ; Liam recognises him ; they talk ; Big Mo walks away, passing behind Liam
+    { t: '0:35', cap: 'Big Mo arrive en marchant avec ses deux suiveurs : Liam le reconnaît', set: STREET, chars: [
+      CH('deuce', 2, 420, 1700, 1050, 'frime', '', { sil: true, k: { walk: [[0.35, 900, 0], [2.65, 0, 0]] } }),
+      CH('bigmo', 2, 900, 1700, 1080, 'frime', '', { sil: true, k: { walk: [[0.5, 700, 0], [2.8, 0, 0]] } }),
+      CH('bigmo', 1, 660, 1846, 1350, 'frime', '', { k: { walk: [[0, 760, 0], [2.3, 0, 0]] } }),
+      // Liam waits, cool, then lights up when he sees who it is
+      LI(230, 1846, 1100, 'frime', BAGS(2), { k: { out: 1.05 } }), LI(230, 1846, 1100, 'fierte', BAGS(2), { k: { in: 1.05 } })],
+      over: () => tag('BIG MO, LA STAR DU QUARTIER', 560, 400, -3).replace('class="tag"', 'class="tag" data-dl="2.3"') + sub(1, 'liam', 'Wouah, c\'est Big Mo, le rappeur le plus connu de chez moi !') },
+    { t: '0:41', cap: 'Big Mo, arrêté devant Liam : ils échangent, puis il repart en marchant', set: STREET, chars: [
+      CH('deuce', 2, 420, 1700, 1050, 'frime', '', { sil: true, k: { walk: [[-2.0, 0, 0], [0, -1150, 0]] } }),
+      CH('bigmo', 2, 900, 1700, 1080, 'frime', '', { sil: true, k: { walk: [[-1.8, 0, 0], [0, -1350, 0]] } }),
+      CH('bigmo', 1, 660, 1846, 1350, 'frime', '', { k: { walk: [[-2.2, 0, 0], [-0.15, -1020, -20]] } }),
+      LI(230, 1846, 1100, 'panique', BAGS(2))],
+      over: () => sub(1, 'bigmo', 'Encore toi, le petit ? Moi, j\'ai posté trois clips ce matin.') },
+    // Liam alone, disgusted : how does Big Mo do three clips ? He collapses (falls out of the picture), cut to him lying
+    { t: '0:48', cap: 'Liam, seul, dégoûté, s\'effondre', set: STREET, zoom: [420, 1250, 1.2], chars: [
+      LI(470, 1846, 1250, 'colere', BAGS(2), { k: { tilt: [[-0.8, 0], [-0.3, -26]], pv: [470, 1846], path: [[-0.8, 0, 0], [-0.3, -60, 820]] } })],
+      over: () => sub(1, 'liam', 'Trois clips en un matin… Mais comment il fait ?') },
+    { t: '0:52', cap: "Liam par terre au milieu de ses sachets. Maya arrive en marchant et dit bonjour", set: STREET, zoom: [540, 1150, 1.25], chars: [
+      CH('maya', 1, 880, 1900, 1420, 'frime', P.phone(580, 1130), { k: { walk: [[0.3, 720, 0], [2.4, 0, 0]] } })],
+      over: () => tag('MAYA, LA VOISINE', 640, 520, 3).replace('class="tag"', 'class="tag" data-dl="2.45"') + lying('panique', 420, 1610, 0.55) + bigBag(470, 1610, -18, 1.25) + bigBag(690, 1650, 14, 1.3) + bigBag(590, 1560, -6, 1.25) + sub(1, 'maya', 'Salut T-Crazy. Big Mo, il fait pas trois tournages : il filme ses prises, et Stalak fait le montage.') },
+    { t: '1:00', cap: 'Liam, relevé, sort son téléphone : Stalak, dessiné, ses douze prises et son son, puis le clip', set: STREET, chars: [LI(540, 1846, 1250, 'fierte', P.phone(606, 760), { pose: { raise: 'r' } })],
       over: () => phoneBig(stalakApp({ takes: [['rue', 'fierte'], ['rue', 'frime'], ['rue', 'colere'], ['rue', 'fierte']], count: 12, ti: 2.9, sticker: 'cool', dl: 3.4 }), 0.92, { dl: 0.5 }) + sub(1, 'narrateur', 'Liam met son son et ses douze prises dans Stalak. Stalak coupe sur le rythme et garde la synchro des lèvres.') },
-    { t: '0:58', cap: 'M. Reyes regarde le clip par-dessus son épaule', set: STREET, chars: [CH('reyes', 1, 640, 1790, 1300, 'frime'), LI(470, 1880, 1200, 'fierte', P.phoneBack(606, 740), { pose: { raise: 'r' } })],
+    { t: '1:07', cap: 'M. Reyes regarde le clip par-dessus son épaule', set: STREET, chars: [CH('reyes', 1, 640, 1790, 1300, 'frime'), LI(470, 1880, 1200, 'fierte', P.phoneBack(606, 740), { pose: { raise: 'r' } })],
       over: () => sub(1, 'reyes', 'Pas mal. Pour le prochain clip, j\'ai une promo sur les glaçons.') },
-    { t: '1:02', cap: 'Liam parle à celui qui regarde', set: STREET, zoom: [540, 1150, 1.3], chars: [LI(540, 2730, 2250, 'frime', P.phone(606, 760), { pose: { raise: 'r' } })],
+    { t: '1:11', cap: 'Liam parle à celui qui regarde', set: STREET, zoom: [540, 1150, 1.3], chars: [LI(540, 2730, 2250, 'frime', P.phone(606, 760), { pose: { raise: 'r' } })],
       over: () => sub(1, 'liam', 'Pas de manager, pas de budget ? T\'as un téléphone. Filme tes prises, Stalak fait le montage.') },
-    { t: '1:10', cap: 'La carte de fin', plain: true, over: () => endCard('IL VOULAIT UN CLIP COMME DANS GTA') },
-  ], "Version 2 (16/11). Sort le 20/11, après l'épisode GTA 6 : c'est l'épisode 4 à l'écran.");
+    { t: '1:19', cap: 'La carte de fin', plain: true, over: () => endCard('IL VOULAIT UN CLIP COMME DANS GTA') },
+  ], "Version 3 (16/11, 20 h) : Big Mo et Maya arrivent en marchant, lumières réalistes. Sort le 20/11, après l'épisode GTA 6 : c'est l'épisode 4 à l'écran.");
 
-  const SUNSET = ['rue', 1, 'jour'];
+  // v2 (16/11, 19 h 32 : the lights) : the evening is the street at sunset (lights.js), its light over everyone ;
+  // the morning stays the street by day
+  const SUNSET = ['rue', 1, 'jour'], EVE = ['rue', 1, 'coucher'];
   ep('ep5', 'IL VOULAIT UN CLIP COMME DANS GTA', 5, [
     { t: '0:00', cap: "L'accroche : M. Reyes, au centre, crie (le matin)", set: SUNSET, zoom: [700, 1100, 1.2], criY: 700, chars: [CH('reyes', 1, 540, 2560, 1900, 'colere')],
       over: () => bandeau(2, 'IL VOULAIT UN CLIP COMME DANS GTA', 5) + FRAME.cri('reyes', 'Rendez-moi ma plante !', 700) },
@@ -604,17 +651,18 @@
       over: () => scooter(420, 1198, 1700) + smoke(170, 1580) + P.plant(120, 1300) + sub(1, 'narrateur', 'Budget du clip : un scooter emprunté et une plante verte.') },
     { t: '0:26', cap: 'M. Reyes les a retrouvés : il crie', set: SUNSET, zoom: [700, 1100, 1.2], chars: [CH('reyes', 1, 640, 2600, 1900, 'colere')],
       over: () => tag('M. REYES, L\'ÉPICIER', 250, 1280, -4) + sub(1, 'reyes', 'Rendez-moi ma plante !') },
-    { t: '0:30', cap: 'Carton « Le soir » : Liam sort son téléphone et fait défiler ses douze prises', set: SUNSET, setOver: sunset, chars: [LI(540, 1846, 1250, 'colere', P.phone(606, 760), { pose: { raise: 'r' } })],
+    { t: '0:30', cap: 'Carton « Le soir » : Liam sort son téléphone et fait défiler ses douze prises', set: EVE, chars: [LI(540, 1846, 1250, 'colere', P.phone(606, 760), { pose: { raise: 'r' } })],
       over: () => phoneBig(gallery12(), 0.92, { dl: 1.1 }) + carton('LE SOIR', 200) + sub(1, 'liam', 'C\'est nul. On dirait pas du tout un jeu vidéo.') },
-    { t: '0:38', cap: 'Maya arrive et dit bonjour', set: SUNSET, setOver: sunset, chars: [CH('maya', 1, 760, 1846, 1180, 'frime', P.phone(580, 1130)), LI(320, 1846, 1200, 'colere')],
-      over: () => tag('MAYA, LA VOISINE', 760, 560, 4) + sub(1, 'maya', 'Salut les garçons ! Les gens veulent pas un jeu vidéo. Ils veulent te voir rapper ton son. Mets tes prises dans Stalak.') },
-    { t: '0:46', cap: 'Liam ouvre Stalak sur son téléphone : le son et les douze prises entrent', set: SUNSET, setOver: sunset, chars: [LI(540, 1846, 1250, 'frime', P.phone(606, 760), { pose: { raise: 'r' } })],
+    // v2 (owner, 16/11, on « Le manager », for the whole series : no one pops in too fast) : Maya walks in, then speaks
+    { t: '0:38', cap: 'Maya arrive en marchant et dit bonjour', set: EVE, chars: [CH('maya', 1, 760, 1846, 1180, 'frime', P.phone(580, 1130), { k: { walk: [[0.2, 640, 0], [2.3, 0, 0]] } }), LI(320, 1846, 1200, 'colere')],
+      over: () => tag('MAYA, LA VOISINE', 760, 560, 4).replace('class="tag"', 'class="tag" data-dl="2.35"') + sub(1, 'maya', 'Salut les garçons ! Les gens veulent pas un jeu vidéo. Ils veulent te voir rapper ton son. Mets tes prises dans Stalak.') },
+    { t: '0:46', cap: 'Liam ouvre Stalak sur son téléphone : le son et les douze prises entrent', set: EVE, chars: [LI(540, 1846, 1250, 'frime', P.phone(606, 760), { pose: { raise: 'r' } })],
       over: () => phoneBig(stalakApp({ takes: [['coucher', 'fierte'], ['rue', 'frime'], ['coucher', 'colere'], ['rue', 'fierte']], count: 12, ti: -1 }), 0.92, { dl: 0.45 }) + sub(1, 'narrateur', 'Liam met son son et ses douze prises dans Stalak.') },
-    { t: '0:52', cap: 'Le clip : le scooter, la plante, coupés sur le temps', set: SUNSET, setOver: sunset, shade: true,
+    { t: '0:52', cap: 'Le clip : le scooter, la plante, coupés sur le temps', set: EVE, shade: true,
       over: () => phoneBig(stalakApp({ takes: [['coucher', 'fierte'], ['rue', 'frime'], ['coucher', 'colere'], ['rue', 'fierte']], count: 12, ti: 0, sticker: 'cool', dl: 0.6 }), 0.92) + sub(1, 'narrateur', 'Stalak coupe sur le rythme et garde la synchro des lèvres.') },
-    { t: '0:58', cap: 'Deuce, très fier', set: SUNSET, setOver: sunset, chars: [LI(320, 1846, 1200, 'colere'), CH('deuce', 1, 780, 1846, 1230, 'fierte')],
+    { t: '0:58', cap: 'Deuce, très fier', set: EVE, chars: [LI(320, 1846, 1200, 'colere'), CH('deuce', 1, 780, 1846, 1230, 'fierte')],
       over: () => sub(1, 'deuce', 'Je l\'avais dit : façon GTA.') },
-    { t: '1:02', cap: 'Liam parle à celui qui regarde', set: SUNSET, setOver: sunset, zoom: [540, 1150, 1.3], chars: [LI(540, 2730, 2250, 'frime', P.phone(606, 760), { pose: { raise: 'r' } })],
+    { t: '1:02', cap: 'Liam parle à celui qui regarde', set: EVE, zoom: [540, 1150, 1.3], chars: [LI(540, 2730, 2250, 'frime', P.phone(606, 760), { pose: { raise: 'r' } })],
       over: () => sub(1, 'liam', 'Pas besoin d\'un budget de jeu vidéo. Ton son, tes prises au téléphone, et Stalak coupe sur le rythme.') },
     { t: '1:10', cap: 'La carte de fin', plain: true, over: () => endCard('LE CLASH AU TERRAIN') },
   ], "Version 2 (16/11). Sort le 21/11. GTA 6 : le nom seulement, jamais le jeu. À faire vérifier par Juridique.");
@@ -625,8 +673,7 @@
   FRAMES['thumb-ep2'] = thumb(ROOMN0, [LI(540, 3150, 2450, 'colere+cerne', HP)], 'IL A PASSÉ LA NUIT SUR SA VIDÉO DE PROMO', 2, `<rect width="1080" height="1920" fill="#57adff" opacity="0.10"/>`);
   FRAMES['thumb-ep4'] = thumb(ROOM, [LI(320, 3080, 2330, 'frime', HP), CH('deuce', 1, 790, 2900, 2350, 'panique')], GTA, 3);
   FRAMES['thumb-ep3'] = thumb(STREET, [CH('deuce', 1, 800, 2860, 2250, 'frime'), LI(330, 3000, 2330, 'colere', BAGS(4))], 'SON POTE S\'EST NOMMÉ SON MANAGER', 4);
-  FRAMES['thumb-ep5'] = thumb(SUNSET, [CH('deuce', 1, 800, 2900, 2300, 'fierte', P.plant(600, 1080)), LI(330, 3000, 2330, 'panique')], 'IL VOULAIT UN CLIP COMME DANS GTA', 5);
-  FRAMES['thumb-ep5'].setOver = sunset;
+  FRAMES['thumb-ep5'] = thumb(EVE, [CH('deuce', 1, 800, 2900, 2300, 'fierte', P.plant(600, 1080)), LI(330, 3000, 2330, 'panique')], 'IL VOULAIT UN CLIP COMME DANS GTA', 5);
 
   window.STORYBOARD = { BOARDS, P, band, hp, headAt, phoneBig, laptopBig, take, editor, clockBig, postScreen, winPhone, gallery, stalakApp, takeScene, liamBust, carton, knock, notif, comment, tag, endCard };
 })();
