@@ -25,12 +25,12 @@
 7. **Les blagues viennent des clichés du genre** (drill, love song, son sur l'ex…) et des artistes que tout le monde connaît dans ce genre.
 8. **Ton sarcastique et pince-sans-rire** dans les textes. Le bonhomme reste un **loser attachant** : on a envie qu'il réussisse.
    [Référence : le juge ne crie jamais, il répond par 2 ou 3 mots secs (« Toujours non. », « … Okay. ») ; c'est le décalage avec le bonhomme qui fait rire.]
-9. **Niveau 5 = le « waouh »** : un vrai snippet Stalak, joli, **plusieurs secondes** à l'écran ; le juge dit enfin oui.
+9. **Niveau 5 = le « waouh »** : un vrai snippet Stalak, joli, **plusieurs secondes** à l'écran ; le juge dit enfin oui. (Depuis le 16/11, 22 h 12 : sans musique, avec une voix off qui explique Stalak.)
    [Référence : le niveau 5 est le plus long (7,5 s) et il finit mieux qu'attendu (le refus se retourne en oui). Chez nous : 10 à 12 s, dont 5 s de snippet plein écran.]
 10. **Promo de 2 ou 3 secondes** (« Le niveau 5, tu le fais sur stalak.app »), puis **une question pour faire commenter**.
     [Référence : 4,4 s de pub, mais l'appli était déjà annoncée par la « quête » du niveau 5. Chez nous le niveau 5 montre déjà Stalak en action : 2,5 s de promo suffisent, puis 2 s de question (exemples : « Tu t'es arrêté à quel niveau, toi ? », « On fait quel genre la prochaine fois ? »). La question reste à l'écran jusqu'à la fin pour que la vidéo boucle.]
 
-**Musique (décision du 16/11, 21 h 42)** : aucune musique pendant la vidéo, **sauf le son du snippet du niveau 5** (5 s), un son dont on a les droits (un son du propriétaire ou d'ALASKA, du genre de la vidéo).
+**Musique (décision du 16/11, 22 h 12, remplace celle de 21 h 42)** : **aucune musique, même au niveau 5.** Une vraie voix de rap (celle du propriétaire) n'aurait pas collé avec la voix Flora du personnage. Au niveau 5, une **voix off** explique comment marche Stalak pendant qu'on voit le rappeur dans l'appli : « Niveau 5. Il filme trois prises sur son son. » / « Stalak les coupe sur le rythme… » / « … et ses lèvres restent synchro. » Ces 3 phrases sont les mêmes dans toutes les vidéos : la voix off est générée une seule fois pour tout le compte. Le rythme se voit : repère ♪ qui pulse sur chaque temps, paroles écrites sous le snippet, lèvres qui les suivent.
 
 **Technique** : tout ce qui est dit est aussi écrit à l'écran ; la vidéo marche sans le son ; rien d'important dans les zones cachées par TikTok ; planche contact (skill `planche-contact`) avant chaque envoi. Pas de concurrent nommé ; seulement des sons dont on a les droits (on cite un artiste, on ne passe pas sa musique).
 
@@ -190,7 +190,8 @@ Le niveau 4 ne nomme jamais une appli : on dit « une appli de montage classique
 ### Le son (décisions du propriétaire du 16/11)
 
 - **Voix Flora** (Gemini), en plus des bulles. Une voix pour le rappeur (la même dans toutes les vidéos), une ou deux pour les cibles. Générées **une seule fois** après validation et feu vert. Environ 6 à 8 répliques par vidéo (une génération par réplique), soit **environ 0,10 $ par vidéo** (0,013 $ la génération au 15/11).
-- **Pas de musique**, comme la référence, **sauf le son du snippet au niveau 5** (5 s, décision du 16/11, 21 h 42) : c'est la seule musique de la vidéo, et c'est là qu'on entend que Stalak coupe sur le rythme. Un son du propriétaire ou d'ALASKA, du genre de la vidéo.
+- **Aucune musique**, comme la référence, même au niveau 5 (décision du 16/11, 22 h 12).
+- **Voix off au niveau 5** : 3 phrases identiques dans toutes les vidéos, générées une seule fois pour tout le compte (voix à choisir parmi 3 propositions au moment de la fabrication).
 - **Bruitages** : baffe, « bonk », sifflement de chute + « clang », poêle, « ding » à chaque case qui change, son de niveau gagné au MAX. Bruitages libres de droits (Pixabay ou faits en code).
 - Pas de générique, pas de jingle : la vidéo commence directement par le niveau 1.
 
@@ -205,7 +206,7 @@ Le niveau 4 ne nomme jamais une appli : on dit « une appli de montage classique
 
 - Vrais artistes : le nom dans les blagues, oui ; leur visage dessiné, leur voix imitée ou une fausse déclaration, non.
 - Pas de concurrent nommé : au niveau 4, « une appli de montage classique », et aucune interface reconnaissable.
-- Pas de musique, sauf le son du snippet du niveau 5 (un son dont on a les droits) ; bruitages libres de droits.
+- Aucune musique ; bruitages libres de droits.
 - Les coups restent du dessin animé.
 - Aucun chiffre inventé (pas de « 2 millions de vues » ; la jauge HYPE n'a pas de chiffre).
 - Chaque vidéo a sa miniature, dessinée dans le style de la série.
@@ -229,7 +230,7 @@ Le niveau 4 ne nomme jamais une appli : on dit « une appli de montage classique
 
 - Durée : entre 30 et 40 s.
 - Voix : Flora.
-- Musique : aucune, sauf le son du snippet du niveau 5 (précisé à 21 h 42).
+- Musique : aucune, même au niveau 5 ; une voix off explique Stalak au niveau 5 (22 h 12).
 - Juge : le Videur du « Pour toi » (21 h 42).
 - Style : D, comme la vidéo de référence (choisi dans l'onglet Univers, 22 h).
 - Scripts : drill, triste et motivation validés ; love et ex réécrits avec ses répliques (22 h 10).
@@ -238,6 +239,6 @@ Le niveau 4 ne nomme jamais une appli : on dit « une appli de montage classique
 
 ## 4. Ce qu'il reste à faire
 
-1. Drill, triste, motivation : visuels validés (22 h 08). Love et ex : scripts validés, accessoires déposés (`python3 tools/levels/render_visuels.py DOSSIER`), à valider.
-2. **Le son des snippets** : un extrait par genre avec **paroles** (le rappeur bonhomme rappe en playback dessus, les lèvres suivent les mots), un fichier audio suffit (mp3, wav ou m4a), sans vidéo ; le propriétaire indique le passage (10 à 15 s, on en garde 5).
+1. Images des 5 pilotes validées (plateau commun + accessoires, `python3 tools/levels/render_visuels.py DOSSIER`).
+2. Les 5 scripts en version 3 (niveau 5 avec voix off) sont à revalider ; les images ne changent pas.
 3. Feu vert (`lots/levels-2026-11-16`), puis voix et vidéos, une par une, planche contact avant chaque envoi.

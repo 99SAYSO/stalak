@@ -30,6 +30,6 @@ Aucun changement visible sur le site : pas de maquette nécessaire (règle 9).
 
 ## Reste au propriétaire
 1. Choisir le style, sans doute D (Univers → « LEVELS · Le bonhomme bâton et son décor »).
-2. Valider les accessoires de love et ex (statut `visuels`) ; drill, triste, motivation sont en `visuels_ok`.
-3. Envoyer un son avec paroles par genre (drill, love, triste, sur l'ex, motivation), fichier audio seul, pour le snippet du niveau 5.
+2. Revalider les 5 scripts en version 3 (seul le niveau 5 change : voix off, aucune musique) ; les images des 5 pilotes sont déjà validées.
+3. Choisir la voix off parmi 3 propositions (au moment de la fabrication).
 4. Donner le feu vert (`lots/levels-2026-11-16`) une fois scripts et visuels validés.
