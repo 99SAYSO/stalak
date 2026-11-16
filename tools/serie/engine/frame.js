@@ -9,29 +9,53 @@
   const WHO = { liam: ['LIAM', BLUE], nadia: ['NADIA', '#7d55c7'], deuce: ['DEUCE', '#23845a'], maya: ['MAYA', '#c94f84'], bigmo: ['BIG MO', '#c98a06'], reyes: ['M. REYES', '#c63d33'], narrateur: ['NARRATEUR', INK] };
   const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
   const cv = document.createElement('canvas').getContext('2d');
-  // split on plain spaces only : a non-breaking space keeps « ! » and « ? » with their word
-  function wrap(text, font, maxW) {
+  // split on plain spaces only : a non-breaking space keeps « ! » and « ? » with their word. French punctuation is glued to its
+  // word here too (« ÉPISODE : », « fou ! »), and a « \n » in the text is a forced cut (« PROCHAIN ÉPISODE :\n » on its own line)
+  const glue = (t) => String(t).replace(/ ([:;!?»])/g, ' $1').replace(/« /g, '« ');
+  function wrap1(text, font, maxW) {
     cv.font = font;
     const out = [];
     let cur = '';
     text.split(' ').filter(Boolean).forEach(w => { const t = cur ? cur + ' ' + w : w; if (!cur || cv.measureText(t).width <= maxW) cur = t; else { out.push(cur); cur = w; } });
     return cur ? out.concat(cur) : out;
   }
-  // the subtitle cards (16/11, contact sheets) : never one word alone on the last line (« GTA » / « 6. », « ton » / « son. ») :
-  // the last two lines are cut again where they are most even, both still inside the card
+  function wrap(text, font, maxW) { return glue(text).split('\n').flatMap(p => wrap1(p, font, maxW)); }
+  // the subtitle cards and the titles (16/11, contact sheets) : never one word alone on a line (« GTA » / « 6. », « … EN PLEINE / PRISE »,
+  // « SON POTE S'EST / NOMMÉ / SON MANAGER ») : the same number of lines as the plain wrap, all inside the width, the cuts chosen
+  // so that the lines are as even as possible, and never after a small word (article, possessive, preposition, subject pronoun :
+  // « … LA NUIT SUR / SA VIDÉO » → « … LA NUIT / SUR SA VIDÉO »)
+  const SMALL = /^(de|du|des|le|la|les|un|une|à|et|ou|ton|ta|tes|son|sa|ses|mon|ma|mes|ce|cette|en|au|aux|sur|dans|pour|par|avec|sans|chez|vers|je|tu|il|elle|on|ils|qui|que|ne|se)$/i;
+  const evenCache = new Map();
   function wrapEven(text, font, maxW) {
-    const L = wrap(text, font, maxW);
-    if (L.length < 2) return L;
-    cv.font = font;
-    const words = (L[L.length - 2] + ' ' + L[L.length - 1]).split(' ').filter(Boolean);
-    let best = null;
-    for (let i = 1; i < words.length; i++) {
-      const a = words.slice(0, i).join(' '), b = words.slice(i).join(' '), wa = cv.measureText(a).width, wb = cv.measureText(b).width;
-      if (wa > maxW || wb > maxW) continue;
-      const cost = Math.abs(wa - wb) + (/^(de|du|des|le|la|les|un|une|à|et|ou|ton|ta|tes|son|sa|ses|mon|ma|mes|ce|cette|en|au|aux)$/i.test(words[i - 1]) ? maxW * 0.3 : 0);
-      if (!best || cost < best[0]) best = [cost, a, b];
+    const key = font + '|' + maxW + '|' + text;
+    if (!evenCache.has(key)) evenCache.set(key, glue(text).split('\n').flatMap(p => even1(p, font, maxW)));
+    return evenCache.get(key).slice();
+  }
+  function even1(text, font, maxW) {
+    const L = wrap1(text, font, maxW), words = text.split(' ').filter(Boolean), n = L.length, m = words.length;
+    let res = L;
+    if (n >= 2 && m <= 24) {
+      cv.font = font;
+      const W = [];   // W[a][b] : the width of the words a … b-1 on one line
+      for (let a = 0; a < m; a++) { W[a] = []; for (let b = a + 1; b <= m; b++) W[a][b] = cv.measureText(words.slice(a, b).join(' ')).width; }
+      let best = null;
+      const cuts = [];
+      (function place(start, k) {   // k lines still to place, from the word « start »
+        if (k === 1) {
+          const lines = cuts.concat([[start, m]]), ws = lines.map(([a, b]) => W[a][b]);
+          if (ws.some(w => w > maxW)) return;
+          const mean = ws.reduce((s, w) => s + w, 0) / n;
+          let cost = Math.sqrt(ws.reduce((s, w) => s + (w - mean) * (w - mean), 0) / n);
+          // (a cut after a small word costs ; a cut after a full stop or a comma helps : « Le 19 novembre, / jour de la sortie… »)
+          lines.slice(0, -1).forEach(([, b]) => { if (SMALL.test(words[b - 1])) cost += maxW * 0.15; else if (/[.,;:!?…]$/.test(words[b - 1])) cost -= maxW * 0.08; });
+          if (!best || cost < best[0] - 0.01) best = [cost, lines];
+          return;
+        }
+        for (let e = start + 1; e <= m - (k - 1); e++) { cuts.push([start, e]); place(e, k - 1); cuts.pop(); }
+      })(0, n);
+      if (best) res = best[1].map(([a, b]) => words.slice(a, b).join(' '));
     }
-    return best ? L.slice(0, -2).concat([best[1], best[2]]) : L;
+    return res;
   }
   const width = (text, font) => { cv.font = font; return cv.measureText(text).width; };
   const T = (x, y, t, size, fill, o = {}) => `<text x="${x}" y="${y}" text-anchor="${o.anchor || 'middle'}" font-family="${o.font || 'Lilita One'}"${o.weight ? ` font-weight="${o.weight}"` : ''} font-size="${size}" fill="${fill}"${o.stroke ? ` stroke="${o.stroke}" stroke-width="${o.sw}" paint-order="stroke" stroke-linejoin="round"` : ''}${o.ls ? ` letter-spacing="${o.ls}"` : ''}>${esc(t)}</text>`;
@@ -48,11 +72,13 @@
   };
 
   // ---------------- the banner : episode number and title, top of the screen ----------------
+  // (16/11, contact sheets : the titles are cut like the subtitles, never one word alone on the last line :
+  //  « SA MÈRE A CRIÉ / EN PLEINE PRISE », not « … EN PLEINE / PRISE » ; same number of lines, so the band keeps its height)
   function bandeau(style, title, ep) { return `<g class="bandeau">${bandeau0(style, title, ep)}</g>`; }
   function bandeau0(style, title, ep) {
     let s = '';
     if (style === 1) { // « La carte glacée » : the white Stalak card, thick ink outline, hard shadow, icicles under it
-      const font = '66px "Lilita One"', lines = wrap(title, font, 820), x = 70, y = 196, w = 940, h = 64 + lines.length * 72;
+      const font = '66px "Lilita One"', lines = wrapEven(title, font, 820), x = 70, y = 196, w = 940, h = 64 + lines.length * 72;
       s += `<rect x="${x + 10}" y="${y + 12}" width="${w}" height="${h}" rx="28" fill="${INK}"/>`;
       [[0.1, 16, 58], [0.19, 12, 34], [0.47, 18, 70], [0.56, 11, 30], [0.79, 15, 52], [0.9, 12, 36]].forEach(([k, iw, L]) => { s += icicle(x + w * k, y + h, iw, L); });
       s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="28" fill="${SNOW}" stroke="${INK}" stroke-width="8"/>`;
@@ -61,7 +87,7 @@
     }
     if (style === 2) { // « La bande bleue » : a full-width blue band, a little tilted, snow on its top edge
       // 16/11 (owner) : the accents of the title (CRIÉ, MÈRE) must never touch the « ÉPISODE n » line above them
-      const font = '74px "Lilita One"', lines = wrap(title, font, ep !== '' && ep != null ? 900 : 740), y = 206, top = (ep !== '' && ep != null) ? 152 : 136, h = top - 40 + lines.length * 80; // the end card's band : narrower, clear of the buttons on the right edge
+      const font = '74px "Lilita One"', lines = wrapEven(title, font, ep !== '' && ep != null ? 900 : 740), y = 206, top = (ep !== '' && ep != null) ? 152 : 136, h = top - 40 + lines.length * 80; // the end card's band : narrower, clear of the buttons on the right edge
       s += `<g transform="rotate(-2.5 540 ${y + h / 2})">`;
       s += `<rect x="-60" y="${y + 12}" width="1200" height="${h}" fill="${INK}"/><rect x="-60" y="${y}" width="1200" height="${h}" fill="${BLUE}" stroke="${INK}" stroke-width="10"/>`;
       s += snowCap(-60, 1140, y, 22);
@@ -71,7 +97,7 @@
       s += '</g>';
     }
     if (style === 3) { // « L'étiquette glace » : an ice ticket with notches, the episode in a night-blue stub, snow on top
-      const font = '62px "Lilita One"', lines = wrap(title, font, 640), x = 80, y = 200, w = 920, h = 70 + lines.length * 68, sx = x + 170;
+      const font = '62px "Lilita One"', lines = wrapEven(title, font, 640), x = 80, y = 200, w = 920, h = 70 + lines.length * 68, sx = x + 170;
       s += `<g transform="rotate(1.5 540 ${y + h / 2})">`;
       const tk = (dx, dy) => `M ${x + dx} ${y + dy} L ${x + w + dx} ${y + dy} L ${x + w + dx} ${y + h / 2 - 24 + dy} A 24 24 0 0 0 ${x + w + dx} ${y + h / 2 + 24 + dy} L ${x + w + dx} ${y + h + dy} L ${x + dx} ${y + h + dy} L ${x + dx} ${y + h / 2 + 24 + dy} A 24 24 0 0 0 ${x + dx} ${y + h / 2 - 24 + dy} Z`;
       s += `<path d="${tk(9, 11)}" fill="${INK}"/><path d="${tk(0, 0)}" fill="${ICE}" stroke="${INK}" stroke-width="7" stroke-linejoin="round"/>`;

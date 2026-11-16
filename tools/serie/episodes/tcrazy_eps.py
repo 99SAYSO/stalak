@@ -47,6 +47,7 @@ TIMES = {
     'ep4': [0, 3, 9, 16, 22, 26, 32, 37, 47, 51, 58, 62, 70],
     'ep3': [0, 3, 10, 18, 25, 28, 30, 35, 41, 48, 52, 60, 67, 71, 79],
     'ep5': [0, 3, 10, 15, 18, 26, 30, 38, 46, 52, 58, 62, 70],
+    'ep6': [0, 2, 6, 11, 17, 21, 24, 27, 33, 38, 42, 48, 54, 58, 66, 71, 79],
 }
 TARGET = 65.0  # seconds : the rule says 65 s at least. The pauses added to get there are small (tcrazy.py plan) : the owner
 # does not want blanks (16/11, episode 2 : « il faut cut à ce moment la séquence, il y a un blanc trop long sinon »), so the
@@ -147,4 +148,29 @@ EPISODES = {
         ('ep5-13', [], dict(hold=3.4, sfx=[('whoosh-short.mp3', 0.75, 0.25)])),
     ], direction={1: 'shouting, running after someone', 2: 'ironic', 3: 'dreamy, eyes lost in the distance', 4: 'flat, unimpressed', 5: 'proud',
                   6: 'ironic', 8: 'disappointed', 9: 'friendly, then convincing', 11: 'very proud', 12: 'dry, ironic', 13: CTA}),
+    # « L'appli a fermé » (the owner's idea of 16/11 ; script v2 and storyboard validated on 16/11) : Triller named, never its logo.
+    # The snippet plays then freezes at the end of the narrator's line ; the camera counts 3, 2, 1 before the narrator ; Maya walks
+    # into take 2 while Liam raps ; the clapperboard of take 3 ; he posts the clip (« Publier »), the likes, then the comment.
+    'ep6': dict(card='tcrazy-ep6', same={}, shots=[
+        ('ep6-01', [1], dict(music='plan', sfx=[('whoosh-short.mp3', 0.0, 0.3)])),
+        ('ep6-02', [2], {}),
+        ('ep6-03', [3], {}),
+        ('ep6-04', [4], dict(lead=0.2, after=0.8, fixed=True, sfx=[('error.mp3', -0.8, 0.16)])),
+        ('ep6-05', [5], dict(music='galere')),
+        ('ep6-06', [6], {}),
+        ('ep6-07', [7], {}),
+        ('ep6-08', [8, 9], dict(lead=0.3)),
+        ('ep6-09', [10, 11], {}),
+        ('ep6-10', [12], dict(music='hustle', dip=True)),
+        ('ep6-11', [13], dict(lead=1.55, fixed=True, sfx=[('click.mp3', 0.05, 0.3), ('click.mp3', 0.5, 0.3), ('click.mp3', 0.95, 0.3), ('ping.mp3', 1.35, 0.3)])),
+        ('ep6-12', [14], dict(lead=2.15, after=0.2, fixed=True, sfx=[('steps.wav', 0.2, 0.25)])),
+        ('ep6-13', [15], dict(lead=0.8, fixed=True, sfx=[('click.mp3', 0.1, 0.4)])),
+        ('ep6-14', [16, 17], dict(music='victoire', lead=0.1, sfx=[('pop.mp3', 2.7, 0.45)])),
+        ('ep6-15', [18], dict(lead=3.35, fixed=True, sfx=[('click.mp3', 0.8, 0.35), ('ping.mp3', 1.05, 0.3), ('notification.mp3', 1.6, 0.4), ('notification.mp3', 2.2, 0.3), ('ping.mp3', 2.9, 0.3)])),
+        ('ep6-16', [19], {}),
+        ('ep6-17', [], dict(hold=3.4, sfx=[('whoosh-short.mp3', 0.75, 0.25)])),
+    ], direction={1: 'shocked and outraged, shouting at his phone', 2: 'disappointed and sulking, a bit whiny', 5: 'worried, a bit lost',
+                  6: 'deadpan, teasing his friend', 7: 'calm and sure of herself', 8: 'curious, a bit suspicious', 9: 'calm, explaining simply, as if it were obvious',
+                  10: 'suspicious', 11: 'dry and amused', 12: 'like a film director, excited and loud', 14: 'excited, jumping into the shot',
+                  15: 'satisfied, like a film director wrapping a scene', 17: 'thrilled', 18: 'amazed and excited', 19: CTA}),
 }

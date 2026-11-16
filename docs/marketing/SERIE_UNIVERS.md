@@ -285,7 +285,7 @@ Les voix de Big Mo et de M. Reyes seront choisies quand un épisode validé les 
   - Les options d'un plan : `zoom`, `dim`, `shade`, `setOver`, `front`, `plain`.
   - Les options d'un personnage : `pose`, `clip`, `after`, `sil`, `flip`.
 - Les planches : `SERIE_WORK=<dossier> python3 tools/serie/univers.py storyboard ep1 [ep2 …]`. Elles sont déposées dans le champ `visuels` de la fiche de l'épisode.
-- Les écrans de téléphone montrent les vraies captures de Stalak (`site_src/aide/fr-*.jpg`) et les autocollants officiels de la mascotte.
+- L'écran de Stalak est dessiné par Claude (`stalakApp`), avec les vidéos de Liam et les autocollants officiels de la mascotte : plus aucune vraie capture depuis le 16/11 (remarques sur l'épisode 1).
 - Les autres écrans sont notre propre interface : jamais celle d'une vraie application.
 - GTA 6 : le nom seulement. Le jeu n'est jamais montré (une lumière d'écran sur le mur suffit).
 - Le numéro à l'écran et le « prochain épisode » suivent l'ordre de sortie (proposé le 16/11, à confirmer par le propriétaire).
@@ -310,6 +310,20 @@ Les voix de Big Mo et de M. Reyes seront choisies quand un épisode validé les 
   - un sous-titre trop court (« Pas mal. » restait 0,3 s) est recoupé avec son voisin en deux moitiés lisibles (relevé par la vérification HyperFrames) ;
   - sur une carte de sous-titre, jamais un mot seul sur la dernière ligne : les deux lignes sont recoupées là où elles sont le plus égales (`wrapEven`), et « GTA 6 » ne se coupe plus en deux (relevé sur les planches contact) ;
   - les bruits de pas (`steps.wav`) sont fabriqués par le pipeline ; un bruitage peut se placer depuis la fin d'un plan (temps négatif).
+- **Version 5 (16/11, 22 h)** :
+  - les titres du bandeau, les cartes de fin et les sous-titres sont coupés de la même façon (`wrapEven` dans `frame.js`) :
+    - autant de lignes qu'avec la coupe simple, donc la bande garde sa hauteur ;
+    - des lignes aussi égales que possible ;
+    - jamais une ligne finie par un petit mot (article, possessif, préposition, pronom) : « … LA NUIT SUR / SA VIDÉO » devient « … LA NUIT / SUR SA VIDÉO », « SA MÈRE A CRIÉ EN PLEINE / PRISE » devient « SA MÈRE A CRIÉ / EN PLEINE PRISE » ;
+    - de préférence une coupe après un point ou une virgule ;
+    - la ponctuation française reste collée à son mot (« ÉPISODE : », « fou ! ») et « PROCHAIN ÉPISODE : » a toujours sa propre ligne (`\n` dans le texte) ;
+  - les épisodes 1 et 2 étaient déjà rendus : seuls leur premier plan et leur carte de fin ont été rendus de nouveau, puis recollés dans la vidéo image par image (`splice.py` du dossier de travail, qui vérifie l'alignement sur les images d'à côté) ;
+  - `rap: 'liam'` sur un plan : Liam rappe sur la musique, la bouche sur le temps, même quand il ne parle pas (les prises au terrain de l'épisode 6). Dans un écran dessiné, sa bouche ne bouge qu'une fois la caméra lancée ou le clip monté ;
+  - les écrans de l'épisode 6 bougent :
+    - l'ancien snippet joue (la bouche sur le temps, la barre de lecture avance), puis se fige et devient gris à la fin de la phrase du narrateur ;
+    - la caméra de Stalak compte 3, 2, 1, puis le point rouge clignote et le bouton devient un carré rouge ;
+    - la publication montre « Publier », puis « Vidéo publiée ! », puis « a aimé ta vidéo » de Maya et de Deuce, puis le commentaire d'un inconnu ;
+  - les voix sont vérifiées par transcription automatique (faster-whisper, modèle « base », sur la machine). Une interjection ajoutée par la voix (« Oh oh ! » avant « On dirait un vrai clip ! ») est coupée dans l'enregistrement, pour que la voix dise exactement le texte écrit.
 
 ## Coûts
 
@@ -323,3 +337,4 @@ Les voix de Big Mo et de M. Reyes seront choisies quand un épisode validé les 
 - 16/11 : 0,039 $ pour les 3 voix du narrateur ; solde Flora environ 2,72 $.
 - 16/11, fabrication : épisode 1 v2 0,091 $, épisode GTA 6 0,169 $ puis 0,078 $, épisode 2 0,039 $ puis 0,026 $ (le « Non » de Maya, 2 essais), « Le manager » 0,143 $, « Le clip façon GTA » 0,156 $.
 - 16/11 à 20 h : « Le manager » v3, 2 répliques ajoutées pour Liam, 0,026 $. Les lumières et HyperFrames : 0 $.
+- 16/11 à 22 h : épisode 6, 19 répliques, 0,26 $ au plus (une voix bloquée par le filtre de Flora a été relancée une fois). Épisodes 1, 2 et GTA 6 refaits avec les lumières : 0 $.

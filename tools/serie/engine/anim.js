@@ -70,6 +70,8 @@
     const F = FRAME.FRAMES[S.frame] || {};
     R = {
       i, S, cam, ui, subs: svg.querySelector('#subs'), cri: svg.querySelector('#cri'), criY: F.criY || 660, lastSub: null,
+      // a character who raps on the music (EP6, the takes on the court : F.rap = 'liam', from F.rapFrom s) : the mouth on the beat
+      rap: F.rap || null, rapFrom: F.rapFrom || 0,
       // the Stalak screen we draw (storyboard.js stalakApp) : the import step, then the clip cut on the beat
       stk: [...svg.querySelectorAll('.stk')].map(el => ({
         ti: +el.dataset.ti, n: +el.dataset.n || 1, tks: [...el.querySelectorAll('.tk')], imp: el.querySelector('.imp'),
@@ -177,8 +179,10 @@
     const cx = 540, cy = S.focusY || 860;
     R.cam.setAttribute('transform', `translate(${cx} ${cy}) scale(${z.toFixed(4)}) translate(${-cx} ${-cy})`);
     // the characters : breathing, a little life while they talk, the mouth on the voice, the blinks
+    const bper = S.beat || 0.5, bpt = t - (S.beat0 != null ? S.beat0 : S.t0), onBeat = (((bpt / (bper / 2)) % 1) + 1) % 1 < 0.5;
     for (const C of R.chars) {
-      const talk = speaking(C.who, t), m = talk ? mouth(C.who, t) : 0;
+      const says = speaking(C.who, t), raps = !says && R.rap === C.who && lt >= R.rapFrom;
+      const talk = says || raps, m = says ? mouth(C.who, t) : raps ? (onBeat ? 1 : 0) : 0;
       const shut = blinking(t, C.seed), open = !shut && m > 0.32;
       show(C.fig, !shut && !open); show(C.figT, open); show(C.figB, shut);
       const br = Math.sin((t + C.seed * 0.37) * 2.6) * 0.006;
@@ -236,7 +240,8 @@
       const per = S.beat || 0.5, b0 = S.beat0 != null ? S.beat0 : S.t0, pt = t - b0;
       const j = ((Math.floor(pt / (2 * per)) % K.n) + K.n) % K.n, open = (((pt / (per / 2)) % 1) + 1) % 1 < 0.5;
       K.tks.forEach((el, q) => el.setAttribute('display', q === j ? 'inline' : 'none'));
-      K.raps.forEach(r => { if (r.fig) r.fig.setAttribute('display', open ? 'none' : 'inline'); if (r.figT) r.figT.setAttribute('display', open ? 'inline' : 'none'); });
+      // (the mouth moves once the clip plays : not while the takes go in, nor before the camera records)
+      K.raps.forEach(r => { const o = open && !importing; if (r.fig) r.fig.setAttribute('display', o ? 'none' : 'inline'); if (r.figT) r.figT.setAttribute('display', o ? 'inline' : 'none'); });
       if (K.ph) { const t0 = Math.max(0, K.ti), p = importing ? 0 : clamp((lt - t0) / Math.max(1, dur - t0), 0, 1); K.ph.setAttribute('transform', `translate(${(p * 480).toFixed(1)} 0)`); }
     }
     // the subtitle of the moment, with a small pop when it changes ; a shout : big words, one by one (owner, 16/11)

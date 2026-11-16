@@ -16,11 +16,11 @@ Le ton est celui d'un dessin animé américain inspiré de l'anime, avec le dél
 
 ## Le format
 
-- **Durée** : entre 1 min 05 et 1 min 20 (règle du 15/11), en vertical 9:16. **Pas de générique.** Depuis qu'on coupe tous les blancs (16/11), les épisodes déjà écrits durent entre 1 min 00 et 1 min 02 (l'épisode GTA 6 : 1 min 18). Pour remonter à 1 min 05, il faudrait ajouter une ou deux répliques par épisode : c'est au propriétaire de choisir (question posée le 16/11). Les arrivées en marchant (voir plus bas) rallongent naturellement : « Le manager » v3 dure 1 min 14, « Le clip façon GTA » v2 1 min 05.
+- **Durée** : entre 1 min 05 et 1 min 20 (règle du 15/11), en vertical 9:16. **Pas de générique.** Depuis qu'on coupe tous les blancs (16/11), les épisodes déjà écrits durent entre 1 min 00 et 1 min 02 (l'épisode GTA 6 : 1 min 18). Pour remonter à 1 min 05, il faudrait ajouter une ou deux répliques par épisode : c'est au propriétaire de choisir (question posée le 16/11). Les arrivées en marchant (voir plus bas) rallongent naturellement : « Le manager » v3 dure 1 min 14, « Le clip façon GTA » v2 1 min 05. L'épisode 6 tombe pile à 1 min 20 : ses temps d'action (le compte 3, 2, 1, la publication) sont resserrés pour ne pas dépasser.
 - **0:00, le cri** : un personnage crie une phrase liée à l'épisode, qui **choque ou fait tout de suite se poser une question** (16/11). Exemple : « Tu m'as enregistrée sans me le dire ?! ». La même phrase revient au milieu ou à la fin, et c'est là qu'on comprend la scène.
 - **Celui qui crie est au centre, en grand, bien visible dès la première image** (16/11, remarque sur l'épisode 1). Le texte peut passer sur lui, ce n'est pas grave. Rien ne cache son visage (les sachets de glaçons sont portés plus bas, par exemple).
 - **Seul le cri de l'accroche s'écrit en grand** (16/11) : pas de carte de sous-titre, mais les mots eux-mêmes, en blanc cerné de noir, qui apparaissent un par un pendant qu'ils sont criés, vers le milieu ou le haut de l'écran, de préférence sur 2 lignes. Le nom de celui qui crie est à côté. Toutes les autres répliques, même criées plus tard, sont en sous-titre normal.
-- **Le bandeau** : en haut, en majuscules, sur la bande bleue penchée avec de la neige dessus (version 4). Le titre est **une phrase qui donne le contexte**, pas un nom d'épisode (16/11). Par exemple « SA MÈRE A CRIÉ EN PLEINE PRISE », dans l'esprit de « IL A RENCONTRÉ UN GROS PROBLÈME » ou « ELLE EST TOUJOURS SUR SON TÉLÉPHONE ».
+- **Le bandeau** : en haut, en majuscules, sur la bande bleue penchée avec de la neige dessus (version 4). Le titre est **une phrase qui donne le contexte**, pas un nom d'épisode (16/11). Par exemple « SA MÈRE A CRIÉ EN PLEINE PRISE », dans l'esprit de « IL A RENCONTRÉ UN GROS PROBLÈME » ou « ELLE EST TOUJOURS SUR SON TÉLÉPHONE ». Le titre est coupé en lignes égales, jamais finies par un petit mot (« SA MÈRE A CRIÉ / EN PLEINE PRISE », pas « … EN PLEINE / PRISE ») ; même règle pour les sous-titres et la carte de fin, où « PROCHAIN ÉPISODE : » a sa propre ligne (16/11, relevé sur les planches contact).
 - **Puis le narrateur.** Le bandeau disparaît dès qu'il parle. Il présente vite les personnages et le contexte, puis il alterne avec eux.
 - **Les sous-titres** : tout ce qui est dit est écrit, sur une carte blanche, avec le nom de celui qui parle dans une étiquette à sa couleur. Une phrase entière par carte quand elle tient, et la carte change quand la voix fait une pause.
 - **Pour qu'un enfant comprenne** (16/11, règle `regle-comprendre-enfant` : « un enfant doit pouvoir comprendre ce qu'il se passe ») :
@@ -114,7 +114,7 @@ Chaque réplique est générée à part, avec son émotion, mais reste réaliste
 
   C'est à faire vérifier par Juridique.
 - Pas de pause ajoutée dans les voix.
-- La voix dit exactement ce qui est écrit à l'écran. Une réplique d'un seul mot est vérifiée avant le montage (16/11 : dans l'épisode 2, Maya disait « ouais » au lieu de « Non »), en comparant le son de la voyelle.
+- La voix dit exactement ce qui est écrit à l'écran. Une réplique d'un seul mot est vérifiée avant le montage (16/11 : dans l'épisode 2, Maya disait « ouais » au lieu de « Non »), en comparant le son de la voyelle. Toutes les voix sont aussi relues par transcription automatique : un son ajouté par la voix (un « Oh oh ! » de Liam dans l'épisode 6) est coupé.
 - Tout est dessiné par Claude en code : Flora ne sert qu'aux voix.
 - Une remarque sur une vidéo vaut pour toute la série : on l'applique aux suivantes et on refait celles déjà envoyées (16/11).
 
@@ -126,7 +126,7 @@ Script à valider → storyboard à valider (une image par moment du script, des
 
 ## Coût
 
-Les images, les musiques, les lumières et le rendu (HyperFrames compris, sur notre machine) coûtent 0 $. Une génération de voix coûte 0,013 $, et on en fait une par réplique (16/11), soit environ 0,17 à 0,23 $ par épisode. Une réplique déjà enregistrée et inchangée est gardée : on ne la paie jamais deux fois. Quand on ajoute une réplique au milieu d'un script, les voix déjà faites sont renumérotées, pas refaites (« Le manager » v3 : 2 répliques ajoutées, 0,026 $).
+Les images, les musiques, les lumières et le rendu (HyperFrames compris, sur notre machine) coûtent 0 $. Une génération de voix coûte 0,013 $, et on en fait une par réplique (16/11), soit environ 0,17 à 0,23 $ par épisode. Une réplique déjà enregistrée et inchangée est gardée : on ne la paie jamais deux fois. Quand on ajoute une réplique au milieu d'un script, les voix déjà faites sont renumérotées, pas refaites (« Le manager » v3 : 2 répliques ajoutées, 0,026 $). L'épisode 6 : 19 répliques, 0,26 $ au plus (une voix bloquée par le filtre de Flora, relancée une fois).
 
 ## Idées d'épisodes (à valider une par une)
 
@@ -137,7 +137,7 @@ Les images, les musiques, les lumières et le rendu (HyperFrames compris, sur no
 | SON POTE S'EST NOMMÉ SON MANAGER | Liam : « Mon manager m'a fait acheter douze sachets de glaçons ! » | Douze prises devant l'épicerie, un sachet de glaçons par prise. (pilote 3) |
 | IL SORT SON SON LE JOUR DE GTA 6 | Deuce : « Sortir ton son le jour de GTA 6 ?! T'es fou ! » | Tout le quartier joue. Mais entre deux parties, ils scrollent : il lui faut un clip, pas juste un son. (actualité, 19/11) |
 | IL VOULAIT UN CLIP COMME DANS GTA | M. Reyes : « Rendez-moi ma plante ! » | Un scooter, une plante verte et douze prises ratées, coupées sur le rythme. (actualité) |
-| L'APPLI DE SES VIDÉOS PROMO A FERMÉ | Liam : « Ils ont fermé l'appli ?! Toute ma promo était dessus ! » | L'idée du propriétaire (16/11). L'appli où il faisait ses snippets ferme, et elle n'est pas nommée. Maya et Deuce lui parlent de Stalak : il va sur stalak.app, sans rien installer. Deuce le filme en 3 prises (seul, avec Maya qui s'ambiance, seul), puis Stalak monte le clip et Liam le poste sur TikTok. (script à valider, épisode 6) |
+| TRILLER N'EST PLUS SUR L'APP STORE | Liam : « Ils ont fermé Triller ?! » | L'idée du propriétaire (16/11). Triller n'est plus sur l'App Store, et c'est là que Liam faisait ses snippets. Maya lui parle de Stalak : il va sur stalak.app, sans rien installer. Deuce le filme en 3 prises au terrain (seul, avec Maya qui arrive en marchant, seul de plus près), Stalak monte le clip et Liam le poste. (épisode 6, fabriqué le 16/11, à valider) |
 | LE RIVAL POSTE UN CLIP PAR JOUR | Big Mo : « T'as zéro abonné et tu me clashes ?! » | Big Mo poste tous les jours. Liam veut comprendre comment. |
 | IL A POSTÉ SON SON AVANT DE LE FINIR | Liam : « Ils veulent le son en entier ?! » | Il poste un extrait à 3 h du matin, et le son n'est pas fini. |
 | TOUT LE LYCÉE A VU SA VIDÉO DÉCALÉE | Maya : « Toute l'école a vu ta bouche décalée. » | Il montre sa vidéo dans le couloir, et le son est décalé. |

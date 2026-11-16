@@ -4,6 +4,17 @@
 
 Statut : EN COURS (fabrication des épisodes dans Studio Stalak ; rien à publier sur le site). Tests : planches contact relues pour chaque vidéo déposée, `npx hyperframes check` passé sur « Le manager ». Rien à faire par le Chef de projet, sauf garder la branche à jour.
 
+## 16/11, 22 h 45 : épisodes 1, 2 et GTA 6 déposés avec les lumières ; épisode 6 fabriqué ; titres coupés en lignes égales
+
+- **Épisodes 1, 2 et GTA 6 refaits et déposés** dans Studio Stalak (statut `video`, tour + 1) : ils étaient validés, le propriétaire a dit oui pour les refaire avec les lumières (21 h 21), ils sont donc à revalider. L'ancienne version de chaque fiche est gardée dans `videoAvantLumieres` (vidéo, planche, miniature, durée). Planches contact relues en entier : 0 problème restant.
+- **Titres, cartes de fin et sous-titres coupés en lignes égales** (`wrapEven`, `frame.js`) : même nombre de lignes qu'avant, jamais une ligne finie par un petit mot, de préférence après un point ou une virgule ; « PROCHAIN ÉPISODE : » sur sa propre ligne. Relevé sur les planches : « SA MÈRE A CRIÉ EN PLEINE / PRISE », « IL A PASSÉ LA NUIT SUR SA / VIDÉO DE PROMO », « IL SORT SON SON LE / JOUR DE GTA 6 ». Pour les épisodes 1 et 2, déjà rendus, seuls le premier plan et la carte de fin ont été refaits et recollés image par image ; GTA 6 et l'épisode 6 sont rendus avec. Le storyboard de l'épisode 6 est redéposé avec les nouvelles coupes (même contenu).
+- **Épisode 6 (« Triller n'est plus sur l'App Store ») fabriqué**, après la validation de son storyboard (`visuels_ok`, 21 h 40) et avec le feu vert de la semaine (`lots/2026-11-16`) :
+  - 19 voix, générées une seule fois (0,26 $ au plus : le filtre de Flora a bloqué une fois la phrase du narrateur, relancée telle quelle) ; voix relues par transcription automatique, un « Oh oh ! » ajouté par la voix avant « On dirait un vrai clip ! » est coupé ;
+  - écrans animés : le snippet qui joue puis se fige, la caméra de Stalak (3, 2, 1, puis enregistrement), le montage dans Stalak (les prises entrent, puis le clip coupé sur le temps, petit logo de la version gratuite, autocollant « hype »), la publication avec les deux « a aimé ta vidéo » et le commentaire d'un inconnu ;
+  - Liam rappe sur la musique pendant les prises (`rap: 'liam'`), Maya arrive en marchant dans la prise 2 ;
+  - 1 min 20 (la limite) ; déposé en `video`, avec sa planche et sa miniature (Liam et Maya).
+- **À décider par le propriétaire** : le prochain épisode annoncé par la carte de fin de l'épisode 6 (aujourd'hui « PROCHAIN ÉPISODE : … ») et par celle de l'épisode 5 (« Le clash au terrain », qui n'existe pas encore). Changer une carte de fin coûte 0 $ et environ 3 min (seul ce plan est refait).
+
 ## 16/11, 21 h 30 : ses réponses ; épisodes 1, 2 et GTA 6 refaits avec les lumières ; storyboard de l'épisode 6
 
 - **Ses réponses (21 h 21)** : on garde « Le manager » validé (la version aux sous-titres mieux coupés n'est pas utilisée) ; on refait les épisodes 1, 2 et GTA 6 avec les lumières ; on lance l'épisode 6.

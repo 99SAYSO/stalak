@@ -335,7 +335,7 @@
       (window.LIGHTS ? LIGHTS.glint(668, 400, 34, { tw: [2.6, 0.6, 0.7, 0] }) : '') + '</g>';
     s += `<g class="ec-url">${T(540, 830, 'stalak.app', 150, SNOW, { stroke: INK, sw: 20 })}</g>`;
     s += `<g class="ec-free">${T(520, 910, 'Gratuit, sans téléchargement ni inscription', 34, ICE, { font: 'Rubik', weight: 800 })}</g>`; // clear of the right edge
-    s += `<g transform="translate(0 800)">${bandeau(2, 'PROCHAIN ÉPISODE : ' + next, '')}</g>`;
+    s += `<g transform="translate(0 800)">${bandeau(2, 'PROCHAIN ÉPISODE :\n' + next, '')}</g>`;
     return s;
   }
 
@@ -688,23 +688,39 @@
     s += `<circle cx="280" cy="420" r="62" fill="none" stroke="#c3cbd8" stroke-width="12"/><path d="M 324 466 L 370 512" stroke="#c3cbd8" stroke-width="14" stroke-linecap="round"/>`;
     return s + T(280, 600, 'Aucun résultat', 48, INK) + T(280, 650, 'pour « Triller »', 30, '#7a8091', { font: 'Rubik', weight: 700 });
   }
-  // one of his old snippets, frozen, gone grey (the video does not play any more)
-  function snippetFrozen() {
-    const g = 'gr' + (++UID);
-    let s = `<defs><filter id="${g}"><feColorMatrix type="saturate" values="0"/></filter></defs><g filter="url(#${g})" opacity="0.75"><rect width="560" height="1000" fill="#0b0d12"/>` +
-      `<g transform="translate(20 150) scale(1)">${takeScene('rue')}${liamBust('fierte', 260, 40, 700, '', false)}</g></g>`;
-    s += `<rect width="560" height="1000" fill="#0b0d12" opacity="0.35"/><g transform="translate(280 350)"><circle r="70" fill="#0b0d12" opacity="0.7"/><rect x="-24" y="-30" width="16" height="60" rx="5" fill="${SNOW}"/><rect x="8" y="-30" width="16" height="60" rx="5" fill="${SNOW}"/></g>`;
-    return s + `<rect x="80" y="690" width="400" height="80" rx="22" fill="${SNOW}" stroke="${INK}" stroke-width="5"/>` + T(280, 744, 'Vidéo indisponible', 34, INK);
+  // one of his old snippets : in the video it plays first (his mouth on the beat, the play head running), then at `freeze`
+  // (seconds from the start of the shot ; < 0 : from its end) it freezes and goes grey, « Vidéo indisponible ». On the still
+  // storyboard : the frozen picture only.
+  function snippetFrozen(freeze = -1.05) {
+    const g = 'gr' + (++UID), live = !!FRAME.ANIM;
+    const scene = (rap) => `<g transform="translate(20 150) scale(1)">${takeScene('rue')}${liamBust('fierte', 260, 40, 700, '', rap)}</g>`;
+    const frozen = `<rect width="560" height="1000" fill="#0b0d12"/><defs><filter id="${g}"><feColorMatrix type="saturate" values="0"/></filter></defs><g filter="url(#${g})" opacity="0.75">${scene(false)}</g>` +
+      `<rect width="560" height="1000" fill="#0b0d12" opacity="0.35"/>`;
+    const pause = `<g transform="translate(280 350)"><circle r="70" fill="#0b0d12" opacity="0.7"/><rect x="-24" y="-30" width="16" height="60" rx="5" fill="${SNOW}"/><rect x="8" y="-30" width="16" height="60" rx="5" fill="${SNOW}"/></g>`;
+    const label = `<rect x="80" y="690" width="400" height="80" rx="22" fill="${SNOW}" stroke="${INK}" stroke-width="5"/>` + T(280, 744, 'Vidéo indisponible', 34, INK);
+    if (!live) return frozen + pause + label;
+    const bar = `<rect x="40" y="958" width="480" height="8" rx="4" fill="#ffffff" opacity="0.35"/>`;
+    const play = `<g class="stk" data-ti="0" data-n="1"><rect width="560" height="1000" fill="#0b0d12"/>${scene(true)}</g>` + bar +
+      K({ lin: [300, 0, 0, freeze] }, `<circle cx="40" cy="962" r="11" fill="${SNOW}" stroke="${INK}" stroke-width="3"/>`);
+    return play + K({ in: freeze, fadein: [freeze, freeze + 0.3] }, frozen + bar + `<circle cx="340" cy="962" r="11" fill="#9aa3b5" stroke="${INK}" stroke-width="3"/>`) +
+      K({ in: freeze, pop: 0.3 }, pause) + K({ in: freeze + 0.2, pop: 0.4 }, label);
   }
-  // Stalak's camera, filming a take : the take number, the red dot, the count 3, 2, 1, the song playing
-  function cameraScreen(n, count = '3', kind = 'terrain') {
-    let s = `<rect width="560" height="1000" fill="#0b0d12"/><g transform="translate(-60 120) scale(1.31)">${takeScene(kind)}${liamBust('fierte', 260, 40, 700, '', false)}</g>`;
+  // Stalak's camera, filming a take : the take number, the red dot, the count 3, 2, 1, the song playing.
+  // rec (video only) : the time the camera starts recording ; before it the count 3, 2, 1, after it the red dot blinks and he raps
+  function cameraScreen(n, count = '3', kind = 'terrain', rec = null) {
+    const live = !!FRAME.ANIM && rec != null;
+    let s = `<rect width="560" height="1000" fill="#0b0d12"/>` + (live ? `<g class="stk" data-ti="${rec}" data-n="1">` : '') +
+      `<g transform="translate(-60 120) scale(1.31)">${takeScene(kind)}${liamBust('fierte', 260, 40, 700, '', live)}</g>` + (live ? '</g>' : '');
     s += `<rect width="560" height="92" fill="${BLUE}"/><circle cx="50" cy="47" r="31" fill="${INK}"/>${img('/site_src/icons/icon.svg', 22, 19, 56, 56)}${T(94, 63, 'Stalak', 42, SNOW, { anchor: 'start', stroke: INK, sw: 8 })}`;
+    const dot = `<circle cx="440" cy="138" r="13" fill="#e5484d"/>`;
     s += `<g transform="rotate(-3 90 140)"><rect x="24" y="112" width="150" height="50" rx="12" fill="${TAKE_COL[(n - 1) % 4]}" stroke="${INK}" stroke-width="4"/>${T(99, 147, 'PRISE ' + n, 30, INK)}</g>` +
-      `<circle cx="440" cy="138" r="13" fill="#e5484d"/>${T(464, 149, 'REC', 30, SNOW, { anchor: 'start', stroke: INK, sw: 5 })}`;
-    if (count) s += T(280, 560, count, 230, SNOW, { stroke: INK, sw: 18 });
+      (live ? `<circle cx="440" cy="138" r="13" fill="#5b6170"/>` + K({ in: rec, blink: [1.4, 0.6] }, dot) : dot) + T(464, 149, 'REC', 30, SNOW, { anchor: 'start', stroke: INK, sw: 5 });
+    if (live) s += ['3', '2', '1'].map((c, i) => K({ in: i * rec / 3.2, out: (i + 1) * rec / 3.2, pop: 0.55, ks: 380, kd: 16 }, T(280, 560, c, 230, SNOW, { stroke: INK, sw: 18 }))).join('');
+    else if (count) s += T(280, 560, count, 230, SNOW, { stroke: INK, sw: 18 });
     s += `<rect x="130" y="830" width="300" height="56" rx="28" fill="#0b0d12" opacity="0.6"/>` + T(280, 868, '♫ ton son', 30, SNOW, { font: 'Rubik', weight: 800 });
-    return s + `<circle cx="280" cy="940" r="44" fill="${SNOW}" stroke="${INK}" stroke-width="5"/><circle cx="280" cy="940" r="30" fill="#e5484d"/>`;
+    s += `<circle cx="280" cy="940" r="44" fill="${SNOW}" stroke="${INK}" stroke-width="5"/>`;
+    // the record button : a round red button, a red square once the camera records
+    return s + (live ? K({ out: rec }, `<circle cx="280" cy="940" r="30" fill="#e5484d"/>`) + K({ in: rec, pop: 0.4 }, `<rect x="262" y="922" width="36" height="36" rx="8" fill="#e5484d"/>`) : `<circle cx="280" cy="940" r="30" fill="#e5484d"/>`);
   }
   // his clip in the feed, then the likes and a comment from someone he does not know (our own drawing, no TikTok logo)
   const courtClip = () => `<g transform="translate(-60 160) scale(1.31)">${takeScene('terrain-maya')}${liamBust('fierte', 260, 40, 700, '', false)}</g>`;
@@ -718,7 +734,7 @@
     { t: '0:06', cap: 'Le narrateur présente Liam', set: AFT, chars: [CH('deuce', 1, 880, 1700, 900, 'frime'), CH('maya', 1, 230, 1700, 900, 'frime'), LI(540, 1846, 1250, 'colere', P.phone(580, 1130))],
       over: () => tag('LIAM, ALIAS T-CRAZY', 640, 600, 3) + sub(1, 'narrateur', "Voici Liam. 15 ans. Zéro abonné. Triller n'est plus disponible sur l'App Store, et c'est là qu'il faisait ses snippets.") },
     { t: '0:11', cap: 'Un ancien snippet se fige et devient gris', set: AFT, chars: [LI(540, 1846, 1250, 'colere', P.phone(606, 760), { pose: { raise: 'r' } })],
-      over: () => phoneBig(snippetFrozen(), 0.92) + sub(1, 'narrateur', "Un snippet, c'est quelques secondes de son son, filmées en playback, pour donner envie sur TikTok et Insta.") },
+      over: () => phoneBig(snippetFrozen(-0.8), 0.92) + sub(1, 'narrateur', "Un snippet, c'est quelques secondes de son son, filmées en playback, pour donner envie sur TikTok et Insta.") },
     { t: '0:17', cap: 'Retour dans la rue : Deuce et Maya', set: AFT, chars: [CH('deuce', 1, 540, 1846, 1200, 'frime'), CH('maya', 1, 870, 1846, 1150, 'frime'), LI(220, 1846, 1150, 'panique')],
       over: () => tag('DEUCE, SON POTE', 540, 470, -3) + tag('MAYA, LA VOISINE', 860, 600, 3) + sub(1, 'liam', 'Sans Triller, je fais comment ? Je monte tout à la main ?') },
     { t: '0:21', cap: 'Deuce', set: AFT, chars: [CH('deuce', 1, 540, 1846, 1200, 'fierte'), CH('maya', 1, 870, 1846, 1150, 'frime'), LI(220, 1846, 1150, 'colere')],
@@ -731,16 +747,24 @@
       over: () => sub(1, 'maya', 'Même pas. Tu vas sur stalak.app.') },
     { t: '0:38', cap: 'Carton : le terrain · Deuce filme Liam', set: COURT, chars: [CH('deuce', 1, 820, 1846, 1200, 'fierte', P.phoneBack(580, 1130)), LI(300, 1846, 1200, 'fierte')],
       over: () => carton('CINQ MINUTES PLUS TARD · LE TERRAIN DE BASKET', 230) + sub(1, 'deuce', 'Silence, on tourne ! Prise 1 !') },
+    // the video (16/11, storyboard validated) : the camera counts 3, 2, 1 then records ; Liam raps on the music in the takes
+    // (rap : his mouth on the beat) ; Maya walks into take 2 before she speaks
     { t: '0:42', cap: 'Prise 1 : la caméra de Stalak, 3, 2, 1', set: COURT, chars: [CH('deuce', 1, 540, 1846, 1250, 'frime', P.phoneBack(580, 1130))],
-      over: () => phoneBig(cameraScreen(1), 0.92) + sub(1, 'narrateur', 'Deuce filme. Le son passe dans le téléphone, et Liam rappe dessus en playback.') },
-    { t: '0:48', cap: 'Prise 2 : Maya arrive en marchant', set: COURT, chars: [CH('maya', 1, 760, 1846, 1180, 'fierte'), LI(330, 1846, 1200, 'fierte')],
+      over: () => phoneBig(cameraScreen(1, '3', 'terrain', 1.35), 0.92) + sub(1, 'narrateur', 'Deuce filme. Le son passe dans le téléphone, et Liam rappe dessus en playback.') },
+    { t: '0:48', cap: 'Prise 2 : Maya arrive en marchant', set: COURT, rap: 'liam', rapFrom: 0.2, chars: [CH('maya', 1, 760, 1846, 1180, 'fierte', '', { k: { walk: [[0.2, 700, 0], [2.0, 0, 0]] } }), LI(330, 1846, 1200, 'fierte')],
       over: () => clap(820, 330, 2) + sub(1, 'maya', 'Attends, je veux être dans le clip !') },
-    { t: '0:54', cap: 'Prise 3 : Liam seul, de plus près', set: COURT, zoom: [540, 1150, 1.3], chars: [LI(540, 2730, 2250, 'fierte')],
+    { t: '0:54', cap: 'Prise 3 : Liam seul, de plus près', set: COURT, rap: 'liam', rapFrom: 0.15, zoom: [540, 1150, 1.3], chars: [LI(540, 2730, 2250, 'fierte')],
       over: () => clap(820, 330, 3) + sub(1, 'deuce', 'Prise 3… C\'est dans la boîte !') },
+    // the takes go into Stalak (2.2 s), then the clip plays cut on the beat ; the mascot's sticker
     { t: '0:58', cap: 'Stalak monte le clip sur le temps', set: COURT, chars: [CH('deuce', 1, 820, 1846, 1150, 'fierte'), CH('maya', 1, 260, 1846, 1100, 'fierte'), LI(540, 1846, 1200, 'fierte', P.phone(606, 760), { pose: { raise: 'r' } })],
-      over: () => phoneBig(stalakApp({ takes: [['terrain', 'fierte'], ['terrain-maya', 'frime'], ['terrain', 'colere']], count: 3, ti: 0, sticker: 'hype', wm: true }), 0.92) + sub(1, 'liam', 'On dirait un vrai clip !') },
+      over: () => phoneBig(stalakApp({ takes: [['terrain', 'fierte'], ['terrain-maya', 'frime'], ['terrain', 'colere']], count: 3, ti: 2.2, sticker: 'hype', dl: 2.7, wm: true, word: 'prises' }), 0.92) + sub(1, 'liam', 'On dirait un vrai clip !') },
+    // he posts it (« Publier », « Vidéo publiée ! »), Maya then Deuce like it, then the comment of someone he does not know
     { t: '1:06', cap: 'Il publie : des cœurs et un inconnu', set: COURT, chars: [LI(540, 1846, 1250, 'fierte', P.phone(606, 760), { pose: { raise: 'r' } })],
-      over: () => phoneBig(feed(courtClip(), { likes: 3, comments: 1, shares: 1, user: 't.crazy', caption: 'Mon nouveau son, filmé au terrain', sound: 'T-Crazy · son original' }) + notifTop('deuce', 'Deuce a aimé ta vidéo', '#23845a') + comments('neo.beats', "Le son est lourd, c'est quand la sortie ?", '#7d55c7'), 0.92) + sub(1, 'liam', 'Quelqu\'un que je connais pas a commenté !') },
+      over: () => phoneBig(FRAME.ANIM ? publish({ at: 0.8, pic: courtClip(), feed: { user: 't.crazy', caption: 'Mon nouveau son, filmé au terrain', sound: 'T-Crazy · son original', likes: 2, comments: 1, shares: 0 },
+        after: K({ in: 1.6, out: 2.45, path: [[1.6, 0, -150], [1.85, 0, 0], [2.2, 0, 0], [2.45, 0, -150]] }, notifTop('maya', 'a aimé ta vidéo', '#c94f84')) +
+          K({ in: 2.2, out: 3.05, path: [[2.2, 0, -150], [2.45, 0, 0], [2.8, 0, 0], [3.05, 0, -150]] }, notifTop('deuce', 'a aimé ta vidéo', '#23845a')) +
+          K({ in: 2.9, path: [[2.9, 0, 470], [3.25, 0, 0]] }, comments('neo.beats', "Le son est lourd, c'est quand la sortie ?", '#7d55c7')) })
+        : feed(courtClip(), { likes: 2, comments: 1, shares: 0, user: 't.crazy', caption: 'Mon nouveau son, filmé au terrain', sound: 'T-Crazy · son original' }) + notifTop('deuce', 'a aimé ta vidéo', '#23845a') + comments('neo.beats', "Le son est lourd, c'est quand la sortie ?", '#7d55c7'), 0.92) + sub(1, 'liam', 'Quelqu\'un que je connais pas a commenté !') },
     { t: '1:11', cap: 'Liam parle à celui qui regarde', set: COURT, zoom: [540, 1150, 1.3], chars: [LI(540, 2730, 2250, 'frime', P.phone(606, 760), { pose: { raise: 'r' } })],
       over: () => sub(1, 'liam', "T'avais Triller, toi aussi ? Ton son, trois prises au téléphone, et Stalak fait le montage sur le rythme. Rien à installer.") },
     { t: '1:19', cap: 'Carte de fin (prochain épisode à choisir)', plain: true, over: () => endCard('…') },
@@ -753,6 +777,7 @@
   FRAMES['thumb-ep4'] = thumb(ROOM, [LI(320, 3080, 2330, 'frime', HP), CH('deuce', 1, 790, 2900, 2350, 'panique')], GTA, 3);
   FRAMES['thumb-ep3'] = thumb(STREET, [CH('deuce', 1, 800, 2860, 2250, 'frime'), LI(330, 3000, 2330, 'colere', BAGS(4))], 'SON POTE S\'EST NOMMÉ SON MANAGER', 4);
   FRAMES['thumb-ep5'] = thumb(EVE, [CH('deuce', 1, 800, 2900, 2300, 'fierte', P.plant(600, 1080)), LI(330, 3000, 2330, 'panique')], 'IL VOULAIT UN CLIP COMME DANS GTA', 5);
+  FRAMES['thumb-ep6'] = thumb(AFT, [CH('maya', 1, 800, 2900, 2300, 'frime'), LI(330, 3000, 2330, 'panique')], "TRILLER N'EST PLUS SUR L'APP STORE", 6);
 
   window.STORYBOARD = { BOARDS, P, band, hp, headAt, phoneBig, laptopBig, take, editor, clockBig, postScreen, winPhone, gallery, stalakApp, takeScene, liamBust, carton, knock, notif, comment, tag, endCard };
 })();
