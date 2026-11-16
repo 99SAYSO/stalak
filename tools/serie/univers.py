@@ -114,11 +114,13 @@ def decor_board(out, title, subtitle, scenes, traits, crop=None, crop_src=None, 
         src = Image.open(path).convert('RGB')
         sc = src.resize((770, 1369), Image.LANCZOS)
         framed(img, sc, 34, 170)
+        y = 572
         if crop:
             csrc = Image.open(crop_src).convert('RGB') if crop_src else src
-            framed(img, csrc.crop(crop).resize((322, 322), Image.LANCZOS), 846, 170)
-            d.text((846, 520), crop_label, font=font(FONT_TEXT, 26, 800), fill=ICE)
-        y = 572
+            th = round(322 * (crop[3] - crop[1]) / (crop[2] - crop[0]))  # a square close-up, or a taller one (the 3:4 grid of a profile)
+            framed(img, csrc.crop(crop).resize((322, th), Image.LANCZOS), 846, 170)
+            d.text((846, 170 + th + 28), crop_label, font=font(FONT_TEXT, 26, 800), fill=ICE)
+            y = 170 + th + 80
         for t in traits:
             for j, line in enumerate(wrap(d, t, ft, 322 - 30)):
                 if j == 0:
@@ -226,6 +228,10 @@ HABILLAGE_BOARDS = {
                    [("L'ACCROCHE", 'bandeau-4-accroche'), ('LE NARRATEUR', 'bandeau-4-narrateur')],
                    ["Le titre de l'épisode sur la bande bleue penchée, de bord à bord, avec de la neige posée dessus (version 2).",
                     'Les sous-titres sur une carte blanche, le nom de celui qui parle dans une étiquette à sa couleur (version 1).', EXAMPLE]),
+    'miniature': ('LA MINIATURE · EXEMPLE', 'La couverture de chaque vidéo, faite avec elle, dans le style de la série.', [('', 'miniature-exemple')],
+                  ["Le titre de l'épisode sur la bande bleue que tu as choisie, les personnages en grand.",
+                   'Titre et visages restent au centre : ils se voient aussi quand TikTok recadre la miniature dans la grille du profil (ci-dessus).',
+                   'Exemple : le titre et la scène changent à chaque épisode.'], ('miniature-exemple', (0, 240, 1080, 1680), 'DANS LA GRILLE')),
     'logo-v1': ('LE LOGO · VERSION 1 : T-CRAZY', 'Le badge rond, ici sur une miniature.', [('', 'logo-1')],
                 ['Le nom de rappeur de Liam dans un badge rond bleu, glacé en haut.',
                  'Sa casquette posée dessus : on le reconnaît tout de suite.',
@@ -257,8 +263,8 @@ def habillage(names):
         title, sub, scenes, traits, *close = HABILLAGE_BOARDS[name]
         paths = [(label, frame(f)) for label, f in scenes]
         if close:
-            src, box = close[0]
-            out.append(decor_board(name, title, sub, paths, traits, crop=box, crop_src=frame(src), crop_label='LE LOGO'))
+            src, box, *label = close[0]
+            out.append(decor_board(name, title, sub, paths, traits, crop=box, crop_src=frame(src), crop_label=(label or ['LE LOGO'])[0]))
         else:
             out.append(decor_board(name, title, sub, paths, traits))
     return out

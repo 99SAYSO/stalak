@@ -202,6 +202,17 @@ Les logos ne portent pas le nom de Stalak : Stalak n'arrive qu'à la fin de l'é
 
 Elles sont dans la fiche `narrateur`, en `a_choisir`. Aucune pause n'a été ajoutée (`pas-voix-pauses`). La page n'accepte pas les fichiers .mp3 : les voix sont donc déposées en .mp4 audio (AAC), que le lecteur de la page lit.
 
+**16/11, 4 h 36 : ses réponses.**
+- **Le bandeau est choisi** : la version 4, « Ton mélange ».
+- **La chambre sans poster** : « ok ». D'après cette réponse, la fiche `decor-chambre` passe en `choisi` (version 2).
+- **La miniature est faite par Claude, dans le même style que la vidéo** (`regle-miniatures-style`).
+  - Un exemple est dessiné dans `frame.js` (image `miniature-exemple`, planche `univers.py habillage miniature`).
+  - Il est déposé dans une nouvelle fiche `miniature`, en `a_choisir`.
+  - Le titre et les visages restent dans le centre 3:4 que garde la grille d'un profil TikTok (de y 240 à y 1680).
+- **Le narrateur : la voix 3, Algieba, « un peu plus rapide »** (`regle-narrateur-voix`).
+  - La même lecture est accélérée sans changer la voix, avec ffmpeg `atempo`, pour 0 $ : ×1,1 (7,0 s) et ×1,2 (6,4 s), à côté de l'originale (7,7 s), dans la fiche `narrateur`.
+  - Pour les épisodes, chaque réplique du narrateur sera générée avec Algieba, puis accélérée de la vitesse choisie.
+
 ## Étape 2 : tout l'univers dans le style choisi (après le choix)
 
 - Liam : 4 versions, chacune de face, de profil et avec 4 expressions (frime, colère, panique, fierté).

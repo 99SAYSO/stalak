@@ -160,6 +160,10 @@
   // version 4, the owner's mix (16/11) : the title band of version 2, the subtitles of version 1
   FRAMES['bandeau-4-accroche'] = Object.assign({}, FRAMES['bandeau-1-accroche'], { over: () => bandeau(2, TITLE, EP) + sub(1, ...HOOK) });
   FRAMES['bandeau-4-narrateur'] = Object.assign({}, FRAMES['bandeau-1-narrateur'], { over: () => sub(1, ...NARR) });
+  // the thumbnail (owner, 16/11 : made by Claude with each video, in the series' style) : the chosen title band, the faces big,
+  // everything inside the centre 3:4 that the TikTok profile grid keeps (y 240 to 1680)
+  FRAMES['miniature-exemple'] = { set: ['cuisine', 1, 'jour'], chars: [{ who: 'nadia', v: 2, expr: 'colere', x: 790, y: 2760, h: 2300 }, { who: 'liam', v: 4, expr: 'panique', x: 330, y: 3080, h: 2330 }],
+    over: () => `<g transform="translate(0 120)">${bandeau(2, TITLE, EP)}</g>` };
   const COVERS = { 1: [['rue', 1, 'jour'], 'frime'], 2: [['toit', 2, 'soir'], 'fierte'], 3: [['terrain', 1, 'jour'], 'panique'] };
   [1, 2, 3].forEach(n => {
     FRAMES[`logo-${n}`] = { set: COVERS[n][0], chars: [{ who: 'liam', v: 4, expr: COVERS[n][1], x: 540, y: 3330, h: 2560 }], shade: true, logo: [n, 540, 505, 0.85] };

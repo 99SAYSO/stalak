@@ -2,6 +2,16 @@
 
 > Marketing & croissance. Rien ne change sur le site : seulement `tools/serie/` et `docs/`.
 
+## 16/11, 4 h 50 : bandeau choisi, chambre validée, une miniature type, le narrateur plus rapide
+
+- À 4 h 36, le propriétaire a répondu.
+  - **Le bandeau est choisi** : la version 4, « Ton mélange ».
+  - **La chambre sans poster** : « ok ». D'après cette réponse, la fiche `decor-chambre` passe en `choisi` (version 2).
+  - **La miniature est faite par Claude, dans le même style que la vidéo** (`regle-miniatures-style` dans « Mes goûts »). Une miniature type est dessinée (`frame.js`, image `miniature-exemple`) et déposée dans une nouvelle fiche `miniature` (habillage), en `a_choisir`. Titre et visages restent dans le centre 3:4 que garde la grille d'un profil TikTok.
+  - **Le narrateur** : il préfère la voix 3, Algieba, mais « un peu plus rapide » (`regle-narrateur-voix`). La même lecture est accélérée avec ffmpeg `atempo`, pour 0 $ : ×1,1 et ×1,2. Les deux versions sont dans la fiche `narrateur`, à côté de l'originale, en `a_choisir`.
+- Coût : 0 $.
+- Ce qui attend : sa vitesse du narrateur et son avis sur la miniature type. Ensuite, les 4 ambiances musicales (ses beats, sinon Pixabay), puis la bible et les scripts.
+
 ## 16/11, 4 h 45 : miniatures avec chaque vidéo, pas de poster, les 3 voix du narrateur
 
 - À 4 h 28, le propriétaire a répondu.
