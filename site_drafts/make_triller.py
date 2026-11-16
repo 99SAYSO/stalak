@@ -30,7 +30,7 @@ SOURCES['fr'] = [(u, t, {
 T = {
  'en': dict(
   path='/triller-alternative', other='/fr/alternative-triller', home='/', pricing='/pricing', locale='en_US', lang='en',
-  title='Triller Alternative: Cut Your Lip-Sync Takes on the Beat | Stalak',
+  title='Triller Alternative: Lip-Sync Takes Cut on the Beat | Stalak',
   desc='Triller’s parent company says it shut down the original app. Stalak still cuts several takes of your song on the beat, in your browser. Free.',
   crumb='Triller alternative', back='← Back to Stalak',
   h1='Triller alternative: cut your lip-sync takes on the beat',
@@ -83,7 +83,7 @@ T = {
  ),
  'fr': dict(
   path='/fr/alternative-triller', other='/triller-alternative', home='/fr/', pricing='/fr/tarifs', locale='fr_FR', lang='fr',
-  title='Alternative à Triller : tes prises montées sur le rythme | Stalak',
+  title='Alternative à Triller : ton playback sur le rythme | Stalak',
   desc='La société mère de Triller dit avoir arrêté l’appli d’origine. Stalak coupe toujours tes prises sur le rythme, dans ton navigateur. Gratuit.',
   crumb='Alternative à Triller', back='← Retour à Stalak',
   h1='Alternative à Triller : tes prises de playback montées sur le rythme',
@@ -159,10 +159,11 @@ footer{max-width:860px;margin:18px auto 0;color:#fff;font-size:13px;text-align:c
 
 def page(L):
     P = T[L]; url = '{{URL}}' + P['path']; abs_url = 'https://stalak.app' + P['path']
+    og = 'https://stalak.app/' + ('og-en.png' if L == 'en' else 'og.png')   # 13/11: the share picture in the page's language
     src = SOURCES[L]
     ld = {'@context': 'https://schema.org', '@graph': [
         {'@type': 'Article', 'headline': P['h1'], 'description': P['desc'], 'inLanguage': P['lang'], 'datePublished': DATE, 'dateModified': MODIFIED,
-         'mainEntityOfPage': abs_url, 'image': 'https://stalak.app/og.png',
+         'mainEntityOfPage': abs_url, 'image': og,
          'author': {'@type': 'Organization', 'name': 'Stalak', 'url': 'https://stalak.app' + P['home']}, 'publisher': {'@id': 'https://stalak.app/#organization'},
          'about': [{'@type': 'SoftwareApplication', 'name': 'Triller'}, {'@type': 'WebApplication', 'name': 'Stalak', 'url': 'https://stalak.app' + P['home']}],
          'citation': [u for u, _, _ in src]},
@@ -180,7 +181,7 @@ def page(L):
 <meta name="description" content="{H.escape(P["desc"])}">
 <meta property="og:type" content="article"><meta property="og:site_name" content="Stalak"><meta property="og:locale" content="{P["locale"]}">
 <meta property="og:title" content="{H.escape(P["title"])}"><meta property="og:description" content="{H.escape(P["desc"])}">
-<meta property="og:url" content="{abs_url}"><meta property="og:image" content="https://stalak.app/og.png"><meta name="twitter:card" content="summary_large_image">
+<meta property="og:url" content="{abs_url}"><meta property="og:image" content="{og}"><meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="{url}">
 {alt}
 <link rel="icon" href="/icons/icon-192.png"><link rel="stylesheet" href="/fonts/fonts.css">
