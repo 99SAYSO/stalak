@@ -24,7 +24,7 @@
   // « SON POTE S'EST / NOMMÉ / SON MANAGER ») : the same number of lines as the plain wrap, all inside the width, the cuts chosen
   // so that the lines are as even as possible, and never after a small word (article, possessive, preposition, subject pronoun :
   // « … LA NUIT SUR / SA VIDÉO » → « … LA NUIT / SUR SA VIDÉO »)
-  const SMALL = /^(de|du|des|le|la|les|un|une|à|et|ou|ton|ta|tes|son|sa|ses|mon|ma|mes|ce|cette|en|au|aux|sur|dans|pour|par|avec|sans|chez|vers|je|tu|il|elle|on|ils|qui|que|ne|se)$/i;
+  const SMALL = /^(de|du|des|le|la|les|un|une|à|et|ou|ton|ta|tes|son|sa|ses|mon|ma|mes|ce|cet|ces|cette|leur|leurs|en|au|aux|sur|dans|pour|par|avec|sans|chez|vers|je|tu|il|elle|on|ils|qui|que|ne|se|me|te|quelques|plusieurs|chaque|toute|toutes|tous)$/i;
   const evenCache = new Map();
   function wrapEven(text, font, maxW) {
     const key = font + '|' + maxW + '|' + text;
@@ -47,7 +47,7 @@
           const mean = ws.reduce((s, w) => s + w, 0) / n;
           let cost = Math.sqrt(ws.reduce((s, w) => s + (w - mean) * (w - mean), 0) / n);
           // (a cut after a small word costs ; a cut after a full stop or a comma helps : « Le 19 novembre, / jour de la sortie… »)
-          lines.slice(0, -1).forEach(([, b]) => { if (SMALL.test(words[b - 1])) cost += maxW * 0.15; else if (/[.,;:!?…]$/.test(words[b - 1])) cost -= maxW * 0.08; });
+          lines.slice(0, -1).forEach(([, b]) => { if (SMALL.test(words[b - 1])) cost += maxW * 0.3; else if (/[.,;:!?…]$/.test(words[b - 1])) cost -= maxW * 0.08; });
           if (!best || cost < best[0] - 0.01) best = [cost, lines];
           return;
         }
