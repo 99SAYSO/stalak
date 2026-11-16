@@ -48,9 +48,10 @@
   // ---------------- screens and cards over the whole frame ----------------
   const img = (href, x, y, w, h, extra = '') => `<image href="${href}" x="${x}" y="${y}" width="${w}" height="${h}" preserveAspectRatio="xMidYMid slice"${extra}/>`;
   // a big phone in the middle of the frame ; inner = what its screen shows (in screen coordinates 0..560 × 0..1000)
-  function phoneBig(inner, k = 1) {
-    const W = 600, H = 1080, x = 540 - W / 2, y = 250;
-    return `<rect width="1080" height="1920" fill="${INK}" opacity="0.5"/><g class="phone"><g transform="translate(540 ${y + H / 2}) scale(${k}) translate(-540 ${-(y + H / 2)})">` +
+  // o.dl : the phone pops in that late (the shot first shows who holds it)
+  function phoneBig(inner, k = 1, o = {}) {
+    const W = 600, H = 1080, x = 540 - W / 2, y = 250, dim = `<rect width="1080" height="1920" fill="${INK}" opacity="0.5"/>`;
+    return (o.dl != null ? K({ fadein: [o.dl, o.dl + 0.25] }, dim) : dim) + `<g class="phone"${o.dl != null ? ` data-dl="${o.dl}"` : ''}><g transform="translate(540 ${y + H / 2}) scale(${k}) translate(-540 ${-(y + H / 2)})">` +
       `<rect x="${x + 12}" y="${y + 16}" width="${W}" height="${H}" rx="64" fill="${INK}" opacity="0.55"/>` +
       `<rect x="${x}" y="${y}" width="${W}" height="${H}" rx="64" fill="#2a2d36" stroke="${INK}" stroke-width="12"/>` +
       `<clipPath id="scr${++UID}"><rect x="${x + 20}" y="${y + 40}" width="${W - 40}" height="${H - 80}" rx="40"/></clipPath>` +
@@ -58,6 +59,67 @@
       `<rect x="${540 - 50}" y="${y + 14}" width="100" height="12" rx="6" fill="#4a4f5c"/></g></g>`;
   }
   let UID = 0;
+  // ---------------- 16/11 (owner) : the little actions that make a screen understandable ----------------
+  // K(o, inner) : something that happens during the shot, in seconds from its start (anim.js kf : in, out, pop, gone, path,
+  // lin, osc, hop, spin, blink, fadein, fade, ripple). On a still storyboard image everything shows.
+  const K = (o, inner) => `<g data-k='${JSON.stringify(o)}'>${inner}</g>`;
+  // the name of a track in the editor
+  const chipT = (text, x, y, c) => `<rect x="${x}" y="${y - 22}" width="92" height="40" rx="10" fill="#0b0d12" stroke="${c}" stroke-width="3"/>` + T(x + 46, y + 7, text, 22, c, { font: 'Rubik', weight: 800 });
+  // the icons of a video feed (our own drawing) : a heart, a comment bubble, a share arrow
+  const ICON = {
+    heart: (x, y, c = SNOW) => `<path d="M ${x} ${y + 20} C ${x - 6} ${y + 14} ${x - 30} ${y} ${x - 30} ${y - 13} C ${x - 30} ${y - 30} ${x - 9} ${y - 34} ${x} ${y - 19} C ${x + 9} ${y - 34} ${x + 30} ${y - 30} ${x + 30} ${y - 13} C ${x + 30} ${y} ${x + 6} ${y + 14} ${x} ${y + 20} Z" fill="${c}" stroke="${INK}" stroke-width="3"/>`,
+    bubble: (x, y) => `<path d="M ${x - 30} ${y - 4} C ${x - 30} ${y - 22} ${x - 16} ${y - 28} ${x} ${y - 28} C ${x + 16} ${y - 28} ${x + 30} ${y - 22} ${x + 30} ${y - 4} C ${x + 30} ${y + 14} ${x + 16} ${y + 20} ${x} ${y + 20} L ${x - 8} ${y + 20} L ${x - 22} ${y + 32} L ${x - 18} ${y + 16} C ${x - 26} ${y + 12} ${x - 30} ${y + 6} ${x - 30} ${y - 4} Z" fill="${SNOW}" stroke="${INK}" stroke-width="3"/>` + [-12, 0, 12].map(d => `<circle cx="${x + d}" cy="${y - 4}" r="3.5" fill="${INK}"/>`).join(''),
+    share: (x, y) => `<path d="M ${x - 28} ${y + 22} C ${x - 26} ${y - 4} ${x - 8} ${y - 14} ${x + 6} ${y - 14} L ${x + 6} ${y - 30} L ${x + 32} ${y - 4} L ${x + 6} ${y + 22} L ${x + 6} ${y + 6} C ${x - 8} ${y + 6} ${x - 20} ${y + 10} ${x - 28} ${y + 22} Z" fill="${SNOW}" stroke="${INK}" stroke-width="3"/>`,
+  };
+  // a vertical video in a feed, as on TikTok (our own drawing, no logo) : the picture, the likes, comments and shares on the
+  // right, the name, the caption and the sound at the bottom (owner, 16/11 : « une sorte de TikTok, avec les likes sur le côté,
+  // le pseudo, le logo des commentaires »). pic : the post, in 0..560 × 0..1000
+  function feed(pic, o = {}) {
+    let s = `<rect width="560" height="1000" fill="#0b0d12"/>${pic}<rect x="0" y="790" width="560" height="210" fill="#0b0d12" opacity="0.35"/>`;
+    s += T(196, 66, 'Abonnements', 26, '#b9c2d3', { font: 'Rubik', weight: 700, stroke: INK, sw: 4 }) + T(372, 66, 'Pour toi', 28, SNOW, { font: 'Rubik', weight: 800, stroke: INK, sw: 4 }) + `<rect x="342" y="80" width="60" height="5" rx="2.5" fill="${SNOW}"/>`;
+    const X = 498, cnt = (v, y) => T(X, y, String(v), 26, SNOW, { font: 'Rubik', weight: 800, stroke: INK, sw: 5 });
+    s += `<circle cx="${X}" cy="470" r="34" fill="${BLUE}" stroke="${SNOW}" stroke-width="4"/>${T(X, 483, 'T', 34, SNOW)}<circle cx="${X}" cy="504" r="13" fill="#e5484d"/>${T(X, 513, '+', 24, SNOW, { font: 'Rubik', weight: 800 })}`;
+    s += ICON.heart(X, 586) + cnt(o.likes, 642) + ICON.bubble(X, 704) + cnt(o.comments, 758) + ICON.share(X, 812) + cnt(o.shares, 866);
+    s += T(26, 878, '@' + o.user, 30, SNOW, { font: 'Rubik', weight: 800, anchor: 'start', stroke: INK, sw: 5 });
+    s += T(26, 920, o.caption, 26, SNOW, { font: 'Rubik', weight: 700, anchor: 'start', stroke: INK, sw: 5 });
+    return s + T(26, 962, '♫ ' + o.sound, 24, SNOW, { font: 'Rubik', weight: 700, anchor: 'start', stroke: INK, sw: 5 });
+  }
+  // posting a video, step by step (owner, 16/11 : « on ne sait même pas qu'il a posté la vidéo ») : the page of the new post and
+  // its « Publier » button, a finger taps it (at o.at s), « Vidéo publiée ! », then the post in the feed (o.feed) ; o.after : drawn
+  // over the feed (a notification, the comments)
+  function publish(o) {
+    const a = o.at, end = a + 0.6;
+    let page = `<rect width="560" height="1000" fill="#f3f6fb"/><rect width="560" height="96" fill="${SNOW}"/><path d="M 0 96 L 560 96" stroke="#d5dbe6" stroke-width="3"/>${T(280, 64, 'Nouvelle vidéo', 34, INK)}`;
+    page += `<clipPath id="pb${++UID}"><rect x="157" y="124" width="246" height="440" rx="18"/></clipPath><g clip-path="url(#pb${UID})"><g transform="translate(157 124) scale(0.44)">${o.pic}</g></g><rect x="157" y="124" width="246" height="440" rx="18" fill="none" stroke="${INK}" stroke-width="5"/>`;
+    page += `<rect x="30" y="600" width="500" height="120" rx="18" fill="${SNOW}" stroke="#c3cbd8" stroke-width="3"/>${T(54, 650, o.feed.caption, 28, INK, { font: 'Rubik', weight: 700, anchor: 'start' })}${T(54, 696, '#rap #nouveauson', 24, BLUE, { font: 'Rubik', weight: 700, anchor: 'start' })}`;
+    const btn = (fill) => `<rect x="30" y="820" width="500" height="96" rx="26" fill="${fill}" stroke="${INK}" stroke-width="5"/>${T(280, 886, 'Publier', 46, SNOW)}`;
+    page += btn(BLUE) + K({ in: a, out: a + 0.25 }, btn(NIGHT));
+    page += K({ in: a - 0.35, pop: 0.5, out: a + 0.3, path: [[a - 0.35, 70, 110], [a, 0, 0]] }, `<circle cx="300" cy="880" r="30" fill="${SNOW}" fill-opacity="0.85" stroke="${INK}" stroke-width="4"/>`);
+    page += K({ ripple: [a, a + 0.45] }, `<circle cx="300" cy="880" r="56" fill="none" stroke="${SNOW}" stroke-width="10"/>`);
+    let s = K({ out: end }, page) + K({ in: end }, feed(o.pic, o.feed)) + (o.after || '');
+    return s + K({ in: a + 0.25, pop: 0.3, gone: [end + 0.5, end + 0.7] }, `<g transform="translate(280 470)"><rect x="-214" y="-60" width="428" height="120" rx="30" fill="${SNOW}" stroke="${INK}" stroke-width="6"/><circle cx="-146" cy="0" r="34" fill="#3fbf7f" stroke="${INK}" stroke-width="4"/><path d="M -162 0 l 11 11 l 22 -24" fill="none" stroke="${SNOW}" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>${T(40, 14, 'Vidéo publiée !', 38, INK)}</g>`);
+  }
+  // a notification that drops from the top of a phone screen ; col : the colour of the avatar
+  const notifTop = (who, text, col) => `<g transform="translate(16 18)"><rect width="528" height="112" rx="26" fill="${SNOW}" stroke="${INK}" stroke-width="5"/><circle cx="58" cy="56" r="34" fill="${col}"/>${T(58, 69, who[0].toUpperCase(), 34, SNOW)}` +
+    `${T(108, 48, who, 26, '#7a8091', { font: 'Rubik', weight: 700, anchor: 'start' })}${T(108, 88, text, 27, INK, { font: 'Rubik', weight: 800, anchor: 'start' })}</g>`;
+  // the comments of a post, slid up from the bottom of the screen
+  function comments(who, text, col) {
+    let s = `<rect x="0" y="560" width="560" height="460" rx="32" fill="${SNOW}" stroke="${INK}" stroke-width="5"/>${T(280, 614, '1 commentaire', 26, '#5b6170', { font: 'Rubik', weight: 800 })}`;
+    s += `<circle cx="64" cy="690" r="34" fill="${col}"/>${T(64, 703, who[0].toUpperCase(), 34, SNOW)}${T(116, 674, who, 26, '#7a8091', { font: 'Rubik', weight: 700, anchor: 'start' })}`;
+    const words = text.split(' '), out = []; let line = '';
+    words.forEach(w => { if ((line + ' ' + w).trim().length > 24) { out.push(line); line = w; } else line = (line + ' ' + w).trim(); }); out.push(line);
+    return s + out.map((l, i) => T(116, 718 + i * 42, l, 32, INK, { font: 'Rubik', weight: 800, anchor: 'start' })).join('');
+  }
+  // a tumbleweed (a ball of dry grass, as in a western) : nobody is there
+  function tumbleweed(cx, cy, r) {
+    let s = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="#c9a26b" opacity="0.28"/>`;
+    for (let i = 0; i < 16; i++) {
+      const a = i * 2.39, b = a + 2.1 + (i % 3) * 0.35, k = 0.25 + (i % 4) * 0.12;
+      const d = `M ${(cx + Math.cos(a) * r).toFixed(1)} ${(cy + Math.sin(a) * r).toFixed(1)} Q ${(cx + Math.cos(a + 1.2) * r * k).toFixed(1)} ${(cy + Math.sin(a + 1.2) * r * k).toFixed(1)} ${(cx + Math.cos(b) * r).toFixed(1)} ${(cy + Math.sin(b) * r).toFixed(1)}`;
+      s += `<path d="${d}" fill="none" stroke="${INK}" stroke-width="9" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${i % 2 ? '#a07a4a' : '#7a5530'}" stroke-width="5" stroke-linecap="round"/>`;
+    }
+    return s;
+  }
   // the gallery of the phone : 3 videos of Liam, filmed anywhere (our own interface, no real app)
   function gallery() {
     let s = `<rect width="560" height="1000" fill="#f3f6fb"/>` + T(30, 70, 'Vidéos', 44, INK, { anchor: 'start' });
@@ -108,19 +170,38 @@
     s += `<path d="M ${cx} ${cy} L ${cx + Math.sin(0.3) * r * 0.62} ${cy - Math.cos(0.3) * r * 0.62}" stroke="${INK}" stroke-width="14" stroke-linecap="round"/><path d="M ${cx} ${cy} L ${cx + Math.sin(2.4) * r * 0.46} ${cy - Math.cos(2.4) * r * 0.46}" stroke="${INK}" stroke-width="18" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="18" fill="${INK}"/></g>`;
     return `<g class="clock">${s}</g>`;
   }
-  // the video editor on Liam's computer (our own simple interface) : his clip, the song, and they don't line up
-  function editor() {
-    let s = `<rect width="848" height="528" fill="#161a24"/><rect x="254" y="22" width="340" height="250" rx="10" fill="#0b0d12" stroke="#2a3142" stroke-width="4"/>`;
-    s += headAt('panique', 424, 156, 0.62, '', false);
-    s += `<rect x="24" y="300" width="800" height="200" rx="10" fill="#1d2230"/>`;
-    // the video track : frame by frame, shifted to the right of the song
-    for (let i = 0; i < 9; i++) s += `<rect x="${86 + i * 80}" y="318" width="74" height="70" rx="6" fill="#2b5d9a" stroke="#57adff" stroke-width="3"/>`;
+  // the video editor on Liam's computer (our own simple interface) : his video on top (his face, the mouth wide open on 4 frames)
+  // and his song below (4 loud words). He drags the video to put each open mouth in front of its word, and it never fits
+  // (owner, 16/11 : « il faut que l'écran soit animé pour qu'on comprenne vraiment ce qu'il essaye de faire »).
+  // o.drag : the moves of the video track [[t, dx]...] ; o.cursor : the mouse ; o.labels : when « DÉCALÉ » shows (K options)
+  function editor(o = {}) {
+    const WORDS = [236, 396, 556, 716], OFF = 52; // the words of the song (x) ; the mouths start 52 px too late
+    let s = `<rect width="848" height="528" fill="#161a24"/><rect x="254" y="22" width="340" height="236" rx="10" fill="#0b0d12" stroke="#2a3142" stroke-width="4"/>`;
+    // the preview : his face, the mouth opening at the wrong moments
+    s += headAt('panique', 424, 150, 0.6, '', false) + K({ blink: [3.1, 0.42] }, headAt('panique+parle', 424, 150, 0.6, '', false));
+    s += `<rect x="24" y="284" width="800" height="228" rx="12" fill="#1d2230"/>` + chipT('VIDÉO', 32, 340, '#57adff') + chipT('SON', 32, 446, '#ffd34d');
+    // the song : quiet, with 4 loud words
     let d = '';
-    for (let i = 0; i < 190; i++) { const xx = 40 + i * 4, a = 8 + 30 * Math.abs(Math.sin(i * 0.8) * Math.sin(i * 0.19 + 0.6)); d += `M ${xx} ${446 - a} L ${xx} ${446 + a} `; }
+    for (let i = 0; i < 168; i++) { const xx = 140 + i * 4, near = Math.min(...WORDS.map(w => Math.abs(xx - w))); const a = near < 22 ? 28 + 12 * Math.abs(Math.sin(i * 1.3)) : 4 + 6 * Math.abs(Math.sin(i * 0.7)); d += `M ${xx} ${446 - a} L ${xx} ${446 + a} `; }
     s += `<path d="${d}" stroke="#ffd34d" stroke-width="3"/>`;
-    // the gap between the mouth and the song
-    s += `<path d="M 300 300 L 300 490 M 352 300 L 352 490" stroke="#ff5a5f" stroke-width="5"/><path d="M 306 300 L 346 300" stroke="#ff5a5f" stroke-width="5"/>`;
-    return s + `<rect x="270" y="236" width="308" height="0" fill="none"/>` + `<g transform="translate(326 286)"><rect x="-66" y="-24" width="132" height="44" rx="12" fill="#ff5a5f" stroke="${INK}" stroke-width="4"/>${T(0, 10, 'DÉCALÉ', 28, SNOW)}</g>`;
+    // where each mouth should be
+    s += WORDS.map(w => `<path d="M ${w} 300 L ${w} 488" stroke="${SNOW}" stroke-width="3" stroke-dasharray="10 9" opacity="0.6"/>`).join('');
+    // the video : 8 frames of his face, the mouth wide open on 4 of them ; the whole track moves when he drags it
+    let v = '';
+    for (let i = 0; i < 8; i++) {
+      const c = 156 + i * 80 + OFF, open = i % 2 === 1;
+      v += `<rect x="${c - 37}" y="304" width="74" height="72" rx="8" fill="#2b5d9a" stroke="${open ? '#ff9f43' : '#57adff'}" stroke-width="${open ? 5 : 3}"/><circle cx="${c}" cy="340" r="25" fill="#c98a5e" stroke="${INK}" stroke-width="3"/>`;
+      v += open ? `<ellipse cx="${c}" cy="348" rx="12" ry="10" fill="${INK}"/><ellipse cx="${c}" cy="353" rx="7" ry="4" fill="#e5484d"/>` : `<path d="M ${c - 9} 349 L ${c + 9} 349" stroke="${INK}" stroke-width="4" stroke-linecap="round"/>`;
+      v += `<circle cx="${c - 9}" cy="334" r="3.5" fill="${INK}"/><circle cx="${c + 9}" cy="334" r="3.5" fill="${INK}"/>`;
+    }
+    s += `<clipPath id="ed${++UID}"><rect x="134" y="296" width="690" height="90"/></clipPath><g clip-path="url(#ed${UID})">` + K({ path: (o.drag || [[0, 0]]).map(([t, dx]) => [t, dx, 0]) }, v) + '</g>';
+    // the play head, again and again
+    s += K({ lin: [660, 0, 0, 1.7, 1] }, `<path d="M 140 292 L 140 504" stroke="${SNOW}" stroke-width="4"/><path d="M 128 288 L 152 288 L 140 304 Z" fill="${SNOW}"/>`);
+    // the mouse, on the first open mouth
+    s += K({ path: o.cursor || [[0, 0, 0]] }, `<path d="M 300 352 L 300 392 L 310 382 L 318 400 L 326 396 L 318 379 L 332 379 Z" fill="${SNOW}" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>`);
+    // « DÉCALÉ » : the mouth and the song do not match
+    const label = `<g transform="translate(130 150) rotate(-6)"><rect x="-96" y="-34" width="192" height="64" rx="16" fill="#ff5a5f" stroke="${INK}" stroke-width="5"/>${T(0, 13, 'DÉCALÉ', 38, SNOW)}</g>`;
+    return s + (o.labels || [{}]).map(ko => K(ko, label)).join('');
   }
   // his posted video and the first comment under it (our own interface, no real app) ; who : the name of the commenter
   function postScreen(text, who = 'commentaire') {
@@ -338,6 +419,11 @@
   // glare on a shop window, over whoever stands behind it
   // a character behind a window pane : the glass is in front of her, a light tint and two reflections over her (owner, 16/11 :
   // « elle est censée être derrière la vitre »). Drawn in her `after`, so the characters in the room stay in front of it.
+  // the kitchen at night (the set is drawn by day) : a night sky in its window, between the curtains and under the valance
+  const kitchenNight = () => `<defs><linearGradient id="kng" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0c1636"/><stop offset="1" stop-color="#2b3270"/></linearGradient></defs>` +
+    `<rect x="420" y="470" width="250" height="358" fill="url(#kng)"/>` + [[455, 520], [610, 545], [520, 600], [640, 640], [470, 690]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="4" fill="#eef3ff"/>`).join('') +
+    `<circle cx="590" cy="600" r="30" fill="#eef3ff"/><circle cx="604" cy="591" r="27" fill="#2b3270"/>` +
+    `<path d="M 420 828 L 420 760 L 470 760 L 470 730 L 530 730 L 530 780 L 590 780 L 590 745 L 640 745 L 640 790 L 670 790 L 670 828 Z" fill="#151a36"/>`;
   const vitre = (x, y, w, h) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#cfe9ff" opacity="0.22"/>` + glare(x, y, w, h);
   const glare = (x, y, w, h) => `<clipPath id="gl${++UID}"><rect x="${x}" y="${y}" width="${w}" height="${h}"/></clipPath><g clip-path="url(#gl${UID})" opacity="0.28"><path d="M ${x + w * 0.1} ${y + h} L ${x + w * 0.35} ${y} L ${x + w * 0.45} ${y} L ${x + w * 0.2} ${y + h} Z M ${x + w * 0.55} ${y + h} L ${x + w * 0.8} ${y} L ${x + w * 0.85} ${y} L ${x + w * 0.6} ${y + h} Z" fill="#ffffff"/></g>`;
   // his new song posted with a still image : nobody stops on it (our own interface)
@@ -348,6 +434,13 @@
     s += `<rect x="40" y="650" width="480" height="10" rx="5" fill="#2a3142"/><rect x="40" y="650" width="60" height="10" rx="5" fill="${BLUE}"/><circle cx="100" cy="655" r="15" fill="${SNOW}"/>`;
     return s + T(280, 770, '0 écoute', 46, '#9aa6bd', { font: 'Rubik', weight: 800 });
   }
+  // the same still picture, as a post in the feed (0..560 × 0..1000) : nothing moves in it
+  const stillPic = () => `<rect width="560" height="1000" fill="#0b0d12"/><rect x="40" y="230" width="480" height="480" rx="18" fill="${NIGHT}" stroke="#2a3142" stroke-width="4"/>` +
+    `<g transform="translate(280 400)">${[0, 1, 2, 3, 4, 5].map(i => `<path d="M 0 0 L ${Math.sin(i * Math.PI / 3) * 90} ${-Math.cos(i * Math.PI / 3) * 90}" stroke="${ICE}" stroke-width="12" stroke-linecap="round"/>`).join('')}</g>` +
+    T(280, 590, 'T-CRAZY', 76, SNOW, { stroke: INK, sw: 10 }) + T(280, 656, 'nouveau son', 34, ICE, { font: 'Rubik', weight: 700 });
+  // his promo video of episode 2, as posted : his face in his room at night, the mouth moving (out of time, of course)
+  const myClip = () => `<rect width="560" height="1000" fill="#1d2a44"/><rect width="560" height="140" fill="#57adff" opacity="0.15"/>` +
+    headAt('frime', 280, 430, 1.05, '', false) + K({ blink: [3.1, 0.42] }, headAt('frime+parle', 280, 430, 1.05, '', false));
   // the light of a screen on a wall, from off screen (a game being played : never shown)
   const screenLight = (cx, cy) => `<defs><radialGradient id="sl1"><stop offset="0" stop-color="#57adff" stop-opacity="0.75"/><stop offset="1" stop-color="#57adff" stop-opacity="0"/></radialGradient><radialGradient id="sl2"><stop offset="0" stop-color="#e86ad6" stop-opacity="0.6"/><stop offset="1" stop-color="#e86ad6" stop-opacity="0"/></radialGradient><radialGradient id="sl3"><stop offset="0" stop-color="#5fe08a" stop-opacity="0.5"/><stop offset="1" stop-color="#5fe08a" stop-opacity="0"/></radialGradient></defs>` +
     `<g class="slight"><ellipse cx="${cx}" cy="${cy}" rx="420" ry="330" fill="url(#sl1)"/><ellipse cx="${cx + 140}" cy="${cy - 90}" rx="260" ry="200" fill="url(#sl2)"/><ellipse cx="${cx - 120}" cy="${cy + 120}" rx="240" ry="190" fill="url(#sl3)"/></g>`;
@@ -408,18 +501,24 @@
       over: () => carton('SIX HEURES PLUS TÔT') + sub(1, 'liam', 'Une vidéo pour la promo de mon son ? Dix minutes, max.') },
     { t: '0:14', cap: 'Carton « Six heures plus tard » : l\'horloge tourne', set: ROOMN, dim: 0.35,
       over: () => carton('SIX HEURES PLUS TARD') + clockBig(610, 600, 230) + headAt('panique+cerne', 300, 1060, 1.7, hp()) + sub(1, 'narrateur', 'Six heures plus tard, il découvre le vrai boss de fin : faire coller sa bouche à son son.') },
-    { t: '0:20', cap: 'Il recale sa bouche image par image', set: ROOMN0, zoom: [640, 1060, 1.6], dim: 0.45,
-      over: () => laptopBig(editor()) + headAt('colere+cerne', 300, 1150, 1.9, hp()) + sub(1, 'liam', 'Là, c\'est bon. Non. Là ! Non plus !') },
-    { t: '0:25', cap: 'Il poste quand même : un commentaire de « maya »', set: ROOMN, over: () => phoneBig(postScreen('Ta bouche est décalée sur toute la vidéo.', 'maya'), 0.92) + sub(1, 'liam', 'Un commentaire !') },
-    { t: '0:32', cap: 'Toc toc : Maya, la voisine, à la fenêtre', set: ROOM, chars: [CH('maya', 1, 865, 1490, 1150, 'frime', '', { clip: [722, 500, 286, 278], after: winPhone(722, 500, 286, 278, 760, 800) + vitre(722, 500, 286, 278) }), LI(380, 1846, 1200, 'frime')],
+    // v3 (owner, 16/11 : « l'écran doit être animé », « le téléphone sort de nulle part ») : the times below are seconds from the
+    // start of the shot, on the voice of line 5 (« Non. » at 2.2 s, « Non plus ! » at 3.94 s) and line 6 (2.6 s)
+    { t: '0:20', cap: 'Il recale sa bouche : il fait glisser sa vidéo pour mettre chaque bouche ouverte en face de son mot, rien ne colle', set: ROOMN0, zoom: [640, 1060, 1.6], dim: 0.45,
+      over: () => laptopBig(editor({ drag: [[0, 0], [0.95, 0], [1.55, -74], [2.5, -74], [3.15, -28]], cursor: [[0, 250, 140], [0.8, 0, 0], [0.95, 0, 0], [1.55, -74, 0], [2.5, -74, 0], [3.15, -28, 0]],
+        labels: [{ in: 0, out: 0.95, blink: [1.6, 0.7] }, { in: 2.2, pop: 0.3, out: 2.5 }, { in: 3.94, pop: 0.3, blink: [1.6, 0.8] }] })) + headAt('colere+cerne', 300, 1150, 1.9, hp()) + sub(1, 'liam', 'Là, c\'est bon. Non. Là ! Non plus !') },
+    { t: '0:25', cap: 'Il prend son téléphone et publie (« Publier », « Vidéo publiée ! ») ; une notification, puis le commentaire de « maya »', set: ROOMN, chars: [LI(540, 1846, 1250, 'frime+cerne', P.phone(606, 760), { pose: { raise: 'r' } })],
+      over: () => phoneBig(publish({ at: 1.0, pic: myClip(), feed: { user: 't.crazy', caption: 'Mon nouveau son !', sound: 'son original - T-Crazy', likes: 0, comments: 1, shares: 0 },
+        after: K({ in: 2.05, path: [[2.05, 0, -150], [2.35, 0, 0], [2.9, 0, 0], [3.15, 0, -150]] }, notifTop('maya', 'a commenté ta vidéo', '#c94f84')) +
+          K({ in: 2.95, path: [[2.95, 0, 470], [3.3, 0, 0]] }, comments('maya', 'Ta bouche est décalée sur toute la vidéo.', '#c94f84')) }), 0.92, { dl: 0.55 }) + sub(1, 'liam', 'Un commentaire !') },
+    { t: '0:32', cap: 'Toc toc : Maya, la voisine, à la fenêtre (la nuit)', set: ROOMN, chars: [CH('maya', 1, 865, 1490, 1150, 'frime', '', { clip: [722, 500, 286, 278], after: winPhone(722, 500, 286, 278, 760, 800) + vitre(722, 500, 286, 278) }), LI(380, 1846, 1200, 'frime')],
       over: () => knock(480, 330, -6) + tag('MAYA, LA VOISINE', 830, 450, 4) + sub(1, 'maya', 'Coucou T-Crazy ! Le commentaire, c\'est moi. Ta bouche est décalée sur toute la vidéo.') },
-    { t: '0:41', cap: 'Le téléphone de Maya : ses prises et son son entrent dans Stalak', set: ROOM, shade: true,
+    { t: '0:41', cap: 'Le téléphone de Maya : ses prises et son son entrent dans Stalak', set: ROOMN, shade: true,
       over: () => phoneBig(stalakApp({ takes: [['nuit', 'colere'], ['chambre', 'frime'], ['nuit', 'fierte']], count: 3, ti: -1, sticker: 'shock', dl: 1.2, word: 'prises' }), 0.92) + sub(1, 'maya', 'Tu mets ton son et tes prises.') },
-    { t: '0:46', cap: 'Le clip de Liam, coupé sur le temps, la bouche synchro', set: ROOM, shade: true,
+    { t: '0:46', cap: 'Le clip de Liam, coupé sur le temps, la bouche synchro', set: ROOMN, shade: true,
       over: () => phoneBig(stalakApp({ takes: [['nuit', 'colere'], ['chambre', 'frime'], ['nuit', 'fierte']], count: 3, ti: 0, sticker: 'cool', dl: 0.6, word: 'prises', lyric: 'le son de l\'année' }), 0.92) + sub(1, 'maya', 'Stalak coupe sur le rythme, et ta bouche reste synchro.') },
-    { t: '0:53', cap: 'Liam regarde son clip, ému', set: ROOM, chars: [LI(360, 1846, 1200, 'fierte+larme', P.phone(606, 760), { pose: { raise: 'r' } }), CH('maya', 1, 780, 1850, 1180, 'frime', P.phone(580, 1130))],
+    { t: '0:53', cap: 'Liam regarde son clip, ému ; Maya toujours à la fenêtre', set: ROOMN, chars: [CH('maya', 1, 865, 1490, 1150, 'frime', '', { clip: [722, 500, 286, 278], after: winPhone(722, 500, 286, 278, 760, 800) + vitre(722, 500, 286, 278) }), LI(380, 1846, 1200, 'fierte+larme', P.phone(606, 760), { pose: { raise: 'r' } })],
       over: () => sub(1, 'maya', 'Pas pour rien. T\'as appris la patience.') },
-    { t: '0:59', cap: 'Liam parle à celui qui regarde', set: ROOM0, zoom: [500, 960, 1.3], chars: [LI(540, 2730, 2250, 'frime', P.phone(606, 760), { pose: { raise: 'r' } })],
+    { t: '0:59', cap: 'Liam parle à celui qui regarde (la nuit)', set: ROOMN0, zoom: [500, 960, 1.3], chars: [LI(540, 2730, 2250, 'frime', P.phone(606, 760), { pose: { raise: 'r' } })],
       over: () => sub(1, 'liam', 'Si toi aussi tu passes tes nuits à recaler ta bouche sur ton son, arrête. Stalak le fait pour toi.') },
     { t: '1:07', cap: 'La carte de fin (le prochain à sortir : GTA 6, le 19 au soir)', plain: true, over: () => endCard(GTA) },
   ], 'Version 2 (16/11) : tes remarques de l\'épisode 1 appliquées.');
@@ -433,13 +532,21 @@
       over: () => tag('LIAM, ALIAS T-CRAZY', 330, 430, -3) + tag('DEUCE, SON POTE', 760, 590, 3) + sub(1, 'narrateur', 'Voici Liam. 15 ans. Zéro abonné. Il a choisi la pire date de l\'année pour sortir son son.') },
     { t: '0:09', cap: 'Liam, sûr de lui', set: ROOM0, zoom: [560, 960, 1.3], chars: [LI(360, 2250, 1500, 'frime', HP), CH('deuce', 1, 820, 2250, 1460, 'colere')],
       over: () => sub(1, 'liam', 'Justement. Tout le monde sera chez soi, devant un écran.') },
-    { t: '0:16', cap: 'Carton « Le 19 novembre » : le terrain et le lycée, vides', plain: true,
-      over: () => band(TERRAIN, 0, 700, 540, 1000, 1, 'ta') + band(LYCEE, 712, 1208, 540, 1316, 1, 'ly') + `<rect x="-10" y="700" width="1100" height="12" fill="${INK}"/>` + carton('LE 19 NOVEMBRE') + sub(1, 'narrateur', 'Le 19 novembre, jour de la sortie de GTA 6, tout le quartier a disparu.') },
+    // v2 (owner, 16/11 : « un seul décor ici, pas deux ») : the school corridor alone, then the empty court with a tumbleweed
+    // rolling across, as in a western ; the court comes on « jour de la sortie de GTA 6, tout le quartier a disparu » (2.36 s from the start of the shot)
+    { t: '0:16', cap: 'Carton « Le 19 novembre » : le couloir du lycée vide, puis le terrain vide où roule une boule d\'herbes sèches', plain: true,
+      over: () => K({ out: 2.36 }, band(LYCEE, 0, 1920, 540, 960, 1, 'ly')) + K({ in: 2.36 }, band(TERRAIN, 0, 1920, 540, 960, 1, 'ta') +
+        K({ lin: [1500, 0, 2.36, 5.5] }, `<ellipse cx="-160" cy="1712" rx="80" ry="14" fill="${INK}" opacity="0.25"/>`) + K({ lin: [1500, 0, 2.36, 5.5], spin: 320, hop: [34, 1.4] }, tumbleweed(-160, 1614, 88))) +
+        carton('LE 19 NOVEMBRE') + sub(1, 'narrateur', 'Le 19 novembre, jour de la sortie de GTA 6, tout le quartier a disparu.') },
     { t: '0:22', cap: "L'épicerie : « FERMÉ »", set: STREET, zoom: [668, 1060, 1.5], front: closed, chars: [CH('reyes', 1, 560, 1580, 820, 'frime', '', { clip: [303, 675, 476, 585], after: glare(303, 675, 476, 585) })],
       over: () => tag('M. REYES, L\'ÉPICIER', 360, 560, -3) + sub(1, 'reyes', 'Je vais jouer.') },
-    { t: '0:26', cap: 'Carton « Le soir » : son son, avec juste une image fixe', set: ROOM, over: () => phoneBig(stillPost(), 0.92) + carton('LE SOIR', 200) + sub(1, 'liam', 'Zéro écoute. Même pas ma mère.') },
-    { t: '0:32', cap: "Liam demande à sa mère ; elle, hors champ : la lumière d'un écran", set: KITCHEN, dim: 0.5, chars: [LI(780, 1846, 1200, 'fierte')],
-      over: () => screenLight(300, 760) + sub(1, 'nadia', 'Pas maintenant, je suis en pleine mission !') },
+    // v2 (owner, 16/11 : « une sorte de TikTok, avec les likes sur le côté, le pseudo ») : he posts his song with a still picture
+    // (the tap at 2.9 s, on « sort quand même son son »), the feed comes on « Avec juste une image fixe », and nothing moves
+    { t: '0:26', cap: 'Carton « Le soir » : il publie son son avec juste une image fixe ; dans le fil, zéro partout', set: ROOMN, chars: [LI(540, 1846, 1250, 'frime', P.phone(606, 760), { pose: { raise: 'r' } })],
+      over: () => phoneBig(publish({ at: 2.9, pic: stillPic(), feed: { user: 't.crazy', caption: 'Mon nouveau son !', sound: 'son original - T-Crazy', likes: 0, comments: 0, shares: 0 },
+        after: K({ in: 4.3, pop: 0.4 }, `<g transform="translate(26 112)"><rect width="236" height="58" rx="16" fill="#0b0d12" fill-opacity="0.8" stroke="${SNOW}" stroke-width="3"/><path d="M 24 15 L 50 29 L 24 43 Z" fill="${SNOW}"/>${T(146, 40, '0 écoute', 30, SNOW, { font: 'Rubik', weight: 800 })}</g>`) }), 0.92, { dl: 1.1 }) + carton('LE SOIR', 200) + sub(1, 'liam', 'Zéro écoute. Même pas ma mère.') },
+    { t: '0:32', cap: "Liam demande à sa mère ; elle, hors champ : la lumière d'un écran (la nuit)", set: KITCHEN, setOver: kitchenNight, dim: 0.55, chars: [LI(780, 1846, 1200, 'fierte')],
+      over: () => screenLight(300, 760) + carton('LA CUISINE', 360) + sub(1, 'nadia', 'Pas maintenant, je suis en pleine mission !') }, // a change of place : its caption (owner, 16/11)
     { t: '0:37', cap: 'Carton « Le lendemain · dans la rue » : Maya arrive et dit bonjour', set: STREET, setOver: closed, chars: [CH('maya', 1, 300, 1846, 1180, 'frime', P.phone(580, 1130)), LI(760, 1846, 1200, 'panique')],
       over: () => carton('LE LENDEMAIN · DANS LA RUE') + tag('MAYA, LA VOISINE', 300, 560, -4) + sub(1, 'maya', 'Ils jouent, oui. Mais entre deux parties, ils scrollent.') },
     { t: '0:47', cap: 'Il se filme trois fois dans le placard', set: ROOM0, zoom: [290, 900, 1.7], chars: [LI(420, 2250, 1500, 'fierte', P.phoneBack(606, 740), { pose: { raise: 'r' } })],
@@ -455,8 +562,9 @@
 
   // the manager episode comes out on 20/11, after the GTA 6 one : number 4 on screen
   ep('ep3', 'SON POTE S\'EST NOMMÉ SON MANAGER', 4, [
-    { t: '0:00', cap: "L'accroche : les bras chargés de glaçons, il crie", set: STREET, zoom: [540, 650, 1.5], criY: 740, chars: [LI(420, 2020, 1250, 'colere', BAGS(4)), CH('deuce', 1, 860, 2020, 1180, 'frime')],
-      over: () => bandeau(2, 'SON POTE S\'EST NOMMÉ SON MANAGER', 4) + FRAME.cri('liam', 'Mon manager m\'a fait acheter douze sachets de glaçons !', 740) },
+    // v2 (owner's remark on episode 1, for the whole series) : the one who shouts is in the middle, big, seen from the first picture
+    { t: '0:00', cap: "L'accroche : Liam au centre, les bras chargés de glaçons, il crie", set: STREET, zoom: [540, 650, 1.5], criY: 700, chars: [LI(540, 2700, 2150, 'colere', `<g transform="translate(0 120)">${BAGS(6)}</g>`)], // the bags lower : his face stays clear
+      over: () => bandeau(2, 'SON POTE S\'EST NOMMÉ SON MANAGER', 4) + FRAME.cri('liam', 'Mon manager m\'a fait acheter douze sachets de glaçons !', 700) },
     { t: '0:03', cap: 'Le narrateur présente Deuce', set: STREET, chars: [CH('deuce', 1, 380, 1846, 1300, 'frime'), LI(800, 1846, 1150, 'colere', BAGS(4))],
       over: () => tag('DEUCE, SON POTE', 380, 470, -3) + tag('LIAM, ALIAS T-CRAZY', 720, 640, 3) + sub(1, 'narrateur', 'Voici Deuce, le meilleur pote de Liam. Il s\'est nommé son manager. Personne ne lui a rien demandé.') },
     { t: '0:10', cap: 'Carton « Ce matin » : Deuce déroule son plan', set: STREET, zoom: [700, 1150, 1.3], chars: [CH('deuce', 1, 600, 2700, 2150, 'frime'), LI(160, 2300, 1500, 'panique')],
@@ -471,10 +579,10 @@
       over: () => sub(1, 'narrateur', 'Et toujours pas de clip.') },
     { t: '0:35', cap: 'Big Mo passe, avec ses deux suiveurs', set: STREET, chars: [CH('deuce', 2, 360, 1700, 1050, 'frime', '', { sil: true }), CH('bigmo', 2, 860, 1700, 1080, 'frime', '', { sil: true }), CH('bigmo', 1, 620, 1846, 1350, 'frime'), LI(170, 1846, 1100, 'panique', BAGS(2))],
       over: () => tag('BIG MO, LA STAR DU QUARTIER', 520, 400, -3) + sub(1, 'bigmo', 'Encore toi, le petit ? Moi, j\'ai posté trois clips ce matin.') },
-    { t: '0:43', cap: "Liam s'effondre sur le trottoir. Maya arrive et dit bonjour", set: STREET, zoom: [540, 1350, 1.25], chars: [CH('maya', 1, 880, 1900, 1420, 'frime', P.phone(580, 1130))],
-      over: () => tag('MAYA, LA VOISINE', 640, 520, 3) + lying('panique', 400, 1150, 0.55) + bigBag(110, 1190, -20, 1.4) + bigBag(690, 1200, 14, 1.4) + bigBag(600, 1110, -6, 1.4) + sub(1, 'maya', 'Salut T-Crazy. Big Mo, il fait pas trois tournages : il filme ses prises, et Stalak fait le montage.') },
-    { t: '0:50', cap: 'Stalak, dessiné : ses douze prises et son son, puis le clip', set: STREET, shade: true,
-      over: () => phoneBig(stalakApp({ takes: [['rue', 'fierte'], ['rue', 'frime'], ['rue', 'colere'], ['rue', 'fierte']], count: 12, ti: 2.4, sticker: 'cool', dl: 2.9 }), 0.92) + sub(1, 'narrateur', 'Liam met son son et ses douze prises dans Stalak. Stalak coupe sur le rythme et garde la synchro des lèvres.') },
+    { t: '0:43', cap: "Liam s'effondre sur le trottoir. Maya arrive et dit bonjour", set: STREET, zoom: [540, 1150, 1.25], chars: [CH('maya', 1, 880, 1900, 1420, 'frime', P.phone(580, 1130))],
+      over: () => tag('MAYA, LA VOISINE', 640, 520, 3) + lying('panique', 420, 1610, 0.55) + bigBag(470, 1610, -18, 1.25) + bigBag(690, 1650, 14, 1.3) + bigBag(590, 1560, -6, 1.25) + sub(1, 'maya', 'Salut T-Crazy. Big Mo, il fait pas trois tournages : il filme ses prises, et Stalak fait le montage.') },
+    { t: '0:50', cap: 'Liam, relevé, sort son téléphone : Stalak, dessiné, ses douze prises et son son, puis le clip', set: STREET, chars: [LI(540, 1846, 1250, 'fierte', P.phone(606, 760), { pose: { raise: 'r' } })],
+      over: () => phoneBig(stalakApp({ takes: [['rue', 'fierte'], ['rue', 'frime'], ['rue', 'colere'], ['rue', 'fierte']], count: 12, ti: 2.9, sticker: 'cool', dl: 3.4 }), 0.92, { dl: 0.5 }) + sub(1, 'narrateur', 'Liam met son son et ses douze prises dans Stalak. Stalak coupe sur le rythme et garde la synchro des lèvres.') },
     { t: '0:58', cap: 'M. Reyes regarde le clip par-dessus son épaule', set: STREET, chars: [CH('reyes', 1, 640, 1790, 1300, 'frime'), LI(470, 1880, 1200, 'fierte', P.phoneBack(606, 740), { pose: { raise: 'r' } })],
       over: () => sub(1, 'reyes', 'Pas mal. Pour le prochain clip, j\'ai une promo sur les glaçons.') },
     { t: '1:02', cap: 'Liam parle à celui qui regarde', set: STREET, zoom: [540, 1150, 1.3], chars: [LI(540, 2730, 2250, 'frime', P.phone(606, 760), { pose: { raise: 'r' } })],
@@ -484,23 +592,24 @@
 
   const SUNSET = ['rue', 1, 'jour'];
   ep('ep5', 'IL VOULAIT UN CLIP COMME DANS GTA', 5, [
-    { t: '0:00', cap: "L'accroche : M. Reyes, au centre, crie", set: SUNSET, setOver: sunset, zoom: [700, 1100, 1.2], criY: 700, chars: [CH('reyes', 1, 540, 2560, 1900, 'colere')],
+    { t: '0:00', cap: "L'accroche : M. Reyes, au centre, crie (le matin)", set: SUNSET, zoom: [700, 1100, 1.2], criY: 700, chars: [CH('reyes', 1, 540, 2560, 1900, 'colere')],
       over: () => bandeau(2, 'IL VOULAIT UN CLIP COMME DANS GTA', 5) + FRAME.cri('reyes', 'Rendez-moi ma plante !', 700) },
-    { t: '0:03', cap: 'Le narrateur présente Deuce', set: SUNSET, setOver: sunset, chars: [CH('deuce', 1, 380, 1846, 1300, 'fierte'), LI(800, 1846, 1150, 'frime')],
+    { t: '0:03', cap: 'Le narrateur présente Deuce', set: SUNSET, chars: [CH('deuce', 1, 380, 1846, 1300, 'fierte'), LI(800, 1846, 1150, 'frime')],
       over: () => tag('DEUCE, SON POTE', 380, 470, -3) + tag('LIAM, ALIAS T-CRAZY', 720, 640, 3) + sub(1, 'narrateur', 'Voici Deuce, le pote de Liam. Il a vu la bande-annonce de GTA 6. Maintenant, il veut un clip pareil.') },
-    { t: '0:10', cap: 'Carton « Ce matin » : Deuce décrit son clip', set: SUNSET, setOver: sunset, zoom: [540, 1150, 1.3], chars: [CH('deuce', 1, 540, 2900, 2050, 'fierte')],
-      over: () => dream(540, 640) + `<circle cx="600" cy="910" r="34" fill="${SNOW}" stroke="${INK}" stroke-width="7"/><circle cx="570" cy="975" r="20" fill="${SNOW}" stroke="${INK}" stroke-width="6"/>` + carton('CE MATIN', 230) + sub(1, 'deuce', 'On va faire un clip comme dans GTA. Des voitures de luxe, des palmiers, un hélicoptère.') },
-    { t: '0:15', cap: 'Ce qu\'ils ont vraiment : un scooter, une plante', set: SUNSET, setOver: sunset, chars: [LI(330, 1846, 1200, 'colere'), CH('deuce', 1, 820, 1846, 1180, 'frime', P.plant(590, 1090))],
+    { t: '0:10', cap: 'Carton « Plus tôt, ce matin » : Deuce décrit son clip', set: SUNSET, zoom: [540, 1150, 1.3], chars: [CH('deuce', 1, 540, 2900, 2050, 'fierte')],
+      over: () => dream(540, 640) + `<circle cx="600" cy="910" r="34" fill="${SNOW}" stroke="${INK}" stroke-width="7"/><circle cx="570" cy="975" r="20" fill="${SNOW}" stroke="${INK}" stroke-width="6"/>` + carton('PLUS TÔT, CE MATIN', 230) + sub(1, 'deuce', 'On va faire un clip comme dans GTA. Des voitures de luxe, des palmiers, un hélicoptère.') },
+    { t: '0:15', cap: 'Ce qu\'ils ont vraiment : un scooter, une plante', set: SUNSET, chars: [LI(330, 1846, 1200, 'colere'), CH('deuce', 1, 820, 1846, 1180, 'frime', P.plant(590, 1090))],
       over: () => `<g transform="translate(540 1480) scale(0.7) translate(-540 -1480)">${scooter(540, 1080, 1700, 0.57)}</g>` + sub(1, 'liam', 'On a un scooter.') },
-    { t: '0:18', cap: 'Le tournage : le scooter cale, le ventilateur-hélico', set: SUNSET, setOver: sunset, chars: [LI(420, 1700, 1150, 'panique'), CH('deuce', 1, 880, 1846, 1150, 'fierte', fan(640, 1000))],
+    { t: '0:18', cap: 'Le tournage : le scooter cale, le ventilateur-hélico', set: SUNSET, chars: [LI(420, 1700, 1150, 'panique'), CH('deuce', 1, 880, 1846, 1150, 'fierte', fan(640, 1000))],
       over: () => scooter(420, 1198, 1700) + smoke(170, 1580) + P.plant(120, 1300) + sub(1, 'narrateur', 'Budget du clip : un scooter emprunté et une plante verte.') },
-    { t: '0:26', cap: 'M. Reyes les a retrouvés : il crie', set: SUNSET, setOver: sunset, zoom: [700, 1100, 1.2], chars: [CH('reyes', 1, 640, 2600, 1900, 'colere')],
+    { t: '0:26', cap: 'M. Reyes les a retrouvés : il crie', set: SUNSET, zoom: [700, 1100, 1.2], chars: [CH('reyes', 1, 640, 2600, 1900, 'colere')],
       over: () => tag('M. REYES, L\'ÉPICIER', 250, 1280, -4) + sub(1, 'reyes', 'Rendez-moi ma plante !') },
-    { t: '0:30', cap: 'Carton « Le soir » : Liam fait défiler ses douze prises', set: SUNSET, setOver: sunset, over: () => phoneBig(gallery12(), 0.92) + carton('LE SOIR', 200) + sub(1, 'liam', 'C\'est nul. On dirait pas du tout un jeu vidéo.') },
+    { t: '0:30', cap: 'Carton « Le soir » : Liam sort son téléphone et fait défiler ses douze prises', set: SUNSET, setOver: sunset, chars: [LI(540, 1846, 1250, 'colere', P.phone(606, 760), { pose: { raise: 'r' } })],
+      over: () => phoneBig(gallery12(), 0.92, { dl: 1.1 }) + carton('LE SOIR', 200) + sub(1, 'liam', 'C\'est nul. On dirait pas du tout un jeu vidéo.') },
     { t: '0:38', cap: 'Maya arrive et dit bonjour', set: SUNSET, setOver: sunset, chars: [CH('maya', 1, 760, 1846, 1180, 'frime', P.phone(580, 1130)), LI(320, 1846, 1200, 'colere')],
       over: () => tag('MAYA, LA VOISINE', 760, 560, 4) + sub(1, 'maya', 'Salut les garçons ! Les gens veulent pas un jeu vidéo. Ils veulent te voir rapper ton son. Mets tes prises dans Stalak.') },
-    { t: '0:46', cap: 'Stalak, dessiné : le son et les douze prises entrent', set: SUNSET, setOver: sunset, shade: true,
-      over: () => phoneBig(stalakApp({ takes: [['coucher', 'fierte'], ['rue', 'frime'], ['coucher', 'colere'], ['rue', 'fierte']], count: 12, ti: -1 }), 0.92) + sub(1, 'narrateur', 'Liam met son son et ses douze prises dans Stalak.') },
+    { t: '0:46', cap: 'Liam ouvre Stalak sur son téléphone : le son et les douze prises entrent', set: SUNSET, setOver: sunset, chars: [LI(540, 1846, 1250, 'frime', P.phone(606, 760), { pose: { raise: 'r' } })],
+      over: () => phoneBig(stalakApp({ takes: [['coucher', 'fierte'], ['rue', 'frime'], ['coucher', 'colere'], ['rue', 'fierte']], count: 12, ti: -1 }), 0.92, { dl: 0.45 }) + sub(1, 'narrateur', 'Liam met son son et ses douze prises dans Stalak.') },
     { t: '0:52', cap: 'Le clip : le scooter, la plante, coupés sur le temps', set: SUNSET, setOver: sunset, shade: true,
       over: () => phoneBig(stalakApp({ takes: [['coucher', 'fierte'], ['rue', 'frime'], ['coucher', 'colere'], ['rue', 'fierte']], count: 12, ti: 0, sticker: 'cool', dl: 0.6 }), 0.92) + sub(1, 'narrateur', 'Stalak coupe sur le rythme et garde la synchro des lèvres.') },
     { t: '0:58', cap: 'Deuce, très fier', set: SUNSET, setOver: sunset, chars: [LI(320, 1846, 1200, 'colere'), CH('deuce', 1, 780, 1846, 1230, 'fierte')],

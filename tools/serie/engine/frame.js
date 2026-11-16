@@ -193,15 +193,16 @@
     if (F.plain) {
       defs += `<radialGradient id="bgp" cx="0.5" cy="0.5" r="0.6"><stop offset="0" stop-color="#3a86e8"/><stop offset="1" stop-color="${BLUE}"/></radialGradient>`;
       body += `<rect width="1080" height="1920" fill="url(#bgp)"/>`;
-    } else if (F.zoom) { // zoom : [cx, cy, k], the set seen closer around (cx, cy)
-      const [zx, zy, zk] = F.zoom;
+    } else if (F.zoom) { // zoom : [cx, cy, k], the set seen closer around (cx, cy) ; never past its edges (16/11 : no empty band)
+      const zk = F.zoom[2], zx = Math.min(Math.max(F.zoom[0], 540 / zk), 1080 - 540 / zk), zy = Math.min(Math.max(F.zoom[1], 960 / zk), 1920 - 960 / zk);
+      F.zoomUsed = [zx, zy, zk];
       body += `<g transform="translate(540 960) scale(${zk}) translate(${-zx} ${-zy})">${DECORS.scene(...F.set)}${F.setOver ? F.setOver() : ''}</g>`;
     } else {
       body += DECORS.scene(...F.set) + (F.setOver ? F.setOver() : ''); // setOver : drawn on the set, in its own coordinates (a sign on a shop)
     }
     (F.chars || []).forEach(c => { const r = who(c); defs += r.defs; body += r.svg; });
     // front : drawn in the set's coordinates but over the characters (a sign stuck on the glass of a shop window)
-    if (F.front) body += F.zoom ? `<g transform="translate(540 960) scale(${F.zoom[2]}) translate(${-F.zoom[0]} ${-F.zoom[1]})">${F.front()}</g>` : F.front();
+    if (F.front) body += F.zoom ? `<g transform="translate(540 960) scale(${F.zoomUsed[2]}) translate(${-F.zoomUsed[0]} ${-F.zoomUsed[1]})">${F.front()}</g>` : F.front();
     if (F.shade) {
       defs += `<linearGradient id="topsh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${INK}" stop-opacity="0.55"/><stop offset="1" stop-color="${INK}" stop-opacity="0"/></linearGradient>`;
       body += `<rect width="1080" height="900" fill="url(#topsh)"/>`;

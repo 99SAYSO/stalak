@@ -2,6 +2,63 @@
 
 > Marketing & croissance. Rien ne change sur le site : seulement `tools/serie/` et `docs/`.
 
+Statut : EN COURS (fabrication des épisodes dans Studio Stalak ; rien à publier sur le site). Tests : planches contact relues pour chaque vidéo déposée. Rien à faire par le Chef de projet, sauf garder la branche à jour.
+
+## 16/11, 18 h 45 : version 3 (ses remarques sur les épisodes 1, 2 et GTA 6), « Le manager » et « Le clip façon GTA » fabriqués, script de l'épisode 6
+
+- **Épisode 1 : validé par le propriétaire (v3, 16 h 52).** Ses 3 remarques du 2e tour sont faites : Nadia au centre dès la première image, le texte de 0:18 en sous-titre normal, Maya derrière la vitre. Une v4 existe aussi, avec le passage par le noir à chaque changement de moment, mais **elle n'est pas déposée**. On ne remplace pas une vidéo validée sans son accord (question posée).
+- **Sa règle (16 h 04) : « un enfant doit pouvoir comprendre »**, pour toutes les vidéos (`regle-comprendre-enfant` dans « Mes goûts »). Appliquée à toute la série :
+  - chaque changement de moment ou de lieu passe par le noir (`dip=True`), avec son carton lu avant la première réplique ;
+  - la lumière reste celle du moment : le matin en plein jour, la nuit jusqu'au carton suivant ;
+  - un seul décor à la fois ;
+  - on voit qui prend le téléphone avant son écran ;
+  - les écrans bougent pour qu'on comprenne l'action.
+- **Épisode 2 : version 3 (ses 8 remarques).**
+  - blancs coupés à 0:08, 0:27 et 1:01 ;
+  - l'écran de l'ordi est animé : Liam fait glisser sa vidéo pour mettre chaque bouche ouverte en face de son mot, et « DÉCALÉ » revient à chaque « Non » ;
+  - la publication est montrée : il prend son téléphone, appuie sur « Publier », voit « Vidéo publiée ! », puis la notification de maya et son commentaire ;
+  - tout reste de nuit après « SIX HEURES PLUS TARD » ;
+  - le « Non. » de Maya est refait : elle disait « ouais ». Il y a eu 2 essais et le bon est gardé, vérifié sur la voyelle.
+- **Épisode GTA 6 (n° 3) : version 2 (ses 2 remarques).**
+  - un seul décor à la fois : le couloir du lycée vide, puis le terrain vide où roule une boule d'herbes sèches, avec un coup de vent ;
+  - le téléphone montre un fil façon TikTok, sans logo : il publie son son avec juste une image fixe, et tout reste à 0 (cœur, commentaires, partages, « 0 écoute »).
+- **« Le manager » (n° 4) et « Le clip façon GTA » (n° 5) : fabriqués** avec toutes les règles :
+  - celui qui crie est au centre (les sachets portés plus bas, son visage reste visible) ;
+  - le téléphone qu'on voit sortir ;
+  - Liam qui tombe sur le trottoir (avant, il flottait devant la vitrine) ;
+  - le passage par le noir.
+- **Pas de blanc, mais une durée plus courte.** Le propriétaire ne veut pas de blanc (« il faut cut à ce moment la séquence »). `plan` n'ajoute donc plus que 0,15 s avant une réplique et 0,2 s après. Le temps vient des actions qu'on voit : la publication, le clip qui joue sur le rythme, la boule d'herbes. Résultat, les épisodes durent un peu plus d'une minute :
+  - épisode 2 : 1 min 00,6 ;
+  - manager : 1 min 01 ;
+  - clip façon GTA : 1 min 01 ;
+  - GTA 6 : 1 min 18.
+
+  **Question posée au propriétaire** : sa règle dit 1 min 05 au moins. Pour y arriver sans blanc, il faut ajouter une ou deux répliques par épisode, ce qui veut dire un script à revalider et environ 0,03 $ de voix par épisode.
+- **Moteur** :
+  - `anim.js` : les actions d'un plan, `K({...})`, en secondes depuis son début ;
+  - `storyboard.js` :
+    - `editor()` animé ;
+    - `publish()` : la page « Nouvelle vidéo », le doigt, « Vidéo publiée ! » ;
+    - `feed()` : un fil façon TikTok, sans logo ;
+    - `notifTop()`, `comments()`, `tumbleweed()`, `stillPic()`, `myClip()` ;
+    - `phoneBig(…, {dl})` : le téléphone arrive après qu'on a vu qui le tient ;
+  - `frame.js` : le zoom d'un décor ne dépasse plus ses bords (des bandes vides de 46 à 248 px existaient dans 9 plans) ;
+  - `tcrazy.py` : petites pauses seulement, et `fixed=True` pour un plan aux actions calées sur la voix.
+- **Épisode 6, « L'appli a fermé » (l'idée du propriétaire du 16/11, 17 h 27)** : le script est dans Studio Stalak (`tcrazy-ep6`, `script`, le 22/11 à confirmer). Choix faits, écrits en tête du script pour sa validation :
+  - l'appli qui ferme n'est pas nommée : aucun concurrent cité, et Triller n'a pas fermé officiellement (retiré du Nasdaq, l'appli ne charge plus les vidéos) ;
+  - « installer » devient « aller sur stalak.app » : rien à télécharger ;
+  - Deuce filme avec la caméra de Stalak (le son passe après le décompte) ;
+  - Liam publie lui-même sur TikTok, car la publication directe n'existe pas encore ;
+  - Stalak arrive vers le milieu, car l'histoire est sa découverte.
+
+  18 répliques à générer après validation, environ 0,23 $. **À décider avec lui** : la carte de fin de l'épisode 5 annonce « Le clash au terrain ». Elle annoncera celui-ci s'il sort le 22.
+- **Coûts du 16/11 après 16 h** :
+  - épisode 2 : 0,039 $, puis 0,026 $ pour le « Non » ;
+  - GTA 6 : 0,078 $ ;
+  - manager : 0,143 $ ;
+  - clip façon GTA : 0,156 $.
+- Skills utilisés : `stalak-da`, `stalak-videos-reseaux`, `planche-contact`.
+
 ## 16/11, 16 h 10 : version 2 de toute la série (les remarques du propriétaire sur l'épisode 1)
 
 - **La fabrication (13 h 45 → 15 h 20).** Feu vert donné (`lots/2026-11-16`). Voix réplique par réplique (« réplique par réplique mais faut que ça reste réaliste »), Liam ×1,1. Ordre de sortie confirmé : « ordre comme tu veux mais je veux celle sur GTA 6 le 19 ». Épisodes 1 et 2 fabriqués, relus sur planche contact et déposés (`video`, avec `miniatureUrl` et `plancheUrl`). L'épisode GTA 6 était à 85 % quand le propriétaire a tout arrêté (15 h 23).

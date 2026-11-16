@@ -4,6 +4,7 @@
 > L'univers a été choisi par le propriétaire dans Studio Stalak (onglet Univers), entre le 15/11 à 22 h 26 et le 16/11 à 4 h 56. Le détail des choix est dans `docs/marketing/SERIE_UNIVERS.md`.
 > Cette bible remplace celle de « Studio Chambre » (Yanis), abandonnée le 15/11.
 > **Version 2 (16/11, 16 h)** : les 10 remarques du propriétaire sur la vidéo de l'épisode 1, appliquées à toute la série (règle `regle-remarques-toute-serie` : une remarque sur une vidéo vaut pour toutes, même celles déjà envoyées).
+> **Version 3 (16/11, 18 h)** : ses remarques sur l'épisode 1 (2e tour), l'épisode 2 (8 remarques) et l'épisode GTA 6 (2 remarques), plus sa règle « un enfant doit pouvoir comprendre », appliquées à toute la série (voir « Pour qu'un enfant comprenne » et « Pas de blanc »).
 
 ## L'idée
 
@@ -11,16 +12,26 @@ Liam a 15 ans, et son nom de rappeur est T-Crazy. Il enregistre dans le placard 
 
 Le ton est celui d'un dessin animé américain inspiré de l'anime, avec le délire hustler, dans l'univers glacé de Stalak. On ne reprend aucun personnage, aucune tenue et aucun décor d'une autre série.
 
-**Stalak n'arrive qu'à la fin**, quand Liam ouvre l'appli : la mascotte officielle réagit dans son téléphone.
+**Stalak n'arrive qu'à la fin**, quand Liam ouvre l'appli : la mascotte officielle réagit dans son téléphone. Exception : l'épisode 6 (« L'appli a fermé », l'idée du propriétaire du 16/11), dont l'histoire est la découverte de Stalak, l'amène vers le milieu.
 
 ## Le format
 
-- **Durée** : entre 1 min 05 et 1 min 20, en vertical 9:16. **Pas de générique.**
+- **Durée** : entre 1 min 05 et 1 min 20 (règle du 15/11), en vertical 9:16. **Pas de générique.** Depuis qu'on coupe tous les blancs (16/11), les épisodes déjà écrits durent entre 1 min 00 et 1 min 02 (l'épisode GTA 6 : 1 min 18). Pour remonter à 1 min 05, il faudrait ajouter une ou deux répliques par épisode : c'est au propriétaire de choisir (question posée le 16/11).
 - **0:00, le cri** : un personnage crie une phrase liée à l'épisode, qui **choque ou fait tout de suite se poser une question** (16/11). Exemple : « Tu m'as enregistrée sans me le dire ?! ». La même phrase revient au milieu ou à la fin, et c'est là qu'on comprend la scène.
-- **Les cris s'écrivent en grand** (16/11) : pas de carte de sous-titre, mais les mots eux-mêmes, en blanc cerné de noir, qui apparaissent un par un pendant qu'ils sont criés, vers le milieu ou le haut de l'écran, sans couvrir un visage. Le nom de celui qui crie est à côté. Ensuite, on revient aux sous-titres. Une réplique est un cri quand le script dit « (crie) ».
+- **Celui qui crie est au centre, en grand, bien visible dès la première image** (16/11, remarque sur l'épisode 1). Le texte peut passer sur lui, ce n'est pas grave. Rien ne cache son visage (les sachets de glaçons sont portés plus bas, par exemple).
+- **Seul le cri de l'accroche s'écrit en grand** (16/11) : pas de carte de sous-titre, mais les mots eux-mêmes, en blanc cerné de noir, qui apparaissent un par un pendant qu'ils sont criés, vers le milieu ou le haut de l'écran, de préférence sur 2 lignes. Le nom de celui qui crie est à côté. Toutes les autres répliques, même criées plus tard, sont en sous-titre normal.
 - **Le bandeau** : en haut, en majuscules, sur la bande bleue penchée avec de la neige dessus (version 4). Le titre est **une phrase qui donne le contexte**, pas un nom d'épisode (16/11). Par exemple « SA MÈRE A CRIÉ EN PLEINE PRISE », dans l'esprit de « IL A RENCONTRÉ UN GROS PROBLÈME » ou « ELLE EST TOUJOURS SUR SON TÉLÉPHONE ».
 - **Puis le narrateur.** Le bandeau disparaît dès qu'il parle. Il présente vite les personnages et le contexte, puis il alterne avec eux.
 - **Les sous-titres** : tout ce qui est dit est écrit, sur une carte blanche, avec le nom de celui qui parle dans une étiquette à sa couleur. Une phrase entière par carte quand elle tient, et la carte change quand la voix fait une pause.
+- **Pour qu'un enfant comprenne** (16/11, règle `regle-comprendre-enfant` : « un enfant doit pouvoir comprendre ce qu'il se passe ») :
+  - jamais de passage d'un coup de la nuit au jour, ni d'un lieu à un autre sans qu'on comprenne pourquoi : chaque changement de moment ou de lieu **passe par le noir** (l'image s'assombrit, puis la nouvelle apparaît), avec son carton, et le carton est lu avant que quelqu'un parle ;
+  - la lumière reste celle du moment : une scène du matin reste en plein jour, et une scène de nuit reste de nuit jusqu'au prochain carton ;
+  - **un seul décor à la fois** (pas d'écran coupé en deux) ; pour montrer qu'un lieu est vide, une boule d'herbes sèches roule dessus, comme dans un western ;
+  - **un écran bouge pour qu'on comprenne ce que fait le personnage** : sur l'ordi, Liam fait glisser sa vidéo pour mettre chaque bouche ouverte en face de son mot, et « DÉCALÉ » revient à chaque échec ;
+  - **on voit qui prend le téléphone** avant que son écran remplisse l'image, et une publication se montre étape par étape : « Publier », un doigt qui appuie, « Vidéo publiée ! », puis la vidéo dans le fil ;
+  - **un fil de vidéos ressemble à TikTok**, dessiné par Claude et sans logo : le cœur, les commentaires et le partage à droite, avec leurs chiffres, le pseudo, la légende et le son en bas ;
+  - un personnage derrière une fenêtre a la vitre devant lui (teinte et reflets). La fenêtre de la cuisine n'a qu'un seul carreau.
+- **Pas de blanc** (16/11, remarques sur l'épisode 2 : « il faut cut à ce moment la séquence, il y a un blanc trop long sinon ») : on coupe dès que la phrase est finie. Un plan ne reste sans parole que s'il s'y passe quelque chose qu'on doit voir (une publication, le clip qui joue sur le rythme, une boule d'herbes qui roule). Sans blancs, un épisode dure environ 1 min (voir « Durée »).
 - **On comprend toujours où on est et qui arrive** (16/11) :
   - chaque changement de lieu ou de moment a un carton en haut de l'écran (« UNE HEURE PLUS TÔT », « CINQ MINUTES PLUS TARD · LA CUISINE ») ;
   - on voit pourquoi on y est (Liam fait la vaisselle parce que sa mère l'a demandé) et d'où sort un objet (il sort son téléphone de sa poche) ;
@@ -89,6 +100,7 @@ Chaque réplique est générée à part, avec son émotion, mais reste réaliste
 
   C'est à faire vérifier par Juridique.
 - Pas de pause ajoutée dans les voix.
+- La voix dit exactement ce qui est écrit à l'écran. Une réplique d'un seul mot est vérifiée avant le montage (16/11 : dans l'épisode 2, Maya disait « ouais » au lieu de « Non »), en comparant le son de la voyelle.
 - Tout est dessiné par Claude en code : Flora ne sert qu'aux voix.
 - Une remarque sur une vidéo vaut pour toute la série : on l'applique aux suivantes et on refait celles déjà envoyées (16/11).
 
@@ -111,6 +123,7 @@ Les images, les musiques et le rendu coûtent 0 $. Une génération de voix coû
 | SON POTE S'EST NOMMÉ SON MANAGER | Liam : « Mon manager m'a fait acheter douze sachets de glaçons ! » | Douze prises devant l'épicerie, un sachet de glaçons par prise. (pilote 3) |
 | IL SORT SON SON LE JOUR DE GTA 6 | Deuce : « Sortir ton son le jour de GTA 6 ?! T'es fou ! » | Tout le quartier joue. Mais entre deux parties, ils scrollent : il lui faut un clip, pas juste un son. (actualité, 19/11) |
 | IL VOULAIT UN CLIP COMME DANS GTA | M. Reyes : « Rendez-moi ma plante ! » | Un scooter, une plante verte et douze prises ratées, coupées sur le rythme. (actualité) |
+| L'APPLI DE SES VIDÉOS PROMO A FERMÉ | Liam : « Ils ont fermé l'appli ?! Toute ma promo était dessus ! » | L'idée du propriétaire (16/11). L'appli où il faisait ses snippets ferme, et elle n'est pas nommée. Maya et Deuce lui parlent de Stalak : il va sur stalak.app, sans rien installer. Deuce le filme en 3 prises (seul, avec Maya qui s'ambiance, seul), puis Stalak monte le clip et Liam le poste sur TikTok. (script à valider, épisode 6) |
 | LE RIVAL POSTE UN CLIP PAR JOUR | Big Mo : « T'as zéro abonné et tu me clashes ?! » | Big Mo poste tous les jours. Liam veut comprendre comment. |
 | IL A POSTÉ SON SON AVANT DE LE FINIR | Liam : « Ils veulent le son en entier ?! » | Il poste un extrait à 3 h du matin, et le son n'est pas fini. |
 | TOUT LE LYCÉE A VU SA VIDÉO DÉCALÉE | Maya : « Toute l'école a vu ta bouche décalée. » | Il montre sa vidéo dans le couloir, et le son est décalé. |

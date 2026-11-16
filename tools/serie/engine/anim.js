@@ -58,7 +58,7 @@
   function compose(i) {
     const S = D.shots[i];
     FRAME.MUTE_SUB = true;
-    svg.innerHTML = `<g id="cam">${FRAME.compose(S.frame)}</g><g id="ui"></g><g id="subs"></g><g id="cri"></g>`;
+    svg.innerHTML = `<g id="cam">${FRAME.compose(S.frame)}</g><g id="ui"></g><g id="subs"></g><g id="cri"></g><rect id="dip" width="1080" height="1920" fill="#0a0d14" opacity="0"/>`;
     FRAME.MUTE_SUB = false;
     place();
     const cam = svg.querySelector('#cam'), ui = svg.querySelector('#ui');
@@ -87,11 +87,46 @@
       spins: [...svg.querySelectorAll('.blades')], hands: [...svg.querySelectorAll('.hands')],
       bus: svg.querySelector('.bus'), dogs: [...svg.querySelectorAll('.dog')], smoke: [...svg.querySelectorAll('.smoke')],
       lights: [...svg.querySelectorAll('.slight')], caps: [...svg.querySelectorAll('.cap')], scooters: [...svg.querySelectorAll('.scooter')],
+      // the little actions on a screen or in a scene, written in storyboard.js with K({...}) (see kf() below)
+      kfs: [...svg.querySelectorAll('[data-k]')].map(el => ({ el, o: JSON.parse(el.dataset.k), c: centre(el) })),
     };
     cur = i;
   }
   const show = (list, on) => list.forEach(el => el.setAttribute('display', on ? 'inline' : 'none'));
   const scaleAt = (el, c, k, extra = '') => el.setAttribute('transform', `${extra} translate(${c[0].toFixed(1)} ${c[1].toFixed(1)}) scale(${k.toFixed(4)}) translate(${(-c[0]).toFixed(1)} ${(-c[1]).toFixed(1)})`);
+
+  // one action of a shot (storyboard.js K({...}), 16/11 : the owner wants to see what happens, « pour qu'on comprenne »).
+  // Times are in seconds from the start of the shot ; a negative time counts from its end. Keys :
+  //   in, out : shown from `in`, gone at `out` ; pop : start scale of a spring pop at `in` ; gone : [a, b] shrinks away
+  //   path : [[t, dx, dy]...] a move between key positions (eased) ; lin : [dx, dy, a, b, repeat] a steady move
+  //   osc : [ax, ay, hz] a wobble ; hop : [height, hz] bounces ; spin : degrees per second ; blink : [hz, duty]
+  //   fadein, fade : [a, b] opacity ; ripple : [a, b] a tap ring that grows and fades
+  function kf(K, lt, dur) {
+    const o = K.o, T = v => (v < 0 ? dur + v : v);
+    let vis = true, k = 1, tx = 0, ty = 0, rot = 0, op = 1;
+    if (o.in != null) { const a = T(o.in); vis = lt >= a; if (o.pop != null) k = o.pop + (1 - o.pop) * spring(lt, a, o.ks || 300, o.kd || 18); }
+    if (o.out != null && lt >= T(o.out)) vis = false;
+    if (o.gone) { const p = seg(lt, T(o.gone[0]), T(o.gone[1])); k *= 1 - eout(p); if (p >= 1) vis = false; }
+    if (o.path) {
+      const P = o.path.map(q => [T(q[0]), q[1] || 0, q[2] || 0]);
+      let q = P[P.length - 1];
+      if (lt <= P[0][0]) q = P[0];
+      else for (let j = 0; j < P.length - 1; j++) if (lt < P[j + 1][0]) { const p = eio(seg(lt, P[j][0], P[j + 1][0])); q = [lt, P[j][1] + (P[j + 1][1] - P[j][1]) * p, P[j][2] + (P[j + 1][2] - P[j][2]) * p]; break; }
+      tx += q[1]; ty += q[2];
+    }
+    if (o.lin) { const [dx, dy, a, b, rep] = o.lin; let p = (lt - T(a)) / Math.max(1e-6, T(b) - T(a)); p = rep ? ((p % 1) + 1) % 1 : clamp(p, 0, 1); tx += dx * p; ty += dy * p; }
+    if (o.osc) { const [ax, ay, hz] = o.osc; tx += ax * Math.sin(2 * Math.PI * hz * lt); ty += ay * Math.sin(2 * Math.PI * hz * lt + 1.3); }
+    if (o.hop) ty -= o.hop[0] * Math.abs(Math.sin(Math.PI * o.hop[1] * lt));
+    if (o.spin) rot += o.spin * lt;
+    if (o.blink) { const [hz, duty] = o.blink; vis = vis && (((lt * hz) % 1) + 1) % 1 < (duty == null ? 0.5 : duty); }
+    if (o.fadein) op *= eout(seg(lt, T(o.fadein[0]), T(o.fadein[1])));
+    if (o.fade) op *= 1 - seg(lt, T(o.fade[0]), T(o.fade[1]));
+    if (o.ripple) { const p = seg(lt, T(o.ripple[0]), T(o.ripple[1])); k *= 0.4 + 1.3 * eout(p); if (p <= 0 || p >= 1) vis = false; op *= 1 - p; }
+    K.el.setAttribute('display', vis ? 'inline' : 'none');
+    if (!vis) return;
+    K.el.setAttribute('opacity', op.toFixed(3));
+    scaleAt(K.el, K.c, Math.max(0.001, k), `translate(${tx.toFixed(1)} ${ty.toFixed(1)})` + (rot ? ` rotate(${(rot % 360).toFixed(2)} ${K.c[0].toFixed(1)} ${K.c[1].toFixed(1)})` : ''));
+  }
 
   // the pop of each kind of element : [delay after the shot starts, spring stiffness, damping, start scale]
   const POP = { phone: [0, 240, 20, 0.55], laptop: [0, 260, 24, 0.85], sticker: [0.55, 300, 13, 0], tag: [0.3, 300, 16, 0], notif: [0.25, 260, 20, 0.4],
@@ -153,6 +188,7 @@
     R.lights.forEach(el => el.setAttribute('opacity', (0.65 + 0.35 * (noise(t * 9, 4) + 1) / 2).toFixed(3)));
     R.caps.forEach(el => el.setAttribute('transform', `translate(0 ${(-70 * eio(seg(lt, 0.8, dur))).toFixed(1)})`));
     R.scooters.forEach(el => el.setAttribute('transform', `translate(${(noise(t * 18, 9) * 3).toFixed(1)} ${(noise(t * 21, 5) * 2.5).toFixed(1)})`));
+    R.kfs.forEach(K => kf(K, lt, dur));
     // the Stalak screen : the song and the takes go in (they pop one by one), « Montage du clip… », then the clip plays,
     // cut from one take to the next every 2 beats of the music, Liam's mouth opening on the half beats
     for (const K of R.stk) {
@@ -194,6 +230,13 @@
         if (t >= w.t) scaleAt(w.el, w.c, Math.max(0.001, 0.25 + 0.75 * spring(t, w.t, 520, 26)), `rotate(${(6 * (1 - spring(t, w.t, 300, 16))).toFixed(2)} ${w.c[0].toFixed(1)} ${w.c[1].toFixed(1)})`);
       }
     } else if (sb) { const k = 0.86 + 0.14 * spring(t, sb.t0, 320, 22); R.subs.setAttribute('transform', `translate(500 1420) scale(${k.toFixed(4)}) translate(-500 -1420)`); }
+    // a change of time or place (a shot with dip : true, the one with its caption) : the picture goes dark, then the new
+    // moment appears, so that a child understands that time has passed (owner, 16/11 at 17 h 04 : « pas de passage trop rapide »)
+    const nx = D.shots[R.i + 1];
+    let dk = 0;
+    if (S.dip) dk = Math.max(dk, 1 - eout(seg(lt, 0, 0.4)));
+    if (nx && nx.dip) dk = Math.max(dk, eio(seg(t, S.t1 - 0.35, S.t1)));
+    svg.querySelector('#dip').setAttribute('opacity', dk.toFixed(3));
   };
 
   // for the render : the picture at t, once the pictures of a new shot are decoded

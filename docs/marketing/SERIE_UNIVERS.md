@@ -290,6 +290,18 @@ Les voix de Big Mo et de M. Reyes seront choisies quand un épisode validé les 
 - GTA 6 : le nom seulement. Le jeu n'est jamais montré (une lumière d'écran sur le mur suffit).
 - Le numéro à l'écran et le « prochain épisode » suivent l'ordre de sortie (proposé le 16/11, à confirmer par le propriétaire).
 
+## Étape 4 : la fabrication des épisodes (16/11)
+
+- Le pipeline : `SERIE_WORK=<dossier> python3 tools/serie/tcrazy.py <ep> <étape>`, avec les étapes `prompts`, `voices`, `plan`, `frames [a b]`, `encode`, `audio`, `mux`, `sheet`, `thumb`, `deliver`. Les plans de chaque épisode sont dans `tools/serie/episodes/tcrazy_eps.py`, et les images dans `tools/serie/engine/storyboard.js`.
+- **Version 3 (16/11, 18 h)**, d'après les remarques du propriétaire, pour toute la série :
+  - `anim.js` : les petites actions d'un plan, écrites `K({...})` dans le storyboard, en secondes depuis le début du plan. On peut faire apparaître, bouger, rouler, clignoter, et dessiner l'onde d'un doigt qui appuie ;
+  - le passage par le noir (`dip=True`) à chaque changement de moment ou de lieu, avec au moins 1 s avant la première réplique ;
+  - les écrans dessinés : l'éditeur où Liam fait glisser sa vidéo (« DÉCALÉ »), la page « Nouvelle vidéo » avec son bouton « Publier », et le fil façon TikTok, sans logo (cœur, commentaires, partage, pseudo), avec la notification qui tombe et les commentaires qui montent ;
+  - la boule d'herbes sèches qui roule sur un lieu vide ;
+  - le zoom d'un décor ne dépasse plus ses bords (avant, une bande vide pouvait apparaître sur le côté) ;
+  - plus de blanc : `plan` n'ajoute plus que de toutes petites pauses (0,15 s avant une réplique, 0,2 s après), et jamais dans un plan aux actions calées (`fixed=True`).
+- **Voix vérifiées** : une réplique d'un seul mot est comparée au son attendu (la voyelle de la fin), avec le script `formants.py` du dossier de travail. Le « Non. » de Maya (épisode 2), qui disait « ouais », est refait (2 essais, le bon gardé).
+
 ## Coûts
 
 - **Visuels : 0 $** (dessinés en code).
@@ -300,3 +312,4 @@ Les voix de Big Mo et de M. Reyes seront choisies quand un épisode validé les 
 - **Musique : 0 $** (Pixabay, choisie le 16/11 faute de beats du propriétaire).
 - Solde Flora au 15/11 : 2,76 $, après les 0,42 $ des planches générées puis retirées.
 - 16/11 : 0,039 $ pour les 3 voix du narrateur ; solde Flora environ 2,72 $.
+- 16/11, fabrication : épisode 1 v2 0,091 $, épisode GTA 6 0,169 $ puis 0,078 $, épisode 2 0,039 $ puis 0,026 $ (le « Non » de Maya, 2 essais), « Le manager » 0,143 $, « Le clip façon GTA » 0,156 $.

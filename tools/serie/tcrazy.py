@@ -320,16 +320,18 @@ def plan(ep):
         E = T.EPISODES[ep]
         defi = {}
         for k, (frame, refs, opt) in enumerate(E['shots'][:-1]):
+            if opt.get('fixed'):  # a shot whose actions are timed on its lines (storyboard K) : never moved
+                continue
             want = times[k + 1] - times[k]
             starts_mid = bool(refs) and re.match(r'\d+[bc]$', str(refs[0]))
             ends_mid = nat[k]['mid']
             if not (starts_mid and ends_mid):
                 defi[k] = max(0.0, want - nat[k]['dur'])
         cap = {}
-        for k in defi:
+        for k in defi:  # small : no blank between two lines (owner, 16/11 : « il faut cut à ce moment la séquence, il y a un blanc »)
             refs = E['shots'][k][1]
             can_lead = k > 0 and bool(refs) and not re.match(r'\d+[bc]$', str(refs[0]))
-            cap[k] = (0.8 if can_lead else 0.0, 0.0 if nat[k]['mid'] else 2.2)
+            cap[k] = (0.15 if can_lead else 0.0, 0.0 if nat[k]['mid'] else 0.2)
         hold = {k: 0.0 for k in defi}
         left = missing
         for _ in range(8):  # in proportion to what each shot lacks, never over its cap
@@ -364,7 +366,10 @@ def _build(ep, pad):
         for name, at, gain in opt.get('sfx', []):
             sfx.append(dict(name=name, t=round(t0 + at, 3), gain=gain))
         pl, pa = pad.get(k, (0.0, 0.0))
-        cur, mid = t0 + (LEAD if k == 0 else 0.0) + opt.get('lead', 0.0) + pl, False
+        lead = opt.get('lead', 0.0) + pl
+        if opt.get('dip'):  # a change of time or place : the picture comes out of the dark and its caption is read before
+            lead = max(lead, 1.0)  # anyone speaks (owner, 16/11 at 17 h 04 : « un enfant doit pouvoir comprendre »)
+        cur, mid = t0 + (LEAD if k == 0 else 0.0) + lead, False
         for j, ref in enumerate(refs):
             m = re.match(r'(\d+)([abc]?)$', str(ref))
             n, part = int(m.group(1)), m.group(2)
@@ -399,7 +404,7 @@ def _build(ep, pad):
             t = t0 + opt.get('hold', 3.0)
         else:
             t = cur + (0.0 if mid else CUT + opt.get('after', 0.0) + pa)
-        shots.append(dict(frame=frame, t0=round(t0, 3), t1=round(t, 3)))
+        shots.append(dict(frame=frame, t0=round(t0, 3), t1=round(t, 3), dip=bool(opt.get('dip'))))
         nat.append(dict(dur=t - t0, mid=mid))
     subs.sort(key=lambda s: s['t0'])
     for i in range(len(subs) - 1):  # a subtitle never stays over the next one

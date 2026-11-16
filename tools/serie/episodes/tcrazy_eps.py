@@ -48,19 +48,23 @@ TIMES = {
     'ep3': [0, 3, 10, 18, 25, 28, 30, 35, 43, 50, 58, 62, 70],
     'ep5': [0, 3, 10, 15, 18, 26, 30, 38, 46, 52, 58, 62, 70],
 }
-TARGET = 67.0  # seconds : the shortest episode we make (the rule says 65 s at least)
+TARGET = 65.0  # seconds : the rule says 65 s at least. The pauses added to get there are small (tcrazy.py plan) : the owner
+# does not want blanks (16/11, episode 2 : « il faut cut à ce moment la séquence, il y a un blanc trop long sinon »), so the
+# time comes from things that happen on screen (fixed=True : a shot whose actions are timed on its lines, never padded)
 
-# the shouted lines (« (crie) » in the script) are written big on screen, word by word (tcrazy.py is_cri, frame.js cri)
+# the shout of the hook (« (crie) » on the first line) is written big on screen, word by word (tcrazy.py is_cri, frame.js cri).
+# dip=True : a change of time or place (the shot with its caption, or the narrator saying where we are) : the picture goes
+# dark and comes back, the caption is read before anyone speaks (owner, 16/11 at 17 h 04 : « un enfant doit pouvoir comprendre »)
 EPISODES = {
     'ep1': dict(card='tcrazy-ep1', same={14: 1}, shots=[
         ('ep1-01', [1], dict(music='galere', sfx=[('whoosh-short.mp3', 0.0, 0.3)])),
         ('ep1-02', [2], {}),
-        ('ep1-03', [3, 4], {}),
+        ('ep1-03', [3, 4], dict(dip=True)),
         ('ep1-04', [5], {}),
         ('ep1-05', [6, 7], {}),
         ('ep1-06', [8], dict(music='plan')),
         ('ep1-07', [9], {}),
-        ('ep1-08', [10], dict(music='hustle')),
+        ('ep1-08', [10], dict(music='hustle', dip=True)),
         ('ep1-09', [11], {}),
         ('ep1-10', [12], dict(sfx=[('knock.wav', 0.05, 0.55)])),
         ('ep1-11', [13], dict(music='victoire', sfx=[('pop.mp3', 3.1, 0.45)])),
@@ -73,14 +77,16 @@ EPISODES = {
     'ep2': dict(card='tcrazy-ep2', same={}, shots=[
         ('ep2-01', [1], dict(music='galere', sfx=[('whoosh-short.mp3', 0.0, 0.3)])),
         ('ep2-02', [2], {}),
-        ('ep2-03', [3], {}),
-        ('ep2-04', [4], dict(music='hustle')),
-        ('ep2-05', [5], {}),
-        ('ep2-06', [6], dict(lead=0.3, after=1.3, sfx=[('notification.mp3', 0.1, 0.4)])),
-        ('ep2-07', [7, 8, 9], dict(lead=0.7, sfx=[('knock.wav', 0.05, 0.55)])),  # the knock is heard before « Coucou »
+        ('ep2-03', [3], dict(dip=True)),
+        ('ep2-04', [4], dict(music='hustle', dip=True)),
+        # v3 (owner's remarks on v2) : the editor moves (he drags his video, « DÉCALÉ » comes back on each « Non ») ; then he posts
+        # it (« Publier », « Vidéo publiée ! »), a notification, the comment, and the cut right after « Un commentaire ! »
+        ('ep2-05', [5], dict(lead=0.9, fixed=True, sfx=[('click.mp3', 0.95, 0.3), ('error.mp3', 2.2, 0.16), ('click.mp3', 2.5, 0.3), ('error.mp3', 3.94, 0.16)])),
+        ('ep2-06', [6], dict(lead=2.6, after=0.35, fixed=True, sfx=[('click.mp3', 1.0, 0.35), ('ping.mp3', 1.25, 0.3), ('notification.mp3', 2.05, 0.4)])),
+        ('ep2-07', [7, 8, 9], dict(lead=1.3, sfx=[('knock.wav', 0.05, 0.55)])),  # the knock is heard, Liam looks up, then « Coucou » (v3 : 1.3 s, the episode stays over a minute)
         ('ep2-08', ['10a'], dict(music='victoire', sfx=[('pop.mp3', 1.2, 0.4)])),
-        ('ep2-09', ['10b'], dict(sfx=[('pop.mp3', 0.6, 0.45)])),
-        ('ep2-10', [11, 12], {}),
+        ('ep2-09', ['10b'], dict(after=1.0, sfx=[('pop.mp3', 0.6, 0.45)])),  # v3 : his clip keeps playing a moment, cut on the beat
+        ('ep2-10', [11, 12], dict(lead=0.8, sfx=[('sparkle.mp3', 0.1, 0.25)])),  # v3 : he looks at his clip, moved, before he speaks
         ('ep2-11', [13], {}),
         ('ep2-12', [], dict(hold=3.4, sfx=[('whoosh-short.mp3', 0.75, 0.25)])),
     ], direction={1: 'shouting at his screen, exhausted and furious', 3: 'very sure of himself, casual', 4: 'ironic', 5: 'frantic, more and more desperate',
@@ -89,12 +95,14 @@ EPISODES = {
         ('ep4-01', [1], dict(music='plan', sfx=[('whoosh-short.mp3', 0.0, 0.3)])),
         ('ep4-02', [2], {}),
         ('ep4-03', [3, 4], {}),
-        ('ep4-04', ['5a'], dict(music='galere')),
+        # v2 (owner's remarks on v1) : one place at a time, the school then the empty court with its tumbleweed (a gust of wind) ;
+        # then he posts his song with a still picture, in a feed like TikTok's (the tap at 2.9 s), and nobody reacts
+        ('ep4-04', ['5a'], dict(music='galere', dip=True, fixed=True, sfx=[('whoosh.mp3', 2.36, 0.3)])),
         ('ep4-05', ['5b', 6], {}),
-        ('ep4-06', [7, 8], {}),
-        ('ep4-07', [9, 10], {}),
-        ('ep4-08', [11, 12, 13, 14], {}),
-        ('ep4-09', [15], dict(music='victoire')),
+        ('ep4-06', [7, 8], dict(dip=True, fixed=True, sfx=[('click.mp3', 2.9, 0.35), ('ping.mp3', 3.15, 0.3)])),
+        ('ep4-07', [9, 10], dict(dip=True)),
+        ('ep4-08', [11, 12, 13, 14], dict(dip=True)),
+        ('ep4-09', [15], dict(music='victoire', dip=True)),
         ('ep4-10', [16], dict(sfx=[('pop.mp3', 2.9, 0.45)])),
         ('ep4-11', [17], dict(lead=0.6, sfx=[('notification.mp3', 0.2, 0.4)])),
         ('ep4-12', [18], {}),
@@ -105,14 +113,14 @@ EPISODES = {
     'ep3': dict(card='tcrazy-ep3', same={}, shots=[
         ('ep3-01', [1], dict(music='plan', sfx=[('whoosh-short.mp3', 0.0, 0.3)])),
         ('ep3-02', [2], {}),
-        ('ep3-03', [3, 4, 5], {}),
+        ('ep3-03', [3, 4, 5], dict(dip=True)),
         ('ep3-04', [6], {}),
         ('ep3-05', ['7a'], dict(music='hustle')),
         ('ep3-06', ['7b'], {}),
         ('ep3-07', ['7c'], {}),
         ('ep3-08', [8, 9], {}),
         ('ep3-09', [10], {}),
-        ('ep3-10', [11], dict(music='victoire', sfx=[('pop.mp3', 2.9, 0.45)])),
+        ('ep3-10', [11], dict(music='victoire', lead=0.5, after=1.0, fixed=True, sfx=[('pop.mp3', 3.4, 0.45)])),  # v2 : Liam takes his phone first ; the clip plays on a moment
         ('ep3-11', [12], {}),
         ('ep3-12', [13], {}),
         ('ep3-13', [], dict(hold=3.4, sfx=[('whoosh-short.mp3', 0.75, 0.25)])),
@@ -121,14 +129,14 @@ EPISODES = {
     'ep5': dict(card='tcrazy-ep5', same={7: 1}, shots=[
         ('ep5-01', [1], dict(music='plan', sfx=[('whoosh-short.mp3', 0.0, 0.3)])),
         ('ep5-02', [2], {}),
-        ('ep5-03', [3], {}),
+        ('ep5-03', [3], dict(dip=True)),
         ('ep5-04', [4, 5], {}),
         ('ep5-05', [6], dict(music='hustle')),
         ('ep5-06', [7], {}),
-        ('ep5-07', [8], {}),
+        ('ep5-07', [8], dict(dip=True, lead=1.7, fixed=True)),  # v2 : Liam with his phone, then his twelve takes, then he speaks
         ('ep5-08', [9], {}),
-        ('ep5-09', ['10a'], dict(music='victoire')),
-        ('ep5-10', ['10b'], dict(sfx=[('pop.mp3', 0.6, 0.45)])),
+        ('ep5-09', ['10a'], dict(music='victoire', lead=0.5)),  # v2 : his phone comes up, then the narrator
+        ('ep5-10', ['10b'], dict(after=1.0, sfx=[('pop.mp3', 0.6, 0.45)])),  # v2 : the clip plays on a moment, cut on the beat
         ('ep5-11', [11, 12], {}),
         ('ep5-12', [13], {}),
         ('ep5-13', [], dict(hold=3.4, sfx=[('whoosh-short.mp3', 0.75, 0.25)])),

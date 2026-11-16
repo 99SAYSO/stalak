@@ -277,7 +277,24 @@
   - **15/11, 21 h 30 : branché sur « Studio Stalak »** (règles 11 et 12). Réseaux sociaux programme seulement les fiches `videos` au statut `valide` (légende, mots-clés, date, heure et vidéo pris dans la fiche), puis les passe en `programme` (avec `zernioId`, champ ajouté, à confirmer par le Chef de projet) et en `publie`. La tâche du samedi passe aussi en `publie` les fiches publiées. Goûts (`da`) lus avant chaque lot ; chaque remarque du propriétaire y va. Le fichier de lot et le dossier Drive de Marketing sont abandonnés.
 
 ### Marketing & croissance
-- **En cours (branche `marketing/serie-fr`, série « T-Crazy ») — 5 scripts validés ; storyboards déposés (épisodes 1 et 2 validés, GTA 6, manager et clip façon GTA à valider) ; puis feu vert et fabrication vidéo par vidéo** :
+- **En cours (branche `marketing/serie-fr`, série « T-Crazy ») — fabrication : épisode 1 validé ; épisodes 2 (v3) et GTA 6 (v2) refaits avec ses remarques ; « Le manager » et « Le clip façon GTA » fabriqués ; épisode 6 (« L'appli a fermé », son idée) en script** :
+  - 16/11, 18 h 45 : **ses remarques et sa règle « un enfant doit pouvoir comprendre » appliquées à toute la série** :
+    - chaque changement de moment ou de lieu passe par le noir, avec son carton ;
+    - la lumière reste celle du moment ;
+    - un seul décor à la fois ;
+    - on voit qui prend le téléphone et la publication étape par étape ;
+    - les fils de vidéos ressemblent à TikTok, sans logo ;
+    - l'écran de l'ordi bouge ;
+    - plus de blanc entre les répliques ;
+    - celui qui crie est au centre de l'accroche.
+
+    Épisode 2 v3 (8 remarques) et épisode GTA 6 v2 (2 remarques) sont redéposés : remarques `traitée` avec leur réponse, fiches en `video`. « Le manager » et « Le clip façon GTA » sont déposés en `video`. **Épisode 1 : validé en v3** ; une v4 avec le passage par le noir existe mais n'est pas déposée, en attente de son accord. **À décider par le propriétaire** :
+    - sans blancs, les épisodes durent 1 min 00 à 1 min 01, sous sa règle de 1 min 05 : ajouter une ou deux répliques par épisode ?
+    - remplacer l'épisode 1 validé par la v4 ?
+    - le script de l'épisode 6 ;
+    - la carte de fin de l'épisode 5 : annoncer l'épisode 6 à la place du « clash au terrain » ?
+
+    Voix : 0,325 $ ce soir. **Pour Juridique** : l'épisode 6 ne nomme pas l'appli qui ferme, car Triller n'a pas fermé officiellement.
   - 16/11, 14 h 15 : les 5 storyboards sont dans Studio Stalak (`visuels`, une image par moment du script, dessinés en code par `tools/serie/engine/storyboard.js`). Le propriétaire a validé les épisodes 1 et 2 à 14 h. **Question posée au propriétaire** : numéroter et annoncer le « prochain épisode » dans l'ordre de sortie (GTA 6 le 19 au soir = n° 3, manager le 20 = n° 4), comme Marketing le propose, ou garder l'ordre des scripts. Pour Liam, la vitesse de la voix (×1,1 ou ×1,2) reste à choisir. Coût : 0 $.
   - 16/11, 13 h 18 : bandeaux plus descriptifs (une phrase qui donne le contexte, `regle-bandeau-descriptif`) et cris d'ouverture qui choquent ou font se poser une question (note du propriétaire sur le script 1). Les 5 scripts sont corrigés et repassés en `script`. 13 h 23 : les phrases du narrateur doivent être claires tout de suite (« le prochain rappeur à percer », `regle-narrateur-clair`). 4 phrases sont corrigées.
   - **Décision du propriétaire (16/11, 12 h 11)** : chaque épisode finit par un appel à l'action, avec Stalak amené intelligemment. Celui qui regarde doit se reconnaître dans la galère de Liam (`regle-cta-intelligent`). Les 3 pilotes sont réécrits en ce sens.
