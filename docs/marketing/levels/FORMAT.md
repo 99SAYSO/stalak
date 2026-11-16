@@ -20,7 +20,7 @@
    [Référence : le niveau 3 (« il rend ça bizarre ») est le plus long des échecs (6 s) : on s'y reconnaît, alors on supporte qu'il dure. Le niveau 4 (« correct, sans plus ») est le plus court (2 s). Chez nous : niveau 3 en 6 s, niveau 4 plus court, en 4 s.]
 5. **Chaque refus a sa chute**, avec ce timing : tentative, refus sec, **demi-seconde de silence**, coup avec un gros bruitage. Un coup différent à chaque niveau, de plus en plus fort, toujours façon dessin animé.
    [Référence : entre deux niveaux, le son tombe à presque rien pendant environ 0,3 s (mesuré vers 3,0 s). Le silence reste un temps comique, pas une pause dans la voix (goût noté : pas de voix off avec des pauses ajoutées) : on le place **entre** le refus et le coup, jamais au milieu d'une réplique. 0,4 à 0,5 s suffit.]
-6. **Un « juge » récurrent** qui recale le bonhomme. 3 idées dessinées dans Studio Stalak (onglet Univers, fiche `levels-juge`) : le Videur du « Pour toi », Mamie Gisèle, le Pouce.
+6. **Un « juge » récurrent** qui recale le bonhomme. **Choisi le 16/11 : le Videur du « Pour toi »** (lunettes noires, oreillette), toujours devant la porte « POUR TOI » et sa corde rouge. Au niveau 5, il décroche la corde : « … Entre. » Le décor est donc **le même dans toutes les vidéos** (la porte, une rue la nuit), comme dans la référence ; seuls les objets et les lieux des prises changent avec le genre.
    [Référence : le même personnage de refus pendant les 5 niveaux, toujours à la même place à droite. C'est lui qui fait la série : on le reconnaît d'une vidéo à l'autre.]
 7. **Les blagues viennent des clichés du genre** (drill, love song, son sur l'ex…) et des artistes que tout le monde connaît dans ce genre.
 8. **Ton sarcastique et pince-sans-rire** dans les textes. Le bonhomme reste un **loser attachant** : on a envie qu'il réussisse.
@@ -29,6 +29,8 @@
    [Référence : le niveau 5 est le plus long (7,5 s) et il finit mieux qu'attendu (le refus se retourne en oui). Chez nous : 10 à 12 s, dont 5 s de snippet plein écran.]
 10. **Promo de 2 ou 3 secondes** (« Le niveau 5, tu le fais sur stalak.app »), puis **une question pour faire commenter**.
     [Référence : 4,4 s de pub, mais l'appli était déjà annoncée par la « quête » du niveau 5. Chez nous le niveau 5 montre déjà Stalak en action : 2,5 s de promo suffisent, puis 2 s de question (exemples : « Tu t'es arrêté à quel niveau, toi ? », « On fait quel genre la prochaine fois ? »). La question reste à l'écran jusqu'à la fin pour que la vidéo boucle.]
+
+**Musique (décision du 16/11, 21 h 42)** : aucune musique pendant la vidéo, **sauf le son du snippet du niveau 5** (5 s), un son dont on a les droits (un son du propriétaire ou d'ALASKA, du genre de la vidéo).
 
 **Technique** : tout ce qui est dit est aussi écrit à l'écran ; la vidéo marche sans le son ; rien d'important dans les zones cachées par TikTok ; planche contact (skill `planche-contact`) avant chaque envoi. Pas de concurrent nommé ; seulement des sons dont on a les droits (on cite un artiste, on ne passe pas sa musique).
 
@@ -147,7 +149,7 @@ Personnages entre 35 % et 80 % de la hauteur ; rien d'important dans les 20 % du
 ### Les personnages
 
 - **Le rappeur** (héros, le même dans toutes les vidéos) : bonhomme bâton au bonnet bleu à pompon et à l'écharpe. Un loser attachant. Ce n'est pas une vraie personne.
-- **Le juge** (pilier 6), le même dans toutes les vidéos, toujours à droite : c'est lui qui recale le bonhomme aux niveaux 1 à 4 et qui dit enfin oui au niveau 5. À choisir parmi 3 idées (fiche Univers `levels-juge`).
+- **Le juge** (pilier 6) : **le Videur du « Pour toi »**, le même dans toutes les vidéos, toujours à droite devant sa porte : il recale le bonhomme aux niveaux 1 à 4 en 2 ou 3 mots secs et le laisse entrer au niveau 5.
 - **Des figurants** selon le genre (une ex, un pote…), seulement si la blague en a besoin.
 - **Vrais artistes** : on peut citer leur nom dans les blagues ; jamais leur visage dessiné, jamais leur voix imitée, jamais de fausse déclaration.
 
@@ -188,7 +190,7 @@ Le niveau 4 ne nomme jamais une appli : on dit « une appli de montage classique
 ### Le son (décisions du propriétaire du 16/11)
 
 - **Voix Flora** (Gemini), en plus des bulles. Une voix pour le rappeur (la même dans toutes les vidéos), une ou deux pour les cibles. Générées **une seule fois** après validation et feu vert. Environ 6 à 8 répliques par vidéo (une génération par réplique), soit **environ 0,10 $ par vidéo** (0,013 $ la génération au 15/11).
-- **Pas de musique**, comme la référence : seulement les voix et les bruitages. Le son du rappeur passe par ses paroles (voix + bulles) et des notes ♪ à l'écran. Au niveau 5, le rythme se voit : la cible bat la mesure de la tête, les ♪ pulsent, et les coupes du snippet tombent sur ces temps.
+- **Pas de musique**, comme la référence, **sauf le son du snippet au niveau 5** (5 s, décision du 16/11, 21 h 42) : c'est la seule musique de la vidéo, et c'est là qu'on entend que Stalak coupe sur le rythme. Un son du propriétaire ou d'ALASKA, du genre de la vidéo.
 - **Bruitages** : baffe, « bonk », sifflement de chute + « clang », poêle, « ding » à chaque case qui change, son de niveau gagné au MAX. Bruitages libres de droits (Pixabay ou faits en code).
 - Pas de générique, pas de jingle : la vidéo commence directement par le niveau 1.
 
@@ -203,7 +205,7 @@ Le niveau 4 ne nomme jamais une appli : on dit « une appli de montage classique
 
 - Vrais artistes : le nom dans les blagues, oui ; leur visage dessiné, leur voix imitée ou une fausse déclaration, non.
 - Pas de concurrent nommé : au niveau 4, « une appli de montage classique », et aucune interface reconnaissable.
-- Pas de musique ; bruitages seulement s'ils sont libres de droits.
+- Pas de musique, sauf le son du snippet du niveau 5 (un son dont on a les droits) ; bruitages libres de droits.
 - Les coups restent du dessin animé.
 - Aucun chiffre inventé (pas de « 2 millions de vues » ; la jauge HYPE n'a pas de chiffre).
 - Chaque vidéo a sa miniature, dessinée dans le style de la série.
@@ -227,12 +229,14 @@ Le niveau 4 ne nomme jamais une appli : on dit « une appli de montage classique
 
 - Durée : entre 30 et 40 s.
 - Voix : Flora.
-- Musique : aucune sur les vidéos LEVELS.
+- Musique : aucune, sauf le son du snippet du niveau 5 (précisé à 21 h 42).
+- Juge : le Videur du « Pour toi » (21 h 42).
 - Horaires : à tester (plan ci-dessus).
 - Style : les 3 premières planches ne lui plaisent pas ; il veut le même dessin que la vidéo de référence. **Style D** proposé (bonshommes pleins aux membres épais, sans visage, fond sombre détaillé, lumière douce), avec nos propres personnages et décors. Planches dessinées en code : `tools/levels/styles.html`, rendu avec `python3 tools/levels/render_styles.py DOSSIER ref`. Fiche Univers `levels-style`, à choisir.
 
 ## 4. Ce qu'il reste à faire
 
-1. Choix du style (Univers → « LEVELS · Le bonhomme bâton et son décor »).
-2. Validation des 5 scripts pilotes (À valider, compte Levels, 18 au 20/11 ; copie dans `docs/marketing/levels/pilotes.json`).
-3. Puis personnages et décors de chaque pilote en images fixes, puis feu vert (`lots/levels-2026-11-16`), puis voix et vidéo.
+1. Choix du style (Univers → « LEVELS · Le bonhomme bâton et son décor » ; D proposé, dessiné comme la référence).
+2. Validation des 5 scripts pilotes réécrits selon les piliers, avec le Videur (Studio Stalak, À valider, compte Levels, 18 au 20/11).
+3. Le propriétaire dit quels sons (les siens ou ceux d'ALASKA) servent aux snippets : drill, love, triste, sur l'ex, motivation.
+4. Puis personnages et décors de chaque pilote en images fixes, puis feu vert (`lots/levels-2026-11-16`), puis voix et vidéo.
