@@ -2837,6 +2837,18 @@ test('Clip mode (7/11): the kind with the start and the video made, the answer a
   assert.deepEqual(f.clipAsk, { pro: 1, reel: 2, none: 1 });
 });
 
+test('audit 13/11: plan openings keep where they came from (menu, account page, Tarifs page, link); Clip opened is counted and shown', async () => {
+  const env = makeEnv(ADMIN_ENV), token = await accessToken();
+  let n = 0;
+  for (const body of [{ name: 'plans_open', why: 'menu' }, { name: 'plans_open', why: 'menu' }, { name: 'plans_open', why: 'account' }, { name: 'plans_open', why: 'pricing' },
+    { name: 'plans_open', why: 'link' }, { name: 'plans_open', why: 'clip' }, { name: 'plans_open', why: 'DROP TABLE' }, { name: 'clip_open' }, { name: 'clip_open' }]) {
+    const r = await call(env, 'POST', '/api/event', { body, ip: '10.63.0.' + (++n) }); assert.equal(r.status, 200, JSON.stringify(r.data));
+  }
+  const r = await adminCall(env, 'GET', '/api/admin/stats?days=7', { token }), f = r.data.usage.funnel;
+  assert.deepEqual(f.plansWhy, { menu: 2, account: 1, pricing: 1, link: 1, clip: 1, other: 1 }, JSON.stringify(f.plansWhy));
+  assert.equal(f.clipOpen, 2);
+});
+
 test('test and real payments: rows keep their Paddle environment; real payments ignore the test subscriptions', async () => {
   const env = makeEnv(ADMIN_ENV), token = await accessToken();
   const u = await proUser(env, 'sandboxer@example.com', 'creator');
@@ -3743,6 +3755,52 @@ test('7/11: a free user may leave an e-mail for tips: consent required, confirme
   const ret = await dailyRetention(env, now);
   assert.equal(ret.optins, 2);
   assert.ok(db.prepare("SELECT COUNT(*) AS c FROM email_optins WHERE email = 'recent-ok@example.com'").get().c === 1);
+});
+
+// ---- audit of 13/11 ----
+test('audit 13/11 n°5: R2 refusing to put the parts together is never a 500: done already / upload gone / part refused / R2 busy', async () => {
+  const env = makeEnv({ MEDIA: createR2() });
+  const pro = await proUser(env, 'cloud13@example.com');
+  const vid = bytes(17 * MiB + 99, 5), meta = { name: 'prise.mov', type: 'video/quicktime', size: vid.length };
+  const start = (id) => call(env, 'POST', '/api/projects/p13/files', { cookie: pro.cookie, body: { fileId: id, ...meta } });
+  const parts = async (id, ps) => { for (let n = 1; n <= 3; n++) assert.equal((await putRaw(env, `/api/projects/p13/files/${id}/parts/${n}`, pro.cookie, vid.subarray((n - 1) * ps, Math.min(vid.length, n * ps)))).status, 200); };
+  const done = (id) => call(env, 'POST', `/api/projects/p13/files/${id}/complete`, { cookie: pro.cookie, body: {} });
+  const status = (id) => env.DB.raw.prepare('SELECT status FROM project_files WHERE id = ?').get(id).status;
+  // 1. already put together at R2 (the first answer was lost): the second try says « ready »
+  let r = await start('take1301'); const ps = r.data.partSize; await parts('take1301', ps);
+  const realResume = env.MEDIA.resumeMultipartUpload.bind(env.MEDIA);
+  let once = true;
+  env.MEDIA.resumeMultipartUpload = (k, u) => { const m = realResume(k, u); const c = m.complete; m.complete = async (p) => { const o = await c(p); if (once) { once = false; throw new Error('network lost after complete'); } return o; }; return m; };
+  r = await done('take1301');
+  assert.equal(r.status, 200, JSON.stringify(r.data)); assert.equal(r.data.status, 'ready'); assert.equal(status('take1301'), 'ready');
+  env.MEDIA.resumeMultipartUpload = realResume;
+  // 2. the upload is gone at R2 (too old): a new one, the page sends the parts again, then it works
+  r = await start('take1302'); await parts('take1302', ps);
+  const old = env.DB.raw.prepare("SELECT upload_id FROM project_files WHERE id = 'take1302'").get().upload_id;
+  env.MEDIA.uploads.delete(old);   // R2 forgot it (about 7 days)
+  r = await done('take1302');
+  assert.equal(r.status, 409); assert.equal(r.data.error, 'parts_missing'); assert.deepEqual(r.data.missing, [1, 2, 3]); assert.equal(r.data.restarted, true);
+  assert.notEqual(env.DB.raw.prepare("SELECT upload_id FROM project_files WHERE id = 'take1302'").get().upload_id, old, 'a new upload');
+  r = await start('take1302'); assert.deepEqual(r.data.uploadedParts, []);
+  await parts('take1302', ps); r = await done('take1302');
+  assert.equal(r.status, 200); assert.equal(status('take1302'), 'ready');
+  // 3. a part refused by R2 (InvalidPart): the parts are forgotten, sent again, then it works
+  r = await start('take1303'); await parts('take1303', ps);
+  env.DB.raw.prepare("UPDATE file_parts SET etag = 'wrong' WHERE file_id = 'take1303' AND part_number = 2").run();
+  r = await done('take1303');
+  assert.equal(r.status, 409); assert.equal(r.data.error, 'parts_missing');
+  await parts('take1303', ps); r = await done('take1303');
+  assert.equal(r.status, 200); assert.equal(status('take1303'), 'ready');
+  // 4. R2 busy: 503 « try again » (the page tries again by itself), nothing lost
+  r = await start('take1304'); await parts('take1304', ps);
+  env.MEDIA.resumeMultipartUpload = (k, u) => { const m = realResume(k, u); m.complete = async () => { throw new Error('We encountered an internal error. Please try again.'); }; return m; };
+  r = await done('take1304');
+  assert.equal(r.status, 503); assert.equal(r.data.error, 'storage_busy');
+  env.MEDIA.resumeMultipartUpload = realResume;
+  r = await done('take1304');
+  assert.equal(r.status, 200); assert.equal(status('take1304'), 'ready');
+  const full = await getBytes(env, '/api/projects/p13/files/take1304', pro.cookie);
+  assert.deepEqual(full.body, vid);
 });
 
 // ---- runner --------------------------------------------------------------------------

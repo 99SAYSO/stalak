@@ -459,7 +459,7 @@ __DEMO_BANNER__<header class="top"><div class="in">
     <!-- (7/11, mode Clip) the 16:9 clips: started and made, and the answer when a clip is exported without Pro -->
     <div class="grid2">
       <div class="card"><h3>Clips 16:9 et vidéos TikTok</h3><p class="note">Exports lancés et réussis de chaque sorte (compté depuis le 7/11).</p><ul class="blist" id="clipKind"></ul></div>
-      <div class="card"><h3>Clip exporté sans Pro : le choix</h3><p class="note">La question « Le mode Clip est réservé à Pro » : ce que la personne a touché.</p><ul class="blist" id="clipAskL"></ul></div>
+      <div class="card"><h3>Clip exporté sans Pro : le choix</h3><p class="note">La question « Le mode Clip est réservé à Pro » : ce que la personne a touché.</p><p class="note" id="clipOpenN"></p><ul class="blist" id="clipAskL"></ul></div>
     </div>
     <div class="card hq" id="vppCard">
       <div class="hbest"><span>🎬 Combien de vidéos par personne</span><span class="sp"></span>
@@ -553,7 +553,8 @@ __DEMO_BANNER__<header class="top"><div class="in">
     device: { ios: 'iPhone / iPad', android: 'Android', desktop: 'Ordinateur', unknown: 'Inconnu (avant le 1/11)' },
     lang: { en: 'Anglais', fr: 'Français', unknown: 'Inconnue' },
     source: { tiktok: 'TikTok', ig: 'Instagram', instagram: 'Instagram', yt: 'YouTube', youtube: 'YouTube', x: 'X (Twitter)', reddit: 'Reddit', discord: 'Discord', google: 'Google', bing: 'Bing', other: 'Autre site', unknown: 'Direct / sans indication', wm: 'Filigrane d’une vidéo' },
-    why: { filters: 'Filtres', clip: 'Mode Clip 16:9', fx: 'Effets premium', text: 'Paroles karaoké', lyrics: 'Paroles auto', pack: 'Packs', cloud: 'Sauvegarde en ligne', human: 'Parler à un humain', wm: 'Enlever le filigrane', other: 'Autre / menu' },
+    why: { filters: 'Filtres', clip: 'Mode Clip 16:9', fx: 'Effets premium', text: 'Paroles karaoké', lyrics: 'Paroles auto', pack: 'Packs', cloud: 'Sauvegarde en ligne', human: 'Parler à un humain', wm: 'Enlever le filigrane',
+      menu: 'Menu ou bouton Pro', account: 'Page Mon compte', pricing: 'Page Tarifs (« Choose Pro »)', link: 'Lien vers les formules', other: 'Autre' },
     fail: { memory: 'Mémoire pleine', decoder: 'Lecture vidéo', encoder: 'Fabrication de la vidéo', hidden: 'Appli quittée pendant l’export', cancel: 'Annulé par la personne',
       closed: 'Page fermée pendant l’export', crash: 'Onglet fermé par le navigateur', other: 'Autre raison' },
     xst: { start: 'Au lancement', prepare: 'Préparation des prises', frames: 'Fabrication des images', assemble: 'Assemblage', file: 'Fichier final', realtime: 'Enregistrement en temps réel' },
@@ -919,6 +920,8 @@ __DEMO_BANNER__<header class="top"><div class="in">
     var ck = { 'Clips lancés': sd.kind_clip || 0, 'Clips réussis': od.kind_clip || 0, 'TikTok / Reels lancés': sd.kind_reel || 0, 'TikTok / Reels réussis': od.kind_reel || 0 };
     blist($('#clipKind'), ck, function (x) { return x; }, { order: Object.keys(ck), keepZero: true, noPct: true });
     blist($('#clipAskL'), fu.clipAsk || {}, { pro: 'Passer à Pro', reel: 'Exporter en TikTok / Reels', none: 'Annuler' });
+    // audit of 13/11: how many opened the Clip mode (App's counter « clip_open »), then the choice when exporting without Pro
+    set('#clipOpenN', '🎬 A ouvert le mode Clip : ' + nf.format(fu.clipOpen || 0) + (fu.clipOpen ? '' : ' (compté dès qu’App l’envoie)'));
   }
   function blist(ul, obj, names, opts) {
     opts = opts || {}; ul.textContent = '';

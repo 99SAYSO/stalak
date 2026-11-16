@@ -98,7 +98,7 @@ PAGE = {
   },
   'en': {
     'path': '/', 'locale': 'en_US',
-    'title': 'Stalak: free lip-sync video editor that cuts your takes to the beat',
+    'title': 'Stalak: free lip-sync video editor that cuts to the beat',   # ≤ 60 characters for Google (13/11 audit; before: « …that cuts your takes to the beat », 67)
     'desc': 'Drop in your song and a few takes of you rapping or singing. Stalak cuts between them on the beat, perfectly in sync. Free, no download, no sign-up.',
     'ld': 'Stalak is a free, browser-based lip-sync video editor for rappers and singers. It cuts between your takes on the beat of your song, keeps the lip sync tight and exports for TikTok, Reels, YouTube Shorts and YouTube.',
     'about': """
@@ -190,6 +190,9 @@ assert n_en == len(TAG.findall(markup)), 'some texts of the English page were no
 
 def meta(lang):
     P = PAGE[lang]; url = URL + P['path']; other = 'en' if lang == 'fr' else 'fr'
+    # Marketing & croissance (13/11): the share picture in the page's language (og.png carries a French line; og-en.png, the same
+    # picture in English, from site_drafts/make_og_en.py)
+    og = URL + ('/og-en.png' if lang == 'en' else '/og.png')
     LD = {'@context': 'https://schema.org', '@graph': [
       {'@type': 'WebApplication', 'name': 'Stalak', 'url': url, 'applicationCategory': 'MultimediaApplication', 'operatingSystem': 'Web, iOS, Android, macOS, Windows',
        'inLanguage': lang, 'isAccessibleForFree': True,
@@ -198,10 +201,10 @@ def meta(lang):
                        **({'priceSpecification': {'@type': 'UnitPriceSpecification', 'price': pr, 'priceCurrency': 'USD', 'billingDuration': d}} if d else {}))
                   for n, pr, d in [('Free', '0', None), ('Stalak Pro (monthly)', '7.99', 'P1M'), ('Stalak Pro (yearly)', '49.99', 'P1Y'),
                                    ('Creator Plus (monthly)', '14.99', 'P1M'), ('Creator Plus (yearly)', '99.99', 'P1Y')]],
-       'description': P['ld'], 'image': URL + '/og.png', 'creator': {'@type': 'Organization', 'name': 'Alaska'}, 'publisher': {'@id': URL + '/#organization'}},
+       'description': P['ld'], 'image': og, 'creator': {'@type': 'Organization', 'name': 'Alaska'}, 'publisher': {'@id': URL + '/#organization'}},
       {'@type': 'WebSite', '@id': URL + '/#website', 'name': 'Stalak', 'alternateName': ['Stalak app', 'stalak.app'], 'url': url, 'inLanguage': lang, 'publisher': {'@id': URL + '/#organization'}},
       dict({'@type': 'Organization', '@id': URL + '/#organization', 'name': 'Stalak', 'alternateName': 'stalak.app', 'url': URL + '/',
-            'logo': {'@type': 'ImageObject', 'url': URL + '/icons/icon-512.png', 'width': 512, 'height': 512}, 'image': URL + '/og.png',
+            'logo': {'@type': 'ImageObject', 'url': URL + '/icons/icon-512.png', 'width': 512, 'height': 512}, 'image': og,
             'description': P['ld'], 'email': EMAIL or None, 'parentOrganization': {'@type': 'Organization', 'name': 'Alaska'}},
            **({'sameAs': list(SOCIAL.values())} if SOCIAL else {})),
     ]}
@@ -223,10 +226,10 @@ def meta(lang):
 <meta property="og:title" content="{H.escape(P['title'])}">
 <meta property="og:description" content="{H.escape(P['desc'])}">
 <meta property="og:url" content="{url}">
-<meta property="og:image" content="{URL}/og.png">
+<meta property="og:image" content="{og}">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="{URL}/og.png">
+<meta name="twitter:image" content="{og}">
 <link rel="manifest" href="{'/fr/manifest.webmanifest' if lang == 'fr' else '/manifest.webmanifest'}">
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
