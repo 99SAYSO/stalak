@@ -8,7 +8,7 @@
   const STY = {
     1: { ink: '#17110e', lw: 3.4, outer: 7.5, sticker: 0, head: 1.3, leg: 0.96, eye: 'anime', shade: 'cel', rough: 0, paper: 0, room: 3,
       pal: { wall: '#d9b79b', wallS: '#b48f78', light: '#ffd9a6', floor: '#8c6a57', floorS: '#6c4f41', base: '#efe2d2',
-        skin: '#c98b5e', skinS: '#a3673f', hair: '#3b2419', hairS: '#24150e', tip: '#cfe9ff', jacket: '#1f6fd6', jacketS: '#16509f', jacketH: '#8cc4ff',
+        skin: '#c98b5e', skinS: '#a3673f', hair: '#171312', hairS: '#0b0908', hairT: '#5b504b', tip: null, jacket: '#1f6fd6', jacketS: '#16509f', jacketH: '#8cc4ff',
         tee: '#f6f2ea', teeS: '#d3c8b6', jeans: '#2d3b59', jeansS: '#1d283f', shoe: '#f8f7f3', shoeS: '#c9cdd6', sole: '#9aa1ad',
         gold: '#efbb31', goldS: '#b98715', neon: '#a5e4ff', foam: '#5c5d66', foamS: '#45464e', tape: '#e8eef6',
         p1: '#c9573f', p1b: '#5a2a24', p2: '#2f4c7d', p2b: '#16223b', mat: '#ece6dc', matS: '#c5bba9', blanket: '#9fb7d6', blanketS: '#7b93b4',
@@ -16,7 +16,7 @@
         phone: '#2a2d36', cupRing: '#1f6fd6', metal: '#3a3d46' } },
     2: { ink: '#0a0d14', lw: 6.5, outer: 9, sticker: 13, head: 1.62, leg: 0.78, eye: 'round', shade: 'soft', rough: 0, paper: 0, room: 6,
       pal: { wall: '#cfe6ff', wallS: '#a9cdf3', light: '#ffffff', floor: '#8fb2df', floorS: '#6f93c4', base: '#f4faff',
-        skin: '#cf9063', skinS: '#b2744b', hair: '#3b2419', hairS: '#2a170f', tip: '#d6ecff', jacket: '#1f6fd6', jacketS: '#1a5cb5', jacketH: '#bfe2ff',
+        skin: '#cf9063', skinS: '#b2744b', hair: '#171312', hairS: '#0b0908', hairT: '#5b504b', tip: null, jacket: '#1f6fd6', jacketS: '#1a5cb5', jacketH: '#bfe2ff',
         tee: '#ffffff', teeS: '#d6ecff', jeans: '#25345a', jeansS: '#1b2745', shoe: '#ffffff', shoeS: '#d6ecff', sole: '#a9cdf3',
         gold: '#f5c53a', goldS: '#d39b1c', neon: '#8fd3ff', foam: '#2f3b57', foamS: '#22304b', tape: '#ffffff',
         p1: '#1f6fd6', p1b: '#0e3f8f', p2: '#0e3f8f', p2b: '#08214d', mat: '#ffffff', matS: '#d6ecff', blanket: '#8fd3ff', blanketS: '#5fb3ea',
@@ -24,7 +24,7 @@
         phone: '#0a0d14', cupRing: '#8fd3ff', metal: '#2b3346' } },
     3: { ink: '#141022', lw: 4.6, outer: 8.5, sticker: 0, head: 1.32, leg: 0.96, eye: 'anime', shade: 'halftone', rough: 3.2, paper: 1, room: 4.5,
       pal: { wall: '#45598a', wallS: '#2a3961', light: '#f6a65c', floor: '#2d3556', floorS: '#1d2340', base: '#9fb4dd',
-        skin: '#d08c5b', skinS: '#8f5233', hair: '#2e1c18', hairS: '#160c0a', tip: '#c6e6ff', jacket: '#2c78dc', jacketS: '#163f86', jacketH: '#a9d8ff',
+        skin: '#d08c5b', skinS: '#8f5233', hair: '#141020', hairS: '#08060d', hairT: '#3a3550', tip: null, jacket: '#2c78dc', jacketS: '#163f86', jacketH: '#a9d8ff',
         tee: '#f3eadb', teeS: '#b9a68c', jeans: '#28304f', jeansS: '#141a33', shoe: '#f3eee4', shoeS: '#b4b8c8', sole: '#7d8399',
         gold: '#f2b93a', goldS: '#a86d12', neon: '#9fe6ff', foam: '#222a44', foamS: '#151a2e', tape: '#e6d8bf',
         p1: '#e2763f', p1b: '#3b1f22', p2: '#7fb6e8', p2b: '#1b2547', mat: '#d9d2c4', matS: '#8d8478', blanket: '#5f7fb8', blanketS: '#34477a',
@@ -87,7 +87,7 @@
   // ---------------- Liam ----------------
   // world points : N = base of the neck. The head is drawn around F (face centre) and scaled by S.head around N.
   function liam(S, P) {
-    const N = [450, 846], hs = S.head, F = [N[0], N[1] - 112 * hs];
+    const N = [450, 846], hs = S.head, F = [N[0], N[1] - 124 * hs];
     const H = (x, y) => [F[0] + x * hs, F[1] + y * hs];
     const htf = `translate(${r1(F[0])} ${r1(F[1])}) scale(${hs})`;
     const legK = S.leg, hip = 1206, ank = hip + 490 * legK;
@@ -101,8 +101,8 @@
       for (let t = 0.22; t < k - 0.05; t += 0.16) { const a = q(t), b2 = q(t + 0.02), dx = b2[0] - a[0], dy = b2[1] - a[1], L = Math.hypot(dx, dy) || 1, ww = (w || 17) * 0.38;
         ticks += `M ${pt([a[0] - dy / L * ww, a[1] + dx / L * ww])} L ${pt([a[0] + dy / L * ww, a[1] - dx / L * ww])} `; }
       into.push({ kind: 'stroke', d: `M ${pt(root)} Q ${pt(c)} ${pt(end)}`, w: (w || 17) * (S.eye === 'round' ? 1.15 : 1), color: P.hair, tf: htf,
-        tip: `M ${pt(t0)} Q ${pt(lerp(c, end, 0.9))} ${pt(end)}`, tipColor: P.tip,
-        ticks: `<path d="${ticks}" stroke="${P.hairS}" stroke-width="2.4" stroke-linecap="round"/>` });
+        tip: P.tip ? `M ${pt(t0)} Q ${pt(lerp(c, end, 0.9))} ${pt(end)}` : null, tipColor: P.tip,
+        ticks: `<path d="${ticks}" stroke="${P.hairT || P.hairS}" stroke-width="3.2" stroke-linecap="round"/><path d="M ${pt(lerp(root, c, 0.2))} Q ${pt(c)} ${pt(lerp(c, end, 0.8))}" fill="none" stroke="${P.hairT || P.hairS}" stroke-width="2" opacity="0.6" transform="translate(-4 0)"/>` });
     });
     // --- hair behind the head : the cap of locs and the long locs at the back ---
     back.push({ d: `M -92 -10 C -104 -60 -96 -122 -40 -142 C -10 -152 10 -152 40 -142 C 96 -122 104 -60 92 -10 C 70 -36 -70 -36 -92 -10 Z`, fill: P.hair, tf: htf, shade: `M -120 -160 L -50 -160 L -80 40 L -120 40 Z`, shadeColor: P.hairS });
@@ -123,21 +123,24 @@
     shoe(350, -1); shoe(550, 1);
 
     // --- neck (behind the collar) ---
-    parts.push({ d: `M 424 ${N[1] - 70} L 476 ${N[1] - 70} L 478 ${N[1] + 30} C 460 ${N[1] + 44} 440 ${N[1] + 44} 422 ${N[1] + 30} Z`, fill: P.skin, shade: `M 410 ${N[1] - 80} L 490 ${N[1] - 80} L 490 ${N[1] - 30} C 460 ${N[1] - 16} 440 ${N[1] - 16} 410 ${N[1] - 30} Z`, shadeColor: P.skinS });
+    parts.push({ d: `M 424 ${N[1] - 70} L 476 ${N[1] - 70} L 478 ${N[1] + 56} C 460 ${N[1] + 66} 440 ${N[1] + 66} 422 ${N[1] + 56} Z`, fill: P.skin, shade: `M 410 ${N[1] - 80} L 490 ${N[1] - 80} L 490 ${N[1] - 30} C 460 ${N[1] - 16} 440 ${N[1] - 16} 410 ${N[1] - 30} Z`, shadeColor: P.skinS });
     // --- the puffer jacket : scalloped sides, quilt lines, gloss ---
     const rows = [880, 950, 1020, 1090, 1160, 1218], wide = [150, 172, 164, 174, 166, 156];
     let jk = `M 392 872 C 360 868 322 870 ${450 - wide[0]} ${rows[0]}`;
     for (let i = 0; i < rows.length - 1; i++) jk += ` C ${450 - wide[i] - 26} ${rows[i] + 22} ${450 - wide[i + 1] - 26} ${rows[i + 1] - 22} ${450 - wide[i + 1]} ${rows[i + 1]}`;
     jk += ` C 380 ${rows[5] + 14} 520 ${rows[5] + 14} ${450 + wide[5]} ${rows[5]}`;
     for (let i = rows.length - 1; i > 0; i--) jk += ` C ${450 + wide[i] + 26} ${rows[i] - 22} ${450 + wide[i - 1] + 26} ${rows[i - 1] + 22} ${450 + wide[i - 1]} ${rows[i - 1]}`;
-    jk += ` C 578 870 540 868 508 872 Z`;
+    jk += ` C 578 870 540 868 508 872 L 488 896 L 412 896 L 392 872 Z`; // open at the neck
     const quilts = rows.slice(1, 5).map(y => `M ${450 - 178} ${y} C 340 ${y + 16} 380 ${y + 16} 408 ${y + 8} M 492 ${y + 8} C 520 ${y + 16} 560 ${y + 16} ${450 + 178} ${y}`).join(' ');
     const gloss = rows.slice(0, 5).map((y, i) => `M ${300 + (i % 2) * 8} ${y + 26} q 28 -14 62 -12 M ${540 + (i % 2) * 6} ${y + 18} q 34 -4 58 10`).join(' ');
     parts.push({ d: jk, fill: P.jacket, shade: `M 260 860 L 372 860 C 346 960 356 1090 392 1240 L 260 1240 Z`, shadeColor: P.jacketS,
       extra: `<path d="${quilts}" fill="none" stroke="${S.ink}" stroke-width="${r1(S.lw)}" stroke-linecap="round"/><path d="${gloss}" fill="none" stroke="${P.jacketH}" stroke-width="${r1(S.lw * 2.2)}" stroke-linecap="round" opacity="0.85"/>` });
-    parts.push({ d: `M 412 880 L 488 880 L 492 1222 L 408 1222 Z`, fill: P.tee, inner: true, shade: `M 400 870 L 432 870 L 428 1230 L 400 1230 Z`, shadeColor: P.teeS });
-    parts.push({ d: `M 406 880 L 410 1222 M 494 880 L 490 1222`, fill: 'none', inner: true });
-    parts.push({ kind: 'stroke', d: `M 390 892 C 378 822 522 822 510 892`, w: 34, color: P.jacket }); // the puffy collar
+    parts.push({ d: `M 420 896 L 450 930 L 480 896 L 488 896 L 492 1222 L 408 1222 L 412 896 Z`, fill: P.tee, inner: true, shade: `M 400 890 L 432 890 L 428 1230 L 400 1230 Z`, shadeColor: P.teeS });
+    parts.push({ d: `M 406 900 L 410 1222 M 494 900 L 490 1222`, fill: 'none', inner: true });
+    // the puffy collar, folded open on the shoulders : the neck stays visible (décision du 16/11)
+    [-1, 1].forEach(sg => parts.push({ d: `M ${450 + sg * 24} 872 C ${450 + sg * 46} 866 ${450 + sg * 80} 870 ${450 + sg * 88} 888 C ${450 + sg * 94} 906 ${450 + sg * 78} 920 ${450 + sg * 58} 916 C ${450 + sg * 46} 914 ${450 + sg * 32} 906 ${450 + sg * 24} 896 Z`,
+      fill: P.jacket, shade: sg < 0 ? `M 350 880 L 400 880 L 400 930 L 350 930 Z` : null, shadeColor: P.jacketS,
+      extra: `<path d="M ${450 + sg * 44} 880 q ${sg * 18} -2 ${sg * 30} 8" fill="none" stroke="${P.jacketH}" stroke-width="${r1(S.lw * 1.6)}" stroke-linecap="round" opacity="0.85"/>` }));
     // --- head : face, details, front locs, headphones ---
     const face = S.eye === 'round'
       ? `M -72 -78 C -88 -40 -90 14 -80 48 C -68 86 -36 106 0 108 C 36 106 68 86 80 48 C 90 14 88 -40 72 -78 Z`
@@ -148,12 +151,7 @@
     parts.push({ kind: 'stroke', d: `M -104 6 C -112 -168 112 -168 104 6`, w: 15, color: P.phone, tf: htf });
     [-1, 1].forEach(sg => parts.push({ d: `M ${sg * 100} -42 C ${sg * 134} -42 ${sg * 138} 54 ${sg * 100} 54 C ${sg * 78} 54 ${sg * 72} -42 ${sg * 100} -42 Z`, fill: P.phone, tf: htf,
       extra: `<ellipse cx="${sg * 104}" cy="6" rx="16" ry="31" fill="${P.cupRing}" stroke="${S.ink}" stroke-width="${S.lw}"/><path d="M ${sg * 112} -18 q ${sg * 8} 14 2 30" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" opacity="0.8"/>` }));
-    // --- the chain and the T (a block letter T, never a cross) ---
-    const chain = [];
-    for (let k = 0; k <= 16; k++) { const t = k / 16, x = 410 + 80 * t, y = 884 + Math.sin(t * Math.PI) * 86; chain.push(`<circle cx="${r1(x)}" cy="${r1(y)}" r="5.2" fill="${P.gold}" stroke="${S.ink}" stroke-width="${r1(S.lw * 0.6)}"/>`); }
-    parts.push({ d: `M 408 968 L 492 968 L 492 992 L 462 992 L 462 1040 L 438 1040 L 438 992 L 408 992 Z`, fill: P.gold,
-      shade: `M 400 982 L 500 982 L 500 1000 L 400 1000 Z M 452 992 L 470 992 L 470 1046 L 452 1046 Z`, shadeColor: P.goldS,
-      extra: chain.join('') + `<path d="M 416 975 l 24 0 M 446 998 l 0 18" stroke="#fff6cf" stroke-width="5" stroke-linecap="round"/>` });
+    // no chain (décision du propriétaire, 16/11)
     // --- arms : puffy sleeves ; left hand pressing the left cup, right hand raised, index up (« le prochain ») ---
     const cup = H(-118, 6), hL = [cup[0] - 6, cup[1] + 12], wL = [hL[0] - 4, hL[1] + 46];
     const hR = [652, 700], wR = [hR[0] + 6, hR[1] + 58];
@@ -196,8 +194,9 @@
     // narrowed anime-US eyes : heavy upper lid, small iris, catchlight
     [-1, 1].forEach(k => {
       const x = k * 36;
-      s += `<path d="M ${x - 24} 6 Q ${x} -6 ${x + 24} 4 Q ${x} 16 ${x - 24} 6 Z" fill="#fbf7f1"/>`;
-      s += `<clipPath id="eye${k}"><path d="M ${x - 24} 6 Q ${x} -6 ${x + 24} 4 Q ${x} 16 ${x - 24} 6 Z"/></clipPath><g clip-path="url(#eye${k})"><circle cx="${x + 4 * k}" cy="6" r="9" fill="#3a2214"/><circle cx="${x + 4 * k}" cy="6" r="4.5" fill="#0d0805"/><circle cx="${x + 7 * k}" cy="3" r="2.4" fill="#ffffff"/></g>`;
+      const E = k < 0 ? `M ${x - 24} 6 Q ${x} -6 ${x + 24} 4 Q ${x} 16 ${x - 24} 6 Z` : `M ${x - 24} 4 Q ${x} -6 ${x + 24} 6 Q ${x} 16 ${x - 24} 4 Z`;
+      s += `<path d="${E}" fill="#fbf7f1"/>`;
+      s += `<clipPath id="eye${k}"><path d="${E}"/></clipPath><g clip-path="url(#eye${k})"><circle cx="${x + 1}" cy="5" r="9" fill="#3a2214"/><circle cx="${x + 1}" cy="5" r="4.5" fill="#0d0805"/><circle cx="${x + 4}" cy="2" r="2.4" fill="#ffffff"/></g>`;
       s += `<path d="M ${x - 26} ${k < 0 ? 8 : 2} Q ${x - 2} ${k < 0 ? -10 : -12} ${x + 26} ${k < 0 ? 2 : 8}" fill="none" stroke="${ink}" stroke-width="${lw * 1.9}" stroke-linecap="round"/>`;
       s += `<path d="M ${x - 18} 12 Q ${x} 18 ${x + 18} 11" fill="none" stroke="${ink}" stroke-width="${lw * 0.6}" stroke-linecap="round"/>`;
     });

@@ -20,9 +20,8 @@ Le même Liam dans la même chambre-studio, dessiné de 3 façons : `tools/serie
 | Style 3 · BD imprimée | traits irréguliers comme au pinceau, trame de points dans les ombres, grain de papier, bleu nuit, glace et orange |
 
 Liam y porte :
-- des locks courtes aux pointes givrées ;
+- des locks courtes (entièrement noires depuis le 16/11) ;
 - une doudoune bleu Stalak ouverte sur un tee-shirt blanc ;
-- une chaîne avec un « T » en lettre bâton ;
 - un jean large et des baskets blanches.
 
 Il tient son casque d'une main et, de l'autre, son téléphone levé : il se filme. Dans la chambre :
@@ -31,6 +30,14 @@ Il tient son casque d'une main et, de l'autre, son téléphone levé : il se fil
 - un ordi portable avec une appli d'enregistrement inventée, sans logo ;
 - un néon bleu glace, une fenêtre givrée au coucher du soleil ;
 - des posters de rappeurs inventés, sans texte.
+
+**16/11, 1 h 52 : Style 1 · Anime US retenu.** Corrections du propriétaire sur Liam (notées dans « Mes goûts », `regle-liam-look`) :
+- locks entièrement noires, sans aucune mèche blanche ;
+- pas de chaîne ;
+- le col de la doudoune ne cache pas le cou ;
+- les deux yeux regardent dans la même direction.
+
+La planche corrigée est redéposée dans la fiche `style` (`a_choisir`). Les planches des styles 2 et 3 sont retirées. Les 4 versions de Liam viennent après sa validation.
 
 ## Étape 2 : tout l'univers dans le style choisi (après le choix)
 

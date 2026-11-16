@@ -2,6 +2,17 @@
 
 > Marketing & croissance. Rien ne change sur le site : seulement `tools/serie/` et `docs/`.
 
+## 16/11, 1 h 52 : Style 1 retenu, Liam corrigé
+
+- Le propriétaire a retenu **Style 1 · Anime US**.
+- La planche est refaite avec ses corrections, toutes dans `tools/serie/engine/tcrazy.js` :
+  - locks entièrement noires ;
+  - pas de chaîne ;
+  - le col de la doudoune ouvert, avec le cou visible ;
+  - les yeux droits.
+- Elle est redéposée seule dans la fiche `style`, en `a_choisir`. Les anciennes planches sont retirées de la page.
+- Ce qui attend : sa validation, puis les 4 versions de Liam (de face, de profil, 4 expressions).
+
 ## 15/11, 23 h : l'univers « T-Crazy », tout dessiné par Claude
 
 **Décision du propriétaire (23 h) :** aucun visuel généré sur Flora. Claude dessine tout lui-même en code, et Flora ne sert qu'aux voix. Elle est notée dans « Mes goûts » (`regle-visuels-claude`). **À reporter par le Chef de projet** dans les décisions de `docs/STATUS.md` et dans `docs/studio/STUDIO_STALAK.md`.
