@@ -50,7 +50,7 @@ Document `lots/<lundi de la semaine AAAA-MM-JJ>` : `{feuVert: true, le, videos}`
 ## Règles (11 et 12 de `STALAK_CONTEXTE.md`)
 1. Avant d'écrire un script, un dessin ou une vidéo : lire toute la collection `da`.
 2. Tant que la fiche n'est pas `script_ok` : rien de généré.
-3. Une fois le script validé : seulement les **images fixes** des personnages et des décors (`visuels`), en réutilisant ceux déjà validés. Toujours ni voix, ni animation, ni musique.
+3. Une fois le script validé : seulement les **images fixes** des personnages et des décors (`visuels`), dessinées par Claude en code (décision du propriétaire du 15/11 à 23 h : pas d'images Flora, Flora seulement pour les voix), en réutilisant ceux déjà validés. Toujours ni voix, ni animation, ni musique.
 4. Vidéo, voix et musique : seulement si la fiche est `visuels_ok` **et** que `lots/<semaine>.feuVert` est `true`. La voix est générée une seule fois, sur le script validé. Un changement de texte après validation repasse par le propriétaire.
 5. Durée de chaque vidéo de la série : entre 1 min 05 et 1 min 20. La structure d'un épisode est dans les règles de « Mes goûts ».
 6. Exception : la maquette demandée par le propriétaire (personnage, pilotes) pour choisir un style.
