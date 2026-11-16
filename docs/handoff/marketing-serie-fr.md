@@ -9,7 +9,8 @@
   - locks entièrement noires ;
   - pas de chaîne ;
   - le col de la doudoune ouvert, avec le cou visible ;
-  - les yeux droits.
+  - les yeux droits ;
+  - à 2 h, un corps plus fin (« je trouve son corps trop large »).
 - Elle est redéposée seule dans la fiche `style`, en `a_choisir`. Les anciennes planches sont retirées de la page.
 - Ce qui attend : sa validation, puis les 4 versions de Liam (de face, de profil, 4 expressions).
 

@@ -37,7 +37,7 @@ Il tient son casque d'une main et, de l'autre, son téléphone levé : il se fil
 - le col de la doudoune ne cache pas le cou ;
 - les deux yeux regardent dans la même direction.
 
-La planche corrigée est redéposée dans la fiche `style` (`a_choisir`). Les planches des styles 2 et 3 sont retirées. Les 4 versions de Liam viennent après sa validation.
+À 2 h, nouvelle remarque : « je trouve son corps trop large ». Liam est donc plus fin (doudoune, manches, jean, baskets) : un ado de 15 ans dans une doudoune trop grande. La planche corrigée est redéposée dans la fiche `style` (`a_choisir`). Les planches des styles 2 et 3 sont retirées. Les 4 versions de Liam viennent après sa validation.
 
 ## Étape 2 : tout l'univers dans le style choisi (après le choix)
 

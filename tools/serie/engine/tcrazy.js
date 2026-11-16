@@ -110,35 +110,36 @@
       [[-40, -120], [-86, 84], -10], [[40, -120], [86, 84], 10]], back);
 
     // --- jeans (baggy), sneakers ---
-    const jeans = `M 300 ${hip - 24} L 600 ${hip - 24} C 612 ${hip + 160 * legK} 626 ${hip + 330 * legK} 632 ${ank} L 474 ${ank} C 468 ${hip + 260 * legK} 462 ${hip + 150 * legK} 450 ${hip + 118 * legK} C 438 ${hip + 150 * legK} 432 ${hip + 260 * legK} 426 ${ank} L 268 ${ank} C 274 ${hip + 330 * legK} 288 ${hip + 160 * legK} 300 ${hip - 24} Z`;
-    const jeansShade = `M 250 ${hip - 30} L 336 ${hip - 30} L 352 ${ank + 10} L 250 ${ank + 10} Z M 450 ${hip + 100} L 474 ${hip + 100} L 498 ${ank + 10} L 432 ${ank + 10} Z`;
-    const folds = `<path d="M 282 ${ank - 40} q 40 -18 80 0 q 30 14 56 -4 M 278 ${ank - 92} q 50 -16 90 2 M 484 ${ank - 44} q 40 -18 80 0 q 30 12 58 -6 M 490 ${ank - 96} q 46 -14 88 4 M 310 ${hip + 210 * legK} q 30 22 70 10 M 520 ${hip + 230 * legK} q 34 18 70 4" fill="none" stroke="${S.ink}" stroke-width="${r1(S.lw * 0.8)}" stroke-linecap="round"/>`;
+    const jeans = `M 342 ${hip - 24} L 558 ${hip - 24} C 566 ${hip + 160 * legK} 576 ${hip + 330 * legK} 580 ${ank} L 468 ${ank} C 464 ${hip + 260 * legK} 458 ${hip + 150 * legK} 450 ${hip + 118 * legK} C 442 ${hip + 150 * legK} 436 ${hip + 260 * legK} 432 ${ank} L 320 ${ank} C 324 ${hip + 330 * legK} 334 ${hip + 160 * legK} 342 ${hip - 24} Z`;
+    const jeansShade = `M 300 ${hip - 30} L 366 ${hip - 30} L 376 ${ank + 10} L 300 ${ank + 10} Z M 450 ${hip + 100} L 466 ${hip + 100} L 486 ${ank + 10} L 436 ${ank + 10} Z`;
+    const folds = `<path d="M 328 ${ank - 40} q 30 -16 60 0 q 22 12 40 -4 M 326 ${ank - 92} q 40 -14 70 2 M 472 ${ank - 44} q 30 -16 62 0 q 22 10 42 -6 M 476 ${ank - 96} q 36 -12 70 4 M 350 ${hip + 210 * legK} q 24 20 56 8 M 494 ${hip + 230 * legK} q 26 16 56 4" fill="none" stroke="${S.ink}" stroke-width="${r1(S.lw * 0.8)}" stroke-linecap="round"/>`;
     parts.push({ d: jeans, fill: P.jeans, shade: jeansShade, shadeColor: P.jeansS, extra: folds });
-    const shoe = (cx, s) => {
+    const shoe = (cx, s, z = 0.8) => {
+      const stf = `translate(${cx} ${ank}) scale(${z}) translate(${-cx} ${-ank})`;
       const d = `M ${cx - 92 * s} ${ank + 62} C ${cx - 98 * s} ${ank + 18} ${cx - 70 * s} ${ank - 18} ${cx - 34 * s} ${ank - 20} L ${cx + 30 * s} ${ank - 16} C ${cx + 62 * s} ${ank - 8} ${cx + 96 * s} ${ank + 18} ${cx + 104 * s} ${ank + 52} L ${cx + 104 * s} ${ank + 70} L ${cx - 92 * s} ${ank + 70} Z`;
       const extra = `<path d="M ${cx - 92 * s} ${ank + 52} L ${cx + 104 * s} ${ank + 52} L ${cx + 104 * s} ${ank + 70} L ${cx - 92 * s} ${ank + 70} Z" fill="${P.sole}" stroke="${S.ink}" stroke-width="${r1(S.lw)}"/>` +
         `<path d="M ${cx - 30 * s} ${ank - 6} l 22 16 M ${cx - 10 * s} ${ank - 10} l 22 16 M ${cx + 10 * s} ${ank - 8} l 20 14" stroke="${S.ink}" stroke-width="${r1(S.lw * 0.8)}" stroke-linecap="round"/>`;
-      parts.push({ d, fill: P.shoe, shade: `M ${cx - 110 * s} ${ank + 24} L ${cx + 120 * s} ${ank + 32} L ${cx + 120 * s} ${ank + 60} L ${cx - 110 * s} ${ank + 60} Z`, shadeColor: P.shoeS, extra });
+      parts.push({ d, fill: P.shoe, tf: stf, shade: `M ${cx - 110 * s} ${ank + 24} L ${cx + 120 * s} ${ank + 32} L ${cx + 120 * s} ${ank + 60} L ${cx - 110 * s} ${ank + 60} Z`, shadeColor: P.shoeS, extra });
     };
-    shoe(350, -1); shoe(550, 1);
+    shoe(368, -1); shoe(532, 1);
 
     // --- neck (behind the collar) ---
     parts.push({ d: `M 424 ${N[1] - 70} L 476 ${N[1] - 70} L 478 ${N[1] + 56} C 460 ${N[1] + 66} 440 ${N[1] + 66} 422 ${N[1] + 56} Z`, fill: P.skin, shade: `M 410 ${N[1] - 80} L 490 ${N[1] - 80} L 490 ${N[1] - 30} C 460 ${N[1] - 16} 440 ${N[1] - 16} 410 ${N[1] - 30} Z`, shadeColor: P.skinS });
     // --- the puffer jacket : scalloped sides, quilt lines, gloss ---
-    const rows = [880, 950, 1020, 1090, 1160, 1218], wide = [150, 172, 164, 174, 166, 156];
-    let jk = `M 392 872 C 360 868 322 870 ${450 - wide[0]} ${rows[0]}`;
-    for (let i = 0; i < rows.length - 1; i++) jk += ` C ${450 - wide[i] - 26} ${rows[i] + 22} ${450 - wide[i + 1] - 26} ${rows[i + 1] - 22} ${450 - wide[i + 1]} ${rows[i + 1]}`;
+    const rows = [880, 950, 1020, 1090, 1160, 1218], wide = [112, 128, 122, 128, 122, 114];
+    let jk = `M 400 872 C 380 868 352 870 ${450 - wide[0]} ${rows[0]}`;
+    for (let i = 0; i < rows.length - 1; i++) jk += ` C ${450 - wide[i] - 18} ${rows[i] + 22} ${450 - wide[i + 1] - 18} ${rows[i + 1] - 22} ${450 - wide[i + 1]} ${rows[i + 1]}`;
     jk += ` C 380 ${rows[5] + 14} 520 ${rows[5] + 14} ${450 + wide[5]} ${rows[5]}`;
-    for (let i = rows.length - 1; i > 0; i--) jk += ` C ${450 + wide[i] + 26} ${rows[i] - 22} ${450 + wide[i - 1] + 26} ${rows[i - 1] + 22} ${450 + wide[i - 1]} ${rows[i - 1]}`;
-    jk += ` C 578 870 540 868 508 872 L 488 896 L 412 896 L 392 872 Z`; // open at the neck
-    const quilts = rows.slice(1, 5).map(y => `M ${450 - 178} ${y} C 340 ${y + 16} 380 ${y + 16} 408 ${y + 8} M 492 ${y + 8} C 520 ${y + 16} 560 ${y + 16} ${450 + 178} ${y}`).join(' ');
-    const gloss = rows.slice(0, 5).map((y, i) => `M ${300 + (i % 2) * 8} ${y + 26} q 28 -14 62 -12 M ${540 + (i % 2) * 6} ${y + 18} q 34 -4 58 10`).join(' ');
-    parts.push({ d: jk, fill: P.jacket, shade: `M 260 860 L 372 860 C 346 960 356 1090 392 1240 L 260 1240 Z`, shadeColor: P.jacketS,
+    for (let i = rows.length - 1; i > 0; i--) jk += ` C ${450 + wide[i] + 18} ${rows[i] - 22} ${450 + wide[i - 1] + 18} ${rows[i - 1] + 22} ${450 + wide[i - 1]} ${rows[i - 1]}`;
+    jk += ` C 548 870 520 868 500 872 L 482 896 L 418 896 L 400 872 Z`; // open at the neck
+    const quilts = rows.slice(1, 5).map(y => `M ${450 - 134} ${y} C 356 ${y + 14} 392 ${y + 14} 416 ${y + 8} M 484 ${y + 8} C 508 ${y + 14} 544 ${y + 14} ${450 + 134} ${y}`).join(' ');
+    const gloss = rows.slice(0, 5).map((y, i) => `M ${344 + (i % 2) * 6} ${y + 26} q 22 -12 48 -10 M ${508 + (i % 2) * 4} ${y + 18} q 26 -4 46 8`).join(' ');
+    parts.push({ d: jk, fill: P.jacket, shade: `M 300 860 L 386 860 C 368 960 376 1090 404 1240 L 300 1240 Z`, shadeColor: P.jacketS,
       extra: `<path d="${quilts}" fill="none" stroke="${S.ink}" stroke-width="${r1(S.lw)}" stroke-linecap="round"/><path d="${gloss}" fill="none" stroke="${P.jacketH}" stroke-width="${r1(S.lw * 2.2)}" stroke-linecap="round" opacity="0.85"/>` });
-    parts.push({ d: `M 420 896 L 450 930 L 480 896 L 488 896 L 492 1222 L 408 1222 L 412 896 Z`, fill: P.tee, inner: true, shade: `M 400 890 L 432 890 L 428 1230 L 400 1230 Z`, shadeColor: P.teeS });
-    parts.push({ d: `M 406 900 L 410 1222 M 494 900 L 490 1222`, fill: 'none', inner: true });
+    parts.push({ d: `M 424 896 L 450 926 L 476 896 L 482 896 L 484 1222 L 416 1222 L 418 896 Z`, fill: P.tee, inner: true, shade: `M 410 890 L 436 890 L 432 1230 L 410 1230 Z`, shadeColor: P.teeS });
+    parts.push({ d: `M 414 900 L 416 1222 M 486 900 L 484 1222`, fill: 'none', inner: true });
     // the puffy collar, folded open on the shoulders : the neck stays visible (décision du 16/11)
-    [-1, 1].forEach(sg => parts.push({ d: `M ${450 + sg * 24} 872 C ${450 + sg * 46} 866 ${450 + sg * 80} 870 ${450 + sg * 88} 888 C ${450 + sg * 94} 906 ${450 + sg * 78} 920 ${450 + sg * 58} 916 C ${450 + sg * 46} 914 ${450 + sg * 32} 906 ${450 + sg * 24} 896 Z`,
+    [-1, 1].forEach(sg => parts.push({ d: `M ${450 + sg * 24} 872 C ${450 + sg * 42} 866 ${450 + sg * 72} 870 ${450 + sg * 80} 888 C ${450 + sg * 86} 906 ${450 + sg * 72} 920 ${450 + sg * 54} 916 C ${450 + sg * 46} 914 ${450 + sg * 32} 906 ${450 + sg * 24} 896 Z`,
       fill: P.jacket, shade: sg < 0 ? `M 350 880 L 400 880 L 400 930 L 350 930 Z` : null, shadeColor: P.jacketS,
       extra: `<path d="M ${450 + sg * 44} 880 q ${sg * 18} -2 ${sg * 30} 8" fill="none" stroke="${P.jacketH}" stroke-width="${r1(S.lw * 1.6)}" stroke-linecap="round" opacity="0.85"/>` }));
     // --- head : face, details, front locs, headphones ---
@@ -155,10 +156,10 @@
     // --- arms : puffy sleeves ; left hand pressing the left cup, right hand raised, index up (« le prochain ») ---
     const cup = H(-118, 6), hL = [cup[0] - 6, cup[1] + 12], wL = [hL[0] - 4, hL[1] + 46];
     const hR = [652, 700], wR = [hR[0] + 6, hR[1] + 58];
-    const sleeve = (a, e, w) => parts.push({ kind: 'stroke', d: `M ${pt(a)} L ${pt(e)} L ${pt(w)}`, w: 82, color: P.jacket,
+    const sleeve = (a, e, w) => parts.push({ kind: 'stroke', d: `M ${pt(a)} L ${pt(e)} L ${pt(w)}`, w: 66, color: P.jacket,
       tip: `M ${pt(lerp(a, e, 0.15))} L ${pt(lerp(a, e, 0.75))}`, tipColor: P.jacketH });
-    sleeve([322, 912], [238, 1010], wL);
-    sleeve([578, 912], [700, 900], wR);
+    sleeve([350, 908], [262, 1000], wL);
+    sleeve([550, 908], [672, 896], wR);
     // fix the sleeve gloss : thinner
     parts.slice(-2).forEach(q => { q.tipW = 10; });
     // left hand : palm on the cup, fingers on top
