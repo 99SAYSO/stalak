@@ -65,7 +65,7 @@
   }
 
   function head(V, expr, tf, into) {
-    const plain = String(expr).replace('+larme', '').replace('+cerne', '');
+    const plain = String(expr).replace(/\+\w+/g, '');
     const hw = HW[V.face];
     // the ears : visible now, the hair is short
     [-1, 1].forEach(k => {
@@ -82,16 +82,28 @@
     if (plain === 'panique') into.push({ d: `M 76 -44 q 16 24 0 38 q -16 -14 0 -38 Z M -84 -34 q 11 17 0 27 q -11 -10 0 -27 Z`, fill: '#bfe6ff', tf });
   }
 
+  // the mouth open while talking, in the mood of the expression
+  function talkMouth(expr, lw) {
+    const tongue = (y) => `<path d="M -10 ${y} q 10 -8 20 0" fill="none" stroke="#c4535a" stroke-width="5" stroke-linecap="round"/>`;
+    if (expr === 'colere') return `<path d="M -30 54 C -36 96 36 96 30 54 C 18 46 -18 46 -30 54 Z" fill="#3b1612" stroke="${INK}" stroke-width="${lw}"/><path d="M -24 56 C -14 52 14 52 24 56 L 22 62 C 10 59 -10 59 -22 62 Z" fill="#ffffff"/>` + tongue(84);
+    if (expr === 'panique') return `<path d="M -22 54 C -26 98 26 98 22 54 C 12 46 -12 46 -22 54 Z" fill="#3b1612" stroke="${INK}" stroke-width="${lw}"/>` + tongue(86);
+    if (expr === 'fierte') return `<path d="M -32 56 C -16 94 18 94 34 54 Z" fill="#3b1612" stroke="${INK}" stroke-width="${lw * 1.1}" stroke-linejoin="round"/><path d="M -28 58 L 30 57 L 28 64 L -26 65 Z" fill="#ffffff"/>` + tongue(84);
+    return `<path d="M -20 58 C -22 86 22 86 20 58 C 10 52 -10 52 -20 58 Z" fill="#3b1612" stroke="${INK}" stroke-width="${lw}"/>` + tongue(78);
+  }
+
   // eyes, brows, nose, mouth for an expression
   function face(V, expr) {
     const lw = S.lw;
     let s = '';
     // « …+cerne » : the same expression after a sleepless night, dark circles under the eyes
-    // « …+larme » : moved, a tear on the cheek
-    if (/\+larme/.test(expr)) { expr = expr.replace('+larme', ''); s += `<path d="M 44 26 C 34 44 36 58 46 58 C 56 58 58 44 44 26 Z" fill="#bfe6ff" stroke="${INK}" stroke-width="${lw * 0.7}"/>`; }
-    const tired = /\+cerne$/.test(expr);
+    // modifiers after the expression : +larme (moved, a tear), +cerne (a sleepless night), +parle (the mouth open : he talks),
+    // +cligne (the eyes shut : a blink). The animation shows +parle and +cligne in turn over the plain face.
+    const mods = (String(expr).match(/\+\w+/g) || []).map(m => m.slice(1));
+    expr = String(expr).replace(/\+\w+/g, '');
+    const talk = mods.includes('parle'), shut = mods.includes('cligne');
+    if (mods.includes('larme')) s += `<path d="M 44 26 C 34 44 36 58 46 58 C 56 58 58 44 44 26 Z" fill="#bfe6ff" stroke="${INK}" stroke-width="${lw * 0.7}"/>`;
+    const tired = mods.includes('cerne');
     if (tired) {
-      expr = expr.replace('+cerne', '');
       [-1, 1].forEach(k => { const x = k * 36; s += `<path d="M ${x - 24} 24 Q ${x} 38 ${x + 24} 24" fill="none" stroke="#7b5a8c" stroke-width="${lw * 0.9}" stroke-linecap="round" opacity="0.8"/><path d="M ${x - 18} 33 Q ${x} 42 ${x + 18} 33" fill="none" stroke="#7b5a8c" stroke-width="${lw * 0.6}" stroke-linecap="round" opacity="0.55"/>`; });
     }
     const eyeShape = (x, k, h) => (k < 0 ? `M ${x - 24} 6 Q ${x} ${6 - h} ${x + 24} 4 Q ${x} ${6 + h * 0.8} ${x - 24} 6 Z` : `M ${x - 24} 4 Q ${x} ${6 - h} ${x + 24} 6 Q ${x} ${6 + h * 0.8} ${x - 24} 4 Z`);
@@ -102,6 +114,8 @@
       const x = k * 36;
       if (expr === 'fierte') { // closed, happy eyes
         s += `<path d="M ${x - 22} 8 Q ${x} -10 ${x + 22} 8" fill="none" stroke="${INK}" stroke-width="${lw * 1.7}" stroke-linecap="round"/>`;
+      } else if (shut) { // a blink : the lids closed
+        s += `<path d="M ${x - 24} 6 Q ${x} 16 ${x + 24} 6" fill="none" stroke="${INK}" stroke-width="${lw * 1.6}" stroke-linecap="round"/>`;
       } else {
         const h = expr === 'panique' ? 22 : expr === 'colere' ? 9 : 12;
         const E = eyeShape(x, k, h);
@@ -122,6 +136,7 @@
       }
     });
     s += `<path d="M 2 16 L -4 40 L 8 42" fill="none" stroke="${INK}" stroke-width="${lw * 0.9}" stroke-linecap="round" stroke-linejoin="round"/>`;
+    if (talk) return s + talkMouth(expr, lw);
     if (expr === 'frime') s += `<path d="M -24 66 C -6 72 16 68 32 54" fill="none" stroke="${INK}" stroke-width="${lw * 1.2}" stroke-linecap="round"/><path d="M 10 66 L 28 58 L 26 64 Z" fill="#ffffff"/>`;
     if (expr === 'colere') s += `<path d="M -30 58 L 30 58 C 32 76 -32 76 -30 58 Z" fill="#ffffff" stroke="${INK}" stroke-width="${lw}"/><path d="M -28 66 L 28 66 M -10 58 L -10 74 M 10 58 L 10 74" stroke="${INK}" stroke-width="${lw * 0.6}"/>`;
     if (expr === 'panique') s += `<path d="M -16 56 C -18 86 18 86 16 56 C 10 50 -10 50 -16 56 Z" fill="#3b1612" stroke="${INK}" stroke-width="${lw}"/><path d="M -8 74 q 8 -6 16 0" fill="none" stroke="#c4535a" stroke-width="5"/>`;

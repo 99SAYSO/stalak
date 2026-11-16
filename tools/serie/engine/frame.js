@@ -32,7 +32,8 @@
   };
 
   // ---------------- the banner : episode number and title, top of the screen ----------------
-  function bandeau(style, title, ep) {
+  function bandeau(style, title, ep) { return `<g class="bandeau">${bandeau0(style, title, ep)}</g>`; }
+  function bandeau0(style, title, ep) {
     let s = '';
     if (style === 1) { // « La carte glacée » : the white Stalak card, thick ink outline, hard shadow, icicles under it
       const font = '66px "Lilita One"', lines = wrap(title, font, 820), x = 70, y = 196, w = 940, h = 64 + lines.length * 72;
@@ -43,12 +44,13 @@
       s += `<g transform="rotate(-4 ${x + 150} ${y})"><rect x="${x + 28}" y="${y - 30}" width="244" height="54" rx="27" fill="${BLUE}" stroke="${INK}" stroke-width="6"/>${T(x + 150, y + 8, 'ÉPISODE ' + ep, 30, SNOW, { font: 'Rubik', weight: 800 })}</g>`;
     }
     if (style === 2) { // « La bande bleue » : a full-width blue band, a little tilted, snow on its top edge
-      const font = '74px "Lilita One"', lines = wrap(title, font, 900), y = 206, h = 96 + lines.length * 80;
+      // 16/11 (owner) : the accents of the title (CRIÉ, MÈRE) must never touch the « ÉPISODE n » line above them
+      const font = '74px "Lilita One"', lines = wrap(title, font, 900), y = 206, top = (ep !== '' && ep != null) ? 152 : 136, h = top - 40 + lines.length * 80;
       s += `<g transform="rotate(-2.5 540 ${y + h / 2})">`;
       s += `<rect x="-60" y="${y + 12}" width="1200" height="${h}" fill="${INK}"/><rect x="-60" y="${y}" width="1200" height="${h}" fill="${BLUE}" stroke="${INK}" stroke-width="10"/>`;
       s += snowCap(-60, 1140, y, 22);
-      if (ep !== '' && ep != null) s += T(540, y + 64, 'ÉPISODE ' + ep, 28, ICE, { font: 'Rubik', weight: 800, ls: 3 });
-      lines.forEach((ln, i) => { s += T(540, y + 136 + i * 80, ln, 74, SNOW, { stroke: INK, sw: 14 }); });
+      if (ep !== '' && ep != null) s += T(540, y + 58, 'ÉPISODE ' + ep, 28, ICE, { font: 'Rubik', weight: 800, ls: 3 });
+      lines.forEach((ln, i) => { s += T(540, y + top + i * 80, ln, 74, SNOW, { stroke: INK, sw: 14 }); });
       s += flake(130, y + 52, 22, ICE, 5) + flake(950, y + 52, 22, ICE, 5);
       s += '</g>';
     }
@@ -69,6 +71,7 @@
 
   // ---------------- the subtitles : the speaker's name next to the text, above the bottom 20 % ----------------
   function sub(style, who, text, bottom = 1488) {
+    if (FRAME.MUTE_SUB) return '';
     const [name, col] = WHO[who], cx = 500, maxW = 800;
     let s = '';
     if (style === 1) { // white card, ink outline, hard shadow ; the name in a coloured tab on its top-left corner
@@ -145,9 +148,16 @@
   // ---------------- a character, placed by its feet : x, y (feet), h (height in px) ----------------
   let CLIPN = 0;
   function who(c) {
-    const r = c.who === 'liam' ? LIAM.figure(c.v || 4, c.expr, c.pose) : CAST.figure(c.who, c.v, c.expr);
-    const inner = `<g class="fig">${r.svg}</g>${c.props || ''}`; // props are drawn in the character's own coordinates ; only the figure is measured
-    let defs = r.defs, svg = `<g data-place="${c.x} ${c.y} ${c.h}"><g>${c.flip ? `<g transform="scale(-1 1)">${inner}</g>` : inner}</g></g>`;
+    const fig = (e) => c.who === 'liam' ? LIAM.figure(c.v || 4, e, c.pose) : CAST.figure(c.who, c.v, e);
+    const r = fig(c.expr);
+    let defs = r.defs, figs = `<g class="fig">${r.svg}</g>`;
+    if (FRAME.ANIM && !c.sil) { // the talking and blinking faces, hidden until the animation shows them
+      const rT = fig(c.expr + '+parle'), rB = fig(c.expr + '+cligne');
+      defs += rT.defs + rB.defs;
+      figs += `<g class="figT" display="none">${rT.svg}</g><g class="figB" display="none">${rB.svg}</g>`;
+    }
+    const inner = figs + (c.props || ''); // props are drawn in the character's own coordinates ; only the figure is measured
+    let svg = `<g data-place="${c.x} ${c.y} ${c.h}" data-who="${c.who}"><g>${c.flip ? `<g transform="scale(-1 1)">${inner}</g>` : inner}</g></g>`;
     // clip : [x, y, w, h] in frame coordinates (a character seen through a window) ; after : drawn over him, in frame coordinates
     // sil : an anonymous silhouette (followers in the background)
     if (c.sil) { defs += `<filter id="silf"><feFlood flood-color="#2a2d36"/><feComposite in2="SourceAlpha" operator="in"/></filter>`; svg = `<g filter="url(#silf)" opacity="0.92">${svg}</g>`; }
@@ -202,5 +212,31 @@
     return `<defs>${defs}</defs>${body}`;
   }
 
-  window.FRAME = { compose, bandeau, sub, logo, FRAMES, WHO };
+  // ---------------- the shouts (owner, 16/11) : when a character shouts, no subtitle card. The words themselves, big, in
+  // the middle or the upper half of the screen, appear one by one as they are said ; then the subtitles come back.
+  // The speaker's name stays next to them (rule of 15/11). cy : the middle of the block (clear of the banner and the faces).
+  function criLayout(who, text, cy = 660) {
+    const maxW = 840;
+    let size = 104, font, lines;
+    for (size of [104, 92, 82]) { font = `${size}px "Lilita One"`; lines = wrap(text, font, maxW); if (lines.length <= 3) break; } // 3 lines at most
+    const lh = Math.round(size * 1.08), sp = width(' ', font), top = cy - (lines.length * lh) / 2, words = [];
+    lines.forEach((ln, li) => {
+      let x = 500 - width(ln, font) / 2; // centred on x = 500 : clear of the buttons on the right edge
+      ln.split(' ').forEach(w => { const ww = width(w, font); words.push({ w, x, y: top + (li + 1) * lh - 20, ww, size }); x += ww + sp; });
+    });
+    return { size, lh, top, cy, words, left: Math.min(...words.map(o => o.x)) };
+  }
+  // one word : an ink shadow, then white with a thick ink outline
+  const criWord = (o) => T(o.x + 7, o.y + 9, o.w, o.size, INK, { anchor: 'start', stroke: INK, sw: 18 }) + T(o.x, o.y, o.w, o.size, SNOW, { anchor: 'start', stroke: INK, sw: 18 });
+  function criName(who, L) {
+    const [name, col] = WHO[who], nw = width(name, '34px "Lilita One"') + 44, x = L.left - 4, y = L.top - 14;
+    return `<g transform="rotate(-4 ${x} ${y})"><rect x="${x}" y="${y - 34}" width="${nw}" height="52" rx="26" fill="${col}" stroke="${INK}" stroke-width="5"/>${T(x + nw / 2, y + 4, name, 34, who === 'narrateur' ? ICE : SNOW)}</g>`;
+  }
+  function cri(who, text, cy = 660) {
+    if (FRAME.MUTE_SUB) return '';
+    const L = criLayout(who, text, cy);
+    return `<g transform="rotate(-3 500 ${cy})">${criName(who, L)}${L.words.map(criWord).join('')}</g>`;
+  }
+
+  window.FRAME = { compose, bandeau, sub, cri, criLayout, criWord, criName, wrap, width, logo, FRAMES, WHO, ANIM: false, MUTE_SUB: false };
 })();

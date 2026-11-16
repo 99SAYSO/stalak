@@ -3,6 +3,7 @@
 > Marketing & croissance, 16/11/2026. Série animée française pour @stalak_app (TikTok, Instagram Reels, YouTube Shorts).
 > L'univers a été choisi par le propriétaire dans Studio Stalak (onglet Univers), entre le 15/11 à 22 h 26 et le 16/11 à 4 h 56. Le détail des choix est dans `docs/marketing/SERIE_UNIVERS.md`.
 > Cette bible remplace celle de « Studio Chambre » (Yanis), abandonnée le 15/11.
+> **Version 2 (16/11, 16 h)** : les 10 remarques du propriétaire sur la vidéo de l'épisode 1, appliquées à toute la série (règle `regle-remarques-toute-serie` : une remarque sur une vidéo vaut pour toutes, même celles déjà envoyées).
 
 ## L'idée
 
@@ -16,13 +17,19 @@ Le ton est celui d'un dessin animé américain inspiré de l'anime, avec le dél
 
 - **Durée** : entre 1 min 05 et 1 min 20, en vertical 9:16. **Pas de générique.**
 - **0:00, le cri** : un personnage crie une phrase liée à l'épisode, qui **choque ou fait tout de suite se poser une question** (16/11). Exemple : « Tu m'as enregistrée sans me le dire ?! ». La même phrase revient au milieu ou à la fin, et c'est là qu'on comprend la scène.
+- **Les cris s'écrivent en grand** (16/11) : pas de carte de sous-titre, mais les mots eux-mêmes, en blanc cerné de noir, qui apparaissent un par un pendant qu'ils sont criés, vers le milieu ou le haut de l'écran, sans couvrir un visage. Le nom de celui qui crie est à côté. Ensuite, on revient aux sous-titres. Une réplique est un cri quand le script dit « (crie) ».
 - **Le bandeau** : en haut, en majuscules, sur la bande bleue penchée avec de la neige dessus (version 4). Le titre est **une phrase qui donne le contexte**, pas un nom d'épisode (16/11). Par exemple « SA MÈRE A CRIÉ EN PLEINE PRISE », dans l'esprit de « IL A RENCONTRÉ UN GROS PROBLÈME » ou « ELLE EST TOUJOURS SUR SON TÉLÉPHONE ».
 - **Puis le narrateur.** Le bandeau disparaît dès qu'il parle. Il présente vite les personnages et le contexte, puis il alterne avec eux.
-- **Les sous-titres** : tout ce qui est dit est écrit, sur une carte blanche, avec le nom de celui qui parle dans une étiquette à sa couleur.
+- **Les sous-titres** : tout ce qui est dit est écrit, sur une carte blanche, avec le nom de celui qui parle dans une étiquette à sa couleur. Une phrase entière par carte quand elle tient, et la carte change quand la voix fait une pause.
+- **On comprend toujours où on est et qui arrive** (16/11) :
+  - chaque changement de lieu ou de moment a un carton en haut de l'écran (« UNE HEURE PLUS TÔT », « CINQ MINUTES PLUS TARD · LA CUISINE ») ;
+  - on voit pourquoi on y est (Liam fait la vaisselle parce que sa mère l'a demandé) et d'où sort un objet (il sort son téléphone de sa poche) ;
+  - un personnage qui arrive dit bonjour (« Coucou Liam ! ») et a son étiquette avec son rôle (« MAYA, LA VOISINE ») ; Maya frappe à la fenêtre (« TOC TOC ! ») ;
+  - les phrases disent les choses simplement : « Maman, on t'entend dans mon enregistrement ! », pas « T'es dans ma prise ».
 - **La fin, avec un appel à l'action** (décision du 16/11) :
   - La solution au problème de Liam, c'est Stalak, mais amené intelligemment, jamais un simple « fais tes vidéos avec Stalak ».
   - Celui qui regarde doit se reconnaître dans la galère de Liam.
-  - On montre la vidéo faite avec Stalak (toujours synchronisée avec la musique) et la mascotte qui réagit dans le téléphone.
+  - On montre la vidéo faite avec Stalak (toujours synchronisée avec la musique) et la mascotte qui réagit dans le téléphone. **L'écran de Stalak est dessiné par Claude** (16/11), avec un exemple fait des vidéos de Liam : son son et ses prises entrent dans Stalak, puis le clip passe d'une prise à l'autre sur le temps, la bouche synchro. Les options montrées sont celles de l'app (Coupes : Auto, Sur les mots, Par mesure ; Rythme : Posé, Normal, Nerveux ; Effets : Aucun, Sobre, Intense). Jamais une vraie capture, jamais les images du propriétaire.
   - Puis Liam se tourne vers celui qui regarde, avec une phrase sur SA galère à lui (« Toi aussi, t'as un son et des vidéos qui dorment dans ta galerie ? »).
   - Enfin, la carte de fin : stalak.app, « Gratuit, sans téléchargement ni inscription », et le prochain épisode.
 - **Une miniature par vidéo**, dessinée par Claude en même temps qu'elle et déposée avec elle dans Studio Stalak. Elle montre le titre sur la bande bleue et les personnages en grand, au centre de l'image.
@@ -38,16 +45,18 @@ Le ton est celui d'un dessin animé américain inspiré de l'anime, avec le dél
 | **Maya** | La voisine qui sait tout faire, calme et sarcastique. C'est elle qui lui montre Stalak. | Version 1, les tresses : queue haute, créoles, sweat lilas |
 | **Big Mo** | Le rival du quartier. Il poste un clip par jour, et il utilise déjà Stalak sans le dire. | Version 1, le boss : coupe rase, barbe, lunettes noires, doudoune noire |
 | **M. Reyes** | Le gérant de l'épicerie, grincheux. Il a « tout vu dans les années 90 ». | Version 1, l'épicier : moustache, lunettes de lecture, tablier vert |
-| **Le narrateur** | On ne le voit jamais. Grave, posé, ironique, façon documentaire. | Voix « Algieba » (Gemini), accélérée ×1,2 |
+| **Le narrateur** | On ne le voit jamais. Grave, posé, ironique, façon documentaire. | Voix « Algieba » (Gemini), accélérée ×1,35 (16/11) |
 | **La mascotte** | L'officielle, telle quelle, dans le téléphone de Liam. Elle ne parle pas : elle réagit avec ses autocollants. | `site_src/emoji` |
 
-Les voix (Gemini sur Flora), choisies le 16/11 :
-- Nadia : Pulcherrima ;
-- Deuce : Schedar ;
-- Maya : Despina ;
-- Liam : Fenrir, « un peu plus vite » (×1,1 ou ×1,2, à choisir).
+Les voix (Gemini sur Flora), choisies le 16/11. Le propriétaire trouvait que tout le monde parlait trop lentement sauf Liam : les autres sont accélérés, et les pauses dans une réplique sont raccourcies (jamais plus de 0,3 s).
+- Liam : Fenrir ×1,1 ;
+- Nadia : Pulcherrima ×1,15 ;
+- Deuce : Schedar ×1,25 ;
+- Maya : Despina ×1,15 ;
+- M. Reyes : Rasalgethi ×1,2 ;
+- Big Mo : Alnilam ×1,15.
 
-Big Mo et M. Reyes auront leur voix quand un épisode validé les fera parler.
+Chaque réplique est générée à part, avec son émotion, mais reste réaliste (16/11).
 
 ## Les décors (choisis le 16/11)
 
@@ -62,7 +71,9 @@ Big Mo et M. Reyes auront leur voix quand un épisode validé les fera parler.
 
 | Galère | Plan foireux | Hustle | Victoire |
 |---|---|---|---|
-| « Scars » (viavebeatz) | « Sneeze » (Rockot) | « Game Show » (Kulakovka) | « Funk Upbeat » (Loksii) |
+| « Urban Hip Hop » (alex_makemusic) | « Sneeze » (Rockot) | « Game Show » (Kulakovka) | « Funk Upbeat » (Loksii) |
+
+« Scars » est retirée (16/11) : trop sérieuse et trop triste. Les musiques font dessin animé, jamais tristes ni sérieuses. La musique de la galère, « Urban Hip Hop », a été choisie et envoyée par le propriétaire (16/11, 16 h). Elle porte le bouclier Content ID sur Pixabay, et il la garde quand même : une réclamation se conteste avec le certificat Pixabay (https://pixabay.com/music/351577/license/).
 
 ## Les règles (onglet « Mes goûts », à relire avant chaque épisode)
 
@@ -79,22 +90,23 @@ Big Mo et M. Reyes auront leur voix quand un épisode validé les fera parler.
   C'est à faire vérifier par Juridique.
 - Pas de pause ajoutée dans les voix.
 - Tout est dessiné par Claude en code : Flora ne sert qu'aux voix.
+- Une remarque sur une vidéo vaut pour toute la série : on l'applique aux suivantes et on refait celles déjà envoyées (16/11).
 
 ## Comment un épisode avance (Studio Stalak)
 
 Script à valider → storyboard à valider (une image par moment du script, dessinée en code) → feu vert de la semaine → production, vidéo par vidéo, avec la barre de progression à jour (voix générée une seule fois sur le texte validé, rendu, planche contact, miniature) → vidéo à valider → programmation par Réseaux sociaux.
 
-**Le numéro et le « prochain épisode » suivent l'ordre de sortie, pas l'ordre d'écriture** (proposé le 16/11, à confirmer par le propriétaire). Par exemple, l'épisode GTA 6 sort le 19 au soir : il porte le n° 3, et l'épisode 2 l'annonce.
+**Le numéro et le « prochain épisode » suivent l'ordre de sortie, pas l'ordre d'écriture** (confirmé le 16/11 : « ordre comme tu veux mais je veux celle sur GTA 6 le 19 »). L'épisode GTA 6 sort le 19 au soir : il porte le n° 3, et l'épisode 2 l'annonce.
 
 ## Coût
 
-Les images, les musiques et le rendu coûtent 0 $. Une génération de voix coûte 0,013 $. On fait une seule génération par personnage et par épisode, découpée ensuite, soit environ 0,05 à 0,08 $ par épisode.
+Les images, les musiques et le rendu coûtent 0 $. Une génération de voix coûte 0,013 $, et on en fait une par réplique (16/11), soit environ 0,17 à 0,23 $ par épisode. Une réplique déjà enregistrée et inchangée est gardée : on ne la paie jamais deux fois.
 
 ## Idées d'épisodes (à valider une par une)
 
 | Bandeau | Le cri d'ouverture | L'histoire |
 |---|---|---|
-| SA MÈRE A CRIÉ EN PLEINE PRISE | Nadia : « Tu m'as enregistrée sans me le dire ?! » | Le cri de sa mère sur la vaisselle tombe pile sur le temps : c'est son refrain. (pilote 1) |
+| SA MÈRE A CRIÉ EN PLEINE PRISE | Nadia : « Tu m'as enregistrée sans me le dire ?! » | Le cri de sa mère sonne plutôt bien dans sa musique : il le garde pour son refrain. (pilote 1) |
 | IL A PASSÉ LA NUIT SUR SA VIDÉO DE PROMO | Liam : « Pourquoi ma bouche est décalée ?! » | Six heures de montage, la bouche décalée. Maya lui montre Stalak. (pilote 2) |
 | SON POTE S'EST NOMMÉ SON MANAGER | Liam : « Mon manager m'a fait acheter douze sachets de glaçons ! » | Douze prises devant l'épicerie, un sachet de glaçons par prise. (pilote 3) |
 | IL SORT SON SON LE JOUR DE GTA 6 | Deuce : « Sortir ton son le jour de GTA 6 ?! T'es fou ! » | Tout le quartier joue. Mais entre deux parties, ils scrollent : il lui faut un clip, pas juste un son. (actualité, 19/11) |

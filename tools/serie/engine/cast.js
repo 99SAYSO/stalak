@@ -137,6 +137,10 @@
   function features(K, expr) {
     const H = K.head, E = H.eye || {};
     let s = '';
+    // +parle : the mouth open (talking) ; +cligne : the eyes shut (a blink) — shown in turn by the animation
+    const mods = (String(expr).match(/\+\w+/g) || []).map(m => m.slice(1));
+    expr = String(expr).replace(/\+\w+/g, '');
+    const talk = mods.includes('parle'), shut = mods.includes('cligne');
     const shape = (x, k, h) => (k < 0 ? `M ${x - 24} 6 Q ${x} ${6 - h} ${x + 24} 4 Q ${x} ${6 + h * 0.8} ${x - 24} 6 Z` : `M ${x - 24} 4 Q ${x} ${6 - h} ${x + 24} 6 Q ${x} ${6 + h * 0.8} ${x - 24} 4 Z`);
     const BR = Object.assign({ frime: [[-18, -24], [-34, -26]], colere: [[-8, -30], [-8, -30]], panique: [[-40, -30], [-40, -30]], fierte: [[-30, -28], [-30, -28]] }, H.brows || {});
     const B = BR[expr], sun = H.glasses === 'sun';
@@ -146,6 +150,9 @@
         if (expr === 'fierte') {
           s += ln(`M ${x - 22} 8 Q ${x} -10 ${x + 22} 8`, INK, LW * 1.7);
           if (E.lash) s += ln(`M ${x + k * 22} 6 l ${k * 9} -6`, INK, LW * 1.1);
+        } else if (shut) {
+          s += ln(`M ${x - 24} 6 Q ${x} 16 ${x + 24} 6`, INK, LW * 1.6);
+          if (E.lash) s += ln(`M ${x + k * 24} 6 l ${k * 9} 4`, INK, LW * 1.1);
         } else {
           let h = expr === 'panique' ? 22 : expr === 'colere' ? 9 : 12;
           const tired = (E.tired || E.lazy) && expr !== 'panique';
@@ -171,6 +178,14 @@
     });
     s += ln({ regular: 'M 2 16 L -4 40 L 8 42', small: 'M 2 24 Q -4 36 6 38', wide: 'M -12 38 Q -6 46 0 41 Q 6 46 12 38 M 2 14 L -2 32', big: 'M 6 4 L -8 42 Q 2 52 14 44' }[H.nose || 'regular'], INK, LW * 0.9);
     const M = (H.mouth && H.mouth[expr]) || expr, lip = H.lips;
+    if (talk) {
+      const tongue = (y) => ln(`M -10 ${y} q 10 -8 20 0`, '#c4535a', 5);
+      if (M === 'colere' || M === 'shout') s += `<path d="M -30 52 C -36 96 36 96 30 52 C 18 44 -18 44 -30 52 Z" fill="#3b1612" stroke="${INK}" stroke-width="${LW}"/><path d="M -24 54 C -14 50 14 50 24 54 L 22 60 C 10 57 -10 57 -22 60 Z" fill="#ffffff"/>` + tongue(84);
+      else if (M === 'panique') s += `<path d="M -22 54 C -26 98 26 98 22 54 C 12 46 -12 46 -22 54 Z" fill="#3b1612" stroke="${INK}" stroke-width="${LW}"/>` + tongue(86);
+      else if (M === 'fierte' || M === 'grin') s += `<path d="M -30 56 C -14 92 16 92 32 54 Z" fill="#3b1612" stroke="${INK}" stroke-width="${LW}" stroke-linejoin="round"/><path d="M -26 58 L 28 57 L 26 64 L -24 65 Z" fill="#ffffff"/>` + tongue(82);
+      else s += `<path d="M -20 58 C -22 86 22 86 20 58 C 10 52 -10 52 -20 58 Z" fill="#3b1612" stroke="${INK}" stroke-width="${LW}"/>` + tongue(78);
+    }
+    else {
     if (M === 'frime') s += ln('M -24 66 C -6 72 16 68 32 54', INK, LW * 1.2) + '<path d="M 10 66 L 28 58 L 26 64 Z" fill="#ffffff"/>' + (lip ? ln('M -10 74 Q 4 78 16 72', lip, 4) : '');
     if (M === 'smirk') s += ln('M -20 66 C -4 70 14 68 28 58', INK, LW * 1.2) + (lip ? ln('M -8 74 Q 4 77 14 72', lip, 4) : '');
     if (M === 'flat') s += ln('M -26 66 Q 0 62 26 66 M -26 66 l -6 6 M 26 66 l 6 6', INK, LW * 1.2);
@@ -179,6 +194,7 @@
     if (M === 'panique') s += `<path d="M -16 56 C -18 86 18 86 16 56 C 10 50 -10 50 -16 56 Z" fill="#3b1612" stroke="${INK}" stroke-width="${LW}"/>` + ln('M -8 74 q 8 -6 16 0', '#c4535a', 5);
     if (M === 'fierte') s += `<path d="M -32 56 C -14 82 18 82 34 54 Z" fill="#ffffff" stroke="${INK}" stroke-width="${r1(LW * 1.1)}" stroke-linejoin="round"/>` + ln('M -28 60 L 30 60', INK, LW * 0.5);
     if (M === 'grin') s += `<path d="M -28 58 C -12 76 14 76 30 56 Z" fill="#ffffff" stroke="${INK}" stroke-width="${LW}" stroke-linejoin="round"/>`;
+    }
     // glasses
     if (H.glasses === 'sun') s += `<path d="M -68 -12 C -68 -20 -10 -20 -8 -12 L -12 16 C -14 28 -60 28 -64 16 Z M 68 -12 C 68 -20 10 -20 8 -12 L 12 16 C 14 28 60 28 64 16 Z" fill="${H.lens || '#15161c'}" stroke="${INK}" stroke-width="${LW}"/>` +
       ln('M -8 -10 Q 0 -15 8 -10 M -68 -10 L -84 -8 M 68 -10 L 84 -8', INK, LW * 1.2) + ln('M -54 -8 l 16 0 M 22 -8 l 16 0', '#ffffff', 4, ' opacity="0.75"');
@@ -346,6 +362,7 @@
 
   function headF(K, expr, tf, into) {
     if (K._expr) expr = K._expr; // a scene can ask for another expression than the sheet's
+    const full = expr; expr = String(expr).replace(/\+\w+/g, ''); // the modifiers (+parle, +cligne) only change the face
     const H = K.head, hw = HWF[H.face], HS = HAIR[H.hair] || {};
     const add = (arr) => arr.forEach(p => into.push(Object.assign({ tf }, p)));
     if (HS.fbehind && !K._body) add(HS.fbehind(K, hw));
@@ -354,7 +371,7 @@
       const x0 = k * (hw - 5);
       into.push(part(EAR(x0, k), K.skin, { tf, extra: ln(`M ${x0 + k * 6} -5 C ${x0 + k * 15} -6 ${x0 + k * 17} 12 ${x0 + k * 9} 22`, K.skinS, 4) }));
     });
-    into.push(part(FACE[H.face], K.skin, { tf, shade: FACESHADE, shadeColor: K.skinS, extra: features(K, expr) + (H.shine ? ln('M -46 -118 q 26 -16 56 -12', '#ffffff', 6, ' opacity="0.55"') : '') }));
+    into.push(part(FACE[H.face], K.skin, { tf, shade: FACESHADE, shadeColor: K.skinS, extra: features(K, full) + (H.shine ? ln('M -46 -118 q 26 -16 56 -12', '#ffffff', 6, ' opacity="0.55"') : '') }));
     if (H.earpiece) into.push(part(`M ${hw + 4} 0 a 7 9 0 1 0 0.1 0 Z`, H.earpiece, { tf, inner: true }));
     if (H.beard) add(BEARD[H.beard](K, hw));
     if (HS.ffront) add(HS.ffront(K, hw));

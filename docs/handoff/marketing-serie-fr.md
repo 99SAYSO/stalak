@@ -2,6 +2,23 @@
 
 > Marketing & croissance. Rien ne change sur le site : seulement `tools/serie/` et `docs/`.
 
+## 16/11, 16 h 10 : version 2 de toute la série (les remarques du propriétaire sur l'épisode 1)
+
+- **La fabrication (13 h 45 → 15 h 20).** Feu vert donné (`lots/2026-11-16`). Voix réplique par réplique (« réplique par réplique mais faut que ça reste réaliste »), Liam ×1,1. Ordre de sortie confirmé : « ordre comme tu veux mais je veux celle sur GTA 6 le 19 ». Épisodes 1 et 2 fabriqués, relus sur planche contact et déposés (`video`, avec `miniatureUrl` et `plancheUrl`). L'épisode GTA 6 était à 85 % quand le propriétaire a tout arrêté (15 h 23).
+- **Ses 10 remarques sur l'épisode 1** (salle de visionnage, note de `tcrazy-ep1`, ajoutée seule à « Mes goûts ») et sa demande : « applique tout ça sur les prochaines et même celle que tu m'as déjà envoyée ». C'est noté comme règle générale : `regle-remarques-toute-serie`. Ce qui est fait :
+  1. **Musique de la galère** : « Scars » retirée (trop sérieuse, trop triste). 4 musiques « dessin animé » sans Content ID proposées dans `musique-galere`. Le propriétaire a finalement envoyé la sienne : « Urban Hip Hop » (alex_makemusic, Pixabay 351577). **Elle a le bouclier Content ID** : il a choisi de la garder quand même (question posée à 16 h 01). Certificat pour contester une réclamation : https://pixabay.com/music/351577/license/. Elle est ajoutée comme option E de la fiche ; `choix` n'est pas touché.
+  2. **Les cris s'écrivent en grand**, mot par mot, vers le milieu ou le haut de l'écran, avec le nom à côté, puis retour aux sous-titres : `FRAME.cri` (frame.js), `kind: 'cri'` dans le plan (tcrazy.py, réplique marquée « (crie) » dans le script), animation dans anim.js. Les plans des cris sont recadrés pour ne couvrir ni le bandeau ni un visage.
+  3. **L'accent de « ÉPISODE »** ne touche plus le titre du bandeau (frame.js, style 2 : plus d'espace entre les deux lignes).
+  4-6. **Ses 3 répliques**, reprises mot pour mot : « Maman, on t'entend dans mon enregistrement ! », « Il réécoute. Et au final, le cri de sa mère sonne plutôt bien dans sa musique. », « Wouah, ça tue ! Je vais le garder dans mon refrain ! ».
+  7-8. **Les transitions** : un carton à chaque changement de lieu ou de moment (`carton`), un bonjour et une étiquette avec le rôle pour qui arrive (« MAYA, LA VOISINE »), « TOC TOC ! » à la fenêtre (`knock`, avec un bruit de coups fait en code). Dans l'épisode 1, Liam fait la vaisselle (sa mère l'a demandé), sort son téléphone, et le narrateur dit pourquoi il lui faut un clip. Même travail dans les 4 autres épisodes.
+  9. **L'écran de Stalak est dessiné par nous** (`stalakApp`, storyboard.js) avec un exemple fait des vidéos de Liam : son son et ses prises entrent, « Montage du clip… », puis le clip passe d'une prise à l'autre toutes les 2 temps de la musique (tempo mesuré avec librosa, `beats_of`), la bouche de Liam bouge sur le rythme. Les options montrées sont celles de l'app. Plus aucune vraie capture ni image du propriétaire (`stalakScreen` supprimé). HyperFrames n'était pas nécessaire : tout est dans le même moteur que la série.
+  10. **Les voix sont plus rapides** : narrateur ×1,35, Nadia et Maya ×1,15, Deuce ×1,25, M. Reyes ×1,2, Big Mo ×1,15, Liam ×1,1 inchangé. Les pauses dans une réplique ne dépassent plus 0,3 s (`squeeze`). Rien à régénérer pour ça.
+- Aussi : sous-titres d'une phrase entière quand elle tient, calés sur les pauses de la voix (`chunks`, `chunk_times`) ; l'écran partagé de l'épisode GTA 6 remplit toute la largeur ; dans l'épisode du manager, le clap « PRISE 12 » passe sur le plan du chien.
+- **Les 5 scripts v2** (en tête de chaque script, la liste de ce qui change ; répliques nouvelles marquées « (nouveau) ») : validés par le propriétaire à 15 h 40-15 h 43. **Les 5 storyboards v2** : déposés à 16 h 02 (`visuels`), avec 2 images en grand pour l'épisode 1 (le cri, l'écran de Stalak).
+- Les anciennes vidéos des épisodes 1 et 2 sont retirées des fiches (gardées dans `videoV1`) pour ne pas embrouiller « À valider ».
+- Voix à générer après la validation des visuels : seulement les répliques nouvelles, 39 en tout (épisode 1 : 7, épisode 2 : 3, GTA 6 : 6, manager : 11, clip façon GTA : 12), soit environ 0,51 $. Les répliques inchangées sont gardées (`prompts` saute une réplique déjà enregistrée). Épisode du manager : M. Reyes et Big Mo gardent les essais choisis.
+- Skills utilisés : `stalak-da`, `stalak-videos-reseaux`, `planche-contact`.
+
 ## 16/11, 14 h 15 : les storyboards des 5 épisodes
 
 - À 13 h 40, le propriétaire a validé les 5 scripts (« j'ai validé c'est bon », fiches en `script_ok`).
