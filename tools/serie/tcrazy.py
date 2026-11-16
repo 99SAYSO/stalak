@@ -215,6 +215,7 @@ def chunks(text, maxc=62, merge=50, short=20):
     (split on plain spaces only, so « décalée ?! » stays whole). Short pieces join their neighbour (since EP4, 16/11 :
     no subtitle of three words flashing for one second, no cut in the middle of a sentence when it fits)."""
     text = re.sub(r' ([?!:;»])', '\u00a0\\1', text).replace('« ', '«\u00a0')  # French typography : no orphan « ?! » at a line start
+    text = re.sub(r'\b(GTA) (\d)', '\\1\u00a0\\2', text)  # « GTA 6 » never cut in two (16/11, contact sheet of « Le clip façon GTA »)
     units = []
     for sen in sentences(text):
         units += split_best([w for w in sen.split(' ') if w], maxc)

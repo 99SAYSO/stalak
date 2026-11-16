@@ -308,6 +308,7 @@ Les voix de Big Mo et de M. Reyes seront choisies quand un épisode validé les 
   - la rue a un lampadaire sur son poteau, éteint le jour, allumé le soir ; `rue` à l'heure `coucher` : le soleil se couche derrière les maisons, la vitrine et les fenêtres s'allument ;
   - l'étape `hf` : l'épisode devient un projet HyperFrames (`<travail>/<ep>/hf/index.html`) dont notre moteur est le runtime (HyperFrames demande l'image d'un instant avec `hf-seek`, le moteur la dessine), plus deux éléments du catalogue HyperFrames, installés à la volée et jamais dans le dépôt : `organic-light-leak-overlay` sur chaque passage par le noir et `vignette` le soir. Le rendu : `npx hyperframes render` avec `HYPERFRAMES_BROWSER_PATH` sur le Chrome déjà installé (le téléchargement de Chrome par HyperFrames est bloqué ici). Environ 25 à 30 min par épisode, contre 5 min avec `frames` ;
   - un sous-titre trop court (« Pas mal. » restait 0,3 s) est recoupé avec son voisin en deux moitiés lisibles (relevé par la vérification HyperFrames) ;
+  - sur une carte de sous-titre, jamais un mot seul sur la dernière ligne : les deux lignes sont recoupées là où elles sont le plus égales (`wrapEven`), et « GTA 6 » ne se coupe plus en deux (relevé sur les planches contact) ;
   - les bruits de pas (`steps.wav`) sont fabriqués par le pipeline ; un bruitage peut se placer depuis la fin d'un plan (temps négatif).
 
 ## Coûts

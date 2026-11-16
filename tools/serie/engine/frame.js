@@ -17,6 +17,22 @@
     text.split(' ').filter(Boolean).forEach(w => { const t = cur ? cur + ' ' + w : w; if (!cur || cv.measureText(t).width <= maxW) cur = t; else { out.push(cur); cur = w; } });
     return cur ? out.concat(cur) : out;
   }
+  // the subtitle cards (16/11, contact sheets) : never one word alone on the last line (« GTA » / « 6. », « ton » / « son. ») :
+  // the last two lines are cut again where they are most even, both still inside the card
+  function wrapEven(text, font, maxW) {
+    const L = wrap(text, font, maxW);
+    if (L.length < 2) return L;
+    cv.font = font;
+    const words = (L[L.length - 2] + ' ' + L[L.length - 1]).split(' ').filter(Boolean);
+    let best = null;
+    for (let i = 1; i < words.length; i++) {
+      const a = words.slice(0, i).join(' '), b = words.slice(i).join(' '), wa = cv.measureText(a).width, wb = cv.measureText(b).width;
+      if (wa > maxW || wb > maxW) continue;
+      const cost = Math.abs(wa - wb) + (/^(de|du|des|le|la|les|un|une|à|et|ou|ton|ta|tes|son|sa|ses|mon|ma|mes|ce|cette|en|au|aux)$/i.test(words[i - 1]) ? maxW * 0.3 : 0);
+      if (!best || cost < best[0]) best = [cost, a, b];
+    }
+    return best ? L.slice(0, -2).concat([best[1], best[2]]) : L;
+  }
   const width = (text, font) => { cv.font = font; return cv.measureText(text).width; };
   const T = (x, y, t, size, fill, o = {}) => `<text x="${x}" y="${y}" text-anchor="${o.anchor || 'middle'}" font-family="${o.font || 'Lilita One'}"${o.weight ? ` font-weight="${o.weight}"` : ''} font-size="${size}" fill="${fill}"${o.stroke ? ` stroke="${o.stroke}" stroke-width="${o.sw}" paint-order="stroke" stroke-linejoin="round"` : ''}${o.ls ? ` letter-spacing="${o.ls}"` : ''}>${esc(t)}</text>`;
   const flake = (x, y, r, c, w = 4) => { let d = ''; for (let i = 0; i < 6; i++) { const a = i * Math.PI / 3 - Math.PI / 2, ux = Math.cos(a), uy = Math.sin(a); d += `M ${x} ${y} L ${(x + ux * r).toFixed(1)} ${(y + uy * r).toFixed(1)} `; [-1, 1].forEach(k => { const b = r * 0.6, c2 = Math.cos(a + k * 0.8), s2 = Math.sin(a + k * 0.8); d += `M ${(x + ux * b).toFixed(1)} ${(y + uy * b).toFixed(1)} l ${(c2 * r * 0.32).toFixed(1)} ${(s2 * r * 0.32).toFixed(1)} `; }); } return `<path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round"/>`; };
@@ -75,7 +91,7 @@
     const [name, col] = WHO[who], cx = 500, maxW = 800;
     let s = '';
     if (style === 1) { // white card, ink outline, hard shadow ; the name in a coloured tab on its top-left corner
-      const font = '800 44px Rubik', lines = wrap(text, font, maxW - 60), h = 54 + lines.length * 56, w = Math.min(maxW, Math.max(...lines.map(l => width(l, font))) + 72), x = cx - w / 2, y = bottom - h;
+      const font = '800 44px Rubik', lines = wrapEven(text, font, maxW - 60), h = 54 + lines.length * 56, w = Math.min(maxW, Math.max(...lines.map(l => width(l, font))) + 72), x = cx - w / 2, y = bottom - h;
       s += `<rect x="${x + 8}" y="${y + 10}" width="${w}" height="${h}" rx="22" fill="${INK}"/><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="22" fill="${SNOW}" stroke="${INK}" stroke-width="6"/>`;
       lines.forEach((ln, i) => { s += T(x + 36, y + 66 + i * 56, ln, 44, INK, { font: 'Rubik', weight: 800, anchor: 'start' }); });
       const nw = width(name, '34px "Lilita One"') + 44;
