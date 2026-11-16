@@ -4794,7 +4794,9 @@ function loop(){
     livePreheat(ci, tt, CU);
     const liveMiss = live && !liveSrc(cut.take, Math.max(0, tt - cut.take.offset), 0.12);
     { if (frameN === 1) loopCut = ci; else if (ci !== loopCut){ loopCut = ci; if (live && !pre) liveOnCut(cut.take, !liveMiss); } }
-    const risky = liveMiss || ve && vlt >= -0.05 && vlt <= cut.take.duration + 0.05 && (ve.paused || ve.seeking || ve.readyState < 2 || usedTakes().some(k => k.el.seeking && k.el.paused));
+    // (16/11, seen by the owner: the cuts went from take 1 to take 2 while the picture stayed on take 1 for 2.3 s) only the
+    // take ON SCREEN keeps the picture when it is not ready; another take still looking for its place no longer freezes it
+    const risky = liveMiss || ve && vlt >= -0.05 && vlt <= cut.take.duration + 0.05 && (ve.paused || ve.seeking || ve.readyState < 2);
     if (risky){ trace('i' + frameN + ' image gardée (' + (liveMiss ? 'décodage' : ve.seeking ? 'recherche' : ve.paused ? 'en pause' : 'pas prête') + ')'); }
     else {
     trace('i' + frameN + ' dessin');
@@ -4848,8 +4850,14 @@ function play(from, opts){
     if (v.playbackRate !== 1){ trace(n + ' : vitesse ' + v.playbackRate.toFixed(2) + ' -> 1'); v.playbackRate = 1; }
     if (lt > tk.duration) return Promise.resolve();
     trace(n + ' : cherche ' + v.currentTime.toFixed(2) + ' -> ' + lt.toFixed(2)); const w = seekTo(v, lt, false); trace(n + ' : recherche lancée'); return w; });
-  trace('attente des prises');
-  Promise.race([Promise.all(waits), sleep(waitCap)]).then(() => {
+  // (16/11) the song waits for the takes needed at its start: the one on screen and those of the cuts of its first 3 s (up to
+  // 2.5 s: on an iPhone several takes looking for their place at once take that long); the others go on getting ready
+  // while it plays (they are seen later)
+  const firstTakes = new Set(); if (ci0 >= 0) for (let j = ci0; j < S.cuts.length && S.cuts[j].t0 < Math.max(S.segStart, playFrom) + 3; j++) firstTakes.add(S.cuts[j].take);
+  const need = usedTakes().map((tk, i) => firstTakes.has(tk) || tk === onScr ? waits[i] : null).filter(Boolean);
+  const waitFirst = Math.max(waitCap, need.length ? 2500 : 0);
+  trace('attente des prises (' + need.length + ' pour le départ)');
+  Promise.race([Promise.all(need.length ? need : waits), sleep(need.length ? waitFirst : waitCap)]).then(() => {
     if (sess !== playSession || !S.playing) return;
     crumb('prises en place, départ du son · ' + usedTakes().map(takeState).join(' | '), true);
     if (WA){
