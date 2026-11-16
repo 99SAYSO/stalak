@@ -213,6 +213,25 @@ Elles sont dans la fiche `narrateur`, en `a_choisir`. Aucune pause n'a été ajo
   - La même lecture est accélérée sans changer la voix, avec ffmpeg `atempo`, pour 0 $ : ×1,1 (7,0 s) et ×1,2 (6,4 s), à côté de l'originale (7,7 s), dans la fiche `narrateur`.
   - Pour les épisodes, chaque réplique du narrateur sera générée avec Algieba, puis accélérée de la vitesse choisie.
 
+## Étape 2e : les ambiances musicales (déposées le 16/11, à choisir)
+
+Le propriétaire n'a pas envoyé de beats : « cherche par toi-même » (16/11, 4 h 40). Les musiques viennent donc de Pixabay.
+- L'usage commercial est permis, sans mention obligatoire.
+- Les titres sont gardés seulement s'ils ne sont pas enregistrés au Content ID (pas de bouclier) et s'ils sont faits par des humains, pas par une IA.
+- La recherche est faite dans le navigateur, avec les données de la page Pixabay (`hasYoutubeContentId`, `isAiGenerated`).
+- Les fichiers sont téléchargés sur `cdn.pixabay.com`. Le tempo et la tonalité sont mesurés avec librosa, car Claude ne peut pas les écouter.
+
+La fiche unique `musique-fonds` est remplacée par 4 fiches, une par ambiance, pour que le propriétaire puisse choisir chacune. Il y a 2 titres par fiche.
+
+| Ambiance | A | B |
+|---|---|---|
+| 1 · Galère (`musique-galere`) | « it only rains when you're gone », Sam_Kamau : piano et cordes, environ 70 BPM, ré mineur — https://pixabay.com/music/solo-piano-it-only-rains-when-youx27re-gone-179560/ | « Remember Lofi Sad », AudiolistProduction : lo-fi, environ 89 BPM, la mineur — https://pixabay.com/music/beats-remember-lofi-sad-20831/ |
+| 2 · Plan foireux (`musique-plan`) | « Dusty Trail Jams », Rockot : hip-hop comique, environ 99 BPM — https://pixabay.com/music/beats-dusty-trail-jams-comedy-cinematic-hip-hop-315882/ | « Sneeze », Rockot : hip-hop comique — https://pixabay.com/music/alternative-hip-hop-sneeze-comedy-hip-hop-beat-603287/ |
+| 3 · Hustle (`musique-hustle`) | « Jazzy Hip-Hop Upbeat », BombinSound : environ 96 BPM — https://pixabay.com/music/old-school-hip-hop-jazzy-hip-hop-upbeat-joyful-mood-631776/ | « Game Show », Kulakovka : environ 92 BPM — https://pixabay.com/music/old-school-hip-hop-game-show-618590/ |
+| 4 · Victoire (`musique-victoire`) | « Funk Vintage », BerryDeep : funk soul, environ 112 BPM — https://pixabay.com/music/old-school-funk-funk-vintage-613023/ | « Funk Upbeat », Loksii : funk, environ 118 BPM — https://pixabay.com/music/funk-funk-funk-upbeat-240482/ |
+
+Les fichiers sont déposés en .mp4 audio (AAC 128 kbit/s), en entier. Il n'y a plus de générique, donc pas de musique de générique.
+
 ## Étape 2 : tout l'univers dans le style choisi (après le choix)
 
 - Liam : 4 versions, chacune de face, de profil et avec 4 expressions (frime, colère, panique, fierté).
@@ -229,6 +248,6 @@ Elles sont dans la fiche `narrateur`, en `a_choisir`. Aucune pause n'a été ajo
   - narrateur : 3 essais, 0,039 $ (dépensés le 16/11) ;
   - voix de Liam, Nadia, Deuce et Maya : 0,16 $ ;
   - ensuite, environ 0,05 à 0,08 $ par épisode (une génération par personnage et par façon de parler, découpée ensuite).
-- **Musique : 0 $** (beats du propriétaire ou Pixabay).
+- **Musique : 0 $** (Pixabay, choisie le 16/11 faute de beats du propriétaire).
 - Solde Flora au 15/11 : 2,76 $, après les 0,42 $ des planches générées puis retirées.
 - 16/11 : 0,039 $ pour les 3 voix du narrateur ; solde Flora environ 2,72 $.

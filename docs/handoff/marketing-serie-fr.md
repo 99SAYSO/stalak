@@ -2,6 +2,21 @@
 
 > Marketing & croissance. Rien ne change sur le site : seulement `tools/serie/` et `docs/`.
 
+## 16/11, 5 h 10 : les 4 ambiances musicales, 2 titres Pixabay chacune
+
+- À 4 h 40, le propriétaire a écrit « cherche par toi-même » : il n'envoie pas de beats.
+- 8 titres ont été trouvés sur Pixabay :
+  - l'usage commercial est permis ;
+  - aucun n'est enregistré au Content ID ;
+  - tous sont faits par des humains, pas par une IA.
+- Comment ils ont été choisis : recherche dans le navigateur, lecture des données de la page (`hasYoutubeContentId`, `isAiGenerated`), téléchargement sur `cdn.pixabay.com`, tempo et tonalité mesurés avec librosa.
+- Ils sont déposés en .mp4 audio dans 4 nouvelles fiches : `musique-galere`, `musique-plan`, `musique-hustle` et `musique-victoire`. Chacune a 2 titres et est en `a_choisir`.
+- La fiche `musique-fonds` est marquée « remplacée ». Le titre, l'auteur et le lien de chaque musique sont dans `docs/marketing/SERIE_UNIVERS.md`, étape 2e.
+- Claude ne peut pas écouter les titres : il les a choisis d'après leur description, leur tempo et leur tonalité. Le propriétaire tranche à l'oreille.
+- Coût : 0 $.
+- **Pour le Chef de projet** : les fiches `musique-fonds` (remplacée) et `musique-generique` (abandonnée) peuvent être retirées de la page.
+- Ce qui attend : les choix du propriétaire (musiques, vitesse du narrateur, miniature type). Ensuite, la bible en une page et les scripts.
+
 ## 16/11, 4 h 50 : bandeau choisi, chambre validée, une miniature type, le narrateur plus rapide
 
 - À 4 h 36, le propriétaire a répondu.
