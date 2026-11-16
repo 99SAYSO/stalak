@@ -15,7 +15,7 @@ Conversation « 8. Vidéos LEVELS », 16/11/2026.
 
 ## Fichiers touchés
 - `docs/marketing/levels/FORMAT.md` (nouveau)
-- `tools/levels/styles.html`, `tools/levels/render_styles.py`, `tools/levels/render_visuels.py` (nouveaux)
+- `tools/levels/styles.html`, `tools/levels/render_styles.py`, `tools/levels/render_visuels.py` (nouveaux : styles, juges, plateau, accessoires des 5 pilotes)
 - `docs/STATUS.md` (section « En cours »)
 - `docs/handoff/levels-format-pilotes.md` (ce fichier)
 
@@ -30,6 +30,6 @@ Aucun changement visible sur le site : pas de maquette nécessaire (règle 9).
 
 ## Reste au propriétaire
 1. Choisir le style, sans doute D (Univers → « LEVELS · Le bonhomme bâton et son décor »).
-2. Valider les visuels de drill, triste et motivation (statut `visuels`) et les scripts love et ex version 2 (statut `script`). Style D et Videur choisis.
-3. Dire quels sons (les siens ou ceux d'ALASKA) servent aux snippets, genre par genre.
+2. Valider les accessoires de love et ex (statut `visuels`) ; drill, triste, motivation sont en `visuels_ok`.
+3. Envoyer un son avec paroles par genre (drill, love, triste, sur l'ex, motivation), fichier audio seul, pour le snippet du niveau 5.
 4. Donner le feu vert (`lots/levels-2026-11-16`) une fois scripts et visuels validés.

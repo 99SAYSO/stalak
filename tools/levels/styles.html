@@ -280,7 +280,7 @@ if(SCENE==='n1'){
  bigLevel(1);
 } else if(SCENE.startsWith('props_')){
  const g=SCENE.slice(6);
- const T={drill:'SON DRILL',triste:'SON TRISTE',motivation:'SON DE MOTIVATION'}[g];
+ const T={drill:'SON DRILL',triste:'SON TRISTE',motivation:'SON DE MOTIVATION',love:'SON LOVE',ex:'SON SUR TON EX'}[g];
  add(`<text x="540" y="230" font-family="Lilita" font-size="62" fill="#fff" stroke="${INK}" stroke-width="10" paint-order="stroke" text-anchor="middle">ACCESSOIRES · ${T}</text>`);
  const cells=[[40,300],[560,300],[40,1050],[560,1050]];
  cells.forEach(([x,y])=>card(x,y,480,700));
@@ -307,6 +307,26 @@ if(SCENE==='n1'){
   {const {x,y}=C(3); add(`<g filter="url(#rim)"><circle cx="${x}" cy="${y+110}" r="110" fill="#f4f8ff" stroke="#151a2c" stroke-width="6"/><circle cx="${x}" cy="${y-40}" r="80" fill="#f4f8ff" stroke="#151a2c" stroke-width="6"/></g>
    <path d="M${x-80} ${y-80} Q ${x-80} ${y-190} ${x} ${y-185} Q ${x+80} ${y-190} ${x+80} ${y-80} Z" fill="#1f6fd6" stroke="#151a2c" stroke-width="6"/><rect x="${x-88}" y="${y-100}" width="176" height="30" rx="10" fill="#d6ecff" stroke="#151a2c" stroke-width="6"/><circle cx="${x}" cy="${y-195}" r="20" fill="#d6ecff" stroke="#151a2c" stroke-width="6"/>
    <path d="M${x-30} ${y-30} l 14 14 m 0 -14 l -14 14 M${x+16} ${y-30} l 14 14 m 0 -14 l -14 14" stroke="#151a2c" stroke-width="5"/>`); lbl(x,y+290,'LE BONHOMME DE NEIGE','le rappeur après le niveau 4');}
+ } else if(g==='love'){
+  {const {x,y}=C(0); add(`<g filter="url(#rim)"><path d="M${x} ${y+230} C ${x-20} ${y+80} ${x+20} ${y-40} ${x} ${y-120}" stroke="#2f8a4a" stroke-width="12" fill="none"/>
+   <path d="M${x-30} ${y+60} q -60 -20 -70 -70 q 50 0 70 50" fill="#2f8a4a" stroke="#151a2c" stroke-width="4"/>
+   <circle cx="${x}" cy="${y-160}" r="80" fill="#d9304a" stroke="#151a2c" stroke-width="6"/><path d="M${x-40} ${y-170} q 40 -50 80 0 q -40 40 -80 0 M${x-20} ${y-150} q 20 -25 40 0" stroke="#8c1428" stroke-width="6" fill="none"/></g>`); lbl(x,y+290,'LA ROSE','niveau 1 · entre ses dents');}
+  {const {x,y}=C(1); add(`<g filter="url(#rim)">${[-110,0,110].map((d,i)=>`<rect x="${x+d-55}" y="${y-60+i*10}" width="110" height="200" rx="10" fill="${['#3d6b4a','#4a5275','#6b5a3d'][i]}" stroke="#151a2c" stroke-width="6"/><rect x="${x+d-62}" y="${y-80+i*10}" width="124" height="28" rx="8" fill="#2b2f3a" stroke="#151a2c" stroke-width="5"/>`).join('')}</g>
+   <text x="${x}" y="${y-140}" font-family="Lilita" font-size="70" fill="#ffc93c" stroke="${INK}" stroke-width="8" paint-order="stroke" text-anchor="middle">BADABOUM</text>`); lbl(x,y+290,'LES POUBELLES','niveau 1 · là où il atterrit');}
+  {const {x,y}=C(2); add(`<g filter="url(#rim)"><path d="M${x} ${y+80} l -130 -130 a 75 75 0 0 1 130 -90 a 75 75 0 0 1 130 90 z" fill="#e85a7a" stroke="#151a2c" stroke-width="6"/><path d="M${x} ${y-140} q -10 -60 30 -110 M${x} ${y-140} q 30 -40 80 -50" stroke="#2f8a4a" stroke-width="10" fill="none" stroke-linecap="round"/><circle cx="${x+30}" cy="${y-255}" r="26" fill="#ffd76a" stroke="#151a2c" stroke-width="5"/></g>`); lbl(x,y+290,'LE POT EN CŒUR','niveau 3 · « PLONK ! »');}
+  {const {x,y}=C(3); add(`<g filter="url(#rim)"><path d="M${x-200} ${y-40} h 260 q 140 0 140 100 q 0 60 -80 60 h -320 z" fill="#14161f" stroke="#3a4473" stroke-width="6"/><rect x="${x-200}" y="${y+40}" width="290" height="30" fill="#f4f8ff" stroke="#151a2c" stroke-width="4"/>${[0,1,2,3,4,5].map(k=>`<rect x="${x-190+k*46}" y="${y+40}" width="22" height="18" fill="#14161f"/>`).join('')}
+   <rect x="${x-180}" y="${y+120}" width="16" height="120" fill="#14161f"/><rect x="${x+100}" y="${y+120}" width="16" height="120" fill="#14161f"/><path d="M${x-150} ${y-40} l 80 -150" stroke="#14161f" stroke-width="10"/></g>`); lbl(x,y+290,'LE PIANO À QUEUE','niveau 4 · « CLONG ! »');}
+ } else if(g==='ex'){
+  {const {x,y}=C(0); add(`<rect x="${x-110}" y="${y-260}" width="220" height="420" rx="36" fill="#0a0d14" stroke="#3a4473" stroke-width="6"/><rect x="${x-95}" y="${y-240}" width="190" height="380" rx="24" fill="#1b2140"/>
+   ${[0,1,2,3].map(k=>`<rect x="${x-85}" y="${y-220+k*85}" width="170" height="70" rx="14" fill="#f4f8ff"/><circle cx="${x-60}" cy="${y-185+k*85}" r="16" fill="#1f6fd6"/><text x="${x+10}" y="${y-178+k*85}" font-family="Rubik" font-weight="700" font-size="17" fill="#151a2c" text-anchor="middle">t'a identifié</text>`).join('')}`); lbl(x,y+290,'LES NOTIFICATIONS','niveau 2');}
+  {const {x,y}=C(1); add(`<g filter="url(#rim)"><rect x="${x-150}" y="${y-200}" width="300" height="380" fill="#8a6a4a" stroke="#151a2c" stroke-width="6"/><rect x="${x-120}" y="${y-170}" width="240" height="320" fill="#c8cfe0"/>
+   <path d="M${x+5} ${y-170} l -20 60 l 25 50 l -20 70 l 20 60 l -15 80" stroke="#151a2c" stroke-width="6" fill="none"/>
+   <circle cx="${x-50}" cy="${y-40}" r="36" fill="#9aa3b8"/><circle cx="${x+55}" cy="${y-40}" r="36" fill="#9aa3b8"/></g>`); lbl(x,y+290,'LE CADRE PHOTO GÉANT','niveau 3 · « CLAC ! »');}
+  {const {x,y}=C(2); add(`<g filter="url(#rim)"><rect x="${x-170}" y="${y-40}" width="200" height="150" rx="18" fill="#4a5275" stroke="#151a2c" stroke-width="6"/><rect x="${x-110}" y="${y-70}" width="80" height="34" rx="12" fill="none" stroke="#151a2c" stroke-width="8"/>
+   <path d="M${x+50} ${y-120} q 60 -30 120 0 l 20 70 l -40 0 l 0 140 l -100 0 l 0 -140 l -40 0 z" fill="#c43b4a" stroke="#151a2c" stroke-width="6"/>
+   <rect x="${x-90}" y="${y+130}" width="200" height="60" rx="26" fill="#2b2f3a" stroke="#151a2c" stroke-width="6"/><circle cx="${x-40}" cy="${y+160}" r="12" fill="#9aa3b8"/><circle cx="${x+60}" cy="${y+160}" r="12" fill="#e5484d"/></g>`); lbl(x,y+290,'SES AFFAIRES','niveau 4 · « BOUM ! »');}
+  {const {x,y}=C(3); add(`<path d="M${x-220} ${y+60} q 220 -180 440 0" stroke="#5b6378" stroke-width="26" fill="none"/>${[-150,-50,50,150].map(d=>`<rect x="${x+d-10}" y="${y-20}" width="20" height="200" fill="#3a4160"/>`).join('')}
+   <rect x="${x-200}" y="${y-250}" width="160" height="140" fill="#232b4a" stroke="#151a2c" stroke-width="5"/><path d="M${x-210} ${y-250} h 180" stroke="#5b6378" stroke-width="10"/>`); lbl(x,y+290,'LES PRISES DU NIVEAU 5','un toit, sous un pont, la porte');}
  } else {
   {const {x,y}=C(0); add(`<g filter="url(#rim)"><rect x="${x-190}" y="${y-20}" width="380" height="40" rx="12" fill="#9aa3b8" stroke="#151a2c" stroke-width="6"/>${[-1,1].map(sg=>`<rect x="${x+sg*150-(sg<0?60:0)}" y="${y-110}" width="60" height="220" rx="16" fill="#2b2f3a" stroke="#151a2c" stroke-width="6"/>`).join('')}</g>`); lbl(x,y+290,'L\'HALTÈRE GÉANT','niveau 3 · « CLANG ! »');}
   {const {x,y}=C(1); add(`<g filter="url(#rim)"><rect x="${x-180}" y="${y}" width="360" height="50" rx="14" fill="#c43b4a" stroke="#151a2c" stroke-width="6"/>${[-140,140].map(d=>`<rect x="${x+d-12}" y="${y+50}" width="24" height="140" fill="#5b6378" stroke="#151a2c" stroke-width="5"/>`).join('')}

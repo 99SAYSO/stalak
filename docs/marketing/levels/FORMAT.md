@@ -238,7 +238,6 @@ Le niveau 4 ne nomme jamais une appli : on dit « une appli de montage classique
 
 ## 4. Ce qu'il reste à faire
 
-1. Valider les visuels de drill, triste et motivation : le plateau commun et les accessoires de chaque vidéo (`python3 tools/levels/render_visuels.py DOSSIER`).
-2. Valider les scripts love et ex (version 2).
-3. Le propriétaire dit quels sons (les siens ou ceux d'ALASKA) servent aux snippets : drill, love, triste, sur l'ex, motivation.
-4. Puis personnages et décors de chaque pilote en images fixes, puis feu vert (`lots/levels-2026-11-16`), puis voix et vidéo.
+1. Drill, triste, motivation : visuels validés (22 h 08). Love et ex : scripts validés, accessoires déposés (`python3 tools/levels/render_visuels.py DOSSIER`), à valider.
+2. **Le son des snippets** : un extrait par genre avec **paroles** (le rappeur bonhomme rappe en playback dessus, les lèvres suivent les mots), un fichier audio suffit (mp3, wav ou m4a), sans vidéo ; le propriétaire indique le passage (10 à 15 s, on en garde 5).
+3. Feu vert (`lots/levels-2026-11-16`), puis voix et vidéos, une par une, planche contact avant chaque envoi.
