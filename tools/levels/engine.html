@@ -1,0 +1,15 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:Lilita;src:url(../../public/fonts/lilitaone.ttf)}
+@font-face{font-family:Rubik;src:url(../../public/fonts/rubik.ttf)}
+html,body{margin:0;background:#000}
+svg{display:block}
+</style></head><body>
+<svg id="s" width="1080" height="1920" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg"><g id="bg"></g><g id="dyn"></g></svg>
+<script src="engine.js"></script>
+<script src="states.js"></script>
+<script>
+window.setup = function (tl) { window.TL = tl; document.getElementById('bg').innerHTML = decorSVG(); };
+</script>
+</body></html>
