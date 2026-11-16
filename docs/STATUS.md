@@ -257,10 +257,11 @@
 - À décider : la publication directe est-elle réservée à Stalak Pro ou ouverte à tous ? Meta risque de demander une vérification d'entreprise (lien avec la LLC).
 
 ### Marketing & croissance
-- **En cours (branche `marketing/serie-fr`, série « T-Crazy », l'univers d'abord) — Liam et Nadia choisis ; 5 personnages à choisir** :
-  - 16/11, 3 h 30 : les 6 autres personnages sont dessinés en code, 2 versions chacun (`tools/serie/engine/cast.js`), et déposés dans l'onglet Univers.
-  - Nadia est choisie : version 2, « Le chignon ».
-  - Restent à choisir : Deuce, Maya, Big Mo, M. Reyes et la mascotte (fidèle à ses autocollants, à taille de personnage ou ronde dans le téléphone).
+- **En cours (branche `marketing/serie-fr`, série « T-Crazy », l'univers d'abord) — personnages choisis ; les 6 décors à choisir** :
+  - 16/11, 3 h 27 : le propriétaire a choisi Deuce (v1, « Le manager »), Maya (v1, « Les tresses »), Big Mo (v1, « Le boss du quartier ») et M. Reyes (v1, « L'épicier »). Nadia était déjà choisie (v2, « Le chignon »).
+  - **Décision du propriétaire (16/11, 3 h 27) : la mascotte n'est pas redessinée en personnage.** On garde la mascotte officielle et ses vrais autocollants (`site_src/emoji`), dans l'écran du téléphone de Liam. La fiche `mascotte` attend sa validation.
+  - 16/11, 3 h 55 : les 6 décors sont dessinés en code, 2 versions chacun (`tools/serie/engine/decors.js`, planches par `tools/serie/univers.py decors`), la chambre-studio de jour et de nuit. Ils sont dans les fiches `decor-*`, en `a_choisir`. Enseignes toutes inventées. Coût : 0 $.
+  - Ensuite : le bandeau et le logo (3 versions chacun), les voix du narrateur (Flora, environ 0,04 $, après accord), la musique ; puis la bible et les scripts.
 
   Avant : style 1 · Anime US validé par le propriétaire le 16/11 à 2 h 04 (Liam aux cheveux noirs, sans chaîne, le cou visible, les yeux droits, le corps fin). 16/11, 2 h 24 : à la demande du propriétaire, Liam porte une casquette à l'envers. C'est une snapback à visière plate, sans logo d'équipe ni de marque (seulement un petit flocon brodé). En dessous, une coupe très simple : cheveux noirs courts. Règle `regle-liam-casquette`. À 2 h 40, l'arrière du crâne de profil est raccourci (`pas-crane-long`). **À 2 h 44, le propriétaire choisit la version 4, « Le deux-tons »** :
   - visage large, sourcil fendu, petite boucle d'oreille ;

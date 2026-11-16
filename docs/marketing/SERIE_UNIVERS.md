@@ -75,7 +75,7 @@ Les 4 planches sont redéposées dans la fiche `liam`, en `a_choisir`. Les image
 
 À noter pour la suite : la planche de style validée (`tcrazy.js`) montre encore Liam avec ses premières locks. Les scènes de la série seront redessinées avec la version de Liam choisie.
 
-## Étape 2b : les autres personnages (déposés le 16/11, à choisir)
+## Étape 2b : les autres personnages (choisis le 16/11 à 3 h 27)
 
 Après « ok suivant » (16/11, 2 h 54), les 6 autres personnages sont dessinés en code, 2 versions chacun.
 - Le dessin est fait par `tools/serie/engine/cast.js`, page `cast.html?c=nadia|deuce|maya|bigmo|reyes|mascotte&v=1|2`.
@@ -105,10 +105,43 @@ Les expressions de la mascotte reprennent les signes de ses autocollants :
 
 Ses locks gardent les perles blanches de l'officielle. La remarque « pas de blanc » concernait Liam.
 
+**16/11, 3 h 27 : les choix du propriétaire** (« c'est bon j'ai fait mes choix ») :
+- Deuce : version 1, « Le manager » ;
+- Maya : version 1, « Les tresses » ;
+- Big Mo : version 1, « Le boss du quartier » ;
+- M. Reyes : version 1, « L'épicier ».
+
+**La mascotte n'est pas redessinée.** Sa note sur la fiche : « je veux garder la mascotte de Stalak de base, pas de personnage » (notée automatiquement dans « Mes goûts »). Les 2 versions dessinées sont donc retirées. Ce qui la remplace :
+- la mascotte officielle, telle quelle, avec ses vrais autocollants (`site_src/emoji`), sans retouche ;
+- elle vit dans l'écran du téléphone de Liam, et seul le téléphone est dessiné dans le style de la série ;
+- elle ne parle pas : elle réagit avec ses autocollants (cool, colère, choc, hype pour les 4 expressions) ;
+- elle arrive à la fin de l'épisode, quand Liam ouvre Stalak.
+
+La fiche `mascotte` montre cette planche (`mascotSheet()` dans `cast.js`, page `cast.html?c=mascotte`), en `a_choisir`. Il reste au propriétaire à la valider.
+
+## Étape 2c : les décors (déposés le 16/11, à choisir)
+
+Les décors sont dessinés en code, vides, prêts pour les personnages, en 1080 × 1920 (9:16) :
+- le moteur est `tools/serie/engine/decors.js`, page `decors.html?d=<lieu>&v=1|2&t=jour|nuit|soir` ;
+- les planches 3:4 sont faites par `python3 tools/serie/univers.py decors` (textes et gros plans dans `DECOR_BOARDS`).
+
+Chaque fiche de l'onglet Univers a 2 versions, en `a_choisir`. Toutes les enseignes sont inventées : aucune vraie marque, aucun vrai logo.
+
+| Fiche | Version 1 | Version 2 |
+|---|---|---|
+| La chambre-studio de Liam (de jour et de nuit) | Le studio sous la fenêtre : la chambre de la planche de style, vide (matelas au sol, mousse de travers, micro, ordi avec une appli inventée) ; la nuit, néon bleu glace, lune et ville allumée | Le placard-studio : le placard en cabine de chant (couettes, micro, pancarte « STUDIO »), bureau, boîtes de baskets, lit sous une fenêtre à stores ; la nuit, une bande LED bleu glace |
+| La cuisine et le salon | La cuisine : frigo couvert de factures et de magnets, évier plein de vaisselle, cafetière de Nadia, lumière de fin d'après-midi | Le salon : canapé usé avec une pièce cousue, plaid, photos de famille, télé, table basse pleine de courrier, lumière à travers les stores |
+| La rue et l'épicerie de M. Reyes | La rue pavillonnaire, l'après-midi : petites maisons, poteau et fils électriques, l'épicerie « REYES » (store rayé, « PROMO », « OUVERT », coffre « GLAÇONS ») | La rue en ville, le soir : immeubles en briques, escaliers de secours, l'épicerie au pied avec son enseigne lumineuse |
+| Le terrain de basket grillagé | Le terrain grillagé en fin de journée : panier au cercle tordu, filet déchiré, immeubles derrière, banc | Sous le pont, la nuit : sous l'autoroute entre deux piliers, un seul lampadaire orange, la ville au loin |
+| Le lycée et le bus scolaire jaune | Le couloir : casiers bleus (quelques rouges), néons, sol qui brille, porte « SORTIE » | Le bus jaune, vu de l'intérieur : rangées de sièges verts, allée, grandes fenêtres, porte de secours au fond |
+| Le toit au coucher du soleil | Le château d'eau, au coucher du soleil : climatiseurs, chaise pliante, ville et ciel orange | Le toit aménagé, au crépuscule : vieux canapé vert, guirlande lumineuse, enceinte, plantes, glacière bleue au flocon |
+
+Pour le lycée, les 2 versions sont 2 lieux différents : le propriétaire peut garder les deux.
+
 ## Étape 2 : tout l'univers dans le style choisi (après le choix)
 
 - Liam : 4 versions, chacune de face, de profil et avec 4 expressions (frime, colère, panique, fierté).
-- Nadia, Deuce, Maya, Big Mo, M. Reyes, la mascotte redessinée : 2 versions chacun.
+- Nadia, Deuce, Maya, Big Mo, M. Reyes : 2 versions chacun. La mascotte reste l'officielle (décision du 16/11 à 3 h 27).
 - Les 6 décors : 2 versions chacun, plus la chambre de nuit.
 - Le bandeau et les sous-titres, le logo de la série : 3 versions chacun.
 - Le narrateur : 3 voix sur la même phrase (Flora).

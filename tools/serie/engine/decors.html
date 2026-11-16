@@ -1,0 +1,13 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>T-Crazy — décors</title>
+<style>@font-face{font-family:'Lilita One';src:url(/site_src/fonts/lilitaone.ttf)}@font-face{font-family:'Rubik';src:url(/site_src/fonts/rubik.ttf);font-weight:300 900}
+html,body{margin:0;background:#000}svg{display:block}</style></head><body>
+<svg id="s" width="1080" height="1920" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg"></svg>
+<script src="tcrazy.js"></script><script src="decors.js"></script>
+<script>
+// ?d=chambre&v=1&t=jour|nuit : one empty set, 1080 × 1920
+const q = new URLSearchParams(location.search);
+document.fonts.load('40px "Lilita One"').then(() => document.fonts.load('700 25px Rubik')).then(() => {
+  document.getElementById('s').innerHTML = DECORS.scene(q.get('d') || 'chambre', +(q.get('v') || 1), q.get('t') || 'jour');
+  window.ready = true;
+});
+</script></body></html>

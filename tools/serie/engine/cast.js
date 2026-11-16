@@ -1,5 +1,6 @@
 /* Série « T-Crazy » — the other characters, drawn in code in the chosen style (Style 1 « Anime US »), like Liam (liam.js).
-   Nadia, Deuce, Maya, Big Mo, M. Reyes and the mascot : 2 versions each. Each sheet : front, profile, 4 expressions.
+   Nadia, Deuce, Maya, Big Mo and M. Reyes : 2 versions each. Each sheet : front, profile, 4 expressions.
+   The mascot is not redrawn : the owner keeps the official one (16/11, 3 h 27) ; its sheet shows its own stickers in Liam's phone.
    The owner's tastes applied : compact heads in profile, no team or brand logo, nothing taken from another series.
    (Marketing & croissance, 16/11/2026) */
 (function () {
@@ -188,29 +189,6 @@
     return s;
   }
 
-  // the mascot's faces, after its official stickers : big eyes, and its sticker signs (shades, anger mark, « !! », sparkles)
-  const spark = (x, y, r, c = '#efbb31') => `<path d="M ${x} ${y - r} Q ${x + r * 0.18} ${y - r * 0.18} ${x + r} ${y} Q ${x + r * 0.18} ${y + r * 0.18} ${x} ${y + r} Q ${x - r * 0.18} ${y + r * 0.18} ${x - r} ${y} Q ${x - r * 0.18} ${y - r * 0.18} ${x} ${y - r} Z" fill="${c}" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>`;
-  function mascotFace(K, expr) {
-    let s = '';
-    const eye = (x, h, pup, lid) => `<ellipse cx="${x}" cy="2" rx="21" ry="${h}" fill="#fbf7f1" stroke="${INK}" stroke-width="${LW * 1.3}"/>` + (pup ? dot(x + 2, 4, pup, '#120c08') + dot(x + 5, -1, 2.6, '#ffffff') : '') + (lid ? ln(lid, INK, LW * 2) : '');
-    if (expr === 'frime') s += `<path d="M -74 -16 L -6 -16 L -10 14 C -12 22 -62 22 -68 14 Z M 74 -16 L 6 -16 L 10 14 C 12 22 62 22 68 14 Z" fill="#15161c" stroke="${INK}" stroke-width="${LW}"/>` + ln('M -6 -14 L 6 -14 M -74 -14 L -88 -12 M 74 -14 L 88 -12', INK, LW * 1.3) + ln('M -58 -8 l 18 0 M 22 -8 l 18 0', '#ffffff', 4, ' opacity="0.8"') + ln('M -22 62 C -4 70 16 66 30 52', INK, LW * 1.3);
-    if (expr === 'colere') s += eye(-38, 16, 7, 'M -62 -10 L -16 4') + eye(38, 16, 7, 'M 62 -10 L 16 4') + ln('M -60 -30 L -18 -16 M 60 -30 L 18 -16', INK, 9) +
-      `<path d="M -28 56 L 28 56 C 30 74 -30 74 -28 56 Z" fill="#ffffff" stroke="${INK}" stroke-width="${LW}"/>` + ln('M -26 64 L 26 64', INK, LW * 0.6);
-    if (expr === 'panique') s += eye(-38, 24, 0) + eye(38, 24, 0) + ln('M -58 -38 Q -38 -50 -18 -40 M 58 -38 Q 38 -50 18 -40', INK, 7) +
-      `<path d="M -12 58 C -14 84 14 84 12 58 C 8 52 -8 52 -12 58 Z" fill="#3b1612" stroke="${INK}" stroke-width="${LW}"/>`;
-    if (expr === 'fierte') s += ln('M -58 6 L -38 -8 L -18 6 M 58 6 L 38 -8 L 18 6', INK, LW * 2) +
-      `<path d="M -34 48 C -30 88 30 88 34 48 Z" fill="#3b1612" stroke="${INK}" stroke-width="${LW}" stroke-linejoin="round"/><path d="M -16 70 Q 0 60 16 70 Q 10 82 0 82 Q -10 82 -16 70 Z" fill="#f08aa0"/>`;
-    s += ln('M 0 24 Q -4 34 4 36', INK, LW * 0.9);
-    return s;
-  }
-  // the signs of its stickers, around the hood : a sparkle, the anger mark, « !! », joy lines
-  const mascotSigns = (expr) => ({
-    frime: spark(132, -120, 22),
-    colere: ln('M 112 -150 q 12 5 7 17 M 142 -145 q -5 12 -17 7 M 137 -114 q -12 -5 -7 -17 M 107 -119 q 5 -12 17 -7', INK, 13) + ln('M 112 -150 q 12 5 7 17 M 142 -145 q -5 12 -17 7 M 137 -114 q -12 -5 -7 -17 M 107 -119 q 5 -12 17 -7', '#e23b3b', 8),
-    panique: `<text x="104" y="-108" font-family="Lilita One" font-size="76" fill="#15161c" stroke="#ffffff" stroke-width="12" paint-order="stroke">!!</text>`,
-    fierte: ln('M -150 -110 l -22 -14 M -158 -76 l -26 -2 M 150 -110 l 22 -14 M 158 -76 l 26 -2', INK, 12) + ln('M -150 -110 l -22 -14 M -158 -76 l -26 -2 M 150 -110 l 22 -14 M 158 -76 l 26 -2', '#8fd3ff', 7),
-  })[expr] || '';
-
   // facial hair, front
   const BEARD = {
     mustache: (K) => [part('M -38 50 C -28 36 -8 36 0 44 C 8 36 28 36 38 50 C 28 58 10 56 0 50 C -10 56 -28 58 -38 50 Z', K.facial || K.hair, { inner: true })],
@@ -366,41 +344,6 @@
     },
   });
 
-  // a lock with a white bead near its end (the mascot's locks, as on the official stickers)
-  function lock(root, end, bend, w, K, into) {
-    const c = [(root[0] + end[0]) / 2 + bend, (root[1] + end[1]) / 2], q = (t) => lerp(lerp(root, c, t), lerp(c, end, t), t);
-    const p = q(0.8), p2 = q(0.82); let dx = p2[0] - p[0], dy = p2[1] - p[1]; const l = Math.hypot(dx, dy) || 1; dx /= l; dy /= l;
-    const h = w * 0.62, band = `M ${pt([p[0] - dy * h, p[1] + dx * h])} L ${pt([p[0] + dy * h, p[1] - dx * h])}`;
-    into.push({ kind: 'stroke', d: `M ${pt(root)} Q ${pt(c)} ${pt(end)}`, w, color: K.hair, ticks: ln(band, INK, 9) + ln(band, K.bead, 5.5) });
-  }
-  const FUR = (cx, cy, rx, ry, irx, iry, icy) => fluffy(cx, cy, rx, ry, 22, 0.12) + ` M ${cx + irx} ${icy} A ${irx} ${iry} 0 1 0 ${cx - irx} ${icy} A ${irx} ${iry} 0 1 0 ${cx + irx} ${icy} Z`;
-  Object.assign(HAIR, {
-    hood: {
-      fback: (K) => {
-        const out = [part('M -150 66 C -178 -40 -152 -172 -60 -198 C -20 -208 20 -208 60 -198 C 152 -172 178 -40 150 66 C 120 118 -120 118 -150 66 Z', K.parka, { shade: 'M -200 -220 L -86 -220 C -112 -120 -114 0 -100 120 L -200 120 Z', shadeColor: K.parkaS })];
-        out.push(part('M -90 -30 C -96 -100 -58 -136 0 -138 C 58 -136 96 -100 90 -30 Z', K.hair, { inner: true }));
-        [[-40, -116, -84, 78, -14], [-66, -96, -96, 58, -8], [-18, -122, -64, 92, -16], [40, -116, 84, 78, 14], [66, -96, 96, 58, 8], [18, -122, 64, 92, 16]].forEach(([x0, y0, x1, y1, b]) => lock([x0, y0], [x1, y1], b, 17, K, out));
-        return out;
-      },
-      ffront: (K) => {
-        const out = [];
-        [[-70, -96, -82, 50, -10], [70, -96, 82, 50, 10], [-46, -112, -60, -44, -6], [-14, -120, -26, -50, -4], [16, -120, 24, -54, 4], [48, -112, 62, -40, 6]].forEach(([x0, y0, x1, y1, b]) => lock([x0, y0], [x1, y1], b, 16, K, out));
-        out.push(part(FUR(0, -10, 132, 146, 98, 112, -2), K.fur, { shade: 'M -180 -200 L -100 -200 C -120 -100 -124 20 -110 160 L -180 160 Z', shadeColor: K.furS }));
-        return out;
-      },
-      hideEarP: true,
-      pback: (K) => [part('M 40 -150 C 0 -204 -90 -206 -140 -150 C -180 -100 -178 0 -146 70 C -120 116 -70 126 -20 120 L 30 116 C 40 60 40 -60 40 -150 Z', K.parka, { shade: 'M -200 -220 L -120 -220 L -120 140 L -200 140 Z', shadeColor: K.parkaS })],
-      pfront: (K) => {
-        const out = [];
-        out.push(part('M 34 -146 C -6 -206 -96 -208 -146 -152 C -184 -102 -180 0 -148 70 C -124 116 -76 128 -24 122 L 22 116 C 6 80 -4 40 -6 0 C -8 -60 6 -110 34 -146 Z', K.parka, { shade: 'M -200 -220 L -120 -220 L -120 140 L -200 140 Z', shadeColor: K.parkaS, extra: ln('M -40 -170 C -90 -150 -120 -80 -116 0', K.parkaH, 8, ' opacity="0.6"') }));
-        [[24, -104, 20, 52, -6], [32, -96, 30, 20, -4]].forEach(([x0, y0, x1, y1, b]) => lock([x0, y0], [x1, y1], b, 15, K, out));
-        out.push(part('M 34 -146 C 62 -150 80 -126 70 -100 C 46 -110 30 -100 24 -80 C 14 -40 10 0 14 40 C 18 70 30 92 48 108 C 60 120 54 140 34 144 C 8 148 -10 124 -14 92 C -20 40 -18 -40 -6 -96 C 0 -124 14 -144 34 -146 Z', K.fur,
-          { shade: 'M -40 -160 L 0 -160 L 0 160 L -40 160 Z', shadeColor: K.furS, extra: ln('M 6 -120 q 8 6 4 16 M -6 -60 q 8 6 4 16 M -8 0 q 8 6 4 16 M -4 60 q 8 6 4 16 M 8 112 q 8 6 4 16', K.furS, 3) }));
-        return out;
-      },
-    },
-  });
-
   function headF(K, expr, tf, into) {
     const H = K.head, hw = HWF[H.face], HS = HAIR[H.hair] || {};
     const add = (arr) => arr.forEach(p => into.push(Object.assign({ tf }, p)));
@@ -410,15 +353,14 @@
       const x0 = k * (hw - 5);
       into.push(part(EAR(x0, k), K.skin, { tf, extra: ln(`M ${x0 + k * 6} -5 C ${x0 + k * 15} -6 ${x0 + k * 17} 12 ${x0 + k * 9} 22`, K.skinS, 4) }));
     });
-    into.push(part(FACE[H.face], K.skin, { tf, shade: FACESHADE, shadeColor: K.skinS, extra: (H.mascot ? mascotFace(K, expr) : features(K, expr)) + (H.shine ? ln('M -46 -118 q 26 -16 56 -12', '#ffffff', 6, ' opacity="0.55"') : '') }));
+    into.push(part(FACE[H.face], K.skin, { tf, shade: FACESHADE, shadeColor: K.skinS, extra: features(K, expr) + (H.shine ? ln('M -46 -118 q 26 -16 56 -12', '#ffffff', 6, ' opacity="0.55"') : '') }));
     if (H.earpiece) into.push(part(`M ${hw + 4} 0 a 7 9 0 1 0 0.1 0 Z`, H.earpiece, { tf, inner: true }));
     if (H.beard) add(BEARD[H.beard](K, hw));
     if (HS.ffront) add(HS.ffront(K, hw));
-    if (H.mascot) into.push(overlay(mascotSigns(expr), tf));
     if (H.earring) [-1, 1].forEach(k => into.push(part(`M ${k * (hw + 6) - 6} 32 a 6 6 0 1 0 12 0 a 6 6 0 1 0 -12 0 Z`, H.earring, { tf, inner: true })));
     if (HS.fover) add(HS.fover(K, hw));
     if (H.hoop) [-1, 1].forEach(k => into.push(overlay(`<circle cx="${k * (hw + 6)}" cy="44" r="8" fill="none" stroke="${INK}" stroke-width="6"/><circle cx="${k * (hw + 6)}" cy="44" r="8" fill="none" stroke="${H.hoop}" stroke-width="3"/>`, tf)));
-    if (expr === 'panique' && !H.mascot) into.push(part('M 70 -60 q 16 24 0 38 q -16 -14 0 -38 Z M -80 -48 q 11 17 0 27 q -11 -10 0 -27 Z', '#bfe6ff', { tf }));
+    if (expr === 'panique') into.push(part('M 70 -60 q 16 24 0 38 q -16 -14 0 -38 Z M -80 -48 q 11 17 0 27 q -11 -10 0 -27 Z', '#bfe6ff', { tf }));
     if (H.pick && expr !== 'panique' && expr !== 'colere') into.push(overlay(ln('M 22 64 L 58 52', '#d9c8ad', 4) + ln('M 22 64 L 58 52', INK, 1.4, ' opacity="0.5"'), tf));
   }
   function headP(K, tf, into) {
@@ -865,83 +807,42 @@
     },
   };
 
-  // the « AA » of the official stickers (ALASKA, the owner's brand), drawn as two blocky gothic letters
-  const AA = (x, y, z) => {
-    const A = (dx, dy) => `M ${dx + 6} ${dy + 100} L ${dx + 10} ${dy + 92} L ${dx + 38} ${dy + 6} L ${dx + 50} ${dy} L ${dx + 58} ${dy + 6} L ${dx + 86} ${dy + 92} L ${dx + 94} ${dy + 100} L ${dx + 62} ${dy + 100} L ${dx + 60} ${dy + 84} L ${dx + 38} ${dy + 84} L ${dx + 34} ${dy + 100} Z M ${dx + 41} ${dy + 70} L ${dx + 57} ${dy + 70} L ${dx + 49} ${dy + 38} Z`;
-    const d = A(0, 0) + ' ' + A(52, 14);
-    return `<g transform="translate(${x} ${y}) scale(${z})"><path d="${d}" fill="#15161c" stroke="${INK}" stroke-width="16" stroke-linejoin="round"/><path d="${d}" fill="#15161c" stroke="#ffffff" stroke-width="8" stroke-linejoin="round"/><path d="${d}" fill="#15161c"/></g>`;
-  };
-  const MASC_HEAD = { face: 'soft', prof: 'female', hair: 'hood', noEars: true, mascot: true, nose: 'small', browW: 7 };
-  const MASC = { skin: '#b07443', skinS: '#8a5530', hair: '#141012', hairS: '#08060a', hairT: '#3c3436', bead: '#f4f4f4', parka: '#1f6fd6', parkaS: '#16509f', parkaH: '#8cc4ff', fur: '#f4efe6', furS: '#d6cdbd' };
-  function mitten(parts, x, y, z = 1) { parts.push(part(`M ${x - 28 * z} ${y - 20 * z} C ${x - 36 * z} ${y + 20 * z} ${x - 22 * z} ${y + 40 * z} ${x} ${y + 40 * z} C ${x + 24 * z} ${y + 40 * z} ${x + 36 * z} ${y + 18 * z} ${x + 28 * z} ${y - 20 * z} Z`, '#16171c', { extra: ln(`M ${x - 26 * z} ${y + 4 * z} q ${-14 * z} ${4 * z} ${-10 * z} ${18 * z}`, '#3a3d46', 4) })); }
-  function furCuff(parts, K, x, y, z = 1) { parts.push(part(fluffy(x, y, 36 * z, 16 * z, 10, 0.25), K.fur, { shade: `M ${x - 50} ${y} L ${x + 50} ${y} L ${x + 50} ${y + 30} L ${x - 50} ${y + 30} Z`, shadeColor: K.furS })); }
-  CAST.mascotte = {
-    1: Object.assign({ name: 'TAILLE PERSONNAGE', text: 'Fidèle aux autocollants : capuche fourrée, locks à perles, moufles, logo AA.', note: 'La mascotte officielle redessinée dans le style de la série, à la taille des autres personnages : doudoune bleu Stalak à capuche fourrée crème, locks noires à perles blanches, moufles noires et le logo AA sur la poitrine. Ses expressions reprennent ses autocollants : lunettes de frime, signe de colère, « !! » de panique, étincelles de fierté.',
-      head: MASC_HEAD, hs: 1.3, c: { pant: '#22252c', pantS: '#15171c', shoe: '#f8f7f3', shoeS: '#c9cdd6', sole: '#9aa1ad', mark: '#1f6fd6' },
-      front: (K, parts, htf) => {
-        const hip = 1206, ank = 1666, c = K.c;
-        pantsF(parts, { top: hip, ank, tw: 98, ao: 108, ai: 18, fill: c.pant, shade: c.pantS });
-        sneakerF(parts, 382, ank, -1, { c: c.shoe, s: c.shoeS, sole: c.sole, mark: c.mark }); sneakerF(parts, 518, ank, 1, { c: c.shoe, s: c.shoeS, sole: c.sole, mark: c.mark });
-        parts.push(part(sym([[0, 868], [50, 866], [112, 892], [128, 960], [126, 1080], [138, 1290, 1], [0, 1298]]), K.parka,
-          { shade: 'M 300 860 L 372 860 C 360 1000 364 1150 376 1300 L 300 1300 Z', shadeColor: K.parkaS,
-            extra: ln('M 450 900 L 450 1290', '#16509f', 5) + ln('M 380 960 q 20 -8 40 0 M 486 1010 q 20 -8 40 0', K.parkaH, 8, ' opacity="0.8"') + AA(476, 950, 0.62) }));
-        arm(parts, [344, 912], [322, 1046], [320, 1150], 64, K.parka, { shine: K.parkaH });
-        arm(parts, [556, 912], [578, 1046], [580, 1150], 64, K.parka, { shine: K.parkaH });
-        furCuff(parts, K, 320, 1156); furCuff(parts, K, 580, 1156);
-        mitten(parts, 320, 1186); mitten(parts, 580, 1186);
-        headF(K, 'fierte', htf, parts);
-      },
-      profile: (K, parts, htf) => {
-        const hip = 1206, ank = 1666, c = K.c;
-        legP(parts, 440, 424, c.pantS, c.pantS, hip, ank); legP(parts, 470, 500, c.pant, c.pantS, hip, ank);
-        sneakerP(parts, 424, ank, { c: c.shoe, s: c.shoeS, sole: c.sole }, true); sneakerP(parts, 500, ank, { c: c.shoe, s: c.shoeS, sole: c.sole, mark: c.mark });
-        parts.push(part('M 440 862 C 396 864 370 900 366 960 C 360 1040 370 1120 364 1200 C 360 1250 362 1280 366 1300 L 548 1300 C 552 1260 548 1200 544 1140 C 540 1060 552 980 544 930 C 538 892 512 868 486 864 Z', K.parka,
-          { shade: 'M 330 860 L 398 860 L 404 1310 L 330 1310 Z', shadeColor: K.parkaS, extra: ln('M 520 940 q 18 30 18 70', K.parkaH, 8, ' opacity="0.8"') }));
-        arm(parts, [466, 914], [476, 1046], [490, 1146], 64, K.parka, { shine: K.parkaH });
-        furCuff(parts, K, 490, 1152, 0.8);
-        mitten(parts, 492, 1182, 0.85);
-        headP(K, htf, parts);
-      },
-    }, MASC),
-    2: Object.assign({ name: 'DANS LE TÉLÉPHONE', text: 'Petite et ronde comme ses autocollants, elle vit dans l\'écran du téléphone.', note: 'La même mascotte, en version ronde et petite comme ses autocollants (grosse tête, petit corps). Elle vit dans l\'écran du téléphone de Liam et réagit avec ses expressions et des emojis glacés (flocons, glaçons). De face (dans le téléphone), de profil et 4 expressions.',
-      head: MASC_HEAD, hs: 1.85, c: { pant: '#22252c', pantS: '#15171c', shoe: '#f8f7f3', shoeS: '#c9cdd6', sole: '#9aa1ad', mark: '#1f6fd6' },
-      front: (K, parts, htf) => {
-        const c = K.c;
-        // the phone and its screen, with icy emojis around her
-        parts.push(part('M 196 110 L 704 110 C 744 110 762 128 762 168 L 762 1432 C 762 1472 744 1490 704 1490 L 196 1490 C 156 1490 138 1472 138 1432 L 138 168 C 138 128 156 110 196 110 Z', '#2a2d36',
-          { extra: `<rect x="162" y="140" width="576" height="1320" rx="36" fill="url(#scr)"/>` + ln('M 400 126 L 500 126', '#4a4f5c', 8) +
-            flake(222, 1000, 30, '#d6ecff', 6) + flake(690, 1180, 26, '#d6ecff', 5) + flake(236, 1330, 22, '#8fd3ff', 5) + flake(676, 960, 22, '#8fd3ff', 5) +
-            `<g transform="rotate(-12 650 1330)"><rect x="620" y="1300" width="62" height="62" rx="12" fill="#bfe6ff" stroke="${INK}" stroke-width="5"/><path d="M 630 1312 L 656 1312" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/></g>` +
-            `<g transform="rotate(10 230 1170)"><rect x="198" y="1138" width="64" height="64" rx="12" fill="#bfe6ff" stroke="${INK}" stroke-width="5"/><path d="M 208 1150 L 236 1150" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/></g>` }));
-        const hip = 1150, ank = 1330;
-        pantsF(parts, { top: hip, ank, tw: 92, ao: 96, ai: 20, cd: 70, fill: c.pant, shade: c.pantS });
-        sneakerF(parts, 392, ank, -1, { c: c.shoe, s: c.shoeS, sole: c.sole, mark: c.mark, z: 0.74 }); sneakerF(parts, 508, ank, 1, { c: c.shoe, s: c.shoeS, sole: c.sole, mark: c.mark, z: 0.74 });
-        parts.push(part(sym([[0, 868], [50, 866], [112, 892], [128, 960], [126, 1060], [134, 1176, 1], [0, 1184]]), K.parka,
-          { shade: 'M 300 860 L 372 860 C 360 980 364 1080 376 1190 L 300 1190 Z', shadeColor: K.parkaS, extra: ln('M 450 980 L 450 1176', '#16509f', 5) + AA(474, 1000, 0.6) }));
-        // she waves
-        arm(parts, [344, 912], [322, 1010], [320, 1086], 64, K.parka, { shine: K.parkaH });
-        arm(parts, [556, 912], [640, 900], [690, 830], 64, K.parka, { shine: K.parkaH });
-        furCuff(parts, K, 320, 1090); furCuff(parts, K, 692, 822, 0.95);
-        mitten(parts, 320, 1120); parts.push(part('M 664 806 C 656 766 676 736 698 736 C 722 736 736 762 730 798 C 726 818 676 826 664 806 Z', '#16171c', { extra: ln('M 736 770 q 14 -4 12 -24', '#16171c', 14) }));
-        parts.push(overlay(ln('M 740 724 l 16 -14 M 746 756 l 12 -2', '#8fd3ff', 7), undefined, [450, 800]));
-        headF(K, 'frime', htf, parts);
-      },
-      profile: (K, parts, htf) => {
-        const c = K.c, hip = 1150, ank = 1330;
-        legP(parts, 440, 428, c.pantS, c.pantS, hip, ank); legP(parts, 470, 490, c.pant, c.pantS, hip, ank);
-        sneakerP(parts, 428, ank, { c: c.shoe, s: c.shoeS, sole: c.sole }, true); sneakerP(parts, 490, ank, { c: c.shoe, s: c.shoeS, sole: c.sole, mark: c.mark });
-        parts.push(part('M 440 862 C 396 864 370 900 366 960 C 360 1040 370 1120 366 1186 L 548 1186 C 552 1120 548 1060 544 1000 C 552 960 540 900 512 874 C 500 866 486 864 470 862 Z', K.parka,
-          { shade: 'M 330 860 L 398 860 L 404 1190 L 330 1190 Z', shadeColor: K.parkaS }));
-        arm(parts, [466, 914], [476, 1010], [488, 1080], 64, K.parka, { shine: K.parkaH });
-        furCuff(parts, K, 488, 1086, 0.8);
-        mitten(parts, 490, 1114, 0.85);
-        headP(K, htf, parts);
-      },
-    }, MASC),
-  };
+  // ---------------- the mascot : the official one, as it is (owner, 16/11 3 h 27 : « je veux garder la mascotte de stalak de base, pas de personnage ») ----------------
+  // its own stickers (site_src/emoji), shown in Liam's phone screen, never redrawn
+  const STICKERS = [['hello', 'SALUT'], ['cool', 'COOL'], ['shock', 'CHOC'], ['hype', 'HYPE'], ['angry', 'COLÈRE'], ['sad', 'TRISTE'], ['lol', 'MDR'], ['love', 'LOVE'],
+    ['think', 'RÉFLÉCHIT'], ['facepalm', 'DÉSESPOIR'], ['money', 'ARGENT'], ['gg', 'GG'], ['focus', 'CONCENTRÉ'], ['coffee', 'CAFÉ'], ['sleep', 'DODO'], ['logo', 'LOGO']];
+  const img = (n, x, y, w) => `<image href="/site_src/emoji/${n}.webp" x="${x}" y="${y}" width="${w}" height="${w}"/>`;
+  function mascotSheet() {
+    let s = `<rect width="1200" height="1600" fill="#1f6fd6"/>`;
+    s += `<text x="600" y="78" text-anchor="middle" font-family="Lilita One" font-size="58" fill="#fdfeff" stroke="#0a0d14" stroke-width="9" paint-order="stroke">LA MASCOTTE · L'OFFICIELLE</text>`;
+    s += `<text x="600" y="122" text-anchor="middle" font-family="Rubik" font-weight="700" font-size="25" fill="#d6ecff">Telle quelle : ses autocollants, dans l'écran du téléphone de Liam.</text>`;
+    const panel = (x, y, w, h) => `<rect x="${x + 5}" y="${y + 9}" width="${w}" height="${h}" rx="22" fill="#0a0d14"/><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="22" fill="#f1e2d3" stroke="#0a0d14" stroke-width="6"/>`;
+    s += panel(30, 150, 560, 930) + panel(610, 150, 560, 930);
+    for (let i = 0; i < 4; i++) s += panel(30 + i * 288, 1110, 270, 390);
+    // the phone, drawn in the series style ; the sticker inside is the real one
+    s += `<g transform="translate(310 586) scale(0.6) translate(-450 -800)"><path d="M 196 110 L 704 110 C 744 110 762 128 762 168 L 762 1432 C 762 1472 744 1490 704 1490 L 196 1490 C 156 1490 138 1472 138 1432 L 138 168 C 138 128 156 110 196 110 Z" fill="#2a2d36" stroke="${INK}" stroke-width="14"/>` +
+      `<rect x="162" y="140" width="576" height="1320" rx="36" fill="url(#scr)"/>` + ln('M 400 126 L 500 126', '#4a4f5c', 8) +
+      `<rect x="214" y="200" width="472" height="78" rx="39" fill="#ffffff" opacity="0.16"/><text x="450" y="252" text-anchor="middle" font-family="Lilita One" font-size="42" fill="#ffffff">stalak.app</text>` +
+      img('hello', 170, 420, 560) + flake(240, 1120, 30, '#d6ecff', 6) + flake(660, 1040, 26, '#d6ecff', 5) + flake(300, 1330, 22, '#8fd3ff', 5) + flake(650, 340, 22, '#8fd3ff', 5) +
+      `<g transform="rotate(-12 640 1300)"><rect x="610" y="1270" width="62" height="62" rx="12" fill="#bfe6ff" stroke="${INK}" stroke-width="5"/><path d="M 620 1282 L 646 1282" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/></g>` +
+      '</g>';
+    s += `<text x="310" y="1062" text-anchor="middle" font-family="Lilita One" font-size="34" fill="#0a0d14">DANS LE TÉLÉPHONE</text>`;
+    // its 16 stickers
+    STICKERS.forEach(([n, label], i) => {
+      const x = 636 + (i % 4) * 128, y = 178 + Math.floor(i / 4) * 214;
+      s += img(n, x, y, 120) + `<text x="${x + 60}" y="${y + 150}" text-anchor="middle" font-family="Lilita One" font-size="21" fill="#0a0d14">${label}</text>`;
+    });
+    s += `<text x="890" y="1062" text-anchor="middle" font-family="Lilita One" font-size="34" fill="#0a0d14">SES 16 AUTOCOLLANTS</text>`;
+    // the 4 reactions that match the other characters' expressions
+    [['cool', 'FRIME'], ['angry', 'COLÈRE'], ['shock', 'PANIQUE'], ['hype', 'FIERTÉ']].forEach(([n, label], i) => {
+      s += img(n, 30 + i * 288 + 15, 1130, 240) + `<text x="${165 + i * 288}" y="1478" text-anchor="middle" font-family="Lilita One" font-size="34" fill="#0a0d14">${label}</text>`;
+    });
+    return `<defs><linearGradient id="scr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f6fd6"/><stop offset="1" stop-color="#0e3f8f"/></linearGradient></defs>` + s;
+  }
 
   // ---------------- the sheet ----------------
   function sheet(cid, v) {
+    if (cid === 'mascotte') return mascotSheet();
     const K = Object.assign({ id: cid + v }, CAST[cid][v]);
     K.P = { skinS: K.skinS, hairS: K.hairS };
     const title = { nadia: 'NADIA', deuce: 'DEUCE', maya: 'MAYA', bigmo: 'BIG MO', reyes: 'M. REYES', mascotte: 'LA MASCOTTE' }[cid];

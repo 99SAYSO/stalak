@@ -240,7 +240,7 @@
     s += `<rect x="690" y="290" width="330" height="590" rx="10" fill="${P.base}" stroke="${ink}" stroke-width="${lw * 1.4}"/>`;
     s += `<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${P.sky1}"/><stop offset="1" stop-color="${P.sky2}"/></linearGradient></defs>`;
     s += `<rect x="714" y="314" width="282" height="542" fill="url(#sky)" stroke="${ink}" stroke-width="${lw}"/>`;
-    s += `<circle cx="880" cy="690" r="56" fill="#fff4cf" opacity="0.9"/>`;
+    s += `<circle cx="880" cy="690" r="56" fill="${P.sun || '#fff4cf'}" opacity="0.9"/>`;
     s += `<path d="M 714 856 L 714 720 L 760 720 L 760 690 L 800 690 L 800 740 L 850 740 L 850 700 L 900 700 L 900 760 L 960 760 L 960 715 L 996 715 L 996 856 Z" fill="${P.city}"/>`;
     s += ln(`M 855 314 L 855 856 M 714 585 L 996 585`, lw * 2.2) + ln(`M 855 314 L 855 856 M 714 585 L 996 585`, lw * 0.9, P.base);
     // frost on the glass corners

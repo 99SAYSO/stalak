@@ -1,9 +1,10 @@
 """Studio Chambre / T-Crazy — lays out the universe options for « Studio Stalak » (onglet Univers).
 
-  SERIE_WORK=<dir> python3 tools/serie/univers.py style      # the 3 style boards (3:4, as the page shows them)
+  SERIE_WORK=<dir> python3 tools/serie/univers.py decors [rue-v1 …]   # the set boards (3:4, as the page shows them)
 
-The images themselves are generated on Flora (Nano Banana 2.1, 1K, about 0.05 $ each) from prompts that describe the
-style by its traits only (no series or character name from elsewhere). They stay in the work folder, never in the repo.
+Since the owner's decision of 15/11 at 23 h, every image is drawn in code by Claude (tools/serie/engine : tcrazy.js, liam.js,
+cast.js, decors.js) ; Flora only makes the voices. The renders stay in the work folder, never in the repo.
+decor_board() lays out a set : day and night side by side, or one scene with a close-up.
 (Marketing & croissance, 15/11/2026)
 """
 import os
@@ -30,7 +31,7 @@ def font(path, size, weight=None):
 
 def wrap(d, text, f, width):
     out, cur = [], ''
-    for w in text.split():
+    for w in [w for w in text.split(' ') if w]:  # split on plain spaces only : a non-breaking space keeps « and » attached
         t = (cur + ' ' + w).strip()
         if d.textlength(t, font=f) <= width:
             cur = t
@@ -84,6 +85,130 @@ def board(out, title, scene, face_box, traits, label):
     return p
 
 
+def decor_board(out, title, subtitle, scenes, traits, crop=None):
+    """3:4 board for a set. Two scenes (day, night) side by side ; or one scene with a close-up and its traits."""
+    W, H = 1200, 1600
+    nb = lambda t: t.replace('« ', '«\u00a0').replace(' »', '\u00a0»')  # never a lone guillemet at a line start
+    traits = [nb(t) for t in traits]
+    img = Image.new('RGB', (W, H), SKY)
+    d = ImageDraw.Draw(img)
+    fs = 60 if len(title) <= 34 else max(40, int(60 * 34 / len(title)))
+    d.text((W // 2, 34), title, font=font(FONT_TITLE, fs), fill=SNOW, anchor='ma', stroke_width=8, stroke_fill=INK)
+    d.text((W // 2, 112), subtitle, font=font(FONT_TEXT, 25, 700), fill=ICE, anchor='ma')
+    ft, fl = font(FONT_TEXT, 28, 600), font(FONT_TITLE, 34)
+    if len(scenes) == 2:
+        for i, (label, path) in enumerate(scenes):
+            sc = Image.open(path).convert('RGB').resize((548, 974), Image.LANCZOS)
+            framed(img, sc, 34 + i * 584, 160)
+            d.text((34 + i * 584 + 274, 1150), label, font=fl, fill=SNOW, anchor='ma', stroke_width=5, stroke_fill=INK)
+        y = 1218
+        for t in traits:
+            for j, line in enumerate(wrap(d, t, ft, W - 120)):
+                if j == 0:
+                    d.text((50, y), '•', font=ft, fill=SNOW)
+                d.text((80, y), line, font=ft, fill=SNOW)
+                y += 36
+            y += 10
+    else:
+        label, path = scenes[0]
+        src = Image.open(path).convert('RGB')
+        sc = src.resize((770, 1369), Image.LANCZOS)
+        framed(img, sc, 34, 170)
+        if crop:
+            framed(img, src.crop(crop).resize((322, 322), Image.LANCZOS), 846, 170)
+            d.text((846, 520), 'GROS PLAN', font=font(FONT_TEXT, 26, 800), fill=ICE)
+        y = 572
+        for t in traits:
+            for j, line in enumerate(wrap(d, t, ft, 322 - 30)):
+                if j == 0:
+                    d.text((846, y), '•', font=ft, fill=SNOW)
+                d.text((876, y), line, font=ft, fill=SNOW)
+                y += 36
+            y += 14
+    os.makedirs(os.path.join(WORK, 'planches'), exist_ok=True)
+    p = os.path.join(WORK, 'planches', out + '.jpg')
+    img.save(p, quality=88)
+    return p
+
+
+# The set boards (onglet Univers, fiches decor-*) : title, subtitle, scenes (label, render name), traits, close-up box.
+# A render name is <set>-v<version>-<time>, made by tools/serie/shot.py from engine/decors.html?d=<set>&v=<version>&t=<time>.
+DECOR_BOARDS = {
+    'chambre-v1': ('LA CHAMBRE · VERSION 1 : LE STUDIO SOUS LA FENÊTRE', 'La chambre de la planche de style, vide, prête pour les personnages.',
+                   [('LE JOUR', 'chambre-v1-jour'), ('LA NUIT', 'chambre-v1-nuit')],
+                   ['Matelas au sol, mousse anti-bruit scotchée de travers, micro sur pied avec filtre.',
+                    "Ordi portable avec une appli d'enregistrement inventée (aucun vrai logo), posters de rappeurs inventés.",
+                    'Le jour : lumière chaude du soir. La nuit : néon bleu glace, écran qui éclaire, lune et ville allumée.'], None),
+    'chambre-v2': ('LA CHAMBRE · VERSION 2 : LE PLACARD-STUDIO', 'Le placard transformé en cabine de chant, le lit sous la fenêtre.',
+                   [('LE JOUR', 'chambre-v2-jour'), ('LA NUIT', 'chambre-v2-nuit')],
+                   ['Le placard ouvert : couettes accrochées en cabine de chant, micro dedans, pancarte « STUDIO » sur la porte.',
+                    "Bureau avec l'ordi et un vieil écran, lampe, boîtes de baskets empilées, lit défait sous une fenêtre à stores.",
+                    'Une bande LED bleu glace au plafond : elle éclaire toute la chambre la nuit.'], None),
+    'cuisine-v1': ('LA MAISON · VERSION 1 : LA CUISINE', "Là où Nadia surprend Liam, en fin d'après-midi.", [('', 'cuisine-v1-jour')],
+                   ["Le frigo couvert de factures, de magnets et d'un dessin de Liam petit, micro en main.",
+                    "L'évier plein de vaisselle : « T-Crazy mange pas si T-Crazy a pas fait la vaisselle. »",
+                    'La cafetière de Nadia, la fenêtre et sa lumière chaude.'], (770, 570, 1070, 870)),
+    'cuisine-v2': ('LA MAISON · VERSION 2 : LE SALON', "Le salon de la maison, en fin d'après-midi.", [('', 'cuisine-v2-jour')],
+                   ['Le canapé usé avec sa pièce cousue et un plaid tricoté.',
+                    'Les photos de famille, la télé, la table basse pleine de courrier.',
+                    'La lumière du soir à travers les stores.'], (300, 960, 800, 1460)),
+    'rue-v1': ('LA RUE · VERSION 1 : LA RUE PAVILLONNAIRE', "Petites maisons et l'épicerie de M. Reyes, l'après-midi.", [('', 'rue-v1-jour')],
+               ['Les petites maisons, le poteau électrique et ses fils qui traversent le ciel.',
+                "L'épicerie « REYES » : enseigne, store rayé, affiche « PROMO », panneau « OUVERT ».",
+                "Le coffre « GLAÇONS » devant la vitrine : un clin d'œil glacé."], (480, 560, 1080, 1160)),
+    'rue-v2': ('LA RUE · VERSION 2 : LA RUE EN VILLE', "Immeubles en briques et l'épicerie au pied, le soir.", [('', 'rue-v2-soir')],
+               ['Immeubles en briques, escalier de secours, fenêtres allumées.',
+                "L'épicerie au pied de l'immeuble, enseigne « REYES » lumineuse.",
+                'Le lampadaire et la lumière de la vitrine sur le trottoir.'], (440, 940, 1080, 1580)),
+    'terrain-v1': ('LE TERRAIN · VERSION 1 : LE TERRAIN GRILLAGÉ', 'Le terrain du quartier, en fin de journée.', [('', 'terrain-v1-jour')],
+                   ['Le grillage, le panier au cercle tordu et au filet déchiré.',
+                    'Les immeubles du quartier derrière, un panneau tordu, un banc.',
+                    'Lumière dorée de fin de journée.'], (620, 820, 1060, 1260)),
+    'terrain-v2': ('LE TERRAIN · VERSION 2 : SOUS LE PONT', "Le terrain sous l'autoroute, la nuit.", [('', 'terrain-v2-nuit')],
+                   ["Sous un pont d'autoroute, entre deux piliers, la ville allumée au loin.",
+                    'Un seul lampadaire orange éclaire le terrain.',
+                    'Le lieu parfait pour les clashs avec Big\u00a0Mo.'], (0, 760, 560, 1320)),
+    'lycee-v1': ('LE LYCÉE · VERSION 1 : LE COULOIR', 'Le couloir et ses casiers.', [('', 'lycee-v1-jour')],
+                 ['Les casiers bleus (quelques rouges) en perspective.',
+                  'Les néons au plafond, le sol qui brille, la porte « SORTIE » au fond.',
+                  'Les 2 versions du lycée sont 2 lieux : tu peux garder les deux.'], (600, 420, 1080, 900)),
+    'lycee-v2': ('LE LYCÉE · VERSION 2 : LE BUS JAUNE', "L'intérieur du bus scolaire.", [('', 'lycee-v2-jour')],
+                 ["Les rangées de sièges verts face à toi, l'allée au milieu.",
+                  'Les grandes fenêtres, la porte de secours jaune au fond.',
+                  'Là où Liam montre ses vidéos à tout le monde.'], (220, 600, 860, 1240)),
+    'toit-v1': ("LE TOIT · VERSION 1 : LE CHÂTEAU D'EAU", "Le toit de l'immeuble au coucher du soleil.", [('', 'toit-v1-soir')],
+                ["Le château d'eau, les climatiseurs, une chaise pliante.",
+                 'Le soleil qui se couche derrière la ville, le ciel orange.',
+                 'Le lieu des moments « lifestyle » et des rêves de gloire.'], (20, 440, 420, 840)),
+    'toit-v2': ('LE TOIT · VERSION 2 : LE TOIT AMÉNAGÉ', "Le toit au crépuscule, la ville qui s'allume.", [('', 'toit-v2-soir')],
+                ['Un vieux canapé vert, une caisse avec une enceinte, des plantes.',
+                 'Une guirlande lumineuse au-dessus du toit.',
+                 "Une glacière bleue avec un flocon : le clin d'œil glacé."], (600, 1240, 1080, 1720)),
+}
+
+
+def decors(names):
+    """Render the scenes a board needs (if missing) and lay the boards out : python3 tools/serie/univers.py decors [rue-v1 …]"""
+    import subprocess
+    out = []
+    for name in names or DECOR_BOARDS:
+        title, sub, scenes, traits, crop = DECOR_BOARDS[name]
+        paths = []
+        for label, r in scenes:
+            p = os.path.join(WORK, 'decors', r + '.png')
+            if not os.path.exists(p):
+                os.makedirs(os.path.dirname(p), exist_ok=True)
+                d, v, t = r.split('-')
+                subprocess.run([sys.executable, os.path.join(ROOT, 'tools/serie/shot.py'),
+                                'tools/serie/engine/decors.html?d=%s&v=%s&t=%s' % (d, v[1:], t), p], check=True)
+            paths.append((label, p))
+        out.append(decor_board(name, title, sub, paths, traits, crop))
+    return out
+
+
 if __name__ == '__main__':
-    print('see the functions ; boards are made from the generated images listed in the work folder')
+    if sys.argv[1:2] == ['decors']:
+        print(*decors(sys.argv[2:]), sep='\n')
+        sys.exit(0)
+    print('usage : SERIE_WORK=<dir> python3 tools/serie/univers.py decors [chambre-v1 rue-v2 …]  (all the set boards by default)')
     sys.exit(0)

@@ -2,6 +2,33 @@
 
 > Marketing & croissance. Rien ne change sur le site : seulement `tools/serie/` et `docs/`.
 
+## 16/11, 3 h 55 : personnages choisis, mascotte officielle, les 6 décors déposés
+
+- À 3 h 27, le propriétaire a écrit « c'est bon j'ai fait mes choix ». Ses choix dans l'onglet Univers :
+  - Deuce : version 1, « Le manager » ;
+  - Maya : version 1, « Les tresses » ;
+  - Big Mo : version 1, « Le boss du quartier » ;
+  - M. Reyes : version 1, « L'épicier ».
+- **La mascotte n'est pas redessinée.** Sa note sur la fiche : « je veux garder la mascotte de Stalak de base, pas de personnage ». Elle est déjà ajoutée automatiquement dans « Mes goûts ».
+  - La fiche `mascotte` montre maintenant la mascotte officielle avec ses vrais autocollants (`site_src/emoji`), dans l'écran du téléphone de Liam. Seul le téléphone est dessiné (`mascotSheet()` dans `tools/serie/engine/cast.js`).
+  - Elle reste en `a_choisir` : il reste au propriétaire à la valider.
+  - Le code de la mascotte redessinée est retiré de `cast.js`.
+- **Les 6 décors sont dessinés en code, 2 versions chacun**, et déposés dans les fiches `decor-*`, en `a_choisir` :
+  - le moteur : `tools/serie/engine/decors.js`, page `decors.html?d=<lieu>&v=1|2&t=jour|nuit|soir` ;
+  - les planches : `python3 tools/serie/univers.py decors` (textes et gros plans dans `DECOR_BOARDS`) ;
+  - la chambre-studio est montrée de jour et de nuit ;
+  - le détail des versions est dans `docs/marketing/SERIE_UNIVERS.md`, étape 2c.
+- La cuisine et le salon sont 2 pièces, le couloir du lycée et le bus sont 2 lieux : pour ces deux fiches, le propriétaire peut garder les deux versions.
+- Toutes les enseignes sont inventées (« REYES », « GLAÇONS », « PROMO », « OUVERT », « SORTIE », « STUDIO ») : aucune vraie marque.
+- Petites retouches :
+  - `tcrazy.js` : le soleil de la chambre peut changer de couleur (`P.sun`), pour la chambre de nuit ;
+  - `univers.py` : les guillemets restent collés à leur mot dans les planches.
+- Coût : 0 $.
+- Ce qui attend :
+  - le choix des décors et la validation de la mascotte par le propriétaire ;
+  - ensuite, le bandeau et le logo (3 versions chacun), les 3 voix du narrateur (Flora, environ 0,04 $, seulement après son accord) et la musique (ses beats, sinon Pixabay) ;
+  - puis la bible en une page et les scripts.
+
 ## 16/11, 3 h 30 : les 6 autres personnages, 2 versions chacun
 
 - À 2 h 54, le propriétaire a écrit « ok suivant ». Les autres personnages sont dessinés en code :
