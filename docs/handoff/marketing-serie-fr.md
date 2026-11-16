@@ -2,6 +2,17 @@
 
 > Marketing & croissance. Rien ne change sur le site : seulement `tools/serie/` et `docs/`.
 
+## 16/11, 5 h 25 : 3 musiques choisies, la galère refaite
+
+- À 4 h 51, le propriétaire a choisi 3 ambiances :
+  - Plan foireux : « Sneeze » ;
+  - Hustle : « Game Show » ;
+  - Victoire : « Funk Upbeat ».
+- Pour la galère : « c'est trop calme » (sa note, ajoutée automatiquement dans « Mes goûts »). 3 nouveaux beats hip-hop tristes, avec une vraie batterie, sont dans la fiche `musique-galere`, en `a_choisir`. Ils sont sans Content ID et faits par des humains. Les sources sont dans `SERIE_UNIVERS.md`, étape 2e.
+- Ménage dans la page : 5 de mes fichiers qui ne servaient plus sont supprimés (l'ancienne planche de la chambre avec le poster, les voix Charon et Algenib, les 2 premières musiques de la galère).
+- Coût : 0 $.
+- Ce qui attend : la musique de la galère, la vitesse du narrateur (×1,1 ou ×1,2), et le logo, qui est optionnel. Ensuite, la bible en une page et les scripts.
+
 ## 16/11, 5 h 10 : les 4 ambiances musicales, 2 titres Pixabay chacune
 
 - À 4 h 40, le propriétaire a écrit « cherche par toi-même » : il n'envoie pas de beats.

@@ -232,6 +232,22 @@ La fiche unique `musique-fonds` est remplacée par 4 fiches, une par ambiance, p
 
 Les fichiers sont déposés en .mp4 audio (AAC 128 kbit/s), en entier. Il n'y a plus de générique, donc pas de musique de générique.
 
+**16/11, 4 h 51 : les choix du propriétaire.**
+- Plan foireux : B, « Sneeze » (Rockot).
+- Hustle : B, « Game Show » (Kulakovka).
+- Victoire : B, « Funk Upbeat » (Loksii).
+- Galère : **à refaire**, « c'est trop calme » (note ajoutée automatiquement dans « Mes goûts »).
+
+Pour la galère, 3 beats hip-hop tristes avec une vraie batterie sont proposés. La part de batterie mesurée est de 0,44 à 0,72, contre 0,03 et 0,16 pour les 2 premiers. Tous sont sans Content ID et faits par des humains.
+
+| Galère, nouvelle série | Titre, auteur, lien |
+|---|---|
+| A | « Boom-bap Emotional Storytelling », onesevenbeatxs : boom bap en mineur, environ 86 BPM — https://pixabay.com/music/beats-boom-bap-emotional-storytelling-rap-beat-prod-by-onesevenbeatxs-311099/ |
+| B | « Scars », viavebeatz : piano triste sur un beat qui tape, environ 92 BPM — https://pixabay.com/music/beats-sad-hip-hop-piano-type-beat-scars-535161/ |
+| C | « Where I'm From », TouchProRecords : mélancolique et plus dur, environ 80 BPM — https://pixabay.com/music/alternative-hip-hop-where-ix27m-from-hip-hop-instrumental-603511/ |
+
+Les fichiers des 2 premiers titres de la galère, et des voix Charon et Algenib qui n'ont pas été retenues, sont retirés de la page.
+
 ## Étape 2 : tout l'univers dans le style choisi (après le choix)
 
 - Liam : 4 versions, chacune de face, de profil et avec 4 expressions (frime, colère, panique, fierté).
