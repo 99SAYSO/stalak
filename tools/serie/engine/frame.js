@@ -205,6 +205,8 @@
     // sil : an anonymous silhouette (followers in the background)
     // flour (17/11, « Les effets spéciaux ») : someone covered in flour from his cap to his shoes, every colour washed towards white, the lines still dark enough to read his face
     if (c.flour) { const id = 'flf' + (++CLIPN); defs += `<filter id="${id}"><feColorMatrix type="matrix" values="0.68 0 0 0 0.32  0 0.68 0 0 0.32  0 0 0.68 0 0.33  0 0 0 1 0"/></filter>`; svg = `<g filter="url(#${id})">${svg}</g>`; }
+    // sodium (17/11, « Nuit à 17 h ») : under the orange street lamp, someone turns orange (the joke of take 2 : « Liam est tout orange »)
+    if (c.sodium) { const id = 'sod' + (++CLIPN); defs += `<filter id="${id}"><feColorMatrix type="matrix" values="0.55 0.45 0.09 0 0.03  0.12 0.50 0.04 0 0.01  0.03 0.07 0.22 0 0  0 0 0 1 0"/></filter>`; svg = `<g filter="url(#${id})">${svg}</g>`; }
     if (c.sil) { defs += `<filter id="silf"><feFlood flood-color="#2a2d36"/><feComposite in2="SourceAlpha" operator="in"/></filter>`; svg = `<g filter="url(#silf)" opacity="0.92">${svg}</g>`; }
     if (c.clip) { const id = 'cc' + (++CLIPN); defs += `<clipPath id="${id}"><rect x="${c.clip[0]}" y="${c.clip[1]}" width="${c.clip[2]}" height="${c.clip[3]}"/></clipPath>`; svg = `<g clip-path="url(#${id})">${svg}</g>`; }
     else if (window.LIGHTS && c.y < 1960 && !c.noShadow) svg = LIGHTS.contact(c.x, c.y, c.h) + svg;
