@@ -1,0 +1,69 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:Lilita;src:url(assets/lilitaone.ttf)}
+@font-face{font-family:Rubik;src:url(assets/rubik.ttf)}
+html,body{margin:0;background:#000}
+#root{position:relative;width:1080px;height:1920px;overflow:hidden;background:#0b0e1a;font-family:Rubik,'Noto Color Emoji',sans-serif}
+.abs{position:absolute}
+#svg{position:absolute;left:0;top:0}
+#amb{left:0;top:760px;width:1080px;height:1160px;overflow:hidden;mix-blend-mode:screen;pointer-events:none}
+.blob{position:absolute;border-radius:50%;filter:blur(60px)}
+#leak{position:absolute;left:-700px;top:0;width:600px;height:1160px;background:linear-gradient(100deg,rgba(255,210,120,0) 0%,rgba(255,200,120,.35) 45%,rgba(255,150,90,.25) 60%,rgba(255,150,90,0) 100%);filter:blur(30px);opacity:0}
+#flash{left:0;top:760px;width:1080px;height:1160px;background:#fff;opacity:0}
+#top{left:0;top:0;width:1080px;height:760px;background:#0b0e1a}
+#title{left:0;top:146px;width:1080px;text-align:center;font-family:Lilita;font-size:66px;line-height:72px;color:#fff;letter-spacing:.5px}
+#nums{left:0;top:388px;width:1080px;display:flex;justify-content:center;gap:20px}
+.num{width:76px;height:76px;box-sizing:border-box;border:5px solid #fff;border-radius:16px;color:#fff;font-family:Lilita;font-size:48px;line-height:68px;text-align:center}
+.lab{left:0;top:484px;width:1080px;text-align:center;font-weight:700;font-size:40px;opacity:0;visibility:hidden}
+#gauge{left:150px;top:556px;width:780px;height:180px;transform-origin:50% 30%}
+#ghead{display:flex;justify-content:space-between;font-family:Lilita;font-size:40px;color:#fff;height:50px}
+#bar{position:relative;width:780px;height:56px;box-sizing:border-box;border:5px solid #fff;border-radius:28px;background:#1a1f33}
+#fill{position:absolute;left:3px;top:3px;height:40px;width:30px;border-radius:20px;background:#e5484d}
+#shine{position:absolute;left:12px;top:8px;height:10px;border-radius:5px;background:#fff;opacity:.35;width:10px}
+#glow{left:-40px;top:20px;width:860px;height:120px;border-radius:60px;background:#ffc93c;filter:blur(30px);opacity:0}
+#cracks{left:0;top:50px;opacity:0;visibility:hidden}
+.cm{left:0;top:122px;width:780px;text-align:center;font-weight:700;font-size:34px;color:#c9d2f0;opacity:0;visibility:hidden}
+.part{position:absolute;width:26px;height:26px;border-radius:6px;opacity:0}
+.bub{position:absolute;box-sizing:border-box;background:#fff;border:6px solid #0a0d14;border-radius:26px;box-shadow:8px 8px 0 #0a0d14;padding:18px 26px;color:#0a0d14;font-weight:700;font-size:40px;line-height:48px;text-align:center;opacity:0;visibility:hidden}
+.bub.off{background:#eaf2ff;font-size:38px;line-height:46px}
+.tail{position:absolute;bottom:-40px;width:44px;height:42px}
+.tag{position:absolute;left:18px;top:-26px;background:#1f6fd6;color:#fff;border:4px solid #0a0d14;border-radius:12px;font-family:Lilita;font-size:28px;line-height:36px;padding:0 14px;font-weight:400}
+.card{position:absolute;left:80px;width:860px;box-sizing:border-box;background:#fff;border:8px solid #0a0d14;border-radius:34px;box-shadow:12px 12px 0 #0a0d14;text-align:center;color:#0a0d14;opacity:0;visibility:hidden}
+#dim{left:0;top:760px;width:1080px;height:1160px;background:#0b0e1a;opacity:0}
+</style></head>
+<body>
+<div id="root" data-composition-id="levels" data-width="1080" data-height="1920" data-duration="__DUR__" data-fps="30">
+  <svg id="svg" width="1080" height="1920" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg"><g id="defs"></g><g id="scene"></g></svg>
+  <div id="amb" class="abs"><div id="b1" class="blob"></div><div id="b2" class="blob"></div><div id="leak"></div></div>
+  <div id="flash" class="abs"></div>
+  <div id="dim" class="abs"></div>
+  <div id="bubs" class="abs" style="left:0;top:0;width:1080px;height:1920px"></div>
+  <div id="top" class="abs">
+    <div id="title" class="abs"></div>
+    <div id="nums" class="abs"></div>
+    <div id="labs"></div>
+    <div id="gauge" class="abs">
+      <div id="glow" class="abs"></div>
+      <div id="ghead"><span>HYPE</span><span id="pct">2 %</span></div>
+      <div id="bar"><div id="fill"></div><div id="shine"></div></div>
+      <svg id="cracks" class="abs" width="780" height="60"><path d="M230 0 l 16 24 l -12 14 l 18 20 M560 56 l -14 -22 l 14 -12 l -10 -22" stroke="#fff" stroke-width="5" fill="none"/></svg>
+      <div id="cms"></div>
+      <div id="parts"></div>
+    </div>
+  </div>
+  <div id="promo" class="card" style="top:900px;padding:40px 30px 46px">
+    <div style="font-family:Lilita;font-size:70px;line-height:80px">LE NIVEAU 5,<br>TU LE FAIS SUR</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:22px;margin-top:26px"><img src="assets/icon.svg" width="120" height="120"><span style="font-family:Lilita;font-size:96px;color:#1f6fd6">stalak.app</span></div>
+  </div>
+  <div id="question" class="card" style="top:930px;padding:44px 30px 40px">
+    <div style="font-family:Lilita;font-size:76px;line-height:86px">TU T'ES ARRÊTÉ<br>À QUEL NIVEAU,<br>TOI ?</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-top:22px"><img src="assets/icon.svg" width="64" height="64"><span style="font-family:Lilita;font-size:50px;color:#1f6fd6">stalak.app</span></div>
+  </div>
+</div>
+<script src="assets/gsap.min.js"></script>
+<script src="assets/engine.js"></script>
+<script src="assets/data.js"></script>
+<script src="assets/scene.js"></script>
+<script src="assets/ui.js"></script>
+</body></html>
