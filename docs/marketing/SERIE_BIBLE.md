@@ -5,6 +5,7 @@
 > Cette bible remplace celle de « Studio Chambre » (Yanis), abandonnée le 15/11.
 > **Version 2 (16/11, 16 h)** : les 10 remarques du propriétaire sur la vidéo de l'épisode 1, appliquées à toute la série (règle `regle-remarques-toute-serie` : une remarque sur une vidéo vaut pour toutes, même celles déjà envoyées).
 > **Version 3 (16/11, 18 h)** : ses remarques sur l'épisode 1 (2e tour), l'épisode 2 (8 remarques) et l'épisode GTA 6 (2 remarques), plus sa règle « un enfant doit pouvoir comprendre », appliquées à toute la série (voir « Pour qu'un enfant comprenne » et « Pas de blanc »).
+> **Version 4 (17/11, 5 h)** : 3 épisodes par jour. 9 nouveaux scripts pour les créneaux de 18 h et de 21 h, du 18 au 22/11 (« La semaine du 16/11 », plus bas), et le nouvel ordre de sortie.
 
 ## L'idée
 
@@ -12,7 +13,7 @@ Liam a 15 ans, et son nom de rappeur est T-Crazy. Il enregistre dans le placard 
 
 Le ton est celui d'un dessin animé américain inspiré de l'anime, avec le délire hustler, dans l'univers glacé de Stalak. On ne reprend aucun personnage, aucune tenue et aucun décor d'une autre série.
 
-**Stalak n'arrive qu'à la fin**, quand Liam ouvre l'appli : la mascotte officielle réagit dans son téléphone. Exception : l'épisode 6 (« L'appli a fermé », l'idée du propriétaire du 16/11), dont l'histoire est la découverte de Stalak, l'amène vers le milieu.
+**Stalak n'arrive qu'à la fin**, quand Liam ouvre l'appli : la mascotte officielle réagit dans son téléphone. Exceptions : l'épisode « L'appli a fermé » (l'idée du propriétaire du 16/11), dont l'histoire est la découverte de Stalak, et « Le clash au terrain » (17/11), dont l'histoire est le secret de Big Mo : Stalak y arrive vers le milieu.
 
 ## Le format
 
@@ -122,11 +123,35 @@ Chaque réplique est générée à part, avec son émotion, mais reste réaliste
 
 Script à valider → storyboard à valider (une image par moment du script, dessinée en code) → feu vert de la semaine → production, vidéo par vidéo, avec la barre de progression à jour (voix générée une seule fois sur le texte validé, rendu, planche contact, miniature) → vidéo à valider → programmation par Réseaux sociaux.
 
-**Le numéro et le « prochain épisode » suivent l'ordre de sortie, pas l'ordre d'écriture** (confirmé le 16/11 : « ordre comme tu veux mais je veux celle sur GTA 6 le 19 »). L'épisode GTA 6 sort le 19 au soir : il porte le n° 3, et l'épisode 2 l'annonce.
+**Le numéro et le « prochain épisode » suivent l'ordre de sortie, pas l'ordre d'écriture** (confirmé le 16/11 : « ordre comme tu veux mais je veux celle sur GTA 6 le 19 »). L'épisode GTA 6 sort le 19 au soir et l'épisode 2 l'annonce. Avec 3 épisodes par jour (17/11), les 6 épisodes déjà validés changent de numéro et 4 cartes de fin changent de titre (tableau ci-dessous) : seulement du texte, 0 $, la voix ne change pas. **À faire seulement avec l'accord du propriétaire** (question posée le 17/11), parce que ces vidéos sont validées.
 
 ## Coût
 
-Les images, les musiques, les lumières et le rendu (HyperFrames compris, sur notre machine) coûtent 0 $. Une génération de voix coûte 0,013 $, et on en fait une par réplique (16/11), soit environ 0,17 à 0,23 $ par épisode. Une réplique déjà enregistrée et inchangée est gardée : on ne la paie jamais deux fois. Quand on ajoute une réplique au milieu d'un script, les voix déjà faites sont renumérotées, pas refaites (« Le manager » v3 : 2 répliques ajoutées, 0,026 $). L'épisode 6 : 19 répliques, 0,26 $ au plus (une voix bloquée par le filtre de Flora, relancée une fois).
+Les images, les musiques, les lumières et le rendu (HyperFrames compris, sur notre machine) coûtent 0 $. Une génération de voix coûte 0,013 $, et on en fait une par réplique (16/11), soit environ 0,17 à 0,23 $ par épisode. Une réplique déjà enregistrée et inchangée est gardée : on ne la paie jamais deux fois. Quand on ajoute une réplique au milieu d'un script, les voix déjà faites sont renumérotées, pas refaites (« Le manager » v3 : 2 répliques ajoutées, 0,026 $). L'épisode 6 : 19 répliques, 0,26 $ au plus (une voix bloquée par le filtre de Flora, relancée une fois). Les 9 nouveaux scripts du 17/11 : 15 à 19 répliques chacun, 152 en tout, soit environ 2 $ de voix pour les 9, générées seulement après leur validation et le feu vert.
+
+## La semaine du 16/11 : 3 épisodes par jour (12 h 30, 18 h, 21 h)
+
+Le 17/11 à 3 h 57, le propriétaire : « on a pas nos 3 vidéos par jour sur la semaine, commence à me créer les scripts ». Les 6 épisodes validés gardent leur jour et leur créneau de 12 h 30 (GTA 6 à 18 h le 19/11, jour de la sortie du jeu) ; 9 nouveaux scripts remplissent les autres créneaux, du 18 au 22/11. Le 17/11 reste vide : un script doit passer par sa validation, puis celle du storyboard, avant la fabrication. Les fiches sont dans Studio Stalak (`tcrazy-ep7` à `tcrazy-ep15`, statut `script`).
+
+| N° | Sortie | Bandeau | Le cri d'ouverture | Ce qui montre Stalak | Prochain épisode annoncé |
+|---|---|---|---|---|---|
+| 1 | 18/11 12 h 30 | SA MÈRE A CRIÉ EN PLEINE PRISE | Nadia | (validé) | à changer : n° 2 |
+| 2 | 18/11 18 h | SON POTE A IMPRIMÉ DES TEE-SHIRTS AVEC SA TÊTE | M. Reyes : « Cinquante tee-shirts avec ta tête ?! » | personne ne connaît son son : trois prises, montage sur le rythme, gratuit | n° 3 |
+| 3 | 18/11 21 h | IL FAIT NUIT À 17 H ET IL DEVAIT TOURNER SON CLIP | Liam : « Il est 17 h et il fait déjà nuit ?! » | trois lumières de nuit, le filtre Noir & blanc (gratuit) | n° 4 |
+| 4 | 19/11 12 h 30 | IL A PASSÉ LA NUIT SUR SA VIDÉO DE PROMO | Liam | (validé) | n° 5, déjà juste |
+| 5 | 19/11 18 h | IL SORT SON SON LE JOUR DE GTA 6 | Deuce | (validé) | à changer : n° 6 |
+| 6 | 19/11 21 h | SA MÈRE A LU SES TEXTES DE RAP | Nadia : « Tu rappes sur moi ?! » | les paroles à l'écran, collées puis calées au tap (gratuit) | n° 7 |
+| 7 | 20/11 12 h 30 | SON POTE S'EST NOMMÉ SON MANAGER | Liam | (validé) | à changer : n° 8 |
+| 8 | 20/11 18 h | SON EXTRAIT A MARCHÉ, MAIS LE SON N'EST PAS FINI | Liam : « Ils veulent le son en entier ?! » | Stalak monte l'extrait pendant que Liam écrit | n° 9 |
+| 9 | 20/11 21 h | IL A PERDU SA VOIX LA VEILLE DE SON CLIP | Deuce : « T'as plus de voix et on tourne demain ?! » | le playback : le son est déjà enregistré, la bouche reste synchro | n° 10 |
+| 10 | 21/11 12 h 30 | IL VOULAIT UN CLIP COMME DANS GTA | M. Reyes | (validé) | n° 11 (« Le clash au terrain »), déjà juste |
+| 11 | 21/11 18 h | IL A CLASHÉ LE RAPPEUR LE PLUS CONNU DU QUARTIER | Big Mo : « T'as zéro abonné et tu me clashes ?! » | le secret de Big Mo : Creator Plus, un pack de 5 à 30 vidéos à partir de 2 prises ; Liam part sur le gratuit (illimité) | n° 12 |
+| 12 | 21/11 21 h | IL A ÉCRIT “RAPPEUR” SUR SA FICHE D'ORIENTATION | Nadia : « T'as écrit “rappeur” sur ta fiche d'orientation ?! » | sur le toit (lifestyle) : poster souvent, même avec les cours | n° 13 |
+| 13 | 22/11 12 h 30 | TRILLER N'EST PLUS SUR L'APP STORE | Liam | (validé) | à choisir : n° 14 |
+| 14 | 22/11 18 h | IL VEUT UNE CAMÉRA DE PRO POUR LE BLACK FRIDAY | Nadia : « Neuf cents balles, ta caméra ?! » | le téléphone suffit, Stalak est gratuit (le Black Friday est le 27/11) | n° 15 |
+| 15 | 22/11 21 h | IL A TOURNÉ SON DROP DANS UN NUAGE DE FARINE | Liam : « Pourquoi t'as lancé de la farine pendant mon drop ?! » | le réglage « Rythme : Nerveux » (coupes jusqu'à chaque temps, gratuit) | la semaine prochaine (à choisir) |
+
+Les numéros à l'écran des épisodes validés passent de 2, 3, 4, 5 et 6 à 4, 5, 7, 10 et 13 (l'épisode 1 garde le sien), et 4 cartes de fin changent : seulement du texte (le premier plan, la carte de fin et la miniature refaits), 0 $, si le propriétaire est d'accord. Deuce est « son pote » jusqu'à l'épisode 7, où il se nomme manager, puis « son manager ».
 
 ## Idées d'épisodes (à valider une par une)
 
@@ -137,8 +162,8 @@ Les images, les musiques, les lumières et le rendu (HyperFrames compris, sur no
 | SON POTE S'EST NOMMÉ SON MANAGER | Liam : « Mon manager m'a fait acheter douze sachets de glaçons ! » | Douze prises devant l'épicerie, un sachet de glaçons par prise. (pilote 3) |
 | IL SORT SON SON LE JOUR DE GTA 6 | Deuce : « Sortir ton son le jour de GTA 6 ?! T'es fou ! » | Tout le quartier joue. Mais entre deux parties, ils scrollent : il lui faut un clip, pas juste un son. (actualité, 19/11) |
 | IL VOULAIT UN CLIP COMME DANS GTA | M. Reyes : « Rendez-moi ma plante ! » | Un scooter, une plante verte et douze prises ratées, coupées sur le rythme. (actualité) |
-| TRILLER N'EST PLUS SUR L'APP STORE | Liam : « Ils ont fermé Triller ?! » | L'idée du propriétaire (16/11). Triller n'est plus sur l'App Store, et c'est là que Liam faisait ses snippets. Maya lui parle de Stalak : il va sur stalak.app, sans rien installer. Deuce le filme en 3 prises au terrain (seul, avec Maya qui arrive en marchant, seul de plus près), Stalak monte le clip et Liam le poste. (épisode 6, fabriqué le 16/11, à valider) |
-| LE RIVAL POSTE UN CLIP PAR JOUR | Big Mo : « T'as zéro abonné et tu me clashes ?! » | Big Mo poste tous les jours. Liam veut comprendre comment. |
-| IL A POSTÉ SON SON AVANT DE LE FINIR | Liam : « Ils veulent le son en entier ?! » | Il poste un extrait à 3 h du matin, et le son n'est pas fini. |
-| TOUT LE LYCÉE A VU SA VIDÉO DÉCALÉE | Maya : « Toute l'école a vu ta bouche décalée. » | Il montre sa vidéo dans le couloir, et le son est décalé. |
-| IL RACONTE SA CARRIÈRE AVANT DE L'AVOIR | Liam : « Dans un an, je remplis un stade. » | Un épisode « lifestyle » : Liam et Maya sur le toit, il raconte sa future carrière. |
+| TRILLER N'EST PLUS SUR L'APP STORE | Liam : « Ils ont fermé Triller ?! » | L'idée du propriétaire (16/11). Triller n'est plus sur l'App Store, et c'est là que Liam faisait ses snippets. Maya lui parle de Stalak : il va sur stalak.app, sans rien installer. Deuce le filme en 3 prises au terrain (seul, avec Maya qui arrive en marchant, seul de plus près), Stalak monte le clip et Liam le poste. (fabriqué le 16/11, validé ; sort le 22/11) |
+| LE RIVAL POSTE UN CLIP PAR JOUR | Big Mo : « T'as zéro abonné et tu me clashes ?! » | Big Mo poste tous les jours. Liam veut comprendre comment. (devenu « IL A CLASHÉ LE RAPPEUR LE PLUS CONNU DU QUARTIER », script du 17/11) |
+| IL A POSTÉ SON SON AVANT DE LE FINIR | Liam : « Ils veulent le son en entier ?! » | Il poste un extrait à 3 h du matin, et le son n'est pas fini. (devenu « SON EXTRAIT A MARCHÉ, MAIS LE SON N'EST PAS FINI », script du 17/11) |
+| TOUT LE LYCÉE A VU SA VIDÉO DÉCALÉE | Maya : « Toute l'école a vu ta bouche décalée. » | Il montre sa vidéo dans le couloir, et le son est décalé. (gardée pour plus tard : trop proche de « Le son de l'année » la même semaine) |
+| IL RACONTE SA CARRIÈRE AVANT DE L'AVOIR | Liam : « Dans un an, je remplis un stade. » | Un épisode « lifestyle » : Liam et Maya sur le toit, il raconte sa future carrière. (mêlé à « IL A ÉCRIT “RAPPEUR” SUR SA FICHE D'ORIENTATION », script du 17/11) |

@@ -2,7 +2,23 @@
 
 > Marketing & croissance. Rien ne change sur le site : seulement `tools/serie/` et `docs/`.
 
-Statut : EN COURS (fabrication des épisodes dans Studio Stalak ; rien à publier sur le site). Tests : planches contact relues pour chaque vidéo déposée, `npx hyperframes check` passé sur « Le manager ». Rien à faire par le Chef de projet, sauf garder la branche à jour.
+Statut : EN COURS (9 nouveaux scripts à valider dans Studio Stalak, puis leur fabrication ; rien à publier sur le site). Tests : planches contact relues pour chaque vidéo déposée, `npx hyperframes check` passé sur « Le manager ». Rien à faire par le Chef de projet, sauf garder la branche à jour.
+
+## 17/11, 5 h : 9 nouveaux scripts pour avoir 3 vidéos par jour (à valider)
+
+- **Sa demande (17/11, 3 h 57)** : « on a pas nos 3 vidéos par jours sur la semaine, commence à me créer les scripts ».
+- **9 scripts écrits et déposés dans Studio Stalak** (`tcrazy-ep7` à `tcrazy-ep15`, statut `script`, onglet « À valider »), pour les créneaux de 18 h et de 21 h, du 18 au 22/11. Les 6 épisodes validés gardent leur jour et leur créneau de 12 h 30 ; GTA 6 reste le 19/11 à 18 h (son créneau 2). Rien le 17/11 : un script passe par sa validation, puis celle du storyboard, avant la fabrication.
+- Ordre de sortie, numéros, bandeaux, cris et cartes de fin : tableau « La semaine du 16/11 » de `docs/marketing/SERIE_BIBLE.md`. Les 9 : « Les tee-shirts » (n° 2), « Nuit à 17 h » (3), « Le cahier de rap » (6), « L'extrait de 3 h du matin » (8), « La voix perdue » (9), « Le clash au terrain » (11, celui qu'annonce déjà la carte de fin du « Clip façon GTA »), « La fiche d'orientation » (12), « Le Black Friday » (14), « Les effets spéciaux » (15).
+- Chaque script suit les règles de « Mes goûts » (85 lignes relues le 17/11) : un cri qui choque ou pose une question, celui qui crie au centre ; un bandeau descriptif jusqu'à la première phrase du narrateur ; tout est sous-titré avec le nom ; un carton et le noir à chaque changement de lieu ou d'heure ; celui qui arrive entre en marchant et dit bonjour ; un seul décor à la fois ; des lumières réalistes ; Stalak dans la deuxième moitié (sauf « Le clash au terrain », dont l'histoire est le secret de Big Mo) ; Liam qui parle de SA galère à celui qui regarde ; la carte de fin avec le prochain épisode dans l'ordre de sortie. Les cris sont répartis (Nadia 3, Liam 3, M. Reyes, Big Mo, Deuce), et les lieux varient d'un créneau à l'autre.
+- Durée estimée : 1 min 14 à 1 min 17 chacun (l'estimation du pipeline par réplique, `(0,3 + caractères / 15) / vitesse`, plus environ 13 s d'images, recalée sur les 6 épisodes validés).
+- Ce que montre Stalak, vérifié sur la page Tarifs et dans l'app (`src/markup.html`) : le montage automatique sur les temps (toutes les formules), les paroles à l'écran collées puis calées au tap (gratuit), le filtre Noir & blanc (gratuit), le Rythme « Nerveux » (« coupes rapides, jusqu'à chaque temps », gratuit), les vidéos illimitées en gratuit, et une fois Creator Plus, avec ce qu'il fait vraiment (packs de 5 à 30 vidéos aux coupes différentes, à partir de 2 playbacks). Les effets sur les drops ne sont pas utilisés : ils viennent du mode Clip, exporté avec Pro.
+- Actualité : le Black Friday (vendredi 27/11, cinq jours après l'épisode du 22/11) ; la nuit qui tombe vers 17 h en novembre (coucher du soleil vers 17 h 05 à Paris le 19/11). Aucune marque, aucun vrai artiste.
+- Continuité : Deuce est « son pote » avant « Le manager » (n° 7), puis « son manager ».
+- Coût : 0 $ (des scripts). Voix prévues : 152 répliques, environ 2 $, générées seulement après sa validation et son feu vert (celui de `lots/2026-11-16` couvrait 5 vidéos). **Solde Flora le 17/11 à 4 h 50 : 0,84 $**, de quoi faire les voix d'environ 4 épisodes : il faudra recharger au moins 1,20 $ (2 $ pour garder de la marge) avant la fabrication des 9.
+- **Question posée au propriétaire** : changer, sur les 6 épisodes validés, le numéro à l'écran (2, 3, 4, 5 et 6 deviennent 4, 5, 7, 10 et 13) et la carte de fin des épisodes 1, GTA 6, « Le manager » et « L'appli a fermé » (qui annonçait « … »). Seulement du texte : le premier plan, la carte de fin et la miniature refaits et recollés, 0 $.
+- Fichiers : `tools/serie/episodes/scripts_semaine_16-11.py` refait les 9 fiches telles qu'elles ont été déposées (vérifié : identiques), `tools/serie/episodes/estimer_duree.py` estime la durée parlée d'un script. Une fois que le propriétaire modifie une fiche, c'est Studio qui fait foi.
+- Ensuite, après sa validation : les storyboards (statut `visuels`), puis les voix et le rendu, en commençant par les deux épisodes du 18/11.
+- Skills : `stalak-videos-reseaux`, `stalak-da`, `hook-generator`, `reels-scripting`.
 
 ## 16/11, 23 h : épisodes 1, 2 et GTA 6 déposés avec les lumières ; épisode 6 fabriqué ; titres coupés en lignes égales
 

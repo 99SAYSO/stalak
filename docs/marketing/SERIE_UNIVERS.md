@@ -325,6 +325,16 @@ Les voix de Big Mo et de M. Reyes seront choisies quand un épisode validé les 
     - la publication montre « Publier », puis « Vidéo publiée ! », puis « a aimé ta vidéo » de Maya et de Deuce, puis le commentaire d'un inconnu ;
   - les voix sont vérifiées par transcription automatique (faster-whisper, modèle « base », sur la machine). Une interjection ajoutée par la voix (« Oh oh ! » avant « On dirait un vrai clip ! ») est coupée dans l'enregistrement, pour que la voix dise exactement le texte écrit.
 
+## Étape 5 : 3 épisodes par jour (17/11, scripts à valider)
+
+Les 9 nouveaux scripts (`tcrazy-ep7` à `tcrazy-ep15` dans Studio Stalak, ordre de sortie dans la bible) n'ajoutent ni personnage ni décor : tout est déjà choisi. Ce qu'il faudra dessiner en code, après leur validation, avec les storyboards :
+
+- **des lumières** (`lights.js`) pour les décors pas encore réglés : la rue en ville le soir (`rue` 2 : le lampadaire et son halo orange, la vitrine, l'enseigne « REYES », les fenêtres qui s'allument), le toit au coucher du soleil (`toit` 1 : le soleil derrière la ville, les contre-jours), le salon (`cuisine` 2 : les stores, la lampe, la télé), la cuisine à l'aube et en fin d'après-midi (avec la farine qui flotte dans le rayon de soleil) ;
+- **des objets** : la table pliante et les tee-shirts « T-CRAZY » avec la tête de Liam, le cahier de rap écrit à la main, la fiche d'orientation, la chaise pliante, l'écharpe, le plaid et le mug, les balais, la farine sur Liam, la boîte de baskets, la perche à selfie, les papillons de nuit ;
+- **des écrans** : la pub du Black Friday (caméra sans marque, prix barré), le profil de Big Mo et ses cases de vidéos (on y reconnaît le terrain, la rue, l'épicerie), les messages que Liam écrit en gros quand il n'a plus de voix, et dans l'écran de Stalak : les paroles collées puis calées au tap, le choix du filtre Noir & blanc, le réglage « Rythme : Nerveux », « Pack : 30 vidéos » (Creator Plus).
+
+La caméra de Stalak, le fil façon TikTok, la publication étape par étape et le clip monté avec le petit logo de la version gratuite existent déjà (épisode 6).
+
 ## Coûts
 
 - **Visuels : 0 $** (dessinés en code).
@@ -335,6 +345,7 @@ Les voix de Big Mo et de M. Reyes seront choisies quand un épisode validé les 
 - **Musique : 0 $** (Pixabay, choisie le 16/11 faute de beats du propriétaire).
 - Solde Flora au 15/11 : 2,76 $, après les 0,42 $ des planches générées puis retirées.
 - 16/11 : 0,039 $ pour les 3 voix du narrateur ; solde Flora environ 2,72 $.
+- 17/11 : les 9 nouveaux scripts, 0 $. Voix prévues : 152 répliques, environ 2 $, seulement après leur validation et le feu vert. Solde Flora le 17/11 à 4 h 50 : 0,84 $ (à recharger d'au moins 1,20 $ pour les 9).
 - 16/11, fabrication : épisode 1 v2 0,091 $, épisode GTA 6 0,169 $ puis 0,078 $, épisode 2 0,039 $ puis 0,026 $ (le « Non » de Maya, 2 essais), « Le manager » 0,143 $, « Le clip façon GTA » 0,156 $.
 - 16/11 à 20 h : « Le manager » v3, 2 répliques ajoutées pour Liam, 0,026 $. Les lumières et HyperFrames : 0 $.
 - 16/11 à 22 h : épisode 6, 19 répliques, 0,26 $ au plus (une voix bloquée par le filtre de Flora a été relancée une fois). Épisodes 1, 2 et GTA 6 refaits avec les lumières : 0 $.
