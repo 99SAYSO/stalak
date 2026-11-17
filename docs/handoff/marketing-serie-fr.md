@@ -11,7 +11,7 @@ Statut : EN COURS (épisodes 7 et 8 à valider dans Studio Stalak, épisode 9 en
 - **Épisodes 7 (« Les tee-shirts », 18/11 18 h) et 8 (« Nuit à 17 h », 18/11 21 h) fabriqués** et déposés en `video` (vidéo, planche, miniature) :
   - 36 voix générées une fois sur le texte validé (0,468 $), relues par transcription (Whisper « small ») : 2 répliques de l'épisode 7 mal dites (M. Reyes : « Pour » au lieu de « Pas » ; Maya : « Orion » au lieu de « Rien ») refaites (0,026 $) ; un « Ha ! » ajouté par la voix au début d'une réplique de Liam coupé ;
   - durées : 1 min 19,8 et 1 min 16,8 (règle : 1 min 05 à 1 min 20). Pour rester sous 1 min 20, l'épisode 7 a des temps d'action un peu resserrés (le départ de M. Reyes, les prises, la publication), mais l'entrée de Maya garde ses 2,1 s (remarque sur l'épisode 3 : « trop rapide ») ;
-  - planches contact relues en entier (une image toutes les 0,5 s) : 0 problème.
+  - planches contact relues en entier (une image toutes les 0,5 s). Relevé sur l'épisode 8 : sous le lampadaire, Liam ne paraissait pas orange, alors que le narrateur le dit et que Maya le lui demande. Corrigé avec une nouvelle option `sodium` des personnages (`frame.js`, la lumière orange du lampadaire), rendu refait et planche relue : 0 problème restant.
 - **Épisode 9 (« Le cahier de rap », 19/11 21 h)** : 16 voix (0,208 $), relues ; 1 min 16,2 ; vidéo en cours.
 - **Épisodes 10 et 11 (20/11)** : storyboards validés, voix pas encore faites : le solde Flora (environ 0,13 $ après l'épisode 9, partagé avec la série LEVELS) ne suffit pas (0,40 $ pour les deux). **Il faut recharger Flora** : environ 1,30 $ pour finir la semaine (10 à 15).
 - **Storyboards 12 à 15 déposés** (statut `visuels`) :
