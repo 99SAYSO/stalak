@@ -246,7 +246,36 @@
       [0, 1, 2, 3, 4, 5, 6, 7].map(i => `<rect x="${i * 66}" y="110" width="33" height="36" fill="${i % 2 ? '#2f8a4e' : '#f3ecd8'}"/>`).join('') + `<rect x="0" y="330" width="520" height="70" fill="#c7c0b4"/>`;
     if (kind === 'coucher') return `<defs><linearGradient id="cch${++UID}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff7a4a"/><stop offset="1" stop-color="#ffd08a"/></linearGradient></defs><rect width="520" height="400" fill="url(#cch${UID})"/><circle cx="400" cy="250" r="70" fill="#fff0b8" opacity="0.9"/><rect x="0" y="320" width="520" height="80" fill="#8a5a4a"/>` +
       `<g transform="translate(90 330) scale(0.9)">${P.plant(0, -70)}</g>`;
+    // 17/11 : the takes of the new episodes. tshirts : in front of the shop, the table of tee-shirts on both sides of Liam ;
+    // lampe : under Deuce's phone light, black around ; lampadaire : orange under the street lamp ; vitrine : the warm shop window
+    if (kind === 'tshirts' || kind === 'tshirts-deuce') {
+      let c = takeScene('rue') + `<rect x="-10" y="298" width="540" height="24" rx="5" fill="#c9cdd6" stroke="${INK}" stroke-width="4"/>` +
+        [[52, 3], [128, 4], [398, 3], [474, 2]].map(([x, n]) => [0, 1, 2, 3].slice(0, n).map(i => foldedTee(x, 298 - (i + 1) * 17, 64)).join('')).join('');
+      if (kind === 'tshirts-deuce') { const r = CAST.figure('deuce', 1, 'fierte'); c += `<defs>${r.defs}</defs><g transform="translate(330 30) scale(0.42)">${r.svg}${tshirt(600, 1060, 300, -14)}</g>`; }
+      return c;
+    }
+    if (kind === 'terrain-echarpe') return takeScene('terrain');
+    // the furnished roof at dusk (17/11, « La fiche d'orientation ») : the string lights, the city lit up below
+    if (kind === 'toit') { let c = `<defs><linearGradient id="tt${++UID}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1d2350"/><stop offset="0.6" stop-color="#5a3d8f"/><stop offset="1" stop-color="#f39a62"/></linearGradient></defs><rect width="520" height="400" fill="url(#tt${UID})"/>`;
+      c += `<path d="M 0 300 L 40 300 L 40 260 L 90 260 L 90 290 L 150 290 L 150 240 L 210 240 L 210 300 L 300 300 L 300 250 L 360 250 L 360 280 L 430 280 L 430 230 L 480 230 L 480 300 L 520 300 L 520 400 L 0 400 Z" fill="#2b2140"/>`;
+      for (let i = 0; i < 14; i++) c += `<rect x="${12 + (i * 37) % 500}" y="${262 + (i * 23) % 40}" width="7" height="9" fill="#ffd36b"/>`;
+      c += `<path d="M 0 40 Q 260 130 520 50" fill="none" stroke="#2a2d36" stroke-width="3"/>` + [40, 110, 180, 250, 320, 390, 460].map((x, i) => `<circle cx="${x}" cy="${(52 + Math.sin(i / 6 * Math.PI) * 52).toFixed(0)}" r="9" fill="#ffe9a8" stroke="${INK}" stroke-width="2"/><circle cx="${x}" cy="${(52 + Math.sin(i / 6 * Math.PI) * 52).toFixed(0)}" r="22" fill="#ffd36b" opacity="0.3"/>`).join('');
+      return c + `<rect y="340" width="520" height="60" fill="#5f5866"/>`; }
+    if (kind === 'lampe') return `<rect width="520" height="400" fill="#05070d"/><radialGradient id="lp${++UID}" cx="0.5" cy="0.45" r="0.6"><stop offset="0" stop-color="#f4f8ff" stop-opacity="0.55"/><stop offset="1" stop-color="#f4f8ff" stop-opacity="0"/></radialGradient><rect width="520" height="400" fill="url(#lp${UID})"/>`;
+    if (kind === 'lampadaire') return `<rect width="520" height="400" fill="#141a3c"/><rect x="0" y="330" width="520" height="70" fill="#2a2b3a"/><rect x="62" y="0" width="14" height="400" fill="#2a2d36"/>` +
+      `<path d="M 70 40 L 0 400 L 300 400 Z" fill="#ffb347" opacity="0.28"/><circle cx="96" cy="40" r="60" fill="#ffcf7a" opacity="0.45"/><ellipse cx="96" cy="38" rx="26" ry="8" fill="#fff3c4"/>`;
+    if (kind === 'vitrine') return `<rect width="520" height="400" fill="#1b2150"/><rect x="0" y="40" width="520" height="70" fill="#c8443a"/>${T(260, 92, 'REYES', 46, SNOW)}` +
+      `<rect x="30" y="130" width="300" height="270" fill="#ffdca4" stroke="${INK}" stroke-width="5"/><rect x="360" y="130" width="140" height="270" fill="#ffe9c0" stroke="${INK}" stroke-width="5"/><rect width="520" height="400" fill="#ffd08a" opacity="0.12"/>`;
     return `<rect width="520" height="400" fill="#cfe3f7"/>`;
+  }
+  // 17/11 : what Liam wears in a take (in his own coordinates)
+  function takeProps(kind) { return kind === 'terrain-echarpe' ? scarf() : ''; }
+  // 17/11 : what the light of a take does to Liam himself (drawn over him, in the preview's coordinates)
+  function takeOver(kind) {
+    if (kind === 'lampe') return `<radialGradient id="lo${++UID}" cx="0.5" cy="0.42" r="0.5"><stop offset="0" stop-color="#ffffff" stop-opacity="0.62"/><stop offset="0.55" stop-color="#ffffff" stop-opacity="0.22"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient><rect width="520" height="400" fill="url(#lo${UID})"/>`;
+    if (kind === 'lampadaire') return `<rect width="520" height="400" fill="#ff8a2a" opacity="0.3" style="mix-blend-mode:multiply"/>` + moths(110, 70, 0.8);
+    if (kind === 'vitrine') return `<rect width="520" height="400" fill="#ffd08a" opacity="0.12"/>`;
+    return '';
   }
   // Liam from the waist up, inside a take ; live : his mouth moves on the beat (the animation)
   function liamBust(expr, x, top, h, props = '', live = true) {
@@ -265,12 +294,15 @@
     s += `<rect width="560" height="92" fill="${BLUE}"/><circle cx="50" cy="47" r="31" fill="${INK}"/>${img('/site_src/icons/icon.svg', 22, 19, 56, 56)}${T(94, 63, 'Stalak', 42, SNOW, { anchor: 'start', stroke: INK, sw: 8 })}${T(536, 58, 'Nouveau clip', 24, ICE, { font: 'Rubik', weight: 800, anchor: 'end' })}`;
     // the preview : the clip being played
     s += `<clipPath id="pv${++UID}"><rect x="20" y="108" width="520" height="400" rx="18"/></clipPath><g clip-path="url(#pv${UID})"><g transform="translate(20 108)">`;
+    // o.bw (17/11, « Nuit à 17 h ») : the free filter « Noir & blanc » on the clip
+    if (o.bw) s += `<filter id="bw${++UID}"><feColorMatrix type="saturate" values="0"/></filter><g filter="url(#bw${UID})">`;
     takes.forEach(([kind, expr], j) => {
-      s += `<g class="tk"${j ? ' display="none"' : ''}>${takeScene(kind)}${liamBust(expr, 260, 40, 700, kind === 'placard' || kind === 'nuit' ? P.headphones() : '')}` +
+      s += `<g class="tk"${j ? ' display="none"' : ''}>${takeScene(kind)}${liamBust(expr, 260, 40, 700, kind === 'placard' || kind === 'nuit' ? P.headphones() : takeProps(kind))}${takeOver(kind)}` +
         `<g transform="rotate(-3 76 36)"><rect x="18" y="16" width="118" height="42" rx="10" fill="${TAKE_COL[j % 4]}" stroke="${INK}" stroke-width="4"/>${T(77, 46, 'PRISE ' + (j + 1), 25, INK)}</g></g>`;
     });
+    if (o.bw) s += '</g>';
     s += `<rect x="0" y="0" width="520" height="400" rx="18" fill="none" stroke="${INK}" stroke-width="6"/>`;
-    if (o.lyric) s += T(260, 376, o.lyric, 30, SNOW, { font: 'Rubik', weight: 900, stroke: INK, sw: 9 });
+    if (o.lyric) { const ls = o.lyric.split('\n'); ls.forEach((l, i) => { s += T(260, 376 - (ls.length - 1 - i) * 38, l, 30, SNOW, { font: 'Rubik', weight: 900, stroke: INK, sw: 9 }); }); }
     // the import step : his song and his videos go into Stalak, then the clip is made
     s += `<g class="imp"${!FRAME.ANIM && ti !== -1 ? ' display="none"' : ''}><rect width="520" height="400" rx="18" fill="${SNOW}" stroke="${INK}" stroke-width="6"/>`;
     s += T(26, 50, 'Ton son', 30, INK, { font: 'Rubik', weight: 800, anchor: 'start' });
@@ -293,11 +325,13 @@
     // the buttons and the real options of the app
     s += `<rect x="20" y="620" width="250" height="56" rx="16" fill="${SNOW}" stroke="${INK}" stroke-width="4"/>${T(145, 658, '▶ Lecture', 28, INK, { font: 'Rubik', weight: 800 })}`;
     s += `<rect x="290" y="620" width="250" height="56" rx="16" fill="${INK}"/>${T(415, 658, '↻ Régénérer', 28, SNOW, { font: 'Rubik', weight: 800 })}`;
-    [['Coupes', ['Auto', 'Sur les mots', 'Par mesure'], 0], ['Rythme', ['Posé', 'Normal', 'Nerveux'], 1], ['Effets', ['Aucun', 'Sobre', 'Intense'], 1]].forEach(([label, opts, sel], r) => {
+    // o.rows : other rows of real options (17/11 : « Filtre », the 3 free filters ; « Rythme : Nerveux » selected)
+    (o.rows || [['Coupes', ['Auto', 'Sur les mots', 'Par mesure'], 0], ['Rythme', ['Posé', 'Normal', 'Nerveux'], 1], ['Effets', ['Aucun', 'Sobre', 'Intense'], 1]]).forEach(([label, opts, sel], r) => {
       const y = 712 + r * 96;
       s += T(22, y, label, 24, '#5b6170', { font: 'Rubik', weight: 800, anchor: 'start' });
+      let fs = 24; while (fs > 17 && opts.reduce((a, op) => a + FRAME.width(op, `700 ${fs}px Rubik`) + 46, 0) > 525) fs--; // the chips fit the screen
       let x = 20;
-      opts.forEach((op, i) => { const w = FRAME.width(op, '700 24px Rubik') + 36; s += `<rect x="${x}" y="${y + 12}" width="${w}" height="46" rx="23" fill="${i === sel ? BLUE : SNOW}" stroke="${i === sel ? INK : '#c3cbd8'}" stroke-width="3"/>${T(x + w / 2, y + 44, op, 24, i === sel ? SNOW : INK, { font: 'Rubik', weight: 700 })}`; x += w + 10; });
+      opts.forEach((op, i) => { const w = FRAME.width(op, `700 ${fs}px Rubik`) + 36; s += `<rect x="${x}" y="${y + 12}" width="${w}" height="46" rx="23" fill="${i === sel ? BLUE : SNOW}" stroke="${i === sel ? INK : '#c3cbd8'}" stroke-width="3"/>${T(x + w / 2, y + 44 - (24 - fs) / 2, op, fs, i === sel ? SNOW : INK, { font: 'Rubik', weight: 700 })}`; x += w + 10; });
     });
     s += '</g>';
     // o.wm : the little Stalak logo of the free version, in a corner of the clip (episode 6 : « la version gratuite »)
@@ -309,10 +343,12 @@
   // ---------------- 16/11 (owner) : every change of place or time is said on screen, and who arrives is clear ----------------
   // a caption at the top (« CINQ MINUTES PLUS TARD · LA CUISINE ») : it pops in, stays 3 s, then goes away
   const carton = (text, y = 268) => {
-    const w = FRAME.width(text, '46px "Lilita One"') + 116, x = 500 - w / 2;
+    // a long caption gets a smaller font, so that the card stays inside the picture (17/11 : « Le lendemain, au coucher du soleil · le toit »)
+    let fs = 46; while (fs > 30 && FRAME.width(text, `${fs}px "Lilita One"`) + 116 > 960) fs -= 2;
+    const w = FRAME.width(text, `${fs}px "Lilita One"`) + 116, x = 500 - w / 2;
     return `<g class="carton"><g transform="rotate(-2 500 ${y})"><rect x="${x + 8}" y="${y - 30}" width="${w}" height="82" rx="20" fill="${INK}"/><rect x="${x}" y="${y - 40}" width="${w}" height="82" rx="20" fill="${ICE}" stroke="${INK}" stroke-width="6"/>` +
       `<circle cx="${x + 46}" cy="${y + 1}" r="21" fill="${SNOW}" stroke="${INK}" stroke-width="5"/><path d="M ${x + 46} ${y + 1} L ${x + 46} ${y - 11} M ${x + 46} ${y + 1} L ${x + 55} ${y + 7}" stroke="${INK}" stroke-width="4" stroke-linecap="round"/>` +
-      `${T(x + 78, y + 17, text, 46, NIGHT, { anchor: 'start' })}</g></g>`;
+      `${T(x + 78, y + 17, text, fs, NIGHT, { anchor: 'start' })}</g></g>`;
   };
   // « TOC TOC ! » : someone knocks on the window (a comic burst)
   const knock = (x, y, r = -8) => {
@@ -772,6 +808,572 @@
     { t: '1:19', cap: 'Carte de fin (prochain épisode à choisir)', plain: true, over: () => endCard('…') },
   ], "L'après-midi, lumières réalistes, Triller nommé sans logo.");
 
+  // ================= 17/11 : 3 episodes a day (owner, 17/11 at 3 h 57). The 6 validated episodes keep 1 to 6 (his answer at
+  // 5 h), the 9 new ones are 7 to 15, in their release order ; each end card names the video that comes out right after.
+  // Only the chosen sets : the street of houses (also at night), the kitchen, the court, the room, the furnished roof.
+  // The print of Deuce's merch : Liam's face in a blue disc, « T-CRAZY » under it (our own design) ; in the tee's own coordinates
+  function teePrint() {
+    const id = 'tp' + (++UID);
+    return `<circle cx="0" cy="-18" r="64" fill="${BLUE}" stroke="${INK}" stroke-width="5"/><clipPath id="${id}"><circle cx="0" cy="-18" r="61"/></clipPath><g clip-path="url(#${id})">${headAt('frime', 0, 6, 0.3, '', false)}</g>` + T(0, 100, 'T-CRAZY', 44, INK);
+  }
+  // a white tee-shirt with that print ; cx, cy : its centre, w : its width
+  function tshirt(cx, cy, w = 300, r = 0) {
+    return `<g transform="translate(${cx} ${cy}) rotate(${r}) scale(${(w / 300).toFixed(3)})"><path d="M -70 -150 C -40 -126 40 -126 70 -150 L 152 -108 L 126 -36 L 92 -50 L 92 160 L -92 160 L -92 -50 L -126 -36 L -152 -108 Z" fill="#fbfcff" stroke="${INK}" stroke-width="7" stroke-linejoin="round"/>` +
+      `<path d="M -70 -150 C -44 -114 44 -114 70 -150" fill="none" stroke="${INK}" stroke-width="6"/><path d="M 40 -120 L 40 150" stroke="#e4ebf4" stroke-width="22" opacity="0.8"/>${teePrint()}</g>`;
+  }
+  // a folded tee-shirt, seen from the front on a pile : x the middle, y the top, w the width
+  const foldedTee = (x, y, w = 120) => `<rect x="${x - w / 2}" y="${y}" width="${w}" height="${(w * 0.28).toFixed(1)}" rx="${(w * 0.06).toFixed(1)}" fill="#fbfcff" stroke="${INK}" stroke-width="${w > 90 ? 4 : 2.5}"/>` +
+    `<path d="M ${x - w * 0.16} ${y} q ${w * 0.16} ${w * 0.11} ${w * 0.32} 0" fill="none" stroke="${INK}" stroke-width="${w > 90 ? 3 : 2}"/><circle cx="${x}" cy="${(y + w * 0.15).toFixed(1)}" r="${(w * 0.08).toFixed(1)}" fill="${BLUE}" stroke="${INK}" stroke-width="2"/>`;
+  // Deuce's stall, in the coordinates of whoever stands behind it (front figure : hands near y 1170, feet 1732) : a folding
+  // table, piles of folded tees, the box they came in, a cardboard sign
+  function merchTable(o = {}) {
+    let s = `<path d="M -40 1224 L 30 1732 M 30 1224 L -40 1732 M 900 1224 L 970 1732 M 970 1224 L 900 1732" stroke="${INK}" stroke-width="16" stroke-linecap="round"/><path d="M -40 1224 L 30 1732 M 30 1224 L -40 1732 M 900 1224 L 970 1732 M 970 1224 L 900 1732" stroke="#8a919c" stroke-width="7" stroke-linecap="round"/>`;
+    s += `<rect x="-90" y="1188" width="1080" height="40" rx="10" fill="#d9dde4" stroke="${INK}" stroke-width="8"/><rect x="-80" y="1222" width="1060" height="10" fill="#a9b0bb"/>`;
+    [[60, 5], [230, 6], [400, 4]].forEach(([x, n]) => { for (let i = 0; i < n; i++) s += foldedTee(x + (i % 2) * 6, 1188 - (i + 1) * 44, 156); });
+    // the box, full, a tee hanging out
+    s += `<path d="M 560 1188 L 590 1010 L 900 1010 L 930 1188 Z" fill="#c9965e" stroke="${INK}" stroke-width="8" stroke-linejoin="round"/><path d="M 590 1010 L 540 940 L 760 940 L 745 1010 M 900 1010 L 960 950 L 760 940" fill="#d9a86e" stroke="${INK}" stroke-width="7" stroke-linejoin="round"/>` +
+      `<g transform="rotate(-8 700 1000)">${foldedTee(700, 985, 180)}</g>` + T(745, 1130, 'T-CRAZY', 50, INK) + `<path d="M 640 1150 L 850 1150" stroke="${INK}" stroke-width="5"/>`;
+    // the sign taped on the front of the table
+    if (!o.nosign) s += `<g transform="rotate(-4 300 1330)"><rect x="140" y="1250" width="330" height="150" rx="8" fill="#d9a86e" stroke="${INK}" stroke-width="7"/>${T(305, 1314, 'T-SHIRTS', 54, INK)}${T(305, 1376, 'T-CRAZY', 54, BLUE)}<path d="M 160 1250 L 200 1236 M 440 1250 L 470 1236" stroke="#e8e1c8" stroke-width="16"/></g>`;
+    return s;
+  }
+  // dead leaves on the sidewalk (in the set's coordinates) : the street is empty, the time is long
+  const leaves = (pts) => pts.map(([x, y, r]) => `<g transform="translate(${x} ${y}) rotate(${r})"><path d="M -26 0 C -16 -18 16 -18 26 0 C 16 18 -16 18 -26 0 Z" fill="#c4813a" stroke="${INK}" stroke-width="4"/><path d="M -26 0 L 30 0" stroke="${INK}" stroke-width="3"/></g>`).join('');
+  // moths around a lamp ; k : their size
+  const moths = (cx, cy, k = 1) => [[-60, -10, 20], [40, -40, -30], [70, 30, 50], [-30, 50, -60], [10, -70, 10], [-80, 40, 80]].map(([dx, dy, r]) =>
+    `<g transform="translate(${cx + dx * k} ${cy + dy * k}) rotate(${r}) scale(${k})"><path d="M 0 0 C -10 -14 -24 -10 -20 2 C -16 10 -6 8 0 0 C 6 8 16 10 20 2 C 24 -10 10 -14 0 0 Z" fill="#e9dcc0" stroke="${INK}" stroke-width="3"/><path d="M 0 -6 L 0 8" stroke="${INK}" stroke-width="4" stroke-linecap="round"/></g>`).join('');
+  // a phone on a selfie stick, held up (in the coordinates of whoever holds it : the hand near 580, 1170)
+  const selfieStick = () => `<path d="M 586 1160 L 760 560" stroke="${INK}" stroke-width="16" stroke-linecap="round"/><path d="M 586 1160 L 760 560" stroke="#6b7180" stroke-width="7" stroke-linecap="round"/><g transform="translate(772 512) rotate(16) scale(1.5)">${P.phoneBack(0, 0)}</g>`;
+  // the lock screen of Liam's phone : the time, big, and his own reminder
+  function lockScreen(time, date) {
+    const g = 'ls' + (++UID);
+    let s = `<defs><linearGradient id="${g}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#121a44"/><stop offset="1" stop-color="#5a3d8f"/></linearGradient></defs><rect width="560" height="1000" fill="url(#${g})"/>`;
+    s += T(280, 118, date, 30, ICE, { font: 'Rubik', weight: 700 }) + T(280, 300, time, 170, SNOW, { font: 'Rubik', weight: 800 });
+    return s + `<g transform="translate(16 380)"><rect width="528" height="112" rx="26" fill="${SNOW}" opacity="0.92" stroke="${INK}" stroke-width="5"/><circle cx="58" cy="56" r="34" fill="#ffd34d" stroke="${INK}" stroke-width="3"/>${T(58, 70, '!', 38, INK)}` +
+      `${T(108, 48, 'Rappel', 26, '#7a8091', { font: 'Rubik', weight: 700, anchor: 'start' })}${T(108, 88, 'Tourner le clip après les cours', 27, INK, { font: 'Rubik', weight: 800, anchor: 'start' })}</g>`;
+  }
+  // the camera of a phone (not Stalak : before Stalak comes), filming a take : the picture, REC, the take number
+  function camScreen(kind, n, expr = 'fierte') {
+    let s = `<rect width="560" height="1000" fill="#0b0d12"/><g transform="translate(-60 120) scale(1.31)">${takeScene(kind)}${liamBust(expr, 260, 40, 700, takeProps(kind), false)}${takeOver(kind)}</g>`;
+    s += `<rect width="560" height="96" fill="#0b0d12" opacity="0.6"/><circle cx="214" cy="50" r="12" fill="#e5484d"/>` + T(298, 61, '00:04', 32, SNOW, { font: 'Rubik', weight: 800 });
+    s += `<g transform="rotate(-3 90 160)"><rect x="24" y="132" width="150" height="50" rx="12" fill="${TAKE_COL[(n - 1) % 4]}" stroke="${INK}" stroke-width="4"/>${T(99, 167, 'PRISE ' + n, 30, INK)}</g>`;
+    return s + `<circle cx="280" cy="930" r="46" fill="none" stroke="${SNOW}" stroke-width="7"/><rect x="262" y="912" width="36" height="36" rx="8" fill="#e5484d"/>`;
+  }
+  const noDim = (svg) => svg.replace(/<rect width="1080" height="1920" fill="#0a0d14" opacity="0.5"\/>/, '');
+  const smallPhone = (inner, x = 800, y = 1330) => `<g transform="translate(${x} ${y}) scale(0.5) translate(-540 -790)">${noDim(phoneBig(inner, 1))}</g>`;
+  const clipPic = (kind, expr = 'fierte', o = {}) => { const id = 'cpb' + (++UID); return (o.bw ? `<filter id="${id}"><feColorMatrix type="saturate" values="0"/></filter><g filter="url(#${id})">` : '<g>') + `<g transform="translate(-60 160) scale(1.31)">${takeScene(kind)}${liamBust(expr, 260, 40, 700, takeProps(kind), false)}${takeOver(kind)}</g></g>` +
+    (o.lyric ? o.lyric.split('\n').map((l, i, a) => T(236, 470 - (a.length - 1 - i) * 38, l, 30, SNOW, { font: 'Rubik', weight: 900, stroke: INK, sw: 9 })).join('') : ''); }; // clear of the feed's buttons on the right
+  // a post : in the video, step by step (« Publier », « Vidéo publiée ! ») then the comment ; on the still, the feed and the comment
+  const posted = (pic, caption, who, text, col, likes = 1) => FRAME.ANIM ? publish({ at: 0.8, pic, feed: { user: 't.crazy', caption, sound: 'T-Crazy · son original', likes, comments: 1, shares: 0 },
+    after: K({ in: 1.9, path: [[1.9, 0, 470], [2.25, 0, 0]] }, comments(who, text, col)) }) : feed(pic, { likes, comments: 1, shares: 0, user: 't.crazy', caption, sound: 'T-Crazy · son original' }) + comments(who, text, col);
+  const RUE = ['rue', 1, 'apres-midi'], RUE_EVE = ['rue', 1, 'coucher'], RUE_NIGHT = ['rue', 1, 'nuit'];
+
+  // ---------------- épisode 7 (18/11, 18 h) : « Les tee-shirts » ----------------
+  const E7 = 'SON POTE A IMPRIMÉ DES TEE-SHIRTS AVEC SA TÊTE';
+  const TEE = (x = 450, y = 1190, w = 380, r = 0) => tshirt(x, y, w, r);
+  ep('ep7', E7, 7, [
+    { t: '0:00', cap: "L'accroche : M. Reyes brandit un tee-shirt", set: RUE, criY: 700, chars: [CH('deuce', 1, 860, 1700, 900, 'fierte', merchTable()), LI(210, 1700, 900, 'fierte'), CH('reyes', 1, 540, 2450, 1800, 'colere', TEE())],
+      over: () => bandeau(2, E7, 7) + FRAME.cri('reyes', `Cinquante tee-shirts avec ta tête${NB}?!`, 700) },
+    { t: '0:02', cap: 'Liam ajuste sa casquette, très fier', set: RUE, chars: [CH('deuce', 1, 840, 1740, 1000, 'frime', merchTable()), CH('reyes', 1, 190, 1856, 1150, 'colere', TEE(450, 1190, 330)), LI(560, 1846, 1250, 'fierte')],
+      over: () => bandeau(2, E7, 7).replace('class="bandeau"', 'class="bandeau" data-cont="1"') + sub(1, 'liam', "C'est ma collection. Le merch, c'est là qu'est l'argent.") },
+    { t: '0:05', cap: 'Le narrateur présente Liam et Deuce', set: RUE, chars: [CH('deuce', 1, 840, 1740, 1000, 'frime', merchTable()), CH('reyes', 1, 190, 1856, 1150, 'frime', TEE(450, 1190, 330)), LI(560, 1846, 1250, 'frime')],
+      over: () => tag('LIAM, ALIAS T-CRAZY', 560, 520, -3) + tag('DEUCE, SON POTE', 860, 690, 3) + tag("M. REYES, L'ÉPICIER", 230, 620, -3) + sub(1, 'narrateur', 'Voici Liam. 15 ans. Zéro abonné. Et voici Deuce, son pote. Ce matin, il a imprimé cinquante tee-shirts avec la tête de Liam.') },
+    { t: '0:13', cap: 'Deuce étale les tee-shirts, sûr de lui', set: RUE, chars: [CH('deuce', 1, 560, 1760, 1060, 'fierte', merchTable()), LI(170, 1846, 1150, 'frime'), CH('reyes', 1, 920, 1856, 1150, 'colere', TEE(450, 1190, 330))],
+      over: () => sub(1, 'deuce', 'Les grands rappeurs vendent des tee-shirts. Donc on vend des tee-shirts. C\'est du business.') },
+    { t: '0:18', cap: 'M. Reyes rend le tee-shirt et rentre', set: RUE, chars: [CH('deuce', 1, 500, 1760, 1060, 'panique', merchTable()), LI(150, 1846, 1150, 'panique'), CH('reyes', 1, 955, 1856, 1150, 'colere', '', { k: { walk: [[0.6, 0, 0], [1.8, 120, -30]] } })],
+      over: () => sub(1, 'reyes', 'Pas devant ma vitrine.') },
+    { t: '0:21', cap: 'Deux heures plus tard : rien de vendu', set: RUE_EVE, front: () => leaves([[620, 1560, 20], [760, 1600, -30], [900, 1540, 60]]), chars: [CH('deuce', 1, 330, 1760, 1060, 'panique', merchTable()), LI(820, 1846, 1150, 'colere')],
+      over: () => carton('DEUX HEURES PLUS TARD · LA RUE') + sub(1, 'narrateur', 'Deux heures plus tard : zéro tee-shirt vendu.') },
+    { t: '0:25', cap: 'Maya arrive en marchant et dit bonjour', set: RUE_EVE, chars: [CH('deuce', 1, 330, 1760, 1060, 'frime', merchTable()), CH('maya', 1, 860, 1846, 1150, 'frime', P.phone(580, 1130), { k: { walk: [[0.2, 640, 0], [2.0, 0, 0]] } }), LI(600, 1846, 1180, 'fierte')],
+      over: () => tag('MAYA, LA VOISINE', 860, 600, 3) + sub(1, 'maya', 'Salut. Vous vendez les tee-shirts de qui ?') },
+    { t: '0:31', cap: 'Liam, vexé ; Deuce a une idée', set: RUE_EVE, chars: [CH('deuce', 1, 330, 1760, 1060, 'fierte', merchTable()), CH('maya', 1, 860, 1846, 1150, 'frime', P.phone(580, 1130)), LI(600, 1846, 1180, 'colere')],
+      over: () => sub(1, 'deuce', "Les gens savent pas qui t'es ? Solution : cent tee-shirts de plus.") },
+    { t: '0:37', cap: 'Maya, appuyée au coffre à glaçons', set: RUE_EVE, chars: [CH('deuce', 1, 230, 1760, 1060, 'panique', merchTable()), LI(470, 1846, 1180, 'panique'), CH('maya', 1, 800, 1846, 1150, 'frime', P.phone(580, 1130))],
+      over: () => sub(1, 'maya', "Les gens achètent le tee-shirt d'un son qu'ils connaissent. Ton son, tu l'as jamais posté.") },
+    { t: '0:45', cap: 'Maya lui montre Stalak, dessiné', set: RUE_EVE, chars: [CH('maya', 1, 800, 1846, 1200, 'frime', P.phone(580, 1130)), LI(300, 1846, 1200, 'panique')],
+      over: () => phoneBig(stalakApp({ takes: [['tshirts', 'fierte'], ['tshirts-deuce', 'frime'], ['tshirts', 'colere']], count: 3, ti: -1 }), 0.92) + sub(1, 'maya', 'Prends Stalak. Tu te filmes trois fois sur ton son, et Stalak monte sur le rythme.') },
+    { t: '0:54', cap: 'Les prises : Deuce danse derrière', set: RUE_EVE, rap: 'liam', rapFrom: 0.2, chars: [CH('deuce', 1, 760, 1760, 1060, 'fierte', merchTable({ nosign: true }) + TEE(600, 1060, 300, -14)), LI(420, 1846, 1220, 'fierte')],
+      over: () => clap(840, 330, 2) },
+    { t: '0:57', cap: 'Stalak monte le clip sur le temps', set: RUE_EVE, chars: [CH('maya', 1, 830, 1846, 1150, 'fierte'), CH('deuce', 1, 250, 1846, 1100, 'fierte'), LI(540, 1846, 1200, 'fierte', P.phone(606, 760), { pose: { raise: 'r' } })],
+      over: () => phoneBig(stalakApp({ takes: [['tshirts', 'fierte'], ['tshirts-deuce', 'frime'], ['tshirts', 'colere']], count: 3, ti: 2.2, sticker: 'hype', dl: 2.7, wm: true, word: 'prises' }), 0.92) + sub(1, 'narrateur', 'Stalak monte les trois prises sur le rythme. Et Liam poste son son pour la première fois.') },
+    { t: '1:01', cap: 'Il publie : un inconnu veut le tee-shirt', set: RUE_EVE, chars: [LI(540, 1846, 1250, 'fierte', P.phone(606, 760), { pose: { raise: 'r' } })],
+      over: () => phoneBig(posted(clipPic('tshirts-deuce'), 'Mon son, enfin posté', 'kenzo.prod', 'Le son est lourd. Il est où, le tee-shirt ?', '#7d55c7', 2), 0.92) + sub(1, 'deuce', "Quelqu'un veut un tee-shirt ! Je l'avais dit !") },
+    { t: '1:06', cap: 'Liam parle à celui qui regarde', set: RUE_EVE, zoom: [540, 1150, 1.3], chars: [LI(540, 2730, 2250, 'frime')],
+      over: () => sub(1, 'liam', "Ton son, personne l'a encore entendu ? Filme trois prises, et Stalak monte sur le rythme. Les tee-shirts, après.") },
+    { t: '1:13', cap: 'La carte de fin (le prochain à sortir : « Nuit à 17 h »)', plain: true, over: () => endCard(`IL FAIT NUIT À 17${NB}H ET IL DEVAIT TOURNER SON CLIP`) },
+  ], "Sort le 18/11 à 18 h. La rue pavillonnaire l'après-midi, puis au coucher du soleil.");
+
+  // ---------------- épisode 8 (18/11, 21 h) : « Nuit à 17 h » ----------------
+  const E8 = `IL FAIT NUIT À 17${NB}H ET IL DEVAIT TOURNER SON CLIP`; // « 17 H » never cut in two
+  const torch = (x, y, tx, ty) => { const g = 'tc' + (++UID), b = 'tb' + (++UID);
+    return `<defs><radialGradient id="${g}"><stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/><stop offset="0.25" stop-color="#f4f8ff" stop-opacity="0.55"/><stop offset="1" stop-color="#f4f8ff" stop-opacity="0"/></radialGradient>` +
+      `<linearGradient id="${b}" x1="${x}" y1="${y}" x2="${tx}" y2="${ty}" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ffffff" stop-opacity="0.5"/><stop offset="1" stop-color="#ffffff" stop-opacity="0.12"/></linearGradient></defs>` +
+      `<g style="mix-blend-mode:screen"><path d="M ${x} ${y - 14} L ${tx - 60} ${ty - 300} L ${tx - 120} ${ty + 380} L ${x} ${y + 14} Z" fill="url(#${b})"/><circle cx="${x}" cy="${y}" r="300" fill="url(#${g})"/><circle cx="${tx}" cy="${ty}" r="230" fill="url(#${g})" opacity="0.8"/><circle cx="${x}" cy="${y}" r="26" fill="#ffffff"/></g>` +
+      (window.LIGHTS ? LIGHTS.glint(x, y, 60, {}) : ''); };
+  ep('ep8', E8, 8, [
+    { t: '0:00', cap: "L'accroche : 17 h 02, et il fait déjà nuit", set: RUE_NIGHT, criY: 700, chars: [CH('deuce', 1, 880, 1700, 900, 'frime', selfieStick()), LI(540, 2650, 2100, 'panique')],
+      over: () => bandeau(2, E8, 8) + FRAME.cri('liam', `Il est 17${NB}h et il fait déjà nuit${NB}?!`, 700) + smallPhone(lockScreen('17:02', 'mercredi 18 novembre')) },
+    { t: '0:02', cap: "Liam, dégoûté, montre l'heure", set: RUE_NIGHT, chars: [CH('deuce', 1, 860, 1760, 1050, 'frime', selfieStick()), LI(470, 1846, 1250, 'colere', P.phone(606, 760), { pose: { raise: 'r' } })],
+      over: () => bandeau(2, E8, 8).replace('class="bandeau"', 'class="bandeau" data-cont="1"') + sub(1, 'liam', 'Je devais tourner mon clip après les cours !') },
+    { t: '0:05', cap: 'Le narrateur présente Liam et Deuce', set: RUE_NIGHT, chars: [CH('deuce', 1, 860, 1760, 1050, 'frime', selfieStick()), LI(470, 1846, 1250, 'colere')],
+      over: () => tag('LIAM, ALIAS T-CRAZY', 470, 520, -3) + tag('DEUCE, SON POTE', 860, 660, 3) + sub(1, 'narrateur', 'Voici Liam. 15 ans. Zéro abonné. Et Deuce, son pote. En novembre, le soleil se couche vers cinq heures. Et Liam sort des cours à cinq heures.') },
+    { t: '0:12', cap: 'La lampe du téléphone : Liam ébloui', set: RUE_NIGHT, chars: [CH('deuce', 1, 820, 1846, 1200, 'fierte', P.phone(580, 1130, '#ffffff')), LI(300, 1846, 1200, 'colere')],
+      over: () => torch(945, 1268, 300, 806) + sub(1, 'deuce', "Pas de soleil ? Pas de problème. J'ai la lampe de mon téléphone.") },
+    { t: '0:17', cap: 'Prise 1 : tout blanc, fond tout noir', set: RUE_NIGHT, chars: [CH('deuce', 1, 540, 1846, 1250, 'frime', P.phoneBack(580, 1130))],
+      over: () => phoneBig(camScreen('lampe', 1), 0.92) + sub(1, 'deuce', 'Prise 1… On dirait un interrogatoire.') },
+    { t: '0:22', cap: 'Prise 2 : orange sous le lampadaire', set: RUE_NIGHT, rap: 'liam', rapFrom: 0.2, front: () => moths(263, 560, 1.4), chars: [CH('deuce', 1, 840, 1846, 1150, 'frime', P.phoneBack(580, 1130)), LI(290, 1846, 1200, 'fierte')],
+      over: () => `<rect x="80" y="560" width="420" height="1300" fill="#ff8a2a" opacity="0.14" style="mix-blend-mode:multiply"/>` + clap(820, 330, 2) + sub(1, 'narrateur', 'Prise 2, sous le lampadaire. Liam est tout orange, et les papillons de nuit adorent son son.') },
+    { t: '0:28', cap: 'Maya arrive en marchant et dit bonsoir', set: RUE_NIGHT, front: () => moths(263, 560, 1.4), chars: [CH('maya', 1, 830, 1846, 1150, 'frime', P.phone(580, 1130), { k: { walk: [[0.2, 640, 0], [2.0, 0, 0]] } }), LI(290, 1846, 1200, 'frime')],
+      over: () => `<rect x="80" y="560" width="420" height="1300" fill="#ff8a2a" opacity="0.14" style="mix-blend-mode:multiply"/>` + tag('MAYA, LA VOISINE', 830, 600, 3) + sub(1, 'maya', 'Bonsoir. Pourquoi t\'es orange ?') },
+    { t: '0:33', cap: 'Maya montre la vitrine de l\'épicerie', set: RUE_NIGHT, chars: [CH('maya', 1, 360, 1846, 1150, 'fierte', P.phone(580, 1130)), LI(760, 1846, 1200, 'frime')],
+      over: () => sub(1, 'maya', 'Mets-toi devant la vitrine. Là, la lumière est belle.') },
+    { t: '0:37', cap: 'Prise 3, devant la vitrine ; M. Reyes ouvre sa porte', set: RUE_NIGHT, rap: 'liam', rapFrom: 0.2, chars: [LI(640, 1846, 1200, 'fierte'), CH('reyes', 1, 960, 1856, 1150, 'colere')],
+      over: () => clap(250, 330, 3) + tag("M. REYES, L'ÉPICIER", 900, 640, 3) + sub(1, 'reyes', 'Bonsoir. Devant ma vitrine, c\'est un chewing-gum minimum.') },
+    { t: '0:43', cap: 'Stalak et le filtre Noir & blanc', set: RUE_NIGHT, chars: [CH('maya', 1, 820, 1846, 1150, 'fierte', P.phone(580, 1130)), CH('deuce', 1, 220, 1846, 1150, 'frime'), LI(520, 1846, 1200, 'frime')],
+      over: () => phoneBig(stalakApp({ takes: [['lampe', 'colere'], ['lampadaire', 'fierte'], ['vitrine', 'frime']], count: 3, ti: -1, word: 'prises', rows: [['Coupes', ['Auto', 'Sur les mots', 'Par mesure'], 0], ['Rythme', ['Posé', 'Normal', 'Nerveux'], 1], ['Filtre', ['Aucun', 'Givre', 'Film 35 mm', 'Noir & blanc'], 3]] }), 0.92) + sub(1, 'maya', 'Mets tes trois prises dans Stalak : il les coupe sur le rythme. Et prends le filtre Noir & blanc.') },
+    { t: '0:52', cap: 'Le clip en noir et blanc, coupé sur le temps', set: RUE_NIGHT, chars: [CH('maya', 1, 830, 1846, 1150, 'fierte'), CH('deuce', 1, 250, 1846, 1100, 'fierte'), LI(540, 1846, 1200, 'fierte', P.phone(606, 760), { pose: { raise: 'r' } })],
+      over: () => phoneBig(stalakApp({ takes: [['lampe', 'colere'], ['lampadaire', 'fierte'], ['vitrine', 'frime']], count: 3, ti: 0, sticker: 'cool', dl: 0.8, wm: true, word: 'prises', bw: true, rows: [['Coupes', ['Auto', 'Sur les mots', 'Par mesure'], 0], ['Rythme', ['Posé', 'Normal', 'Nerveux'], 1], ['Filtre', ['Aucun', 'Givre', 'Film 35 mm', 'Noir & blanc'], 3]] }), 0.92) + sub(1, 'narrateur', 'En noir et blanc, la lampe, le lampadaire et la vitrine vont ensemble. Ça devient un style.') },
+    { t: '0:59', cap: 'Il publie : « L\'ambiance de nuit »', set: RUE_NIGHT, chars: [CH('maya', 1, 860, 1846, 1100, 'frime'), LI(470, 1846, 1250, 'fierte', P.phone(606, 760), { pose: { raise: 'r' } })],
+      over: () => phoneBig(posted(clipPic('vitrine', 'fierte', { bw: true }), 'Clip de nuit', 'yasmine.wav', "L'ambiance de nuit 🔥", '#c94f84', 3), 0.92) + sub(1, 'liam', 'Le clip de nuit, c\'était voulu.') },
+    { t: '1:04', cap: 'Liam parle à celui qui regarde', set: RUE_NIGHT, zoom: [400, 1150, 1.3], chars: [LI(330, 2730, 2250, 'frime')],
+      over: () => sub(1, 'liam', 'Toi aussi, il fait nuit après les cours ? Filme sous la lumière que t\'as. Stalak coupe sur le rythme, et le noir et blanc est gratuit.') },
+    { t: '1:12', cap: 'La carte de fin (le prochain à sortir : l\'épisode 2)', plain: true, over: () => endCard('IL A PASSÉ LA NUIT SUR SA VIDÉO DE PROMO') },
+  ], 'Sort le 18/11 à 21 h. Ta rue pavillonnaire à la tombée de la nuit (la rue en ville n\'a pas été choisie).');
+
+  // ---------------- épisode 9 (19/11, 21 h) : « Le cahier de rap » ----------------
+  const E9 = 'SA MÈRE A LU SES TEXTES DE RAP', KITCHEN_N = ['cuisine', 1, 'nuit'];
+  const LYRICS = ['Ma daronne rentre à six heures,', 'les yeux fatigués.', 'Elle a sauvé des vies,', "moi j'ai sauvé un couplet."];
+  // Liam's notebook of lyrics, open (its own lines and blue handwriting) ; cx, cy its centre, w its width
+  function notebook(cx, cy, w = 300, r = 0) {
+    let s = `<g transform="translate(${cx} ${cy}) rotate(${r}) scale(${(w / 300).toFixed(3)})"><rect x="-150" y="-104" width="300" height="208" rx="10" fill="#fdfbf4" stroke="${INK}" stroke-width="6"/>`;
+    for (let i = 0; i < 6; i++) s += `<path d="M -138 ${-70 + i * 30} L -12 ${-70 + i * 30} M 12 ${-70 + i * 30} L 138 ${-70 + i * 30}" stroke="#9fc4ff" stroke-width="2.5"/>`;
+    for (let i = 0; i < 5; i++) s += `<path d="M -130 ${-76 + i * 30} q 12 -9 24 0 t 24 0 t 24 0 t 24 0${i % 2 ? '' : ' t 22 0'}" fill="none" stroke="#1f3fa0" stroke-width="3.2"/><path d="M 22 ${-76 + i * 30} q 12 -9 24 0 t 24 0${i === 4 ? '' : ' t 24 0 t 22 0'}" fill="none" stroke="#1f3fa0" stroke-width="3.2"/>`;
+    for (let i = 0; i < 7; i++) s += `<circle cx="0" cy="${-90 + i * 30}" r="7" fill="none" stroke="#6b7180" stroke-width="3"/>`;
+    return s + '</g>';
+  }
+  // the page, close up : his four lines written by hand, a crown over « daronne »
+  function notebookPage() {
+    let s = `<rect width="1080" height="1920" fill="${INK}" opacity="0.45"/><g transform="rotate(-4 540 900)"><rect x="96" y="420" width="900" height="1000" rx="18" fill="${INK}" opacity="0.5" transform="translate(14 18)"/><rect x="96" y="420" width="900" height="1000" rx="18" fill="#fdfbf4" stroke="${INK}" stroke-width="10"/>`;
+    for (let i = 0; i < 11; i++) s += `<path d="M 130 ${560 + i * 76} L 960 ${560 + i * 76}" stroke="#9fc4ff" stroke-width="4"/>`;
+    s += `<path d="M 210 440 L 210 1400" stroke="#ff9a9a" stroke-width="4"/>` + T(240, 520, 'Couplet 1', 46, '#6b7180', { font: 'Rubik', weight: 700, anchor: 'start' });
+    // the lines fit the page (17/11, planche : the first one went past its edge)
+    let fs = 54; while (fs > 30 && Math.max(...LYRICS.map(l => FRAME.width(l, `italic 700 ${fs}px Rubik`))) > 700) fs -= 2;
+    LYRICS.forEach((l, i) => { s += `<text x="240" y="${625 + i * 152}" font-family="Rubik" font-weight="700" font-style="italic" font-size="${fs}" fill="#1f3fa0">${l}</text>`; });
+    // the crown drawn over « daronne », a heart and a snowflake in the margin
+    const cx = 240 + FRAME.width('Ma ', `italic 700 ${fs}px Rubik`) + FRAME.width('daronne', `italic 700 ${fs}px Rubik`) / 2;
+    s += `<path d="M ${cx - 62} 566 L ${cx - 50} 534 L ${cx - 24} 558 L ${cx} 526 L ${cx + 24} 558 L ${cx + 50} 534 L ${cx + 62} 566 Z" fill="none" stroke="#1f3fa0" stroke-width="5" stroke-linejoin="round"/>`;
+    s += `<path d="M 150 900 C 132 880 112 900 150 930 C 188 900 168 880 150 900 Z" fill="none" stroke="#e5484d" stroke-width="5"/>` + T(150, 1190, '❄', 60, '#1f6fd6');
+    return s + '</g>';
+  }
+  // a mug of coffee, in a character's own coordinates (the hand near 580, 1130)
+  const mug = (x, y) => `<g transform="translate(${x} ${y})"><path d="M 28 -24 q 30 0 30 24 q 0 24 -30 24" fill="none" stroke="${INK}" stroke-width="9"/><rect x="-32" y="-40" width="62" height="74" rx="12" fill="#e86a52" stroke="${INK}" stroke-width="6"/><path d="M -10 -56 q -10 -16 0 -30 M 12 -56 q -10 -16 0 -30" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" opacity="0.8"/></g>`;
+  // Liam asleep at the kitchen table, his cheek on his pen (in the set's coordinates, behind whoever stands in front)
+  function sleepingLiam(x, y, k = 1) {
+    let s = `<g transform="translate(${x} ${y}) scale(${k})">`;
+    s += `<rect x="-300" y="0" width="600" height="38" rx="8" fill="#c48a52" stroke="${INK}" stroke-width="7"/><path d="M -250 38 L -250 330 M 250 38 L 250 330" stroke="${INK}" stroke-width="18"/><path d="M -250 38 L -250 330 M 250 38 L 250 330" stroke="#9a6a40" stroke-width="9"/>`;
+    s += `<rect x="-190" y="-58" width="300" height="70" rx="34" fill="${BLUE}" stroke="${INK}" stroke-width="7"/><rect x="-60" y="-70" width="260" height="76" rx="36" fill="${BLUE}" stroke="${INK}" stroke-width="7"/>`;
+    s += `<g transform="rotate(-78 -40 -120)">${headAt('frime+cligne', -40, -120, 0.62, '', false)}</g>`;
+    s += `<path d="M 150 -10 L 250 -40" stroke="${INK}" stroke-width="12" stroke-linecap="round"/><path d="M 150 -10 L 250 -40" stroke="#ffd34d" stroke-width="6" stroke-linecap="round"/>`;
+    return s + T(-120, -230, 'z', 54, '#9fc4ff', { stroke: INK, sw: 6 }) + T(-70, -290, 'z', 70, '#9fc4ff', { stroke: INK, sw: 6 }) + '</g>';
+  }
+  // Stalak's lyrics step (the real thing : « paroles importées et calées au tap ») : the clip with the line on it, his
+  // four lines pasted, the two first already placed, the third lit, and the big button he taps in time with his song
+  function lyricsScreen() {
+    let s = `<rect width="560" height="1000" fill="#f3f6fb"/><rect width="560" height="92" fill="${BLUE}"/><circle cx="50" cy="47" r="31" fill="${INK}"/>${img('/site_src/icons/icon.svg', 22, 19, 56, 56)}${T(94, 63, 'Stalak', 42, SNOW, { anchor: 'start', stroke: INK, sw: 8 })}${T(536, 58, 'Paroles', 24, ICE, { font: 'Rubik', weight: 800, anchor: 'end' })}`;
+    s += `<clipPath id="ly${++UID}"><rect x="20" y="108" width="520" height="330" rx="18"/></clipPath><g clip-path="url(#ly${UID})"><g transform="translate(20 108)">${takeScene('vaisselle')}${liamBust('fierte', 260, 30, 640, '', false)}</g></g><rect x="20" y="108" width="520" height="330" rx="18" fill="none" stroke="${INK}" stroke-width="6"/>`;
+    s += T(280, 386, LYRICS[2], 30, SNOW, { font: 'Rubik', weight: 900, stroke: INK, sw: 9 });
+    s += T(26, 488, 'Tes paroles', 30, INK, { font: 'Rubik', weight: 800, anchor: 'start' }) + T(534, 488, 'collées', 24, '#5b6170', { font: 'Rubik', weight: 700, anchor: 'end' });
+    LYRICS.forEach((l, i) => {
+      const y = 508 + i * 62, on = i === 2;
+      s += `<rect x="20" y="${y}" width="520" height="52" rx="14" fill="${on ? BLUE : SNOW}" stroke="${on ? INK : '#c3cbd8'}" stroke-width="3"/>` + T(40, y + 35, l, 24, on ? SNOW : i < 2 ? INK : '#9aa3b5', { font: 'Rubik', weight: 800, anchor: 'start' });
+      if (i < 2) s += `<circle cx="512" cy="${y + 26}" r="14" fill="#3fbf7f" stroke="${INK}" stroke-width="2.5"/><path d="M 505 ${y + 26} l 5 5 l 9 -10" fill="none" stroke="${SNOW}" stroke-width="4" stroke-linecap="round"/>`;
+    });
+    s += K({ ripple: [0.8, 1.3] }, `<circle cx="280" cy="866" r="96" fill="none" stroke="${BLUE}" stroke-width="10"/>`) + `<circle cx="280" cy="866" r="70" fill="${BLUE}" stroke="${INK}" stroke-width="6"/>` + T(280, 882, 'TAP', 46, SNOW);
+    s += K({ in: 0.5, out: 1.1, path: [[0.5, 60, 80], [0.8, 0, 0]] }, `<circle cx="336" cy="912" r="28" fill="${SNOW}" fill-opacity="0.85" stroke="${INK}" stroke-width="4"/>`);
+    return s + T(280, 976, 'Tape à chaque phrase, en rythme', 24, '#5b6170', { font: 'Rubik', weight: 800 });
+  }
+  ep('ep9', E9, 9, [
+    { t: '0:00', cap: "L'accroche : 6 h du matin, Nadia a trouvé le cahier", set: KITCHEN_N, criY: 700, setOver: () => sleepingLiam(800, 1420, 0.8), chars: [CH('nadia', 2, 470, 2450, 1800, 'colere', notebook(450, 1110, 400, -6))],
+      over: () => bandeau(2, E9, 9) + FRAME.cri('nadia', `Tu rappes sur moi${NB}?!`, 700) },
+    { t: '0:02', cap: "Liam se réveille d'un coup", set: KITCHEN_N, chars: [CH('nadia', 2, 300, 1856, 1250, 'colere', notebook(450, 1110, 330, -6)), LI(780, 1846, 1200, 'panique')],
+      over: () => bandeau(2, E9, 9).replace('class="bandeau"', 'class="bandeau" data-cont="1"') + sub(1, 'liam', "Maman ! C'est privé, ça ! Rends-moi mon cahier !") },
+    { t: '0:06', cap: 'Le narrateur présente Liam et Nadia', set: KITCHEN_N, chars: [CH('nadia', 2, 300, 1856, 1250, 'frime', notebook(450, 1110, 330, -6)), LI(780, 1846, 1200, 'colere')],
+      over: () => tag('LIAM, ALIAS T-CRAZY', 780, 560, 3) + tag('NADIA, SA MÈRE', 300, 520, -3) + sub(1, 'narrateur', 'Voici Liam. 15 ans. Zéro abonné. Et voici Nadia, sa mère, infirmière de nuit. En rentrant, elle a trouvé son cahier de rap.') },
+    { t: '0:14', cap: 'Le cahier, de près : Nadia lit', set: KITCHEN_N, chars: [CH('nadia', 2, 300, 1856, 1250, 'frime', notebook(450, 1110, 330, -6))],
+      over: () => notebookPage() + sub(1, 'nadia', '« Ma daronne rentre à six heures, les yeux fatigués. Elle a sauvé des vies, moi j\'ai sauvé un couplet. »') },
+    { t: '0:21', cap: 'Nadia est touchée, mais ne le montre pas', set: KITCHEN_N, chars: [CH('nadia', 2, 300, 1856, 1250, 'fierte', notebook(450, 1110, 330, -6)), LI(780, 1846, 1200, 'colere')],
+      over: () => sub(1, 'nadia', "C'est… pas mal.") },
+    { t: '0:26', cap: 'Nadia, son café à la main', set: KITCHEN_N, chars: [CH('nadia', 2, 300, 1856, 1250, 'frime', mug(580, 1130)), LI(780, 1846, 1200, 'frime')],
+      over: () => sub(1, 'nadia', "Alors pourquoi personne l'a jamais entendu ?") },
+    { t: '0:30', cap: 'Sa vidéo : il rappe trop vite, « Il dit quoi ? »', set: KITCHEN_N, chars: [LI(540, 1846, 1250, 'colere', P.phone(606, 760), { pose: { raise: 'r' } })],
+      over: () => phoneBig(feed(clipPic('chambre', 'colere'), { likes: 0, comments: 1, shares: 0, user: 't.crazy', caption: 'Mon couplet en 10 secondes', sound: 'T-Crazy · son original' }) + comments('theo.bzh', 'Il dit quoi ?', '#23845a'), 0.92) + sub(1, 'liam', 'Dans mes vidéos, je rappe trop vite. Personne comprend ce que je dis.') },
+    { t: '0:36', cap: 'Carton « Après les cours » : Maya arrive', set: KITCHEN, chars: [CH('maya', 1, 800, 1846, 1150, 'frime', P.phone(580, 1130), { k: { walk: [[0.3, 600, 0], [2.0, 0, 0]] } }), LI(330, 1846, 1200, 'frime')],
+      over: () => carton('APRÈS LES COURS · LA CUISINE') + tag('MAYA, LA VOISINE', 800, 600, 3) + sub(1, 'maya', "Salut. Ta mère m'a dit que t'avais écrit un truc très beau.") },
+    { t: '0:41', cap: 'Stalak : il colle ses paroles, puis il tape en rythme', set: KITCHEN, chars: [CH('maya', 1, 820, 1846, 1150, 'fierte', P.phone(580, 1130)), LI(300, 1846, 1200, 'frime')],
+      over: () => phoneBig(lyricsScreen(), 0.92) + sub(1, 'maya', 'Mets tes paroles à l\'écran. Dans Stalak, tu les colles, puis tu tapes en rythme pour les caler sur ton son.') },
+    { t: '0:51', cap: 'Le clip : chaque phrase quand il la dit', set: KITCHEN, chars: [CH('maya', 1, 830, 1846, 1150, 'fierte'), LI(540, 1846, 1200, 'fierte', P.phone(606, 760), { pose: { raise: 'r' } })],
+      over: () => phoneBig(stalakApp({ takes: [['vaisselle', 'fierte'], ['frigo', 'frime'], ['vaisselle', 'colere']], count: 3, ti: 2.2, sticker: 'hype', dl: 2.7, wm: true, word: 'prises', lyric: LYRICS[2] + '\n' + LYRICS[3] }), 0.92) + sub(1, 'narrateur', 'Stalak passe d\'une prise à l\'autre sur le rythme, et chaque phrase s\'affiche quand Liam la dit.') },
+    { t: '0:59', cap: 'Il publie : « La phrase sur sa mère »', set: KITCHEN, chars: [LI(540, 1846, 1250, 'fierte', P.phone(606, 760), { pose: { raise: 'r' } })],
+      over: () => phoneBig(posted(clipPic('vaisselle', 'fierte', { lyric: LYRICS[2] + '\n' + LYRICS[3] }), 'Couplet pour ma daronne', 'ines.mp3', 'La phrase sur sa mère 😭', '#c94f84', 4), 0.92) },
+    { t: '1:02', cap: 'Nadia passe, sa tasse à la main', set: KITCHEN, chars: [CH('maya', 1, 860, 1846, 1100, 'frime'), LI(520, 1846, 1200, 'fierte', P.phone(606, 760), { pose: { raise: 'r' } }), CH('nadia', 2, 180, 1856, 1250, 'frime', mug(580, 1130), { k: { walk: [[0, -520, 0], [1.6, 0, 0]] } })],
+      over: () => sub(1, 'nadia', 'Bonjour, Maya. Très joli, ton couplet, Liam. Maintenant, la vaisselle.') },
+    { t: '1:05', cap: 'Liam parle à celui qui regarde', set: KITCHEN, zoom: [540, 1150, 1.3], chars: [LI(540, 2730, 2250, 'frime')],
+      over: () => sub(1, 'liam', 'T\'as écrit des phrases que personne a jamais lues, toi aussi ? Mets-les à l\'écran : avec Stalak, tu les cales au tap, gratuitement.') },
+    { t: '1:13', cap: 'La carte de fin (le prochain à sortir : l\'épisode 4)', plain: true, over: () => endCard("SON POTE S'EST NOMMÉ SON MANAGER") },
+  ], 'Sort le 19/11 à 21 h. La cuisine à 6 h du matin (il fait encore nuit), puis après les cours.');
+
+  // ---------------- épisode 10 (20/11, 18 h) : « L'extrait de 3 h du matin » ----------------
+  const E10 = "SON EXTRAIT A MARCHÉ, MAIS LE SON N'EST PAS FINI";
+  // several comments under a post (our own interface) : [who, text, colour]...
+  function commentsList(items, title) {
+    let s = `<rect x="0" y="430" width="560" height="590" rx="32" fill="${SNOW}" stroke="${INK}" stroke-width="5"/>${T(280, 484, title || items.length + ' commentaires', 26, '#5b6170', { font: 'Rubik', weight: 800 })}`;
+    items.forEach(([who, text, col], i) => {
+      const y = 540 + i * 118;
+      s += K({ in: 0.2 + i * 0.7, pop: 0.35 }, `<g><circle cx="64" cy="${y + 20}" r="34" fill="${col}"/>${T(64, y + 33, who[0].toUpperCase(), 34, SNOW)}${T(116, y + 4, who, 26, '#7a8091', { font: 'Rubik', weight: 700, anchor: 'start' })}${T(116, y + 48, text, 31, INK, { font: 'Rubik', weight: 800, anchor: 'start' })}</g>`);
+    });
+    return s;
+  }
+  const extractPic = () => clipPic('placard', 'fierte');
+  const ROOM_D = ['chambre', 2, 'jour'];
+  ep('ep10', E10, 10, [
+    { t: '0:00', cap: "L'accroche : ils réclament le son en entier", set: ROOM_D, criY: 770, chars: [LI(540, 2650, 2100, 'panique')],
+      over: () => bandeau(2, E10, 10) + FRAME.cri('liam', `Ils veulent le son en entier${NB}?!`, 770) + smallPhone(feed(extractPic(), { likes: 41, comments: 12, shares: 3, user: 't.crazy', caption: 'Extrait du nouveau son', sound: 'T-Crazy · son original' }) + commentsList([['nina.lzr', 'Le son en entier stp', '#c94f84'], ['kev_93', "C'est quand, la sortie ?", '#23845a']], '12 commentaires')) },
+    { t: '0:02', cap: 'Liam, paniqué', set: ROOM_D, chars: [LI(540, 1846, 1250, 'panique', P.phone(606, 760), { pose: { raise: 'r' } })],
+      over: () => bandeau(2, E10, 10).replace('class="bandeau"', 'class="bandeau" data-cont="1"') + sub(1, 'liam', 'Mais il existe pas, le son en entier !') },
+    { t: '0:05', cap: "Le narrateur : l'extrait posté à 3 h 12", set: ROOM_D, chars: [LI(540, 1846, 1250, 'colere', P.phone(606, 760), { pose: { raise: 'r' } })],
+      over: () => phoneBig(feed(extractPic(), { likes: 41, comments: 12, shares: 3, user: 't.crazy', caption: 'Extrait du nouveau son · publié à 3:12', sound: 'T-Crazy · son original' }), 0.92) + tag('LIAM, ALIAS T-CRAZY', 540, 230, -3) + sub(1, 'narrateur', 'Voici Liam. 15 ans. Hier encore, zéro abonné. Cette nuit, à trois heures du matin, il a posté quinze secondes de son nouveau son.') },
+    { t: '0:13', cap: 'Les commentaires continuent', set: ROOM_D, chars: [LI(540, 1846, 1250, 'panique', P.phone(606, 760), { pose: { raise: 'r' } })],
+      over: () => phoneBig(feed(extractPic(), { likes: 41, comments: 12, shares: 3, user: 't.crazy', caption: 'Extrait du nouveau son', sound: 'T-Crazy · son original' }) + commentsList([['nina.lzr', 'Le son en entier stp', '#c94f84'], ['kev_93', "C'est quand, la sortie ?", '#23845a'], ['sofiane.wav', 'Encore !!', '#7d55c7']], '12 commentaires'), 0.92) + sub(1, 'narrateur', 'Ce matin, des inconnus réclament la suite. Le problème : Liam n\'a écrit que le refrain.') },
+    { t: '0:18', cap: 'Deuce entre en marchant et dit bonjour', set: ROOM_D, chars: [CH('deuce', 1, 790, 1846, 1200, 'fierte', '', { k: { walk: [[0.2, 600, 0], [1.9, 0, 0]] } }), LI(300, 1846, 1200, 'panique')],
+      over: () => tag('DEUCE, SON MANAGER', 790, 560, 3) + sub(1, 'deuce', 'Salut, la star. On est en rupture de stock.') },
+    { t: '0:22', cap: 'Liam, dépassé', set: ROOM_D, chars: [CH('deuce', 1, 790, 1846, 1200, 'frime'), LI(300, 1846, 1200, 'colere')],
+      over: () => sub(1, 'liam', 'Il me faut une semaine pour finir le son. D\'ici là, ils vont m\'oublier !') },
+    { t: '0:29', cap: 'Son ordi : 4 h de montage pour 15 s', set: ['chambre', 2, 'jour', { nomic: true }], zoom: [640, 1060, 1.6], dim: 0.45,
+      over: () => laptopBig(editor({ labels: [] })) + `<g transform="rotate(6 860 360)"><rect x="740" y="290" width="250" height="140" rx="10" fill="#ffd34d" stroke="${INK}" stroke-width="6"/>${T(865, 352, 'MONTAGE', 40, INK)}${T(865, 408, '3 h → 7 h', 44, '#c8443a')}</g>` + headAt('colere', 300, 1150, 1.9) + sub(1, 'liam', 'Un extrait par jour ?! Celui-là m\'a pris quatre heures de montage ! J\'écris quand, moi ?') },
+    { t: '0:36', cap: 'Maya entre en marchant et dit bonjour', set: ROOM_D, chars: [CH('maya', 1, 800, 1846, 1150, 'frime', P.phone(580, 1130), { k: { walk: [[0.2, 600, 0], [1.9, 0, 0]] } }), LI(320, 1846, 1200, 'colere')],
+      over: () => tag('MAYA, LA VOISINE', 800, 600, 3) + sub(1, 'maya', 'Salut. J\'ai vu ton extrait. Il est où, le reste ?') },
+    { t: '0:41', cap: 'Maya lui montre Stalak, dessiné', set: ROOM_D, chars: [CH('maya', 1, 820, 1846, 1150, 'fierte', P.phone(580, 1130)), LI(300, 1846, 1200, 'frime')],
+      over: () => phoneBig(stalakApp({ takes: [['placard', 'fierte'], ['chambre', 'frime'], ['placard', 'colere']], count: 3, ti: -1, word: 'prises' }), 0.92) + sub(1, 'maya', 'Le montage, laisse Stalak le faire. Tu te filmes trois fois sur ton refrain, et Stalak coupe sur le rythme. Toi, pendant ce temps, tu écris.') },
+    { t: '0:50', cap: 'Stalak monte l\'extrait ; Liam écrit son couplet', set: ROOM_D, chars: [CH('deuce', 1, 820, 1846, 1150, 'fierte', P.phone(580, 1130)), LI(300, 1846, 1200, 'fierte', notebook(450, 1180, 260, -10))],
+      over: () => phoneBig(stalakApp({ takes: [['placard', 'fierte'], ['chambre', 'frime'], ['placard', 'colere']], count: 3, ti: 2.2, sticker: 'hype', dl: 2.7, wm: true, word: 'prises' }), 0.8) + sub(1, 'narrateur', 'Stalak monte l\'extrait sur le rythme. Et pendant ce temps-là, Liam écrit enfin son premier couplet.') },
+    { t: '0:58', cap: 'Il publie « Extrait 2 » : « Encore ! »', set: ROOM_D, chars: [LI(540, 1846, 1250, 'fierte', P.phone(606, 760), { pose: { raise: 'r' } })],
+      over: () => phoneBig(posted(clipPic('chambre', 'frime'), 'Extrait 2', 'nina.lzr', 'Encore !', '#c94f84', 57), 0.92) + sub(1, 'deuce', 'Et moi, j\'ai trouvé le nom de l\'album : « Le son en entier ».') },
+    { t: '1:04', cap: 'Liam parle à celui qui regarde', set: ['chambre', 2, 'jour', { nomic: true }], zoom: [500, 960, 1.3], chars: [LI(540, 2730, 2250, 'frime')],
+      over: () => sub(1, 'liam', 'T\'as un son pas fini, toi aussi ? Garde tes nuits pour écrire. Tes extraits, Stalak les monte sur le rythme.') },
+    { t: '1:12', cap: 'La carte de fin (le prochain à sortir : « La voix perdue »)', plain: true, over: () => endCard('IL A PERDU SA VOIX LA VEILLE DE SON CLIP') },
+  ], 'Sort le 20/11 à 18 h. La chambre-studio, le matin.');
+
+  // ---------------- épisode 11 (20/11, 21 h) : « La voix perdue » ----------------
+  const E11 = 'IL A PERDU SA VOIX LA VEILLE DE SON CLIP';
+  // a knitted scarf around Liam's neck, its two ends hanging (in his own coordinates)
+  function scarf() {
+    return `<path d="M 318 918 Q 450 990 582 918 L 590 972 Q 450 1046 310 972 Z" fill="#c8443a" stroke="${INK}" stroke-width="8" stroke-linejoin="round"/>` +
+      `<path d="M 340 950 Q 450 1004 560 950" fill="none" stroke="#ffd34d" stroke-width="7"/>` +
+      `<path d="M 500 990 L 548 1000 L 560 1210 L 506 1214 Z" fill="#c8443a" stroke="${INK}" stroke-width="8" stroke-linejoin="round"/><path d="M 508 1060 L 552 1064 M 510 1120 L 556 1124" stroke="#ffd34d" stroke-width="7"/>` +
+      `<path d="M 506 1214 l 0 22 M 524 1214 l 0 24 M 542 1212 l 0 22 M 558 1210 l 0 20" stroke="${INK}" stroke-width="5" stroke-linecap="round"/>`;
+  }
+  // a plaid over his shoulders (in his own coordinates)
+  const plaid = () => `<path d="M 236 1010 Q 450 930 664 1010 L 720 1480 L 586 1500 L 470 1060 L 430 1060 L 314 1500 L 180 1480 Z" fill="#8a6ab0" stroke="${INK}" stroke-width="8" stroke-linejoin="round"/>` +
+    [0, 1, 2, 3].map(i => `<path d="M ${214 + i * 6} ${1150 + i * 90} L ${330 - i * 4} ${1130 + i * 90} M ${570 + i * 4} ${1130 + i * 90} L ${690 - i * 6} ${1150 + i * 90}" stroke="#ffd34d" stroke-width="7"/>`).join('');
+  // a phone screen with big words typed (he has no voice : he writes)
+  const typed = (text) => `<rect width="560" height="1000" fill="#fdfbf4"/><rect width="560" height="96" fill="#ffd34d"/>${T(280, 64, 'Notes', 36, INK)}` + text.split('\n').map((l, i) => T(280, 420 + i * 120, l, 96, INK)).join('') + `<rect x="${280 + FRAME.width(text.split('\n').slice(-1)[0], '96px "Lilita One"') / 2 + 10}" y="${330 + (text.split('\n').length - 1) * 120}" width="8" height="110" fill="${BLUE}"/>`;
+  // the reminder on Deuce's phone
+  const shootReminder = () => `<rect width="560" height="1000" fill="#f3f6fb"/><rect width="560" height="96" fill="${SNOW}"/>${T(280, 64, 'Calendrier', 34, INK)}` +
+    `${T(40, 170, 'Demain', 40, '#5b6170', { font: 'Rubik', weight: 800, anchor: 'start' })}<rect x="30" y="200" width="500" height="200" rx="22" fill="#c8443a" stroke="${INK}" stroke-width="5"/>${T(60, 270, 'TOURNAGE DU CLIP', 40, SNOW, { anchor: 'start' })}${T(60, 340, '16 h · le terrain', 34, SNOW, { font: 'Rubik', weight: 800, anchor: 'start' })}`;
+  const SICK = (expr, x, y, h, o = {}) => LI(x, y, h, expr, plaid() + scarf() + (o.mug ? mug(580, 1150) : ''), o);
+  const COURT_PM = ['terrain', 1, 'apres-midi'];
+  ep('ep11', E11, 11, [
+    { t: '0:00', cap: "L'accroche : plus de voix, tournage demain", set: KITCHEN_N, criY: 700, chars: [SICK('panique', 830, 1700, 900, { mug: true }), CH('deuce', 1, 470, 2450, 1800, 'panique', P.phone(580, 1130))],
+      over: () => bandeau(2, E11, 11) + FRAME.cri('deuce', `T'as plus de voix et on tourne demain${NB}?!`, 700) + smallPhone(shootReminder(), 820, 1360) },
+    { t: '0:02', cap: "Liam n'a qu'un filet de voix", set: KITCHEN_N, chars: [CH('deuce', 1, 260, 1846, 1150, 'panique', P.phone(580, 1130)), SICK('panique', 740, 1846, 1200, { mug: true })],
+      over: () => bandeau(2, E11, 11).replace('class="bandeau"', 'class="bandeau" data-cont="1"') + sub(1, 'liam', 'Ça va… je gère…') },
+    { t: '0:05', cap: 'Le narrateur présente Liam et Deuce', set: KITCHEN_N, chars: [CH('deuce', 1, 260, 1846, 1150, 'frime', P.phone(580, 1130)), SICK('colere', 740, 1846, 1200, { mug: true })],
+      over: () => tag('LIAM, ALIAS T-CRAZY', 740, 560, 3) + tag('DEUCE, SON MANAGER', 260, 600, -3) + sub(1, 'narrateur', 'Voici Liam. 15 ans. Zéro abonné. Et Deuce, son manager. Hier soir, Liam a rappé dehors, dans le froid, pendant trois heures. Ce matin, plus de voix.') },
+    { t: '0:12', cap: 'Nadia entre avec du thé', set: KITCHEN_N, chars: [CH('deuce', 1, 180, 1846, 1100, 'frime'), SICK('colere', 560, 1846, 1180), CH('nadia', 2, 870, 1856, 1250, 'frime', mug(580, 1130), { k: { walk: [[0.2, 520, 0], [1.8, 0, 0]] } })],
+      over: () => tag('NADIA, SA MÈRE', 870, 520, 3) + sub(1, 'nadia', 'Bonsoir, Deuce. Je suis infirmière : pour sa voix, c\'est du thé, du repos, et pas un mot jusqu\'à demain.') },
+    { t: '0:18', cap: 'Liam ne peut plus parler : il écrit', set: KITCHEN_N, chars: [SICK('colere', 540, 1846, 1250, { pose: { raise: 'r' } })],
+      over: () => phoneBig(typed('ET MON\nCLIP ?!'), 0.92) + sub(1, 'narrateur', 'Liam ne peut plus parler. Alors il écrit.') },
+    { t: '0:22', cap: 'Deuce, très sérieux ; Nadia', set: KITCHEN_N, chars: [CH('deuce', 1, 220, 1846, 1150, 'fierte'), SICK('panique', 560, 1846, 1180), CH('nadia', 2, 880, 1856, 1250, 'frime', mug(580, 1130))],
+      over: () => sub(1, 'deuce', 'Pas de panique. On annule le tournage, et on fait un communiqué de presse.') },
+    { t: '0:28', cap: "Nadia : c'est du playback", set: KITCHEN_N, chars: [CH('deuce', 1, 220, 1846, 1150, 'panique'), SICK('frime', 560, 1846, 1180), CH('nadia', 2, 880, 1856, 1250, 'fierte', mug(580, 1130))],
+      over: () => sub(1, 'nadia', 'Ton son, il est déjà enregistré. Dans ton clip, tu chantes pas pour de vrai : tu bouges les lèvres dessus.') },
+    { t: '0:35', cap: 'Le lendemain, 16 h, au terrain', set: COURT_PM, chars: [CH('deuce', 1, 800, 1846, 1200, 'fierte', P.phoneBack(580, 1130)), LI(320, 1846, 1200, 'frime', scarf())],
+      over: () => carton('LE LENDEMAIN, 16 H · LE TERRAIN DE BASKET', 230) },
+    { t: '0:38', cap: 'Les prises : il bouge les lèvres, sans un bruit', set: COURT_PM, chars: [CH('deuce', 1, 540, 1846, 1250, 'frime', P.phoneBack(580, 1130))],
+      over: () => phoneBig(camScreen('terrain-echarpe', 1), 0.92) + sub(1, 'narrateur', 'Le son passe dans le téléphone. Et pour la première fois de sa vie, Liam tourne un clip sans dire un mot.') },
+    { t: '0:47', cap: 'Maya arrive en marchant et dit bonjour', set: COURT_PM, chars: [CH('deuce', 1, 230, 1846, 1150, 'frime', P.phoneBack(580, 1130)), LI(520, 1846, 1200, 'frime', scarf()), CH('maya', 1, 860, 1846, 1150, 'frime', P.phone(580, 1130), { k: { walk: [[0.2, 500, 0], [1.8, 0, 0]] } })],
+      over: () => tag('MAYA, LA VOISINE', 860, 600, 3) + sub(1, 'maya', 'Salut. C\'est quoi, cette écharpe ?') },
+    { t: '0:52', cap: 'Maya ouvre Stalak', set: COURT_PM, chars: [CH('maya', 1, 820, 1846, 1150, 'fierte', P.phone(580, 1130)), LI(300, 1846, 1200, 'frime', scarf())],
+      over: () => phoneBig(stalakApp({ takes: [['terrain-echarpe', 'fierte'], ['terrain-echarpe', 'frime'], ['terrain-echarpe', 'colere']], count: 3, ti: -1, word: 'prises' }), 0.92) + sub(1, 'maya', 'Mets tes trois prises dans Stalak. Il les cale sur ton son, et il coupe sur le rythme. Ta bouche reste synchro.') },
+    { t: '0:59', cap: 'Le clip, la bouche synchro, même sans voix', set: COURT_PM, chars: [CH('maya', 1, 830, 1846, 1150, 'fierte'), CH('deuce', 1, 250, 1846, 1100, 'fierte'), LI(540, 1846, 1200, 'fierte', scarf() + P.phone(606, 760), { pose: { raise: 'r' } })],
+      over: () => phoneBig(stalakApp({ takes: [['terrain-echarpe', 'fierte'], ['terrain-echarpe', 'frime'], ['terrain-echarpe', 'colere']], count: 3, ti: 2.2, sticker: 'cool', dl: 2.7, wm: true, word: 'prises' }), 0.92) + sub(1, 'narrateur', 'Même sans voix, sa bouche est synchro. Personne ne devinerait qu\'il est malade.') },
+    { t: '1:05', cap: 'Il publie ; il écrit « C\'ÉTAIT VOULU »', set: COURT_PM, chars: [LI(540, 1846, 1250, 'fierte', scarf() + P.phone(606, 760), { pose: { raise: 'r' } })],
+      over: () => phoneBig(posted(clipPic('terrain-echarpe', 'fierte'), 'Clip sans voix', 'lou.prod', "Le style avec l'écharpe 🔥", '#7d55c7', 6), 0.92) + `<g transform="rotate(-4 540 300)"><rect x="250" y="220" width="580" height="140" rx="26" fill="${SNOW}" stroke="${INK}" stroke-width="8"/>${T(540, 316, "C'ÉTAIT VOULU.", 74, INK)}</g>` + sub(1, 'deuce', 'Demain, je lance la mode des écharpes.') },
+    { t: '1:09', cap: 'Liam chuchote à celui qui regarde', set: COURT_PM, zoom: [540, 1150, 1.3], chars: [LI(540, 2730, 2250, 'frime', scarf())],
+      over: () => sub(1, 'liam', 'Toi aussi, t\'as plus de voix ? Ton son est déjà enregistré. Filme-toi en playback, et Stalak cale tes prises sur ton son.') },
+    { t: '1:16', cap: 'La carte de fin (le prochain à sortir : l\'épisode 5)', plain: true, over: () => endCard('IL VOULAIT UN CLIP COMME DANS GTA') },
+  ], 'Sort le 20/11 à 21 h. La cuisine le soir (le salon n\'a pas été choisi), puis le terrain le lendemain.');
+
+  // ---------------- épisode 12 (21/11, 18 h) : « Le clash au terrain » ----------------
+  const E12 = 'IL A CLASHÉ LE RAPPEUR LE PLUS CONNU DU QUARTIER';
+  // Big Mo from the waist up in a little tile (his own clips), anywhere ; x, y : the top left, w : the width
+  const moBust = (x, y, w) => { const r = CAST.figure('bigmo', 1, 'frime'), k = w / 900 * 1.15; return `<defs>${r.defs}</defs><g transform="translate(${(x - 0.08 * w).toFixed(1)} ${(y + 0.06 * w).toFixed(1)}) scale(${k.toFixed(4)})">${r.svg}</g>`; };
+  // Big Mo's profile : a clip a day, always his two takes (the court, the shop) cut differently (our own interface)
+  function moProfile() {
+    let s = `<rect width="560" height="1000" fill="#0b0d12"/><circle cx="84" cy="124" r="56" fill="#c98a06" stroke="${SNOW}" stroke-width="4"/>${T(84, 144, 'M', 56, SNOW)}`;
+    s += T(160, 112, '@bigmo.officiel', 32, SNOW, { font: 'Rubik', weight: 800, anchor: 'start' }) + T(160, 152, '50 000 abonnés · un clip par jour', 24, '#b9c2d3', { font: 'Rubik', weight: 700, anchor: 'start' });
+    for (let i = 0; i < 9; i++) {
+      const x = 8 + (i % 3) * 184, y = 200 + Math.floor(i / 3) * 262, id = 'mp' + (++UID);
+      s += `<clipPath id="${id}"><rect x="${x}" y="${y}" width="176" height="252" rx="10"/></clipPath><g clip-path="url(#${id})"><g transform="translate(${x} ${y}) scale(${176 / 520} ${252 / 400})">${takeScene(i % 2 ? 'rue' : 'terrain')}</g>${moBust(x + 20, y + 40, 150)}</g>`;
+      s += `<rect x="${x}" y="${y}" width="176" height="252" rx="10" fill="none" stroke="#2a3142" stroke-width="3"/>` + T(x + 12, y + 238, '▶ JOUR ' + (60 - i), 20, SNOW, { font: 'Rubik', weight: 800, anchor: 'start', stroke: INK, sw: 4 });
+    }
+    return s;
+  }
+  // Stalak, Creator Plus (the real offer : « packs de 5 à 30 vidéos aux coupes différentes, à partir de 2 playbacks ») on Big Mo's phone
+  function packScreen() {
+    let s = `<rect width="560" height="1000" fill="#f3f6fb"/><rect width="560" height="92" fill="${BLUE}"/><circle cx="50" cy="47" r="31" fill="${INK}"/>${img('/site_src/icons/icon.svg', 22, 19, 56, 56)}${T(94, 63, 'Stalak', 42, SNOW, { anchor: 'start', stroke: INK, sw: 8 })}`;
+    s += `<rect x="346" y="26" width="194" height="42" rx="21" fill="#ffd34d" stroke="${INK}" stroke-width="3"/>${T(443, 55, 'Creator Plus', 24, INK, { font: 'Rubik', weight: 800 })}`;
+    s += T(26, 150, 'Tes 2 playbacks', 30, INK, { font: 'Rubik', weight: 800, anchor: 'start' });
+    ['terrain', 'rue'].forEach((k, j) => { const x = 26 + j * 260, id = 'pk' + (++UID); s += `<clipPath id="${id}"><rect x="${x}" y="172" width="244" height="190" rx="14"/></clipPath><g clip-path="url(#${id})"><g transform="translate(${x} 172) scale(${244 / 520} ${190 / 400})">${takeScene(k)}</g>${moBust(x + 60, 186, 140)}</g><rect x="${x}" y="172" width="244" height="190" rx="14" fill="none" stroke="${INK}" stroke-width="4"/>`; });
+    s += T(26, 420, 'Pack : 30 vidéos', 38, INK, { anchor: 'start' }) + T(534, 420, 'coupes différentes', 22, '#5b6170', { font: 'Rubik', weight: 700, anchor: 'end' });
+    for (let i = 0; i < 30; i++) {
+      const x = 26 + (i % 6) * 86, y = 446 + Math.floor(i / 6) * 92;
+      s += `<rect x="${x}" y="${y}" width="76" height="82" rx="8" fill="#e3e9f3" stroke="${INK}" stroke-width="2.5"/>` + [0, 1, 2, 3].map(b => `<rect x="${x + 6 + b * 17}" y="${y + 58}" width="15" height="16" rx="3" fill="${TAKE_COL[(i + b * (1 + i % 3)) % 2]}"/>`).join('') + `<path d="M ${x + 30} ${y + 18} l 20 12 l -20 12 Z" fill="${INK}"/>`;
+    }
+    return s + `<rect x="20" y="916" width="520" height="66" rx="20" fill="${BLUE}" stroke="${INK}" stroke-width="4"/>` + T(280, 960, 'Générer le pack', 30, SNOW, { font: 'Rubik', weight: 800 });  // the app's own button (FR : « Générer le pack ») : Stalak makes the videos, it does not post them
+  }
+  // his phone forgotten on the bench (decors.js terrain1 : the bench 40-340 × 1580), lit up
+  const benchPhone = () => `<g transform="translate(190 1566) rotate(-4)"><rect x="-56" y="-14" width="112" height="28" rx="8" fill="#1d1f27" stroke="${INK}" stroke-width="4"/><rect x="-48" y="-9" width="96" height="18" rx="4" fill="#8fd3ff"/></g>` + (window.LIGHTS ? LIGHTS.glint(190, 1566, 40, {}) : '');
+  const MO = (expr, x, y, h, props = '', o = {}) => CH('bigmo', 1, x, y, h, expr, props, o);
+  ep('ep12', E12, 12, [
+    { t: '0:00', cap: "L'accroche : Big Mo n'en revient pas", set: COURT_PM, criY: 700, chars: [CH('deuce', 1, 200, 1700, 880, 'frime'), CH('maya', 1, 880, 1700, 860, 'frime'), MO('colere', 540, 2450, 1800)],
+      over: () => bandeau(2, E12, 12) + FRAME.cri('bigmo', `T'as zéro abonné et tu me clashes${NB}?!`, 700) },
+    { t: '0:02', cap: 'Liam, le menton levé, rappe son clash', set: COURT_PM, rap: 'liam', rapFrom: 0.1, chars: [MO('frime', 800, 1846, 1350), LI(300, 1846, 1200, 'fierte')],
+      over: () => bandeau(2, E12, 12).replace('class="bandeau"', 'class="bandeau" data-cont="1"') + sub(1, 'liam', "Big Mo, tes clips, c'est tous les jours la même chose. Moi, j'en fais un par an, mais c'est grandiose !") },
+    { t: '0:07', cap: 'Le narrateur présente Liam et Big Mo', set: COURT_PM, chars: [MO('frime', 800, 1846, 1350), LI(300, 1846, 1200, 'frime')],
+      over: () => tag('LIAM, ALIAS T-CRAZY', 300, 560, -3) + tag('BIG MO, LE RAPPEUR DU QUARTIER', 700, 420, 3) + sub(1, 'narrateur', 'Voici Liam. 15 ans. Zéro abonné. Et voici Big Mo, le rappeur le plus connu du quartier : cinquante mille abonnés.') },
+    // 04-06 : everybody stands right of the bench (40-340), so that the phone left on it stays in sight
+    { t: '0:15', cap: 'Big Mo pose son téléphone sur le banc', set: COURT_PM, setOver: benchPhone, chars: [LI(790, 1846, 1200, 'colere'), MO('fierte', 440, 1846, 1350, '', { k: { walk: [[1.4, 0, 0], [3.6, 1120, 0]] } })],
+      over: () => sub(1, 'bigmo', 'Un par an ? Moi, c\'est un par jour, le petit. Salut.') },
+    { t: '0:20', cap: 'Liam, dégoûté, se tourne vers le banc', set: COURT_PM, setOver: benchPhone, chars: [CH('deuce', 1, 700, 1846, 1150, 'frime'), CH('maya', 1, 930, 1846, 1100, 'frime', P.phone(580, 1130)), LI(460, 1846, 1200, 'colere')],
+      over: () => tag('DEUCE, SON MANAGER', 660, 560, -3) + tag('MAYA, LA VOISINE', 880, 640, 3) + sub(1, 'liam', 'Un clip par jour ?! Moi, un clip, ça me prend tout un week-end !') },
+    { t: '0:25', cap: 'Deuce a une théorie', set: COURT_PM, setOver: benchPhone, chars: [CH('deuce', 1, 700, 1846, 1150, 'fierte'), CH('maya', 1, 930, 1846, 1100, 'frime', P.phone(580, 1130)), LI(460, 1846, 1200, 'panique')],
+      over: () => sub(1, 'deuce', 'Facile : il a une équipe de vingt personnes. Ou un clone.') },
+    { t: '0:31', cap: 'Les vidéos de Big Mo : les deux mêmes prises', set: COURT_PM, chars: [CH('maya', 1, 800, 1846, 1150, 'fierte', P.phone(580, 1130)), LI(300, 1846, 1200, 'panique')],
+      over: () => phoneBig(moProfile(), 0.92) + sub(1, 'maya', 'Regarde : c\'est toujours les deux mêmes prises. Mais chaque jour, le montage change.') },
+    { t: '0:38', cap: 'Sur le banc, le téléphone de Big Mo s\'allume : Stalak', set: COURT_PM, chars: [LI(540, 1846, 1250, 'panique', P.phone(606, 760), { pose: { raise: 'r' } })],
+      over: () => phoneBig(packScreen() + `<g class="sticker" data-dl="0.6"><g transform="translate(470 720)"><circle r="80" fill="${SNOW}" stroke="${INK}" stroke-width="6"/>${img('/site_src/emoji/shock.webp', -70, -70, 140, 140)}</g></g>`, 0.92) + sub(1, 'liam', 'Big Mo utilise Stalak ?!') },
+    { t: '0:46', cap: 'Big Mo revient chercher son téléphone', set: COURT_PM, chars: [LI(280, 1846, 1200, 'panique', P.phone(606, 760), { pose: { raise: 'r' } }), MO('frime', 790, 1846, 1350, '', { k: { walk: [[0, 700, 0], [1.6, 0, 0]] } })],
+      over: () => sub(1, 'bigmo', 'Mon téléphone. Et pas un mot, le petit.') },
+    { t: '0:50', cap: 'Liam à Maya : un pack de trente ?', set: COURT_PM, chars: [CH('maya', 1, 800, 1846, 1150, 'fierte', P.phone(580, 1130)), LI(300, 1846, 1200, 'fierte')],
+      over: () => sub(1, 'maya', 'T\'as pas un rond. Commence par la version gratuite : tes vidéos sont illimitées.') },
+    { t: '0:56', cap: 'Deux prises au terrain, Stalak monte le clip', set: COURT_PM, chars: [CH('deuce', 1, 820, 1846, 1150, 'fierte', P.phoneBack(580, 1130)), LI(540, 1846, 1200, 'fierte', P.phone(606, 760), { pose: { raise: 'r' } })],
+      over: () => phoneBig(stalakApp({ takes: [['terrain', 'fierte'], ['terrain', 'frime']], count: 2, ti: 2.2, sticker: 'hype', dl: 2.7, wm: true, word: 'prises' }), 0.92) + sub(1, 'narrateur', 'Deux prises, Stalak monte sur le rythme, et Liam poste sa vidéo du jour. Jour un.') },
+    { t: '1:04', cap: 'Il publie « Jour 1 » : « Réponds à Big Mo »', set: COURT_PM, chars: [LI(540, 1846, 1250, 'fierte', P.phone(606, 760), { pose: { raise: 'r' } })],
+      over: () => phoneBig(posted(clipPic('terrain', 'fierte'), 'Jour 1', 'adam.bkr', 'Réponds à Big Mo 😂', '#7d55c7', 9), 0.92) + sub(1, 'deuce', 'Plus que trois cent soixante-quatre.') },
+    { t: '1:08', cap: 'Liam parle à celui qui regarde', set: COURT_PM, zoom: [540, 1150, 1.3], chars: [LI(540, 2730, 2250, 'frime')],
+      over: () => sub(1, 'liam', 'Un clip te prend tout un week-end, toi aussi ? Filme tes prises, Stalak monte sur le rythme, et poste tous les jours.') },
+    { t: '1:16', cap: 'La carte de fin : « La fiche d\'orientation »', plain: true, over: () => endCard('IL A ÉCRIT “RAPPEUR” SUR SA FICHE D\'ORIENTATION') },
+  ], 'Sort le 21/11 à 18 h, juste après « Le clip façon GTA » (qui l\'annonce). Le terrain en fin de journée.');
+
+  // ---------------- épisode 13 (21/11, 21 h) : « La fiche d'orientation » ----------------
+  const E13 = 'IL A ÉCRIT “RAPPEUR” SUR SA FICHE D\'ORIENTATION', ROOF = ['toit', 2, 'soir'];
+  // the school form (our own : no real school), in a character's own coordinates ; cx, cy its centre, w its width
+  function fiche(cx, cy, w = 380, r = 0) {
+    return `<g transform="translate(${cx} ${cy}) rotate(${r}) scale(${(w / 380).toFixed(3)})"><rect x="-190" y="-250" width="380" height="500" rx="8" fill="#fdfdfb" stroke="${INK}" stroke-width="7"/>` +
+      T(0, -190, "FICHE D'ORIENTATION", 30, INK) + `<path d="M -160 -170 L 160 -170" stroke="${INK}" stroke-width="3"/>` +
+      [-120, -70].map(y => `<path d="M -160 ${y} L 160 ${y}" stroke="#c3cbd8" stroke-width="3"/>`).join('') + T(-160, -128, 'Nom : Liam', 24, '#5b6170', { font: 'Rubik', weight: 700, anchor: 'start' }) +
+      T(-160, -20, 'Métier envisagé :', 26, INK, { font: 'Rubik', weight: 800, anchor: 'start' }) +
+      `<text x="0" y="50" text-anchor="middle" font-family="Rubik" font-weight="800" font-style="italic" font-size="50" fill="#1f3fa0">RAPPEUR</text><text x="0" y="104" text-anchor="middle" font-family="Rubik" font-weight="700" font-style="italic" font-size="32" fill="#1f3fa0">(le prochain)</text>` +
+      `<ellipse cx="0" cy="36" rx="150" ry="52" fill="none" stroke="#e5484d" stroke-width="6" transform="rotate(-4)"/>` + [150, 200].map(y => `<path d="M -160 ${y} L 160 ${y}" stroke="#c3cbd8" stroke-width="3"/>`).join('') + '</g>';
+  }
+  // a folding chair on the roof (in the set's coordinates) ; x its middle, y the seat
+  const chair = (x, y) => `<path d="M ${x - 70} ${y + 10} L ${x - 90} ${y + 196} M ${x + 70} ${y + 10} L ${x + 90} ${y + 196} M ${x - 60} ${y} L ${x - 60} ${y - 160} M ${x + 60} ${y} L ${x + 60} ${y - 160}" stroke="${INK}" stroke-width="14" stroke-linecap="round"/><path d="M ${x - 70} ${y + 10} L ${x - 90} ${y + 196} M ${x + 70} ${y + 10} L ${x + 90} ${y + 196} M ${x - 60} ${y} L ${x - 60} ${y - 160} M ${x + 60} ${y} L ${x + 60} ${y - 160}" stroke="#8a919c" stroke-width="6" stroke-linecap="round"/>` +
+    `<rect x="${x - 80}" y="${y - 10}" width="160" height="26" rx="6" fill="#3f7a55" stroke="${INK}" stroke-width="6"/><rect x="${x - 66}" y="${y - 150}" width="132" height="56" rx="6" fill="#3f7a55" stroke="${INK}" stroke-width="6"/>`;
+  ep('ep13', E13, 13, [
+    { t: '0:00', cap: "L'accroche : Nadia a lu la fiche d'orientation", set: KITCHEN_N, criY: 700, chars: [LI(820, 1700, 900, 'frime'), CH('nadia', 2, 450, 2450, 1800, 'colere', fiche(450, 1170, 400, -5))],
+      over: () => bandeau(2, E13, 13) + FRAME.cri('nadia', `T'as écrit «${NB}rappeur${NB}» sur ta fiche d'orientation${NB}?!`, 700) },
+    { t: '0:02', cap: 'Liam, très calme', set: KITCHEN_N, chars: [CH('nadia', 2, 290, 1856, 1250, 'colere', fiche(450, 1170, 330, -5)), LI(770, 1846, 1200, 'frime')],
+      over: () => bandeau(2, E13, 13).replace('class="bandeau"', 'class="bandeau" data-cont="1"') + sub(1, 'liam', 'Et j\'ai mis « le prochain » entre parenthèses. Pour qu\'ils sachent.') },
+    { t: '0:06', cap: 'Le narrateur présente Liam et Nadia', set: KITCHEN_N, chars: [CH('nadia', 2, 290, 1856, 1250, 'frime', fiche(450, 1170, 330, -5)), LI(770, 1846, 1200, 'fierte')],
+      over: () => tag('NADIA, SA MÈRE', 290, 520, -3) + tag('LIAM, ALIAS T-CRAZY', 770, 560, 3) + sub(1, 'narrateur', 'Voici Liam. 15 ans. Zéro abonné. Et Nadia, sa mère. Au lycée, on a demandé à Liam quel métier il voulait faire plus tard.') },
+    { t: '0:14', cap: 'Nadia pose la feuille', set: KITCHEN_N, chars: [CH('nadia', 2, 290, 1856, 1250, 'colere'), LI(770, 1846, 1200, 'panique')],
+      over: () => sub(1, 'nadia', 'Rappeur, d\'accord. Mais tu vas en cours jusqu\'au bout. Et tu fais la vaisselle.') },
+    { t: '0:20', cap: 'Le lendemain, sur le toit : debout sur une chaise', set: ROOF, setOver: () => chair(540, 1660), chars: [LI(540, 1660, 1150, 'fierte')],
+      over: () => carton('LE LENDEMAIN, AU COUCHER DU SOLEIL · LE TOIT', 230) },
+    { t: '0:24', cap: 'Maya arrive en marchant et dit bonjour', set: ROOF, setOver: () => chair(420, 1660), chars: [LI(420, 1660, 1150, 'fierte'), CH('maya', 1, 860, 1846, 1150, 'frime', P.phone(580, 1130), { k: { walk: [[0.2, 500, 0], [1.8, 0, 0]] } })],
+      over: () => tag('MAYA, LA VOISINE', 860, 600, 3) + sub(1, 'liam', 'Je visualise. Dans un an, je remplis un stade.') },
+    { t: '0:30', cap: 'Maya, à côté de la glacière', set: ROOF, setOver: () => chair(420, 1660), chars: [LI(420, 1660, 1150, 'frime'), CH('maya', 1, 860, 1846, 1150, 'frime', P.phone(580, 1130))],
+      over: () => sub(1, 'maya', 'Un stade. Avec qui dedans ?') },
+    { t: '0:33', cap: 'Liam descend de sa chaise', set: ROOF, setOver: () => chair(560, 1660), chars: [LI(320, 1846, 1200, 'panique'), CH('maya', 1, 860, 1846, 1150, 'frime', P.phone(580, 1130))],
+      over: () => sub(1, 'narrateur', 'Pour remplir un stade, il faut des gens qui connaissent ton son. Et pour ça, il faut le poster. Souvent.') },
+    { t: '0:40', cap: 'Combien de vidéos ce mois-ci ? Une.', set: ROOF, setOver: () => chair(560, 1660), chars: [LI(320, 1846, 1200, 'colere'), CH('maya', 1, 860, 1846, 1150, 'fierte', P.phone(580, 1130))],
+      over: () => sub(1, 'liam', 'Une. Entre les cours, les devoirs et la vaisselle, j\'ai pas le temps de monter !') },
+    { t: '0:47', cap: 'Maya lui montre Stalak, dessiné', set: ROOF, chars: [CH('maya', 1, 820, 1846, 1150, 'fierte', P.phone(580, 1130)), LI(300, 1846, 1200, 'frime')],
+      over: () => phoneBig(stalakApp({ takes: [['toit', 'fierte'], ['toit', 'frime'], ['toit', 'colere']], count: 3, ti: -1, word: 'prises' }), 0.92) + sub(1, 'maya', 'Le montage, c\'est Stalak. Tu te filmes trois fois sur ton son, ici, et Stalak coupe sur le rythme.') },
+    { t: '0:56', cap: 'Trois prises au coucher du soleil, le clip monté', set: ROOF, chars: [CH('maya', 1, 830, 1846, 1150, 'fierte'), LI(540, 1846, 1200, 'fierte', P.phone(606, 760), { pose: { raise: 'r' } })],
+      over: () => phoneBig(stalakApp({ takes: [['toit', 'fierte'], ['toit', 'frime'], ['toit', 'colere']], count: 3, ti: 2.2, sticker: 'cool', dl: 2.7, wm: true, word: 'prises' }), 0.92) + sub(1, 'narrateur', 'Trois prises au coucher du soleil. Stalak monte sur le rythme, et Liam a posté avant le dîner.') },
+    { t: '1:03', cap: `Il publie : « C'est où, ce${NB}toit${NB}?${NB}»`, set: ROOF, chars: [CH('maya', 1, 860, 1846, 1100, 'frime'), LI(470, 1846, 1250, 'fierte', P.phone(606, 760), { pose: { raise: 'r' } })],
+      over: () => phoneBig(posted(clipPic('toit', 'fierte'), 'Coucher de soleil', 'clara.mp3', 'C\'est où, ce toit ? 😍', '#c94f84', 7), 0.92) + sub(1, 'liam', 'Bon. Le stade, ce sera dans deux ans.') },
+    { t: '1:08', cap: 'Liam parle à celui qui regarde', set: ROOF, zoom: [540, 1150, 1.3], chars: [LI(540, 2730, 2250, 'frime')],
+      over: () => sub(1, 'liam', 'T\'as cours demain, toi aussi ? Filme trois prises ce soir. Stalak monte sur le rythme, et t\'as posté avant tes devoirs.') },
+    { t: '1:16', cap: 'La carte de fin : « Triller »', plain: true, over: () => endCard("TRILLER N'EST PLUS SUR L'APP STORE") },
+  ], 'Sort le 21/11 à 21 h. La cuisine le soir, puis ton toit au coucher du soleil.');
+
+  // ---------------- épisode 14 (22/11, 18 h) : « Le Black Friday » ----------------
+  const E14 = 'IL VEUT UNE CAMÉRA DE PRO POUR LE BLACK FRIDAY';
+  // a camera, drawn by us (no brand) ; cx, cy its centre, w its width
+  const camera = (cx, cy, w = 300) => `<g transform="translate(${cx} ${cy}) scale(${(w / 300).toFixed(3)})"><rect x="-150" y="-80" width="300" height="170" rx="22" fill="#2a2d36" stroke="${INK}" stroke-width="8"/>` +
+    `<rect x="-118" y="-114" width="110" height="40" rx="10" fill="#3a3f4c" stroke="${INK}" stroke-width="7"/><circle cx="40" cy="6" r="66" fill="#1d1f27" stroke="${INK}" stroke-width="8"/><circle cx="40" cy="6" r="42" fill="#3b6fb0" stroke="${INK}" stroke-width="6"/>` +
+    `<circle cx="24" cy="-10" r="12" fill="#ffffff" opacity="0.7"/><circle cx="-112" cy="-40" r="10" fill="#e5484d"/></g>`;
+  // the Black Friday ad on Liam's phone (our own drawing : a camera with no brand, its old price crossed out, « neuf cents balles »)
+  function bfAd() {
+    let s = `<rect width="560" height="1000" fill="#0f1116"/>` + T(280, 118, 'BLACK', 92, '#ffd34d', { stroke: INK, sw: 6 }) + T(280, 208, 'FRIDAY', 92, '#ffd34d', { stroke: INK, sw: 6 });
+    s += `<rect x="40" y="248" width="480" height="420" rx="30" fill="#f3f6fb" stroke="${INK}" stroke-width="6"/>` + camera(280, 470, 330);
+    s += `<g transform="rotate(10 446 312)"><circle cx="446" cy="312" r="66" fill="#e5484d" stroke="${INK}" stroke-width="6"/>${T(446, 326, '−30 %', 36, SNOW)}</g>`;
+    s += T(280, 736, 'Caméra pro 4K', 40, SNOW, { font: 'Rubik', weight: 800 }) + T(280, 796, '1 290 €', 40, '#9aa3b5', { font: 'Rubik', weight: 700 }) + `<path d="M 196 783 L 364 783" stroke="#e5484d" stroke-width="6"/>`;
+    s += T(280, 892, '900 €', 96, '#ffd34d', { stroke: INK, sw: 6 });
+    return s + `<rect x="60" y="920" width="440" height="58" rx="18" fill="${BLUE}" stroke="${INK}" stroke-width="4"/>` + T(280, 959, 'Ajouter au panier', 28, SNOW, { font: 'Rubik', weight: 800 });
+  }
+  // the promotions Deuce scrolls through (our own drawing, no brand)
+  function bfList() {
+    const icon = {
+      shoe: `<path d="M -66 26 L -64 -14 Q -44 -34 -14 -22 L 22 -6 Q 62 0 66 26 Z" fill="${SNOW}" stroke="${INK}" stroke-width="6" stroke-linejoin="round"/><rect x="-70" y="22" width="140" height="18" rx="8" fill="#e5484d" stroke="${INK}" stroke-width="5"/>`,
+      hp: `<path d="M -46 20 L -46 -6 A 46 46 0 0 1 46 -6 L 46 20" fill="none" stroke="${INK}" stroke-width="10"/><rect x="-62" y="0" width="30" height="50" rx="10" fill="${BLUE}" stroke="${INK}" stroke-width="5"/><rect x="32" y="0" width="30" height="50" rx="10" fill="${BLUE}" stroke="${INK}" stroke-width="5"/>`,
+      tv: `<rect x="-66" y="-40" width="132" height="84" rx="8" fill="#2a2d36" stroke="${INK}" stroke-width="6"/><rect x="-56" y="-31" width="112" height="66" rx="4" fill="#57adff"/><path d="M -20 44 L -30 60 M 20 44 L 30 60" stroke="${INK}" stroke-width="6" stroke-linecap="round"/>`,
+      cam: camera(0, 0, 130),
+    };
+    let s = `<rect width="560" height="1000" fill="#0f1116"/>` + T(280, 88, 'BLACK FRIDAY', 64, '#ffd34d', { stroke: INK, sw: 6 });
+    [['Baskets', '−30 %', 'shoe'], ['Casque', '−40 %', 'hp'], ['Télé', '−50 %', 'tv'], ['Caméra pro', '−30 %', 'cam']].forEach(([name, off, ic], i) => {
+      const y = 126 + i * 214;
+      s += `<rect x="24" y="${y}" width="512" height="190" rx="24" fill="#f3f6fb" stroke="${INK}" stroke-width="5"/><circle cx="110" cy="${y + 95}" r="70" fill="#e3e9f3"/><g transform="translate(110 ${y + 95})">${icon[ic]}</g>`;
+      s += T(206, y + 84, name, 38, INK, { font: 'Rubik', weight: 800, anchor: 'start' }) + T(206, y + 140, 'Offre limitée', 26, '#5b6170', { font: 'Rubik', weight: 700, anchor: 'start' });
+      s += `<g transform="rotate(-6 452 ${y + 95})"><rect x="382" y="${y + 62}" width="140" height="66" rx="16" fill="#e5484d" stroke="${INK}" stroke-width="5"/>${T(452, y + 108, off, 34, SNOW)}</g>`;
+    });
+    return s;
+  }
+  // a phone held in the hand, its screen readable (in a character's own coordinates) : inner is a 560 × 1000 screen
+  const handPhone = (inner, x, y, k = 0.3) => { const id = 'hp' + (++UID); return `<g transform="translate(${x} ${y}) scale(${k}) translate(-300 -540)"><rect width="600" height="1080" rx="64" fill="#2a2d36" stroke="${INK}" stroke-width="14"/>` +
+    `<clipPath id="${id}"><rect x="20" y="40" width="560" height="1000" rx="40"/></clipPath><g clip-path="url(#${id})"><g transform="translate(20 40)">${inner}</g></g></g>`; };
+  // a shoe box (no brand) : under the arm, or open and empty (in a character's own coordinates)
+  const shoebox = (x, y, open = false, r = 0) => `<g transform="translate(${x} ${y}) rotate(${r})">` + (open
+    ? `<g transform="rotate(-28 -150 -64)"><rect x="-160" y="-108" width="320" height="44" rx="6" fill="#ff8f4a" stroke="${INK}" stroke-width="8"/></g><path d="M -150 -64 L 150 -64 L 136 70 L -136 70 Z" fill="#e8742c" stroke="${INK}" stroke-width="8" stroke-linejoin="round"/><path d="M -134 -54 L 134 -54 L 128 -14 L -128 -14 Z" fill="#3a2a20"/>`
+    : `<rect x="-150" y="-64" width="300" height="134" rx="8" fill="#e8742c" stroke="${INK}" stroke-width="8"/><rect x="-162" y="-80" width="324" height="44" rx="6" fill="#ff8f4a" stroke="${INK}" stroke-width="8"/>`) + '</g>';
+  ep('ep14', E14, 14, [
+    { t: '0:00', cap: "L'accroche : la caméra du Black Friday", set: KITCHEN_N, criY: 700, chars: [LI(830, 1700, 900, 'panique'), CH('nadia', 2, 470, 2450, 1800, 'colere', handPhone(bfAd(), 590, 1010, 0.42))],
+      over: () => bandeau(2, E14, 14) + FRAME.cri('nadia', `Neuf cents balles, ta caméra${NB}?!`, 700) },
+    { t: '0:02', cap: 'Liam insiste, le téléphone à bout de bras', set: KITCHEN_N, chars: [CH('nadia', 2, 290, 1856, 1250, 'colere'), LI(770, 1846, 1200, 'fierte', handPhone(bfAd(), 606, 700, 0.3), { pose: { raise: 'r' } })],
+      over: () => bandeau(2, E14, 14).replace('class="bandeau"', 'class="bandeau" data-cont="1"') + sub(1, 'liam', "Mais elle est en promo ! C'est le Black Friday, maman !") },
+    { t: '0:05', cap: 'Le narrateur présente Liam et Nadia', set: KITCHEN_N, chars: [CH('nadia', 2, 290, 1856, 1250, 'frime'), LI(770, 1846, 1200, 'fierte', handPhone(bfAd(), 606, 700, 0.3), { pose: { raise: 'r' } })],
+      over: () => tag('NADIA, SA MÈRE', 290, 520, -3) + tag('LIAM, ALIAS T-CRAZY', 770, 560, 3) + sub(1, 'narrateur', "Voici Liam. 15 ans. Zéro abonné. Et Nadia, sa mère. Dans cinq jours, c'est le Black Friday. Et Liam en est sûr : sans caméra de pro, pas de vrai clip.") },
+    { t: '0:13', cap: 'Nadia lui rend son téléphone', set: KITCHEN_N, chars: [CH('nadia', 2, 290, 1856, 1250, 'frime', P.phone(580, 1130)), LI(770, 1846, 1200, 'panique')],
+      over: () => sub(1, 'nadia', "Ton téléphone filme très bien. Je le sais : c'est moi qui l'ai payé.") },
+    { t: '0:19', cap: 'Deuce entre, une boîte de baskets sous le bras', set: KITCHEN_N, chars: [CH('nadia', 2, 240, 1856, 1250, 'frime'), LI(540, 1846, 1200, 'panique'), CH('deuce', 1, 860, 1846, 1150, 'fierte', shoebox(600, 1010), { k: { walk: [[0.3, 600, 0], [2.0, 0, 0]] } })],
+      over: () => tag('DEUCE, SON MANAGER', 860, 600, 3) + sub(1, 'deuce', "Bonsoir, madame. J'ai entendu “Black Friday”. J'ai un plan.") },
+    { t: '0:24', cap: 'Deuce ouvre la boîte : vide', set: KITCHEN_N, chars: [CH('nadia', 2, 240, 1856, 1250, 'colere'), LI(540, 1846, 1200, 'panique'), CH('deuce', 1, 860, 1846, 1150, 'fierte', shoebox(470, 1120, true))],
+      over: () => sub(1, 'deuce', "On revend tes baskets, et avec l'argent, on prend la caméra.") },
+    { t: '0:30', cap: 'Le lendemain, dans la rue', set: RUE, chars: [CH('deuce', 1, 720, 1846, 1150, 'fierte', P.phone(580, 1130)), LI(380, 1846, 1200, 'frime')],
+      over: () => carton('LE LENDEMAIN · LA RUE') },
+    { t: '0:33', cap: 'Deuce fait défiler les promos', set: RUE, chars: [CH('deuce', 1, 720, 1846, 1150, 'fierte', P.phone(580, 1130)), LI(380, 1846, 1200, 'frime')],
+      over: () => phoneBig(bfList(), 0.92) + sub(1, 'deuce', 'Moins trente, moins quarante… Si on achète tout, on est riches !') },
+    { t: '0:38', cap: 'Maya arrive en marchant et dit bonjour', set: RUE, chars: [CH('deuce', 1, 250, 1846, 1150, 'frime', P.phone(580, 1130)), LI(520, 1846, 1200, 'fierte'), CH('maya', 1, 850, 1846, 1150, 'frime', P.phone(580, 1130), { k: { walk: [[0.2, 640, 0], [2.0, 0, 0]] } })],
+      over: () => tag('MAYA, LA VOISINE', 850, 600, 3) + sub(1, 'maya', 'Salut. Vous achetez quoi ?') },
+    { t: '0:43', cap: 'Maya lui montre Stalak, dessiné', set: RUE, chars: [CH('maya', 1, 800, 1846, 1200, 'frime', P.phone(580, 1130)), LI(300, 1846, 1200, 'panique')],
+      over: () => phoneBig(stalakApp({ takes: [['superette', 'fierte'], ['rue', 'frime'], ['superette', 'colere']], count: 3, ti: -1 }), 0.92) + sub(1, 'maya', "Un vrai clip, c'est pas la caméra, c'est le montage. Tu te filmes trois fois au téléphone, et Stalak coupe sur le rythme.") },
+    { t: '0:53', cap: 'Les prises : Deuce filme avec le téléphone de Liam', set: RUE, rap: 'liam', rapFrom: 0.2, chars: [CH('deuce', 1, 820, 1846, 1150, 'fierte', P.phoneBack(580, 1130)), LI(380, 1846, 1220, 'fierte')],
+      over: () => clap(840, 330, 2) },
+    { t: '0:57', cap: 'Stalak monte le clip sur le temps', set: RUE, chars: [CH('maya', 1, 830, 1846, 1150, 'fierte'), CH('deuce', 1, 250, 1846, 1100, 'fierte'), LI(540, 1846, 1200, 'fierte', P.phone(606, 760), { pose: { raise: 'r' } })],
+      over: () => phoneBig(stalakApp({ takes: [['superette', 'fierte'], ['rue', 'frime'], ['superette', 'colere']], count: 3, ti: 2.2, sticker: 'hype', dl: 2.7, wm: true, word: 'prises' }), 0.92) + sub(1, 'narrateur', 'Trois prises au téléphone, Stalak monte sur le rythme, et les baskets de Liam sont sauvées.') },
+    { t: '1:01', cap: 'Il publie : « Tu filmes avec quoi ? »', set: RUE, chars: [LI(540, 1846, 1250, 'fierte', P.phone(606, 760), { pose: { raise: 'r' } })],
+      over: () => phoneBig(posted(clipPic('superette'), 'Mon nouveau clip', 'lina.wav', 'Tu filmes avec quoi ?', '#2f8f6a', 3), 0.92) + sub(1, 'liam', 'Avec une caméra de pro, évidemment.') },
+    { t: '1:06', cap: 'Liam parle à celui qui regarde', set: RUE, zoom: [540, 1150, 1.3], chars: [LI(540, 2730, 2250, 'frime')],
+      over: () => sub(1, 'liam', "Avant de casser ta tirelire au Black Friday : ton téléphone suffit. Stalak monte tes prises sur le rythme, et c'est gratuit.") },
+    { t: '1:14', cap: 'La carte de fin : « Le nuage de farine »', plain: true, over: () => endCard('IL A TOURNÉ SON DROP DANS UN NUAGE DE FARINE') },
+  ], "Sort le 22/11 à 18 h. La cuisine le soir (au lieu du salon), puis la rue l'après-midi.");
+
+  // ---------------- épisode 15 (22/11, 21 h) : « Les effets spéciaux » ----------------
+  const E15 = 'IL A TOURNÉ SON DROP DANS UN NUAGE DE FARINE';
+  // a seeded random : the same picture at every render
+  const rnd = (seed) => { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; };
+  // flour on someone, in frame coordinates (his feet x, y and his height h) : white dust all over him
+  function flourDust(x, y, h, seed = 7, n = 46) {
+    const r = rnd(seed); let s = '<g opacity="0.85">';
+    for (let i = 0; i < n; i++) { const px = x + (r() - 0.5) * h * 0.42, py = y - h * (0.04 + 0.9 * r()), rr = (4 + r() * 12) * h / 1200; s += `<circle cx="${px.toFixed(0)}" cy="${py.toFixed(0)}" r="${rr.toFixed(1)}" fill="#ffffff"/>`; }
+    return s + '</g>';
+  }
+  // the flour in the air, in the set's coordinates : the sun ray from the window (380-710 × 430-850), big soft puffs, and
+  // dust slowly falling through the ray
+  function flourCloud(seed = 3) {
+    const r = rnd(seed);
+    let s = `<path d="M 410 470 L 700 470 L 1080 1380 L 1080 1920 L 640 1920 Z" fill="#fff3cc" opacity="0.2"/>`;
+    for (let i = 0; i < 8; i++) s += `<ellipse cx="${(160 + r() * 760).toFixed(0)}" cy="${(700 + r() * 900).toFixed(0)}" rx="${(110 + r() * 150).toFixed(0)}" ry="${(70 + r() * 90).toFixed(0)}" fill="#ffffff" opacity="${(0.1 + r() * 0.1).toFixed(2)}"/>`;
+    for (let i = 0; i < 44; i++) {
+      const px = (80 + r() * 920).toFixed(0), py = (520 + r() * 1150).toFixed(0), dx = ((r() - 0.5) * 30).toFixed(0), t0 = (r() * 0.8).toFixed(2);
+      s += K({ path: [[+t0, 0, -40], [+t0 + 4, +dx, 150]] }, `<circle cx="${px}" cy="${py}" r="${(2.5 + r() * 5).toFixed(1)}" fill="#ffffff" opacity="0.9"/>`);
+    }
+    return s;
+  }
+  // the kitchen floor, white with flour (in the set's coordinates, under the characters)
+  function flourMess(seed = 11) {
+    const r = rnd(seed); let s = '<g opacity="0.9">';
+    for (let i = 0; i < 16; i++) s += `<ellipse cx="${(40 + r() * 1000).toFixed(0)}" cy="${(1560 + r() * 340).toFixed(0)}" rx="${(50 + r() * 120).toFixed(0)}" ry="${(12 + r() * 24).toFixed(0)}" fill="#ffffff"/>`;
+    return s + '</g>';
+  }
+  // the empty bag of flour (no brand), in a character's own coordinates
+  const flourBag = (x, y, r = -24) => `<g transform="translate(${x} ${y}) rotate(${r})"><path d="M -80 -126 L 80 -126 L 96 130 L -96 130 Z" fill="#f4efe2" stroke="${INK}" stroke-width="7" stroke-linejoin="round"/>` +
+    `<path d="M -80 -126 L -62 -168 L -22 -138 L 18 -172 L 58 -140 L 80 -126" fill="#f4efe2" stroke="${INK}" stroke-width="6" stroke-linejoin="round"/>${T(0, 16, 'FARINE', 42, INK)}<path d="M -42 64 q 42 -30 84 0" fill="none" stroke="#d9a86e" stroke-width="8" stroke-linecap="round"/></g>`;
+  // a broom standing on the floor, held at the hand (in a character's own coordinates)
+  const broom = (x = 600, top = 560, foot = 1760, lean = 40) => `<path d="M ${x} ${top} L ${x + lean} ${foot - 96}" stroke="${INK}" stroke-width="24" stroke-linecap="round"/><path d="M ${x} ${top} L ${x + lean} ${foot - 96}" stroke="#c48a52" stroke-width="12" stroke-linecap="round"/>` +
+    `<path d="M ${x + lean - 92} ${foot} L ${x + lean - 58} ${foot - 104} L ${x + lean + 58} ${foot - 104} L ${x + lean + 92} ${foot} Z" fill="#e8c35a" stroke="${INK}" stroke-width="8" stroke-linejoin="round"/>` +
+    [-56, -28, 0, 28, 56].map(d => `<path d="M ${x + lean + d * 0.7} ${foot - 90} L ${x + lean + d} ${foot - 8}" stroke="#b8902c" stroke-width="5"/>`).join('');
+  // Nadia's bag on her shoulder (in her own coordinates)
+  const handbag = (x = 640, y = 1060) => `<path d="M ${x - 170} 650 Q ${x - 80} 820 ${x - 50} ${y - 64}" fill="none" stroke="${INK}" stroke-width="13" stroke-linecap="round"/>` +
+    `<rect x="${x - 92}" y="${y - 72}" width="184" height="150" rx="26" fill="#8a3f5c" stroke="${INK}" stroke-width="8"/><rect x="${x - 40}" y="${y - 42}" width="80" height="20" rx="8" fill="#ffd34d" stroke="${INK}" stroke-width="4"/>`;
+  // the take on Deuce's phone : the drop comes… and the picture turns white
+  function dropScreen() {
+    const id = 'dr' + (++UID);
+    let s = `<rect width="560" height="1000" fill="#0f1116"/>` + T(280, 76, 'Prise 1', 36, SNOW, { font: 'Rubik', weight: 800 });
+    s += `<clipPath id="${id}"><rect x="20" y="110" width="520" height="650" rx="18"/></clipPath><g clip-path="url(#${id})"><g transform="translate(20 110) scale(1 1.625)">${takeScene('vaisselle')}</g>${liamBust('fierte', 280, 210, 900, '', false)}` +
+      K({ in: 2.2 }, `<rect x="20" y="110" width="520" height="650" fill="#ffffff"/><g opacity="0.13">${liamBust('panique', 280, 210, 900, '', false)}</g>` + [[150, 300, 90], [380, 260, 110], [260, 520, 130], [440, 620, 80]].map(([cx, cy, rr]) => `<circle cx="${cx}" cy="${cy}" r="${rr}" fill="#f4f6f9" stroke="#dfe3ea" stroke-width="6"/>`).join('')) + '</g>';
+    s += `<rect x="20" y="110" width="520" height="650" rx="18" fill="none" stroke="${INK}" stroke-width="6"/>`;
+    s += `<rect x="40" y="806" width="480" height="14" rx="7" fill="#3a3f4c"/><rect x="40" y="806" width="300" height="14" rx="7" fill="${BLUE}"/><circle cx="340" cy="813" r="17" fill="${SNOW}" stroke="${INK}" stroke-width="4"/>`;
+    return s + `<rect x="286" y="842" width="108" height="46" rx="12" fill="#e5484d" stroke="${INK}" stroke-width="4"/>` + T(340, 875, 'DROP', 28, SNOW);
+  }
+  const FLOUR = (x, y, h, seed) => ({ flour: true, after: flourDust(x, y, h, seed) });
+  const NERVEUX = [['Coupes', ['Auto', 'Sur les mots', 'Par mesure'], 0], ['Rythme', ['Posé', 'Normal', 'Nerveux'], 2], ['Effets', ['Aucun', 'Sobre', 'Intense'], 1]];
+  const DROP_TAKES = [['vaisselle', 'fierte'], ['frigo', 'frime'], ['vaisselle', 'colere']];
+  ep('ep15', E15, 15, [
+    { t: '0:00', cap: "L'accroche : Liam, blanc de farine", set: KITCHEN, criY: 700, setOver: () => flourMess(), front: () => flourCloud(), chars: [CH('deuce', 1, 850, 1700, 900, 'frime', flourBag(600, 1100)), LI(520, 2450, 1800, 'colere', '', FLOUR(520, 2450, 1800, 7))],
+      over: () => bandeau(2, E15, 15) + FRAME.cri('liam', `Pourquoi t'as lancé de la farine pendant mon drop${NB}?!`, 700) },
+    { t: '0:02', cap: 'Deuce, très calme', set: KITCHEN, setOver: () => flourMess(), front: () => flourCloud(5), chars: [LI(300, 1846, 1200, 'colere', '', FLOUR(300, 1846, 1200, 5)), CH('deuce', 1, 770, 1846, 1150, 'frime', flourBag(600, 1100))],
+      over: () => bandeau(2, E15, 15).replace('class="bandeau"', 'class="bandeau" data-cont="1"') + sub(1, 'deuce', "C'est un effet spécial. Dans les vrais clips, il y a de la fumée sur le drop.") },
+    { t: '0:07', cap: 'Le narrateur présente Liam et Deuce', set: KITCHEN, setOver: () => flourMess(), chars: [LI(300, 1846, 1200, 'frime', '', FLOUR(300, 1846, 1200, 5)), CH('deuce', 1, 770, 1846, 1150, 'fierte', flourBag(600, 1100))],
+      over: () => tag('LIAM, ALIAS T-CRAZY', 300, 560, -3) + tag('DEUCE, SON MANAGER', 770, 600, 3) + sub(1, 'narrateur', "Voici Liam. 15 ans. Zéro abonné. Et voici Deuce, son manager. Le drop, c'est le moment où le son explose : Deuce voulait que ça se voie.") },
+    { t: '0:15', cap: 'La prise : au drop, tout devient blanc', set: KITCHEN, setOver: () => flourMess(), chars: [LI(300, 1846, 1200, 'panique', '', FLOUR(300, 1846, 1200, 5)), CH('deuce', 1, 770, 1846, 1150, 'fierte', P.phone(580, 1130))],
+      over: () => phoneBig(dropScreen(), 0.92) + sub(1, 'deuce', 'Regarde : le drop arrive, et… boum !') },
+    { t: '0:21', cap: "Nadia rentre et s'arrête net", set: KITCHEN, setOver: () => flourMess(), chars: [LI(540, 1846, 1200, 'panique', '', FLOUR(540, 1846, 1200, 9)), CH('deuce', 1, 860, 1846, 1150, 'frime', flourBag(600, 1100)), CH('nadia', 2, 200, 1856, 1250, 'colere', handbag(), { k: { walk: [[0, -520, 0], [1.6, 0, 0]] } })],
+      over: () => tag('NADIA, SA MÈRE', 200, 520, -3) + sub(1, 'nadia', 'Bonsoir… Pourquoi ma cuisine est blanche ?') },
+    { t: '0:27', cap: 'Nadia tend un balai à chacun', set: KITCHEN, setOver: () => flourMess(), chars: [LI(540, 1846, 1200, 'panique', '', FLOUR(540, 1846, 1200, 9)), CH('deuce', 1, 860, 1846, 1150, 'panique'), CH('nadia', 2, 200, 1856, 1250, 'frime', broom(560, 520, 1760, -30) + broom(640, 540, 1760, 30))],
+      over: () => sub(1, 'nadia', 'Alors la direction artistique va passer le balai.') },
+    { t: '0:31', cap: 'Une heure plus tard : la cuisine est propre', set: KITCHEN_N, chars: [LI(330, 1846, 1200, 'panique', broom(600, 620, 1760, 50)), CH('deuce', 1, 760, 1846, 1150, 'panique', broom(560, 640, 1760, -50))],
+      over: () => carton('UNE HEURE PLUS TARD · LA CUISINE') },
+    { t: '0:34', cap: 'Deuce a une autre idée', set: KITCHEN_N, chars: [LI(330, 1846, 1200, 'colere', broom(600, 620, 1760, 50)), CH('deuce', 1, 760, 1846, 1150, 'fierte', broom(560, 640, 1760, -50))],
+      over: () => sub(1, 'deuce', "Pour le prochain clip, j'ai pensé aux confettis.") },
+    { t: '0:38', cap: 'Maya arrive en marchant et dit bonjour', set: KITCHEN_N, chars: [CH('deuce', 1, 230, 1846, 1100, 'frime'), LI(510, 1846, 1200, 'frime'), CH('maya', 1, 840, 1846, 1150, 'frime', P.phone(580, 1130), { k: { walk: [[0.2, 640, 0], [2.0, 0, 0]] } })],
+      over: () => tag('MAYA, LA VOISINE', 840, 600, 3) + sub(1, 'maya', "Salut. Il paraît que t'as tourné un clip dans la farine ?") },
+    { t: '0:43', cap: 'Stalak, en « Nerveux »', set: KITCHEN_N, chars: [CH('maya', 1, 800, 1846, 1200, 'frime', P.phone(580, 1130)), LI(300, 1846, 1200, 'panique')],
+      over: () => phoneBig(stalakApp({ takes: DROP_TAKES, count: 3, ti: -1, rows: NERVEUX }), 0.92) + sub(1, 'maya', "Pour qu'un drop claque, il faut que ça coupe pile sur le temps. Et Stalak, en “Nerveux”, coupe jusqu'à chaque temps.") },
+    { t: '0:53', cap: 'Les prises : Deuce mime la farine', set: KITCHEN_N, rap: 'liam', rapFrom: 0.2, chars: [CH('deuce', 1, 800, 1846, 1150, 'fierte', `<path d="M 640 1010 q 70 -90 170 -70 M 660 1080 q 90 -60 190 -20" fill="none" stroke="${INK}" stroke-width="7" stroke-linecap="round" stroke-dasharray="16 14"/>`), LI(380, 1846, 1220, 'fierte')],
+      over: () => clap(840, 330, 2) },
+    { t: '0:57', cap: 'Stalak monte le clip : au drop, une prise par temps', set: KITCHEN_N, chars: [CH('maya', 1, 830, 1846, 1150, 'fierte'), CH('deuce', 1, 250, 1846, 1100, 'fierte'), LI(540, 1846, 1200, 'fierte', P.phone(606, 760), { pose: { raise: 'r' } })],
+      over: () => phoneBig(stalakApp({ takes: DROP_TAKES, count: 3, ti: 2.2, sticker: 'hype', dl: 2.7, wm: true, word: 'prises', rows: NERVEUX }), 0.92) + sub(1, 'narrateur', "Au drop, Stalak passe d'une prise à l'autre à chaque temps. Ça explose, et la cuisine reste propre.") },
+    { t: '1:01', cap: 'Il publie : un inconnu adore le drop', set: KITCHEN_N, chars: [LI(540, 1846, 1250, 'fierte', P.phone(606, 760), { pose: { raise: 'r' } })],
+      over: () => phoneBig(posted(clipPic('frigo', 'fierte'), 'Mon drop, sans farine', 'sami.beats', 'Le drop 🔥🔥', '#d9822b', 5), 0.92) + sub(1, 'deuce', "Tu vois ? Mon idée de farine, c'était presque ça.") },
+    { t: '1:06', cap: 'Liam parle à celui qui regarde', set: KITCHEN_N, zoom: [540, 1150, 1.3], chars: [LI(540, 2730, 2250, 'frime')],
+      over: () => sub(1, 'liam', 'Tu veux que ton drop explose, toi aussi ? Pas besoin de farine : filme plusieurs prises, et Stalak coupe sur le rythme.') },
+    { t: '1:14', cap: 'La carte de fin : le prochain, à choisir', plain: true, over: () => endCard('LA SEMAINE PROCHAINE') },
+  ], "Sort le 22/11 à 21 h. La cuisine en fin d'après-midi, puis le soir, une fois rangée.");
+
   // ---------------- the thumbnails (TikTok cover), one per episode, in the style of the validated example (frame.js) ----------------
   const thumb = (set, chars, title, num, extra = '') => ({ set, chars, over: () => extra + `<g transform="translate(0 120)">${bandeau(2, title, num)}</g>` });
   FRAMES['thumb-ep1'] = thumb(KITCHEN, [CH('nadia', 2, 790, 2760, 2300, 'colere', P.phone(580, 1130, '#ffe066')), LI(330, 3080, 2330, 'panique')], 'SA MÈRE A CRIÉ EN PLEINE PRISE', 1);
@@ -780,6 +1382,15 @@
   FRAMES['thumb-ep3'] = thumb(STREET, [CH('deuce', 1, 800, 2860, 2250, 'frime'), LI(330, 3000, 2330, 'colere', BAGS(4))], 'SON POTE S\'EST NOMMÉ SON MANAGER', 4);
   FRAMES['thumb-ep5'] = thumb(EVE, [CH('deuce', 1, 800, 2900, 2300, 'fierte', P.plant(600, 1080)), LI(330, 3000, 2330, 'panique')], 'IL VOULAIT UN CLIP COMME DANS GTA', 5);
   FRAMES['thumb-ep6'] = thumb(AFT, [CH('maya', 1, 800, 2900, 2300, 'frime'), LI(330, 3000, 2330, 'panique')], "TRILLER N'EST PLUS SUR L'APP STORE", 6);
+  FRAMES['thumb-ep7'] = thumb(RUE, [LI(300, 3000, 2330, 'fierte'), CH('reyes', 1, 790, 2900, 2300, 'colere', TEE(450, 1190, 380))], E7, 7);
+  FRAMES['thumb-ep8'] = thumb(RUE_NIGHT, [LI(540, 3150, 2450, 'panique')], E8, 8);
+  FRAMES['thumb-ep9'] = thumb(KITCHEN_N, [LI(300, 3000, 2330, 'panique'), CH('nadia', 2, 790, 2900, 2300, 'colere', notebook(450, 1110, 420, -6))], E9, 9);
+  FRAMES['thumb-ep10'] = thumb(ROOM_D, [LI(540, 3150, 2450, 'panique', P.phone(606, 760), { pose: { raise: 'r' } })], E10, 10);
+  FRAMES['thumb-ep11'] = thumb(KITCHEN_N, [CH('deuce', 1, 800, 2900, 2300, 'panique'), SICK('panique', 330, 3000, 2330)], E11, 11);
+  FRAMES['thumb-ep12'] = thumb(COURT_PM, [LI(300, 3000, 2330, 'fierte'), MO('colere', 790, 2900, 2300)], E12, 12);
+  FRAMES['thumb-ep13'] = thumb(KITCHEN_N, [LI(320, 3000, 2330, 'frime'), CH('nadia', 2, 790, 2900, 2300, 'colere', fiche(450, 1170, 420, -5))], E13, 13);
+  FRAMES['thumb-ep14'] = thumb(KITCHEN_N, [LI(320, 3000, 2330, 'fierte', handPhone(bfAd(), 606, 700, 0.34), { pose: { raise: 'r' } }), CH('nadia', 2, 790, 2900, 2300, 'colere')], E14, 14);
+  FRAMES['thumb-ep15'] = thumb(KITCHEN, [LI(540, 3150, 2450, 'colere', '', FLOUR(540, 3150, 2450, 7))], E15, 15, flourCloud());
 
   window.STORYBOARD = { BOARDS, P, band, hp, headAt, phoneBig, laptopBig, take, editor, clockBig, postScreen, winPhone, gallery, stalakApp, takeScene, liamBust, carton, knock, notif, comment, tag, endCard };
 })();

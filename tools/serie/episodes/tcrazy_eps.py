@@ -48,6 +48,10 @@ TIMES = {
     'ep3': [0, 3, 10, 18, 25, 28, 30, 35, 41, 48, 52, 60, 67, 71, 79],
     'ep5': [0, 3, 10, 15, 18, 26, 30, 38, 46, 52, 58, 62, 70],
     'ep6': [0, 2, 6, 11, 17, 21, 24, 27, 33, 38, 42, 48, 54, 58, 66, 71, 79],
+    # 17/11 : the new episodes (3 a day, 18 to 22/11), numbers 7 to 15 on screen
+    'ep7': [0, 2, 5, 13, 18, 21, 25, 31, 37, 45, 54, 57, 61, 66, 73],
+    'ep8': [0, 2, 5, 12, 17, 22, 28, 33, 37, 43, 52, 59, 64, 72],
+    'ep9': [0, 2, 6, 14, 21, 26, 30, 36, 41, 51, 59, 62, 65, 73],
 }
 TARGET = 65.0  # seconds : the rule says 65 s at least. The pauses added to get there are small (tcrazy.py plan) : the owner
 # does not want blanks (16/11, episode 2 : « il faut cut à ce moment la séquence, il y a un blanc trop long sinon »), so the
@@ -173,4 +177,66 @@ EPISODES = {
                   6: 'deadpan, teasing his friend', 7: 'calm and sure of herself', 8: 'curious, a bit suspicious', 9: 'calm, explaining simply, as if it were obvious',
                   10: 'suspicious', 11: 'dry and amused', 12: 'like a film director, excited and loud', 14: 'excited, jumping into the shot',
                   15: 'satisfied, like a film director wrapping a scene', 17: 'thrilled', 18: 'amazed and excited', 19: CTA}),
+    # ---------------- 17/11 : 3 a day (owner, 17/11 at 3 h 57) ; scripts and storyboards validated on 17/11 ----------------
+    # « Les tee-shirts » (n° 7, 18/11 at 18 h) : Deuce's merch ; the street in the afternoon, then two hours later at sunset
+    'ep7': dict(card='tcrazy-ep7', same={}, shots=[
+        ('ep7-01', [1], dict(music='plan', sfx=[('whoosh-short.mp3', 0.0, 0.3)])),
+        ('ep7-02', [2], {}),
+        ('ep7-03', [3], {}),
+        ('ep7-04', [4], {}),
+        ('ep7-05', [5], dict(after=0.4)),  # M. Reyes goes back into his shop
+        ('ep7-06', [6], dict(music='galere', dip=True, lead=0.6)),
+        ('ep7-07', [7, 8, 9], dict(lead=2.1, fixed=True, sfx=[('steps.wav', 0.2, 0.25)])),  # Maya walks in, then speaks (owner, 16/11 : entrances not too fast)
+        ('ep7-08', [10], {}),
+        ('ep7-09', [11, 12], {}),
+        ('ep7-10', [13, 14, 15], dict(lead=0.2)),
+        ('ep7-11', [], dict(music='hustle', hold=2.8, sfx=[('click.mp3', 0.1, 0.35)])),  # the takes : Liam raps on his song, Deuce dances
+        ('ep7-12', [16], dict(lead=0.1, sfx=[('pop.mp3', 2.6, 0.45)])),
+        ('ep7-13', [17], dict(music='victoire', lead=2.0, fixed=True, sfx=[('click.mp3', 0.8, 0.35), ('ping.mp3', 1.05, 0.3), ('notification.mp3', 1.9, 0.4)])),  # the post's own times (storyboard posted : the comment at 1.9 s)
+        ('ep7-14', [18], {}),
+        ('ep7-15', [], dict(hold=3.4, sfx=[('whoosh-short.mp3', 0.75, 0.25)])),
+    ], direction={1: 'shouting, outraged, holding up a tee-shirt with a kid\'s face on it', 2: 'very proud, like a young businessman', 4: 'very sure of himself, explaining business',
+                  5: 'dry, deadpan, grumpy', 6: 'ironic', 7: 'curious, casual', 8: 'proud, pointing at himself', 9: 'deadpan, honestly confused',
+                  10: 'like a genius with a brilliant idea', 11: 'calm, matter-of-fact', 12: 'whining, discouraged', 13: 'calm, explaining simply',
+                  14: 'suspicious', 15: 'casual, as if it were obvious', 16: 'warm', 17: 'thrilled and triumphant', 18: CTA}),
+    # « Nuit à 17 h » (n° 8, 18/11 at 21 h) : the street of houses at nightfall (rue 1 'nuit'), the three lights, the filter
+    'ep8': dict(card='tcrazy-ep8', same={}, shots=[
+        ('ep8-01', [1], dict(music='plan', sfx=[('whoosh-short.mp3', 0.0, 0.3)])),
+        ('ep8-02', [2], {}),
+        ('ep8-03', [3], {}),
+        ('ep8-04', [4], dict(music='galere', sfx=[('click.mp3', 0.2, 0.35)])),  # the phone light comes on
+        ('ep8-05', [5], dict(music='hustle', lead=0.8)),  # take 1 on the screen of Deuce's phone
+        ('ep8-06', [6], dict(lead=0.3, sfx=[('click.mp3', 0.05, 0.35)])),  # take 2 under the street lamp
+        ('ep8-07', [7, 8], dict(lead=2.1, fixed=True, sfx=[('steps.wav', 0.2, 0.25)])),  # Maya walks in, then speaks
+        ('ep8-08', [9], {}),
+        ('ep8-09', [10, 11], dict(lead=0.4, sfx=[('click.mp3', 0.05, 0.35)])),  # take 3 ; M. Reyes at his door
+        ('ep8-10', [12, 13, 14], dict(lead=0.3)),
+        ('ep8-11', [15], dict(lead=0.2, after=0.6, sfx=[('pop.mp3', 0.8, 0.45)])),
+        ('ep8-12', [16, 17], dict(music='victoire', lead=2.3, fixed=True, sfx=[('click.mp3', 0.8, 0.35), ('ping.mp3', 1.05, 0.3), ('notification.mp3', 1.9, 0.4)])),
+        ('ep8-13', [18], {}),
+        ('ep8-14', [], dict(hold=3.4, sfx=[('whoosh-short.mp3', 0.75, 0.25)])),
+    ], direction={1: 'shocked and outraged, shouting at the dark sky', 2: 'whining, frustrated', 4: 'very sure of himself, proud of his idea',
+                  5: 'deadpan, puzzled, looking at his screen', 6: 'amused', 7: 'curious and amused', 8: 'proud, insisting', 9: 'calm, helpful',
+                  10: 'grumpy, dry, deadpan', 11: 'quick, giving in', 12: 'calm, explaining simply', 13: 'puzzled', 14: 'dry, teasing',
+                  15: 'warm', 16: 'cocky, pretending it was all planned', 17: 'flat, ironic', 18: CTA}),
+    # « Le cahier de rap » (n° 9, 19/11 at 21 h) : the kitchen at dawn, then after school (cuisine 1, 'nuit' then 'jour')
+    'ep9': dict(card='tcrazy-ep9', same={}, shots=[
+        ('ep9-01', [1], dict(music='plan', sfx=[('whoosh-short.mp3', 0.0, 0.3)])),
+        ('ep9-02', [2], {}),
+        ('ep9-03', [3], {}),
+        ('ep9-04', [4], {}),  # the notebook, close : Nadia reads
+        ('ep9-05', [5, 6], {}),
+        ('ep9-06', [7], dict(music='galere')),
+        ('ep9-07', [8], dict(sfx=[('pop.mp3', 0.1, 0.4)])),  # his video, too fast : « Il dit quoi ? »
+        ('ep9-08', [9, 10], dict(dip=True, lead=2.6, fixed=True, sfx=[('steps.wav', 0.5, 0.25)])),  # after school : Maya walks in, then speaks
+        ('ep9-09', [11, 12, 13], dict(lead=0.3)),
+        ('ep9-10', [14], dict(music='hustle', lead=0.2, after=0.8, sfx=[('pop.mp3', 2.6, 0.45)])),  # the clip : each sentence when he says it
+        ('ep9-11', [], dict(music='victoire', hold=3.4, sfx=[('click.mp3', 0.8, 0.35), ('ping.mp3', 1.05, 0.3), ('notification.mp3', 1.9, 0.4)])),  # he posts, the comment comes at 1.9 s and stays to be read
+        ('ep9-12', [15], dict(lead=2.1, fixed=True, sfx=[('steps.wav', 0.2, 0.25)])),  # Nadia walks in, her mug in her hand
+        ('ep9-13', [16], {}),
+        ('ep9-14', [], dict(hold=3.4, sfx=[('whoosh-short.mp3', 0.75, 0.25)])),
+    ], direction={1: 'shouting, shocked, holding up her son\'s notebook', 2: 'panicked and embarrassed, waking up suddenly',
+                  4: 'reading aloud from a notebook, slowly, quietly moved', 5: 'hiding that she is moved, dry', 6: 'outraged, very proud of himself',
+                  7: 'calm and direct, a bit tired', 8: 'admitting it, a bit embarrassed', 9: 'casual, saying hi, curious', 10: 'surprised and touched',
+                  11: 'calm, explaining simply', 12: 'hopeful, amazed', 13: 'dry, teasing', 14: 'warm', 15: 'warm and proud, then firm like a mother', 16: CTA}),
 }

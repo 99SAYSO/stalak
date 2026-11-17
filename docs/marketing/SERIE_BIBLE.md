@@ -6,6 +6,7 @@
 > **Version 2 (16/11, 16 h)** : les 10 remarques du propriétaire sur la vidéo de l'épisode 1, appliquées à toute la série (règle `regle-remarques-toute-serie` : une remarque sur une vidéo vaut pour toutes, même celles déjà envoyées).
 > **Version 3 (16/11, 18 h)** : ses remarques sur l'épisode 1 (2e tour), l'épisode 2 (8 remarques) et l'épisode GTA 6 (2 remarques), plus sa règle « un enfant doit pouvoir comprendre », appliquées à toute la série (voir « Pour qu'un enfant comprenne » et « Pas de blanc »).
 > **Version 4 (17/11, 5 h)** : 3 épisodes par jour. 9 nouveaux scripts pour les créneaux de 18 h et de 21 h, du 18 au 22/11 (« La semaine du 16/11 », plus bas), et le nouvel ordre de sortie.
+> **Version 5 (17/11, 6 h)** : les numéros définitifs (les 6 épisodes validés gardent 1 à 6, les nouveaux sont 7 à 15), les décors remplacés, et la fabrication des épisodes 7, 8 et 9.
 
 ## L'idée
 
@@ -131,27 +132,33 @@ Les images, les musiques, les lumières et le rendu (HyperFrames compris, sur no
 
 ## La semaine du 16/11 : 3 épisodes par jour (12 h 30, 18 h, 21 h)
 
-Le 17/11 à 3 h 57, le propriétaire : « on a pas nos 3 vidéos par jour sur la semaine, commence à me créer les scripts ». Les 6 épisodes validés gardent leur jour et leur créneau de 12 h 30 (GTA 6 à 18 h le 19/11, jour de la sortie du jeu) ; 9 nouveaux scripts remplissent les autres créneaux, du 18 au 22/11. Le 17/11 reste vide : un script doit passer par sa validation, puis celle du storyboard, avant la fabrication. Les fiches sont dans Studio Stalak (`tcrazy-ep7` à `tcrazy-ep15`, statut `script`).
+Le 17/11 à 3 h 57, le propriétaire : « on a pas nos 3 vidéos par jour sur la semaine, commence à me créer les scripts ». Les 6 épisodes validés gardent leur jour et leur créneau ; 9 nouveaux scripts remplissent les autres créneaux, du 18 au 22/11 (fiches `tcrazy-ep7` à `tcrazy-ep15` dans Studio Stalak). Il a validé les 9 scripts (17/11, 4 h 55), puis les storyboards des épisodes 7 à 11 (5 h 18).
 
-| N° | Sortie | Bandeau | Le cri d'ouverture | Ce qui montre Stalak | Prochain épisode annoncé |
-|---|---|---|---|---|---|
-| 1 | 18/11 12 h 30 | SA MÈRE A CRIÉ EN PLEINE PRISE | Nadia | (validé) | à changer : n° 2 |
-| 2 | 18/11 18 h | SON POTE A IMPRIMÉ DES TEE-SHIRTS AVEC SA TÊTE | M. Reyes : « Cinquante tee-shirts avec ta tête ?! » | personne ne connaît son son : trois prises, montage sur le rythme, gratuit | n° 3 |
-| 3 | 18/11 21 h | IL FAIT NUIT À 17 H ET IL DEVAIT TOURNER SON CLIP | Liam : « Il est 17 h et il fait déjà nuit ?! » | trois lumières de nuit, le filtre Noir & blanc (gratuit) | n° 4 |
-| 4 | 19/11 12 h 30 | IL A PASSÉ LA NUIT SUR SA VIDÉO DE PROMO | Liam | (validé) | n° 5, déjà juste |
-| 5 | 19/11 18 h | IL SORT SON SON LE JOUR DE GTA 6 | Deuce | (validé) | à changer : n° 6 |
-| 6 | 19/11 21 h | SA MÈRE A LU SES TEXTES DE RAP | Nadia : « Tu rappes sur moi ?! » | les paroles à l'écran, collées puis calées au tap (gratuit) | n° 7 |
-| 7 | 20/11 12 h 30 | SON POTE S'EST NOMMÉ SON MANAGER | Liam | (validé) | à changer : n° 8 |
-| 8 | 20/11 18 h | SON EXTRAIT A MARCHÉ, MAIS LE SON N'EST PAS FINI | Liam : « Ils veulent le son en entier ?! » | Stalak monte l'extrait pendant que Liam écrit | n° 9 |
-| 9 | 20/11 21 h | IL A PERDU SA VOIX LA VEILLE DE SON CLIP | Deuce : « T'as plus de voix et on tourne demain ?! » | le playback : le son est déjà enregistré, la bouche reste synchro | n° 10 |
-| 10 | 21/11 12 h 30 | IL VOULAIT UN CLIP COMME DANS GTA | M. Reyes | (validé) | n° 11 (« Le clash au terrain »), déjà juste |
-| 11 | 21/11 18 h | IL A CLASHÉ LE RAPPEUR LE PLUS CONNU DU QUARTIER | Big Mo : « T'as zéro abonné et tu me clashes ?! » | le secret de Big Mo : Creator Plus, un pack de 5 à 30 vidéos à partir de 2 prises ; Liam part sur le gratuit (illimité) | n° 12 |
-| 12 | 21/11 21 h | IL A ÉCRIT “RAPPEUR” SUR SA FICHE D'ORIENTATION | Nadia : « T'as écrit “rappeur” sur ta fiche d'orientation ?! » | sur le toit (lifestyle) : poster souvent, même avec les cours | n° 13 |
-| 13 | 22/11 12 h 30 | TRILLER N'EST PLUS SUR L'APP STORE | Liam | (validé) | à choisir : n° 14 |
-| 14 | 22/11 18 h | IL VEUT UNE CAMÉRA DE PRO POUR LE BLACK FRIDAY | Nadia : « Neuf cents balles, ta caméra ?! » | le téléphone suffit, Stalak est gratuit (le Black Friday est le 27/11) | n° 15 |
-| 15 | 22/11 21 h | IL A TOURNÉ SON DROP DANS UN NUAGE DE FARINE | Liam : « Pourquoi t'as lancé de la farine pendant mon drop ?! » | le réglage « Rythme : Nerveux » (coupes jusqu'à chaque temps, gratuit) | la semaine prochaine (à choisir) |
+**Les numéros** (sa réponse du 17/11 : « Non, garde-les telles quelles ») : les 6 vidéos validées ne changent pas (numéros 1 à 6, cartes de fin comprises). Les nouveaux épisodes sont numérotés 7 à 15 dans leur ordre de sortie, et leur carte de fin annonce la vidéo qui sort juste après.
 
-Les numéros à l'écran des épisodes validés passent de 2, 3, 4, 5 et 6 à 4, 5, 7, 10 et 13 (l'épisode 1 garde le sien), et 4 cartes de fin changent : seulement du texte (le premier plan, la carte de fin et la miniature refaits), 0 $, si le propriétaire est d'accord. Deuce est « son pote » jusqu'à l'épisode 7, où il se nomme manager, puis « son manager ».
+| Sortie | N° | Bandeau | Le cri d'ouverture | Ce qui montre Stalak | Prochain épisode annoncé | État (17/11, 6 h) |
+|---|---|---|---|---|---|---|
+| 18/11 12 h 30 | 1 | SA MÈRE A CRIÉ EN PLEINE PRISE | Nadia | (validé) | (inchangé) | validé |
+| 18/11 18 h | 7 | SON POTE A IMPRIMÉ DES TEE-SHIRTS AVEC SA TÊTE | M. Reyes : « Cinquante tee-shirts avec ta tête ?! » | personne ne connaît son son : trois prises, montage sur le rythme, gratuit | IL FAIT NUIT À 17 H ET IL DEVAIT TOURNER SON CLIP | vidéo à valider |
+| 18/11 21 h | 8 | IL FAIT NUIT À 17 H ET IL DEVAIT TOURNER SON CLIP | Liam : « Il est 17 h et il fait déjà nuit ?! » | trois lumières de nuit, le filtre Noir & blanc (gratuit) | IL A PASSÉ LA NUIT SUR SA VIDÉO DE PROMO | vidéo à valider |
+| 19/11 12 h 30 | 2 | IL A PASSÉ LA NUIT SUR SA VIDÉO DE PROMO | Liam | (validé) | (inchangé) | validé |
+| 19/11 18 h | 3 | IL SORT SON SON LE JOUR DE GTA 6 | Deuce | (validé) | (inchangé) | validé |
+| 19/11 21 h | 9 | SA MÈRE A LU SES TEXTES DE RAP | Nadia : « Tu rappes sur moi ?! » | les paroles à l'écran, collées puis calées au tap (gratuit) | SON POTE S'EST NOMMÉ SON MANAGER | voix faites, vidéo en cours |
+| 20/11 12 h 30 | 4 | SON POTE S'EST NOMMÉ SON MANAGER | Liam | (validé) | (inchangé) | validé |
+| 20/11 18 h | 10 | SON EXTRAIT A MARCHÉ, MAIS LE SON N'EST PAS FINI | Liam : « Ils veulent le son en entier ?! » | Stalak monte l'extrait pendant que Liam écrit | IL A PERDU SA VOIX LA VEILLE DE SON CLIP | storyboard validé ; voix : il faut recharger Flora |
+| 20/11 21 h | 11 | IL A PERDU SA VOIX LA VEILLE DE SON CLIP | Deuce : « T'as plus de voix et on tourne demain ?! » | le playback : le son est déjà enregistré, la bouche reste synchro | IL VOULAIT UN CLIP COMME DANS GTA | storyboard validé ; voix : il faut recharger Flora |
+| 21/11 12 h 30 | 5 | IL VOULAIT UN CLIP COMME DANS GTA | M. Reyes | (validé) | LE CLASH AU TERRAIN (c'est bien le 12) | validé |
+| 21/11 18 h | 12 | IL A CLASHÉ LE RAPPEUR LE PLUS CONNU DU QUARTIER | Big Mo : « T'as zéro abonné et tu me clashes ?! » | le secret de Big Mo : Creator Plus, un pack de 5 à 30 vidéos à partir de 2 prises (le vrai bouton : « Générer le pack ») ; Liam part sur le gratuit (illimité) | IL A ÉCRIT “RAPPEUR” SUR SA FICHE D'ORIENTATION | storyboard à valider |
+| 21/11 21 h | 13 | IL A ÉCRIT “RAPPEUR” SUR SA FICHE D'ORIENTATION | Nadia : « T'as écrit “rappeur” sur ta fiche d'orientation ?! » | sur le toit (lifestyle) : poster souvent, même avec les cours | TRILLER N'EST PLUS SUR L'APP STORE | storyboard à valider |
+| 22/11 12 h 30 | 6 | TRILLER N'EST PLUS SUR L'APP STORE | Liam | (validé) | (inchangé) | validé |
+| 22/11 18 h | 14 | IL VEUT UNE CAMÉRA DE PRO POUR LE BLACK FRIDAY | Nadia : « Neuf cents balles, ta caméra ?! » | le téléphone suffit, Stalak est gratuit (le Black Friday est le 27/11) | IL A TOURNÉ SON DROP DANS UN NUAGE DE FARINE | storyboard à valider |
+| 22/11 21 h | 15 | IL A TOURNÉ SON DROP DANS UN NUAGE DE FARINE | Liam : « Pourquoi t'as lancé de la farine pendant mon drop ?! » | le réglage « Rythme : Nerveux » (coupes jusqu'à chaque temps, gratuit) | LA SEMAINE PROCHAINE (en attendant son choix) | storyboard à valider |
+
+Deuce est « son pote » jusqu'au 20/11 (l'épisode 4, où il se nomme manager), puis « son manager ».
+
+**Les décors** : seulement ceux qu'il a choisis dans l'Univers (chambre 2, cuisine 1, rue 1, terrain 1, lycée 1, toit 2). Quand un script parle d'un lieu qu'il n'a pas choisi (le salon dans les épisodes 11 et 14), le storyboard le remplace par la cuisine, et la fiche le dit. Nouveautés dessinées pour la semaine : la rue 1 de nuit (lampadaire, vitrine éclairée), la cuisine 1 le soir (lampe au-dessus de la table), la farine (épisode 15 : Liam blanchi, le nuage dans le rayon de soleil).
+
+**À la fabrication (17/11)** : chaque voix est générée une fois, sur le texte validé. Deux répliques de l'épisode 7 étaient mal dites (M. Reyes disait « Pour » au lieu de « Pas », Maya « Orion » au lieu de « Rien ») : refaites, 0,026 $. Un « Ha ! » ajouté par la voix au début d'une réplique de Liam a été coupé, pour coller au texte. Les entrées en marchant restent à 2,1 s au moins (remarque sur l'épisode 3 : « trop rapide »). Durées : épisode 7, 1 min 19,8 ; épisode 8, 1 min 16,8 ; épisode 9, 1 min 16,2.
 
 ## Idées d'épisodes (à valider une par une)
 

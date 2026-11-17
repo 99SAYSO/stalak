@@ -42,7 +42,7 @@ def ep(**k):
 
 
 # ---------------------------------------------------------------------------------------------------------------- A · ÉP. 2
-ep(id='tcrazy-ep7', num=2, date='2026-11-18', slot=2, heure='18 h', titre='Les tee-shirts',
+ep(id='tcrazy-ep7', num=7, date='2026-11-18', slot=2, heure='18 h', titre='Les tee-shirts',
    banner="SON POTE A IMPRIMÉ DES TEE-SHIRTS AVEC SA TÊTE", shouter='M. Reyes',
    when="le 18/11 à 18 h, juste après l'épisode 1",
    lights="le soleil de l'après-midi puis sa lumière plus dorée, l'enseigne de l'épicerie et l'écran du téléphone ont leur halo, et l'impression brillante des tee-shirts a ses reflets",
@@ -82,7 +82,7 @@ ep(id='tcrazy-ep7', num=2, date='2026-11-18', slot=2, heure='18 h', titre='Les t
    decors="Décor déjà fait : la rue pavillonnaire et l'épicerie (l'écran de Stalak et le fil façon TikTok existent aussi) ; à dessiner : la table pliante, les tee-shirts « T-CRAZY » avec la tête de Liam, le carton, la feuille morte.")
 
 # ---------------------------------------------------------------------------------------------------------------- B · ÉP. 3
-ep(id='tcrazy-ep8', num=3, date='2026-11-18', slot=3, heure='21 h', titre='Nuit à 17 h',
+ep(id='tcrazy-ep8', num=8, date='2026-11-18', slot=3, heure='21 h', titre='Nuit à 17 h',
    banner="IL FAIT NUIT À 17 H ET IL DEVAIT TOURNER SON CLIP", shouter='Liam',
    when="le 18/11 à 21 h",
    lights="c'est le sujet de l'épisode : le ciel bleu nuit, les fenêtres allumées, le halo orange du lampadaire, la lampe blanche du téléphone, la lumière douce de la vitrine et le reflet de l'enseigne sur la doudoune",
@@ -121,7 +121,7 @@ ep(id='tcrazy-ep8', num=3, date='2026-11-18', slot=3, heure='21 h', titre='Nuit 
    decors="Décor déjà fait : la rue en ville, le soir (version 2) ; à faire : ses lumières (lampadaire, vitrine, enseigne, fenêtres), la lampe du téléphone, les papillons de nuit, la perche à selfie, le choix du filtre dans l'écran de Stalak.")
 
 # ---------------------------------------------------------------------------------------------------------------- C · ÉP. 6
-ep(id='tcrazy-ep9', num=6, date='2026-11-19', slot=3, heure='21 h', titre='Le cahier de rap',
+ep(id='tcrazy-ep9', num=9, date='2026-11-19', slot=3, heure='21 h', titre='Le cahier de rap',
    banner="SA MÈRE A LU SES TEXTES DE RAP", shouter='Nadia',
    when="le 19/11 à 21 h, juste après l'épisode GTA 6",
    lights="la lumière bleue de l'aube par la fenêtre et la petite lampe au-dessus de la table, puis la lumière de l'après-midi ; la tasse de café fume, l'écran du téléphone a son halo",
@@ -158,7 +158,7 @@ ep(id='tcrazy-ep9', num=6, date='2026-11-19', slot=3, heure='21 h', titre='Le ca
    decors="Décor déjà fait : la cuisine (le jour existe, l'aube est à faire en lumière) ; à dessiner : le cahier de rap écrit à la main, l'écran de Stalak avec les paroles collées et le tap.")
 
 # ---------------------------------------------------------------------------------------------------------------- E · ÉP. 8
-ep(id='tcrazy-ep10', num=8, date='2026-11-20', slot=2, heure='18 h', titre="L'extrait de 3 h du matin",
+ep(id='tcrazy-ep10', num=10, date='2026-11-20', slot=2, heure='18 h', titre="L'extrait de 3 h du matin",
    banner="SON EXTRAIT A MARCHÉ, MAIS LE SON N'EST PAS FINI", shouter='Liam',
    when="le 20/11 à 18 h, juste après l'épisode du manager",
    lights="la lumière douce du matin par la fenêtre, le halo de l'écran de l'ordi et du téléphone, le néon bleu glace du studio",
@@ -195,7 +195,7 @@ ep(id='tcrazy-ep10', num=8, date='2026-11-20', slot=2, heure='18 h', titre="L'ex
    decors="Décor déjà fait : la chambre-studio (de jour) ; l'appli de montage inventée existe (épisode « Le son de l'année ») ; à dessiner : les commentaires qui réclament la suite, l'extrait publié à 3:12.")
 
 # ---------------------------------------------------------------------------------------------------------------- G · ÉP. 9
-ep(id='tcrazy-ep11', num=9, date='2026-11-20', slot=3, heure='21 h', titre='La voix perdue',
+ep(id='tcrazy-ep11', num=11, date='2026-11-20', slot=3, heure='21 h', titre='La voix perdue',
    banner="IL A PERDU SA VOIX LA VEILLE DE SON CLIP", shouter='Deuce',
    when="le 20/11 à 21 h",
    lights="la lampe du salon et le reflet bleu de la télé, le mug qui fume, puis la lumière dorée de l'après-midi au terrain, avec les reflets du grillage",
@@ -237,7 +237,7 @@ ep(id='tcrazy-ep11', num=9, date='2026-11-20', slot=3, heure='21 h', titre='La v
    decors="Décors déjà faits : le salon et le terrain grillagé (la caméra de Stalak existe, épisode « L'appli a fermé ») ; à dessiner : l'écharpe, le plaid, le mug, les messages que Liam écrit en gros sur son téléphone. La voix de Liam est chuchotée sur ses deux répliques.")
 
 # ---------------------------------------------------------------------------------------------------------------- F · ÉP. 11
-ep(id='tcrazy-ep12', num=11, date='2026-11-21', slot=2, heure='18 h', titre='Le clash au terrain',
+ep(id='tcrazy-ep12', num=12, date='2026-11-21', slot=2, heure='18 h', titre='Le clash au terrain',
    banner="IL A CLASHÉ LE RAPPEUR LE PLUS CONNU DU QUARTIER", shouter='Big Mo',
    stalak="Exceptionnellement, Stalak arrive vers le milieu, parce que l'histoire, c'est le secret de Big Mo",
    when="le 21/11 à 18 h, juste après « Le clip façon GTA », dont la carte de fin annonce déjà « LE CLASH AU TERRAIN » : elle reste juste",
@@ -279,7 +279,7 @@ ep(id='tcrazy-ep12', num=11, date='2026-11-21', slot=2, heure='18 h', titre='Le 
    decors="Décor déjà fait : le terrain grillagé ; à dessiner : le profil de Big Mo avec ses cases de vidéos (on y reconnaît le terrain, la rue, l'épicerie), l'écran de Stalak avec « Pack : 30 vidéos ».")
 
 # ---------------------------------------------------------------------------------------------------------------- D · ÉP. 12
-ep(id='tcrazy-ep13', num=12, date='2026-11-21', slot=3, heure='21 h', titre="La fiche d'orientation",
+ep(id='tcrazy-ep13', num=13, date='2026-11-21', slot=3, heure='21 h', titre="La fiche d'orientation",
    banner="IL A ÉCRIT “RAPPEUR” SUR SA FICHE D'ORIENTATION", shouter='Nadia',
    when="le 21/11 à 21 h",
    extra="Un épisode « lifestyle » : l'idée « Il raconte sa carrière avant de l'avoir » (le toit) est mêlée à celle de la fiche d'orientation. Le message reste sain : le rap, et les cours jusqu'au bout.",
@@ -405,8 +405,9 @@ def line(who, mod, text):
 
 
 def build(e):
-    head = ("VERSION 1 (17/11) · nouvel épisode, écrit pour avoir 3 vidéos par jour cette semaine. Il sort %s : c'est l'épisode %d à l'écran "
-            "(le numéro et le « prochain épisode » suivent l'ordre de sortie, ta règle du 16/11)." % (e['when'], e['num']))
+    head = ("VERSION 1 (17/11) · nouvel épisode, écrit pour avoir 3 vidéos par jour cette semaine. Il sort %s. C'est l'épisode %d à l'écran : "
+            "tes 6 épisodes validés gardent les numéros 1 à 6 (ta réponse du 17/11 à 5 h), les nouveaux suivent dans leur ordre de sortie, "
+            "et la carte de fin annonce la vidéo qui sort juste après." % (e['when'], e['num']))
     if e.get('extra'):
         head += '\n- ' + e['extra']
     parts = [head, RULES.format(shouter=e['shouter'], lights=e['lights'], stalak=e.get('stalak', "Stalak n'arrive que dans la deuxième moitié, quand Liam est coincé"))]

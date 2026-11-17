@@ -120,16 +120,19 @@
     const ouvert = (k) => K({ flk: [3, 0.6] }, neonText(742, 1250, 'OUVERT', 30, '#ff6a5a', k) + halo(742, 1238, 150, '#ff6a5a', 0.32 * k, { ry: 70 }));
     const ice = [[548, 1292, 34, [3.1, 0.2, 0.8, 0.2]], [700, 1300, 28, [3.7, 1.9, 0.8, 0.2]], [612, 1452, 22, [4.3, 2.8, 0.8, 0.2]], [742, 1330, 26, [2.9, 1.1, 0.8, 0.2]]].map(([x, y, sz, tw]) => glint(x, y, sz, { tw, color: '#d6ecff' })).join('');
     const panes = glass(510, 910, 317, 390, { per: 6.5, ph: 0.8 }) + glass(873, 910, 161, 430, { per: 6.5, ph: 3.6, k: 0.8 });
-    if (t === 'coucher' || t === 'soir') {
-      // evening : the low sun behind the houses on the left, the street lamp and the shop are lit, warm and violet grade
-      const sunU = halo(330, 865, 420, '#ffb060', 0.75, { hot: 130, streak: 760, sk: 0.55 });
-      const sunO = halo(330, 865, 1000, '#ff9a4a', 0.34, { c1: 0.15, skirt: 0.5 }) + rays(330, 865, -14, 84, 7, 1300, '#ffb070', 0.05, 4) + ghosts(330, 865, 0.05);
+    if (t === 'coucher' || t === 'soir' || t === 'nuit') {
+      // evening : the low sun behind the houses on the left, the street lamp and the shop are lit, warm and violet grade ;
+      // 'nuit' (17/11) : no sun any more, a blue night grade, the lamp, the shop and the windows stronger
+      const dark = t === 'nuit';
+      const sunU = dark ? '' : halo(330, 865, 420, '#ffb060', 0.75, { hot: 130, streak: 760, sk: 0.55 });
+      const sunO = dark ? '' : halo(330, 865, 1000, '#ff9a4a', 0.34, { c1: 0.15, skirt: 0.5 }) + rays(330, 865, -14, 84, 7, 1300, '#ffb070', 0.05, 4) + ghosts(330, 865, 0.05);
       const lampU = halo(263, 492, 170, '#ffcf7a', 0.85, { hot: 34, streak: 330 }) + cone(263, 494, 26, 230, 1630, '#ffcf7a', 0.13) + pool(263, 1545, 320, 66, '#ffcf7a', 0.45);
       const lampO = halo(263, 492, 300, '#ffcf7a', 0.28, { c1: 0.2, skirt: 0.5 });
       const shopU = halo(668, 1110, 330, '#ffd08a', 0.42, { ry: 260 }) + pool(668, 1500, 300, 60, '#ffd08a', 0.3) + halo(775, 675, 420, '#ff8a6a', 0.22, { ry: 150 });
       const wins = [[48, 1039], [192, 1039], [310, 1079], [420, 1079]].map(([x, y]) => halo(x, y, 95, '#ffd36b', 0.32)).join('');
-      const mul = wash([[0, '#c86a7a', 0.34], [0.45, '#e09070', 0.24], [0.8, '#8a6ab0', 0.22], [1, '#5a4a90', 0.3]]);
-      return { under: layers('', sunU + lampU + shopU + wins + ouvert(1.25) + panes + ice), over: layers(mul, sunO + lampO + halo(668, 1110, 420, '#ffd08a', 0.12, { c1: 0.1 })), amb: 0.65 };
+      const mul = dark ? wash([[0, '#2a3a8a', 0.34], [0.5, '#22306e', 0.26], [0.85, '#3a2f6a', 0.28], [1, '#151a3a', 0.36]]) : wash([[0, '#c86a7a', 0.34], [0.45, '#e09070', 0.24], [0.8, '#8a6ab0', 0.22], [1, '#5a4a90', 0.3]]);
+      const k = dark ? 1.3 : 1;
+      return { under: layers('', sunU + lampU + (dark ? lampU : '') + shopU + (dark ? shopU : '') + wins + (dark ? wins : '') + ouvert(1.25 * k) + panes + ice), over: layers(mul, sunO + lampO + (dark ? lampO : '') + halo(668, 1110, 420, '#ffd08a', 0.12 * k, { c1: 0.1 })), amb: dark ? 0.85 : 0.65 };
     }
     // the day (and the afternoon, a little lower and warmer) : the sun up on the right, out of the picture
     const pm = t === 'apres-midi';
@@ -174,7 +177,13 @@
   } };
   // the kitchen by day (decors.js cuisine1 : window pane 402-688 × 452-828, the tap near 600, 1012, fridge handles at x 790,
   // the clock at 560, 250)
-  RIGS.cuisine = { 1: () => {
+  RIGS.cuisine = { 1: (t) => {
+    if (t === 'nuit' || t === 'soir') { // 17/11 : the pendant lamp (decors.js cuisine1, its bulb at 545, 270), the dark window
+      const lampU = halo(545, 270, 190, '#ffd99a', 0.95, { hot: 40, streak: 320 }) + cone(545, 272, 40, 380, 1130, '#ffd99a', 0.12) + pool(545, 1132, 330, 46, '#ffd99a', 0.4);
+      const lampO = halo(545, 270, 560, '#ffd99a', 0.3, { c1: 0.15, skirt: 0.5 }) + halo(545, 900, 700, '#ffd99a', 0.1, { c1: 0.1 });
+      const under = lampU + glass(402, 452, 286, 376, { per: 6.8, ph: 1.4, k: 0.5 }) + glint(606, 1014, 18, { tw: [3.7, 0.4] }) + glint(520, 1098, 14, { tw: [4.1, 2.4] });
+      return { under: layers('', under), over: layers(wash([[0, '#2a3a8a', 0.24], [0.6, '#2a3060', 0.18], [1, '#151a3a', 0.3]]), lampO), amb: 0.7 };
+    }
     const g = nid();
     const patch = `<defs><linearGradient id="${g}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff2cf" stop-opacity="0.22"/><stop offset="1" stop-color="#fff2cf" stop-opacity="0.03"/></linearGradient></defs><path d="M 402 828 L 688 828 L 900 1500 L 560 1500 Z" fill="url(#${g})"/>`;
     const glints = [[606, 1014, 20, [3.7, 0.4]], [790, 640, 18, [4.6, 1.9]], [790, 960, 16, [5.2, 3.3]], [520, 1098, 16, [4.1, 2.4]], [578, 228, 18, [5.6, 0.9]]].map(([x, y, sz, tw]) => glint(x, y, sz, { tw })).join('');

@@ -142,13 +142,15 @@
   const persp = (vx, vy) => ({ x: (x, z) => vx + (x - vx) / z, y: (y, z) => vy + (y - vy) / z });
 
   // ---------------- 2. the kitchen, the living room ----------------
-  function cuisine1() {
+  // t : 'jour' ; 'nuit' (17/11 : 6 h du matin in November, or the evening) : the night in the window, the pendant lamp lit
+  function cuisine1(t) {
+    const N = t === 'nuit' || t === 'soir';
     let s = `<rect x="-40" y="-40" width="1160" height="2000" fill="#ecd9a6"/>` + nf('M -40 -40 L 200 -40 L 80 1500 L -40 1500 Z', '#d6c28e');
     // wall clock, upper cabinets
     s += `<circle cx="560" cy="250" r="56" fill="#f8f4ea" stroke="${INK}" stroke-width="${LW}"/>` + ln('M 560 250 L 560 214 M 560 250 L 586 262', INK, 5);
     s += f(R(30, 300, 320, 330), '#b07a4e') + nf(R(30, 300, 60, 330), '#8f5e3a') + ln('M 190 304 L 190 626', INK, LW) + `<circle cx="170" cy="580" r="7" fill="#efbb31" stroke="${INK}" stroke-width="2.4"/><circle cx="210" cy="580" r="7" fill="#efbb31" stroke="${INK}" stroke-width="2.4"/>`;
     // the window over the sink, a valance and curtains
-    s += windowSky(380, 430, 330, 420, 'jour', { cross: false }); // one big pane : Maya stands behind it, no bar across her face (16/11)
+    s += windowSky(380, 430, 330, 420, N ? 'nuit' : 'jour', { cross: false }); // one big pane : Maya stands behind it, no bar across her face (16/11)
     s += f('M 360 404 L 730 404 L 730 470 Q 640 500 545 470 Q 450 500 360 470 Z', '#e86a52') + f('M 360 466 L 420 466 L 404 880 L 360 880 Z', '#e86a52') + f('M 730 466 L 670 466 L 686 880 L 730 880 Z', '#e86a52');
     // tiles, counter, cabinets
     s += `<rect x="-40" y="880" width="780" height="250" fill="${pattern('tile', 46, 46, '<rect width="46" height="46" fill="#f4f1e8"/><path d="M 0 0 L 46 0 L 46 46" fill="none" stroke="#cfc8b6" stroke-width="3"/>')}" stroke="${INK}" stroke-width="${LW}"/>`;
@@ -169,8 +171,9 @@
     // floor : linoleum tiles
     s += `<rect x="-40" y="1500" width="1160" height="460" fill="${pattern('lino', 120, 120, '<rect width="120" height="120" fill="#e6dcc4"/><rect width="60" height="60" fill="#cbbd9c"/><rect x="60" y="60" width="60" height="60" fill="#cbbd9c"/>')}" stroke="${INK}" stroke-width="${LW}"/>` + nf('M -40 1500 L 300 1500 L 160 1960 L -40 1960 Z', '#000', 0.08);
     s += f(R(-40, 1490, 1160, 16), '#d8cfb8');
-    // the warm light of the end of the afternoon
-    s += warm() + nf('M 380 860 L 710 860 L 900 1500 L 300 1500 Z', '#ffd39a', 0.22) + nf('M 300 1500 L 900 1500 L 1000 1960 L 220 1960 Z', '#ffd39a', 0.18);
+    // the warm light of the end of the afternoon ; at night, the room is dark and the pendant lamp over the counter is lit
+    if (N) s += night(0.36) + ln('M 545 -40 L 545 206', INK, 6) + f('M 488 268 L 602 268 L 578 204 L 512 204 Z', '#2f8a7a') + `<ellipse cx="545" cy="270" rx="38" ry="10" fill="#fff3c4" stroke="${INK}" stroke-width="3"/>`;
+    else s += warm() + nf('M 380 860 L 710 860 L 900 1500 L 300 1500 Z', '#ffd39a', 0.22) + nf('M 300 1500 L 900 1500 L 1000 1960 L 220 1960 Z', '#ffd39a', 0.18);
     return s;
   }
   function cuisine2() {
@@ -223,10 +226,13 @@
   // t : 'jour' (and 'apres-midi'), or 'coucher' / 'soir' : the sun goes down behind the houses, the street lamp, the windows
   // and the shop light up (the lights themselves, halos and grade, are in lights.js)
   function rue1(t) {
-    const eve = t === 'coucher' || t === 'soir';
-    let s = eve ? sky([[0, '#2f3a86'], [0.36, '#b0577f'], [0.66, '#ff7a52'], [0.88, '#ffb36a'], [1, '#ffd08a']], 1500) : sky([[0, '#8fc3ec'], [0.55, '#cfe3f0'], [1, '#ffd7a8']], 1500);
-    if (eve) s += `<circle cx="330" cy="865" r="84" fill="#fff0c8"/>`;
-    s += eve ? cloud(80, 260, 1.1, '#ffc6b4', 0.9) + cloud(640, 180, 0.8, '#ffb8b0', 0.9) + cloud(420, 420, 0.6, '#ffd2a8', 0.75) : cloud(80, 260, 1.1) + cloud(640, 180, 0.8) + cloud(420, 420, 0.6, '#ffffff', 0.8);
+    // 'nuit' (17/11, « Nuit à 17 h ») : the sun has just set, the sky goes dark blue with a last band of orange low down,
+    // the windows, the street lamp and the shop are lit
+    const dark = t === 'nuit', eve = t === 'coucher' || t === 'soir' || dark;
+    let s = dark ? sky([[0, '#0d1331'], [0.45, '#1f2862'], [0.72, '#3d3880'], [0.88, '#8a4f7a'], [1, '#d9785e']], 1500) : eve ? sky([[0, '#2f3a86'], [0.36, '#b0577f'], [0.66, '#ff7a52'], [0.88, '#ffb36a'], [1, '#ffd08a']], 1500) : sky([[0, '#8fc3ec'], [0.55, '#cfe3f0'], [1, '#ffd7a8']], 1500);
+    if (dark) s += stars(18, 0, 0, 1080, 560, 7);
+    else if (eve) s += `<circle cx="330" cy="865" r="84" fill="#fff0c8"/>`;
+    s += dark ? cloud(80, 260, 1.1, '#3a3f78', 0.8) + cloud(640, 180, 0.8, '#343a70', 0.8) + cloud(420, 420, 0.6, '#5a4a86', 0.7) : eve ? cloud(80, 260, 1.1, '#ffc6b4', 0.9) + cloud(640, 180, 0.8, '#ffb8b0', 0.9) + cloud(420, 420, 0.6, '#ffd2a8', 0.75) : cloud(80, 260, 1.1) + cloud(640, 180, 0.8) + cloud(420, 420, 0.6, '#ffffff', 0.8);
     const win = eve ? '#ffcf6b' : '#ffe9b0';
     s += house(-30, 900, 300, 420, '#9fc1d8', '#6b4f52', win) + house(250, 960, 230, 360, '#e8c9a0', '#7a4e45', win) + tree(420, 1100, 90, '#5f9a4f', '#477a3a');
     s += f(R(-40, 1320, 520, 140), '#8fbf6f') + ln('M -40 1320 L 480 1320', INK, LW);
@@ -240,7 +246,7 @@
     s += f(R(-40, 1460, 1160, 170), '#cfcbc4') + ln('M 200 1460 L 160 1630 M 520 1460 L 500 1630 M 860 1460 L 860 1630', '#a9a49b', 4);
     s += f(R(-40, 1630, 1160, 30), '#b5b0a7') + f(R(-40, 1660, 1160, 300), '#5a5c63') + ln('M -40 1800 L 1120 1800', '#e8c95a', 10, ' stroke-dasharray="80 60"');
     s += f('M 390 1460 L 390 1400 C 390 1380 430 1380 430 1400 L 430 1460 Z', '#e5484d') + f(R(376, 1410, 68, 16), '#c8443a') + f('M 270 1460 L 278 1370 L 352 1370 L 360 1460 Z', '#3f7a55') + f(R(268, 1360, 92, 16), '#2f5e41');
-    s += warm() + nf('M -40 1460 L 1120 1460 L 1120 1640 L -40 1640 Z', '#ffd39a', 0.14) + nf('M 470 580 L 1080 580 L 1080 1460 L 470 1460 Z', '#ffd39a', 0.12);
+    s += dark ? night(0.38) : warm() + nf('M -40 1460 L 1120 1460 L 1120 1640 L -40 1640 Z', '#ffd39a', 0.14) + nf('M 470 580 L 1080 580 L 1080 1460 L 470 1460 Z', '#ffd39a', 0.12);
     return s;
   }
   function rue2() {
