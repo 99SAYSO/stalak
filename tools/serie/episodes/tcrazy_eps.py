@@ -52,6 +52,8 @@ TIMES = {
     'ep7': [0, 2, 5, 13, 18, 21, 25, 31, 37, 45, 54, 57, 61, 66, 73],
     'ep8': [0, 2, 5, 12, 17, 22, 28, 33, 37, 43, 52, 59, 64, 72],
     'ep9': [0, 2, 6, 14, 21, 26, 30, 36, 41, 51, 59, 62, 65, 73],
+    'ep10': [0, 2, 5, 13, 18, 22, 29, 36, 41, 50, 58, 64, 72],
+    'ep11': [0, 2, 5, 12, 18, 22, 28, 35, 38, 47, 52, 59, 65, 69, 76],
 }
 TARGET = 65.0  # seconds : the rule says 65 s at least. The pauses added to get there are small (tcrazy.py plan) : the owner
 # does not want blanks (16/11, episode 2 : « il faut cut à ce moment la séquence, il y a un blanc trop long sinon »), so the
@@ -239,4 +241,43 @@ EPISODES = {
                   4: 'reading aloud from a notebook, slowly, quietly moved', 5: 'hiding that she is moved, dry', 6: 'outraged, very proud of himself',
                   7: 'calm and direct, a bit tired', 8: 'admitting it, a bit embarrassed', 9: 'casual, saying hi, curious', 10: 'surprised and touched',
                   11: 'calm, explaining simply', 12: 'hopeful, amazed', 13: 'dry, teasing', 14: 'warm', 15: 'warm and proud, then firm like a mother', 16: CTA}),
+    # « L'extrait de 3 h du matin » (n° 10, 20/11 at 18 h) : Liam's room in the day (chambre 2)
+    'ep10': dict(card='tcrazy-ep10', same={}, shots=[
+        ('ep10-01', [1], dict(music='plan', sfx=[('whoosh-short.mp3', 0.0, 0.3)])),
+        ('ep10-02', [2], {}),
+        ('ep10-03', [3], dict(sfx=[('notification.mp3', 0.2, 0.35)])),  # the extract posted at 3 h 12
+        ('ep10-04', [4], {}),
+        ('ep10-05', [5], dict(lead=2.1, fixed=True, sfx=[('steps.wav', 0.2, 0.25)])),  # Deuce walks in, then speaks
+        ('ep10-06', [6, 7], dict(music='galere')),
+        ('ep10-07', [8], {}),  # his computer : 4 hours of editing for 15 seconds
+        ('ep10-08', [9, 10], dict(lead=2.1, fixed=True, sfx=[('steps.wav', 0.2, 0.25)])),  # Maya walks in, then speaks
+        ('ep10-09', [11], {}),
+        ('ep10-10', [12], dict(music='hustle', lead=0.2, after=0.6, sfx=[('pop.mp3', 2.6, 0.45)])),  # Stalak cuts the extract while Liam writes
+        ('ep10-11', [13, 14], dict(music='victoire', lead=2.3, fixed=True, sfx=[('click.mp3', 0.8, 0.35), ('ping.mp3', 1.05, 0.3), ('notification.mp3', 1.9, 0.4)])),
+        ('ep10-12', [15], {}),
+        ('ep10-13', [], dict(hold=3.4, sfx=[('whoosh-short.mp3', 0.75, 0.25)])),
+    ], direction={1: 'shocked, shouting at his phone', 2: 'panicked, whining', 4: 'ironic', 5: 'very proud, like a businessman, saying hi',
+                  6: 'overwhelmed, stressed', 7: 'very sure of himself, explaining business', 8: 'outraged and exhausted', 9: 'casual, saying hi, curious',
+                  10: 'exasperated', 11: 'calm, explaining simply', 12: 'warm', 13: 'very proud, like a genius', 14: 'dry, teasing', 15: CTA}),
+    # « La voix perdue » (n° 11, 20/11 at 21 h) : the kitchen in the evening (cuisine 1 'nuit', instead of the living room), then the court at 16 h
+    'ep11': dict(card='tcrazy-ep11', same={}, shots=[
+        ('ep11-01', [1], dict(music='plan', sfx=[('whoosh-short.mp3', 0.0, 0.3)])),
+        ('ep11-02', [2], {}),
+        ('ep11-03', [3], {}),
+        ('ep11-04', [4], dict(lead=2.1, fixed=True, sfx=[('steps.wav', 0.2, 0.25)])),  # Nadia walks in with tea, then speaks
+        ('ep11-05', [5], dict(sfx=[('typing.mp3', 0.3, 0.3)])),  # he can't speak : he types
+        ('ep11-06', [6], dict(music='galere')),
+        ('ep11-07', [7, 8, 9], {}),
+        ('ep11-08', [], dict(dip=True, hold=2.4)),  # « Le lendemain, 16 h · le terrain »
+        ('ep11-09', [10], dict(music='hustle', lead=0.4, sfx=[('click.mp3', 0.1, 0.35)])),  # the takes : he moves his lips, without a sound
+        ('ep11-10', [11, 12], dict(lead=2.1, fixed=True, sfx=[('steps.wav', 0.2, 0.25)])),  # Maya walks in, then speaks
+        ('ep11-11', [13], {}),
+        ('ep11-12', [14], dict(lead=0.2, after=0.6, sfx=[('pop.mp3', 2.6, 0.45)])),
+        ('ep11-13', [15], dict(music='victoire', lead=2.3, fixed=True, sfx=[('click.mp3', 0.8, 0.35), ('ping.mp3', 1.05, 0.3), ('notification.mp3', 1.9, 0.4)])),
+        ('ep11-14', [16], {}),
+        ('ep11-15', [], dict(hold=3.4, sfx=[('whoosh-short.mp3', 0.75, 0.25)])),
+    ], direction={1: 'shouting, panicked', 2: 'whispering with almost no voice, hoarse, pretending to be fine', 4: 'calm and firm, like a nurse giving orders',
+                  5: 'ironic', 6: 'very serious, like a businessman in a crisis', 7: 'dry, a bit tired', 8: 'calm, explaining simply', 9: 'amazed, excited',
+                  10: 'warm', 11: 'casual, curious, saying hi', 12: 'proud', 13: 'calm, explaining simply', 14: 'warm', 15: 'very sure of himself, like a genius',
+                  16: 'whispering with almost no voice, hoarse, talking straight to the camera, friendly, like giving a tip to a friend'}),
 }
