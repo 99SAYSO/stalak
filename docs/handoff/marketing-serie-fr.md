@@ -2,9 +2,9 @@
 
 > Marketing & croissance. Rien ne change sur le site : seulement `tools/serie/` et `docs/`.
 
-Statut : EN COURS (épisodes 7 et 8 à valider dans Studio Stalak, épisode 9 en fabrication, storyboards 12 à 15 à valider ; rien à publier sur le site). Tests : planches contact relues pour chaque vidéo déposée, `node --check` sur le moteur. Rien à faire par le Chef de projet, sauf garder la branche à jour.
+Statut : EN COURS (épisodes 7, 8 et 9 à valider dans Studio Stalak, storyboards 12 à 15 à valider, voix des épisodes 10 et 11 en attente d'une recharge de Flora ; rien à publier sur le site). Tests : planches contact relues pour chaque vidéo déposée, `node --check` sur le moteur. Rien à faire par le Chef de projet, sauf garder la branche à jour.
 
-## 17/11, 6 h : épisodes 7 et 8 fabriqués, 9 en cours ; storyboards 12 à 15 déposés
+## 17/11, 6 h 45 : épisodes 7, 8 et 9 fabriqués ; storyboards 12 à 15 déposés
 
 - **Ses réponses** : les 9 scripts validés (4 h 55) ; les numéros des 6 épisodes validés ne changent pas (« Non, garde-les telles quelles ») : les nouveaux sont 7 à 15 dans l'ordre de sortie, et leur carte de fin annonce la vidéo qui sort juste après ; les storyboards 7 à 11 validés (5 h 18).
 - **Feu vert** : `lots/2026-11-16` est à `true` (donné le 16/11 pour 5 vidéos) et les fiches 7 à 11 sont en `visuels_ok` : la fabrication a commencé, coûts annoncés avant chaque génération.
@@ -12,7 +12,8 @@ Statut : EN COURS (épisodes 7 et 8 à valider dans Studio Stalak, épisode 9 en
   - 36 voix générées une fois sur le texte validé (0,468 $), relues par transcription (Whisper « small ») : 2 répliques de l'épisode 7 mal dites (M. Reyes : « Pour » au lieu de « Pas » ; Maya : « Orion » au lieu de « Rien ») refaites (0,026 $) ; un « Ha ! » ajouté par la voix au début d'une réplique de Liam coupé ;
   - durées : 1 min 19,8 et 1 min 16,8 (règle : 1 min 05 à 1 min 20). Pour rester sous 1 min 20, l'épisode 7 a des temps d'action un peu resserrés (le départ de M. Reyes, les prises, la publication), mais l'entrée de Maya garde ses 2,1 s (remarque sur l'épisode 3 : « trop rapide ») ;
   - planches contact relues en entier (une image toutes les 0,5 s). Relevé sur l'épisode 8 : sous le lampadaire, Liam ne paraissait pas orange, alors que le narrateur le dit et que Maya le lui demande. Corrigé avec une nouvelle option `sodium` des personnages (`frame.js`, la lumière orange du lampadaire), rendu refait et planche relue : 0 problème restant.
-- **Épisode 9 (« Le cahier de rap », 19/11 21 h)** : 16 voix (0,208 $), relues ; 1 min 16,2 ; vidéo en cours.
+- **Épisode 9 (« Le cahier de rap », 19/11 21 h)** : 16 voix (0,208 $), relues ; 1 min 16,3 ; planche relue (0 problème), déposé en `video` avec sa miniature.
+- Le 17/11 vers 6 h 10, la machine a redémarré pendant le rendu : rien de perdu (le dossier de travail est resté), le rendu des épisodes 8 et 9 a été relancé.
 - **Épisodes 10 et 11 (20/11)** : storyboards validés, voix pas encore faites : le solde Flora (environ 0,13 $ après l'épisode 9, partagé avec la série LEVELS) ne suffit pas (0,40 $ pour les deux). **Il faut recharger Flora** : environ 1,30 $ pour finir la semaine (10 à 15).
 - **Storyboards 12 à 15 déposés** (statut `visuels`) :
   - 12 : corrigé avant dépôt : on voit le téléphone de Big Mo sur le banc pendant toute la scène, l'écran de Stalak montre le vrai bouton de l'appli (« Générer le pack », et non « Programmer » : Stalak ne publie pas à ta place) ;
@@ -20,7 +21,8 @@ Statut : EN COURS (épisodes 7 et 8 à valider dans Studio Stalak, épisode 9 en
   - 14 (« Le Black Friday ») : dessiné ; la cuisine le soir au lieu du salon (pas dans les décors choisis), une pub de caméra sans marque, la boîte de baskets vide de Deuce ;
   - 15 (« Les effets spéciaux ») : dessiné ; Liam blanchi par la farine (nouvelle option `flour` des personnages), le nuage dans le rayon de soleil, les balais de Nadia, Stalak réglé sur « Nerveux ». Carte de fin : « LA SEMAINE PROCHAINE », en attendant son choix du premier épisode de la semaine prochaine.
 - Fichiers : `tools/serie/episodes/tcrazy_eps.py` (plans, temps et directions de jeu des épisodes 7, 8 et 9), `tools/serie/engine/storyboard.js` (épisodes 12 à 15, carton qui s'ajuste), `tools/serie/engine/frame.js` (option `flour`).
-- Ensuite : la vidéo de l'épisode 9 ; les voix des épisodes 10 et 11 dès que Flora est rechargée ; 12 à 15 après validation de leurs storyboards.
+- Épisodes 10 et 11 : plans, temps et jeu déjà écrits dans `tcrazy_eps.py`, demandes de voix prêtes (`prompts`) : il ne reste qu'à générer les voix (0,403 $) puis lancer le rendu.
+- Ensuite : les voix des épisodes 10 et 11 dès que Flora est rechargée ; 12 à 15 après validation de leurs storyboards.
 - Skills : `stalak-videos-reseaux`, `stalak-da`, `planche-contact`, `hyperframes`.
 
 ## 17/11, 5 h : 9 nouveaux scripts pour avoir 3 vidéos par jour (à valider)

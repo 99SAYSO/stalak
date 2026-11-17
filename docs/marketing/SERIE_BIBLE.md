@@ -143,7 +143,7 @@ Le 17/11 à 3 h 57, le propriétaire : « on a pas nos 3 vidéos par jour sur la
 | 18/11 21 h | 8 | IL FAIT NUIT À 17 H ET IL DEVAIT TOURNER SON CLIP | Liam : « Il est 17 h et il fait déjà nuit ?! » | trois lumières de nuit, le filtre Noir & blanc (gratuit) | IL A PASSÉ LA NUIT SUR SA VIDÉO DE PROMO | vidéo à valider |
 | 19/11 12 h 30 | 2 | IL A PASSÉ LA NUIT SUR SA VIDÉO DE PROMO | Liam | (validé) | (inchangé) | validé |
 | 19/11 18 h | 3 | IL SORT SON SON LE JOUR DE GTA 6 | Deuce | (validé) | (inchangé) | validé |
-| 19/11 21 h | 9 | SA MÈRE A LU SES TEXTES DE RAP | Nadia : « Tu rappes sur moi ?! » | les paroles à l'écran, collées puis calées au tap (gratuit) | SON POTE S'EST NOMMÉ SON MANAGER | voix faites, vidéo en cours |
+| 19/11 21 h | 9 | SA MÈRE A LU SES TEXTES DE RAP | Nadia : « Tu rappes sur moi ?! » | les paroles à l'écran, collées puis calées au tap (gratuit) | SON POTE S'EST NOMMÉ SON MANAGER | vidéo à valider |
 | 20/11 12 h 30 | 4 | SON POTE S'EST NOMMÉ SON MANAGER | Liam | (validé) | (inchangé) | validé |
 | 20/11 18 h | 10 | SON EXTRAIT A MARCHÉ, MAIS LE SON N'EST PAS FINI | Liam : « Ils veulent le son en entier ?! » | Stalak monte l'extrait pendant que Liam écrit | IL A PERDU SA VOIX LA VEILLE DE SON CLIP | storyboard validé ; voix : il faut recharger Flora |
 | 20/11 21 h | 11 | IL A PERDU SA VOIX LA VEILLE DE SON CLIP | Deuce : « T'as plus de voix et on tourne demain ?! » | le playback : le son est déjà enregistré, la bouche reste synchro | IL VOULAIT UN CLIP COMME DANS GTA | storyboard validé ; voix : il faut recharger Flora |
@@ -158,7 +158,7 @@ Deuce est « son pote » jusqu'au 20/11 (l'épisode 4, où il se nomme manager),
 
 **Les décors** : seulement ceux qu'il a choisis dans l'Univers (chambre 2, cuisine 1, rue 1, terrain 1, lycée 1, toit 2). Quand un script parle d'un lieu qu'il n'a pas choisi (le salon dans les épisodes 11 et 14), le storyboard le remplace par la cuisine, et la fiche le dit. Nouveautés dessinées pour la semaine : la rue 1 de nuit (lampadaire, vitrine éclairée), la cuisine 1 le soir (lampe au-dessus de la table), la farine (épisode 15 : Liam blanchi, le nuage dans le rayon de soleil).
 
-**À la fabrication (17/11)** : chaque voix est générée une fois, sur le texte validé. Deux répliques de l'épisode 7 étaient mal dites (M. Reyes disait « Pour » au lieu de « Pas », Maya « Orion » au lieu de « Rien ») : refaites, 0,026 $. Un « Ha ! » ajouté par la voix au début d'une réplique de Liam a été coupé, pour coller au texte. Les entrées en marchant restent à 2,1 s au moins (remarque sur l'épisode 3 : « trop rapide »). Durées : épisode 7, 1 min 19,8 ; épisode 8, 1 min 16,8 ; épisode 9, 1 min 16,2.
+**À la fabrication (17/11)** : chaque voix est générée une fois, sur le texte validé. Deux répliques de l'épisode 7 étaient mal dites (M. Reyes disait « Pour » au lieu de « Pas », Maya « Orion » au lieu de « Rien ») : refaites, 0,026 $. Un « Ha ! » ajouté par la voix au début d'une réplique de Liam a été coupé, pour coller au texte. Les entrées en marchant restent à 2,1 s au moins (remarque sur l'épisode 3 : « trop rapide »). Durées : épisode 7, 1 min 19,8 ; épisode 8, 1 min 16,8 ; épisode 9, 1 min 16,3. Sous le lampadaire de l'épisode 8, Liam devient orange (option `sodium`) : sans ça, « Pourquoi t'es orange ? » ne se comprenait pas.
 
 ## Idées d'épisodes (à valider une par une)
 
