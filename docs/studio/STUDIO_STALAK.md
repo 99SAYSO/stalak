@@ -16,6 +16,8 @@ Une fiche par élément : `{categorie: "personnage" | "decor" | "habillage" | "m
 - Le Chef de projet a posé la première liste le 15/11 (19 fiches). Marketing peut en ajouter, pas en retirer.
 
 
+- `statut: "retire"` (depuis le 17/11) : le propriétaire n'en a plus besoin (croix dans l'onglet Univers). Ne plus rien proposer pour cet élément ; `statutAvant` garde l'ancien statut s'il le remet. Dans l'onglet, ce qui est `choisi` est replié en bas dans « Déjà validé ».
+
 ### `videos` — une fiche par vidéo
 | Champ | Contenu |
 |---|---|
