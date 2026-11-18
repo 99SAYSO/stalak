@@ -900,8 +900,9 @@
       over: () => phoneBig(posted(clipPic('tshirts-deuce'), 'Mon son, enfin posté', 'kenzo.prod', 'Le son est lourd. Il est où, le tee-shirt ?', '#7d55c7', 2), 0.92) + sub(1, 'deuce', "Quelqu'un veut un tee-shirt ! Je l'avais dit !") },
     { t: '1:06', cap: 'Liam parle à celui qui regarde', set: RUE_EVE, zoom: [540, 1150, 1.3], chars: [LI(540, 2730, 2250, 'frime')],
       over: () => sub(1, 'liam', "Ton son, personne l'a encore entendu ? Filme trois prises, et Stalak monte sur le rythme. Les tee-shirts, après.") },
-    { t: '1:13', cap: 'La carte de fin (le prochain à sortir : « Nuit à 17 h »)', plain: true, over: () => endCard(`IL FAIT NUIT À 17${NB}H ET IL DEVAIT TOURNER SON CLIP`) },
-  ], "Sort le 18/11 à 18 h. La rue pavillonnaire l'après-midi, puis au coucher du soleil.");
+    // 18/11 : with the Chef's new schedule, the episode 2 comes right after this one (owner, 18/11 : « Oui, refais-la »)
+    { t: '1:13', cap: 'La carte de fin (le prochain à sortir : l\'épisode 2, le 20/11 à 12 h 30)', plain: true, over: () => endCard('IL A PASSÉ LA NUIT SUR SA VIDÉO DE PROMO') },
+  ], "Sort le 19/11 à 21 h. La rue pavillonnaire l'après-midi, puis au coucher du soleil.");
 
   // ---------------- épisode 8 (18/11, 21 h) : « Nuit à 17 h » ----------------
   const E8 = `IL FAIT NUIT À 17${NB}H ET IL DEVAIT TOURNER SON CLIP`; // « 17 H » never cut in two
@@ -937,8 +938,9 @@
       over: () => phoneBig(posted(clipPic('vitrine', 'fierte', { bw: true }), 'Clip de nuit', 'yasmine.wav', "L'ambiance de nuit 🔥", '#c94f84', 3), 0.92) + sub(1, 'liam', 'Le clip de nuit, c\'était voulu.') },
     { t: '1:04', cap: 'Liam parle à celui qui regarde', set: RUE_NIGHT, zoom: [400, 1150, 1.3], chars: [LI(330, 2730, 2250, 'frime')],
       over: () => sub(1, 'liam', 'Toi aussi, il fait nuit après les cours ? Filme sous la lumière que t\'as. Stalak coupe sur le rythme, et le noir et blanc est gratuit.') },
-    { t: '1:12', cap: 'La carte de fin (le prochain à sortir : l\'épisode 2)', plain: true, over: () => endCard('IL A PASSÉ LA NUIT SUR SA VIDÉO DE PROMO') },
-  ], 'Sort le 18/11 à 21 h. Ta rue pavillonnaire à la tombée de la nuit (la rue en ville n\'a pas été choisie).');
+    // 18/11 : the Chef's new schedule puts « L'extrait de 3 h du matin » right after this one (owner, 18/11 : « Oui, refais-la »)
+    { t: '1:12', cap: 'La carte de fin (le prochain à sortir : « L\'extrait de 3 h du matin »)', plain: true, over: () => endCard("SON EXTRAIT A MARCHÉ, MAIS LE SON N'EST PAS FINI") },
+  ], 'Sort le 21/11 à 21 h. Ta rue pavillonnaire à la tombée de la nuit (la rue en ville n\'a pas été choisie).');
 
   // ---------------- épisode 9 (19/11, 21 h) : « Le cahier de rap » ----------------
   const E9 = 'SA MÈRE A LU SES TEXTES DE RAP', KITCHEN_N = ['cuisine', 1, 'nuit'];
@@ -1020,7 +1022,7 @@
     { t: '1:05', cap: 'Liam parle à celui qui regarde', set: KITCHEN, zoom: [540, 1150, 1.3], chars: [LI(540, 2730, 2250, 'frime')],
       over: () => sub(1, 'liam', 'T\'as écrit des phrases que personne a jamais lues, toi aussi ? Mets-les à l\'écran : avec Stalak, tu les cales au tap, gratuitement.') },
     { t: '1:13', cap: 'La carte de fin (le prochain à sortir : l\'épisode 4)', plain: true, over: () => endCard("SON POTE S'EST NOMMÉ SON MANAGER") },
-  ], 'Sort le 19/11 à 21 h. La cuisine à 6 h du matin (il fait encore nuit), puis après les cours.');
+  ], 'Sort le 20/11 à 18 h. La cuisine à 6 h du matin (il fait encore nuit), puis après les cours.');
 
   // ---------------- épisode 10 (20/11, 18 h) : « L'extrait de 3 h du matin » ----------------
   const E10 = "SON EXTRAIT A MARCHÉ, MAIS LE SON N'EST PAS FINI";
@@ -1061,7 +1063,7 @@
     { t: '1:04', cap: 'Liam parle à celui qui regarde', set: ['chambre', 2, 'jour', { nomic: true }], zoom: [500, 960, 1.3], chars: [LI(540, 2730, 2250, 'frime')],
       over: () => sub(1, 'liam', 'T\'as un son pas fini, toi aussi ? Garde tes nuits pour écrire. Tes extraits, Stalak les monte sur le rythme.') },
     { t: '1:12', cap: 'La carte de fin (le prochain à sortir : « La voix perdue »)', plain: true, over: () => endCard('IL A PERDU SA VOIX LA VEILLE DE SON CLIP') },
-  ], 'Sort le 20/11 à 18 h. La chambre-studio, le matin.');
+  ], 'Sort le 22/11 à 12 h 30. La chambre-studio, le matin.');
 
   // ---------------- épisode 11 (20/11, 21 h) : « La voix perdue » ----------------
   const E11 = 'IL A PERDU SA VOIX LA VEILLE DE SON CLIP';
@@ -1111,8 +1113,8 @@
       over: () => phoneBig(posted(clipPic('terrain-echarpe', 'fierte'), 'Clip sans voix', 'lou.prod', "Le style avec l'écharpe 🔥", '#7d55c7', 6), 0.92) + `<g transform="rotate(-4 540 300)"><rect x="250" y="220" width="580" height="140" rx="26" fill="${SNOW}" stroke="${INK}" stroke-width="8"/>${T(540, 316, "C'ÉTAIT VOULU.", 74, INK)}</g>` + sub(1, 'deuce', 'Demain, je lance la mode des écharpes.') },
     { t: '1:09', cap: 'Liam chuchote à celui qui regarde', set: COURT_PM, zoom: [540, 1150, 1.3], chars: [LI(540, 2730, 2250, 'frime', scarf())],
       over: () => sub(1, 'liam', 'Toi aussi, t\'as plus de voix ? Ton son est déjà enregistré. Filme-toi en playback, et Stalak cale tes prises sur ton son.') },
-    { t: '1:16', cap: 'La carte de fin (le prochain à sortir : l\'épisode 5)', plain: true, over: () => endCard('IL VOULAIT UN CLIP COMME DANS GTA') },
-  ], 'Sort le 20/11 à 21 h. La cuisine le soir (le salon n\'a pas été choisi), puis le terrain le lendemain.');
+    { t: '1:16', cap: 'La carte de fin (le prochain à sortir : « Le clash au terrain »)', plain: true, over: () => endCard('IL A CLASHÉ LE RAPPEUR LE PLUS CONNU DU QUARTIER') },
+  ], 'Sort le 22/11 à 18 h. La cuisine le soir (le salon n\'a pas été choisi), puis le terrain le lendemain.');
 
   // ---------------- épisode 12 (21/11, 18 h) : « Le clash au terrain » ----------------
   const E12 = 'IL A CLASHÉ LE RAPPEUR LE PLUS CONNU DU QUARTIER';
@@ -1174,7 +1176,7 @@
     { t: '1:08', cap: 'Liam parle à celui qui regarde', set: COURT_PM, zoom: [540, 1150, 1.3], chars: [LI(540, 2730, 2250, 'frime')],
       over: () => sub(1, 'liam', 'Un clip te prend tout un week-end, toi aussi ? Filme tes prises, Stalak monte sur le rythme, et poste tous les jours.') },
     { t: '1:16', cap: 'La carte de fin : « La fiche d\'orientation »', plain: true, over: () => endCard('IL A ÉCRIT “RAPPEUR” SUR SA FICHE D\'ORIENTATION') },
-  ], 'Sort le 21/11 à 18 h, juste après « Le clip façon GTA » (qui l\'annonce). Le terrain en fin de journée.');
+  ], 'Sort le 22/11 à 21 h, juste après « La voix perdue » (qui l\'annonce). Le terrain en fin de journée.');
 
   // ---------------- épisode 13 (21/11, 21 h) : « La fiche d'orientation » ----------------
   const E13 = 'IL A ÉCRIT “RAPPEUR” SUR SA FICHE D\'ORIENTATION', ROOF = ['toit', 2, 'soir'];
@@ -1217,8 +1219,8 @@
       over: () => phoneBig(posted(clipPic('toit', 'fierte'), 'Coucher de soleil', 'clara.mp3', 'C\'est où, ce toit ? 😍', '#c94f84', 7), 0.92) + sub(1, 'liam', 'Bon. Le stade, ce sera dans deux ans.') },
     { t: '1:08', cap: 'Liam parle à celui qui regarde', set: ROOF, zoom: [540, 1150, 1.3], chars: [LI(540, 2730, 2250, 'frime')],
       over: () => sub(1, 'liam', 'T\'as cours demain, toi aussi ? Filme trois prises ce soir. Stalak monte sur le rythme, et t\'as posté avant tes devoirs.') },
-    { t: '1:16', cap: 'La carte de fin : « Triller »', plain: true, over: () => endCard("TRILLER N'EST PLUS SUR L'APP STORE") },
-  ], 'Sort le 21/11 à 21 h. La cuisine le soir, puis ton toit au coucher du soleil.');
+    { t: '1:16', cap: 'La carte de fin : « Le Black Friday »', plain: true, over: () => endCard('IL VEUT UNE CAMÉRA DE PRO POUR LE BLACK FRIDAY') },
+  ], 'Sort le 23/11 à 12 h 30. La cuisine le soir, puis ton toit au coucher du soleil.');
 
   // ---------------- épisode 14 (22/11, 18 h) : « Le Black Friday » ----------------
   const E14 = 'IL VEUT UNE CAMÉRA DE PRO POUR LE BLACK FRIDAY';
@@ -1289,7 +1291,7 @@
     { t: '1:06', cap: 'Liam parle à celui qui regarde', set: RUE, zoom: [540, 1150, 1.3], chars: [LI(540, 2730, 2250, 'frime')],
       over: () => sub(1, 'liam', "Avant de casser ta tirelire au Black Friday : ton téléphone suffit. Stalak monte tes prises sur le rythme, et c'est gratuit.") },
     { t: '1:14', cap: 'La carte de fin : « Le nuage de farine »', plain: true, over: () => endCard('IL A TOURNÉ SON DROP DANS UN NUAGE DE FARINE') },
-  ], "Sort le 22/11 à 18 h. La cuisine le soir (au lieu du salon), puis la rue l'après-midi.");
+  ], "Sort le 23/11 à 18 h. La cuisine le soir (au lieu du salon), puis la rue l'après-midi.");
 
   // ---------------- épisode 15 (22/11, 21 h) : « Les effets spéciaux » ----------------
   const E15 = 'IL A TOURNÉ SON DROP DANS UN NUAGE DE FARINE';
@@ -1329,12 +1331,12 @@
   // Nadia's bag on her shoulder (in her own coordinates)
   const handbag = (x = 640, y = 1060) => `<path d="M ${x - 170} 650 Q ${x - 80} 820 ${x - 50} ${y - 64}" fill="none" stroke="${INK}" stroke-width="13" stroke-linecap="round"/>` +
     `<rect x="${x - 92}" y="${y - 72}" width="184" height="150" rx="26" fill="#8a3f5c" stroke="${INK}" stroke-width="8"/><rect x="${x - 40}" y="${y - 42}" width="80" height="20" rx="8" fill="#ffd34d" stroke="${INK}" stroke-width="4"/>`;
-  // the take on Deuce's phone : the drop comes… and the picture turns white
+  // the take on Deuce's phone : the drop comes… and the picture turns white (18/11 : at 1.85 s, on Deuce's « boum »)
   function dropScreen() {
     const id = 'dr' + (++UID);
     let s = `<rect width="560" height="1000" fill="#0f1116"/>` + T(280, 76, 'Prise 1', 36, SNOW, { font: 'Rubik', weight: 800 });
     s += `<clipPath id="${id}"><rect x="20" y="110" width="520" height="650" rx="18"/></clipPath><g clip-path="url(#${id})"><g transform="translate(20 110) scale(1 1.625)">${takeScene('vaisselle')}</g>${liamBust('fierte', 280, 210, 900, '', false)}` +
-      K({ in: 2.2 }, `<rect x="20" y="110" width="520" height="650" fill="#ffffff"/><g opacity="0.13">${liamBust('panique', 280, 210, 900, '', false)}</g>` + [[150, 300, 90], [380, 260, 110], [260, 520, 130], [440, 620, 80]].map(([cx, cy, rr]) => `<circle cx="${cx}" cy="${cy}" r="${rr}" fill="#f4f6f9" stroke="#dfe3ea" stroke-width="6"/>`).join('')) + '</g>';
+      K({ in: 1.85 }, `<rect x="20" y="110" width="520" height="650" fill="#ffffff"/><g opacity="0.13">${liamBust('panique', 280, 210, 900, '', false)}</g>` + [[150, 300, 90], [380, 260, 110], [260, 520, 130], [440, 620, 80]].map(([cx, cy, rr]) => `<circle cx="${cx}" cy="${cy}" r="${rr}" fill="#f4f6f9" stroke="#dfe3ea" stroke-width="6"/>`).join('')) + '</g>';
     s += `<rect x="20" y="110" width="520" height="650" rx="18" fill="none" stroke="${INK}" stroke-width="6"/>`;
     s += `<rect x="40" y="806" width="480" height="14" rx="7" fill="#3a3f4c"/><rect x="40" y="806" width="300" height="14" rx="7" fill="${BLUE}"/><circle cx="340" cy="813" r="17" fill="${SNOW}" stroke="${INK}" stroke-width="4"/>`;
     return s + `<rect x="286" y="842" width="108" height="46" rx="12" fill="#e5484d" stroke="${INK}" stroke-width="4"/>` + T(340, 875, 'DROP', 28, SNOW);
@@ -1371,8 +1373,8 @@
       over: () => phoneBig(posted(clipPic('frigo', 'fierte'), 'Mon drop, sans farine', 'sami.beats', 'Le drop 🔥🔥', '#d9822b', 5), 0.92) + sub(1, 'deuce', "Tu vois ? Mon idée de farine, c'était presque ça.") },
     { t: '1:06', cap: 'Liam parle à celui qui regarde', set: KITCHEN_N, zoom: [540, 1150, 1.3], chars: [LI(540, 2730, 2250, 'frime')],
       over: () => sub(1, 'liam', 'Tu veux que ton drop explose, toi aussi ? Pas besoin de farine : filme plusieurs prises, et Stalak coupe sur le rythme.') },
-    { t: '1:14', cap: 'La carte de fin : le prochain, à choisir', plain: true, over: () => endCard('LA SEMAINE PROCHAINE') },
-  ], "Sort le 22/11 à 21 h. La cuisine en fin d'après-midi, puis le soir, une fois rangée.");
+    { t: '1:14', cap: 'La carte de fin : « Prochain épisode : bientôt » (son choix du 18/11)', plain: true, over: () => endCard('BIENTÔT') },
+  ], "Sort le 23/11 à 21 h. La cuisine en fin d'après-midi, puis le soir, une fois rangée.");
 
   // ---------------- the thumbnails (TikTok cover), one per episode, in the style of the validated example (frame.js) ----------------
   const thumb = (set, chars, title, num, extra = '') => ({ set, chars, over: () => extra + `<g transform="translate(0 120)">${bandeau(2, title, num)}</g>` });

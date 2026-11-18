@@ -158,7 +158,9 @@ def voices(ep):
         src = os.path.join(raw, 'L%02d.wav' % n)
         if not os.path.exists(src):
             print('missing', src); continue
-        sp = T.SPEED.get(l['who'], 1.0)
+        # an episode may be a little faster as a whole (tempo, 18/11 : the 19-line episodes 14 and 15, so that they stay
+        # under 1 min 20 without cutting their text) ; the speed of each character stays the one the owner chose
+        sp = T.SPEED.get(l['who'], 1.0) * E.get('tempo', 1.0)
         tmp = os.path.join(out, '_t.wav')
         if sp != 1.0:
             run(['ffmpeg', '-nostdin', '-v', 'error', '-y', '-i', src, '-filter:a', 'atempo=%.3f' % sp, '-ar', str(SR), '-ac', '1', tmp])
@@ -373,7 +375,8 @@ def _build(ep, pad):
     the music changes. A shot may change in the middle of a line, between two of its sentences ('7a', '7b')."""
     E, L = T.EPISODES[ep], {l['n']: l for l in script_lines(ep)}
     vdir = os.path.join(WORK, 'voice', ep)
-    GAP, CUT, LEAD = 0.22, 0.32, 0.18  # between two lines of a shot, at a cut, before the first shout
+    GAP, CUT, LEAD = E.get('gap', 0.22), E.get('cut', 0.32), 0.18  # between two lines of a shot, at a cut, before the first shout
+    # (an episode may set tighter gaps and cuts : 18/11, the 19-line episodes, so that they stay under 1 min 20)
     t, shots, lines, subs, music, sfx, placed, nat = 0.0, [], [], [], [], [], {}, []
     for k, (frame, refs, opt) in enumerate(E['shots']):
         t0 = t

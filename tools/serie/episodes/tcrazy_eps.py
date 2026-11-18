@@ -54,6 +54,10 @@ TIMES = {
     'ep9': [0, 2, 6, 14, 21, 26, 30, 36, 41, 51, 59, 62, 65, 73],
     'ep10': [0, 2, 5, 13, 18, 22, 29, 36, 41, 50, 58, 64, 72],
     'ep11': [0, 2, 5, 12, 18, 22, 28, 35, 38, 47, 52, 59, 65, 69, 76],
+    'ep12': [0, 2, 7, 15, 20, 25, 31, 38, 46, 50, 56, 64, 68, 76],
+    'ep13': [0, 2, 6, 14, 20, 24, 30, 33, 40, 47, 56, 63, 68, 76],
+    'ep14': [0, 2, 5, 13, 19, 24, 30, 33, 38, 43, 53, 57, 61, 66, 74],
+    'ep15': [0, 2, 7, 15, 21, 27, 31, 34, 38, 43, 53, 57, 61, 66, 74],
 }
 TARGET = 65.0  # seconds : the rule says 65 s at least. The pauses added to get there are small (tcrazy.py plan) : the owner
 # does not want blanks (16/11, episode 2 : « il faut cut à ce moment la séquence, il y a un blanc trop long sinon »), so the
@@ -269,15 +273,100 @@ EPISODES = {
         ('ep11-06', [6], dict(music='galere')),
         ('ep11-07', [7, 8, 9], {}),
         ('ep11-08', [], dict(dip=True, hold=2.4)),  # « Le lendemain, 16 h · le terrain »
-        ('ep11-09', [10], dict(music='hustle', lead=0.4, sfx=[('click.mp3', 0.1, 0.35)])),  # the takes : he moves his lips, without a sound
+        ('ep11-09', [10], dict(music='hustle', lead=0.2, sfx=[('click.mp3', 0.1, 0.35)])),  # the takes : he moves his lips, without a sound
         ('ep11-10', [11, 12], dict(lead=2.1, fixed=True, sfx=[('steps.wav', 0.2, 0.25)])),  # Maya walks in, then speaks
         ('ep11-11', [13], {}),
-        ('ep11-12', [14], dict(lead=0.2, after=0.6, sfx=[('pop.mp3', 2.6, 0.45)])),
-        ('ep11-13', [15], dict(music='victoire', lead=2.3, fixed=True, sfx=[('click.mp3', 0.8, 0.35), ('ping.mp3', 1.05, 0.3), ('notification.mp3', 1.9, 0.4)])),
+        ('ep11-12', [14], dict(lead=0.1, after=0.2, sfx=[('pop.mp3', 2.6, 0.45)])),  # 18/11 : a little shorter, so that the episode stays under 1 min 20
+        ('ep11-13', [15], dict(music='victoire', lead=2.2, fixed=True, sfx=[('click.mp3', 0.8, 0.35), ('ping.mp3', 1.05, 0.3), ('notification.mp3', 1.9, 0.4)])),
         ('ep11-14', [16], {}),
         ('ep11-15', [], dict(hold=3.4, sfx=[('whoosh-short.mp3', 0.75, 0.25)])),
     ], direction={1: 'shouting, panicked', 2: 'whispering with almost no voice, hoarse, pretending to be fine', 4: 'calm and firm, like a nurse giving orders',
                   5: 'ironic', 6: 'very serious, like a businessman in a crisis', 7: 'dry, a bit tired', 8: 'calm, explaining simply', 9: 'amazed, excited',
                   10: 'warm', 11: 'casual, curious, saying hi', 12: 'proud', 13: 'calm, explaining simply', 14: 'warm', 15: 'very sure of himself, like a genius',
                   16: 'whispering with almost no voice, hoarse, talking straight to the camera, friendly, like giving a tip to a friend'}),
+    # 18/11 : the Chef's new schedule (programmed in Zernio from the 19th) : 10, 11, 12 on 22/11 ; 13, 14, 15 on 23/11.
+    # The end cards announce the video released right after (11 → 12, 13 → 14) ; 15 : « Prochain épisode : bientôt » (owner, 18/11)
+    # « Le clash au terrain » (n° 12, 22/11 at 21 h) : the court at the end of the day (terrain 1 'fin de journée')
+    'ep12': dict(card='tcrazy-ep12', same={}, shots=[
+        ('ep12-01', [1], dict(music='plan', sfx=[('whoosh-short.mp3', 0.0, 0.3)])),
+        ('ep12-02', [2], {}),  # Liam raps his clash, chin up
+        ('ep12-03', [3], {}),
+        ('ep12-04', [4], dict(after=0.3, fixed=True, sfx=[('steps.wav', 1.4, 0.25)])),  # Big Mo leaves his phone on the bench and walks away (from 1.4 s, gone at 3.6 s)
+        ('ep12-05', [5], dict(music='galere')),
+        ('ep12-06', [6], {}),
+        ('ep12-07', [7], {}),  # Big Mo's profile : always the same two takes
+        ('ep12-08', [8, 9], dict(lead=0.5, sfx=[('notification.mp3', 0.1, 0.35)])),  # his phone lights up on the bench : Stalak, Creator Plus (the shock sticker at 0.6 s)
+        ('ep12-09', [10], dict(lead=2.1, fixed=True, sfx=[('steps.wav', 0.0, 0.25)])),  # Big Mo walks back (0 to 1.6 s), then speaks
+        ('ep12-10', [11, 12], {}),
+        ('ep12-11', [13], dict(music='hustle', lead=0.2, after=0.6, sfx=[('pop.mp3', 2.6, 0.45)])),  # two takes at the court, Stalak cuts them
+        ('ep12-12', [14], dict(music='victoire', lead=2.3, fixed=True, sfx=[('click.mp3', 0.8, 0.35), ('ping.mp3', 1.05, 0.3), ('notification.mp3', 1.9, 0.4)])),
+        ('ep12-13', [15], {}),
+        ('ep12-14', [], dict(hold=3.4, sfx=[('whoosh-short.mp3', 0.75, 0.25)])),
+    ], direction={1: 'shouting, outraged, can not believe what he just heard', 2: 'rapping a cocky diss with his chin up, very proud of himself', 4: 'cool and condescending, unbothered, never in a hurry',
+                  5: 'shocked, then whining', 6: 'very serious, like an expert with a theory', 7: 'calm, matter-of-fact, showing something on her phone', 8: 'shocked, amazed',
+                  10: 'cool, low, a bit threatening but amused', 11: 'excited, like a kid who wants a toy', 12: 'dry, teasing, then helpful', 13: 'warm',
+                  14: 'deadpan, like a manager counting', 15: CTA}),
+    # « La fiche d'orientation » (n° 13, 23/11 at 12 h 30) : the kitchen in the evening (cuisine 1 'nuit'), then the roof at sunset (toit 2 'soir')
+    'ep13': dict(card='tcrazy-ep13', same={}, shots=[
+        ('ep13-01', [1], dict(music='plan', sfx=[('whoosh-short.mp3', 0.0, 0.3)])),
+        ('ep13-02', [2], {}),
+        ('ep13-03', [3], {}),
+        ('ep13-04', [4, 5], {}),  # Nadia puts the form down : « Les trois ?! »
+        ('ep13-05', [], dict(dip=True, hold=2.8)),  # « Le lendemain, au coucher du soleil · le toit » : Liam on his chair
+        ('ep13-06', [6, 7], dict(lead=2.1, fixed=True, sfx=[('steps.wav', 0.2, 0.25)])),  # Maya walks in (0.2 to 1.8 s), then says hi
+        ('ep13-07', [8], {}),
+        ('ep13-08', [9], dict(music='galere')),  # Liam gets off his chair
+        ('ep13-09', [10, 11], {}),
+        ('ep13-10', [12], {}),  # Maya shows him Stalak
+        ('ep13-11', [13], dict(music='hustle', lead=0.2, after=0.6, sfx=[('pop.mp3', 2.6, 0.45)])),  # three takes at sunset, Stalak cuts them
+        ('ep13-12', [14, 15], dict(music='victoire', lead=2.3, fixed=True, sfx=[('click.mp3', 0.8, 0.35), ('ping.mp3', 1.05, 0.3), ('notification.mp3', 1.9, 0.4)])),
+        ('ep13-13', [16], {}),
+        ('ep13-14', [], dict(hold=3.4, sfx=[('whoosh-short.mp3', 0.75, 0.25)])),
+    ], direction={1: 'shouting, shocked, holding up a school form', 2: 'very calm and proud, as if it were obvious', 4: 'firm, like a mother laying down the rules',
+                  5: 'outraged, whining', 6: 'casual, saying hi, curious and amused', 7: 'dreamy and very serious, eyes closed, as if he could see it',
+                  8: 'dry, unimpressed', 9: 'calm, matter-of-fact', 10: 'curious, a bit teasing', 11: 'admitting it: says the number « Une » clearly, as a one-word answer, then whining, overwhelmed',  # 18/11 : the first take said « Eh » instead of « Une »
+                  12: 'calm, explaining simply', 13: 'warm', 14: 'proud, changing his plan without losing face', 15: 'dry, teasing', 16: CTA}),
+    # « Le Black Friday » (n° 14, 23/11 at 18 h) : the kitchen in the evening (instead of the living room), then the street the next day
+    'ep14': dict(card='tcrazy-ep14', same={}, tempo=1.03, gap=0.16, cut=0.25, shots=[  # 19 lines : a little tighter, to stay under 1 min 20
+        ('ep14-01', [1], dict(music='plan', sfx=[('whoosh-short.mp3', 0.0, 0.3)])),
+        ('ep14-02', [2], {}),
+        ('ep14-03', [3], {}),
+        ('ep14-04', [4, 5], {}),
+        ('ep14-05', [6, 7], dict(lead=2.2, fixed=True, sfx=[('steps.wav', 0.3, 0.25)])),  # Deuce walks in with a shoe box (0.3 to 2.0 s), then speaks
+        ('ep14-06', [8, 9], {}),  # the box is empty
+        ('ep14-07', [], dict(music='galere', dip=True, hold=2.2)),  # « Le lendemain · la rue »
+        ('ep14-08', [10], {}),  # Deuce scrolls through the deals
+        ('ep14-09', [11, 12], dict(lead=2.2, fixed=True, sfx=[('steps.wav', 0.2, 0.25)])),  # Maya walks in (0.2 to 2.0 s), then says hi
+        ('ep14-10', [13, 14, 15], {}),  # Maya shows him Stalak
+        ('ep14-11', [], dict(music='hustle', hold=2.5, sfx=[('click.mp3', 0.1, 0.35)])),  # the takes : Deuce films with Liam's phone
+        ('ep14-12', [16], dict(lead=0.1, sfx=[('pop.mp3', 2.6, 0.45)])),
+        ('ep14-13', [17, 18], dict(music='victoire', lead=2.1, fixed=True, sfx=[('click.mp3', 0.8, 0.35), ('ping.mp3', 1.05, 0.3), ('notification.mp3', 1.9, 0.4)])),
+        ('ep14-14', [19], {}),
+        ('ep14-15', [], dict(hold=3.4, sfx=[('whoosh-short.mp3', 0.75, 0.25)])),
+    ], direction={1: 'shouting, shocked, reading a price on a phone', 2: 'pleading and excited, like a salesman', 4: 'dry, deadpan, a bit tired',
+                  5: 'whining, insisting', 6: 'very polite and sure of himself, like a businessman with a plan', 7: 'flat, firm, deadpan',
+                  8: 'very sure of himself, explaining business', 9: 'shocked, outraged, protective', 10: 'excited and greedy, like a genius doing maths',
+                  11: 'casual, saying hi, curious', 12: 'proud, a bit pompous', 13: 'calm, explaining simply', 14: 'suspicious',
+                  15: 'casual, as if it were obvious, a bit teasing', 16: 'warm', 17: 'cocky, lying with a straight face', 18: 'flat, ironic', 19: CTA}),
+    # « Les effets spéciaux » (n° 15, 23/11 at 21 h) : the kitchen in the afternoon, white with flour (cuisine 1), then in the evening, clean
+    'ep15': dict(card='tcrazy-ep15', same={}, tempo=1.03, gap=0.18, cut=0.27, shots=[  # 19 lines : a little tighter, to stay under 1 min 20
+        ('ep15-01', [1], dict(music='plan', sfx=[('whoosh-short.mp3', 0.0, 0.3)])),
+        ('ep15-02', [2], {}),
+        ('ep15-03', [3], {}),
+        ('ep15-04', [4, 5], dict(sfx=[('whoosh.mp3', 1.7, 0.3)])),  # the take on Deuce's phone : at the drop (1.85 s, on his « boum ») the picture turns white
+        ('ep15-05', [6, 7], dict(lead=2.1, fixed=True, sfx=[('steps.wav', 0.0, 0.25)])),  # Nadia walks in (0 to 1.6 s) and stops dead
+        ('ep15-06', [8], dict(music='galere')),  # a broom for each of them
+        ('ep15-07', [], dict(dip=True, hold=2.4)),  # « Une heure plus tard · la cuisine »
+        ('ep15-08', [9, 10], {}),  # « Non ! » from the living room
+        ('ep15-09', [11, 12], dict(lead=2.3, fixed=True, sfx=[('steps.wav', 0.2, 0.25)])),  # Maya walks in (0.2 to 2.0 s), then says hi
+        ('ep15-10', [13, 14, 15], {}),  # Stalak set to « Nerveux »
+        ('ep15-11', [], dict(music='hustle', hold=2.8, sfx=[('click.mp3', 0.1, 0.35)])),  # the takes : Deuce mimes the flour
+        ('ep15-12', [16], dict(lead=0.1, sfx=[('pop.mp3', 2.6, 0.45)])),
+        ('ep15-13', [17, 18], dict(music='victoire', lead=2.3, fixed=True, sfx=[('click.mp3', 0.8, 0.35), ('ping.mp3', 1.05, 0.3), ('notification.mp3', 1.9, 0.4)])),
+        ('ep15-14', [19], {}),
+        ('ep15-15', [], dict(hold=3.4, sfx=[('whoosh-short.mp3', 0.75, 0.25)])),
+    ], direction={1: 'shouting, outraged, covered in flour', 2: 'very calm and sure of himself, like an artist explaining his vision', 4: 'excited, building up to a big moment',
+                  5: 'panicked, outraged', 6: 'tired, then stunned, stopping dead', 7: 'very polite and sure of himself, like an art director', 8: 'calm, dry and firm',
+                  9: 'very proud of his new idea', 10: 'shouting from another room, firm', 11: 'casual, saying hi, amused', 12: 'whining, frustrated',
+                  13: 'calm, explaining simply', 14: 'suspicious', 15: 'dry, amused', 16: 'warm', 17: 'very proud, convinced he was right', 18: 'flat, ironic', 19: CTA}),
 }
