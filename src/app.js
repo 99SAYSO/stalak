@@ -6623,7 +6623,9 @@ function loop(){
     livePreheat(ci, tt, CU);
     const liveMiss = live && !liveSrc(cut.take, Math.max(0, tt - cut.take.offset), 0.12);
     { if (frameN === 1) loopCut = ci; else if (ci !== loopCut){ loopCut = ci; if (live && !pre) liveOnCut(cut.take, !liveMiss); } }
-    const risky = liveMiss || ve && vlt >= -0.05 && vlt <= cut.take.duration + 0.05 && (ve.paused || ve.seeking || ve.readyState < 2 || usedTakes().some(k => k.el.seeking && k.el.paused));
+    // (16/11, seen by the owner: the cuts went from take 1 to take 2 while the picture stayed on take 1 for 2.3 s) only the
+    // take ON SCREEN keeps the picture when it is not ready; another take still looking for its place no longer freezes it
+    const risky = liveMiss || ve && vlt >= -0.05 && vlt <= cut.take.duration + 0.05 && (ve.paused || ve.seeking || ve.readyState < 2);
     if (risky){ trace('i' + frameN + ' image gardée (' + (liveMiss ? 'décodage' : ve.seeking ? 'recherche' : ve.paused ? 'en pause' : 'pas prête') + ')'); }
     else {
     trace('i' + frameN + ' dessin');
@@ -6677,8 +6679,14 @@ function play(from, opts){
     if (v.playbackRate !== 1){ trace(n + ' : vitesse ' + v.playbackRate.toFixed(2) + ' -> 1'); v.playbackRate = 1; }
     if (lt > tk.duration) return Promise.resolve();
     trace(n + ' : cherche ' + v.currentTime.toFixed(2) + ' -> ' + lt.toFixed(2)); const w = seekTo(v, lt, false); trace(n + ' : recherche lancée'); return w; });
-  trace('attente des prises');
-  Promise.race([Promise.all(waits), sleep(waitCap)]).then(() => {
+  // (16/11) the song waits for the takes needed at its start: the one on screen and those of the cuts of its first 3 s (up to
+  // 2.5 s: on an iPhone several takes looking for their place at once take that long); the others go on getting ready
+  // while it plays (they are seen later)
+  const firstTakes = new Set(); if (ci0 >= 0) for (let j = ci0; j < S.cuts.length && S.cuts[j].t0 < Math.max(S.segStart, playFrom) + 3; j++) firstTakes.add(S.cuts[j].take);
+  const need = usedTakes().map((tk, i) => firstTakes.has(tk) || tk === onScr ? waits[i] : null).filter(Boolean);
+  const waitFirst = Math.max(waitCap, need.length ? 2500 : 0);
+  trace('attente des prises (' + need.length + ' pour le départ)');
+  Promise.race([Promise.all(need.length ? need : waits), sleep(need.length ? waitFirst : waitCap)]).then(() => {
     if (sess !== playSession || !S.playing) return;
     crumb('prises en place, départ du son · ' + usedTakes().map(takeState).join(' | '), true);
     if (WA){
@@ -7909,22 +7917,28 @@ async function exportOne(again){
     if (filtLocked()){ const c = await filtAsk(); if (c === 'pro'){ lockOpen('filters', 'filters'); return; } if (c !== 'without') return; setFilter('none', true); diag('filtre Pro : export sans ce filtre'); }
   }
   if (!S.cuts.length || S.exporting || exportGate) return;
-  const safe = !!again || !!S.lightNext, light = again === 'memory' || again === 'crash' || S.lightNext === 'crash';
+  // (audit 13/11, n° 4: 2 iPhones closed the tab ~10 s into the pictures of a 9:16 video of more than 60 s) on a phone, a long
+  // video is made the safe way from the start: one take decoded at a time, drawn in 2D. Measured on 4 takes 1080×1920 and
+  // 70 s: +500 MB in the first 5 s of the pictures the usual way (every take open at once), against a slow climb, 300 MB
+  // lower at its top, the safe way (and no slower)
+  const longPhone = PHONE_DEV && S.segEnd - S.segStart > 45;
+  const safe = !!again || !!S.lightNext || longPhone, light = again === 'memory' || again === 'crash' || S.lightNext === 'crash';
   const keep = { noTiles: S.noTiles, noGl: S.noGl }; let retry = null, made = false;
-  if (safe){ S.noTiles = true; S.noGl = true; diag('export : réglages plus sûrs' + (again ? ' (nouvel essai après « ' + again + ' »)' : ' (après un onglet fermé pendant l’export)')); }
+  if (safe){ S.noTiles = true; S.noGl = true; diag('export : réglages plus sûrs' + (again ? ' (nouvel essai après « ' + again + ' »)' : S.lightNext ? ' (après un onglet fermé pendant l’export)' : ' (longue vidéo sur téléphone)')); }
   // (7/11, Clip mode, before n° 1) a video too long for this device's memory even at the lowest bitrate is not started (the
   // browser would close the tab in the middle): said, with the longest passage that fits, as for a pack
   { const v0 = await pickVideoConfig(); if (v0){ const mp = memPlan(1, light ? Math.max(3e6, v0.bitrate * 0.6) : v0.bitrate);
     if (!mp.ok){ S.noTiles = keep.noTiles; S.noGl = keep.noGl; const secs = Math.round(S.segEnd - S.segStart);
       diag('mémoire : ' + Math.round(mp.need) + ' Mo pour ' + mp.budget + ' Mo sur cet appareil, export refusé (' + secs + ' s, jusqu’à ' + mp.sMax + ' s)');
       sayNear(expNearAt(), mp.sMax ? 'exp.mem' : 'exp.mem0', { s: secs, smax: mp.sMax }); acctEvent('export_refused', { cat: 'memory' }); return; } } }
-  S.lightNext = false; try { localStorage.removeItem('stalak:expLight'); } catch(e){}
+  S.lightNextWas = !!S.lightNext; S.lightNext = false; try { localStorage.removeItem('stalak:expLight'); } catch(e){}
   S.packN = 1; S.wm = wmOn(); beginExport(!!again); const TX = performance.now(); await fontsReady();
   if (again){ setT('#expRetry', 'exp.retry'); $('#expRetry').hidden = false; }
   try {
     let vcfg = await pickVideoConfig(); const acfg = vcfg && await pickAudioConfig(S.song.buffer.sampleRate);
     if (S.expX){ S.expX.st = null; S.expX.path = vcfg && acfg ? 'wc' : window.MediaRecorder && view.captureStream ? 'rt' : 'none'; }
-    if (vcfg && safe){ vcfg = plainCfg(vcfg); if (light) vcfg.bitrate = Math.max(3e6, Math.round(vcfg.bitrate * 0.6 / 1e5) * 1e5); }
+    // (a long video on a phone keeps its encoder: only the drawing is made the safe way)
+    if (vcfg && (again || S.lightNextWas)){ vcfg = plainCfg(vcfg); if (light) vcfg.bitrate = Math.max(3e6, Math.round(vcfg.bitrate * 0.6 / 1e5) * 1e5); }
     if (vcfg){ const mp = memPlan(1, vcfg.bitrate);
       if (mp.bitrate < vcfg.bitrate){ vcfg = Object.assign({}, vcfg, { bitrate: mp.bitrate }); diag('mémoire : ' + Math.round(memNeed(1, 10e6)) + ' Mo à 10 Mbit/s pour ' + mp.budget + ' Mo sur cet appareil, débit ' + (mp.bitrate / 1e6).toFixed(1) + ' Mbit/s'); } }
     let ext = 'mp4', blob = null;
@@ -8509,7 +8523,9 @@ function setFormat(f){ S.fmt = f; [W, H] = FORMATS[f]; try { frameUI(); } catch(
 function kindUI(){
   const clip = isClip();
   $$('#kindSeg button, #kindSeg4 button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === S.kind));
-  $('#kindHint').textContent = _t(clip ? 'kind.hint.clip' : 'kind.hint.reel');
+  // (audit 13/11, n° 1) never written again when it already says that: a text written again is « painted » again, and on the
+  // home page it counted as its biggest picture, only once the app had loaded (4.5 s on a slow phone instead of 1.4)
+  { const t = _t(clip ? 'kind.hint.clip' : 'kind.hint.reel'); if ($('#kindHint').textContent !== t) $('#kindHint').textContent = t; }
   $('#endBox').hidden = false; $('#barsSel').hidden = $('#barsLbl').hidden = clip;
   $('#waveHint').textContent = _t(clip ? 'wave.hint.clip' : 'wave.hint.reel');
   // formats: 16:9 or 9:16 for a clip, the vertical / feed / square ones for TikTok and Reels
@@ -8775,8 +8791,12 @@ function togglePlay(){ if (S.exporting) return; if (S.playing) stop(); else play
 $('#playBtn').onclick = togglePlay;
 $('#songPlay').onclick = listenToggle;
 // (audit 6/11, n° 18) the Clip mode can be tried by everybody, in the preview; only its export asks for Pro (as the filters)
-bindSeg('#kindSeg', k => { setKind(k); if (k === 'clip' && !can('clip')) say('ca.try'); });
-bindSeg('#kindSeg4', k => { setKind(k); if (k === 'clip' && !can('clip')) say('ca.try'); });
+// (audit 13/11, n° 3) « opened the Clip mode »: sent once per page (anonymous), when the person chooses Clip herself; counted by
+// Comptes as one number (functions/_lib/metrics.js, ev_clip_open)
+let clipOpened = false;
+const kindPick = k => { setKind(k); if (k === 'clip' && !clipOpened){ clipOpened = true; acctEvent('clip_open'); } if (k === 'clip' && !can('clip')) say('ca.try'); };
+bindSeg('#kindSeg', kindPick);
+bindSeg('#kindSeg4', kindPick);
 bindSeg('#frameSeg', v => { S.frame = v; S.frameUser = true; store.set('stalak:frame', v); stop(true); showFrame(cursorIn()); say('frame.st.' + v); });
 // the end of the passage, one bar earlier or later (both modes: the same as the end handle)
 $('#endPrev').onclick = () => { if (!S.song) return; if (segMove('r', segEndBar() - 1)){ stop(true); rebuild(false); } };
@@ -11240,7 +11260,9 @@ window.addEventListener('beforeunload', e => { if (S.exporting || lpUnsaved()){ 
 
 /* ---------- FR / EN: everything on screen is written again in the other language, the work stays as it is ---------- */
 function applyLang(){
-  document.documentElement.lang = LANG;
+  // (audit 13/11, n° 1) set only when it changes: set again to the same value, every text of the page was shaped and painted
+  // again, and on a phone the home page's biggest text counted only then (once the app had loaded: 4.5 s instead of 1.4)
+  if (document.documentElement.lang !== LANG) document.documentElement.lang = LANG;
   applyStatic();
   if (hasT('doc.title')) document.title = _t('doc.title');
   $$('.langsw button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === LANG)));

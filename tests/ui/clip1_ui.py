@@ -85,6 +85,8 @@ def run(b, base, lang, iphone, PW):
     pg.locator('#kindSeg4 button[data-v="clip"]').click(); pg.wait_for_timeout(1500)
     st = ev(pg, "[S.step, S.kind, S.fmt, $('#kindSeg button[data-v=\"clip\"]').getAttribute('aria-pressed'), $('#kindSeg4 button[data-v=\"clip\"]').getAttribute('aria-pressed'), S.cuts.length > 0]")
     check(tag + ' : passé en Clip sans quitter l’étape 4 (16:9, les deux sélecteurs à jour)', st == [4, 'clip', '169', 'true', 'true', True], st)
+    co = [e for e in events if e.get('name') == 'clip_open']
+    check(tag + ' : « a ouvert le mode Clip » envoyé une fois (un seul nombre, compté par Comptes)', len(co) == 1 and 'cat' not in co[0], co)
 
     # n° 2: the effects and the lyrics in Free, with the watermark
     ev(pg, "S.lyrics.lines = [{ text: 'Ligne de test', t: 0.5 }, { text: 'Deuxième ligne', t: 4 }], S.lyrics.mode = 'paste', rebuild(false)")
@@ -153,7 +155,20 @@ def run(b, base, lang, iphone, PW):
 
     # n° 6, back: TikTok at the Montage step
     pg.locator('#kindSeg4 button[data-v="reel"]').click(); pg.wait_for_timeout(1200)
+    pg.locator('#kindSeg4 button[data-v="clip"]').click(); pg.wait_for_timeout(600); pg.locator('#kindSeg4 button[data-v="reel"]').click(); pg.wait_for_timeout(1200)
+    check(tag + ' : une seule fois par visite (rouvert : rien de plus)', [e for e in events if e.get('name') == 'clip_open'] == [])
     check(tag + ' : retour en TikTok depuis l’étape 4 (9:16, 8 mesures)', ev(pg, "[S.step, S.kind, S.fmt, S.nBars]") == [4, 'reel', '916', 8], ev(pg, "[S.step, S.kind, S.fmt, S.nBars]"))
+    # (audit 13/11, n° 2) the hovers are for a mouse only: none left outside @media (hover:hover) (except a hover shared with
+    # the keyboard's focus, or one that only shows a tag); on a phone, a touched choice button keeps its colours
+    loose = pg.evaluate("""() => { const out = []; const walk = (rules, inHover) => { for (const r of rules){
+        if (r.cssRules && r.media) walk(r.cssRules, inHover || /hover:\\s*hover/.test(r.media.mediaText));
+        else if (r.selectorText && r.selectorText.includes(':hover') && !inHover && !/focus|::after/.test(r.selectorText)) out.push(r.selectorText); } };
+      for (const sh of document.styleSheets){ try { walk(sh.cssRules, false); } catch(e){} } return out; }""")
+    check(tag + ' : survols réservés à la souris (aucun survol collé au doigt)', loose == [], loose)
+    if iphone:
+        b0 = pg.locator('#fmtSeg button[data-v="45"]'); b0.tap(); pg.wait_for_timeout(200); pg.locator('#fmtSeg button[data-v="916"]').tap(); pg.wait_for_timeout(300)
+        bg = pg.evaluate("() => [getComputedStyle(document.querySelector('#fmtSeg button[data-v=\"45\"]')).backgroundColor, getComputedStyle(document.querySelector('#fmtSeg button[data-v=\"916\"]')).color]")
+        check(tag + ' : après un toucher, le bouton quitté redevient normal et le choisi reste lisible (blanc sur bleu)', bg[0] in ('rgba(0, 0, 0, 0)', 'transparent') and bg[1] == 'rgb(255, 255, 255)', bg)
     check(tag + ' : aucune erreur dans la page', not errs, errs)
     ctx.close()
 

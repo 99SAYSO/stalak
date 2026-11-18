@@ -161,10 +161,14 @@ def page_files(b, base, lang, iphone, PW):
     pg.evaluate("document.fonts.ready"); pg.wait_for_timeout(300)
     fonts = [u for u, _ in seen if '/fonts/' in u and not u.endswith('.css') and '?' not in u.split('/fonts/')[1]]
     check(tag + ' : polices en WOFF2 seulement', fonts and all(re.search(r'\.[0-9a-f]{8}\.woff2$', u) for u in fonts), fonts)
-    scripts = pg.evaluate("() => [...document.scripts].map(s => ({ src: s.getAttribute('src') || '', defer: s.defer, n: s.src ? 0 : s.textContent.length }))")
+    scripts = pg.evaluate("() => [...document.scripts].map(s => ({ src: s.getAttribute('src') || '', defer: s.defer, dyn: !s.async && !!s.src && !s.defer, n: s.src ? 0 : s.textContent.length }))")
     ext = [s for s in scripts if s['src']]
-    check(tag + ' : les scripts à part, différés (mp4box, mp4-muxer, compte, appli)', len(ext) >= 4 and all(s['defer'] for s in ext)
-          and any(re.match(r'/assets/app\.[0-9a-f]{10}\.js$', s['src']) for s in ext) and max(s['n'] for s in scripts if not s['src']) < 20000, scripts)
+    # (audit 13/11, n° 1) no longer « defer » in the page: added by the page itself right after its first picture, in their order
+    # (async = false); none of them in the page's HTML
+    html = pg.evaluate("() => fetch(location.href).then(r => r.text())")
+    check(tag + ' : les scripts à part, chargés après le premier affichage (mp4box, mp4-muxer, compte, appli)', len(ext) >= 4 and all(s['dyn'] for s in ext)
+          and any(re.match(r'/assets/app\.[0-9a-f]{10}\.js$', s['src']) for s in ext) and max(s['n'] for s in scripts if not s['src']) < 20000
+          and '<script defer src=' not in html and '<script src=' not in html, scripts)
     # 22. the footer's links
     hs = pg.evaluate("() => [...document.querySelectorAll('.ft-list a')].map(a => Math.round(a.getBoundingClientRect().height))")
     check(tag + ' : liens du pied de page : 44 px', hs and min(hs) >= 44, hs)

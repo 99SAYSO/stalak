@@ -1,0 +1,151 @@
+Statut : PRÊT
+Branche : app/audit-13-11 (créée depuis `main` 9baa963 du 13/11, « Audit du site du 13/11 et STATUS »).
+Maquette : https://app-audit-13-11.stalak-site.pages.dev (à faire valider par le propriétaire, règle 9).
+
+Demande : audit du 13/11 (`docs/audit/2026-11-13-audit-site.md`), points pour App : 4 (vitesse de l'accueil), 10 (bouton pâle),
+3 (compteur du mode Clip, avec Comptes) et les 2 plantages d'export sur iPhone.
+
+## 1. Vitesse de l'accueil sur téléphone (audit n° 4)
+**La cause.** Le plus grand texte du premier écran est affiché très tôt, vers 1,2 s sur un téléphone lent simulé. Mais quand
+le script de l'appli arrivait, il remettait la langue de la page (`<html lang="en">`) à la même valeur. Le navigateur refaisait
+alors la mise en forme de tous les textes, et la phrase sous « TikTok / Clip » comptait comme si elle venait d'apparaître.
+Lighthouse / PageSpeed en déduisaient que l'affichage attendait les 305 Ko du script, ce qui donnait 4,4 s sur une 4G lente.
+Ce n'était ni la vidéo, ni les polices.
+
+**Les corrections**, sans rien changer à ce qu'on voit :
+- `src/app.js` : la langue de la page n'est remise que si elle change vraiment. C'est la correction qui compte.
+- `src/app.js` : la phrase sous « TikTok / Clip » n'est réécrite que si son texte change.
+- `build_site.py`, **pour Marketing** :
+  - les deux bibliothèques vidéo et l'appli ne sont plus dans la page en « defer ». Un petit script les charge juste après
+    le premier affichage, dans le même ordre ;
+  - la vidéo de l'accueil n'est plus téléchargée en même temps. On voit son image tout de suite, et elle se lance une fois
+    la page chargée ;
+  - si le téléphone demande moins d'animations, la vidéo reste sur son image. Elle tournait jusqu'ici, car le réglage de
+    l'appli visait l'ancien identifiant `#heroVid`.
+- `src/markup.html` : la vidéo de l'accueil n'a plus `autoplay`, et `preload="none"`.
+- Essayé puis abandonné : écrire la liste des polices dans la page. Le premier affichage n'était pas plus rapide.
+
+**La mesure avant / après** (Lighthouse 12, téléphone comme PageSpeed, même serveur local compressé comme Cloudflare,
+médiane de 5 passages) :
+
+| | Série | Score | Premier affichage | Plus grand élément | Blocage | Plus grand élément, les 5 passages |
+|---|---|---|---|---|---|---|
+| Avant (`main`) | 1 | 90 | 1,4 s | 2,4 s | 184 ms | 4,0 · 1,5 · 4,4 · 2,4 · 2,4 s |
+| Avant (`main`) | 2 | 93 | 1,2 s | 2,3 s | 252 ms | 2,4 · 2,3 · 2,3 · 2,3 · 2,1 s |
+| Après | 1 | 97 | 1,8 s | 2,1 s | 83 ms | 2,3 · 2,2 · 2,1 · 2,1 · 2,1 s |
+| Après (version finale) | 2 | 97 | 1,8 s | 2,1 s | 102 ms | 2,1 · 2,1 · 2,2 · 2,1 · 2,1 s |
+
+- Avant, l'élément le plus grand dépasse 4 s pour 2 passages sur 10. C'est ce que PageSpeed a vu (4,5 s).
+- Après, il ne dépasse plus : il reste entre 2,1 et 2,3 s sur les 10 passages, donc sous la cible de 2,5 s.
+- Sur stalak.app avant correction, la même mesure donnait 4,4 s.
+- Le premier affichage calculé par Lighthouse monte un peu (1,4 → 1,8 s), car le script arrive plus tard dans son calcul.
+- Sur un vrai téléphone lent simulé (réseau 1,6 Mbit/s, processeur 4 fois plus lent, médiane de 3), rien ne change pour
+  la personne. Premier affichage : 0,84 s avant, 0,87 s après. Plus grand élément : 1,22 → 1,24 s. Appli prête à
+  l'emploi : 5,53 → 5,46 s.
+- **La suite possible** : ces 5,5 s avant que l'appli réponde viennent du poids du script (305 Ko compressés, dont 200 Ko
+  inutiles au premier écran). Les réduire demande de découper l'appli en morceaux chargés à la demande. C'est un plus gros
+  chantier, à décider.
+
+## 2. Bouton de choix pâle sur téléphone (audit n° 10)
+Tous les survols simples de l'appli sont réservés aux appareils avec souris (`@media (hover:hover)`) : 18 règles dans
+`src/theme.css` et 2 dans `src/style.css`.
+- Sur un écran tactile, un bouton touché ne reste plus « survolé ».
+- Le bouton choisi reste blanc sur bleu, les autres redeviennent normaux.
+- Restent tels quels : les survols partagés avec la touche Tab du clavier (menus) et l'étiquette PRO.
+
+## 3. Compteur du mode Clip (audit n° 3), avec Comptes
+**Mise à jour du 16/11, après le retour du Chef de projet.** Ma branche entrait en conflit avec `compte/audit-13-11`. On garde
+la version de Comptes :
+- les raisons `menu`, `account`, `pricing` et `link` sont passées par `apGo('pro', { from })` ;
+- `clipOpen` est un seul nombre dans le tableau de bord.
+J'ai donc retiré ma version (`plansFrom`, raison `tarifs`, compteurs `clip_open_free` / `clip_open_pro`). L'appli envoie
+`acctEvent('clip_open')` **une fois par page**, quand la personne choisit Clip elle-même (étape 1 ou Montage), sans détail.
+Si on veut un jour séparer Gratuit et Pro pour ce compteur, c'est à demander à Comptes.
+
+Ce qui reste vrai :
+- les offres ouvertes depuis l'export du Clip envoient bien la raison `clip` (vérifié : `clip_ask` « pro » puis `plans_open`
+  « clip ») ;
+- `ev_plans_why_clip` est à 0 depuis le 7/11 parce que choisir Clip n'ouvre plus les offres (`app/clip-1` : on essaie tout en
+  aperçu, les offres ne s'ouvrent qu'à l'export d'un clip sans Pro). Le 0 veut dire qu'aucun compte Gratuit n'a demandé
+  l'export d'un clip.
+
+## 4. Plantages d'export sur iPhone (2 cas : 9:16, plus de 60 s, étape « frames », après environ 10 s)
+- Je ne peux pas lancer Safari d'iPhone ici. J'ai reproduit la même situation dans Chromium, en suivant la mémoire de
+  l'onglet toutes les 0,5 s : 4 prises 1080×1920 de 80 s (environ 150 Mo chacune, comme un iPhone), tout le morceau (70 s),
+  en 9:16.
+  - **De la façon habituelle**, toutes les prises sont décodées en même temps et dessinées par la carte graphique. La
+    mémoire monte de **500 Mo dans les 5 premières secondes des images**, puis reste vers 1,2 Go, avec un pic à 1,25 Go.
+  - **De la façon sûre**, une prise à la fois et dessin en 2D, elle monte doucement et plafonne vers 0,9 Go, avec un pic à
+    0,98 Go. L'export n'est pas plus lent, il a même été plus rapide ici.
+  - Un onglet Safari d'iPhone est fermé autour de 1 à 1,5 Go selon le modèle. Le moment et l'étape correspondent aux 2 cas.
+- **La correction** : sur téléphone, une vidéo de plus de 45 s est faite de la façon sûre dès le départ. L'encodeur et la
+  qualité restent les mêmes.
+- **Ce que je ne peux pas promettre** : c'est mesuré dans Chromium, pas sur un vrai iPhone. Le compteur
+  `ev_xf_ios_crash` dira dans les jours qui viennent si ces plantages disparaissent.
+
+## 5. Bug de l'aperçu vu par le propriétaire (16/11)
+**Ce qu'il a vu** : la ligne des coupes passait de la prise 1 à la prise 2, mais l'image restait sur la prise 1 pendant les
+2,3 premières secondes, puis tout repartait.
+
+**La cause**, dans `loop()` de `src/app.js` : l'image était gardée dès qu'**une seule** des prises utilisées cherchait sa place
+en pause, même si ce n'était pas celle à l'écran. Au départ, sur iPhone, toutes les prises cherchent leur place en même temps, et
+le son ne les attendait que 0,9 s au plus. Le son partait donc, et l'image restait figée tant qu'une prise cherchait encore.
+
+**Les corrections** :
+- l'image n'est gardée que si **la prise à l'écran** n'est pas prête (en pause, en recherche, ou pas encore d'image) ;
+- avant de lancer le son, Stalak attend la prise à l'écran et celles des coupes des **3 premières secondes**, jusqu'à 2,5 s.
+  Les autres prises continuent de se préparer pendant que le son joue : on ne les voit que plus tard.
+
+**Vérifié** par un nouveau test, `tests/ui/apercu_depart_ui.py` (iPhone 390 px et ordinateur 1280 px). Les prises y sont
+lues par les lecteurs vidéo du navigateur, comme sur iPhone, et la prise 2 met 2 s à trouver sa place :
+- sur `main`, le défaut est reproduit : l'image reste gardée après le départ du son, et le son ne patiente que 0,9 s ;
+- sur la branche, 10/10 : le son attend la prise 2 quand elle arrive dans les 3 premières secondes, il ne l'attend pas quand
+  elle arrive plus tard, et l'image de la prise 1 avance pendant que la prise 2 cherche encore.
+
+**La boîte noire** de l'appareil du propriétaire n'est pas lisible d'ici (elle reste dans son navigateur). Pour confirmer sur
+son téléphone : refaire le même aperçu sur la maquette, puis « Copier les infos pour l'équipe » et me les envoyer.
+
+**L'export peut-il avoir le même défaut ? Non.**
+- L'export habituel (WebCodecs) décode chaque image exactement au bon moment, prise par prise. Il ne dépend pas des lecteurs
+  vidéo, donc il ne peut pas rester sur l'image d'une autre prise.
+- L'export de secours en temps réel place la prise suivante à l'avance (avant sa coupe) et ne garde jamais l'image d'une autre
+  prise.
+
+## Fichiers
+`src/app.js` (dont l'aperçu, 16/11), `src/markup.html`, `src/theme.css`, `src/style.css`, `build_site.py` (Marketing), `functions/` et les chiffres de démo : version de Comptes gardée telle
+quelle (fusion du 16/11).
+Tests :
+- nouveau `tests/ui/apercu_depart_ui.py` (bug de l'aperçu du 16/11) ;
+- `tests/ui/clip1_ui.py` (`clip_open` une fois par visite, survols, bouton après un toucher) ;
+- `tests/ui/exports_rates_ui.py` (vidéo de 70 s sur téléphone de la façon sûre, et sur ordinateur comme d'habitude) ;
+- `tests/ui/audit611_ui.py` (scripts chargés après le premier affichage).
+
+Pour le propriétaire : il manque toujours les paroles des 8 premières mesures de « neva die » pour l'exemple.
+
+## Résultats des tests (16/11, après la fusion de `origin/main` et la correction de l'aperçu, lancés un par un)
+- serveur `tests/backend/run.mjs` : **107/107**
+- `apercu_depart_ui` (nouveau) : **10/10**. Sur `main`, il échoue (7/10) : le défaut y est bien reproduit.
+- `audit_ui` **158/158**, `clip1_ui` **87/87**, `audit611_ui` **91/91**, `exports_rates_ui` **80/80**, `fluidite_ui` **30/30**,
+  `pied_de_page_ui` **836/836**, `formules_ui` **137/137**.
+- `fin_export_ui` 82/86 : ce sont les 4 mêmes échecs que sur `main`. La case e-mail en haut de l'écran de fin pousse
+  « Enregistrer » plus bas (voir plus bas). Ça n'a pas de lien avec cette branche.
+
+## Résultats des tests (13-14/11, sur la branche)
+- **Série complète**, lancée par deux en même temps :
+  - audit_ui 158/158, son_passage 86/86, projet_local_ui 48/48, export_pub_ui 22/22, filtres_ui 106/106, paroles_suppr 44/44,
+    remux_frag 10/10 ;
+  - animations_ui 44/44, liens_cmp_ui 58/58, pied_de_page_ui 842/842, fluidite_ui 30/30, plans_ui 35/35, gallery_ui 49/49,
+    help_ui 42/42 ;
+  - clip1_ui 87/87, audit611_ui 91/91, serveur 106/106.
+- **Relancés seuls** : exports_rates_ui 80/80, après une attente corrigée (le message après un plantage arrive au bout
+  d'environ 1 s, le test regardait à 1,2 s fixes). formules_ui 137/137 (dans la série, le « filigrane dans chaque image »
+  n'échoue que quand la machine est chargée).
+- **Pareil sur `main`**, donc sans lien avec cette branche :
+  - `support_ui` : l'e-mail de test n'est pas envoyé (« Pas envoyés : access ») ;
+  - `lyrics_ui` : le compte Pro de test du serveur ;
+  - **`fin_export_ui` 82/86 et `partager_ui` 70/74** : sur `main` aussi, « Enregistrer la vidéo » tombe sous le bas de l'écran
+    sur iPhone et Android, à 759 px pour un écran de 664. **Cause** : la case « Reçois des conseils pour tes prochaines
+    vidéos par e-mail » (Comptes, `compte/donnees-7-11`) est maintenant en haut de l'écran de fin, au-dessus de la vidéo et
+    du bouton. Je n'y ai pas touché : c'est un choix d'un autre domaine. **Proposition** : la mettre sous les boutons
+    Enregistrer / Partager, l'écran de fin du 6/11 voulant que « Enregistrer » se voie tout de suite. Décision à prendre
+    avec Comptes et le propriétaire.
