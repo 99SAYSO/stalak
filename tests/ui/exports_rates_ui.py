@@ -109,7 +109,7 @@ def run(b, base, lang, iphone, PW):
     msg = pg.evaluate("() => { const e = document.querySelector('#expRetry'); return e && !e.hidden && e.getClientRects().length ? e.textContent : ''; }")
     check(tag + ' : 1 échec → nouvel essai automatique, dit sur l’écran d’export : « %s »' % t['retry'], t['retry'] in msg, msg)
     pg.wait_for_function('() => __ev("S.done === true && !S.exporting")', timeout=60000); pg.wait_for_timeout(300)
-    runs = pg.evaluate('window.__runs')
+    runs = pg.evaluate('window.__runs'); hw0 = runs[0]['hw']
     check(tag + ' : 2e essai avec des réglages plus sûrs (encodeur au choix du navigateur, une prise à la fois, dessin 2D)', runs[0]['noTiles'] is False and runs[1]['hw'] is None and runs[1]['noTiles'] and runs[1]['noGl'], runs)
     check(tag + ' : réglages remis comme avant ensuite', ev(pg, '!S.noTiles && !S.noGl'))
     r = names(events, 'export_retry')
@@ -188,7 +188,11 @@ def run(b, base, lang, iphone, PW):
     # 4. the browser closed the tab (no pagehide): found at the next visit
     del events[:]
     pg.evaluate("""() => localStorage.setItem('stalak:expRun', JSON.stringify({ st: 'frames', fmt: '916', kind: 'one', path: 'wc', dur: 'd30', took: 't60', mem: 'unk', left: false }))""")
-    open_app(pg, base, lang); pg.wait_for_timeout(1200)
+    open_app(pg, base, lang)
+    # (the message comes 0.8 s after the app has started: waited for, up to 6 s, instead of a fixed time)
+    try: pg.wait_for_function('t => document.body.innerText.includes(t)', arg=t['crash'], timeout=6000)
+    except Exception: pass
+    pg.wait_for_timeout(300)
     c = names(events, 'export_fail')
     check(tag + ' : onglet fermé par le navigateur : compté « plantage » à la visite suivante, avec les détails, et dit', [e.get('cat') for e in c] == ['crash'] and x_ok(c[0].get('x')) and t['crash'] in text(pg), (c, text(pg)[-300:]))
     shot(pg, 'plantage-%s-%s.png' % (dev, lang))
@@ -200,6 +204,16 @@ def run(b, base, lang, iphone, PW):
     runs = pg.evaluate('window.__runs')
     check(tag + ' : l’export suivant est plus léger (débit réduit, réglages sûrs), puis plus rien de spécial', len(runs) == 1 and runs[0]['noTiles'] and runs[0]['br'] <= 6e6 and runs[0]['hw'] is None
           and not ev(pg, 'S.lightNext') and pg.evaluate("() => localStorage.getItem('stalak:expLight')") is None, runs)
+    # (audit 13/11, n° 4) a long video on a phone (> 45 s): the safe drawing from the start (one take at a time, 2D), same encoder
+    pg.locator('#dvEdit').click(); pg.wait_for_timeout(300)
+    ev(pg, FAKE % (0, json.dumps('x'), 0)); ev(pg, "S.__se = S.segEnd, S.segEnd = S.segStart + 70")
+    pg.evaluate('() => { __ev("exportOne()"); }'); pg.wait_for_function('() => __ev("S.done === true && !S.exporting")', timeout=60000)
+    runs = pg.evaluate('window.__runs'); ev(pg, "S.segEnd = S.__se")
+    if iphone:
+        check(tag + ' : vidéo de 70 s sur téléphone : prises une à une et dessin 2D dès le départ, même encodeur', len(runs) == 1 and runs[0]['noTiles'] and runs[0]['noGl'] and runs[0]['hw'] == hw0
+              and ev(pg, '!S.noTiles && !S.noGl'), (runs, hw0))
+    else:
+        check(tag + ' : vidéo de 70 s sur ordinateur : comme d’habitude', len(runs) == 1 and not runs[0]['noTiles'] and not runs[0]['noGl'], runs)
     check(tag + ' : aucune erreur dans la page', not errs, errs)
     ctx.close()
 
