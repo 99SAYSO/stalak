@@ -414,7 +414,8 @@ def _build(ep, pad):
                 txt = typo(P['parts'][ip] if part else l['text'])
                 subs.append(dict(who=l['who'], text=txt, t0=round(a, 3), t1=round(b + 0.6, 3), kind='cri', words=word_times(xs, a, b, txt)))
             else:
-                cs = chunks(P['parts'][ip] if part else l['text'])
+                # an episode may give the pieces of a line itself (18/11 : « Commence » was left alone on its first line)
+                cs = (None if part else E.get('subs', {}).get(n)) or chunks(P['parts'][ip] if part else l['text'])
                 bt = chunk_times(xs, a, b, cs)
                 for i, c in enumerate(cs):
                     subs.append(dict(who=l['who'], text=c, t0=round(bt[i], 3), t1=round(max(bt[i + 1], bt[i] + 0.5), 3)))

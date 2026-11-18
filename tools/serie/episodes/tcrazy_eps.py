@@ -305,7 +305,9 @@ EPISODES = {
     ], direction={1: 'shouting, outraged, can not believe what he just heard', 2: 'rapping a cocky diss with his chin up, very proud of himself', 4: 'cool and condescending, unbothered, never in a hurry',
                   5: 'shocked, then whining', 6: 'very serious, like an expert with a theory', 7: 'calm, matter-of-fact, showing something on her phone', 8: 'shocked, amazed',
                   10: 'cool, low, a bit threatening but amused', 11: 'excited, like a kid who wants a toy', 12: 'dry, teasing, then helpful', 13: 'warm',
-                  14: 'deadpan, like a manager counting', 15: CTA}),
+                  14: 'deadpan, like a manager counting', 15: CTA},
+         # 18/11, contact sheet : « Commence » was alone on the first line of its subtitle ; cut at the colon instead
+         subs={12: ["T'as pas un rond.", 'Commence par la version gratuite\u00a0:', 'tes vidéos sont illimitées.']}),
     # « La fiche d'orientation » (n° 13, 23/11 at 12 h 30) : the kitchen in the evening (cuisine 1 'nuit'), then the roof at sunset (toit 2 'soir')
     'ep13': dict(card='tcrazy-ep13', same={}, shots=[
         ('ep13-01', [1], dict(music='plan', sfx=[('whoosh-short.mp3', 0.0, 0.3)])),
