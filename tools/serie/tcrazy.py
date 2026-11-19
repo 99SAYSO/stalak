@@ -412,10 +412,15 @@ def _build(ep, pad):
             xs = P['x'][int((a - P['t0']) * SR):int((b - P['t0']) * SR)] if P['x'] is not None else None
             if is_cri(l):  # a shout (owner, 16/11) : no subtitle card, the words big and one by one, then the subtitles again
                 txt = typo(P['parts'][ip] if part else l['text'])
+                for g in E.get('glue', []):  # words an episode keeps on one line (18/11 : « sur / ta fiche » ended a line with « sur »)
+                    txt = txt.replace(g, g.replace(' ', '\u00a0'))
                 subs.append(dict(who=l['who'], text=txt, t0=round(a, 3), t1=round(b + 0.6, 3), kind='cri', words=word_times(xs, a, b, txt)))
             else:
                 # an episode may give the pieces of a line itself (18/11 : « Commence » was left alone on its first line)
-                cs = (None if part else E.get('subs', {}).get(n)) or chunks(P['parts'][ip] if part else l['text'])
+                st = P['parts'][ip] if part else l['text']
+                for g in E.get('glue', []):
+                    st = st.replace(g, g.replace(' ', '\u00a0'))
+                cs = (None if part else E.get('subs', {}).get(n)) or chunks(st)
                 bt = chunk_times(xs, a, b, cs)
                 for i, c in enumerate(cs):
                     subs.append(dict(who=l['who'], text=c, t0=round(bt[i], 3), t1=round(max(bt[i + 1], bt[i] + 0.5), 3)))

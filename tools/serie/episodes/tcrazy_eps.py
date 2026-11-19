@@ -264,7 +264,7 @@ EPISODES = {
                   6: 'overwhelmed, stressed', 7: 'very sure of himself, explaining business', 8: 'outraged and exhausted', 9: 'casual, saying hi, curious',
                   10: 'exasperated', 11: 'calm, explaining simply', 12: 'warm', 13: 'very proud, like a genius', 14: 'dry, teasing', 15: CTA}),
     # « La voix perdue » (n° 11, 20/11 at 21 h) : the kitchen in the evening (cuisine 1 'nuit', instead of the living room), then the court at 16 h
-    'ep11': dict(card='tcrazy-ep11', same={}, shots=[
+    'ep11': dict(card='tcrazy-ep11', same={}, glue=['et on tourne'], shots=[  # the shout : « … de voix / et on tourne… », not « … de voix et / on tourne… » (18/11)
         ('ep11-01', [1], dict(music='plan', sfx=[('whoosh-short.mp3', 0.0, 0.3)])),
         ('ep11-02', [2], {}),
         ('ep11-03', [3], {}),
@@ -306,10 +306,11 @@ EPISODES = {
                   5: 'shocked, then whining', 6: 'very serious, like an expert with a theory', 7: 'calm, matter-of-fact, showing something on her phone', 8: 'shocked, amazed',
                   10: 'cool, low, a bit threatening but amused', 11: 'excited, like a kid who wants a toy', 12: 'dry, teasing, then helpful', 13: 'warm',
                   14: 'deadpan, like a manager counting', 15: CTA},
-         # 18/11, contact sheet : « Commence » was alone on the first line of its subtitle ; cut at the colon instead
-         subs={12: ["T'as pas un rond.", 'Commence par la version gratuite\u00a0:', 'tes vidéos sont illimitées.']}),
+         # 18/11, contact sheet : « Commence » was alone on the first line of its subtitle ; cut at the colon instead (and, 19/11,
+         # that card stays on one line : frame.js) ; « trois cent / soixante-quatre » cut the number in two : in figures on screen
+         subs={12: ["T'as pas un rond.", 'Commence par la version gratuite\u00a0:', 'tes vidéos sont illimitées.'], 14: ['Plus que 364.']}),
     # « La fiche d'orientation » (n° 13, 23/11 at 12 h 30) : the kitchen in the evening (cuisine 1 'nuit'), then the roof at sunset (toit 2 'soir')
-    'ep13': dict(card='tcrazy-ep13', same={}, shots=[
+    'ep13': dict(card='tcrazy-ep13', same={}, glue=['sur ta', 'trois fois'], shots=[  # the shout : « … “rappeur” / sur ta fiche… », not « … sur / ta fiche » ; Maya's subtitle : « Tu te filmes / trois fois… », not « … trois / fois… » (19/11)
         ('ep13-01', [1], dict(music='plan', sfx=[('whoosh-short.mp3', 0.0, 0.3)])),
         ('ep13-02', [2], {}),
         ('ep13-03', [3], {}),
@@ -329,7 +330,9 @@ EPISODES = {
                   8: 'dry, unimpressed', 9: 'calm, matter-of-fact', 10: 'curious, a bit teasing', 11: 'admitting it: says the number « Une » clearly, as a one-word answer, then whining, overwhelmed',  # 18/11 : the first take said « Eh » instead of « Une »
                   12: 'calm, explaining simply', 13: 'warm', 14: 'proud, changing his plan without losing face', 15: 'dry, teasing', 16: CTA}),
     # « Le Black Friday » (n° 14, 23/11 at 18 h) : the kitchen in the evening (instead of the living room), then the street the next day
-    'ep14': dict(card='tcrazy-ep14', same={}, tempo=1.03, gap=0.16, cut=0.25, shots=[  # 19 lines : a little tighter, to stay under 1 min 20
+    'ep14': dict(card='tcrazy-ep14', same={}, tempo=1.03, gap=0.16, cut=0.25,
+         subs={8: ['On revend tes baskets,', "et avec l'argent, on prend la caméra."]},  # 18/11 : not « … et avec / l'argent… »
+         shots=[  # 19 lines : a little tighter, to stay under 1 min 20
         ('ep14-01', [1], dict(music='plan', sfx=[('whoosh-short.mp3', 0.0, 0.3)])),
         ('ep14-02', [2], {}),
         ('ep14-03', [3], {}),

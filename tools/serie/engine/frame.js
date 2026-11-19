@@ -25,6 +25,9 @@
   // so that the lines are as even as possible, and never after a small word (article, possessive, preposition, subject pronoun :
   // « … LA NUIT SUR / SA VIDÉO » → « … LA NUIT / SUR SA VIDÉO »)
   const SMALL = /^(de|du|des|le|la|les|un|une|à|et|ou|ton|ta|tes|son|sa|ses|mon|ma|mes|ce|cet|ces|cette|leur|leurs|en|au|aux|sur|dans|pour|par|avec|sans|chez|vers|je|tu|il|elle|on|ils|qui|que|ne|se|me|te|quelques|plusieurs|chaque|toute|toutes|tous)$/i;
+  // 19/11, contact sheets : nor after a number, which stays with what it counts (« trois / prises », « vingt / personnes »,
+  // « trois cent / soixante-quatre ») ; a number followed by its punctuation (« trois, ») can end a line
+  const NUMW = /^(deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze|treize|quatorze|quinze|seize|vingt|trente|quarante|cinquante|soixante|cent|cents|mille|\d+)$/i;
   const evenCache = new Map();
   function wrapEven(text, font, maxW) {
     const key = font + '|' + maxW + '|' + text;
@@ -47,7 +50,7 @@
           const mean = ws.reduce((s, w) => s + w, 0) / n;
           let cost = Math.sqrt(ws.reduce((s, w) => s + (w - mean) * (w - mean), 0) / n);
           // (a cut after a small word costs ; a cut after a full stop or a comma helps : « Le 19 novembre, / jour de la sortie… »)
-          lines.slice(0, -1).forEach(([, b]) => { if (SMALL.test(words[b - 1])) cost += maxW * 0.3; else if (/[.,;:!?…]$/.test(words[b - 1])) cost -= maxW * 0.08; });
+          lines.slice(0, -1).forEach(([, b]) => { if (SMALL.test(words[b - 1]) || NUMW.test(words[b - 1])) cost += maxW * 0.3; else if (/[.,;:!?…]$/.test(words[b - 1])) cost -= maxW * 0.08; });
           if (!best || cost < best[0] - 0.01) best = [cost, lines];
           return;
         }
@@ -117,7 +120,12 @@
     const [name, col] = WHO[who], cx = 500, maxW = 800;
     let s = '';
     if (style === 1) { // white card, ink outline, hard shadow ; the name in a coloured tab on its top-left corner
-      const font = '800 44px Rubik', lines = wrapEven(text, font, maxW - 60), h = 54 + lines.length * 56, w = Math.min(maxW, Math.max(...lines.map(l => width(l, font))) + 72), x = cx - w / 2, y = bottom - h;
+      const font = '800 44px Rubik';
+      let lines = wrapEven(text, font, maxW - 60), cap = maxW;
+      // 19/11, contact sheet of episode 12 : two lines with one word alone (« Commence / par la version gratuite : ») stay on one line
+      // when the text fits a slightly wider card (at most 872 px, still clear of the buttons on the right edge)
+      if (lines.length === 2 && lines.some(l => !l.includes(' ')) && width(glue(text), font) <= maxW) { lines = [glue(text)]; cap = maxW + 72; }
+      const h = 54 + lines.length * 56, w = Math.min(cap, Math.max(...lines.map(l => width(l, font))) + 72), x = cx - w / 2, y = bottom - h;
       s += `<rect x="${x + 8}" y="${y + 10}" width="${w}" height="${h}" rx="22" fill="${INK}"/><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="22" fill="${SNOW}" stroke="${INK}" stroke-width="6"/>`;
       lines.forEach((ln, i) => { s += T(x + 36, y + 66 + i * 56, ln, 44, INK, { font: 'Rubik', weight: 800, anchor: 'start' }); });
       const nw = width(name, '34px "Lilita One"') + 44;

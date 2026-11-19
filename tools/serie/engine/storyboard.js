@@ -1117,7 +1117,8 @@
   ], 'Sort le 22/11 à 18 h. La cuisine le soir (le salon n\'a pas été choisi), puis le terrain le lendemain.');
 
   // ---------------- épisode 12 (21/11, 18 h) : « Le clash au terrain » ----------------
-  const E12 = 'IL A CLASHÉ LE RAPPEUR LE PLUS CONNU DU QUARTIER';
+  // 18/11, contact sheet : « … LE RAPPEUR LE / PLUS CONNU… » ended a line with « LE » ; « LE PLUS » now stays together
+  const E12 = `IL A CLASHÉ LE RAPPEUR LE${NB}PLUS CONNU DU QUARTIER`;
   // Big Mo from the waist up in a little tile (his own clips), anywhere ; x, y : the top left, w : the width
   const moBust = (x, y, w) => { const r = CAST.figure('bigmo', 1, 'frime'), k = w / 900 * 1.15; return `<defs>${r.defs}</defs><g transform="translate(${(x - 0.08 * w).toFixed(1)} ${(y + 0.06 * w).toFixed(1)}) scale(${k.toFixed(4)})">${r.svg}</g>`; };
   // Big Mo's profile : a clip a day, always his two takes (the court, the shop) cut differently (our own interface)
@@ -1179,7 +1180,7 @@
   ], 'Sort le 22/11 à 21 h, juste après « La voix perdue » (qui l\'annonce). Le terrain en fin de journée.');
 
   // ---------------- épisode 13 (21/11, 21 h) : « La fiche d'orientation » ----------------
-  const E13 = 'IL A ÉCRIT “RAPPEUR” SUR SA FICHE D\'ORIENTATION', ROOF = ['toit', 2, 'soir'];
+  const E13 = `IL A ÉCRIT “RAPPEUR” SUR${NB}SA FICHE D'ORIENTATION`, ROOF = ['toit', 2, 'soir']; // « SUR SA » together : no line ends with « SUR » (18/11)
   // the school form (our own : no real school), in a character's own coordinates ; cx, cy its centre, w its width
   function fiche(cx, cy, w = 380, r = 0) {
     return `<g transform="translate(${cx} ${cy}) rotate(${r}) scale(${(w / 380).toFixed(3)})"><rect x="-190" y="-250" width="380" height="500" rx="8" fill="#fdfdfb" stroke="${INK}" stroke-width="7"/>` +
@@ -1189,14 +1190,17 @@
       `<text x="0" y="50" text-anchor="middle" font-family="Rubik" font-weight="800" font-style="italic" font-size="50" fill="#1f3fa0">RAPPEUR</text><text x="0" y="104" text-anchor="middle" font-family="Rubik" font-weight="700" font-style="italic" font-size="32" fill="#1f3fa0">(le prochain)</text>` +
       `<ellipse cx="0" cy="36" rx="150" ry="52" fill="none" stroke="#e5484d" stroke-width="6" transform="rotate(-4)"/>` + [150, 200].map(y => `<path d="M -160 ${y} L 160 ${y}" stroke="#c3cbd8" stroke-width="3"/>`).join('') + '</g>';
   }
+  // the form in close-up over the dimmed kitchen (19/11, contact sheet : held at Nadia's waist, « RAPPEUR (le prochain) » was hidden
+  // by Liam's subtitle while he talks about it) ; the title band stays on top of it
+  const ficheBig = () => `<rect width="1080" height="1920" fill="${INK}" opacity="0.5"/><g class="phone">${fiche(540, 905, 500, -4)}</g>`;
   // a folding chair on the roof (in the set's coordinates) ; x its middle, y the seat
   const chair = (x, y) => `<path d="M ${x - 70} ${y + 10} L ${x - 90} ${y + 196} M ${x + 70} ${y + 10} L ${x + 90} ${y + 196} M ${x - 60} ${y} L ${x - 60} ${y - 160} M ${x + 60} ${y} L ${x + 60} ${y - 160}" stroke="${INK}" stroke-width="14" stroke-linecap="round"/><path d="M ${x - 70} ${y + 10} L ${x - 90} ${y + 196} M ${x + 70} ${y + 10} L ${x + 90} ${y + 196} M ${x - 60} ${y} L ${x - 60} ${y - 160} M ${x + 60} ${y} L ${x + 60} ${y - 160}" stroke="#8a919c" stroke-width="6" stroke-linecap="round"/>` +
     `<rect x="${x - 80}" y="${y - 10}" width="160" height="26" rx="6" fill="#3f7a55" stroke="${INK}" stroke-width="6"/><rect x="${x - 66}" y="${y - 150}" width="132" height="56" rx="6" fill="#3f7a55" stroke="${INK}" stroke-width="6"/>`;
   ep('ep13', E13, 13, [
     { t: '0:00', cap: "L'accroche : Nadia a lu la fiche d'orientation", set: KITCHEN_N, criY: 700, chars: [LI(820, 1700, 900, 'frime'), CH('nadia', 2, 450, 2450, 1800, 'colere', fiche(450, 1170, 400, -5))],
       over: () => bandeau(2, E13, 13) + FRAME.cri('nadia', `T'as écrit «${NB}rappeur${NB}» sur ta fiche d'orientation${NB}?!`, 700) },
-    { t: '0:02', cap: 'Liam, très calme', set: KITCHEN_N, chars: [CH('nadia', 2, 290, 1856, 1250, 'colere', fiche(450, 1170, 330, -5)), LI(770, 1846, 1200, 'frime')],
-      over: () => bandeau(2, E13, 13).replace('class="bandeau"', 'class="bandeau" data-cont="1"') + sub(1, 'liam', 'Et j\'ai mis « le prochain » entre parenthèses. Pour qu\'ils sachent.') },
+    { t: '0:02', cap: 'Liam, très calme ; la fiche en gros plan', set: KITCHEN_N, chars: [CH('nadia', 2, 290, 1856, 1250, 'colere'), LI(770, 1846, 1200, 'frime')],
+      over: () => ficheBig() + bandeau(2, E13, 13).replace('class="bandeau"', 'class="bandeau" data-cont="1"') + sub(1, 'liam', 'Et j\'ai mis « le prochain » entre parenthèses. Pour qu\'ils sachent.') },
     { t: '0:06', cap: 'Le narrateur présente Liam et Nadia', set: KITCHEN_N, chars: [CH('nadia', 2, 290, 1856, 1250, 'frime', fiche(450, 1170, 330, -5)), LI(770, 1846, 1200, 'fierte')],
       over: () => tag('NADIA, SA MÈRE', 290, 520, -3) + tag('LIAM, ALIAS T-CRAZY', 770, 560, 3) + sub(1, 'narrateur', 'Voici Liam. 15 ans. Zéro abonné. Et Nadia, sa mère. Au lycée, on a demandé à Liam quel métier il voulait faire plus tard.') },
     { t: '0:14', cap: 'Nadia pose la feuille', set: KITCHEN_N, chars: [CH('nadia', 2, 290, 1856, 1250, 'colere'), LI(770, 1846, 1200, 'panique')],
@@ -1219,11 +1223,12 @@
       over: () => phoneBig(posted(clipPic('toit', 'fierte'), 'Coucher de soleil', 'clara.mp3', 'C\'est où, ce toit ? 😍', '#c94f84', 7), 0.92) + sub(1, 'liam', 'Bon. Le stade, ce sera dans deux ans.') },
     { t: '1:08', cap: 'Liam parle à celui qui regarde', set: ROOF, zoom: [540, 1150, 1.3], chars: [LI(540, 2730, 2250, 'frime')],
       over: () => sub(1, 'liam', 'T\'as cours demain, toi aussi ? Filme trois prises ce soir. Stalak monte sur le rythme, et t\'as posté avant tes devoirs.') },
-    { t: '1:16', cap: 'La carte de fin : « Le Black Friday »', plain: true, over: () => endCard('IL VEUT UNE CAMÉRA DE PRO POUR LE BLACK FRIDAY') },
+    { t: '1:16', cap: 'La carte de fin : « Le Black Friday »', plain: true, over: () => endCard(`IL VEUT UNE CAMÉRA DE PRO POUR${NB}LE${NB}BLACK${NB}FRIDAY`) },
   ], 'Sort le 23/11 à 12 h 30. La cuisine le soir, puis ton toit au coucher du soleil.');
 
   // ---------------- épisode 14 (22/11, 18 h) : « Le Black Friday » ----------------
-  const E14 = 'IL VEUT UNE CAMÉRA DE PRO POUR LE BLACK FRIDAY';
+  // 18/11, contact sheet : « … POUR LE BLACK / FRIDAY » cut « Black Friday » in two ; « POUR LE BLACK FRIDAY » now stays together
+  const E14 = `IL VEUT UNE CAMÉRA DE PRO POUR${NB}LE${NB}BLACK${NB}FRIDAY`;
   // a camera, drawn by us (no brand) ; cx, cy its centre, w its width
   const camera = (cx, cy, w = 300) => `<g transform="translate(${cx} ${cy}) scale(${(w / 300).toFixed(3)})"><rect x="-150" y="-80" width="300" height="170" rx="22" fill="#2a2d36" stroke="${INK}" stroke-width="8"/>` +
     `<rect x="-118" y="-114" width="110" height="40" rx="10" fill="#3a3f4c" stroke="${INK}" stroke-width="7"/><circle cx="40" cy="6" r="66" fill="#1d1f27" stroke="${INK}" stroke-width="8"/><circle cx="40" cy="6" r="42" fill="#3b6fb0" stroke="${INK}" stroke-width="6"/>` +
@@ -1249,8 +1254,8 @@
     [['Baskets', '−30 %', 'shoe'], ['Casque', '−40 %', 'hp'], ['Télé', '−50 %', 'tv'], ['Caméra pro', '−30 %', 'cam']].forEach(([name, off, ic], i) => {
       const y = 126 + i * 214;
       s += `<rect x="24" y="${y}" width="512" height="190" rx="24" fill="#f3f6fb" stroke="${INK}" stroke-width="5"/><circle cx="110" cy="${y + 95}" r="70" fill="#e3e9f3"/><g transform="translate(110 ${y + 95})">${icon[ic]}</g>`;
-      s += T(206, y + 84, name, 38, INK, { font: 'Rubik', weight: 800, anchor: 'start' }) + T(206, y + 140, 'Offre limitée', 26, '#5b6170', { font: 'Rubik', weight: 700, anchor: 'start' });
-      s += `<g transform="rotate(-6 452 ${y + 95})"><rect x="382" y="${y + 62}" width="140" height="66" rx="16" fill="#e5484d" stroke="${INK}" stroke-width="5"/>${T(452, y + 108, off, 34, SNOW)}</g>`;
+      s += T(206, y + 110, name, 38, INK, { font: 'Rubik', weight: 800, anchor: 'start' }) + T(206, y + 156, 'Offre limitée', 26, '#5b6170', { font: 'Rubik', weight: 700, anchor: 'start' });
+      s += `<g transform="rotate(-6 466 ${y + 34})"><rect x="410" y="${y + 10}" width="112" height="48" rx="14" fill="#e5484d" stroke="${INK}" stroke-width="5"/>${T(466, y + 45, off, 28, SNOW)}</g>`; // 18/11 : in the corner, so that « Caméra pro » is not cut by it
     });
     return s;
   }
@@ -1281,7 +1286,7 @@
     { t: '0:38', cap: 'Maya arrive en marchant et dit bonjour', set: RUE, chars: [CH('deuce', 1, 250, 1846, 1150, 'frime', P.phone(580, 1130)), LI(520, 1846, 1200, 'fierte'), CH('maya', 1, 850, 1846, 1150, 'frime', P.phone(580, 1130), { k: { walk: [[0.2, 640, 0], [2.0, 0, 0]] } })],
       over: () => tag('MAYA, LA VOISINE', 850, 600, 3) + sub(1, 'maya', 'Salut. Vous achetez quoi ?') },
     { t: '0:43', cap: 'Maya lui montre Stalak, dessiné', set: RUE, chars: [CH('maya', 1, 800, 1846, 1200, 'frime', P.phone(580, 1130)), LI(300, 1846, 1200, 'panique')],
-      over: () => phoneBig(stalakApp({ takes: [['superette', 'fierte'], ['rue', 'frime'], ['superette', 'colere']], count: 3, ti: -1 }), 0.92) + sub(1, 'maya', "Un vrai clip, c'est pas la caméra, c'est le montage. Tu te filmes trois fois au téléphone, et Stalak coupe sur le rythme.") },
+      over: () => phoneBig(stalakApp({ takes: [['superette', 'fierte'], ['rue', 'frime'], ['superette', 'colere']], count: 3, ti: -1, word: 'prises' }), 0.92) + sub(1, 'maya', "Un vrai clip, c'est pas la caméra, c'est le montage. Tu te filmes trois fois au téléphone, et Stalak coupe sur le rythme.") },
     { t: '0:53', cap: 'Les prises : Deuce filme avec le téléphone de Liam', set: RUE, rap: 'liam', rapFrom: 0.2, chars: [CH('deuce', 1, 820, 1846, 1150, 'fierte', P.phoneBack(580, 1130)), LI(380, 1846, 1220, 'fierte')],
       over: () => clap(840, 330, 2) },
     { t: '0:57', cap: 'Stalak monte le clip sur le temps', set: RUE, chars: [CH('maya', 1, 830, 1846, 1150, 'fierte'), CH('deuce', 1, 250, 1846, 1100, 'fierte'), LI(540, 1846, 1200, 'fierte', P.phone(606, 760), { pose: { raise: 'r' } })],
@@ -1290,7 +1295,7 @@
       over: () => phoneBig(posted(clipPic('superette'), 'Mon nouveau clip', 'lina.wav', 'Tu filmes avec quoi ?', '#2f8f6a', 3), 0.92) + sub(1, 'liam', 'Avec une caméra de pro, évidemment.') },
     { t: '1:06', cap: 'Liam parle à celui qui regarde', set: RUE, zoom: [540, 1150, 1.3], chars: [LI(540, 2730, 2250, 'frime')],
       over: () => sub(1, 'liam', "Avant de casser ta tirelire au Black Friday : ton téléphone suffit. Stalak monte tes prises sur le rythme, et c'est gratuit.") },
-    { t: '1:14', cap: 'La carte de fin : « Le nuage de farine »', plain: true, over: () => endCard('IL A TOURNÉ SON DROP DANS UN NUAGE DE FARINE') },
+    { t: '1:14', cap: 'La carte de fin : « Le nuage de farine »', plain: true, over: () => endCard('IL A TOURNÉ SON DROP\nDANS UN NUAGE DE FARINE') }, // 18/11 : 4 even lines (« … SON DROP DANS UN / … » ended a line with « UN »)
   ], "Sort le 23/11 à 18 h. La cuisine le soir (au lieu du salon), puis la rue l'après-midi.");
 
   // ---------------- épisode 15 (22/11, 21 h) : « Les effets spéciaux » ----------------
@@ -1364,7 +1369,7 @@
     { t: '0:38', cap: 'Maya arrive en marchant et dit bonjour', set: KITCHEN_N, chars: [CH('deuce', 1, 230, 1846, 1100, 'frime'), LI(510, 1846, 1200, 'frime'), CH('maya', 1, 840, 1846, 1150, 'frime', P.phone(580, 1130), { k: { walk: [[0.2, 640, 0], [2.0, 0, 0]] } })],
       over: () => tag('MAYA, LA VOISINE', 840, 600, 3) + sub(1, 'maya', "Salut. Il paraît que t'as tourné un clip dans la farine ?") },
     { t: '0:43', cap: 'Stalak, en « Nerveux »', set: KITCHEN_N, chars: [CH('maya', 1, 800, 1846, 1200, 'frime', P.phone(580, 1130)), LI(300, 1846, 1200, 'panique')],
-      over: () => phoneBig(stalakApp({ takes: DROP_TAKES, count: 3, ti: -1, rows: NERVEUX }), 0.92) + sub(1, 'maya', "Pour qu'un drop claque, il faut que ça coupe pile sur le temps. Et Stalak, en “Nerveux”, coupe jusqu'à chaque temps.") },
+      over: () => phoneBig(stalakApp({ takes: DROP_TAKES, count: 3, ti: -1, rows: NERVEUX, word: 'prises' }), 0.92) + sub(1, 'maya', "Pour qu'un drop claque, il faut que ça coupe pile sur le temps. Et Stalak, en “Nerveux”, coupe jusqu'à chaque temps.") },
     { t: '0:53', cap: 'Les prises : Deuce mime la farine', set: KITCHEN_N, rap: 'liam', rapFrom: 0.2, chars: [CH('deuce', 1, 800, 1846, 1150, 'fierte', `<path d="M 640 1010 q 70 -90 170 -70 M 660 1080 q 90 -60 190 -20" fill="none" stroke="${INK}" stroke-width="7" stroke-linecap="round" stroke-dasharray="16 14"/>`), LI(380, 1846, 1220, 'fierte')],
       over: () => clap(840, 330, 2) },
     { t: '0:57', cap: 'Stalak monte le clip : au drop, une prise par temps', set: KITCHEN_N, chars: [CH('maya', 1, 830, 1846, 1150, 'fierte'), CH('deuce', 1, 250, 1846, 1100, 'fierte'), LI(540, 1846, 1200, 'fierte', P.phone(606, 760), { pose: { raise: 'r' } })],
