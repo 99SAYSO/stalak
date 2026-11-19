@@ -26,8 +26,10 @@
   // « … LA NUIT SUR / SA VIDÉO » → « … LA NUIT / SUR SA VIDÉO »)
   const SMALL = /^(de|du|des|le|la|les|un|une|à|et|ou|ton|ta|tes|son|sa|ses|mon|ma|mes|ce|cet|ces|cette|leur|leurs|en|au|aux|sur|dans|pour|par|avec|sans|chez|vers|je|tu|il|elle|on|ils|qui|que|ne|se|me|te|quelques|plusieurs|chaque|toute|toutes|tous)$/i;
   // 19/11, contact sheets : nor after a number, which stays with what it counts (« trois / prises », « vingt / personnes »,
-  // « trois cent / soixante-quatre ») ; a number followed by its punctuation (« trois, ») can end a line
-  const NUMW = /^(deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze|treize|quatorze|quinze|seize|vingt|trente|quarante|cinquante|soixante|cent|cents|mille|\d+)$/i;
+  // « trois cent / soixante-quatre », « Zéro / abonné ») ; a number followed by its punctuation (« trois, ») can end a line
+  const NUMW = /^(zéro|deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze|treize|quatorze|quinze|seize|vingt|trente|quarante|cinquante|soixante|cent|cents|mille|\d+)$/i;
+  // (19/11 : an elided small word too : « passe d'une / prise » ends a line with « d'une »)
+  const isSmall = (w) => SMALL.test(w) || NUMW.test(w) || SMALL.test(w.replace(/^(?:d|l|qu|jusqu|lorsqu|puisqu|s|n|j|m|t)['’]/i, ''));
   const evenCache = new Map();
   function wrapEven(text, font, maxW) {
     const key = font + '|' + maxW + '|' + text;
@@ -50,7 +52,7 @@
           const mean = ws.reduce((s, w) => s + w, 0) / n;
           let cost = Math.sqrt(ws.reduce((s, w) => s + (w - mean) * (w - mean), 0) / n);
           // (a cut after a small word costs ; a cut after a full stop or a comma helps : « Le 19 novembre, / jour de la sortie… »)
-          lines.slice(0, -1).forEach(([, b]) => { if (SMALL.test(words[b - 1]) || NUMW.test(words[b - 1])) cost += maxW * 0.3; else if (/[.,;:!?…]$/.test(words[b - 1])) cost -= maxW * 0.08; });
+          lines.slice(0, -1).forEach(([, b]) => { if (isSmall(words[b - 1])) cost += maxW * 0.3; else if (/[.,;:!?…]$/.test(words[b - 1])) cost -= maxW * 0.08; });
           if (!best || cost < best[0] - 0.01) best = [cost, lines];
           return;
         }

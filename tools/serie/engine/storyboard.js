@@ -869,7 +869,7 @@
   const RUE = ['rue', 1, 'apres-midi'], RUE_EVE = ['rue', 1, 'coucher'], RUE_NIGHT = ['rue', 1, 'nuit'];
 
   // ---------------- épisode 7 (18/11, 18 h) : « Les tee-shirts » ----------------
-  const E7 = 'SON POTE A IMPRIMÉ DES TEE-SHIRTS AVEC SA TÊTE';
+  const E7 = `SON POTE A IMPRIMÉ DES${NB}TEE-SHIRTS AVEC SA TÊTE`; // 19/11 (check_lines.py) : not « … IMPRIMÉ DES / TEE-SHIRTS… »
   const TEE = (x = 450, y = 1190, w = 380, r = 0) => tshirt(x, y, w, r);
   ep('ep7', E7, 7, [
     { t: '0:00', cap: "L'accroche : M. Reyes brandit un tee-shirt", set: RUE, criY: 700, chars: [CH('deuce', 1, 860, 1700, 900, 'fierte', merchTable()), LI(210, 1700, 900, 'fierte'), CH('reyes', 1, 540, 2450, 1800, 'colere', TEE())],
@@ -905,7 +905,7 @@
   ], "Sort le 19/11 à 21 h. La rue pavillonnaire l'après-midi, puis au coucher du soleil.");
 
   // ---------------- épisode 8 (18/11, 21 h) : « Nuit à 17 h » ----------------
-  const E8 = `IL FAIT NUIT À 17${NB}H ET IL DEVAIT TOURNER SON CLIP`; // « 17 H » never cut in two
+  const E8 = `IL FAIT NUIT À 17${NB}H ET IL${NB}DEVAIT TOURNER SON CLIP`; // « 17 H » never cut in two ; 19/11 : not « … ET IL / DEVAIT… »
   const torch = (x, y, tx, ty) => { const g = 'tc' + (++UID), b = 'tb' + (++UID);
     return `<defs><radialGradient id="${g}"><stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/><stop offset="0.25" stop-color="#f4f8ff" stop-opacity="0.55"/><stop offset="1" stop-color="#f4f8ff" stop-opacity="0"/></radialGradient>` +
       `<linearGradient id="${b}" x1="${x}" y1="${y}" x2="${tx}" y2="${ty}" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ffffff" stop-opacity="0.5"/><stop offset="1" stop-color="#ffffff" stop-opacity="0.12"/></linearGradient></defs>` +
@@ -1334,7 +1334,8 @@
     `<path d="M ${x + lean - 92} ${foot} L ${x + lean - 58} ${foot - 104} L ${x + lean + 58} ${foot - 104} L ${x + lean + 92} ${foot} Z" fill="#e8c35a" stroke="${INK}" stroke-width="8" stroke-linejoin="round"/>` +
     [-56, -28, 0, 28, 56].map(d => `<path d="M ${x + lean + d * 0.7} ${foot - 90} L ${x + lean + d} ${foot - 8}" stroke="#b8902c" stroke-width="5"/>`).join('');
   // Nadia's bag on her shoulder (in her own coordinates)
-  const handbag = (x = 640, y = 1060) => `<path d="M ${x - 170} 650 Q ${x - 80} 820 ${x - 50} ${y - 64}" fill="none" stroke="${INK}" stroke-width="13" stroke-linecap="round"/>` +
+  // 19/11, contact sheet : the long strap started on Nadia's face (a dark line across it) ; a short handle above the bag instead
+  const handbag = (x = 640, y = 1060) => `<path d="M ${x - 56} ${y - 70} Q ${x} ${y - 165} ${x + 56} ${y - 70}" fill="none" stroke="${INK}" stroke-width="12" stroke-linecap="round"/>` +
     `<rect x="${x - 92}" y="${y - 72}" width="184" height="150" rx="26" fill="#8a3f5c" stroke="${INK}" stroke-width="8"/><rect x="${x - 40}" y="${y - 42}" width="80" height="20" rx="8" fill="#ffd34d" stroke="${INK}" stroke-width="4"/>`;
   // the take on Deuce's phone : the drop comes… and the picture turns white (18/11 : at 1.85 s, on Deuce's « boum »)
   function dropScreen() {
@@ -1396,7 +1397,8 @@
   FRAMES['thumb-ep11'] = thumb(KITCHEN_N, [CH('deuce', 1, 800, 2900, 2300, 'panique'), SICK('panique', 330, 3000, 2330)], E11, 11);
   FRAMES['thumb-ep12'] = thumb(COURT_PM, [LI(300, 3000, 2330, 'fierte'), MO('colere', 790, 2900, 2300)], E12, 12);
   FRAMES['thumb-ep13'] = thumb(KITCHEN_N, [LI(320, 3000, 2330, 'frime'), CH('nadia', 2, 790, 2900, 2300, 'colere', fiche(450, 1170, 420, -5))], E13, 13);
-  FRAMES['thumb-ep14'] = thumb(KITCHEN_N, [LI(320, 3000, 2330, 'fierte', handPhone(bfAd(), 606, 700, 0.34), { pose: { raise: 'r' } }), CH('nadia', 2, 790, 2900, 2300, 'colere')], E14, 14);
+  // 19/11 : the ad was held up by Liam behind Nadia's head (« BLACK FRIDAY » and « 900 € » half hidden) ; now Nadia holds it in front of her, as in the hook
+  FRAMES['thumb-ep14'] = thumb(KITCHEN_N, [LI(320, 3000, 2330, 'fierte'), CH('nadia', 2, 790, 2900, 2300, 'colere', handPhone(bfAd(), 450, 1050, 0.26))], E14, 14);
   FRAMES['thumb-ep15'] = thumb(KITCHEN, [LI(540, 3150, 2450, 'colere', '', FLOUR(540, 3150, 2450, 7))], E15, 15, flourCloud());
 
   window.STORYBOARD = { BOARDS, P, band, hp, headAt, phoneBig, laptopBig, take, editor, clockBig, postScreen, winPhone, gallery, stalakApp, takeScene, liamBust, carton, knock, notif, comment, tag, endCard };

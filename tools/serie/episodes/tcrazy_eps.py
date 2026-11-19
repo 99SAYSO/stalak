@@ -226,7 +226,7 @@ EPISODES = {
                   10: 'grumpy, dry, deadpan', 11: 'quick, giving in', 12: 'calm, explaining simply', 13: 'puzzled', 14: 'dry, teasing',
                   15: 'warm', 16: 'cocky, pretending it was all planned', 17: 'flat, ironic', 18: CTA}),
     # « Le cahier de rap » (n° 9, 19/11 at 21 h) : the kitchen at dawn, then after school (cuisine 1, 'nuit' then 'jour')
-    'ep9': dict(card='tcrazy-ep9', same={}, shots=[
+    'ep9': dict(card='tcrazy-ep9', same={}, glue=['sur moi'], shots=[  # the shout : « Tu rappes / sur moi ?! », not « … sur / moi ?! » (19/11)
         ('ep9-01', [1], dict(music='plan', sfx=[('whoosh-short.mp3', 0.0, 0.3)])),
         ('ep9-02', [2], {}),
         ('ep9-03', [3], {}),
@@ -354,7 +354,10 @@ EPISODES = {
                   11: 'casual, saying hi, curious', 12: 'proud, a bit pompous', 13: 'calm, explaining simply', 14: 'suspicious',
                   15: 'casual, as if it were obvious, a bit teasing', 16: 'warm', 17: 'cocky, lying with a straight face', 18: 'flat, ironic', 19: CTA}),
     # « Les effets spéciaux » (n° 15, 23/11 at 21 h) : the kitchen in the afternoon, white with flour (cuisine 1), then in the evening, clean
-    'ep15': dict(card='tcrazy-ep15', same={}, tempo=1.03, gap=0.18, cut=0.27, shots=[  # 19 lines : a little tighter, to stay under 1 min 20
+    'ep15': dict(card='tcrazy-ep15', same={}, tempo=1.03, gap=0.18, cut=0.27,
+         # 19/11, contact sheet : « … passe d'une / prise… » (the only cut that fits ended with « d'une ») : three lines instead
+         subs={16: ["Au drop, Stalak passe\nd'une prise à l'autre à chaque temps.", 'Ça explose, et la cuisine reste propre.']},
+         shots=[  # 19 lines : a little tighter, to stay under 1 min 20
         ('ep15-01', [1], dict(music='plan', sfx=[('whoosh-short.mp3', 0.0, 0.3)])),
         ('ep15-02', [2], {}),
         ('ep15-03', [3], {}),
