@@ -12,9 +12,12 @@ The order of the steps :
             HyperFrames composition, with the registry's light leak on each change of time and a vignette in the evening
             → <work>/<ep>/video.mp4 (no sound ; about 12-15 min per episode on 2 processors ; HYPERFRAMES_BROWSER_PATH = an installed Chrome)
   audio   : the 4 Pixabay ambiences under the voices, a few sound effects, -14 LUFS → <work>/<ep>/mix.wav
-  mux     : → <work>/<ep>/<ep>.mp4 (publication) and <ep>-720.mp4 (for Studio Stalak, under 20 MB)
+  mux     : → <work>/<ep>/<ep>.mp4 (the master) and <ep>-720.mp4 (a light copy)
   sheet   : the contact sheet, one image every 0.5 s (tools/contact_sheet.py)
   thumb   : the thumbnail, drawn in the series style → <work>/<ep>/<ep>-miniature.jpg
+  deliver : → <work>/<ep>/<ep>-pub.mp4 (under 19.5 MB : the viewing version for Studio Stalak, videoUrl) and <ep>-planche.jpg
+  hd      : → <work>/<ep>/<ep>-hd.mp4, the publication version (19/11 : H.264 High, 1080 x 1920, 30 images/s, 11 Mbit/s,
+            AAC 192 kbit/s, faststart) : uploaded to Zernio (presigned URL), its publicUrl in videoHDUrl. Never publish the light one.
 The words come from <work>/scripts/<card>.json (the card exported from Studio Stalak) : never typed again.
 Renders, voices and music stay in the work folder, never in the repo.
 """
@@ -784,6 +787,33 @@ def mux(ep):
         print('%s : %.1f Mo' % (p, os.path.getsize(p) / 1e6))
 
 
+def hd(ep):
+    """the publication version (owner's rule of 19/11 : the light version, about 1.5 Mbit/s, came out blurry on TikTok, which
+    recompresses it) : H.264 High, 1080 x 1920, 30 images/s, 10 to 12 Mbit/s (two passes, 11 Mbit/s on average, 12 at most),
+    AAC 192 kbit/s, faststart -> <work>/<ep>/<ep>-hd.mp4. It goes to Zernio (presigned upload), and its publicUrl into videoHDUrl.
+    Source : video.mp4 (the picture of the version on the card) and mix.wav ; SERIE_HD_SRC=video_hf.mp4 takes the full render
+    instead (an episode whose card keeps the version from before a splice)."""
+    d = os.path.join(WORK, ep)
+    src = os.path.join(d, os.environ.get('SERIE_HD_SRC', 'video.mp4'))
+    out, log = os.path.join(d, ep + '-hd.mp4'), os.path.join(d, 'hd2pass')
+    vf = ['-vf', 'scale=in_range=pc:out_range=tv:out_color_matrix=bt709'] if src.endswith('video_hf.mp4') else []
+    enc = ['-c:v', 'libx264', '-profile:v', 'high', '-level:v', '4.1', '-preset', 'medium', '-b:v', '11M', '-maxrate', '12M', '-bufsize', '24M',
+           '-pix_fmt', 'yuv420p', '-r', '30', '-g', '60', '-colorspace', 'bt709', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-color_range', 'tv',
+           '-passlogfile', log]
+    run(['ffmpeg', '-nostdin', '-v', 'error', '-y', '-i', src, '-map', '0:v'] + vf + enc + ['-pass', '1', '-an', '-f', 'mp4', os.devnull])
+    run(['ffmpeg', '-nostdin', '-v', 'error', '-y', '-i', src, '-i', os.path.join(d, 'mix.wav'), '-map', '0:v', '-map', '1:a'] + vf + enc +
+        ['-pass', '2', '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart', out])
+    for f in os.listdir(d):
+        if f.startswith('hd2pass'):
+            os.remove(os.path.join(d, f))
+    v = json.loads(run(['ffprobe', '-v', 'error', '-show_entries', 'stream=codec_type,codec_name,profile,width,height,r_frame_rate,bit_rate:format=duration,size',
+                        '-of', 'json', out]).stdout)
+    vs = [x for x in v['streams'] if x['codec_type'] == 'video'][0]
+    au = [x for x in v['streams'] if x['codec_type'] == 'audio'][0]
+    print('%s : %.1f Mo, %.1f s ; %s %s %sx%s %s, %.1f Mbit/s ; %s %d kbit/s' % (out, int(v['format']['size']) / 1e6, float(v['format']['duration']),
+          vs['codec_name'], vs['profile'], vs['width'], vs['height'], vs['r_frame_rate'], int(vs['bit_rate']) / 1e6, au['codec_name'], int(au['bit_rate']) // 1000))
+
+
 def sheet(ep):
     d = os.path.join(WORK, ep)
     run(['python3', os.path.join(ROOT, 'tools/contact_sheet.py'), os.path.join(d, ep + '.mp4'), '--out', os.path.join(d, 'planche')])
@@ -791,8 +821,8 @@ def sheet(ep):
 
 
 def deliver(ep):
-    """what goes into Studio Stalak : the full-size video under 19.5 MB (also the one to publish), and a one-page overview
-    (one image per second) for plancheUrl"""
+    """what goes into Studio Stalak : the full-size video under 19.5 MB (the viewing version ; since 19/11 the published one is
+    <ep>-hd.mp4, see hd), and a one-page overview (one image per second) for plancheUrl"""
     from PIL import Image, ImageDraw, ImageFont
     d = os.path.join(WORK, ep)
     src, pub = os.path.join(d, ep + '.mp4'), os.path.join(d, ep + '-pub.mp4')
@@ -831,4 +861,4 @@ def thumb(ep):
 
 if __name__ == '__main__':
     ep, step = sys.argv[1], sys.argv[2]
-    {'prompts': prompts, 'voices': voices, 'plan': plan, 'frames': lambda e: frames(e, *sys.argv[3:5]), 'hf': lambda e: hf(e, *sys.argv[3:5]), 'hfproject': hf_project, 'encode': encode, 'audio': audio, 'mux': mux, 'sheet': sheet, 'thumb': thumb, 'deliver': deliver}[step](ep)
+    {'prompts': prompts, 'voices': voices, 'plan': plan, 'frames': lambda e: frames(e, *sys.argv[3:5]), 'hf': lambda e: hf(e, *sys.argv[3:5]), 'hfproject': hf_project, 'encode': encode, 'audio': audio, 'mux': mux, 'sheet': sheet, 'thumb': thumb, 'deliver': deliver, 'hd': hd}[step](ep)
