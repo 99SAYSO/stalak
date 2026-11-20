@@ -1,21 +1,21 @@
-# Format « BONNE IDÉE / ARNAQUE ? » — mode d'emploi
+# Format « BONNE IDÉE VS MAUVAISE IDÉE » — mode d'emploi
 
 Décision du propriétaire du 20/11/2026 : ce format remplace celui des épisodes T-Crazy actuels **à partir du lundi 23/11**, sur le même compte (@stalak_app, TikTok et Instagram), à 3 vidéos par jour. Les épisodes déjà programmés continuent ; chaque vidéo du nouveau format prend la place d'un épisode prévu dès qu'elle est validée. Mécanique tirée de l'analyse `docs/marketing/ANALYSE_FORMAT_DEBAT.md`.
 
 ## Le principe en une phrase
 
-Un rappeur veut faire la promo de son son avec une idée (acheter des vues, spammer sa famille…). La barre en haut demande : **bonne idée ou arnaque ?** Le « grand » tranche, puis prouve ce qui marche vraiment **en montrant un snippet** : la question « Comment t'as fait ce clip ? » mène à Stalak.
+Un rappeur veut faire la promo de son son avec une idée (acheter des vues, spammer sa famille…). La barre en haut demande : **bonne idée ou mauvaise idée ?** Le « grand » tranche, puis prouve ce qui marche vraiment **en montrant un snippet** : la question « Comment t'as fait ce clip ? » mène à Stalak.
 
 ## Ce qui ne change jamais (le squelette)
 
 | Temps | Contenu | Règles |
 |---|---|---|
-| **Image 0** | En haut : le **sujet en 2 ou 3 mots, en majuscules** (« ACHETER DES VUES »), et dessous **la barre : « BONNE IDÉE » sur fond vert à gauche, « ARNAQUE ? » sur fond rouge à droite**. Les personnages sont déjà à l'écran, en pleine dispute. | La barre reste en haut **toute la vidéo**, jusqu'au verdict. Rien d'autre en haut. |
+| **Image 0** | En haut : le **sujet en 2 ou 3 mots, en majuscules** (« ACHETER DES VUES »), et dessous **la barre : « BONNE IDÉE » sur fond vert à gauche, « VS » au milieu, « MAUVAISE IDÉE » sur fond rouge à droite** (nom du format décidé le 20/11 à 4 h 32). Les personnages sont déjà à l'écran, en pleine dispute. | La barre reste en haut **toute la vidéo**, jusqu'au verdict. Rien d'autre en haut. |
 | **0 – 3 s · l'accroche** | Un personnage **crie** la première phrase de la dispute. Elle s'écrit **en très gros, mot par mot**, en même temps que la voix, avec **le mot clé dans une autre couleur** (« T'as payé 50 balles pour **10 000 VUES** ?! »). | Phrase de 5 à 9 mots, finie avant 3 s. Elle contient le sujet. Changement de plan à 3,5 s au plus tard. |
 | **3 – 15 s · la dispute** | Liam défend son idée, quelqu'un (Nadia, Deuce, Maya) est contre. Chacun sa position, ça monte. | Premier passage de chaque personnage : petite étiquette avec son nom. Un plan toutes les 3 à 5 s. |
 | **15 – 18 s · l'arrivée du grand** | Big Mo arrive (« Je vous ai entendus de la porte. ») : c'est l'autorité, toujours lui. | |
 | **18 – 40 s · l'explication** | Big Mo explique pourquoi, **avec des images** : l'écran du téléphone, des chiffres, ce qui se passe vraiment. | Que du vrai : chaque fait est vérifié, jamais inventé. Pas de chiffre sans source. |
-| **40 – 44 s · le verdict** | Un tampon plein écran : **« ARNAQUE »** en rouge ou **« BONNE IDÉE »** en vert. | Le verdict surprend au moins une fois sur trois (une idée qui a l'air nulle et qui marche, ou l'inverse). |
+| **40 – 44 s · le verdict** | Un tampon plein écran : **« MAUVAISE IDÉE »** en rouge ou **« BONNE IDÉE »** en vert. | Le verdict surprend au moins une fois sur trois (une idée qui a l'air nulle et qui marche, ou l'inverse). |
 | **44 – 52 s · la chute** | « Ce qui marche, c'est ça. » Big Mo montre **son propre snippet** sur son téléphone : net, calé sur le son, avec de vrais commentaires. Petite touche drôle ou tendre. | |
 | **52 – 55 s · le pont (mot pour mot, toujours)** | Liam : « **Mais comment t'as fait ce clip ?** » — Big Mo : « **C'est simple.** » | Ces deux phrases ne changent jamais. |
 | **55 – 77 s · Stalak, bien expliqué** | Big Mo tient le téléphone et **explique vraiment ce qu'est Stalak**, étape par étape, pendant que les vraies images de stalak.app défilent (voir « L'explication de Stalak » plus bas). | Captures réelles du site, jamais inventées. Rien de promis que Stalak ne fait pas. |
