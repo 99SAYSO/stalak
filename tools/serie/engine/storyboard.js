@@ -1382,6 +1382,14 @@
     { t: '1:14', cap: 'La carte de fin : « Prochain épisode : bientôt » (son choix du 18/11)', plain: true, over: () => endCard('BIENTÔT') },
   ], "Sort le 23/11 à 21 h. La cuisine en fin d'après-midi, puis le soir, une fois rangée.");
 
+  // ---------------- « BONNE IDÉE VS MAUVAISE IDÉE » (owner, 20/11) : the Stalak part, the last 20 to 22 s, the same in every video.
+  // Big Mo stands on the left of the set of the video, the set darkened behind him ; tools/serie/stalak_part.py lays over it the
+  // phone with the owner's real iPhone recordings of stalak.app, the steps, the store card and Big Mo's words (HyperFrames).
+  // One frame per set : 01 the kitchen in the evening, 02 the bedroom, 03 the street, 04 the roof, 05 the kitchen in the morning, 06 the court.
+  const DIMSET = (k) => () => `<rect width="1080" height="1920" fill="${INK}" opacity="${k}"/>`;
+  ep('bima-stalak', 'STALAK', 0, [KITCHEN_N, ROOM, STREET, ROOF, KITCHEN, TERRAIN].map((set, i) => (
+    { t: '0:00', cap: 'La partie Stalak : Big Mo et son téléphone (' + set[0] + ', ' + set[2] + ')', set, setOver: DIMSET(0.42), chars: [CH('bigmo', 1, 215, 1846, 1300, 'frime')] })));
+
   // ---------------- the thumbnails (TikTok cover), one per episode, in the style of the validated example (frame.js) ----------------
   const thumb = (set, chars, title, num, extra = '') => ({ set, chars, over: () => extra + `<g transform="translate(0 120)">${bandeau(2, title, num)}</g>` });
   FRAMES['thumb-ep1'] = thumb(KITCHEN, [CH('nadia', 2, 790, 2760, 2300, 'colere', P.phone(580, 1130, '#ffe066')), LI(330, 3080, 2330, 'panique')], 'SA MÈRE A CRIÉ EN PLEINE PRISE', 1);
