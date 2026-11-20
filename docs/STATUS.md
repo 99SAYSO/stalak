@@ -504,6 +504,22 @@
 Ces montants sont avant TVA et frais. Réaliste : 10 000 € par mois en avril 2027.
 
 ### Juridique & business
+- **Fait (branche `legal/tiktok`, 21/11)** : TikTok dans la confidentialité FR/EN et les conditions FR/EN, pour la validation de l'appli par TikTok. Détail et tableau des promesses dans `docs/juridique/TIKTOK.md`.
+  - Confidentialité `#tiktok` : ce qu'on reçoit (profil, stats du compte, vidéos publiques avec vues et likes, jetons chiffrés), à quoi ça sert (publier les clips choisis, stats visibles par la personne seule), durées, comment délier et tout effacer, rien vendu ni partagé.
+    - Durées annoncées : nom et photo tant que relié ; stats et liste 24 h ; vidéo pas gardée ; état de publication 30 jours ; effacement immédiat à la déliaison ; 30 jours si l'accès est retiré depuis TikTok.
+    - Ailleurs dans la page : cookie `stalak_c`, TikTok dans les prestataires, section US et « En bref ».
+  - Conditions `#tiktok` (section 9) : publication seulement sur action de la personne ; conditions et Confirmation d'utilisation de la musique de TikTok ; pas de garantie de publication ; « Délier » ; pas d'affiliation avec TikTok.
+- **À faire par Réseaux sociaux (avant la demande de validation)** : tableau de `docs/juridique/TIKTOK.md`, partie 1.
+  - Cache des stats 24 h au plus, effacé à la déliaison.
+  - États de publication purgés à 30 jours.
+  - Liens expirés ou retirés depuis TikTok effacés sous 30 jours (aujourd'hui la ligne reste en `expired`).
+  - Vidéo jamais gardée.
+  - Libellés « Délier » / « Unlink », « Mes stats » / « My stats ».
+  - Écran de publication conforme aux règles de TikTok (partie 2).
+- **À décider (propriétaire + Chef de projet), urgent avant la validation** : TikTok interdit qu'une appli ajoute son logo ou son filigrane aux vidéos publiées par son outil, alors que la publication directe est ouverte aux gratuits (filigrane). Choix :
+  - publier sans filigrane via « Publier sur TikTok » ;
+  - ou réserver la publication directe à Pro et Creator Plus.
+  Voir `TIKTOK.md`, partie 3.
 - **Fait (branche `legal/video-par-email`, 07/11, refaite à 16 h)** : confidentialité FR/EN alignée **exactement** sur `compte/donnees-7-11`. Il n'y a pas d'envoi de la vidéo par e-mail. Détail dans `docs/juridique/EMAIL_CONSEILS.md`.
   - Nouvelle section « Conseils par e-mail » (`#conseils-email` / `#email-tips`) : texte de la case cité mot pour mot, confirmation par bouton, effacement à 7 jours sans confirmation, 3 ans après la confirmation, désinscription en un clic qui efface tout de suite, 2 e-mails par mois au plus, ce qui est gardé, `stalak:optin`, moins de 15 ans : accord d'un parent.
   - Totaux de visites par provenance × pays × appareil, fermetures de la fenêtre de paiement par étape, `stalak:vsrc`, `stalak:lastDay` 13 mois.
