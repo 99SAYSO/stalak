@@ -31,14 +31,14 @@ Source : TikTok for Developers, « Content Sharing Guidelines ».
 - **Légende ou hashtags pré-remplis : permis, mais modifiables par la personne avant publication.**
 - **Pas de filigrane ni de logo de l'appli sur la vidéo publiée** : « should not superimpose … any brand name, logo, watermark ». Voir 3.
 
-## 3. Point à décider : le filigrane du Gratuit et la publication directe
-La publication directe est ouverte à tous, gratuits compris (décision du 21/11, 0 h 20). Mais les règles de TikTok interdisent à une
-appli d'ajouter son logo ou son filigrane aux vidéos publiées par son outil. Le filigrane du Gratuit (mascotte + « stalak.app ») est
-exactement ça : **risque sérieux de refus à la validation**, puis de coupure de l'accès.
-
-Choix possibles (décision du propriétaire, avec le Chef de projet) :
-1. **Publier sans filigrane quand on passe par « Publier sur TikTok »**, même en Gratuit. Le filigrane reste sur les vidéos enregistrées sur l'appareil. C'est le plus simple pour la validation, mais les gratuits ont alors une façon d'avoir des vidéos sans filigrane. Les conditions (section 4) devront le dire.
-2. **Réserver la publication directe à Pro et Creator Plus** (sans filigrane) : revient sur la décision du 21/11.
-3. Garder le filigrane : à éviter (contraire aux règles de TikTok).
-
-Les pages publiées ici ne parlent pas du filigrane dans la partie TikTok. Dès le choix fait, Juridique adapte la section 4 des conditions.
+## 3. Filigrane : DÉCIDÉ (21/11, 0 h 24)
+**La publication directe sur TikTok est réservée à Pro et Creator Plus** (vidéos sans filigrane), à cause de la règle de TikTok
+qui interdit à une appli d'ajouter son logo ou son filigrane aux vidéos publiées par son outil. Ça remplace « ouverte à tout le
+monde » (21/11, 0 h 20).
+- Conditions FR/EN : publication TikTok et stats ajoutées à la formule Pro (section 3) ; paragraphe « Publier sur TikTok (Pro et Creator Plus) » (section 9) : clips publiés sans filigrane ; si l'abonnement s'arrête, plus de publication ni de stats jusqu'au réabonnement, et le compte TikTok reste relié jusqu'à ce qu'il soit délié.
+- Confidentialité FR/EN : liaison « avec Stalak Pro ou Creator Plus » ; nom et photo gardés même si l'abonnement s'arrête, jusqu'à la déliaison.
+- **Pour Réseaux sociaux** :
+  - bouton « Relier TikTok », « Publier » et « Mes stats » réservés aux abonnés (gratuits : `acctOpen('tiktok')` vers les formules) ;
+  - contrôle côté serveur (`requirePro`) sur la liaison, la publication et les stats ;
+  - **jamais de filigrane** sur une vidéo envoyée à TikTok ;
+  - abonnement terminé : refuser publication et stats, garder la liaison ; la purge à 30 jours des liens expirés s'applique.

@@ -25,13 +25,14 @@ par TikTok. Infos pour décider, pas un avis juridique.
   - partie 2 : les règles de TikTok pour l'écran de publication ;
   - partie 3 : le problème du filigrane.
 
-ATTENTION, à décider avant la demande de validation :
-Les règles de TikTok (Content Sharing Guidelines) interdisent à une appli d'ajouter son logo ou son filigrane aux vidéos publiées
-par son outil (« should not superimpose … any brand name, logo, watermark »). Or la publication directe est ouverte aux gratuits,
-dont les vidéos ont le filigrane mascotte + stalak.app. Choix :
-(1) publier sans filigrane via « Publier sur TikTok », même en Gratuit (les conditions, section 4, devront le dire) ;
-(2) réserver la publication directe à Pro et Creator Plus.
-Garder le filigrane = risque sérieux de refus.
+DÉCIDÉ (propriétaire, 21/11, 0 h 24) : à cause de la règle de TikTok sur les filigranes, la publication directe est réservée à Pro
+et Creator Plus. Ajouté sur cette branche :
+- conditions FR/EN : publication TikTok et stats dans la formule Pro (section 3) ; « Publier sur TikTok (Pro et Creator Plus) »
+  avec clips sans filigrane et ce qui se passe si l'abonnement s'arrête (section 9) ;
+- confidentialité FR/EN : liaison réservée à Pro et Creator Plus ; nom et photo gardés jusqu'à la déliaison, même après
+  l'abonnement.
+Pour Réseaux sociaux : liaison, publication et stats réservées aux abonnés, côté app et serveur ; jamais de filigrane sur une
+vidéo envoyée à TikTok (TIKTOK.md, partie 3). Le Chef de projet met à jour la décision dans STALAK_CONTEXTE.md.
 
 Fichiers touchés :
 - site_src/privacy.html, site_src/fr/confidentialite.html, site_src/terms.html, site_src/fr/conditions.html
@@ -48,5 +49,4 @@ Mise en ligne : peut partir dès maintenant (TikTok lira les pages pendant la va
 Réseaux sociaux doit tenir les promesses du tableau (TIKTOK.md, partie 1), surtout le cache de 24 h, la purge à 30 jours et la
 suppression des liens expirés.
 
-Reste au propriétaire :
-- Trancher la question du filigrane avec le Chef de projet (partie 3 de TIKTOK.md).
+Reste au propriétaire : rien.

@@ -516,10 +516,7 @@ Ces montants sont avant TVA et frais. Réaliste : 10 000 € par mois en avril 2
   - Vidéo jamais gardée.
   - Libellés « Délier » / « Unlink », « Mes stats » / « My stats ».
   - Écran de publication conforme aux règles de TikTok (partie 2).
-- **À décider (propriétaire + Chef de projet), urgent avant la validation** : TikTok interdit qu'une appli ajoute son logo ou son filigrane aux vidéos publiées par son outil, alors que la publication directe est ouverte aux gratuits (filigrane). Choix :
-  - publier sans filigrane via « Publier sur TikTok » ;
-  - ou réserver la publication directe à Pro et Creator Plus.
-  Voir `TIKTOK.md`, partie 3.
+- **Décidé (propriétaire, 21/11, 0 h 24)** : à cause du filigrane (règle de TikTok), **la publication directe sur TikTok est réservée à Pro et Creator Plus**. Elle n'est plus ouverte aux gratuits. Conditions et confidentialité FR/EN adaptées sur `legal/tiktok`. Pour Réseaux sociaux : liaison, publication et « Mes stats » réservées aux abonnés, contrôlées aussi côté serveur, et jamais de filigrane sur une vidéo envoyée à TikTok (`TIKTOK.md`, partie 3).
 - **Fait (branche `legal/video-par-email`, 07/11, refaite à 16 h)** : confidentialité FR/EN alignée **exactement** sur `compte/donnees-7-11`. Il n'y a pas d'envoi de la vidéo par e-mail. Détail dans `docs/juridique/EMAIL_CONSEILS.md`.
   - Nouvelle section « Conseils par e-mail » (`#conseils-email` / `#email-tips`) : texte de la case cité mot pour mot, confirmation par bouton, effacement à 7 jours sans confirmation, 3 ans après la confirmation, désinscription en un clic qui efface tout de suite, 2 e-mails par mois au plus, ce qui est gardé, `stalak:optin`, moins de 15 ans : accord d'un parent.
   - Totaux de visites par provenance × pays × appareil, fermetures de la fenêtre de paiement par étape, `stalak:vsrc`, `stalak:lastDay` 13 mois.
