@@ -40,6 +40,7 @@ Puis le snippet de Big Mo en grand, 2 secondes, avec « **stalak.app** » écrit
 Règles :
 - Ne dire que ce qui est vrai **en gratuit** ; ce qui est réservé à Stalak Pro (transcription automatique des paroles, export sans filigrane) n'est jamais présenté comme gratuit. Si on le montre, on le dit (« avec Stalak Pro »).
 - Pas de durée chiffrée (« en 3 minutes ») tant qu'elle n'est pas mesurée : « en quelques minutes ».
+- **Le téléphone de Big Mo montre un vrai enregistrement d'écran d'iPhone** fait par le propriétaire sur stalak.app (décision du 20/11), comme la référence. Sous le téléphone, une carte façon « App Store » : logo Stalak, « Stalak · Ton clip playback monté sur le rythme », bouton « Ouvrir ». On découpe ses enregistrements en 4 morceaux (Son, Prises, Paroles, Montage) et on les accélère si besoin, sans rien inventer.
 - Les captures sont faites sur le vrai site, avec un son dont on a les droits (par exemple l'exemple « neva die » du propriétaire).
 - Le texte peut varier de quelques mots selon le sujet, mais les 4 étapes et « stalak.app » sont toujours là.
 
