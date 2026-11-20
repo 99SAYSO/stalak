@@ -25,6 +25,7 @@ export const FEATURES = Object.freeze({
   packs: 'creator',
   cloud: 'creator',     // online saving (R2) and the Galerie
   human: 'creator',     // « Parler à un humain »
+  tiktok: 'pro',        // Réseaux sociaux (21/11): « Publier sur TikTok » (sent without watermark, as TikTok asks) and the detailed « Mes stats »
   // names of the Basic / Pro / Max offer, still asked by pages of that time (same meaning in the new offer)
   nologo: 'pro',
   unlimited: 'free',

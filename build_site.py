@@ -48,6 +48,7 @@ markup = (src / 'markup.html').read_text(encoding='utf-8')
 markup = re.sub(r'<!--HEROVIDEO-->.*?<!--/HEROVIDEO-->', '', markup, flags=re.S) if not (extra / 'demo' / 'edit.mp4').exists() else markup.replace('<!--HEROVIDEO-->', '').replace('<!--/HEROVIDEO-->', '')
 js = (src / 'app.js').read_text(encoding='utf-8')
 ACCOUNT_JS = (src / 'account.js').read_text(encoding='utf-8')   # stalak.app only: sign in, Stalak Pro
+TIKTOK_JS = (src / 'tiktok.js').read_text(encoding='utf-8')     # Réseaux sociaux (21/11), stalak.app only: « Publier sur TikTok », « Mes stats »
 
 # 1. head: fonts and libraries from the site itself
 # favicon: real files (Google Search cannot read an icon written inside the page as data:)
@@ -143,6 +144,7 @@ markup = markup.replace(a, '<section class="about" aria-labelledby="aboutT" data
 assert '<!--FOOTER-->' in markup
 markup = markup.replace('<!--FOOTER-->', FOOT.render('fr', i18n='site.footer'))
 css += '\n' + (src / 'footer.css').read_text(encoding='utf-8')
+css += '\n' + (src / 'tiktok.css').read_text(encoding='utf-8')   # Réseaux sociaux (21/11)
 css += '\n.about{align-self:center;max-width:760px;width:100%;color:#fff;font-size:14.5px;line-height:1.55;margin-top:18px}.about h2{font:400 22px/1.2 var(--display);margin:0 0 6px;color:#fff;text-shadow:0 2px 0 var(--ink)}.about p{margin:0 0 8px}.about ul{margin:0 0 8px;padding-left:20px}.about strong{font-weight:700}.about a{color:#fff;font-weight:700;text-decoration:underline;text-underline-offset:3px}\n'
 
 # 3. languages: the dictionaries are in app.js (between /*@EN*/ … /*EN@*/ and /*@FR*/ … /*FR@*/); the French of the page's
@@ -286,7 +288,7 @@ def app_loader():
     The page is drawn first; the two video libraries and the app (360 KB, kept a year: /assets/… carry their version) are
     loaded right after that first picture, in their order (async = false). Then the home video starts, unless the person
     asked her phone for less motion (it stays on its first picture)."""
-    files = VENDOR + ['/assets/' + ASSETS['account'], '/assets/' + ASSETS['app']]
+    files = VENDOR + ['/assets/' + ASSETS['account'], '/assets/' + ASSETS['app'], '/assets/' + ASSETS['tiktok']]
     return ('<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=' + json.dumps(files) + ';'
             'function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}'
             'requestAnimationFrame(function(){setTimeout(go,0);});'
@@ -310,7 +312,7 @@ for f in list(out.glob('*.html')) + list((out / 'fr').glob('*.html')):
 # App & montage (audit 6/11, n° 10): the app's code and the account's, as versioned files
 (out / 'assets').mkdir(exist_ok=True)
 ASSETS = {}
-for _k, _code in (('app', js), ('account', ACCOUNT_JS)):
+for _k, _code in (('app', js), ('account', ACCOUNT_JS), ('tiktok', TIKTOK_JS)):
     _b = _code.encode('utf-8'); _n = _k + '.' + hashlib.sha1(_b).hexdigest()[:10] + '.js'
     (out / 'assets' / _n).write_bytes(_b); ASSETS[_k] = _n
 (out / 'index.html').write_text(page('en', markup_en), encoding='utf-8')

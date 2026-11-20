@@ -195,7 +195,7 @@ const tests = [];
 const test = (name, fn) => tests.push({ name, fn });
 const FREE_ENT = { plan: 'free', features: ['unlimited'], limits: { lyricsPerDay: 0, lyricsMinutesPerDay: 0, cloudBytes: 0 },
   outro: false, cloudSave: false, clipMode: false, autoLyrics: false, packs: false };
-const PRO_ENT = { plan: 'pro', features: ['nowm', 'clip', 'fx', 'text', 'filters', 'lyrics', 'nologo', 'unlimited'],
+const PRO_ENT = { plan: 'pro', features: ['nowm', 'clip', 'fx', 'text', 'filters', 'lyrics', 'tiktok', 'nologo', 'unlimited'],
   limits: { lyricsPerDay: 20, lyricsMinutesPerDay: 90, cloudBytes: 0 },
   outro: false, cloudSave: false, clipMode: true, autoLyrics: true, packs: false };
 
@@ -1734,7 +1734,8 @@ test('help chat: per-connection and daily site limits; model failure → 502; no
 // ---- social connect: TikTok and Instagram accounts (migration 0005) ------------------------------
 const SOCIAL_ENV = { SOCIAL_CONNECT_ENABLED: '1', SOCIAL_TOKEN_KEY: 'glace-neige-stalactite-0123456789-abcdef',
   TIKTOK_CLIENT_KEY: 'tt-client-key', TIKTOK_CLIENT_SECRET: 'tt-secret', INSTAGRAM_APP_ID: '1122334455', INSTAGRAM_APP_SECRET: 'ig-secret' };
-const soc = { calls: [], ttScope: 'user.info.basic,video.publish', ttRefreshFail: false, igWrapped: true, n: 0 };
+const TT_ALL = 'user.info.basic,video.publish,video.upload,user.info.stats,video.list';
+const soc = { calls: [], ttScope: TT_ALL, ttRefreshFail: false, igWrapped: true, n: 0 };
 socialFetch = async (url, init = {}) => {
   const f = init.body ? new URLSearchParams(init.body) : null;
   if (url === 'https://open.tiktokapis.com/v2/oauth/token/') {
@@ -1748,9 +1749,14 @@ socialFetch = async (url, init = {}) => {
   }
   if (url.startsWith('https://open.tiktokapis.com/v2/user/info/')) {
     soc.calls.push({ k: 'tt-info', url, auth: init.headers.Authorization });
-    return Response.json({ data: { user: { open_id: 'tt-open-1', display_name: '99sayso', avatar_url: 'https://p16.tiktokcdn.example/a.jpg' } }, error: { code: 'ok' } });
+    const stats = url.includes('follower_count') ? { follower_count: 1234, following_count: 56, likes_count: 7890, video_count: 42 } : {};
+    return Response.json({ data: { user: { open_id: 'tt-open-1', display_name: '99sayso', avatar_url: 'https://p16.tiktokcdn.example/a.jpg', ...stats } }, error: { code: 'ok' } });
   }
   if (url === 'https://open.tiktokapis.com/v2/oauth/revoke/') { soc.calls.push({ k: 'tt-revoke', f }); return new Response(''); }
+  // Content Posting API + stats (tiktok.js, 21/11)
+  if (url.startsWith('https://open.tiktokapis.com/v2/post/') || url.startsWith('https://open.tiktokapis.com/v2/video/list/') || url.startsWith('https://open-upload.tiktokapis.com/')) {
+    return ttFake(url, init);
+  }
   if (url === 'https://api.instagram.com/oauth/access_token') {
     soc.calls.push({ k: 'ig-code', f });
     if (f.get('code') !== 'c0de') return Response.json({ error_type: 'OAuthException', error_message: 'bad code' }, { status: 400 });
@@ -1812,7 +1818,7 @@ test('social TikTok: start, callback, tokens stored encrypted, account listed wi
   assert.equal(b.r.status, 302);
   assert.equal(b.loc.origin + b.loc.pathname, 'https://www.tiktok.com/v2/auth/authorize/');
   assert.equal(b.q.get('client_key'), 'tt-client-key'); assert.equal(b.q.get('response_type'), 'code');
-  assert.equal(b.q.get('scope'), 'user.info.basic,video.publish');
+  assert.equal(b.q.get('scope'), TT_ALL);
   assert.equal(b.q.get('redirect_uri'), 'https://stalak.app/api/connect/tiktok/callback');
   assert.ok(b.state.length >= 40);
   for (const f of ['HttpOnly', 'Secure', 'SameSite=Lax', 'Path=/api/connect', 'Max-Age=600']) assert.ok(b.setCookie.includes(f), f);
@@ -1885,11 +1891,11 @@ test('social callback guards: state, browser cookie, other account, cancel, miss
   env.DB.raw.exec('UPDATE social_states SET expires_at = 1');
   r = await socialFinish(env, 'tiktok', b, a.cookie);
   assert.equal(fragOf(r), 'social-err-state_mismatch');
-  // the person unticked « publish videos » on TikTok's screen
-  soc.ttScope = 'user.info.basic';
+  // the person unticked the basic permission on TikTok's screen (each other permission is checked when it is used, tiktok.js)
+  soc.ttScope = 'video.publish';
   b = await socialBegin(env, 'tiktok', a.cookie);
   r = await socialFinish(env, 'tiktok', b, a.cookie);
-  soc.ttScope = 'user.info.basic,video.publish';
+  soc.ttScope = TT_ALL;
   assert.equal(fragOf(r), 'social-err-missing_permission');
   assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM social_accounts').get().n, 0);
   // a return path off the site falls back to "/"
@@ -3801,6 +3807,276 @@ test('audit 13/11 n°5: R2 refusing to put the parts together is never a 500: do
   assert.equal(r.status, 200); assert.equal(status('take1304'), 'ready');
   const full = await getBytes(env, '/api/projects/p13/files/take1304', pro.cookie);
   assert.deepEqual(full.body, vid);
+});
+
+// ---- « Publier sur TikTok » and « Mes stats » (tiktok.js, migration 0018, 21/11) ------------------------------------
+const tt = { creator: null, initErr: null, puts: [], inits: [], status: 'PUBLISH_COMPLETE', fail: null, videos: [], statusCalls: 0 };
+function ttReset() {
+  tt.creator = { creator_avatar_url: 'https://p16.tiktokcdn.example/c.jpg', creator_username: 'sayso99', creator_nickname: '99sayso',
+    privacy_level_options: ['PUBLIC_TO_EVERYONE', 'MUTUAL_FOLLOW_FRIENDS', 'SELF_ONLY'], comment_disabled: false, duet_disabled: false,
+    stitch_disabled: true, max_video_post_duration_sec: 600 };
+  tt.initErr = null; tt.puts = []; tt.inits = []; tt.status = 'PUBLISH_COMPLETE'; tt.fail = null; tt.statusCalls = 0;
+  tt.videos = Array.from({ length: 25 }, (_, i) => ({ id: String(7300000000000000000n + BigInt(i)), create_time: 1763000000 + i * 86400,
+    title: i % 2 ? 'mon snippet #rap #drill' : 'freestyle #rap', duration: 10 + (i % 4) * 15, view_count: 1000 + i * 100,
+    like_count: 50 + i, comment_count: 5, share_count: 2, cover_image_url: 'https://p16.tiktokcdn.example/v' + i + '.jpg',
+    share_url: 'https://www.tiktok.com/@sayso99/video/' + (7300000000000000000n + BigInt(i)) }));
+}
+async function ttFake(url, init) {
+  const auth = init.headers && (init.headers.Authorization || (init.headers.get && init.headers.get('Authorization')));
+  if (url.startsWith('https://open-upload.tiktokapis.com/')) {
+    const h = new Headers(init.headers);
+    tt.puts.push({ url, range: h.get('Content-Range'), len: Number(h.get('Content-Length')), type: h.get('Content-Type'), bytes: new Uint8Array(init.body).length });
+    const [, , last, total] = h.get('Content-Range').match(/bytes (\d+)-(\d+)\/(\d+)/);
+    return new Response('', { status: Number(last) + 1 === Number(total) ? 201 : 206 });
+  }
+  const body = init.body ? JSON.parse(init.body) : {};
+  const ok = (data) => Response.json({ data, error: { code: 'ok', message: '', log_id: 'l1' } });
+  const err = (status, code) => Response.json({ error: { code, message: 'x', log_id: 'l2' } }, { status });
+  if (!/^Bearer act\./.test(String(auth))) return err(401, 'access_token_invalid');
+  if (url.endsWith('/v2/post/publish/creator_info/query/')) return tt.creatorErr ? err(403, tt.creatorErr) : ok(tt.creator);
+  if (url.endsWith('/v2/post/publish/video/init/') || url.endsWith('/v2/post/publish/inbox/video/init/')) {
+    tt.inits.push({ url, body });
+    if (tt.initErr) return err(403, tt.initErr);
+    return ok({ publish_id: 'v_pub_file~v2.' + tt.inits.length, upload_url: (tt.uploadHost || 'https://open-upload.tiktokapis.com/') + 'video/?upload_id=' + tt.inits.length + '&upload_token=secret' });
+  }
+  if (url.endsWith('/v2/post/publish/status/fetch/')) {
+    tt.statusCalls++;
+    // like TikTok: the post id as a bare 64-bit number in the JSON text
+    const ids = tt.status === 'PUBLISH_COMPLETE' ? '[7311111111111111111]' : '[]';
+    return new Response(`{"data":{"status":"${tt.status}","fail_reason":${JSON.stringify(tt.fail)},"publicaly_available_post_id":${ids},"uploaded_bytes":1},"error":{"code":"ok","message":"","log_id":"l3"}}`,
+      { headers: { 'Content-Type': 'application/json' } });
+  }
+  if (url.startsWith('https://open.tiktokapis.com/v2/video/list/')) {
+    const max = body.max_count || 10, from = body.cursor ? tt.videos.findIndex((v) => v.create_time * 1000 < body.cursor) : 0;
+    const list = [...tt.videos].sort((a, b) => b.create_time - a.create_time);
+    const start = body.cursor ? list.findIndex((v) => v.create_time * 1000 < body.cursor) : 0;
+    const page = start < 0 ? [] : list.slice(start, start + max);
+    const more = start >= 0 && start + max < list.length;
+    return ok({ videos: page, cursor: page.length ? page[page.length - 1].create_time * 1000 : 0, has_more: more });
+  }
+  return err(404, 'not_found');
+}
+async function ttLinked(env, email, plan) {
+  const u = plan ? await proUser(env, email, plan) : await login(env, email);
+  const b = await socialBegin(env, 'tiktok', u.cookie); await socialFinish(env, 'tiktok', b, u.cookie);
+  return u;
+}
+const ttPut = (env, id, n, cookie, data) => putRaw(env, `/api/tiktok/publish/${id}/chunk/${n}`, cookie, data);
+const PUB = (extra = {}) => ({ mode: 'direct', size: 1000, duration: 12.5, title: 'mon snippet #rap', privacy: 'PUBLIC_TO_EVERYONE',
+  comment: true, duet: false, stitch: false, commercial: { on: false }, consent: true, meta: { song: 'neva die', start: 31.2, end: 43.7, format: 'tiktok' }, ...extra });
+
+test('tiktok: off, not linked, free plan → refused; Pro reads creator_info', async () => {
+  ttReset();
+  let env = makeEnv();
+  let u = await login(env, 'ttoff@example.com');
+  let r = await call(env, 'GET', '/api/tiktok/creator', { cookie: u.cookie });
+  assert.equal(r.status, 404); assert.equal(r.data.error, 'not_enabled');
+  env = makeEnv(SOCIAL_ENV);
+  r = await call(env, 'GET', '/api/tiktok/creator');
+  assert.equal(r.status, 401);
+  u = await login(env, 'ttnolink@example.com');
+  r = await call(env, 'GET', '/api/tiktok/creator', { cookie: u.cookie });
+  assert.equal(r.status, 409); assert.equal(r.data.error, 'not_connected');
+  // free: linked, but « Publier sur TikTok » is Pro (decision of 21/11: TikTok forbids the watermark of the free export)
+  const free = await ttLinked(env, 'ttfree@example.com');
+  r = await call(env, 'GET', '/api/tiktok/creator', { cookie: free.cookie });
+  assert.equal(r.status, 403); assert.equal(r.data.error, 'pro_required');
+  r = await call(env, 'POST', '/api/tiktok/publish', { cookie: free.cookie, body: PUB() });
+  assert.equal(r.status, 403); assert.equal(r.data.error, 'pro_required');
+  assert.equal(tt.inits.length, 0);
+  const pro = await ttLinked(env, 'ttpro@example.com', 'pro');
+  r = await call(env, 'GET', '/api/tiktok/creator', { cookie: pro.cookie });
+  assert.equal(r.status, 200);
+  assert.deepEqual(r.data.creator, { username: 'sayso99', nickname: '99sayso', avatarUrl: 'https://p16.tiktokcdn.example/c.jpg',
+    privacyOptions: ['PUBLIC_TO_EVERYONE', 'MUTUAL_FOLLOW_FRIENDS', 'SELF_ONLY'], commentDisabled: false, duetDisabled: false,
+    stitchDisabled: true, maxDuration: 600 });
+  assert.equal(r.data.canDraft, true);
+  assert.ok(!JSON.stringify(r.data).includes('act.'));
+  // TikTok says the account cannot post more today: said clearly, nothing sent
+  tt.creatorErr = 'spam_risk_too_many_posts';
+  r = await call(env, 'GET', '/api/tiktok/creator', { cookie: pro.cookie });
+  tt.creatorErr = null;
+  assert.equal(r.status, 429); assert.equal(r.data.error, 'tt_too_many_posts');
+  // permission refused on TikTok's screen: link again
+  soc.ttScope = 'user.info.basic';
+  const half = await ttLinked(env, 'tthalf@example.com', 'pro');
+  soc.ttScope = TT_ALL;
+  r = await call(env, 'GET', '/api/tiktok/creator', { cookie: half.cookie });
+  assert.equal(r.status, 409); assert.equal(r.data.error, 'tt_scope');
+  r = await call(env, 'GET', '/api/tiktok/stats', { cookie: half.cookie });
+  assert.equal(r.status, 409); assert.equal(r.data.error, 'tt_scope');
+});
+
+test('tiktok publish: TikTok’s rules checked on the server (privacy, boxes, commercial content, consent, duration)', async () => {
+  ttReset();
+  const env = makeEnv(SOCIAL_ENV);
+  const pro = await ttLinked(env, 'ttrules@example.com', 'pro');
+  const bad = async (extra, code) => {
+    const r = await call(env, 'POST', '/api/tiktok/publish', { cookie: pro.cookie, body: PUB(extra) });
+    assert.equal(r.status, code === 'tt_too_long' || code === 'consent_required' || code.startsWith('tt_') || code.startsWith('bad_') ? 400 : 400, code);
+    assert.equal(r.data.error, code);
+  };
+  await bad({ consent: false }, 'consent_required');
+  await bad({ consent: 'yes' }, 'consent_required');
+  await bad({ privacy: '' }, 'tt_privacy');                         // no default visibility (2b)
+  await bad({ privacy: 'FOLLOWER_OF_CREATOR' }, 'tt_privacy');      // not in this account's options
+  await bad({ commercial: { on: true } }, 'tt_commercial');         // toggle on, nothing chosen (3a)
+  await bad({ privacy: 'SELF_ONLY', commercial: { on: true, branded: true } }, 'tt_branded_private');   // (3b)
+  await bad({ duration: 601 }, 'tt_too_long');                      // max_video_post_duration_sec (1c)
+  await bad({ title: 'x'.repeat(2201) }, 'tt_title');
+  await bad({ mode: 'other' }, 'bad_mode');
+  await bad({ size: 0 }, 'bad_size');
+  await bad({ size: 3 * 1024 * 1024 * 1024 }, 'bad_size');
+  assert.equal(tt.inits.length, 0);
+  // a good one: the boxes are what the person ticked, and Stitch stays off since the account forbids it (2c)
+  let r = await call(env, 'POST', '/api/tiktok/publish', { cookie: pro.cookie, body: PUB({ stitch: true, commercial: { on: true, yourBrand: true } }) });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.equal(tt.inits.length, 1);
+  const init = tt.inits[0];
+  assert.equal(init.url, 'https://open.tiktokapis.com/v2/post/publish/video/init/');
+  assert.deepEqual(init.body.post_info, { title: 'mon snippet #rap', privacy_level: 'PUBLIC_TO_EVERYONE', disable_comment: false,
+    disable_duet: true, disable_stitch: true, brand_organic_toggle: true, brand_content_toggle: false });
+  assert.deepEqual(init.body.source_info, { source: 'FILE_UPLOAD', video_size: 1000, chunk_size: 1000, total_chunk_count: 1 });
+  assert.match(r.data.id, /^ttp_[0-9a-f]{24}$/);
+  const row = env.DB.raw.prepare('SELECT * FROM tiktok_posts WHERE id = ?').get(r.data.id);
+  assert.ok(row.upload_url_enc.startsWith('v1.') && !row.upload_url_enc.includes('upload_token'));   // kept encrypted
+  assert.equal(JSON.parse(row.meta_json).song, 'neva die');
+  assert.ok(!JSON.stringify(r.data).includes('upload_token'));       // never given to the page
+  // creator_info is read again before each sending
+  assert.equal(r.status, 200);
+});
+
+test('tiktok publish: pieces in order, sent to TikTok with the right ranges; status, link, draft', async () => {
+  ttReset();
+  const env = makeEnv(SOCIAL_ENV);
+  const pro = await ttLinked(env, 'ttsend@example.com', 'creator');
+  const other = await ttLinked(env, 'ttother@example.com', 'pro');
+  const MB = 1024 * 1024, size = 23 * MB + 5;                       // 2 pieces: 10 MB, then 13 MB + 5 bytes
+  let r = await call(env, 'POST', '/api/tiktok/publish', { cookie: pro.cookie, body: PUB({ size }) });
+  assert.equal(r.status, 200);
+  assert.deepEqual([r.data.chunkSize, r.data.chunks], [10 * MB, 2]);
+  assert.deepEqual(tt.inits[0].body.source_info, { source: 'FILE_UPLOAD', video_size: size, chunk_size: 10 * MB, total_chunk_count: 2 });
+  const id = r.data.id, file = bytes(size, 7);
+  // someone else, a piece out of order, a wrong size: refused, nothing sent
+  r = await ttPut(env, id, 0, other.cookie, file.subarray(0, 10 * MB));
+  assert.equal(r.status, 404);
+  r = await ttPut(env, id, 1, pro.cookie, file.subarray(10 * MB));
+  assert.equal(r.status, 409); assert.equal(r.data.error, 'bad_chunk');
+  r = await ttPut(env, id, 0, pro.cookie, file.subarray(0, 10 * MB - 1));
+  assert.equal(r.status, 400); assert.equal(r.data.error, 'bad_length');
+  r = await call(env, 'PUT', `/api/tiktok/publish/${id}/chunk/0`, { cookie: pro.cookie, raw: file.subarray(0, 10), ct: 'application/octet-stream', origin: 'https://evil.example' });
+  assert.equal(r.status, 403);
+  assert.equal(tt.puts.length, 0);
+  r = await ttPut(env, id, 0, pro.cookie, file.subarray(0, 10 * MB));
+  assert.equal(r.status, 200); assert.equal(r.data.status, 'uploading');
+  r = await ttPut(env, id, 1, pro.cookie, file.subarray(10 * MB));
+  assert.equal(r.status, 200); assert.equal(r.data.status, 'processing');
+  assert.deepEqual(tt.puts.map((p) => [p.range, p.len, p.bytes, p.type]), [
+    [`bytes 0-${10 * MB - 1}/${size}`, 10 * MB, 10 * MB, 'video/mp4'], [`bytes ${10 * MB}-${size - 1}/${size}`, size - 10 * MB, size - 10 * MB, 'video/mp4']]);
+  assert.equal(env.DB.raw.prepare('SELECT upload_url_enc FROM tiktok_posts WHERE id = ?').get(id).upload_url_enc, null);   // erased once sent
+  r = await ttPut(env, id, 2, pro.cookie, file.subarray(0, 10));
+  assert.equal(r.status, 409); assert.equal(r.data.error, 'not_uploading');
+  // status: processing, then published with its link; at most one call to TikTok every 3 s
+  tt.status = 'PROCESSING_UPLOAD';
+  r = await call(env, 'GET', `/api/tiktok/publish/${id}`, { cookie: pro.cookie });
+  assert.equal(r.data.status, 'processing');
+  r = await call(env, 'GET', `/api/tiktok/publish/${id}`, { cookie: pro.cookie });
+  assert.equal(tt.statusCalls, 1);
+  env.DB.raw.exec("UPDATE tiktok_posts SET checked_at = 1");
+  tt.status = 'PUBLISH_COMPLETE';
+  r = await call(env, 'GET', `/api/tiktok/publish/${id}`, { cookie: pro.cookie });
+  assert.equal(r.data.status, 'published');
+  assert.equal(r.data.url, 'https://www.tiktok.com/@sayso99/video/7311111111111111111');
+  r = await call(env, 'GET', `/api/tiktok/publish/${id}`, { cookie: other.cookie });
+  assert.equal(r.status, 404);
+  // failed: the reason is passed on (a known word only)
+  r = await call(env, 'POST', '/api/tiktok/publish', { cookie: pro.cookie, body: PUB() });
+  await ttPut(env, r.data.id, 0, pro.cookie, bytes(1000));
+  tt.status = 'FAILED'; tt.fail = 'duration_check_failed';
+  r = await call(env, 'GET', `/api/tiktok/publish/${r.data.id}`, { cookie: pro.cookie });
+  assert.equal(r.data.status, 'failed'); assert.equal(r.data.failReason, 'duration_check_failed');
+  // draft: sent to the TikTok inbox, no post_info at all
+  tt.status = 'SEND_TO_USER_INBOX';
+  r = await call(env, 'POST', '/api/tiktok/publish', { cookie: pro.cookie, body: { mode: 'draft', size: 1000, duration: 12, consent: true } });
+  assert.equal(r.status, 200);
+  const last = tt.inits[tt.inits.length - 1];
+  assert.equal(last.url, 'https://open.tiktokapis.com/v2/post/publish/inbox/video/init/');
+  assert.deepEqual(Object.keys(last.body), ['source_info']);
+  await ttPut(env, r.data.id, 0, pro.cookie, bytes(1000));
+  r = await call(env, 'GET', `/api/tiktok/publish/${r.data.id}`, { cookie: pro.cookie });
+  assert.equal(r.data.status, 'inbox'); assert.equal(r.data.mode, 'draft');
+  // TikTok refuses public posts before the audit: said clearly
+  tt.initErr = 'unaudited_client_can_only_post_to_private_accounts';
+  r = await call(env, 'POST', '/api/tiktok/publish', { cookie: pro.cookie, body: PUB() });
+  assert.equal(r.status, 403); assert.equal(r.data.error, 'tt_private_only');
+  tt.initErr = null;
+  // security review 21/11: an upload address outside TikTok's upload hosts is never used (the file is not sent there)
+  tt.uploadHost = 'https://evil.example/';
+  r = await call(env, 'POST', '/api/tiktok/publish', { cookie: pro.cookie, body: PUB() });
+  assert.equal(r.status, 502); assert.equal(r.data.error, 'tt_error');
+  tt.uploadHost = null;
+  // the upload address expired (1 hour)
+  r = await call(env, 'POST', '/api/tiktok/publish', { cookie: pro.cookie, body: PUB() });
+  env.DB.raw.exec(`UPDATE tiktok_posts SET expires_at = 1 WHERE id = '${r.data.id}'`);
+  const exp = await ttPut(env, r.data.id, 0, pro.cookie, bytes(1000));
+  assert.equal(exp.status, 410); assert.equal(exp.data.error, 'upload_expired');
+  // too many sendings in an hour
+  env.DB.raw.exec(`UPDATE rate_limits SET count = 100 WHERE key = 'tt:pub:${pro.user.id}'`);
+  r = await call(env, 'POST', '/api/tiktok/publish', { cookie: pro.cookie, body: PUB() });
+  assert.equal(r.status, 429);
+  // unlinking TikTok erases what Stalak kept of the sendings
+  r = await call(env, 'DELETE', '/api/connect/tiktok', { cookie: pro.cookie });
+  assert.equal(r.status, 200);
+  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM tiktok_posts WHERE user_id = ?').get(pro.user.id).n, 0);
+});
+
+test('tiktok chunk plan follows TikTok’s media transfer rules (5 to 64 MB, last one up to 128 MB)', async () => {
+  const { chunkPlan, CHUNK } = await import('../../functions/_lib/tiktok.js');
+  const MB = 1024 * 1024;
+  for (const size of [1, 4 * MB, 5 * MB, 10 * MB - 1, 10 * MB, 19 * MB, 20 * MB, 21 * MB + 3, 300 * MB + 7, 2048 * MB]) {
+    const p = chunkPlan(size);
+    const lastSize = size - (p.chunks - 1) * p.chunkSize;
+    assert.ok(p.chunks >= 1 && p.chunks <= 1000, size);
+    if (p.chunks === 1) assert.equal(p.chunkSize, size);
+    else { assert.equal(p.chunkSize, CHUNK); assert.ok(p.chunkSize >= 5 * MB && p.chunkSize <= 64 * MB); assert.ok(lastSize >= p.chunkSize && lastSize <= 128 * MB, size); }
+  }
+});
+
+test('tiktok stats: free preview (followers, views and likes of the last 10); Pro analysis with the Stalak passages', async () => {
+  ttReset();
+  const env = makeEnv(SOCIAL_ENV);
+  const free = await ttLinked(env, 'ttstfree@example.com');
+  let r = await call(env, 'GET', '/api/tiktok/stats?tz=-60', { cookie: free.cookie });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.equal(r.data.pro, false);
+  assert.deepEqual(r.data.account, { displayName: '99sayso', avatarUrl: 'https://p16.tiktokcdn.example/a.jpg', followers: 1234, following: 56, likes: 7890, videos: 42 });
+  assert.equal(r.data.videos.length, 10);
+  assert.deepEqual(Object.keys(r.data.videos[0]).sort(), ['cover', 'createdAt', 'id', 'likes', 'title', 'url', 'views']);
+  assert.equal(r.data.analysis, undefined);                          // the analysis is not sent to a free account at all
+  assert.equal(r.data.videos[0].views, 3400);                        // the most recent first
+  // Pro: up to 100 videos (here 25, over 2 pages), the analysis, and which videos were sent from Stalak
+  const pro = await ttLinked(env, 'ttstpro@example.com', 'pro');
+  const mk = (postId, song, start, views) => {
+    env.DB.raw.prepare(`INSERT INTO tiktok_posts (id, user_id, publish_id, mode, status, video_size, chunk_size, chunk_count, post_id, meta_json, created_at, updated_at, expires_at)
+      VALUES (?, ?, 'p', 'direct', 'published', 1, 1, 1, ?, ?, 1, 1, 1)`).run('ttp_' + postId.slice(-24).padStart(24, '0'), pro.user.id, postId, JSON.stringify({ song, start, end: start + 12 }));
+  };
+  mk(tt.videos[24].id, 'neva die', 31.2); mk(tt.videos[3].id, 'neva die', 12);
+  r = await call(env, 'GET', '/api/tiktok/stats?tz=-60', { cookie: pro.cookie });
+  assert.equal(r.status, 200);
+  assert.equal(r.data.pro, true);
+  assert.equal(r.data.videos.length, 25);
+  const a = r.data.analysis;
+  assert.equal(a.n, 25);
+  assert.equal(a.top[0], tt.videos[24].id);
+  assert.equal(a.flop.length, 3);
+  assert.ok(a.weekday.every((g) => g.n >= 1 && typeof g.enough === 'boolean'));
+  assert.ok(a.hashtags.some((g) => g.key === '#rap' && g.n === 25) && a.hashtags.some((g) => g.key === '#drill'));
+  assert.deepEqual(a.stalak.map((g) => [g.key, g.n]).sort(), [['other', 23], ['stalak', 2]]);
+  assert.equal(a.passages.length, 1);
+  assert.equal(a.passages[0].song, 'neva die');
+  assert.deepEqual(a.passages[0].videos.map((v) => v.start), [31.2, 12]);   // the passage of the video with more views first
+  assert.ok(r.data.videos.find((v) => v.id === tt.videos[24].id).stalak);
+  assert.ok(!JSON.stringify(r.data).includes('act.'));
 });
 
 // ---- runner --------------------------------------------------------------------------
