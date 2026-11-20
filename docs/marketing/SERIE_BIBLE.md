@@ -7,6 +7,7 @@
 > **Version 3 (16/11, 18 h)** : ses remarques sur l'épisode 1 (2e tour), l'épisode 2 (8 remarques) et l'épisode GTA 6 (2 remarques), plus sa règle « un enfant doit pouvoir comprendre », appliquées à toute la série (voir « Pour qu'un enfant comprenne » et « Pas de blanc »).
 > **Version 4 (17/11, 5 h)** : 3 épisodes par jour. 9 nouveaux scripts pour les créneaux de 18 h et de 21 h, du 18 au 22/11 (« La semaine du 16/11 », plus bas), et le nouvel ordre de sortie.
 > **Version 5 (17/11, 6 h)** : les numéros définitifs (les 6 épisodes validés gardent 1 à 6, les nouveaux sont 7 à 15), les décors remplacés, et la fabrication des épisodes 7, 8 et 9.
+> **À partir du 23/11 (décision du propriétaire du 20/11)** : le compte passe au format « BONNE IDÉE VS MAUVAISE IDÉE » (mode d'emploi : `docs/marketing/FORMAT_BONNE_IDEE_VS_MAUVAISE_IDEE.md`), avec les mêmes personnages, décors, voix et musiques, Big Mo en « grand » qui tranche. Les épisodes T-Crazy déjà programmés continuent jusqu'à ce que chaque nouvelle vidéo validée prenne leur place. Suivi des vidéos, faits vérifiés et sources : `docs/marketing/BONNE_IDEE_SUIVI.md`.
 
 ## L'idée
 

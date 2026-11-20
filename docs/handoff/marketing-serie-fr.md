@@ -2,7 +2,21 @@
 
 > Marketing & croissance. Rien ne change sur le site : seulement `tools/serie/` et `docs/`.
 
-Statut : versions de publication des épisodes 1 à 15 faites (19/11, 14 h 10) ; sinon EN PAUSE (demandée par le propriétaire le 19/11 à 3 h 15). Épisodes 10 à 15 fabriqués et validés. Versions corrigées des épisodes déjà validés (lignes de texte mal coupées, sa réponse « Oui, toutes ») : 7, 9 et 13 sur leurs fiches ; 8, 10 et 11 à faire à la reprise. Le Chef de projet a remplacé 7, 8 et 9 dans Zernio (19/11 au matin). Rien à publier sur le site. Tests : planches contact relues pour chaque vidéo déposée, chaque voix relue par transcription, `node --check` sur le moteur.
+Statut : PRÊT (documents seulement). 20/11, 5 h : 6 scripts du nouveau format « BONNE IDÉE VS MAUVAISE IDÉE » (23 et 24/11) déposés dans Studio Stalak, à valider par le propriétaire ; rien n'est fabriqué avant sa validation. Série T-Crazy : versions de publication des épisodes 1 à 15 faites (19/11) ; versions corrigées de 8, 10 et 11 toujours en pause (sa demande du 19/11 à 3 h 15). Rien à publier sur le site. Tests : faits et chiffres vérifiés à la source (liste dans `docs/marketing/BONNE_IDEE_SUIVI.md`), fonctions gratuites et Pro vérifiées dans le code de l'app.
+
+## 20/11, 5 h : les 6 premiers scripts « BONNE IDÉE VS MAUVAISE IDÉE » (à valider)
+
+- **Sa demande (20/11, 4 h 31, puis deux corrections à 4 h 33)** : nouveau format dès le lundi 23/11 sur le même compte ; 6 scripts tout de suite pour lundi 23 et mardi 24 (12 h 30 / 18 h / 21 h), pris dans les 20 sujets, Big Mo comme « grand », nos personnages validés, chaque verdict vérifié, la partie Stalak sur de vraies captures, rien de promis que le site ne fait pas. Le format s'appelle « BONNE IDÉE VS MAUVAISE IDÉE » (barre verte · VS · rouge, tampon « BONNE IDÉE » ou « MAUVAISE IDÉE ») ; la partie Stalak suit la section « L'explication de Stalak » du mode d'emploi (20 à 22 s, texte de base, 4 étapes Son, Prises, Paroles, Montage, rien de Pro présenté comme gratuit).
+- **Lu** : `docs/marketing/FORMAT_BONNE_IDEE_VS_MAUVAISE_IDEE.md`, `docs/marketing/ANALYSE_FORMAT_DEBAT.md`, toute la collection `da` (86 lignes, dont la règle du 20/11), `docs/STATUS.md`, `docs/studio/STUDIO_STALAK.md`, `STALAK_CONTEXTE.md`.
+- **Écrit** : fiches `videos/bonne-idee-01` à `06` (statut `script`, `format` « Bonne idée vs mauvaise idée », `compte` principal, champs en plus : `verdict`, `sujet`, `sources`, et `remplace` pour les 3 du lundi). Tableau, faits, sources et plan de fabrication : `docs/marketing/BONNE_IDEE_SUIVI.md`.
+- **Les choix** :
+  - 2 verdicts surprenants sur 6 (le feat à 0 abonné, le même refrain tous les jours) ; le Black Friday (27/11) pour l'actualité du premier.
+  - « Acheter des abonnés » plutôt que « des vues » : les chiffres officiels de TikTok portent sur les faux abonnés.
+  - Pas de narrateur ni de bandeau-titre T-Crazy : le format n'en a pas (la règle du 20/11 est la plus récente).
+  - Partie Stalak : le texte de base, une seule retouche (la phrase des paroles avant celle des coupes, pour suivre les 4 étapes du site), dite au propriétaire.
+  - Fonctions gratuites et Pro relues dans `src/markup.html`, `src/app.js` et la page Tarifs : les paroles collées et calées sont gratuites, la « Transcription auto » est Pro ; l'export gratuit garde le filigrane (plus de pub depuis le 6/11), donc le snippet de Big Mo et l'export montré le gardent aussi.
+  - TikTok, Instagram et Spotify sont nommés (le texte de base du mode d'emploi dit « TikTok et Insta »), jamais dessinés avec leur logo.
+- **Reste** : sa validation des scripts ; puis visuels (dessinés en code, vraies captures du site une seule fois pour les 6), feu vert, voix (environ 1 $ pour les 6 : les répliques communes une seule fois), vidéos, planches, miniatures, versions de publication.
 
 ## 19/11, après-midi : versions de publication (haute qualité) de tous les épisodes programmés
 
