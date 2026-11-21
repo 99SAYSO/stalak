@@ -132,6 +132,7 @@ const fmt = (n) => { try { return new Intl.NumberFormat(lang() === 'en' ? 'en-US
 const fdate = (ms) => { try { return new Date(ms).toLocaleDateString(lang() === 'en' ? 'en-US' : 'fr-FR', { day: 'numeric', month: 'short' }); } catch (e) { return ''; } };
 
 async function api(method, path, body, extra) {
+  if (body === undefined && method !== 'GET' && !(extra && extra.body !== undefined)) body = {};   // the server wants JSON on every change (CSRF check)
   let res;
   try {
     res = await fetch(path, Object.assign({ method, credentials: 'same-origin', headers: body !== undefined ? { 'Content-Type': 'application/json' } : {},
