@@ -1,1 +1,5 @@
 date,heure_paris,reseau,episode,titre,lot,zernio_id,duree_s,vues,part_jusqu_au_bout,partages,visites_profil,jaime,commentaires,enregistrements,releve_le,notes
+2026-11-19,12:30,instagram,1,La vaisselle ou la gloire,,6afdeaad55040513d70012a6,79,1786,0.357,2,,73,0,4,2026-11-21,durée moyenne (28.2 s sur 79 s) ; visites du profil non données par vidéo
+2026-11-19,12:30,tiktok,1,La vaisselle ou la gloire,,6afdeaad55040513d70012a6,79,,,,,,,,2026-11-21,chiffres absents : synchro TikTok en échec dans Zernio (« tiktok API returned null »)
+2026-11-19,18:00,instagram,4,Le jour de GTA 6,,6afdeae39d7cfe704724607e,79,1258,0.358,1,,47,0,2,2026-11-21,durée moyenne (28.3 s sur 79 s) ; visites du profil non données par vidéo
+2026-11-19,18:00,tiktok,4,Le jour de GTA 6,,6afdeae39d7cfe704724607e,80,786,0.019,4,7,83,0,4,2026-11-21,completion_rate TikTok ; durée moyenne regardée 13.4 s
