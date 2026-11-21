@@ -46,9 +46,11 @@ const unwrap = (b) => (Array.isArray(b.data) && b.data[0] && typeof b.data[0] ==
 export const SOCIAL = {
   tiktok: {
     keys: (env) => !!(env.TIKTOK_CLIENT_KEY && env.TIKTOK_CLIENT_SECRET),
-    // video.publish = Direct Post; user.info.basic = name and photo shown in Stalak
-    scope: 'user.info.basic,video.publish',
-    needs: 'video.publish',
+    // user.info.basic = name and photo shown in Stalak; video.publish = Direct Post; video.upload = draft in the TikTok inbox;
+    // user.info.stats + video.list = « Mes stats » (21/11). Only user.info.basic is required to link: each feature checks its
+    // own permission when used (tiktok.js) and asks to link again if it is missing.
+    scope: 'user.info.basic,video.publish,video.upload,user.info.stats,video.list',
+    needs: 'user.info.basic',
     authorize(env, state) {
       const q = new URLSearchParams({ client_key: env.TIKTOK_CLIENT_KEY, response_type: 'code', scope: this.scope,
         redirect_uri: redirectUri(env, 'tiktok'), state });
@@ -285,6 +287,7 @@ async function listAccounts(env, user, now = Date.now()) {
       const over = r.provider === 'tiktok' ? (r.refresh_expires_at && r.refresh_expires_at <= now) : r.access_expires_at <= now;
       return { provider: r.provider, username: r.username, displayName: r.display_name, avatarUrl: r.avatar_url,
         accountType: r.account_type, status: r.status === 'ok' && !over ? 'ok' : 'expired',
+        scopes: String(r.scopes || '').split(/[,\s]+/).filter(Boolean),
         connectedAt: new Date(r.created_at).toISOString() };
     }),
   });
@@ -296,6 +299,8 @@ async function disconnect(env, user, p) {
     await revokeRow(env, row);
     await env.DB.prepare('DELETE FROM social_accounts WHERE user_id = ?1 AND provider = ?2').bind(user.id, p).run();
   }
+  // what Stalak kept of the videos sent to TikTok goes with the link (21/11); quiet before migration 0018
+  if (p === 'tiktok') await env.DB.prepare('DELETE FROM tiktok_posts WHERE user_id = ?1').bind(user.id).run().catch((e) => { if (!/no such table/i.test(String(e && e.message))) throw e; });
   return json({ ok: true, provider: p, disconnected: !!row });
 }
 
@@ -317,6 +322,7 @@ export async function deleteSocialAccounts(env, userId) {
     env.DB.prepare('DELETE FROM social_accounts WHERE user_id = ?1').bind(userId),
     env.DB.prepare('DELETE FROM social_states WHERE user_id = ?1').bind(userId),
   ]);
+  await env.DB.prepare('DELETE FROM tiktok_posts WHERE user_id = ?1').bind(userId).run().catch((e) => { if (!/no such table/i.test(String(e && e.message))) throw e; });
 }
 
 // GET /api/connect/:p/start — a browser navigation (or a small window opened by the app)

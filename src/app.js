@@ -399,6 +399,9 @@ const I18N_EN = /*@EN*/{
   "_bloc.app.formules": "App & montage : formules et filigrane (offre du 30/10 au soir ; plus de pub depuis le 6/11)",
   "acct.why.nowm": "No watermark with Pro.",
   "ap.whyIn.nowm": "No watermark with Pro. Sign in or create an account to get it.",
+  "_bloc.social.tiktok": "Réseaux sociaux : « Publier sur TikTok » et « Mes stats » (21/11)",
+  "acct.why.tiktok": "Post straight to TikTok with Pro, without the watermark.",
+  "ap.whyIn.tiktok": "Post straight to TikTok with Pro. Sign in or create an account to get it.",
   "acct.why.fx": "Premium effects come with Pro.",
   "ap.whyIn.fx": "Premium effects come with Pro. Sign in or create an account to get it.",
   "wm.note": "Free videos carry the Stalak watermark.",
@@ -1331,6 +1334,9 @@ const I18N_FR = /*@FR*/{
   "_bloc.app.formules": "App & montage : formules et filigrane (offre du 30/10 au soir ; plus de pub depuis le 6/11)",
   "acct.why.nowm": "Pas de filigrane avec Pro.",
   "ap.whyIn.nowm": "Pas de filigrane avec Pro. Connecte-toi ou crée un compte pour en profiter.",
+  "_bloc.social.tiktok": "Réseaux sociaux : « Publier sur TikTok » et « Mes stats » (21/11)",
+  "acct.why.tiktok": "Publie directement sur TikTok avec Pro, sans filigrane.",
+  "ap.whyIn.tiktok": "Publie directement sur TikTok avec Pro. Connecte-toi ou crée un compte pour l’avoir.",
   "acct.why.fx": "Les effets premium, c’est avec Pro.",
   "ap.whyIn.fx": "Les effets premium, c’est avec Pro. Connecte-toi ou crée un compte pour en profiter.",
   "wm.note": "Les vidéos gratuites portent le filigrane Stalak.",
@@ -5233,7 +5239,7 @@ function filtOverlay(c, idx, t, lw, lh){
    sizes), filters (all the filters; 3 are free), lyrics (automatic lyrics) → Pro; pack5, pack10, pack30 (from 2 playbacks),
    cloud, human → Creator Plus. Free needs no account: unlimited exports, with a moving watermark that a rewarded ad
    removes from one video. */
-const FEAT_PLAN = { nowm: 'pro', clip: 'pro', fx: 'pro', text: 'pro', filters: 'pro', lyrics: 'pro', pack5: 'creator', pack10: 'creator', pack30: 'creator', cloud: 'creator', human: 'creator' };
+const FEAT_PLAN = { nowm: 'pro', clip: 'pro', fx: 'pro', text: 'pro', filters: 'pro', lyrics: 'pro', pack5: 'creator', pack10: 'creator', pack30: 'creator', cloud: 'creator', human: 'creator', tiktok: 'pro' /* Réseaux sociaux, 21/11 */ };
 const PLAN_TAG = { pro: 'PRO', creator: 'CREATOR+' };
 function can(feat){
   if (!ACCT) return feat !== 'nowm';
@@ -9845,7 +9851,7 @@ function acctPro(){ return acctHas('filters'); }
 // the reasons that open the plans page (acctOpen('…')) and the feature each one asks for
 function apWhyHas(k){ const f = WHY_FEATURE[String(k || '').replace('acct.why.', '')]; return !!f && acctHas(f); }
 const WHY_FEATURE = { lyrics: 'lyrics', pack: 'pack5', pack5: 'pack5', pack10: 'pack10', pack30: 'pack30', clip: 'clip', fx: 'fx',
-  outro: 'nowm', nologo: 'nowm', nowm: 'nowm', wm: 'nowm', text: 'text', cloud: 'cloud', support: 'human', human: 'human', filters: 'filters' };
+  outro: 'nowm', nologo: 'nowm', nowm: 'nowm', wm: 'nowm', text: 'text', cloud: 'cloud', support: 'human', human: 'human', filters: 'filters', tiktok: 'tiktok' };
 /* anonymous counters of the funnel (dashboard): visit → export → ad → plans page → payment window → payment.
    acctEvent('export_ok'), acctEvent('export_fail', {cat: 'memory'|'decoder'|'hidden'|'cancel'|'other'}), acctEvent('pro_offer') (the Pro
    offer after the 1st video, App), acctEvent('ad_offer'), acctEvent('ad_shown') (the ad really on screen, App), acctEvent('ad_ok')…
@@ -11306,5 +11312,17 @@ const langPick = e => {
 };
 // (one listener for the page: the footer's switch is written again with the footer when the language changes)
 document.addEventListener('click', e => { if (e.target.closest && e.target.closest('.langsw button[data-lang]')) langPick(e); });
+/* ---- Réseaux sociaux (21/11): what « Publier sur TikTok » and « Mes stats » (src/tiktok.js, stalak.app only) may read and
+   open. Read-only: the exported file and its caption, the plan, the language; nothing here changes the edit. ---- */
+window.StalakApp = Object.freeze({
+  lang: () => LANG,
+  exported: () => (lastBlob && !/\.zip$/i.test(lastName) ? { blob: lastBlob, name: lastName, watermark: !!S.lastWm, demo: !!S.lastDemo,
+    caption: ($('#capText') && $('#capText').value) || '', format: S.fmt, song: S.song ? S.song.name || null : null,
+    start: S.song ? S.segStart : null, end: S.song ? S.segEnd : null } : null),
+  can: (f) => can(f),
+  plans: (why) => lockOpen('tiktok', why || 'tiktok'),
+  menuClose: () => { try { acctMenu(false); } catch(e){} },
+  busy: () => !!(S.exporting || askDone),
+});
 applyLang();
 })();

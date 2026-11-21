@@ -9,6 +9,7 @@ import { turnstileSiteKey } from './turnstile.js';
 import { yearlyReminders } from './reminders.js';
 import { handleWebhook, portalLinks, cancelSubscriptionNow, changePlan } from './paddle.js';
 import { social, socialWebhook, isSocialWebhook, socialProviders, deleteSocialAccounts } from './social.js';
+import { tiktok } from './tiktok.js';   // Réseaux sociaux: « Publier sur TikTok », « Mes stats »
 import { projectCover, coverUrl, COVER_TYPES, projectFiles, storageInfo, checkProjectFiles, dropUnusedFiles, readyFiles, deleteProjectMedia, deleteUserMedia, maybeCleanup, cleanupCloud, cloudAvailable } from './cloud.js';
 import { timingSafeEqual } from './crypto.js';
 import { limit } from './ratelimit.js';
@@ -291,7 +292,9 @@ async function dispatch(request, env, ctx) {
     // raw media bytes (project files): application/octet-stream, which a plain cross-site form cannot send either
     const rawUpload = method === 'PUT' && parts[0] === 'projects' && parts[2] === 'files' && parts.length >= 4;
     const coverUpload = method === 'PUT' && parts[0] === 'projects' && parts[2] === 'cover' && parts.length === 3;
-    if (STATE_CHANGING.has(method)) checkCsrf(request, env, route === 'me/avatar' && method === 'PUT' ? AVATAR_TYPES : rawUpload ? ['application/octet-stream'] : coverUpload ? COVER_TYPES : []);
+    // Réseaux sociaux: a piece of a video sent to TikTok (/api/tiktok/publish/:id/chunk/:n), raw bytes too
+    const ttChunk = method === 'PUT' && parts[0] === 'tiktok' && parts[1] === 'publish' && parts[3] === 'chunk' && parts.length === 5;
+    if (STATE_CHANGING.has(method)) checkCsrf(request, env, route === 'me/avatar' && method === 'PUT' ? AVATAR_TYPES : rawUpload || ttChunk ? ['application/octet-stream'] : coverUpload ? COVER_TYPES : []);
 
     switch (route) {
       case 'config':
@@ -400,6 +403,7 @@ async function dispatch(request, env, ctx) {
       default:
         if (parts[0] === 'projects' && parts.length <= 6) return projects(request, env, method, parts.slice(1), ctx);
         if (parts[0] === 'connect' && parts.length <= 3) return social(request, env, method, parts.slice(1));
+        if (parts[0] === 'tiktok' && parts.length <= 5) return tiktok(request, env, method, parts.slice(1));
         // « Parler à un humain » (support.js)
         if (parts[0] === 'support') return support(request, env, method, parts.slice(1), ctx);
         throw new HttpError(404, 'not_found', 'Unknown API route.');
