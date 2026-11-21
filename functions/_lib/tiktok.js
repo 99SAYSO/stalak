@@ -50,7 +50,7 @@ const TT_ERRORS = {
   spam_risk_too_many_pending_share: [429, 'tt_too_many_drafts', 'TikTok: too many drafts are waiting in the TikTok app. Finish or delete them first.'],
   spam_risk_user_banned_from_posting: [403, 'tt_banned', 'TikTok does not let this account post right now.'],
   reached_active_user_cap: [429, 'tt_app_cap', 'TikTok: too many people are posting from Stalak today. Try again later.'],
-  unaudited_client_can_only_post_to_private_accounts: [403, 'tt_private_only', 'For now TikTok only lets Stalak post videos visible to you alone.'],
+  unaudited_client_can_only_post_to_private_accounts: [403, 'tt_private_only', 'For now TikTok only lets Stalak post to a private TikTok account.'],
   privacy_level_option_mismatch: [400, 'tt_privacy', 'This visibility is not available for this account.'],
   scope_not_authorized: [409, 'tt_scope', 'Link TikTok again and accept every permission.'],
   access_token_invalid: [409, 'reconnect_needed', 'The TikTok link has expired: connect the account again.'],
