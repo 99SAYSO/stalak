@@ -24,7 +24,7 @@ PADDLE_PRICE_CREATOR_YEAR = "pri_01m6gz1aabr7h5tyyfwkbgvjpk"      # Stalak Creat
 # Older prices of 30/10 (test subscriptions only), still recognised so their subscribers keep their price:
 # Basic and Pro in euros → pro, Max → creator. Format: id:plan:interval, comma between them.
 PADDLE_PRICES_OLD = ""
-SOCIAL_CONNECT_ENABLED = "0"
+SOCIAL_CONNECT_ENABLED = "1"
 # Audit of 30/10. All the code e-mails of a day together (sign-up, new device, forgotten password): above it they wait until
 # midnight UTC and the owner gets an e-mail (at 80 % too). Set it to the Resend plan's daily allowance (BACKEND.md, step 3).
 EMAIL_DAILY_MAX = "1000"
