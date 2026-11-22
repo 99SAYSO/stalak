@@ -77,10 +77,10 @@ def run(b, base, lang, iphone):
     # ---- n° 4: « Exporter » within reach ----
     pg.evaluate('window.scrollTo(0, 0)'); pg.wait_for_timeout(500)
     fab = pg.locator('#expFab')
-    check(tag + ' : bouton « Exporter » fixé en bas quand la carte Exporter est loin', fab.is_visible() and fab.inner_text().startswith('Export'), fab.inner_text() if fab.count() else None)
+    check(tag + ' : bouton « Exporter » fixé en bas quand la carte Exporter est loin', fab.is_visible() and fab.inner_text().strip().startswith('Export'), fab.inner_text() if fab.count() else None)
     if SHOTS: pg.screenshot(path=os.path.join(SHOTS, 'fab-' + ('iphone' if iphone else 'ordi') + '-' + lang + '.png'))
     fb, hb = fab.bounding_box(), pg.locator('#helpBtn').bounding_box()
-    check(tag + ' : il ne touche pas le glaçon d’aide', fb['x'] + fb['width'] <= hb['x'] or fb['y'] + fb['height'] <= hb['y'], (fb, hb))
+    check(tag + ' : il ne touche pas le glaçon d’aide', fb['x'] + fb['width'] <= hb['x'] or fb['y'] + fb['height'] <= hb['y'] or hb['y'] + hb['height'] <= fb['y'], (fb, hb))   # (22/11) a bar across the bottom: the cube above it
     pg.evaluate("document.querySelector('#expFab').click()")
     try: pg.wait_for_function("() => document.querySelector('#expFab').hidden && (() => ['#exportBtn'].every(s => { const e = document.querySelector(s), r = e.getBoundingClientRect(); if (!r.width) return true; const x = r.left + r.width / 2, y = r.top + r.height / 2; return y > 0 && y < innerHeight && e.contains(document.elementFromPoint(x, y)); }))()", timeout=8000); inview = True
     except Exception: inview = False
