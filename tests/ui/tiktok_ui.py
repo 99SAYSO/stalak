@@ -52,6 +52,14 @@ def visible(pg, sel):
     return pg.evaluate("s => { const e = document.querySelector(s); if (!e) return false; const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(e).visibility !== 'hidden' && !e.closest('[hidden]'); }", sel)
 
 
+def brand(pg, sel, info=False):
+    r = pg.evaluate("""s => { const b = document.querySelector(s); if (!b) return null; const cs = getComputedStyle(b), lg = b.querySelector('svg.ttk-logo');
+        const p = lg && lg.querySelector('path'); const r = lg && lg.getBoundingClientRect();
+        return { bg: cs.backgroundColor, color: cs.color, logo: !!lg, fill: p && getComputedStyle(p).fill, w: r && Math.round(r.width), label: (b.querySelector('.ttk-lbl') || {}).textContent || '' }; }""", sel)
+    if info: return r
+    return bool(r) and r['bg'] == 'rgb(18, 18, 18)' and r['color'] == 'rgb(255, 255, 255)' and r['logo'] and r['fill'] == 'rgb(255, 255, 255)' and r['w'] >= 20 and len(r['label']) > 3
+
+
 def no_hscroll(pg):
     return pg.evaluate("() => document.documentElement.scrollWidth <= window.innerWidth + 1")
 
@@ -85,6 +93,9 @@ def server(ctx, st):
             return js({'accounts': [{'provider': 'tiktok', 'status': 'ok', 'displayName': 'Stalak App', 'avatarUrl': AV,
                                      'scopes': ['user.info.basic', 'video.publish', 'video.upload', 'user.info.stats', 'video.list']}] if st['linked'] else []})
         if path == '/api/connect/tiktok' and m == 'DELETE':
+            # like the real server (CSRF): a change must come as JSON, or 415 (the « Délier » bug of 21/11)
+            st['delCT'] = req.headers.get('content-type', '')
+            if not st['delCT'].startswith('application/json'): return js({'error': 'unsupported_media_type'}, 415)
             st['linked'] = False; return js({'ok': True})
         if path == '/api/tiktok/creator':
             if not st['pro']: return js({'error': 'plan_required'}, 403)
@@ -95,8 +106,13 @@ def server(ctx, st):
             st['sent'] = json.loads(req.post_data or '{}')
             return js({'id': 'ttp_' + '0' * 24, 'mode': st['sent'].get('mode'), 'chunkSize': 4096, 'chunks': 1})
         if re.match(r'^/api/tiktok/publish/ttp_0+/chunk/\d+$', path):
-            st['chunks'] = st.get('chunks', 0) + 1; return js({'ok': True, 'done': True})
+            st['chunks'] = st.get('chunks', 0) + 1
+            if st.get('lost'):   # the piece arrived but its answer was lost: the app sends it again, the server says « already have it »
+                st['lost'] = False; return route.abort()
+            if st['chunks'] > 1 and st.get('lostRetry'): return js({'error': 'not_uploading', 'message': 'x'}, 409)
+            return js({'ok': True, 'done': True})
         if re.match(r'^/api/tiktok/publish/ttp_0+$', path):
+            if st.get('stuck'): return js({'status': 'processing'})
             if st['sent'].get('mode') == 'draft': return js({'status': 'inbox'})
             return js({'status': 'published', 'url': 'https://www.tiktok.com/@stalak_app/video/7311111111111111111'})
         if path == '/api/tiktok/stats':
@@ -139,6 +155,7 @@ def flow(b, base, lang, iphone, PW, pro):
     ev(pg, "acctOpen()"); pg.wait_for_timeout(500)
     pg.wait_for_selector('#ttkCard', timeout=5000)
     check(tag + ' : page du compte : carte TikTok avec « %s »' % t['link'], visible(pg, '#ttkLink') and pg.locator('#ttkLink').inner_text().strip() == t['link'])
+    check(tag + ' : « %s » aux couleurs de TikTok : fond noir, texte blanc, logo officiel blanc' % t['link'], brand(pg, '#ttkLink'), brand(pg, '#ttkLink', True))
     # linking: the popup is opened on the start address (the real TikTok screen comes after)
     pg.evaluate("() => { window.__opened = []; window.open = (u) => { window.__opened.push(u); return {}; }; }")
     pg.locator('#ttkLink').click()
@@ -172,11 +189,13 @@ def flow(b, base, lang, iphone, PW, pro):
     pg.wait_for_timeout(300)
     ev(pg, "apHide()"); pg.wait_for_timeout(400)
     ev(pg, "acctMenu(true)"); pg.wait_for_timeout(200)
-    check(tag + ' : menu du compte : « TikTok · %s »' % t['stats'], visible(pg, '[data-am="tiktok"]') and t['stats'] in pg.locator('[data-am="tiktok"]').inner_text())
+    check(tag + ' : menu du compte : « TikTok · %s » avec le logo TikTok' % t['stats'], visible(pg, '[data-am="tiktok"]') and t['stats'] in pg.locator('[data-am="tiktok"]').inner_text()
+          and visible(pg, '[data-am="tiktok"] svg.ttk-logo'))
     ev(pg, "acctMenu(false)")
     # 2. the end of an export
     to_end(pg)
     check(tag + ' : fin d’export : « %s » visible' % t['pub'], visible(pg, '#ttkPub') and pg.locator('#ttkPub').inner_text().strip() == t['pub'])
+    check(tag + ' : « %s » aux couleurs de TikTok : fond noir, texte blanc, logo officiel blanc' % t['pub'], brand(pg, '#ttkPub'), brand(pg, '#ttkPub', True))
     by = pg.locator('#saveBtn').bounding_box(); bt = pg.locator('#ttkPub').bounding_box()
     check(tag + ' : sous « Enregistrer la vidéo »', bt and by and bt['y'] > by['y'], (by, bt))
     check(tag + ' : fin d’export : pas de défilement de côté', no_hscroll(pg))
@@ -238,6 +257,26 @@ def flow(b, base, lang, iphone, PW, pro):
         check(tag + ' : brouillon : envoyé dans la boîte de réception TikTok', st['sent'].get('mode') == 'draft' and pg.locator('.ttk-out a.btn.primary').count() == 0
               and pg.locator('.ttk-out .ttk-st').count() == 1, pg.locator('.ttk-out').inner_text())
         pg.keyboard.press('Escape'); pg.wait_for_timeout(200)
+        # 22/11: the draft that turned forever. A piece whose answer is lost, then TikTok slow to answer: never locked
+        st['chunks'] = 0; st['lost'] = True; st['lostRetry'] = True; st['stuck'] = True
+        pg.locator('#ttkPub').click(); pg.wait_for_selector('#ttkGo', timeout=8000)
+        pg.locator('input[name=ttkMode][value=draft]').check()
+        pg.locator('#ttkGo').click(); pg.wait_for_timeout(6000)
+        o = pg.evaluate("() => ({ err: document.querySelectorAll('.ttk-out .ttk-err').length, close: [...document.querySelectorAll('.ttk-out button')].length, txt: document.querySelector('.ttk-out').innerText })")
+        check(tag + ' : brouillon : morceau reçu mais réponse perdue → pas d’erreur, on attend TikTok', st['chunks'] == 2 and o['err'] == 0, (st['chunks'], o))
+        check(tag + ' : brouillon : pendant l’attente, « Fermer » est là', o['close'] == 1, o)
+        shot(pg, 'tiktok-brouillon-attente', iphone, lang)
+        pg.keyboard.press('Escape'); pg.wait_for_timeout(300)
+        check(tag + ' : brouillon : Échap ferme pendant l’attente (rien ne reste bloqué)', pg.locator('.ttk-layer').count() == 0)
+        st['stuck'] = False; st['lostRetry'] = False
+    # « Délier » (the bug of 21/11): the request goes as JSON and the card comes back to « Relier TikTok »
+    ev(pg, "acctOpen()"); pg.wait_for_selector('#ttkUnlink', timeout=8000)
+    pg.locator('#ttkUnlink').click(); pg.wait_for_timeout(300)
+    if pg.locator('.ttk-layer #ttkUnlinkGo, .ttk-layer .btn.primary').count():
+        pg.locator('.ttk-layer .btn.primary').first.click()
+    pg.wait_for_selector('#ttkLink', timeout=8000)
+    check(tag + ' : « %s » envoie du JSON (pas de refus du serveur) et la carte revient à « %s »' % (t['unlink'], t['link']),
+          st.get('delCT', '').startswith('application/json') and not st['linked'], st.get('delCT'))
     check(tag + ' : aucune erreur dans la page', not errs, errs)
     ctx.close()
 

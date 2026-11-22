@@ -45,6 +45,8 @@ const TXT = {
     'st.pub': 'C’est publié sur TikTok ✓', 'st.pubPriv': 'C’est publié ✓ Elle est visible par toi seulement.', 'st.see': 'Voir sur TikTok',
     'st.inbox': 'C’est envoyé ✓ Ouvre TikTok : ta vidéo t’attend dans ta boîte de réception pour finir la publication.',
     'st.fail': 'TikTok n’a pas publié la vidéo.', 'st.later': 'TikTok n’a pas encore fini. Tu la retrouveras sur ton profil dans quelques minutes.',
+    'st.waitD': 'TikTok la met dans ta boîte de réception : ça peut prendre quelques minutes. Tu peux fermer cette fenêtre.',
+    'st.laterD': 'TikTok n’a pas encore fini. Tu recevras une notification dans TikTok quand ton brouillon sera prêt.', 'e.timeout': 'TikTok met trop de temps à répondre. Réessaie dans un instant.',
     'f.duration_check_failed': 'La durée de la vidéo ne convient pas à TikTok.', 'f.file_format_check_failed': 'Le format du fichier ne convient pas à TikTok.',
     'f.frame_rate_check_failed': 'La cadence d’images ne convient pas à TikTok.', 'f.picture_size_check_failed': 'La taille de l’image ne convient pas à TikTok.',
     'f.spam_risk_too_many_posts': 'Ton compte a atteint la limite de publications du jour. Réessaie demain.',
@@ -95,6 +97,8 @@ const TXT = {
     'st.pub': 'Posted on TikTok ✓', 'st.pubPriv': 'Posted ✓ Only you can see it.', 'st.see': 'See it on TikTok',
     'st.inbox': 'Sent ✓ Open TikTok: your video is waiting in your inbox to finish posting.',
     'st.fail': 'TikTok didn’t post the video.', 'st.later': 'TikTok isn’t done yet. You’ll find it on your profile in a few minutes.',
+    'st.waitD': 'TikTok is putting it in your inbox: it may take a few minutes. You can close this window.',
+    'st.laterD': 'TikTok isn’t done yet. You’ll get a notification in TikTok when your draft is ready.', 'e.timeout': 'TikTok is taking too long to answer. Try again in a moment.',
     'f.duration_check_failed': 'The video’s length doesn’t suit TikTok.', 'f.file_format_check_failed': 'The file format doesn’t suit TikTok.',
     'f.frame_rate_check_failed': 'The frame rate doesn’t suit TikTok.', 'f.picture_size_check_failed': 'The picture size doesn’t suit TikTok.',
     'f.spam_risk_too_many_posts': 'Your account reached today’s posting limit. Try again tomorrow.',
@@ -133,12 +137,17 @@ const fdate = (ms) => { try { return new Date(ms).toLocaleDateString(lang() === 
 
 async function api(method, path, body, extra) {
   if (body === undefined && method !== 'GET' && !(extra && extra.body !== undefined)) body = {};   // the server wants JSON on every change (CSRF check)
-  let res;
+  let res, data;
+  // a time limit on every request (22/11): a request that never answers must not leave the screen turning forever
+  const x = Object.assign({}, extra || {}), wait = x.timeout || 30e3; delete x.timeout;
+  const ac = typeof AbortController === 'function' ? new AbortController() : null;
+  const tm = ac ? setTimeout(() => ac.abort(), wait) : 0;
   try {
     res = await fetch(path, Object.assign({ method, credentials: 'same-origin', headers: body !== undefined ? { 'Content-Type': 'application/json' } : {},
-      body: body !== undefined ? JSON.stringify(body) : undefined }, extra || {}));
-  } catch (e) { const er = new Error('offline'); er.code = 'offline'; throw er; }
-  const data = await res.json().catch(() => ({}));
+      body: body !== undefined ? JSON.stringify(body) : undefined, signal: ac ? ac.signal : undefined }, x));
+    data = await res.json().catch(() => ({}));
+  } catch (e) { const er = new Error('offline'); er.code = ac && ac.signal.aborted ? 'timeout' : 'offline'; throw er; }
+  finally { clearTimeout(tm); }
   if (!res.ok) { const er = new Error(data.message || 'error'); er.code = data.error || 'generic'; er.status = res.status; er.data = data; throw er; }
   return data;
 }
@@ -354,19 +363,38 @@ async function send(form, ex, st, caption, dur, c) {
     const a = n * start.chunkSize, b = n === start.chunks - 1 ? ex.blob.size : a + start.chunkSize;
     let ok = false, last;
     for (let k = 0; k < 3 && !ok; k++) {
-      try { await api('PUT', `/api/tiktok/publish/${start.id}/chunk/${n}`, undefined, { headers: { 'Content-Type': 'application/octet-stream' }, body: ex.blob.slice(a, b) }); ok = true; }
-      catch (e) { last = e; if (e.code === 'upload_expired' || e.status === 409 || e.status === 404) break; await new Promise((r) => setTimeout(r, 1500 * (k + 1))); }
+      try { await api('PUT', `/api/tiktok/publish/${start.id}/chunk/${n}`, undefined, { headers: { 'Content-Type': 'application/octet-stream' }, body: ex.blob.slice(a, b), timeout: 120e3 }); ok = true; }
+      catch (e) {
+        last = e;
+        // the piece arrived but the answer was lost (network, time limit): the server already has it, go on (22/11)
+        if (e.code === 'bad_chunk' && e.data && e.data.next > n) { ok = true; break; }
+        if (e.code === 'not_uploading' && n === start.chunks - 1) { ok = true; break; }
+        if (e.code === 'upload_expired' || e.status === 409 || e.status === 404 || e.status === 403) break;
+        await new Promise((r) => setTimeout(r, 1500 * (k + 1)));
+      }
     }
     if (!ok) { fail(errText(last), last); return; }
     const p = Math.round(((n + 1) / start.chunks) * 100); bar.value = p; msg.textContent = t('st.send', { p });
   }
+  const draft = st.mode === 'draft';
   msg.textContent = t('st.proc'); bar.removeAttribute('value');
-  out.append(el('p', { class: 'ttk-note', text: t('st.wait') }));
+  L._busy = false;   // the file is with TikTok: closing is safe now (22/11)
+  out.append(el('p', { class: 'ttk-note', text: t(draft ? 'st.waitD' : 'st.wait') }),
+    el('button', { class: 'btn', type: 'button', text: t('pub.close'), onclick: () => close() }));
   const t0 = Date.now();
+  let errs = 0;
+  const later = () => { bar.remove(); msg.textContent = t(draft ? 'st.laterD' : 'st.later'); };
   const poll = async () => {
     if (layer !== L) return;
     let s;
-    try { s = await api('GET', `/api/tiktok/publish/${start.id}`); } catch (e) { s = { status: 'processing' }; }
+    try { s = await api('GET', `/api/tiktok/publish/${start.id}`); errs = 0; }
+    catch (e) {
+      if (layer !== L) return;
+      if (/reconnect_needed|not_connected|tt_scope|not_found/.test(e.code)) { fail(errText(e), e); return; }
+      if (++errs >= 5) { later(); return; }
+      s = { status: 'processing' };
+    }
+    if (layer !== L) return;
     if (s.status === 'published') {
       L._busy = false; bar.remove();
       msg.textContent = st.privacy === 'SELF_ONLY' ? t('st.pubPriv') : t('st.pub');
@@ -376,7 +404,7 @@ async function send(form, ex, st, caption, dur, c) {
     }
     if (s.status === 'inbox') { L._busy = false; bar.remove(); msg.textContent = t('st.inbox'); out.replaceChildren(msg, el('button', { class: 'btn', type: 'button', text: t('pub.close'), onclick: () => close() })); return; }
     if (s.status === 'failed') { fail(t('st.fail') + ' ' + (TXT.fr['f.' + s.failReason] ? t('f.' + s.failReason) : '')); return; }
-    if (Date.now() - t0 > 5 * 60e3) { L._busy = false; bar.remove(); msg.textContent = t('st.later'); out.append(el('button', { class: 'btn', type: 'button', text: t('pub.close'), onclick: () => close() })); return; }
+    if (Date.now() - t0 > 5 * 60e3) { later(); return; }
     pollT = setTimeout(poll, 4000);
   };
   pollT = setTimeout(poll, 2500);
@@ -436,6 +464,19 @@ function analysisView(A, byId, vrow) {
 }
 const mmss = (s) => { if (s == null || !isFinite(s)) return '?'; const m = Math.floor(s / 60), r = Math.floor(s % 60); return m + ':' + String(r).padStart(2, '0'); };
 
+// ---- TikTok's logo (22/11) ------------------------------------------------------------------------------------------------
+// The official TikTok icon, taken unchanged from TikTok for Developers' « Logo and Button pack » (Button_Black.svg, the white
+// note of the « Continue with TikTok » button). Rules (TikTok brand guidelines): never redrawn, stretched, outlined or recoloured:
+// white on black (or black on white, in the menu: currentColor), with room around it, and always next to a written label.
+// https://developers.tiktok.com/doc/getting-started-design-guidelines
+const TT_ICON = '<svg class="ttk-logo" viewBox="11 11 22 22" aria-hidden="true" focusable="false"><path style="fill:currentColor;stroke:none" fill-rule="evenodd" clip-rule="evenodd" d="M25.5172 25.0575C25.4647 26.4295 24.3093 27.5306 22.8929 27.5306C22.5691 27.5306 22.2591 27.4729 21.9727 27.3675C22.2591 27.4729 22.5692 27.5306 22.893 27.5306C24.3094 27.5306 25.4648 26.4295 25.5174 25.0576L25.5224 12.8063H27.8124C28.0331 13.971 28.7405 14.9704 29.7205 15.5948C29.7208 15.5952 29.7212 15.5956 29.7215 15.596C30.4037 16.0305 31.2171 16.284 32.0903 16.284V16.9645C32.0903 16.9645 32.0903 16.9645 32.0904 16.9646V19.3405C30.4684 19.3405 28.9654 18.8334 27.7386 17.9728V24.1852C27.7386 27.2878 25.1559 29.8119 21.9812 29.8119C20.7545 29.8119 19.6169 29.4338 18.6818 28.7921C18.6813 28.7916 18.6808 28.791 18.6802 28.7905C17.1964 27.7717 16.224 26.0876 16.224 24.1846C16.224 21.0821 18.8067 18.5579 21.9814 18.5579C22.2448 18.5579 22.503 18.5791 22.7572 18.6128V19.337C19.861 19.4031 17.4865 21.5682 17.1713 24.3333C17.4868 21.5685 19.8611 19.4037 22.7571 19.3376V21.7342C22.5115 21.6591 22.2519 21.6154 21.9812 21.6154C20.5314 21.6154 19.3519 22.7683 19.3519 24.1852C19.3519 25.1719 19.9247 26.0292 20.7616 26.4596C20.7616 26.4597 20.7616 26.4597 20.7616 26.4597C21.1265 26.6474 21.541 26.7549 21.9811 26.7549C23.3975 26.7549 24.5529 25.6538 24.6055 24.2819L24.6105 12.0305H27.7385C27.7385 12.2955 27.7646 12.5545 27.8123 12.8063H25.5223L25.5172 25.0575Z"/></svg>';
+function ttLabel(b, text) {
+  let s = b.querySelector('.ttk-lbl');
+  if (!s) { b.textContent = ''; b.insertAdjacentHTML('afterbegin', TT_ICON); s = el('span', { class: 'ttk-lbl' }); b.append(s); }
+  s.textContent = text;
+  return b;
+}
+
 // ---- where it shows in the app ------------------------------------------------------------------------------------------
 // 1. the account page (« Ton compte »): a TikTok card, linked or not
 function card() {
@@ -454,7 +495,7 @@ function card() {
       el('button', { class: 'btn', type: 'button', id: 'ttkUnlink', text: t('unlink'), onclick: unlink })));
   } else {
     kids.push(el('p', { class: 'ttk-k', text: a && a.status !== 'ok' ? t('expired') : t('card.p') }));
-    kids.push(el('div', { class: 'row' }, el('button', { class: 'btn primary', type: 'button', id: 'ttkLink', text: t('link'), onclick: link })));
+    kids.push(el('div', { class: 'row' }, ttLabel(el('button', { class: 'btn ttk-tt', type: 'button', id: 'ttkLink', onclick: link }), t('link'))));
   }
   c.replaceChildren(...kids);
 }
@@ -466,7 +507,7 @@ function menu() {
   if (!on) { if (b) b.hidden = true; return; }
   if (!b) {
     b = el('button', { type: 'button', role: 'menuitem', tabindex: '-1', 'data-am': 'tiktok' });
-    b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>';
+    b.innerHTML = TT_ICON;
     b.append(el('span', { class: 'ttk-amT' }));
     b.addEventListener('click', (e) => { e.stopPropagation(); APP.menuClose(); linked() ? statsOpen() : link(); });
     const help = $('[data-am="help"]', m); if (help) help.before(b); else m.prepend(b);
@@ -481,11 +522,11 @@ function doneButton() {
   const on = TT.offered && ex && !ex.demo;
   if (!on) { if (b) b.hidden = true; return; }
   if (!b) {
-    b = el('button', { class: 'btn big ttk-pubbtn', type: 'button', id: 'ttkPub', onclick: () => { if (!APP.busy()) publishOpen(); } });
+    b = el('button', { class: 'btn big ttk-pubbtn ttk-tt', type: 'button', id: 'ttkPub', onclick: () => { if (!APP.busy()) publishOpen(); } });
     const after = $('#shareBox') && !$('#shareBox').hidden ? $('#shareBox') : $('#saveRow');
     (after || $('#result') || dv).after(b);
   }
-  b.hidden = false; b.textContent = t('pub.btn');
+  b.hidden = false; ttLabel(b, t('pub.btn'));
   const pro = APP.can('tiktok');
   b.classList.toggle('protag', !pro); if (!pro) b.dataset.plan = 'PRO'; else delete b.dataset.plan;
 }
