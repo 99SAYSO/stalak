@@ -237,7 +237,6 @@ const I18N_EN = /*@EN*/{
   "outro": "Free videos end with 3 seconds of the Stalak logo.",
   "save.btn": "Save to device",
   "post.title": "Post your video",
-  "post.share": "Share",
   "post.hint": "Save your video, then open the app of your choice and add it.",
   "diag.sum": "Technical info",
   "copy": "Copy",
@@ -1191,9 +1190,8 @@ const I18N_EN = /*@EN*/{
   "exp.mem": "This video of {s} s is too long for this device’s memory: it could close the page halfway. Pick a part of up to {smax} s (step 1), or export it on a computer.",
   "exp.mem0": "This video is too long for this device’s memory: it could close the page halfway. Export it on a computer.",
   "exp.fab": "Export",
-  "post.sharePhotos": "Save to Photos / Share",
   "save.file": "Download the file",
-  "post.shareHintIos": "Pick TikTok or Instagram: the app opens with your video already in. Paste the caption under it and post. To keep it in Photos: “Save Video”.",
+  "post.shareHintIos": "In the list, tap “Save Video” to keep it in Photos. Or pick TikTok or Instagram: the app opens with your video already in. Paste the caption under it and post.",
   "cap.t": "Caption, ready to copy",
   "cap.copy": "Copy caption",
   "cap.ok": "Caption copied ✓",
@@ -1211,8 +1209,9 @@ const I18N_EN = /*@EN*/{
   "opt.sent": "📬 Check your inbox and tap the link to confirm.",
   "opt.later": "Too many tries. Try again later.",
   "opt.err": "It didn’t work. Try again in a moment.",
-  "post.shareMain": "Share",
-  "post.shareHintPhone": "Pick TikTok or Instagram: the app opens with your video already in. Paste the caption under it and post.",
+  "post.shareHintPhone": "In the list, pick where to keep it (Photos, Files…). Or pick TikTok or Instagram: the app opens with your video already in. Paste the caption under it and post.",
+  "save.dlLink": "Or download the file",
+  "save.shareFail": "The share list didn’t open: the video is downloaded instead.",
   "fa.t": "“{name}” is a Pro filter",
   "fa.p": "You can try it in the preview. To export it, go Pro, or export your video without this filter.",
   "fa.pro": "Go Pro, from $4.17/mo",
@@ -1903,11 +1902,9 @@ const I18N_FR = /*@FR*/{
   "exp.mem": "Cette vidéo de {s} s est trop longue pour la mémoire de cet appareil : la page risquerait de se fermer en route. Choisis un passage de {smax} s au plus (étape 1), ou exporte-la sur un ordinateur.",
   "exp.mem0": "Cette vidéo est trop longue pour la mémoire de cet appareil : la page risquerait de se fermer en route. Exporte-la sur un ordinateur.",
   "exp.fab": "Exporter",
-  "post.share": "Partager",
   "save.btn": "Enregistrer sur l'appareil",
-  "post.sharePhotos": "Enregistrer dans Photos / Partager",
   "save.file": "Télécharger le fichier",
-  "post.shareHintIos": "Choisis TikTok ou Instagram : l’appli s’ouvre avec ta vidéo déjà importée. Colle la légende dessous et poste. Pour la garder dans Photos : « Enregistrer la vidéo ».",
+  "post.shareHintIos": "Dans la liste, touche « Enregistrer la vidéo » pour la garder dans Photos. Ou choisis TikTok ou Instagram : l’appli s’ouvre avec ta vidéo déjà importée. Colle la légende dessous et poste.",
   "cap.t": "Légende prête à copier",
   "cap.copy": "Copier la légende",
   "opt.need": "Coche la case pour accepter d’abord.",
@@ -1920,8 +1917,9 @@ const I18N_FR = /*@FR*/{
   "cap.sel": "Sélectionne le texte et copie-le.",
   "cap.tags": "#playback #rap #lipsync #madewithstalak",
   "cap.made": "made with stalak.app",
-  "post.shareMain": "Partager",
-  "post.shareHintPhone": "Choisis TikTok ou Instagram : l’appli s’ouvre avec ta vidéo déjà importée. Colle la légende dessous et poste.",
+  "post.shareHintPhone": "Dans la liste, choisis où la garder (Photos, Fichiers…). Ou choisis TikTok ou Instagram : l’appli s’ouvre avec ta vidéo déjà importée. Colle la légende dessous et poste.",
+  "save.dlLink": "Ou télécharger le fichier",
+  "save.shareFail": "La liste de partage ne s’est pas ouverte : la vidéo est téléchargée à la place.",
   "fa.t": "« {name} » est un filtre Pro",
   "fa.p": "Tu peux l’essayer dans l’aperçu. Pour l’exporter, passe à Pro, ou exporte ta vidéo sans ce filtre.",
   "fa.pro": "Passer à Pro, dès 4,17 $/mois",
@@ -6903,9 +6901,9 @@ function startTake(){
   const tick = async () => {
     const st = (!player.paused && !player.seeking && player.readyState >= 2) ? player.currentTime : null;
     if (st != null){
-      const left = Math.ceil((S.segStart - st) / spb - 1e-6);
-      // (owner, 06/11: without a timer, no number at all on the screen; with one, the beats before the passage are counted)
-      $('#recCount').textContent = recDelay && st < S.segStart && left >= 1 && left <= 4 ? String(left) : '';
+      // (owner, 22/11: with a timer, the count is shown once, before the song, and never again once the song plays; 06/11:
+      // without a timer, no number at all)
+      $('#recCount').textContent = '';
       // song time minus video time, measured all along the take
       if (recRec.state === 'recording' && st > from + 0.25) samples.push(st - (performance.now() - recT0) / 1000);
       $('#recTime').textContent = st < S.segStart ? _t('rec.ready') : '● ' + (st - S.segStart).toFixed(1) + ' s';
@@ -8127,18 +8125,16 @@ function postShow(){
   links.forEach(a => { if (/tiktok/.test(a.href)) a.hidden = wide; if (/youtube/.test(a.href)) a.textContent = wide ? 'YouTube' : 'YouTube Shorts'; });
   let can = false;
   try { can = !!(navigator.canShare && navigator.share && lastBlob && navigator.canShare({ files: [new File([lastBlob], lastName || 'stalak.mp4', { type: lastBlob.type || 'video/mp4' })] })); } catch(e){}
-  // « Enregistrer la vidéo » first and big (owner, 06/11). Phones and tablets (iPhone, iPad, Android; 05/11, « comme CapCut »):
-  // « Partager » right under it opens the phone's share list with the video file (TikTok / Instagram open with the video
-  // already in), then the caption to copy. A computer, or a phone that cannot share a file: no share button.
-  const sb = $('#shareBtn'), sv = $('#saveBtn'), box = $('#shareBox'), main = PHONE_DEV && can && !S.noShare && !zip;
-  sb.hidden = !main;
-  if (main){
-    if (sb.parentNode !== box){ box.append(sb, $('#postHint')); }
-    sb.className = 'btn big sharemain'; setT(sb, 'post.shareMain');
-  } else if (sb.parentNode === box){
-    $('#postBox .row').prepend(sb); $('#postBox .row').after($('#postHint'));
-    sb.className = 'btn'; setT(sb, 'post.share');
-  }
+  // « Enregistrer la vidéo » first and big (owner, 06/11), the only button (owner, 22/11: « Enregistrer » and « Partager » made
+  // one). Phones and tablets that can share a file: it opens the phone's share list with the video (on an iPhone « Enregistrer
+  // la vidéo » there puts it in Photos; TikTok / Instagram open with the video already in), the hint under it says so.
+  // A computer, a pack, or a phone that cannot share a file: the file is downloaded, as before.
+  const sv = $('#saveBtn'), box = $('#shareBox'), main = PHONE_DEV && can && !S.noShare && !zip;
+  S.saveShares = main;
+  if (main){ if ($('#postHint').parentNode !== box) box.append($('#saveDl'), $('#postHint')); }
+  else if ($('#postHint').parentNode === box){ $('#postBox .row').after($('#postHint')); $('#saveRow').after($('#saveDl')); }
+  // Android: its share list does not always offer to keep the file, so the plain download stays as a small link
+  $('#saveDl').hidden = !main || IOS_DEV;
   sv.className = 'btn primary big savemain'; setT(sv, zip ? 'save.packBtn' : 'save.video');
   box.hidden = !main || !lastBlob;
   $('#capBox').hidden = !lastBlob || zip;
@@ -8148,7 +8144,7 @@ function postShow(){
   capUi(); proOfferUi(); optUi();
 }
 /* ---- the end of the export (owner, 06/11): only what matters, and where to tap is seen at once. The edit, the steps and the
-   rest of the page are hidden; the result is moved into #doneView: « Enregistrer la vidéo » (big), « Partager » on a phone,
+   rest of the page are hidden; the result is moved into #doneView: « Enregistrer la vidéo » (big: the share list on a phone, 22/11),
    « Copier la légende », « Sans filigrane → Pro » for free videos; « Modifier la vidéo » (a small link) goes back to the
    edit, with the result kept in the Export card as before. ---- */
 function doneShow(){
@@ -8186,17 +8182,6 @@ function doneHide(){
 }
 $('#dvEdit').onclick = doneHide;
 $('#dvPro').onclick = () => lockOpen('nowm');
-$('#shareBtn').onclick = async () => {
-  if (!lastBlob) return;
-  try { await navigator.share({ files: [new File([lastBlob], lastName, { type: lastBlob.type || 'video/mp4' })], title: 'Stalak' }); setT('#postHint', 'post.sent'); }
-  catch(e){
-    if (e && e.name === 'AbortError') return;   // closed by the person
-    diag('partage : ' + (e && (e.name + ' ' + e.message) || e)); S.noShare = true; postShow();
-    $('#postBox').hidden = false; setT('#postHint', 'post.noshare');
-    // (06/11) on the end screen the networks' links are hidden: the explanation goes under « Enregistrer la vidéo »
-    if (S.done) setT('#saveNote', 'post.noshare');
-  }
-};
 /* the logo: a new project, everything cleared (asked first when there is something to lose) */
 function homeGo(){ S.cancel = true; try { stop(true); } catch(e){} location.reload(); }
 /* the confirmation box: one question, « Annuler » or the action; resolves true or false */
@@ -8315,19 +8300,30 @@ $('#homeNo').onclick = () => { if (askDone) askDone(false); };
 $('#homeYes').onclick = () => { if (askDone) askDone(true); };
 $('#homeAsk').addEventListener('keydown', e => { if (e.key === 'Escape'){ e.stopPropagation(); $('#homeNo').click(); } });
 $('#homeAsk').addEventListener('click', e => { if (e.target === e.currentTarget) $('#homeNo').click(); });
+/* the file downloaded by the browser (Stalak's own site) */
+function saveDownload(){
+  const url = URL.createObjectURL(lastBlob), a = document.createElement('a'); a.href = url; a.download = lastName; a.rel = 'noopener';
+  document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 60000);
+  setT('#saveNote', /iPhone|iPad|iPod/.test(navigator.userAgent) ? 'save.dlIos' : 'save.dl');
+}
+$('#saveDl').onclick = e => { e.preventDefault(); if (lastBlob) saveDownload(); };
 $('#saveBtn').onclick = async () => {
   if (!lastBlob) return;
   // (audit 6/11, n° 5) on a phone the Pro offer waits for this tap, so it never hides « Enregistrer »
   if (!S.ppSaved){ S.ppSaved = true; setTimeout(proOfferUi, 600); }
+  // (owner, 22/11) a phone or tablet that can share the file: the share list, opened at once (it needs the tap itself)
+  if (S.saveShares){
+    try { await navigator.share({ files: [new File([lastBlob], lastName, { type: lastBlob.type || 'video/mp4' })], title: 'Stalak' }); setT('#saveNote', 'post.sent'); return; }
+    catch(e){
+      if (e && e.name === 'AbortError') return;   // the list closed by the person
+      diag('partage : ' + (e && (e.name + ' ' + e.message) || e) + ', téléchargement à la place'); S.noShare = true; postShow();
+      if (!downloads && !window.claude){ saveDownload(); setT('#saveNote', 'save.shareFail'); return; }
+    }
+  }
   // asked again at the click: the first answer can come back empty when the page was still loading
   if (!downloads && window.claude && window.claude.use){ try { downloads = await window.claude.use('downloads'); } catch(e){} }
   // on Stalak's own site (no Claude around it): the browser's own download
-  if (!downloads && !window.claude){
-    const url = URL.createObjectURL(lastBlob), a = document.createElement('a'); a.href = url; a.download = lastName; a.rel = 'noopener';
-    document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 60000);
-    setT('#saveNote', /iPhone|iPad|iPod/.test(navigator.userAgent) ? 'save.dlIos' : 'save.dl');
-    return;
-  }
+  if (!downloads && !window.claude){ saveDownload(); return; }
   if (!downloads){ diag('enregistrement : non proposé par cette vue (' + location.host + ')'); setT('#saveNote', 'save.na'); return; }
   try { await downloads.save({ filename: lastName, data: lastBlob }); setT('#saveNote', 'save.ok'); }
   catch(e){ if (e && e.code === 'declined') setT('#saveNote', 'save.cancel'); else setT('#saveNote', 'save.fail', { code: e && e.code || 'erreur' }); }
@@ -9344,7 +9340,8 @@ LE SITE, EN 4 ÉTAPES (onglets en haut : 1 Son, 2 Prises, 3 Paroles, 4 Montage)
 - « Exporter la vidéo », ou un pack de 5, 10 ou 30 vidéos toutes différentes (« Générer le pack », avec Stalak Pro sur stalak.app), puis « Enregistrer sur l'appareil ».
 - « Sauvegarder en ligne » (Stalak Pro, sur stalak.app ; à l'étape Montage, ou Galerie dans le menu du compte en haut à droite) : garde le projet entier (son, prises, paroles et leurs temps, montage, format, style du texte) dans le compte, 20 Go au plus. Il se rouvre tel quel sur n'importe quel appareil depuis la Galerie (menu du compte en haut à droite : toucher un projet pour l'ouvrir ; appui long ou « … » pour Renommer, Supprimer). Un fichier déjà en ligne n'est pas renvoyé ; après une coupure, « Réessayer » reprend où l'envoi s'était arrêté. Espace plein : supprimer un ancien projet. Un projet non ouvert depuis 6 mois est supprimé, après un e-mail de rappel. Sans Stalak Pro, le bouton porte un badge PRO ; sur la page claude.ai, ce n'est pas disponible.
 - Les vidéos gratuites se terminent par 3 secondes avec le logo Stalak.
-- « Poster ta vidéo » : sur téléphone, « Partager vers TikTok, Insta, YouTube… » ouvre la liste de partage du téléphone. Sinon, enregistrer la vidéo puis toucher TikTok, Instagram ou YouTube Shorts pour ouvrir la page d'ajout. La publication automatique sans passer par l'appli n'existe pas encore.
+- « Enregistrer la vidéo » (fin de l'export) : sur téléphone et tablette, il ouvre la liste de partage du téléphone. Sur iPhone, y toucher « Enregistrer la vidéo » la met dans Photos ; TikTok ou Instagram s'ouvrent avec la vidéo déjà importée (coller ensuite la légende). Sur Android, un petit lien « Ou télécharger le fichier » reste dessous. Sur ordinateur, ou si le partage n'est pas possible, la vidéo est téléchargée. Il n'y a plus de bouton « Partager ».
+- « Poster ta vidéo » (sur ordinateur) : enregistrer la vidéo puis toucher TikTok, Instagram ou YouTube Shorts pour ouvrir la page d'ajout. La publication automatique sans passer par l'appli n'existe pas encore.
 - Toucher le logo Stalak en haut à gauche : nouveau projet (tout est effacé, après confirmation).
 - Le bouton FR / EN en haut change la langue du site.
 - En cas de problème : dans cette fenêtre d'aide, le bouton « Copier les infos pour l'équipe » (sous la zone de texte) copie le journal technique, à envoyer à l'équipe Stalak.
@@ -9396,7 +9393,8 @@ THE SITE, IN 4 STEPS (tabs at the top: 1 Sound, 2 Takes, 3 Lyrics, 4 Edit)
 - "Export video", or a pack of 5, 10 or 30 all-different videos ("Make the pack", with Stalak Pro on stalak.app), then "Save to device".
 - "Save online" (Stalak Pro, on stalak.app; at the Edit step, or Gallery in the account menu at the top right): keeps the whole project (song, takes, lyrics and their timing, edit, format, text style) in the account, up to 20 GB. It opens again as it was on any device from the Gallery (tap to open; long press or "…" to Rename, Delete). A file already online isn't sent again; after a connection drop, "Try again" resumes where the upload stopped. Storage full: delete an old project. A project not opened for 6 months is deleted, after a reminder email. Without Stalak Pro, the button has a PRO badge; on the claude.ai page, it isn't available.
 - Free videos end with 3 seconds of the Stalak logo.
-- "Post your video": on a phone, "Share to TikTok, Insta, YouTube…" opens the phone's share sheet. Otherwise, save the video then tap TikTok, Instagram or YouTube Shorts to open their upload page. Automatic posting without going through the app doesn't exist yet.
+- "Save video" (end of the export): on a phone or tablet it opens the phone's share sheet. On an iPhone, "Save Video" there puts it in Photos; TikTok or Instagram open with the video already in (then paste the caption). On Android a small "Or download the file" link stays under it. On a computer, or when sharing isn't possible, the video is downloaded. There is no "Share" button anymore.
+- "Post your video" (on a computer): save the video then tap TikTok, Instagram or YouTube Shorts to open their upload page. Automatic posting without going through the app doesn't exist yet.
 - Tapping the Stalak logo at the top left: new project (everything is cleared, after confirming).
 - The FR / EN switch at the top changes the language of the site.
 - If something goes wrong: in this help window, the "Copy info for the team" button (under the text box) copies the technical log, to send to the Stalak team.

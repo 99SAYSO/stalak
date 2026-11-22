@@ -447,12 +447,13 @@
           <p class="note cover-note" id="coverNote" hidden></p>
           <div class="result" id="result" hidden>
             <video id="resultVideo" controls playsinline hidden></video>
-            <!-- (06/11) « Enregistrer la vidéo » first and big; on a phone, « Partager » under it (app.js postShow moves it
-                 into #shareBox); then the caption to copy -->
+            <!-- (06/11) « Enregistrer la vidéo » first and big, the only button (22/11: on a phone it opens the share list;
+                 app.js postShow moves the hint into #shareBox); then the caption to copy -->
             <div class="row" id="saveRow">
               <button class="btn primary big" id="saveBtn" type="button" data-i18n="save.video">Enregistrer la vidéo</button>
               <span class="note" id="saveNote"></span>
             </div>
+            <a class="savedl" id="saveDl" href="#" hidden data-i18n="save.dlLink">Ou télécharger le fichier</a>
             <div class="sharebox" id="shareBox" hidden></div>
             <div class="capbox" id="capBox">
               <label class="label" for="capText" data-i18n="cap.t">Légende prête à copier</label>
@@ -475,7 +476,6 @@
             <div class="post" id="postBox">
               <p class="label" data-i18n="post.title">Poster ta vidéo</p>
               <div class="row">
-                <button class="btn" id="shareBtn" type="button" hidden data-i18n="post.share">Partager</button>
                 <a class="btn sm" href="https://www.tiktok.com/upload" target="_blank" rel="noopener">TikTok</a>
                 <a class="btn sm" href="https://www.instagram.com/" target="_blank" rel="noopener">Instagram</a>
                 <a class="btn sm" href="https://www.youtube.com/upload" target="_blank" rel="noopener">YouTube Shorts</a>
