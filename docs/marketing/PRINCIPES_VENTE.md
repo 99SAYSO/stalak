@@ -19,6 +19,19 @@ Le propriétaire a envoyé le 22/11/2026 des fiches de conseils marketing à ret
 13. **Preuve sociale :** avis 5 étoiles réels bien visibles, témoignages avec nom et résultat, vidéos faites par les utilisateurs.
 14. **Une bonne pub fait ressentir quelque chose** : elle part d'un besoin et d'une émotion, pas d'un effet « wow » ni d'un coût bas.
 
+## Lot 2 (22/11)
+
+15. **Une bonne pub se prépare :** d'abord connaître les besoins et les peurs des rappeurs (commentaires, messages, mails), ensuite chercher beaucoup d'idées, puis tester et affiner. La recherche avant les idées.
+16. **Trouver des idées :** oser large au début, regarder ce qui marche ailleurs (y compris dans d'autres domaines) et le refaire à notre façon. Chez Stalak : on reprend la mécanique, jamais la vidéo, le texte ni le style d'un autre (règle déjà en place).
+17. **Arrêter de dire l'évident** (« ça monte des vidéos ») : dire ce qu'il ne savait pas, ce qu'il ne pouvait pas voir (comment Stalak cale les lèvres et coupe sur le rythme), ce que ça change pour lui. Comprendre fait vendre, décrire non.
+18. **Vendre plus en disant moins.** Trop expliquer fait décrocher. Textes courts, une idée par écran. Écouter d'abord : partir de ce que les utilisateurs disent eux-mêmes et répondre à ça.
+19. **Un prix précis paraît plus honnête** qu'un prix rond, surtout pour les gros montants. Nos prix sont déjà précis (7,99 / 49,99 / 14,99 / 99,99).
+20. **Prix en ,99 :** le premier chiffre fait le travail. Déjà en place.
+21. **Cadrer du bon côté :** annoncer le bénéfice plutôt que le manque (« sans filigrane », « 5 mois offerts » plutôt que « −47 % », si le calcul est exact).
+22. **Faire sentir un cadeau :** regrouper et offrir (l'annuel qui offre des mois, un pack de vidéos inclus), toujours avec des chiffres vrais.
+23. **Le laisser se l'approprier :** on tient plus à ce qui est déjà à soi. Lui montrer SON clip monté, avec son son et son nom, avant de parler de prix.
+24. **Le héros, c'est lui, pas nous.** Personne ne s'intéresse à l'histoire de la marque : raconter son problème et sa victoire. *À concilier avec la décision du 30/10 (« le fondateur parle en son nom : je suis rappeur, j'ai codé Stalak ») : l'histoire du fondateur sert de preuve, en une phrase ; le reste parle du rappeur.*
+
 ## Décision liée (22/11)
 
 Sur la page Tarifs et l'écran des formules : **la formule la plus chère en premier**, puis on descend (Creator Plus, Pro, Gratuit). Le prix le plus haut sert de repère et fait paraître Pro raisonnable.
