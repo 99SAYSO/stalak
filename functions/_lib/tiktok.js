@@ -41,6 +41,7 @@ const httpsUrl = (v) => (/^https:\/\/[^\s"'<>]{1,1990}$/.test(String(v || '')) ?
 // the address TikTok gives for sending the file: only TikTok's own upload hosts (revue de sécurité 21/11: Stalak's server
 // never sends a file anywhere else, even if TikTok's answer were changed on the way)
 const uploadUrl = (v) => { const u = httpsUrl(v); if (!u) return null; try { return /^open-upload(-[a-z0-9]+)*\.tiktokapis\.com$/i.test(new URL(u).hostname) ? u : null; } catch { return null; } };
+const TT_WAIT = 20e3, UPLOAD_WAIT = 90e3;
 const cut = (v, n) => (v == null ? '' : String(v).slice(0, n));
 const int = (v) => (Number.isFinite(Number(v)) ? Math.max(0, Math.round(Number(v))) : 0);
 
@@ -55,6 +56,7 @@ const TT_ERRORS = {
   scope_not_authorized: [409, 'tt_scope', 'Link TikTok again and accept every permission.'],
   access_token_invalid: [409, 'reconnect_needed', 'The TikTok link has expired: connect the account again.'],
   rate_limit_exceeded: [429, 'tt_rate', 'TikTok asks to wait a little. Try again in a minute.'],
+  tt_timeout: [504, 'timeout', 'TikTok is taking too long to answer. Try again in a moment.'],   // ours: TikTok did not answer in time (22/11)
 };
 function ttFail(body, status, where) {
   const code = String((body && body.error && body.error.code) || '');
@@ -64,10 +66,17 @@ function ttFail(body, status, where) {
   return new HttpError(502, 'tt_error', 'TikTok did not answer as expected. Try again in a moment.');
 }
 async function tt(token, path, body, method = 'POST') {
-  const res = await fetch(API + path, {
-    method, headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json; charset=UTF-8' },
-    body: method === 'POST' ? JSON.stringify(body || {}) : undefined,
-  });
+  let res;
+  try {
+    res = await fetch(API + path, {
+      method, headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json; charset=UTF-8' },
+      body: method === 'POST' ? JSON.stringify(body || {}) : undefined,
+      signal: AbortSignal.timeout(TT_WAIT),   // 22/11: TikTok not answering must not hold the request forever
+    });
+  } catch (e) {
+    console.warn('[stalak] tiktok', path, e && e.name === 'TimeoutError' ? 'timeout' : 'network');
+    return { res: { status: 504 }, body: { error: { code: 'tt_timeout' } }, ok: false, text: '' };
+  }
   const text = await res.text().catch(() => '');
   let b = {};
   try { b = JSON.parse(text); } catch {}
@@ -229,8 +238,15 @@ async function publishChunk(request, env, id, nRaw, now) {
   const buf = await request.arrayBuffer();
   if (buf.byteLength !== want) throw new HttpError(400, 'bad_length', 'Wrong piece size.');
   const url = await openToken(env, row.upload_url_enc, `${user.id}:tiktok:upload:${id}`);
-  const res = await fetch(url, { method: 'PUT', body: buf, headers: {
-    'Content-Type': 'video/mp4', 'Content-Length': String(want), 'Content-Range': `bytes ${first}-${last}/${row.video_size}` } });
+  let res;
+  try {
+    res = await fetch(url, { method: 'PUT', body: buf, signal: AbortSignal.timeout(UPLOAD_WAIT), headers: {
+      'Content-Type': 'video/mp4', 'Content-Length': String(want), 'Content-Range': `bytes ${first}-${last}/${row.video_size}` } });
+  } catch (e) {
+    // 22/11: TikTok did not answer in time; the piece can be sent again (same number)
+    console.warn('[stalak] tiktok upload', e && e.name === 'TimeoutError' ? 'timeout' : 'network', n + 1, '/', row.chunk_count);
+    throw new HttpError(504, 'tt_upload', 'TikTok did not take this piece. Try again.');
+  }
   if (!(res.status === 200 || res.status === 201 || res.status === 206)) {
     console.warn('[stalak] tiktok upload', res.status);
     if (res.status === 403) {
@@ -266,6 +282,8 @@ async function publishStatus(request, env, id, now) {
       const m = r.text.match(/"publicaly_available_post_id"\s*:\s*\[\s*"?([0-9]{1,30})/);
       const postId = m ? m[1] : null;
       const fail = st === 'failed' ? (FAIL_OK.test(String(d.fail_reason || '')) ? String(d.fail_reason) : 'internal') : null;
+      // a trace in the Cloudflare logs (22/11): mode, what TikTok said, never the ids nor the token
+      if (st !== row.status || !STATUS_MAP[d.status]) console.log('[stalak] tiktok status', row.mode, String(d.status || '?').slice(0, 40), fail || '');
       await env.DB.prepare('UPDATE tiktok_posts SET status = ?2, fail_reason = ?3, post_id = COALESCE(?4, post_id), updated_at = ?5 WHERE id = ?1')
         .bind(id, st, fail, postId, now).run();
       row = { ...row, status: st, fail_reason: fail, post_id: postId || row.post_id };
