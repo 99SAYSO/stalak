@@ -54,6 +54,12 @@
       <div class="hero-txt">
         <h1 class="hero-h1" data-i18n="hero.h1">Le montage de playback gratuit pour les rappeurs</h1>
         <p class="hero-s" data-i18n="hero.s">Filme quelques prises sur ton son&nbsp;: Stalak les coupe sur le temps, lèvres synchro.</p>
+        <!-- App & montage (22/11, audit mobile n° 1): what starts it, in the first screen of a phone: the song (opens the file
+             choice of #songFile) and the example (#demoBtn) -->
+        <div class="hero-go">
+          <button class="btn primary big hero-song" id="heroSong" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg><span data-i18n="hero.song">Choisir mon son</span></button>
+          <button class="btn hero-demo" id="heroDemo" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 4l13 8-13 8z"/></svg><span data-i18n="hero.demo">Voir un exemple</span></button>
+        </div>
         <!-- Marketing & croissance (07/11, rapport chiffres : le mode Clip, 1re raison d'ouvrir Pro) : choisit « Clip » à l'étape 1
              (#kindSeg, le choix qui existe déjà) et l'amène sous les yeux ; rien d'autre ne change -->
         <button type="button" class="hero-clip" id="heroClip" data-i18n="hero.clip">Essaie le <b>mode Clip</b>&nbsp;: tout ton morceau en 16:9</button>
@@ -188,6 +194,18 @@
         <p class="hint" style="text-align:center;margin:8px auto 0" data-i18n="rec.hint">Le son démarre une mesure avant ton passage, pour que tu sois dans le rythme.</p>
       </div>
       <ul class="takes" id="takeList"></ul>
+      <!-- (22/11, audit vente n° 4) what Stalak is doing with the takes, step by step (app.js wsUi); moved to the top of the
+           Montage step when the person is there -->
+      <div class="wsteps" id="wSteps" role="status" aria-live="polite" hidden>
+        <p class="ws-t" data-i18n="ws.t">Stalak monte ta vidéo</p>
+        <ol class="ws-list">
+          <li data-ws="song"><i aria-hidden="true"></i><span data-i18n="ws.song"><b>J’écoute ton son</b> et je trouve ses temps forts</span></li>
+          <li data-ws="sync"><i aria-hidden="true"></i><span><span data-i18n="ws.sync"><b>Je cale chaque prise sur ton son</b>, pour que tes lèvres tombent juste</span><span class="ws-n"></span></span></li>
+          <li data-ws="look"><i aria-hidden="true"></i><span><span data-i18n="ws.look"><b>Je regarde tes prises</b> pour garder les plus belles images</span><span class="ws-n"></span></span></li>
+          <li data-ws="cut"><i aria-hidden="true"></i><span data-i18n="ws.cut"><b>Je coupe sur le rythme</b> et je passe d’une prise à l’autre</span></li>
+        </ol>
+        <p class="ws-p" data-i18n="ws.p">Tu peux déjà écouter et changer les réglages : le montage se met à jour tout seul.</p>
+      </div>
       <div class="brollbox">
         <div class="brollhead">
           <label class="btn tip" for="brollFiles" data-tip="Des vidéos où tu ne chantes pas : la rue, le studio, la voiture, tes potes… Pas besoin de les caler, leur son n'est jamais utilisé." data-i18n="broll.add" data-i18n-attr="data-tip:broll.add.tip">+ Plans d'ambiance</label>
@@ -333,6 +351,7 @@
 
       <!-- STEP 4 -->
       <section id="p4" class="panel" hidden>
+        <div class="ws-slot" id="wsSlot4"></div>
         <div class="card">
           <h2 data-i18n="p4.title">Ton montage</h2>
           <div class="grid2">
@@ -447,6 +466,13 @@
           <p class="note cover-note" id="coverNote" hidden></p>
           <div class="result" id="result" hidden>
             <video id="resultVideo" controls playsinline hidden></video>
+            <!-- (22/11, audit vente n° 4) free plan, end of the export: the person's own edit with and without the logo, side by
+                 side (the same moment, drawn by the preview: app.js cmpShots); the video made goes in the left box -->
+            <div class="dvcmp" id="dvCmp" hidden>
+              <figure class="cmp-f"><div class="cmp-box" id="cmpA"></div><figcaption data-i18n="cmp.a">Avec le logo · Gratuit</figcaption></figure>
+              <figure class="cmp-f cmp-pro"><div class="cmp-box"><canvas id="cmpB" width="360" height="640" role="img" aria-label="Ta vidéo sans le logo" data-i18n-attr="aria-label:cmp.b.aria"></canvas></div><figcaption><span data-i18n="cmp.b">Sans le logo</span> <b class="cmp-tag">PRO</b></figcaption></figure>
+              <p class="cmp-note" id="cmpNote" data-i18n="cmp.note">Ton montage, à gauche tel que tu l’as exporté, à droite sans le logo.</p>
+            </div>
             <!-- (06/11) « Enregistrer la vidéo » first and big, the only button (22/11: on a phone it opens the share list;
                  app.js postShow moves the hint into #shareBox); then the caption to copy -->
             <div class="row" id="saveRow">
@@ -454,6 +480,8 @@
               <span class="note" id="saveNote"></span>
             </div>
             <a class="savedl" id="saveDl" href="#" hidden data-i18n="save.dlLink">Ou télécharger le fichier</a>
+            <button class="btn big dv-cmpgo" id="dvCmpGo" type="button" hidden><span data-i18n="cmp.go">Exporter sans le logo</span> <b class="cmp-tag">PRO</b></button>
+            <p class="cmp-price" id="dvCmpP" hidden></p>
             <div class="sharebox" id="shareBox" hidden></div>
             <div class="capbox" id="capBox">
               <label class="label" for="capText" data-i18n="cap.t">Légende prête à copier</label>
@@ -525,8 +553,15 @@
       <div class="ex-mascot" id="expMascot"><i class="ex-block"></i></div>
     </div>
     <div class="exppct" id="expPct">0 %</div>
-    <p class="expmsg" id="expMsg" data-i18n="exps.m0">Je découpe la glace…</p>
+    <p class="expmsg" id="expMsg" hidden></p>
     <div class="progress"><i id="expBar"></i></div>
+    <!-- (22/11, audit vente n° 4) what Stalak is doing, the real steps of the export, ticked as they are done -->
+    <ol class="ws-list xsteps" id="xSteps">
+      <li data-x="0"><i aria-hidden="true"></i><span data-i18n="xs.0"><b>Je prépare tes prises</b> en pleine qualité</span></li>
+      <li data-x="1"><i aria-hidden="true"></i><span data-i18n="xs.1"><b>Je fabrique les images</b> : coupes, effets, paroles</span></li>
+      <li data-x="2"><i aria-hidden="true"></i><span data-i18n="xs.2"><b>J’assemble l’image et ton son</b></span></li>
+      <li data-x="3"><i aria-hidden="true"></i><span data-i18n="xs.3"><b>Je finis ton fichier MP4</b>, prêt pour TikTok et Insta</span></li>
+    </ol>
     <!-- (7/11) an export made again by itself after a failure: said here, on the export screen -->
     <p class="expretry" id="expRetry" role="status" hidden></p>
     <p class="expstay" data-i18n="exps.stay">Reste sur Stalak jusqu’à la fin : l’écran reste allumé.</p>
@@ -820,22 +855,60 @@
         <p class="ap-legal"><a href="/fr/tarifs" data-i18n="ap.pricing" data-i18n-attr="href:ap.pricingHref">Tarifs</a></p>
       </div>
       <div class="pr" id="apBuy">
-        <!-- offer of 30/10/2026: Gratuit + Basic / Pro / Max, billed monthly or yearly (domaine Comptes) -->
+        <!-- offer of 30/10/2026: Gratuit + Basic / Pro / Max, billed monthly or yearly (domaine Comptes); 22/11 (owner): Creator Plus,
+             Pro, Gratuit in this order, the full button on Creator Plus, the monthly price struck next to the yearly one,
+             « N mois offerts », what it changes for you before the lists (folded) -->
         <div class="pl-int" role="radiogroup" aria-label="Facturation" data-i18n-attr="aria-label:pl.int.aria" id="plInt">
           <button type="button" role="radio" aria-checked="false" data-int="month" data-i18n="pl.int.month">Mensuel</button>
-          <button type="button" role="radio" aria-checked="true" data-int="year"><span data-i18n="pl.int.year">Annuel</span> <b class="pl-int-save" id="plIntSave" data-i18n="pl.int.save">jusqu’à −47 %</b></button>
+          <button type="button" role="radio" aria-checked="true" data-int="year"><span data-i18n="pl.int.year">Annuel</span> <b class="pl-int-save" id="plIntSave">5 mois offerts</b></button>
         </div>
         <div class="pr-plans pl-plans">
-          <article class="pr-plan pl-card pl-pro is-best" data-plan="pro" aria-labelledby="plProN">
+          <article class="pr-plan pl-card pl-creator is-best" data-plan="creator" aria-labelledby="plCreatorN">
             <span class="pr-glint" aria-hidden="true"></span>
+            <p class="pr-ribbon pl-ribbon" data-i18n="pl.rib">Tout Stalak</p>
+            <div class="pr-art"><img data-emo="gg" alt="" width="112" height="112"></div>
+            <h3 class="pr-name" id="plCreatorN" data-i18n="pl.n.creator">Creator Plus</h3>
+            <p class="pr-price"><s class="pl-was" data-pl="was" hidden></s><span class="pr-amt" data-pl="amt">14,99 $</span><span class="pr-per" data-i18n="pr.per">/mois</span></p>
+            <p class="pr-bill" data-pl="bill" data-i18n="pr.month.bill">Facturé chaque mois</p>
+            <p class="pr-pill pl-pill" data-pl="pill" hidden></p>
+            <button class="btn pr-cta primary" type="button" data-buy="creator" data-i18n="pl.cta.creator">Choisir Creator Plus</button>
+            <p class="pl-note" data-pl="note" hidden></p>
+            <div class="pl-res">
+              <p class="pl-res-t" data-i18n="pl.res.t">Ce que ça change pour toi</p>
+              <ul>
+                <li data-i18n="pl.res.c1">Un mois de vidéos en une séance : 5 à 30 vidéos différentes du même son</li>
+                <li data-i18n="pl.res.c2">Tes projets sur tous tes appareils</li>
+                <li data-i18n="pl.res.c3">Un humain te répond, en direct ou sous 24 h</li>
+              </ul>
+            </div>
+            <details class="pl-all"><summary data-i18n="pl.all">Tout ce qui est inclus</summary>
+            <ul class="pr-feats">
+              <li class="pr-plus" data-i18n="pl.f.plusPro">Tout Pro, plus :</li>
+              <li data-i18n="pl.f.packs"><strong>Le générateur de packs</strong> : 5 à 30 vidéos aux coupes différentes, dès 2 playbacks</li>
+              <li data-i18n="pl.f.lyr60"><strong>Paroles écrites pour toi</strong>, 60 fois par jour</li>
+              <li data-i18n="pl.f.cloud"><strong>Sauvegarde en ligne</strong> : 100 Go, sur tous tes appareils</li>
+              <li data-i18n="pl.f.human"><strong>Parler à un humain</strong> : en direct, ou réponse par e-mail sous 24 h</li>
+            </ul>
+            </details>
+          </article>
+          <article class="pr-plan pl-card pl-pro" data-plan="pro" aria-labelledby="plProN">
             <p class="pr-ribbon pl-ribbon" data-i18n="pl.rib.pro">Sans filigrane</p>
             <div class="pr-art"><img data-emo="money" alt="" width="112" height="112"></div>
             <h3 class="pr-name" id="plProN" data-i18n="pl.n.pro">Pro</h3>
-            <p class="pr-price"><span class="pr-amt" data-pl="amt">7,99 $</span><span class="pr-per" data-i18n="pr.per">/mois</span></p>
+            <p class="pr-price"><s class="pl-was" data-pl="was" hidden></s><span class="pr-amt" data-pl="amt">7,99 $</span><span class="pr-per" data-i18n="pr.per">/mois</span></p>
             <p class="pr-bill" data-pl="bill" data-i18n="pr.month.bill">Facturé chaque mois</p>
             <p class="pr-pill pl-pill" data-pl="pill" hidden></p>
-            <button class="btn pr-cta primary" type="button" data-buy="pro" data-i18n="pl.cta.pro">Choisir Pro</button>
+            <button class="btn pr-cta" type="button" data-buy="pro" data-i18n="pl.cta.pro">Choisir Pro</button>
             <p class="pl-note" data-pl="note" hidden></p>
+            <div class="pl-res">
+              <p class="pl-res-t" data-i18n="pl.res.t">Ce que ça change pour toi</p>
+              <ul>
+                <li data-i18n="pl.res.p1">Tes vidéos finissent sur toi, sans logo Stalak</li>
+                <li data-i18n="pl.res.p2">Ton clip YouTube 16:9, monté tout seul</li>
+                <li data-i18n="pl.res.p3">Des paroles mot par mot qui font chanter ton refrain</li>
+              </ul>
+            </div>
+            <details class="pl-all"><summary data-i18n="pl.all">Tout ce qui est inclus</summary>
             <ul class="pr-feats">
               <li data-i18n="pl.f.nowm"><strong>Sans filigrane</strong></li>
               <li data-i18n="pl.f.clip"><strong>Le mode Clip</strong> : ton clip YouTube 16:9, monté tout seul</li>
@@ -844,23 +917,7 @@
               <li data-i18n="pl.f.filters"><strong>Tous les filtres</strong> vidéo</li>
               <li data-i18n="pl.f.lyr20"><strong>Paroles écrites pour toi</strong>, 20 fois par jour</li>
             </ul>
-          </article>
-          <article class="pr-plan pl-card pl-creator" data-plan="creator" aria-labelledby="plCreatorN">
-                        <p class="pr-ribbon pl-ribbon" data-i18n="pl.rib">Tout Stalak</p>
-            <div class="pr-art"><img data-emo="gg" alt="" width="112" height="112"></div>
-            <h3 class="pr-name" id="plCreatorN" data-i18n="pl.n.creator">Creator Plus</h3>
-            <p class="pr-price"><span class="pr-amt" data-pl="amt">14,99 $</span><span class="pr-per" data-i18n="pr.per">/mois</span></p>
-            <p class="pr-bill" data-pl="bill" data-i18n="pr.month.bill">Facturé chaque mois</p>
-            <p class="pr-pill pl-pill" data-pl="pill" hidden></p>
-            <button class="btn pr-cta" type="button" data-buy="creator" data-i18n="pl.cta.creator">Choisir Creator Plus</button>
-            <p class="pl-note" data-pl="note" hidden></p>
-            <ul class="pr-feats">
-              <li class="pr-plus" data-i18n="pl.f.plusPro">Tout Pro, plus :</li>
-              <li data-i18n="pl.f.packs"><strong>Le générateur de packs</strong> : 5 à 30 vidéos aux coupes différentes, dès 2 playbacks</li>
-              <li data-i18n="pl.f.lyr60"><strong>Paroles écrites pour toi</strong>, 60 fois par jour</li>
-              <li data-i18n="pl.f.cloud"><strong>Sauvegarde en ligne</strong> : 100 Go, sur tous tes appareils</li>
-              <li data-i18n="pl.f.human"><strong>Parler à un humain</strong> : en direct, ou réponse par e-mail sous 24 h</li>
-            </ul>
+            </details>
           </article>
           <article class="pr-plan pr-free pl-card pl-free" data-plan="free" aria-labelledby="apFreeN">
             <div class="pr-art"><img data-emo="coffee" alt="" width="112" height="112"></div>
@@ -869,6 +926,14 @@
             <p class="pr-bill" data-i18n="pl.free.bill">Sans compte obligatoire</p>
             <p class="pr-pill pr-now" data-pl="now" data-i18n="pr.now">Ton plan actuel</p>
             <button class="btn pr-cta" id="apStayFree" type="button" data-i18n="pr.stay">Rester en gratuit</button>
+            <div class="pl-res">
+              <p class="pl-res-t" data-i18n="pl.res.t">Ce que ça change pour toi</p>
+              <ul>
+                <li data-i18n="pl.res.f1">Monte autant de vidéos que tu veux, coupées sur le rythme</li>
+                <li class="is-minus" data-i18n="pl.res.f2">Le logo Stalak sur chaque vidéo</li>
+              </ul>
+            </div>
+            <details class="pl-all"><summary data-i18n="pl.all">Tout ce qui est inclus</summary>
             <ul class="pr-feats">
               <li data-i18n="pl.f.free"><strong>Montage illimité</strong>, coupé sur le rythme</li>
               <li data-i18n="pr.f.lyr0">Paroles à l’écran (taille M, phrase entière)</li>
@@ -876,6 +941,7 @@
               <li data-i18n="pl.f.filters3">3 filtres</li>
               <li class="is-minus" data-i18n="pl.f.wm">Filigrane Stalak sur chaque vidéo</li>
             </ul>
+            </details>
           </article>
         </div>
 
@@ -947,7 +1013,9 @@
 </div>
 
 <!-- help: the ice cube in the corner opens a little chat with an assistant -->
-<button class="btn primary expfab" id="expFab" type="button" hidden><span data-i18n="exp.fab">Exporter</span> <span aria-hidden="true">↓</span></button>
+<!-- (22/11, audit mobile n° 3) « Exporter » in a bar across the bottom of the screen: the page keeps room for it (body.fabon),
+     so it never sits on a setting; what will be exported is written next to the button -->
+<div class="expbar" id="expFab" hidden><button class="btn expbar-go" type="button"><span data-i18n="exp.fab">Exporter</span> <span aria-hidden="true">↓</span></button><span class="expbar-i" id="expFabI"></span></div>
 <button class="help-cube" id="helpBtn" type="button" aria-label="Aide" data-i18n-attr="aria-label:help.aria" aria-expanded="false" aria-controls="helpPanel">
   <svg viewBox="0 0 64 64" focusable="false" aria-hidden="true">
     <path class="hc-top" d="M14 20 L30 11 Q33 9.5 36 11 L52 20 L36 28.5 Q33 30 30 28.5 Z"/>

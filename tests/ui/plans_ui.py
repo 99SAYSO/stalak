@@ -6,8 +6,9 @@ the plans page (Gratuit + Stalak Pro + Stalak Creator Plus, monthly / yearly, in
 Build the site first (python3 build_site.py …), then run node tests/ui/cloud-server.mjs <repo>/public <port> (a fresh one per
 run): the real Functions on node:sqlite, Paddle imitated. Accounts come from /__test/login?email=…&pro=1[&plan=pro] (or pro=0).
 In that server, Creator Plus yearly has no Paddle price: its button must say « Bientôt ».
-Checks (aligned on the Tarifs page, audit of 30/10): signed out, FR, 390 px: 3 cards (Pro first on a phone, « Ni pub ni
-filigrane »), YEARLY by default (Pro 4,17 $/mois, 49,99 $ a year, « Économise 47 % »), monthly 7,99 $ / 14,99 $, « dès 2
+Checks (owner, 22/11: Creator Plus, Pro, Gratuit, the full button on Creator Plus, the monthly price struck next to the
+yearly one, « 5 mois offerts », what it changes before the lists): signed out, FR, 390 px: 3 cards, YEARLY by default (Pro
+4,17 $/mois with 7,99 $ struck, 49,99 $ a year, « 5 mois offerts »), monthly 7,99 $ / 14,99 $, « dès 2
 playbacks », « 100 GB » in English, a plan asks to sign in; free, EN, 1280 px: 3 cards side by side (Free → Creator Plus), no
 reminder box any more; Pro at 1280 px: « Ta formule », « Passer à Creator Plus » shows today's price before confirming; Creator
 Plus at 390 px EN: its perks (60 a day, 100 GB, Talk to a human), Pro starts at the renewal; sign-up without the reminder box;
@@ -109,19 +110,27 @@ async def main():
         ctx, pg, err = await open_page(browser, 'fr', 390, 844)
         await plans_page(pg)
         c = await cards(pg)
-        check('fr-390: 3 cards, Pro first on a phone (as on the Tarifs page)', [x['plan'] for x in c] == ['pro', 'creator', 'free'], c)
+        check('fr-390: 3 cards, Creator Plus, Pro, Gratuit (owner, 22/11)', [x['plan'] for x in c] == ['creator', 'pro', 'free'], c)
         check('fr-390: one column', max(x['x'] for x in c) - min(x['x'] for x in c) <= 2, c)
         by = {x['plan']: x for x in c}
         yr = await pg.get_attribute('#plInt [data-int=year]', 'aria-checked')
         check('fr-390: yearly by default', yr == 'true', yr)
-        check('fr-390 yearly: Pro 4,17 $/mois, 49,99 $ once a year, saves 47 %', by['pro']['amt'] == '4,17 $' and '49,99 $' in by['pro']['bill'] and '47' in by['pro']['pill'], by['pro'])
-        check('fr-390 yearly: Creator Plus saves 44 %', '44' in by['creator']['pill'], by['creator'])
+        check('fr-390 yearly: Pro 4,17 $/mois, 49,99 $ once a year, « 5 mois offerts »', by['pro']['amt'] == '4,17 $' and '49,99 $' in by['pro']['bill'] and by['pro']['pill'] == '5 mois offerts', by['pro'])
+        check('fr-390 yearly: Creator Plus 8,33 $, « 5 mois offerts »', by['creator']['amt'] == '8,33 $' and by['creator']['pill'] == '5 mois offerts', by['creator'])
+        was = await pg.evaluate("() => [...document.querySelectorAll('#apBuy .pl-card')].map(c => { const w = c.querySelector('[data-pl=was]'); return w && !w.hidden && w.offsetParent ? w.textContent + '|' + getComputedStyle(w).textDecorationLine : null; })")
+        check('fr-390 yearly: the monthly price struck next to it (14,99 $, 7,99 $), none on Gratuit', bool(was[0]) and was[0].startswith('14,99') and 'line-through' in was[0] and bool(was[1]) and was[1].startswith('7,99') and was[2] is None, was)
+        sizes = await pg.evaluate("() => ['.pl-pro .pr-amt', '.pl-pro .pr-bill'].map(s => getComputedStyle(document.querySelector('#apBuy ' + s)).fontSize)")
+        check('fr-390: the size of « 4,17 $ » is unchanged (52 px), the yearly amount too', sizes[0] == '52px', sizes)
+        res = await pg.evaluate("() => [...document.querySelectorAll('#apBuy .pl-card')].map(c => { const r = c.querySelector('.pl-res'), d = c.querySelector('.pl-all'); return [!!r && r.offsetParent !== null && !!(r.compareDocumentPosition(d) & 4), !!d && !d.open, r ? r.querySelectorAll('li').length : 0]; })")
+        check('fr-390: « Ce que ça change pour toi » before the lists, which are folded', all(x[0] and x[1] and x[2] >= 2 for x in res), res)
+        prim = await pg.evaluate("() => [...document.querySelectorAll('#apBuy [data-buy]')].filter(b => b.classList.contains('primary')).map(b => b.dataset.buy)")
+        check('fr-390: the full button on Creator Plus (owner, 22/11)', prim == ['creator'], prim)
         check('fr-390 yearly: a plan without a price says « Bientôt »', by['creator']['btn'] == 'Bientôt' and by['creator']['off'], by['creator'])
         rib = await pg.inner_text('#apBuy .pl-pro .pl-ribbon')
-        check('fr-390: Pro put forward « Sans filigrane » (no ads since 06/11)', rib == 'Sans filigrane' and await pg.eval_on_selector('#apBuy .pl-pro', 'e => e.classList.contains("is-best")'), rib)
+        check('fr-390: Pro keeps « Sans filigrane », Creator Plus is put forward', rib == 'Sans filigrane' and await pg.eval_on_selector('#apBuy .pl-creator', 'e => e.classList.contains("is-best")'), rib)
         save = await pg.inner_text('#plIntSave')
-        check('fr-390: the yearly switch says « jusqu’à −47 % »', '47' in save, save)
-        packs = await pg.inner_text('#apBuy .pl-creator [data-i18n="pl.f.packs"]')
+        check('fr-390: the yearly switch says « 5 mois offerts »', save == '5 mois offerts', save)
+        packs = await pg.text_content('#apBuy .pl-creator [data-i18n="pl.f.packs"]')
         check('fr-390: packs « dès 2 playbacks »', 'dès 2 playbacks' in packs, packs)
         check('fr-390: no horizontal scroll (the comparison scrolls inside its card)', await no_scroll(pg))
         await shot(pg, 'plans-year-fr-390')
@@ -141,11 +150,11 @@ async def main():
         await plans_page(pg)
         c = await cards(pg)
         row = sorted(c, key=lambda x: x['x'])
-        check('en-1280: 3 cards side by side, Free → Creator Plus', [x['plan'] for x in row] == ['free', 'pro', 'creator'] and len({x['x'] for x in c}) == 3, row)
+        check('en-1280: 3 cards side by side, Creator Plus → Free', [x['plan'] for x in row] == ['creator', 'pro', 'free'] and len({x['x'] for x in c}) == 3, row)
         by = {x['plan']: x for x in c}
-        check('en-1280: dollar prices, yearly by default', by['pro']['amt'] == '$4.17' and by['creator']['amt'] == '$8.33' and '47' in by['pro']['pill'], [x['amt'] for x in c])
-        gb = await pg.inner_text('#apBuy [data-i18n="pl.v.100"]')
-        packs = await pg.inner_text('#apBuy .pl-creator [data-i18n="pl.f.packs"]')
+        check('en-1280: dollar prices, yearly by default', by['pro']['amt'] == '$4.17' and by['creator']['amt'] == '$8.33' and by['pro']['pill'] == '5 months free', [x['amt'] for x in c])
+        gb = await pg.text_content('#apBuy [data-i18n="pl.v.100"]')
+        packs = await pg.text_content('#apBuy .pl-creator [data-i18n="pl.f.packs"]')
         check('en-1280: « 100 GB » and « from just 2 takes »', gb == '100 GB' and 'from just 2 takes' in packs, [gb, packs])
         # opened by a lock: the reason stays in sight at the top of the card the page scrolls to
         await pg.evaluate('__ev("acctOpen(\'clip\', { plan: \'pro\' })")')
