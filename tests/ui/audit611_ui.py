@@ -102,7 +102,7 @@ def flow(b, base, site, lang, iphone, PW):
     ev(pg, "store.set(PP_KEY, 0), " + FAST_EXPORT)
     pg.evaluate('() => { __ev("exportOne()"); }'); pg.wait_for_function('() => __ev("S.done === true")', timeout=120000); pg.wait_for_timeout(2600)
     if iphone:
-        check(tag + ' : 1re vidéo : la fenêtre Pro n’est pas encore là, « Enregistrer » se voit', not visible(pg, '#proPop .card') and visible(pg, '#dvPro'))
+        check(tag + ' : 1re vidéo : la fenêtre Pro n’est pas encore là, « Enregistrer » se voit', not visible(pg, '#proPop .card') and visible(pg, '#dvCmpGo'))
         pg.locator('#saveBtn').click(); pg.wait_for_timeout(2800)
         check(tag + ' : après le toucher sur « Enregistrer », la fenêtre Pro', visible(pg, '#proPop .card'))
     else:

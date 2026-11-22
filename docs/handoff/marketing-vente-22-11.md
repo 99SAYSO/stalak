@@ -50,3 +50,11 @@ Les 30 avis envoyés par le propriétaire sont dans `site_src/avis.json`, textes
 `COUNT` dans `build_site.py`, `.proof-n` dans `theme.css` : le compteur est le premier élément de la partie sous l'éditeur, le chiffre en très gros
 (police de titre, 64 à 104 px), « Déjà » au-dessus et « vidéos montées avec Stalak » dessous. Il compte de 0 au total en 0,9 s à son arrivée à l'écran
 (rien avec « moins d'animations »). Sans réponse de `/api/stats/exports` : toujours caché.
+
+## Audit Marketing du 23/11 : points 1 à 4 (23/11, 1 h)
+Audit : `docs/audit/2026-11-23-audit-marketing.md`. Décisions du propriétaire : 5, 7, 8 refusés ; 10 pris par le Chef de projet ; 6 et 9 plus tard.
+- **1** `build_site.py` `PAGE[...]['desc']` FR et EN : le résultat d'abord (« Ton son est prêt, pas ton snippet ? … Prêt à poster ce soir »), 157 et 154 caractères. Titres inchangés.
+- **2** `site_src/*.html` et `site_src/fr/*.html` : texte des 76 boutons `a.cta` (liens et suivi `?ref=seo` inchangés).
+- **3** et **4** `site_src/fr/tarifs.html`, `site_src/pricing.html`, `src/pricing.css` (`.p4-fold`).
+- Fusion de `main` : `src/markup.html` (mon titre + les boutons `.hero-go` d'App & montage), `src/theme.css` (les deux blocs gardés), `public/` reconstruit.
+- Propositions « un site beau dès l'arrivée » : page claude.ai « Stalak, idées d'animations » (6 maquettes animées, à choisir par le propriétaire). Rien de codé.

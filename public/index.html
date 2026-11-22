@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="Drop in your song and a few takes of you rapping or singing. Stalak cuts between them on the beat, perfectly in sync. Free, no download, no sign-up.">
+<meta name="description" content="Song done, no snippet yet? Drop in your song and a few takes: Stalak cuts them on the beat, lips in sync. Ready to post tonight. Free, no sign-up.">
 <meta name="theme-color" content="#1f6fd6">
 <meta name="google-adsense-account" content="ca-pub-2317718448369640">
 <link rel="canonical" href="https://stalak.app/">
@@ -15,7 +15,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:locale:alternate" content="fr_FR">
 <meta property="og:title" content="Stalak: free lip-sync video editor that cuts to the beat">
-<meta property="og:description" content="Drop in your song and a few takes of you rapping or singing. Stalak cuts between them on the beat, perfectly in sync. Free, no download, no sign-up.">
+<meta property="og:description" content="Song done, no snippet yet? Drop in your song and a few takes: Stalak cuts them on the beat, lips in sync. Ready to post tonight. Free, no sign-up.">
 <meta property="og:url" content="https://stalak.app/">
 <meta property="og:image" content="https://stalak.app/og-en.png">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
@@ -1239,7 +1239,7 @@ header .stepper{margin-left:auto}
 @media (min-width:880px){
   #apBuy .pl-plans{grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:stretch;padding-top:70px}
   #apBuy .pl-card{top:0}
-  #apBuy .pl-free{order:1}#apBuy .pl-pro{order:2;top:-14px}#apBuy .pl-creator{order:3}
+  #apBuy .pl-creator{order:1;top:-14px}#apBuy .pl-pro{order:2}#apBuy .pl-free{order:3}   /* owner, 22/11: the dearest first */
 }
 @media (min-width:1000px){
   #apBuy .pl-card{padding-left:16px;padding-right:16px}
@@ -1266,9 +1266,18 @@ header .stepper{margin-left:auto}
 .expretry{margin:6px auto 2px;max-width:34ch;padding:8px 12px;border-radius:12px;background:var(--frost);color:var(--ink);font:600 14px/1.35 var(--body)}
 .expretry[hidden]{display:none}
 /* « Exporter » within reach at the Montage step (audit 30/10): fixed at the bottom, left of the help ice cube */
-.expfab{position:fixed;z-index:59;left:50%;transform:translateX(-50%);bottom:max(16px,env(safe-area-inset-bottom,0px));min-height:52px;padding:12px 26px;font:400 19px/1 var(--display);letter-spacing:.02em;box-shadow:0 4px 0 var(--ink),0 10px 24px rgba(0,0,0,.25)}
-.expfab:active{transform:translateX(-50%) translateY(3px)}
-@media (max-width:480px){.expfab{left:16px;transform:none;right:auto;max-width:calc(100% - 100px)}.expfab:active{transform:translateY(3px)}}
+/* (22/11, audit mobile n° 3) a bar across the bottom: the page keeps its height free (body.fabon), the help ice cube sits
+   above it */
+:root{--fabh:84px}
+.expbar{position:fixed;z-index:59;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;gap:14px;box-sizing:border-box;min-height:var(--fabh);padding:10px max(16px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:var(--sky-deep);border-top:3px solid var(--ink);box-shadow:0 -6px 20px rgba(10,13,20,.22)}
+.expbar[hidden]{display:none}
+.expbar-go{order:2;flex:1 1 auto;max-width:420px;min-height:54px;justify-content:center;font:400 22px/1 var(--display);letter-spacing:.02em}
+.expbar-i{order:1;flex:none;max-width:34%;color:var(--ice);font:500 12.5px/1.35 var(--body);white-space:pre-line}
+.expbar-i:empty{display:none}
+body.fabon .help-cube{bottom:calc(var(--fabh) + 10px)}
+/* at the bottom of the page, the footer keeps room for the bar and the cube above it: no link under them */
+body.fabon:has(> .help-cube) > .ft{padding-bottom:calc(env(safe-area-inset-bottom,0px) + var(--fabh) + 76px)}
+@media (max-width:480px){ body.fabon .help-panel{bottom:calc(var(--fabh) + 66px)} }
 /* the help ice cube (audit 30/10): smaller on a phone, it stops bobbing after a few seconds, and the page keeps room at the
    bottom so that it never sits on « Continuer » once scrolled down */
 .help-cube{animation-iteration-count:6}
@@ -1429,6 +1438,15 @@ body.isdone > .help-cube{display:none}
    « Clip » à l'étape 1 ; une pastille blanche à contour encre, avec un petit écran 16:9 */
 .hero-clip{display:inline-block;min-height:38px;margin:10px 0 0;padding:7px 13px 6px 10px;border:2.5px solid var(--ink);border-radius:999px;background:var(--snow);color:var(--ink);box-shadow:0 3px 0 var(--ink);font:600 13.5px/1.25 var(--body);text-align:left;cursor:pointer;transition:transform var(--dur-1,.12s) var(--ease-out,ease-out)}
 .hero-clip b{font-weight:800}
+/* (22/11, audit mobile n° 1) « Choisir mon son » and « Voir un exemple », in the first screen of a phone */
+.hero-go{display:flex;flex-direction:column;gap:10px;margin:12px 0 2px}
+.hero-go .btn{width:100%;justify-content:center;gap:10px}
+.hero-go svg{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.hero-go .hero-demo svg{fill:currentColor;stroke:none;width:16px;height:16px}
+.hero-go .hero-song{min-height:58px;font-size:21px}
+.hero-go .hero-demo{min-height:48px;font-size:16.5px}
+/* a computer: the song card and « Essayer avec un exemple » are already in its first screen */
+@media (min-width:900px){ .hero-go{display:none} }
 .hero-clip::before{content:"";display:inline-block;vertical-align:-3px;margin-right:8px;width:24px;height:15px;box-sizing:border-box;border:2px solid var(--ink);border-radius:4px;background:var(--sky-deep) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 15'%3E%3Cpath d='M10 4.2v6.6l5.4-3.3z' fill='%23fff'/%3E%3C/svg%3E") center/100% 100% no-repeat}
 .hero-clip:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
 @media (prefers-reduced-motion:reduce){ .hero-clip{transition:none} .hero-clip:active{transform:none} }
@@ -1493,6 +1511,65 @@ body:has(.rv-view){overflow-x:clip}
   .ba-v video{display:block;width:100%;height:auto;aspect-ratio:9/16;object-fit:cover;border:2.5px solid var(--ink);border-radius:14px;box-shadow:0 4px 0 var(--ink);background:var(--ink)}
   .ba-v figcaption{margin-top:9px;font:700 12px/1.25 var(--body);color:#3b4150}
 }
+/* (22/11, audit vente n° 4) « Stalak monte ta vidéo »: the real steps, ticked as they are done */
+.wsteps{margin:14px 0 4px;padding:14px 16px 12px;border:2.5px solid var(--ink);border-radius:18px;background:var(--snow);box-shadow:0 4px 0 var(--ink);color:var(--ink)}
+.wsteps[hidden]{display:none}
+.ws-slot:empty{display:none}
+#p4 > .ws-slot .wsteps{margin:0 0 14px}
+.ws-t{margin:0 0 10px;font:400 20px/1.1 var(--display)}
+.ws-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+.ws-list li{display:flex;gap:10px;align-items:flex-start;font:400 14.5px/1.35 var(--body)}
+.ws-list li[hidden]{display:none}
+.ws-list li i{flex:none;width:22px;height:22px;box-sizing:border-box;border-radius:50%;border:2.5px solid #b8cde8;margin-top:-1px;display:grid;place-items:center}
+.ws-list li[data-st="now"] i{border-color:var(--sky-deep)}
+.ws-list li[data-st="now"] i::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--sky-deep)}
+.ws-list li[data-st="done"] i{border-color:var(--sky-deep);background:var(--sky-deep) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/13px no-repeat}
+.ws-list li[data-st="todo"]{color:#5b6884}
+.ws-n{white-space:nowrap}
+.ws-p{margin:10px 0 0;font:400 13px/1.4 var(--body);color:#3b4a66}
+/* the export screen: the same ticked steps, on a white card under the bar */
+.xsteps{margin:14px auto 4px;max-width:420px;padding:12px 14px;border:2.5px solid var(--ink);border-radius:16px;background:var(--snow);box-shadow:0 4px 0 var(--ink);color:var(--ink);text-align:left;gap:8px}
+.expmsg[hidden]{display:none}
+@media (max-width:480px){ .xsteps li{font-size:14px} }
+/* (22/11, audit vente n° 4) the end of a free export: with and without the logo, side by side, then « Enregistrer la vidéo »
+   (the free way out, first) and « Exporter sans le logo » */
+.dvcmp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start;width:100%;max-width:380px;margin:0 auto}
+/* small enough that « Enregistrer la vidéo » and « Publier sur TikTok » are seen at once on a phone */
+@media (max-width:600px){ .dvcmp{max-width:260px} .cmp-note{display:none} }
+.dvcmp[hidden]{display:none}
+.cmp-f{margin:0;display:flex;flex-direction:column;gap:6px;min-width:0}
+.cmp-box{position:relative;border:2.5px solid var(--ink);border-radius:16px;overflow:hidden;background:var(--ink);line-height:0}
+.cmp-pro .cmp-box{border-color:var(--sky-deep);box-shadow:0 0 0 3px var(--ice)}
+.cmp-box video,.cmp-box canvas{display:block;width:100%;height:auto;max-height:none !important;aspect-ratio:auto;border:0;border-radius:0;margin:0}
+.cmp-f figcaption{font:700 13.5px/1.3 var(--body);color:var(--ink);text-align:center}
+.cmp-tag{display:inline-block;font:700 10.5px/1 var(--body);letter-spacing:.04em;padding:3px 6px;border-radius:6px;background:var(--ink);color:#fff;vertical-align:1px}
+.cmp-note{grid-column:1 / -1;margin:0;font:400 13px/1.4 var(--body);color:#3b4a66;text-align:center}
+.dv-cmpgo{width:100%;justify-content:center;gap:8px;min-height:56px;font-size:18px;background:var(--ice)}
+.dv-cmpgo[hidden],.cmp-price[hidden]{display:none}
+.cmp-price{margin:-6px 0 0;font:400 13px/1.4 var(--body);color:#3b4a66;text-align:center}
+.doneview .dvcmp{order:1}
+.doneview .dv-cmpgo,.doneview .cmp-price{order:3}
+/* (22/11) the e-mail box (Comptes) under the caption: « Enregistrer la vidéo » is seen at once, without scrolling */
+.doneview .optbox{order:9}
+.doneview .result.cmpon > video{display:none}
+/* (owner, 22/11) the plans: the monthly price struck next to the yearly one, « N mois offerts », what it changes before the
+   lists (folded under « Tout ce qui est inclus »); the sizes of the price and of the yearly amount do not change */
+#apBuy .pl-was{font:600 20px/1 var(--body);color:var(--muted);margin-right:10px;text-decoration-thickness:2px}
+#apBuy .pl-was[hidden]{display:none}
+.pl-res{margin:14px 0 4px;text-align:left}
+.pl-res-t{margin:0 0 8px;font:700 15px/1.3 var(--body);color:var(--ink)}
+.pl-res ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.pl-res li{position:relative;padding-left:26px;font:400 15px/1.4 var(--body);color:var(--ink)}
+.pl-res li::before{content:"";position:absolute;left:0;top:2px;width:18px;height:18px;border-radius:50%;background:var(--sky-deep) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/11px no-repeat}
+.pl-res li.is-minus{color:var(--muted)}
+.pl-res li.is-minus::before{background:#c9d5e6;-webkit-mask:none}
+.pl-all{margin-top:6px;text-align:left}
+.pl-all > summary{cursor:pointer;min-height:44px;display:flex;align-items:center;gap:8px;font:700 14.5px/1.3 var(--body);color:var(--sky-deep);list-style:none}
+.pl-all > summary::-webkit-details-marker{display:none}
+.pl-all > summary::before{content:"";width:0;height:0;border:6px solid transparent;border-left:8px solid currentColor;border-right:0;transition:transform .15s}
+.pl-all[open] > summary::before{transform:rotate(90deg)}
+.pl-all > summary:focus-visible{outline:3px solid var(--ink);outline-offset:2px;border-radius:8px}
+#plIntSave[hidden]{display:none}
 
 /* ---- pricing: promo, plan cards, trust line, comparison, FAQ ----
    One component for the Stalak Pro page in the app (#pro, appended to the theme by build.py / build_site.py) and the
@@ -1712,6 +1789,13 @@ body:has(.rv-view){overflow-x:clip}
 .rv-stars{color:#e8a200;letter-spacing:1px;font-size:15px;line-height:1}
 .rv-who{margin:0;font:700 13.5px/1.3 var(--body);color:var(--muted)}
 .rv-note{display:flex;align-items:center;gap:6px;font:700 14px/1 var(--body)}
+/* (23/11, audit Marketing n° 4) the comparison table, folded: its title is the button */
+.p4-fold > summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;min-height:48px;margin:0 auto;padding:0 18px;width:max-content;max-width:100%;border:2.5px solid var(--ink);border-radius:999px;background:#fff;box-shadow:0 4px 0 var(--ink);font:700 15.5px/1.2 var(--body);color:var(--ink)}
+.p4-fold > summary::-webkit-details-marker{display:none}
+.p4-fold > summary::after{content:"";width:8px;height:8px;border-right:2.5px solid currentColor;border-bottom:2.5px solid currentColor;transform:translateY(-2px) rotate(45deg)}
+.p4-fold[open] > summary::after{transform:translateY(2px) rotate(-135deg)}
+.p4-fold > summary:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.p4-fold[open] > summary{margin-bottom:16px}
 
 /* ---- the footer (src/footer.py, owner 01/11): the same on every page — app, Pricing, legal pages, guides, Triller page.
    A full-width ink band with icicles along its top edge; at the very bottom of the page, never fixed. No animation (motion-design:
@@ -1930,6 +2014,12 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
       <div class="hero-txt">
         <h1 class="hero-h1" data-i18n="hero.h1">Your song is done. Where’s the snippet?</h1>
         <p class="hero-s" data-i18n="hero.s">Film a few takes of your song. Stalak cuts them on the beat, lips in sync: your snippet is ready to post tonight.</p>
+        <!-- App & montage (22/11, audit mobile n° 1): what starts it, in the first screen of a phone: the song (opens the file
+             choice of #songFile) and the example (#demoBtn) -->
+        <div class="hero-go">
+          <button class="btn primary big hero-song" id="heroSong" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg><span data-i18n="hero.song">Choose my song</span></button>
+          <button class="btn hero-demo" id="heroDemo" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 4l13 8-13 8z"/></svg><span data-i18n="hero.demo">See an example</span></button>
+        </div>
         <!-- Marketing & croissance (07/11, rapport chiffres : le mode Clip, 1re raison d'ouvrir Pro) : choisit « Clip » à l'étape 1
              (#kindSeg, le choix qui existe déjà) et l'amène sous les yeux ; rien d'autre ne change -->
         <button type="button" class="hero-clip" id="heroClip" data-i18n="hero.clip">Try <b>Music video mode</b>: your whole song in 16:9</button>
@@ -2064,6 +2154,18 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
         <p class="hint" style="text-align:center;margin:8px auto 0" data-i18n="rec.hint">The song starts one bar before your part, so you’re in the groove.</p>
       </div>
       <ul class="takes" id="takeList"></ul>
+      <!-- (22/11, audit vente n° 4) what Stalak is doing with the takes, step by step (app.js wsUi); moved to the top of the
+           Montage step when the person is there -->
+      <div class="wsteps" id="wSteps" role="status" aria-live="polite" hidden>
+        <p class="ws-t" data-i18n="ws.t">Stalak is editing your video</p>
+        <ol class="ws-list">
+          <li data-ws="song"><i aria-hidden="true"></i><span data-i18n="ws.song"><b>Listening to your song</b> and finding its strong beats</span></li>
+          <li data-ws="sync"><i aria-hidden="true"></i><span><span data-i18n="ws.sync"><b>Setting each take on your song</b>, so your lips land right</span><span class="ws-n"></span></span></li>
+          <li data-ws="look"><i aria-hidden="true"></i><span><span data-i18n="ws.look"><b>Looking at your takes</b> to keep the best shots</span><span class="ws-n"></span></span></li>
+          <li data-ws="cut"><i aria-hidden="true"></i><span data-i18n="ws.cut"><b>Cutting on the beat</b> and switching from one take to another</span></li>
+        </ol>
+        <p class="ws-p" data-i18n="ws.p">You can already listen and change the settings: the edit updates by itself.</p>
+      </div>
       <div class="brollbox">
         <div class="brollhead">
           <label class="btn tip" for="brollFiles" data-tip="Videos where you’re not singing: the street, the studio, the car, your friends… No need to sync them, their sound is never used." data-i18n="broll.add" data-i18n-attr="data-tip:broll.add.tip">+ B-roll</label>
@@ -2209,6 +2311,7 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
 
       <!-- STEP 4 -->
       <section id="p4" class="panel" hidden>
+        <div class="ws-slot" id="wsSlot4"></div>
         <div class="card">
           <h2 data-i18n="p4.title">Your edit</h2>
           <div class="grid2">
@@ -2323,6 +2426,13 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
           <p class="note cover-note" id="coverNote" hidden></p>
           <div class="result" id="result" hidden>
             <video id="resultVideo" controls playsinline hidden></video>
+            <!-- (22/11, audit vente n° 4) free plan, end of the export: the person's own edit with and without the logo, side by
+                 side (the same moment, drawn by the preview: app.js cmpShots); the video made goes in the left box -->
+            <div class="dvcmp" id="dvCmp" hidden>
+              <figure class="cmp-f"><div class="cmp-box" id="cmpA"></div><figcaption data-i18n="cmp.a">With the logo · Free</figcaption></figure>
+              <figure class="cmp-f cmp-pro"><div class="cmp-box"><canvas id="cmpB" width="360" height="640" role="img" aria-label="Your video without the logo" data-i18n-attr="aria-label:cmp.b.aria"></canvas></div><figcaption><span data-i18n="cmp.b">Without the logo</span> <b class="cmp-tag">PRO</b></figcaption></figure>
+              <p class="cmp-note" id="cmpNote" data-i18n="cmp.note">Your edit: on the left as you exported it, on the right without the logo.</p>
+            </div>
             <!-- (06/11) « Enregistrer la vidéo » first and big, the only button (22/11: on a phone it opens the share list;
                  app.js postShow moves the hint into #shareBox); then the caption to copy -->
             <div class="row" id="saveRow">
@@ -2330,6 +2440,8 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
               <span class="note" id="saveNote"></span>
             </div>
             <a class="savedl" id="saveDl" href="#" hidden data-i18n="save.dlLink">Or download the file</a>
+            <button class="btn big dv-cmpgo" id="dvCmpGo" type="button" hidden><span data-i18n="cmp.go">Export without the logo</span> <b class="cmp-tag">PRO</b></button>
+            <p class="cmp-price" id="dvCmpP" hidden></p>
             <div class="sharebox" id="shareBox" hidden></div>
             <div class="capbox" id="capBox">
               <label class="label" for="capText" data-i18n="cap.t">Caption, ready to copy</label>
@@ -2410,8 +2522,15 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
       <div class="ex-mascot" id="expMascot"><i class="ex-block"></i></div>
     </div>
     <div class="exppct" id="expPct">0 %</div>
-    <p class="expmsg" id="expMsg" data-i18n="exps.m0">Cutting the ice…</p>
+    <p class="expmsg" id="expMsg" hidden></p>
     <div class="progress"><i id="expBar"></i></div>
+    <!-- (22/11, audit vente n° 4) what Stalak is doing, the real steps of the export, ticked as they are done -->
+    <ol class="ws-list xsteps" id="xSteps">
+      <li data-x="0"><i aria-hidden="true"></i><span data-i18n="xs.0"><b>Getting your takes ready</b> in full quality</span></li>
+      <li data-x="1"><i aria-hidden="true"></i><span data-i18n="xs.1"><b>Making the pictures</b>: cuts, effects, lyrics</span></li>
+      <li data-x="2"><i aria-hidden="true"></i><span data-i18n="xs.2"><b>Putting the picture and your song together</b></span></li>
+      <li data-x="3"><i aria-hidden="true"></i><span data-i18n="xs.3"><b>Finishing your MP4 file</b>, ready for TikTok and Insta</span></li>
+    </ol>
     <!-- (7/11) an export made again by itself after a failure: said here, on the export screen -->
     <p class="expretry" id="expRetry" role="status" hidden></p>
     <p class="expstay" data-i18n="exps.stay">Stay on Stalak until it’s done: the screen stays on.</p>
@@ -2705,22 +2824,60 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
         <p class="ap-legal"><a href="/pricing" data-i18n="ap.pricing" data-i18n-attr="href:ap.pricingHref">Pricing</a></p>
       </div>
       <div class="pr" id="apBuy">
-        <!-- offer of 30/10/2026: Gratuit + Basic / Pro / Max, billed monthly or yearly (domaine Comptes) -->
+        <!-- offer of 30/10/2026: Gratuit + Basic / Pro / Max, billed monthly or yearly (domaine Comptes); 22/11 (owner): Creator Plus,
+             Pro, Gratuit in this order, the full button on Creator Plus, the monthly price struck next to the yearly one,
+             « N mois offerts », what it changes for you before the lists (folded) -->
         <div class="pl-int" role="radiogroup" aria-label="Billing" data-i18n-attr="aria-label:pl.int.aria" id="plInt">
           <button type="button" role="radio" aria-checked="false" data-int="month" data-i18n="pl.int.month">Monthly</button>
-          <button type="button" role="radio" aria-checked="true" data-int="year"><span data-i18n="pl.int.year">Yearly</span> <b class="pl-int-save" id="plIntSave" data-i18n="pl.int.save">up to −{n}%</b></button>
+          <button type="button" role="radio" aria-checked="true" data-int="year"><span data-i18n="pl.int.year">Yearly</span> <b class="pl-int-save" id="plIntSave">5 mois offerts</b></button>
         </div>
         <div class="pr-plans pl-plans">
-          <article class="pr-plan pl-card pl-pro is-best" data-plan="pro" aria-labelledby="plProN">
+          <article class="pr-plan pl-card pl-creator is-best" data-plan="creator" aria-labelledby="plCreatorN">
             <span class="pr-glint" aria-hidden="true"></span>
+            <p class="pr-ribbon pl-ribbon" data-i18n="pl.rib">All of Stalak</p>
+            <div class="pr-art"><img data-emo="gg" alt="" width="112" height="112"></div>
+            <h3 class="pr-name" id="plCreatorN" data-i18n="pl.n.creator">Creator Plus</h3>
+            <p class="pr-price"><s class="pl-was" data-pl="was" hidden></s><span class="pr-amt" data-pl="amt">14,99 $</span><span class="pr-per" data-i18n="pr.per">/mo</span></p>
+            <p class="pr-bill" data-pl="bill" data-i18n="pr.month.bill">Billed every month</p>
+            <p class="pr-pill pl-pill" data-pl="pill" hidden></p>
+            <button class="btn pr-cta primary" type="button" data-buy="creator" data-i18n="pl.cta.creator">Choose Creator Plus</button>
+            <p class="pl-note" data-pl="note" hidden></p>
+            <div class="pl-res">
+              <p class="pl-res-t" data-i18n="pl.res.t">What it changes for you</p>
+              <ul>
+                <li data-i18n="pl.res.c1">A month of videos in one sitting: 5 to 30 different videos of the same song</li>
+                <li data-i18n="pl.res.c2">Your projects on all your devices</li>
+                <li data-i18n="pl.res.c3">A human answers you, live or within 24 h</li>
+              </ul>
+            </div>
+            <details class="pl-all"><summary data-i18n="pl.all">Everything included</summary>
+            <ul class="pr-feats">
+              <li class="pr-plus" data-i18n="pl.f.plusPro">Everything in Pro, plus:</li>
+              <li data-i18n="pl.f.packs"><strong>The pack generator</strong>: 5 to 30 videos, each cut differently, from just 2 takes</li>
+              <li data-i18n="pl.f.lyr60"><strong>Lyrics written for you</strong>, 60 times a day</li>
+              <li data-i18n="pl.f.cloud"><strong>Online saving</strong>: 100 GB, on all your devices</li>
+              <li data-i18n="pl.f.human"><strong>Talk to a human</strong>: live, or an answer by email within 24 hours</li>
+            </ul>
+            </details>
+          </article>
+          <article class="pr-plan pl-card pl-pro" data-plan="pro" aria-labelledby="plProN">
             <p class="pr-ribbon pl-ribbon" data-i18n="pl.rib.pro">No watermark</p>
             <div class="pr-art"><img data-emo="money" alt="" width="112" height="112"></div>
             <h3 class="pr-name" id="plProN" data-i18n="pl.n.pro">Pro</h3>
-            <p class="pr-price"><span class="pr-amt" data-pl="amt">7,99 $</span><span class="pr-per" data-i18n="pr.per">/mo</span></p>
+            <p class="pr-price"><s class="pl-was" data-pl="was" hidden></s><span class="pr-amt" data-pl="amt">7,99 $</span><span class="pr-per" data-i18n="pr.per">/mo</span></p>
             <p class="pr-bill" data-pl="bill" data-i18n="pr.month.bill">Billed every month</p>
             <p class="pr-pill pl-pill" data-pl="pill" hidden></p>
-            <button class="btn pr-cta primary" type="button" data-buy="pro" data-i18n="pl.cta.pro">Choose Pro</button>
+            <button class="btn pr-cta" type="button" data-buy="pro" data-i18n="pl.cta.pro">Choose Pro</button>
             <p class="pl-note" data-pl="note" hidden></p>
+            <div class="pl-res">
+              <p class="pl-res-t" data-i18n="pl.res.t">What it changes for you</p>
+              <ul>
+                <li data-i18n="pl.res.p1">Your videos end on you, with no Stalak logo</li>
+                <li data-i18n="pl.res.p2">Your 16:9 YouTube music video, edited by itself</li>
+                <li data-i18n="pl.res.p3">Word-by-word lyrics that get people singing your hook</li>
+              </ul>
+            </div>
+            <details class="pl-all"><summary data-i18n="pl.all">Everything included</summary>
             <ul class="pr-feats">
               <li data-i18n="pl.f.nowm"><strong>No watermark</strong></li>
               <li data-i18n="pl.f.clip"><strong>Music video mode</strong>: your 16:9 YouTube video, edited for you</li>
@@ -2729,23 +2886,7 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
               <li data-i18n="pl.f.filters"><strong>Every video filter</strong></li>
               <li data-i18n="pl.f.lyr20"><strong>Lyrics written for you</strong>, 20 times a day</li>
             </ul>
-          </article>
-          <article class="pr-plan pl-card pl-creator" data-plan="creator" aria-labelledby="plCreatorN">
-                        <p class="pr-ribbon pl-ribbon" data-i18n="pl.rib">All of Stalak</p>
-            <div class="pr-art"><img data-emo="gg" alt="" width="112" height="112"></div>
-            <h3 class="pr-name" id="plCreatorN" data-i18n="pl.n.creator">Creator Plus</h3>
-            <p class="pr-price"><span class="pr-amt" data-pl="amt">14,99 $</span><span class="pr-per" data-i18n="pr.per">/mo</span></p>
-            <p class="pr-bill" data-pl="bill" data-i18n="pr.month.bill">Billed every month</p>
-            <p class="pr-pill pl-pill" data-pl="pill" hidden></p>
-            <button class="btn pr-cta" type="button" data-buy="creator" data-i18n="pl.cta.creator">Choose Creator Plus</button>
-            <p class="pl-note" data-pl="note" hidden></p>
-            <ul class="pr-feats">
-              <li class="pr-plus" data-i18n="pl.f.plusPro">Everything in Pro, plus:</li>
-              <li data-i18n="pl.f.packs"><strong>The pack generator</strong>: 5 to 30 videos, each cut differently, from just 2 takes</li>
-              <li data-i18n="pl.f.lyr60"><strong>Lyrics written for you</strong>, 60 times a day</li>
-              <li data-i18n="pl.f.cloud"><strong>Online saving</strong>: 100 GB, on all your devices</li>
-              <li data-i18n="pl.f.human"><strong>Talk to a human</strong>: live, or an answer by email within 24 hours</li>
-            </ul>
+            </details>
           </article>
           <article class="pr-plan pr-free pl-card pl-free" data-plan="free" aria-labelledby="apFreeN">
             <div class="pr-art"><img data-emo="coffee" alt="" width="112" height="112"></div>
@@ -2754,6 +2895,14 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
             <p class="pr-bill" data-i18n="pl.free.bill">No account needed</p>
             <p class="pr-pill pr-now" data-pl="now" data-i18n="pr.now">Your current plan</p>
             <button class="btn pr-cta" id="apStayFree" type="button" data-i18n="pr.stay">Stay on Free</button>
+            <div class="pl-res">
+              <p class="pl-res-t" data-i18n="pl.res.t">What it changes for you</p>
+              <ul>
+                <li data-i18n="pl.res.f1">Make as many videos as you want, cut on the beat</li>
+                <li class="is-minus" data-i18n="pl.res.f2">The Stalak logo on every video</li>
+              </ul>
+            </div>
+            <details class="pl-all"><summary data-i18n="pl.all">Everything included</summary>
             <ul class="pr-feats">
               <li data-i18n="pl.f.free"><strong>Unlimited editing</strong>, cut on the beat</li>
               <li data-i18n="pr.f.lyr0">On-screen lyrics (size M, whole sentence)</li>
@@ -2761,6 +2910,7 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
               <li data-i18n="pl.f.filters3">3 filters</li>
               <li class="is-minus" data-i18n="pl.f.wm">Stalak watermark on every video</li>
             </ul>
+            </details>
           </article>
         </div>
 
@@ -2832,7 +2982,9 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
 </div>
 
 <!-- help: the ice cube in the corner opens a little chat with an assistant -->
-<button class="btn primary expfab" id="expFab" type="button" hidden><span data-i18n="exp.fab">Export</span> <span aria-hidden="true">↓</span></button>
+<!-- (22/11, audit mobile n° 3) « Exporter » in a bar across the bottom of the screen: the page keeps room for it (body.fabon),
+     so it never sits on a setting; what will be exported is written next to the button -->
+<div class="expbar" id="expFab" hidden><button class="btn expbar-go" type="button"><span data-i18n="exp.fab">Export</span> <span aria-hidden="true">↓</span></button><span class="expbar-i" id="expFabI"></span></div>
 <button class="help-cube" id="helpBtn" type="button" aria-label="Help" data-i18n-attr="aria-label:help.aria" aria-expanded="false" aria-controls="helpPanel">
   <svg viewBox="0 0 64 64" focusable="false" aria-hidden="true">
     <path class="hc-top" d="M14 20 L30 11 Q33 9.5 36 11 L52 20 L36 28.5 Q33 30 30 28.5 Z"/>
@@ -2859,6 +3011,6 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
   <button class="hp-human" id="helpHuman" type="button" data-i18n="help.human" hidden>Talk to a human</button>
   <button class="hp-diag" id="helpDiag" type="button" data-i18n="help.diag">Copy info for the team</button>
 </section>
-<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.c9f4369178.js", "/assets/app.d1c1192cef.js", "/assets/tiktok.8fcf3f7d25.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
+<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.c9f4369178.js", "/assets/app.998d8a0820.js", "/assets/tiktok.8fcf3f7d25.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
 </body>
 </html>

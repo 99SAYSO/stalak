@@ -21,10 +21,10 @@ FAST_EXPORT = ("pickVideoConfig = async () => null, renderRealtime = async () =>
                "return { blob: new Blob([new Uint8Array(4096)], { type: 'video/mp4' }), ext: 'mp4' }; }")
 T = {
     'fr': {'go1': '● Lancer la prise 1', 'go2': '● Lancer la prise 2', 'lq': 'Tu veux ajouter les paroles à la vidéo ?', 'yes': 'Oui', 'no': 'Non',
-           'save': 'Enregistrer la vidéo', 'pack': 'Enregistrer le pack (.zip)', 'share': 'Partager', 'copy': 'Copier la légende', 'pro': 'Sans filigrane → Pro',
+           'save': 'Enregistrer la vidéo', 'pack': 'Enregistrer le pack (.zip)', 'share': 'Partager', 'copy': 'Copier la légende', 'pro': 'Exporter sans le logo PRO', 'cmpa': 'Avec le logo · Gratuit', 'cmpb': 'Sans le logo PRO',
            'edit': 'Modifier la vidéo', 'ready': 'Ta vidéo est prête ✓', 'readyp': 'Ton pack est prêt ✓'},
     'en': {'go1': '● Start take 1', 'go2': '● Start take 2', 'lq': 'Add the lyrics to your video?', 'yes': 'Yes', 'no': 'No',
-           'save': 'Save video', 'pack': 'Save the pack (.zip)', 'share': 'Share', 'copy': 'Copy caption', 'pro': 'No watermark → Pro',
+           'save': 'Save video', 'pack': 'Save the pack (.zip)', 'share': 'Share', 'copy': 'Copy caption', 'pro': 'Export without the logo PRO', 'cmpa': 'With the logo · Free', 'cmpb': 'Without the logo PRO',
            'edit': 'Edit the video', 'ready': 'Your video is ready ✓', 'readyp': 'Your pack is ready ✓'},
 }
 
@@ -119,19 +119,33 @@ def flow(b, base, lang, iphone, PW):
     ev(pg, "S.song.demo = false, store.set(PP_KEY, 1), " + FAST_EXPORT)
     pg.evaluate('() => { __ev("exportOne()"); }')
     pg.wait_for_function('() => __ev("S.done === true")', timeout=30000); pg.wait_for_timeout(400)
-    vis = {k: visible(pg, s) for k, s in (('save', '#saveBtn'), ('dl', '#saveDl'), ('copy', '#capCopy'), ('pro', '#dvPro'), ('edit', '#dvEdit'),
+    vis = {k: visible(pg, s) for k, s in (('save', '#saveBtn'), ('dl', '#saveDl'), ('copy', '#capCopy'), ('pro', '#dvCmpGo'), ('oldpro', '#dvPro'), ('cmp', '#dvCmp'), ('edit', '#dvEdit'),
                                          ('steps', '#stepper'), ('work', '#work'), ('stage', '#view'), ('exportBtn', '#exportBtn'), ('fab', '#expFab'), ('links', '#postBox'))}
     vis['share'] = pg.locator('#shareBtn').count() > 0
-    want = {'save': True, 'dl': False, 'share': False, 'copy': True, 'pro': True, 'edit': True, 'steps': False, 'work': False, 'stage': False, 'exportBtn': False, 'fab': False, 'links': False}
-    check(tag + ' : fin d’export : seulement l’essentiel (Enregistrer, le seul bouton, 22/11 ; Copier la légende, Sans filigrane → Pro, Modifier), plus de montage ni d’onglets', vis == want, vis)
-    txt = {k: pg.locator(s).inner_text().strip() for k, s in (('save', '#saveBtn'), ('copy', '#capCopy'), ('pro', '#dvPro'), ('edit', '#dvEdit'), ('ready', '#dvT'))}
-    check(tag + ' : textes de la fin d’export', txt == {'save': t['save'], 'copy': t['copy'], 'pro': t['pro'], 'edit': t['edit'], 'ready': t['ready']}, txt)
+    want = {'save': True, 'dl': False, 'share': False, 'copy': True, 'pro': True, 'oldpro': False, 'cmp': True, 'edit': True, 'steps': False, 'work': False, 'stage': False, 'exportBtn': False, 'fab': False, 'links': False}
+    check(tag + ' : fin d’export : seulement l’essentiel (Enregistrer, le seul bouton, 22/11 ; Copier la légende ; avec / sans le logo côte à côte et « Exporter sans le logo », 22/11 ; Modifier), plus de montage ni d’onglets', vis == want, vis)
+    txt = {k: ' '.join(pg.locator(s).inner_text().split()) for k, s in (('save', '#saveBtn'), ('copy', '#capCopy'), ('pro', '#dvCmpGo'), ('edit', '#dvEdit'), ('ready', '#dvT'), ('cmpa', '#dvCmp .cmp-f:first-child figcaption'), ('cmpb', '#dvCmp .cmp-pro figcaption'))}
+    check(tag + ' : textes de la fin d’export', txt == {'save': t['save'], 'copy': t['copy'], 'pro': t['pro'], 'edit': t['edit'], 'ready': t['ready'], 'cmpa': t['cmpa'], 'cmpb': t['cmpb']}, txt)
+    # (22/11) the two pictures: the same moment of the edit, the one with the logo different from the one without it
+    pg.wait_for_function("() => __ev(\"!!$('#resultVideo').dataset.poster\")", timeout=20000)
+    cmp = pg.evaluate('''async () => { const b = document.querySelector('#cmpB'), v = document.querySelector('#resultVideo');
+      const img = new Image(); img.src = v.poster; await img.decode(); const a = document.createElement('canvas'); a.width = b.width; a.height = b.height; a.getContext('2d').drawImage(img, 0, 0, a.width, a.height);
+      const da = a.getContext('2d').getImageData(0, 0, a.width, a.height).data, db = b.getContext('2d').getImageData(0, 0, b.width, b.height).data;
+      let diff = 0, same = 0; for (let i = 0; i < da.length; i += 4){ const d = Math.abs(da[i] - db[i]) + Math.abs(da[i+1] - db[i+1]) + Math.abs(da[i+2] - db[i+2]); if (d > 60) diff++; else same++; }
+      return { diff: diff / (diff + same), inLeft: v.parentNode.id, w: b.width, h: b.height }; }''')
+    check(tag + ' : avec / sans le logo : la même image de son montage, seul le logo change (la vidéo faite à gauche)', cmp['inLeft'] == 'cmpA' and 0.001 < cmp['diff'] < 0.08 and cmp['w'] == 360, cmp)
+    bs, bp = pg.locator('#saveBtn').bounding_box(), pg.locator('#dvCmpGo').bounding_box()
+    check(tag + ' : « Enregistrer la vidéo » (gratuit) avant « Exporter sans le logo »', bs['y'] < bp['y'], (bs, bp))
+    pg.evaluate("() => __ev('window.__lo = null, lockOpen = (f, w) => { window.__lo = f; }')")
+    pg.locator('#dvCmpGo').click(); pg.wait_for_timeout(100)
+    check(tag + ' : « Exporter sans le logo » ouvre les formules (sans filigrane)', pg.evaluate("() => __ev('window.__lo')") == 'nowm')
     if iphone: check(tag + ' : sur iPhone, l’explication dit de toucher « Enregistrer la vidéo » dans la liste pour Photos', 'Photos' in pg.locator('#postHint').inner_text() and visible(pg, '#postHint'), pg.locator('#postHint').inner_text())
     bx = {k: pg.locator(s).bounding_box() for k, s in (('save', '#saveBtn'), ('copy', '#capCopy'), ('edit', '#dvEdit'))}
     order = [bx['save']['y'], bx['copy']['y']]
     check(tag + ' : dans l’ordre Enregistrer, Copier la légende', order == sorted(order) and bx['edit']['y'] > bx['copy']['y'], bx)
     vh = pg.viewport_size['height']
-    check(tag + ' : on voit tout de suite où toucher : les boutons dans l’écran, « Enregistrer » le plus grand', bx['copy']['y'] + bx['copy']['height'] <= vh
+    # (Chef de projet, 22/11) the main button seen whole without scrolling, even with « Publier sur TikTok » and the Pro offer
+    check(tag + ' : on voit tout de suite où toucher : « Enregistrer » en entier dans l’écran, sans défiler, le plus grand', pg.evaluate('scrollY') == 0 and bx['save']['y'] >= 0 and bx['save']['y'] + bx['save']['height'] <= vh
           and bx['save']['height'] >= bx['copy']['height'], (bx, vh))
     big = pg.evaluate("() => parseFloat(getComputedStyle(document.querySelector('#saveBtn')).fontSize) > parseFloat(getComputedStyle(document.querySelector('#dvEdit')).fontSize) + 4")
     check(tag + ' : « Modifier la vidéo » petit et discret', big)

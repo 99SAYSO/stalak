@@ -76,7 +76,7 @@ PAGE = {
   'fr': {
     'path': '/fr/', 'locale': 'fr_FR',
     'title': 'Stalak — ton playback monté sur le rythme',
-    'desc': 'Monte ton playback sur le rythme : importe ton son et tes prises, Stalak coupe en gardant la synchro des lèvres. Gratuit, sans téléchargement ni inscription.',
+    'desc': 'Ton son est prêt, pas ton snippet ? Importe ton son et tes prises : Stalak monte ton playback sur le rythme, lèvres synchro. Prêt à poster ce soir. Gratuit.',   # (23/11) the result first, as on the page
     'ld': 'Stalak est un site de montage de playback (lip sync) : il coupe tes prises sur le rythme de ton son, garde la synchro des lèvres parfaite et exporte pour TikTok, Reels, Shorts et YouTube.',
     'about': """
     <h2 id="aboutT">Stalak, c’est quoi ?</h2>
@@ -89,7 +89,7 @@ PAGE = {
   'en': {
     'path': '/', 'locale': 'en_US',
     'title': 'Stalak: free lip-sync video editor that cuts to the beat',   # ≤ 60 characters for Google (13/11 audit; before: « …that cuts your takes to the beat », 67)
-    'desc': 'Drop in your song and a few takes of you rapping or singing. Stalak cuts between them on the beat, perfectly in sync. Free, no download, no sign-up.',
+    'desc': 'Song done, no snippet yet? Drop in your song and a few takes: Stalak cuts them on the beat, lips in sync. Ready to post tonight. Free, no sign-up.',
     'ld': 'Stalak is a free, browser-based lip-sync video editor for rappers and singers. It cuts between your takes on the beat of your song, keeps the lip sync tight and exports for TikTok, Reels, YouTube Shorts and YouTube.',
     'about': """
     <h2 id="aboutT">What is Stalak?</h2>

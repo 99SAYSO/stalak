@@ -245,12 +245,6 @@ const I18N_EN = /*@EN*/{
   "install.go": "Install",
   "exps.one": "Stalak is building your video",
   "exps.many": "Stalak is building your {n} videos",
-  "exps.m0": "Cutting the ice…",
-  "exps.m1": "Laying the first blocks…",
-  "exps.m2": "Your edit is taking shape…",
-  "exps.m3": "A few more blocks…",
-  "exps.m4": "Polishing the igloo…",
-  "exps.m5": "Almost done…",
   "exps.done": "Igloo finished! Your video is ready.",
   "exps.stop": "Stopping…",
   "home.askT": "Start over?",
@@ -650,6 +644,12 @@ const I18N_EN = /*@EN*/{
   "dv.t": "Your video is ready ✓",
   "dv.tPack": "Your pack is ready ✓",
   "dv.edit": "Edit the video",
+  "cmp.a": "With the logo · Free",
+  "cmp.b": "Without the logo",
+  "cmp.b.aria": "Your video without the logo",
+  "cmp.note": "Your edit: on the left as you exported it, on the right without the logo.",
+  "cmp.go": "Export without the logo",
+  "cmp.price": "Pro from {p}/month, billed yearly · cancel anytime",
   "dv.try": "Now try it with your song",
   "dv.tryNow": "Pick your song: Stalak does the rest.",
   "dv.nowm": "Save without watermark",
@@ -1066,6 +1066,8 @@ const I18N_EN = /*@EN*/{
   "hero.s": "Film a few takes of your song. Stalak cuts them on the beat, lips in sync: your snippet is ready to post tonight.",
   "hero.v": "Example: a video Stalak edited from three takes",
   "hero.clip": "Try <b>Music video mode</b>: your whole song in 16:9",
+  "hero.song": "Choose my song",
+  "hero.demo": "See an example",
   "ap.noacct": "You don’t need an account to make videos. It’s only for subscribing and getting your projects back.",
   "_bloc.app.son": "App & montage : étape Son (glisser-déposer, poignées du passage)",
   "listen.seg": "▶ Play the part",
@@ -1108,9 +1110,20 @@ const I18N_EN = /*@EN*/{
   "pl.int.aria": "Billing",
   "pl.int.month": "Monthly",
   "pl.int.year": "Yearly",
-  "pl.int.save": "up to −{n}%",
   "pl.billY": "{y} billed once a year",
   "pl.save": "Save {n}%",
+  "pl.months": "{n} months free",
+  "pl.monthsUpTo": "up to {n} months free",
+  "pl.res.t": "What it changes for you",
+  "pl.all": "Everything included",
+  "pl.res.c1": "A month of videos in one sitting: 5 to 30 different videos of the same song",
+  "pl.res.c2": "Your projects on all your devices",
+  "pl.res.c3": "A human answers you, live or within 24 h",
+  "pl.res.p1": "Your videos end on you, with no Stalak logo",
+  "pl.res.p2": "Your 16:9 YouTube music video, edited by itself",
+  "pl.res.p3": "Word-by-word lyrics that get people singing your hook",
+  "pl.res.f1": "Make as many videos as you want, cut on the beat",
+  "pl.res.f2": "The Stalak logo on every video",
   "pl.rib": "All of Stalak",
   "pl.cta.pro": "Choose Pro",
   "pl.cta.creator": "Choose Creator Plus",
@@ -1190,6 +1203,19 @@ const I18N_EN = /*@EN*/{
   "exp.mem": "This video of {s} s is too long for this device’s memory: it could close the page halfway. Pick a part of up to {smax} s (step 1), or export it on a computer.",
   "exp.mem0": "This video is too long for this device’s memory: it could close the page halfway. Export it on a computer.",
   "exp.fab": "Export",
+  "xs.0": "<b>Getting your takes ready</b> in full quality",
+  "xs.1": "<b>Making the pictures</b>: cuts, effects, lyrics",
+  "xs.2": "<b>Putting the picture and your song together</b>",
+  "xs.3": "<b>Finishing your MP4 file</b>, ready for TikTok and Insta",
+  "ws.t": "Stalak is editing your video",
+  "ws.song": "<b>Listening to your song</b> and finding its strong beats",
+  "ws.sync": "<b>Setting each take on your song</b>, so your lips land right",
+  "ws.look": "<b>Looking at your takes</b> to keep the best shots",
+  "ws.cut": "<b>Cutting on the beat</b> and switching from one take to another",
+  "ws.p": "You can already listen and change the settings: the edit updates by itself.",
+  "ws.n": " · {a} of {b}",
+  "fab.takes": "{n} take",
+  "fab.takes_p": "{n} takes",
   "save.file": "Download the file",
   "post.shareHintIos": "In the list, tap “Save Video” to keep it in Photos. Or pick TikTok or Instagram: the app opens with your video already in. Paste the caption under it and post.",
   "cap.t": "Caption, ready to copy",
@@ -1238,11 +1264,6 @@ const I18N_FR = /*@FR*/{
   "cut.unlock": "Ne plus garder",
   "copied": "Copié",
   "exps.many": "Stalak construit tes {n} vidéos",
-  "exps.m1": "Je pose les premiers blocs…",
-  "exps.m2": "Ton montage prend forme…",
-  "exps.m3": "Encore quelques blocs…",
-  "exps.m4": "Je fignole l’igloo…",
-  "exps.m5": "Presque fini…",
   "exps.done": "Igloo terminé ! Ta vidéo est prête.",
   "exps.stop": "J’arrête…",
   "mode.mots.tip": "Coupe au début de chaque phrase et sur la rime en fin de ligne, toujours sur un temps.",
@@ -1584,6 +1605,7 @@ const I18N_FR = /*@FR*/{
   "dv.t": "Ta vidéo est prête ✓",
   "dv.tPack": "Ton pack est prêt ✓",
   "dv.edit": "Modifier la vidéo",
+  "cmp.price": "Pro dès {p}/mois en annuel · annulable à tout moment",
   "dv.try": "Essaie avec ton son",
   "dv.tryNow": "Choisis ton son : Stalak fait le reste.",
   "dv.nowm": "Enregistrer sans filigrane",
@@ -1851,9 +1873,10 @@ const I18N_FR = /*@FR*/{
   "pl.n.pro": "Pro",
   "pl.n.creator": "Creator Plus",
   "acct.proT": "Les formules Stalak",
-  "pl.int.save": "jusqu’à −{n} %",
   "pl.billY": "{y} facturés une fois par an",
   "pl.save": "Économise {n} %",
+  "pl.months": "{n} mois offerts",
+  "pl.monthsUpTo": "jusqu’à {n} mois offerts",
   "pl.rib": "Tout Stalak",
   "pl.cta.pro": "Choisir Pro",
   "pl.cta.creator": "Choisir Creator Plus",
@@ -1902,6 +1925,9 @@ const I18N_FR = /*@FR*/{
   "exp.mem": "Cette vidéo de {s} s est trop longue pour la mémoire de cet appareil : la page risquerait de se fermer en route. Choisis un passage de {smax} s au plus (étape 1), ou exporte-la sur un ordinateur.",
   "exp.mem0": "Cette vidéo est trop longue pour la mémoire de cet appareil : la page risquerait de se fermer en route. Exporte-la sur un ordinateur.",
   "exp.fab": "Exporter",
+  "ws.n": " · {a} sur {b}",
+  "fab.takes": "{n} prise",
+  "fab.takes_p": "{n} prises",
   "save.btn": "Enregistrer sur l'appareil",
   "save.file": "Télécharger le fichier",
   "post.shareHintIos": "Dans la liste, touche « Enregistrer la vidéo » pour la garder dans Photos. Ou choisis TikTok ou Instagram : l’appli s’ouvre avec ta vidéo déjà importée. Colle la légende dessous et poste.",
@@ -3272,6 +3298,37 @@ function alignTake(tk){
   }
   tk.offset = r.offset; tk.status = r.cands.length > 1 ? 'ambig' : r.conf > 6 ? 'ok' : 'check';
 }
+/* (22/11, audit vente n° 4) « Stalak monte ta vidéo »: what Stalak is doing with the takes, the real steps (the song's beats,
+   each take set on the song, the pictures looked at for the best take, the cuts), at the Takes step under the list and at the
+   top of the Montage step. Shown while something is under way, then a moment with every step ticked, then it goes. */
+let wsWas = false, wsEnd = 0;
+function wsUi(){
+  const box = $('#wSteps'); if (!box) return;
+  const vids = S.takes.filter(t => t.kind === 'video' && !t.broll);
+  const there = (S.step === 2 || S.step === 4) && !!S.song && vids.length > 0 && !S.exporting && !S.done;
+  const pend = vids.filter(t => t.status === 'pending').length;
+  const looking = vids.filter(t => t.qualPct != null && !t.qual), looked = vids.filter(t => t.qual).length;
+  const busy = there && (pend > 0 || looking.length > 0 || (S.step === 4 && !S.cuts.length));
+  const now = performance.now();
+  if (busy){ wsWas = true; wsEnd = 0; }
+  else if (wsWas && there && !wsEnd) wsEnd = now + 1800;
+  const show = there && (busy || (wsEnd && now < wsEnd));
+  if (!show){ if (!box.hidden) box.hidden = true; if (wsEnd && now >= wsEnd){ wsWas = false; wsEnd = 0; } return; }
+  const slot = S.step === 4 ? $('#wsSlot4') : $('#takeList');
+  if (S.step === 4 ? box.parentNode !== slot : box.previousElementSibling !== slot) (S.step === 4 ? slot.append(box) : slot.after(box));
+  const songOk = !!(S.song.beats && S.song.beats.length), syncOk = songOk && pend === 0, lookOk = syncOk && !looking.length, cutOk = lookOk && S.cuts.length > 0;
+  const st = { song: songOk ? 'done' : 'now', sync: syncOk ? 'done' : songOk ? 'now' : 'todo', look: lookOk ? 'done' : syncOk ? 'now' : 'todo', cut: cutOk ? 'done' : lookOk ? 'now' : 'todo' };
+  box.querySelectorAll('li[data-ws]').forEach(li => { const k = li.dataset.ws; if (li.dataset.st !== st[k]) li.dataset.st = st[k]; });
+  // the picture analysis runs only where the page decodes the takes itself: no such line when it does not run
+  box.querySelector('li[data-ws="look"]').hidden = !looking.length && !looked;
+  const n1 = box.querySelector('li[data-ws="sync"] .ws-n'), t1 = _t('ws.n', { a: vids.length - pend, b: vids.length });
+  if (n1.textContent !== t1) n1.textContent = t1;
+  const pct = looking.length ? Math.round(looking.reduce((a, t) => a + (t.qualPct || 0), 0) / looking.length * 100) : null;
+  const n2 = box.querySelector('li[data-ws="look"] .ws-n'), t2 = pct != null ? ' · ' + pctT(pct) : '';
+  if (n2.textContent !== t2) n2.textContent = t2;
+  if (box.hidden) box.hidden = false;
+}
+setInterval(wsUi, 400);
 function renderTakes(){
   try { frameUI(); } catch(e){}
   const ul = $('#takeList'); ul.innerHTML = '';
@@ -5276,7 +5333,7 @@ const WM_SVG = /*@WMSVG*/"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2
 const WM_IMG = new Image(); WM_IMG.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(WM_SVG);
 const wmOn = () => !can('nowm');
 /* what the picture shows: during an export, what was decided when it started (S.wm); otherwise the plan of now */
-const wmShow = () => S.exporting ? !!S.wm : wmOn();
+const wmShow = () => S.exporting ? !!S.wm : !S.wmHide && wmOn();   // S.wmHide: the « without the logo » picture of the end screen (22/11)
 const WM_W = 0.14, WM_SAFE = { l: 0.045, r: 0.12, t: 0.09, b: 0.21 };
 function wmPos(t, lw, lh, w, h){
   const x0 = lw * WM_SAFE.l, x1 = lw * (1 - WM_SAFE.r) - w, y0 = lh * WM_SAFE.t, y1 = lh * (1 - WM_SAFE.b) - h;
@@ -5508,7 +5565,7 @@ async function showFrame(t){
       else { tk.el.pause(); await seekTo(tk.el, Math.max(0, Math.min(tk.duration-0.05, lt))); }
       if (S.playing || S.exporting || tok !== showTok) return;
     }
-    drawComposite(g, fd, null, S.step === 4, t); return;
+    drawComposite(g, fd, null, S.step === 4 && !S.snap, t); return;
   }
   const tok = ++showTok, cut = P ? P.R[cutIdx(P.R, t)] : S.cuts[cutAt(t)], tk = cut.take;
   // outside the take (nothing to show but black): no picture to wait for
@@ -5516,7 +5573,7 @@ async function showFrame(t){
   if (outside){}
   else if (tk.kind === 'video' && tk.live){ await liveWait(tk, Math.max(0, t - tk.offset)); if (S.playing || S.exporting || tok !== showTok) return; }
   else if (tk.kind === 'video'){ tk.el.pause(); await seekTo(tk.el, Math.max(0, Math.min(tk.duration-0.05, t - tk.offset))); if (S.playing || S.exporting || tok !== showTok) return; }
-  drawFrame(g, cut, t, S.step === 4);
+  drawFrame(g, cut, t, S.step === 4 && !S.snap);
 }
 
 /* ---------- reading MP4 / MOV takes: their sound, and their pictures one by one ---------- */
@@ -7793,7 +7850,6 @@ function expFailSay(e, cancelKey, failKey){
 function expNearAt(){ return S.done ? '#dvSlot' : '#expNear'; }
 function endExport(ok){ wakeOff(); expRunClear(); S.expX = null; S.realtime = false; expClose(ok === undefined ? !$('#result').hidden : !!ok);   /* (7/11) ok: this export made its video (a failed one after a good one must not show the end screen of the old video) */ S.exporting = false; proOfferUi(); if (RES !== PREV) setRes(PREV); if (S.rebuildLater){ S.rebuildLater = false; setTimeout(() => rebuild(false), 0); } specCache.clear(); S.takes.forEach(t => { if (t.orig && t.el !== t.orig) t.orig.remove(); }); S.takes.forEach(t => { if (t.proxyWaiting) applyProxy(t); }); setBusy(false); progress(null); $('#cancelBtn').hidden = true; showFrame(cursorIn()); }
 /* the export screen: the igloo gets one more block as the video advances; done, the mascot waves and the screen goes */
-const EXP_MSG = [[0, 'exps.m0'], [0.12, 'exps.m1'], [0.35, 'exps.m2'], [0.6, 'exps.m3'], [0.85, 'exps.m4'], [0.97, 'exps.m5']];   // keys (t)
 let expBlocks = null, expShown = -1, expT = 0;
 function expBuild(){
   if (expBlocks) return; const NS = 'http://www.w3.org/2000/svg', gI = $('#expIgloo'); expBlocks = [];
@@ -7861,7 +7917,7 @@ document.addEventListener('keydown', e => {
 function expOpen(){
   expBuild(); expShown = -1; expT = performance.now();
   expBlocks.forEach(b => b.classList.remove('on')); $('#expDoor').classList.remove('on'); $('#expFlag').classList.remove('on');
-  $('#expRetry').hidden = true; const sc = $('#expScreen'); sc.classList.remove('done'); sc.hidden = false; modalOn(true); expUpdate(0); $('#expCancel').disabled = false;
+  $('#expRetry').hidden = true; $('#expMsg').hidden = true; setT('#expMsg', null); const sc = $('#expScreen'); sc.classList.remove('done'); sc.hidden = false; modalOn(true); expUpdate(0); $('#expCancel').disabled = false;
   $('#expTitle').textContent = S.packN > 1 ? _t('exps.many', { n: S.packN }) : _t('exps.one');
   // the screen itself takes the focus, not « Annuler »: a space bar pressed out of habit must not stop the export
   setTimeout(() => { try { $('#expScreen').focus({ preventScroll: true }); } catch(e){} }, 50);
@@ -7873,17 +7929,20 @@ function expUpdate(p){
   if (k !== expShown){ for (let i=0; i<expBlocks.length; i++) expBlocks[i].classList.toggle('on', i < k); expShown = k; }
   $('#expDoor').classList.toggle('on', p >= 0.95);
   $('#expPct').textContent = pctT(Math.floor(p * 100)); $('#expBar').style.width = (p * 100).toFixed(1) + '%';
-  let m = EXP_MSG[0][1]; for (const [a, k] of EXP_MSG) if (p >= a) m = k; $('#expMsg').textContent = _t(m);
+  // (22/11) the steps: the files ready (the first picture made), the pictures, the sound put with them, the file written
+  const xs = S.expX, si = xs && xs.st === 'file' ? 3 : p >= 0.92 ? 2 : p > 0 ? 1 : 0;
+  expSteps(si);
 }
+function expSteps(k){ $$('#xSteps li').forEach(li => { const i = +li.dataset.x, st = i < k ? 'done' : i === k ? 'now' : 'todo'; if (li.dataset.st !== st) li.dataset.st = st; }); }
 function expClose(ok){
   const sc = $('#expScreen'); if (sc.hidden) return;
   if (!ok){ sc.hidden = true; modalOn(false); try { $('#exportBtn').focus(); } catch(e){} return; }
   expUpdate(1); expBlocks.forEach(b => b.classList.add('on')); $('#expDoor').classList.add('on'); $('#expFlag').classList.add('on');
-  sc.classList.add('done'); $('#expPct').textContent = pctT(100); $('#expMsg').textContent = _t('exps.done'); $('#expCancel').disabled = true;
+  sc.classList.add('done'); $('#expPct').textContent = pctT(100); expSteps(4); setT('#expMsg', 'exps.done'); $('#expMsg').hidden = false; $('#expCancel').disabled = true;
   // (06/11) the end screen: only the video and what to do with it
   setTimeout(() => { sc.hidden = true; modalOn(false); const r = $('#result'); if (r && !r.hidden && lastBlob) doneShow(); }, 1600);
 }
-$('#expCancel').onclick = () => { $('#cancelBtn').click(); $('#expMsg').textContent = _t('exps.stop'); $('#expCancel').disabled = true; };
+$('#expCancel').onclick = () => { $('#cancelBtn').click(); setT('#expMsg', 'exps.stop'); $('#expMsg').hidden = false; $('#expCancel').disabled = true; };
 $('#expScreen').addEventListener('keydown', e => { if (e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); } });
 /* a clip (16:9) at the export, without Pro: Pro, or the video in 9:16, or nothing */
 let caDone = null;
@@ -8092,7 +8151,11 @@ let expSeen = false;
 function expFabUi(){
   const f = $('#expFab'); if (!f) return;
   f.hidden = S.step !== 4 || S.exporting || S.done || expSeen || !S.cuts.length || (document.querySelector('.wrap') || document.body).hasAttribute('inert');
+  // (22/11) the page keeps room for the bar at the Montage step, so the last setting is never under it
+  document.body.classList.toggle('fabon', S.step === 4 && !S.done && !!S.cuts.length);
+  if (!f.hidden){ const n = usedTakes().length; $('#expFabI').textContent = ({ '916': '9:16', '45': '4:5', '11': '1:1', '169': '16:9' }[S.fmt] || S.fmt) + ' · ' + fmtDur(S.segEnd - S.segStart) + '\n' + tn('fab.takes', n); }
 }
+const fmtDur = d => { d = Math.max(0, Math.round(d)); return Math.floor(d / 60) + ':' + String(d % 60).padStart(2, '0'); };
 // seen or not: read on scroll (once per frame) and when the page size changes
 let expLook = 0;
 const expLookNow = () => { expLook = 0; const r = $('#expRow').getBoundingClientRect(); expSeen = r.height > 0 && r.bottom > 0 && r.top < window.innerHeight - 40; expFabUi(); };
@@ -8165,7 +8228,10 @@ function doneUi(){
   // (n° 4) paid since (or now Pro) while this video carries the watermark: the same video again without it, in big
   const redo = !zip && !demo && !!S.lastWm && can('nowm');
   $('#dvNoWm').hidden = !redo;
-  $('#dvPro').hidden = !ACCT || can('nowm') || zip || demo;
+  // (22/11) a free video with the logo: the person's own edit with and without it, side by side, and « Exporter sans le logo »
+  const cmp = !!S.done && !!ACCT && !can('nowm') && !zip && !demo && !!S.lastWm;
+  $('#dvPro').hidden = !ACCT || can('nowm') || zip || demo || cmp;
+  cmpUi(cmp);
   $('#saveBtn').classList.toggle('primary', !demo && !redo);
   if (S.done) setT('#saveBtn', zip ? 'save.packBtn' : redo ? 'save.videoWm' : 'save.video');
 }
@@ -8174,6 +8240,7 @@ $('#dvTry').onclick = () => { try { sessionStorage.setItem('stalak:trySong', '1'
 $('#dvNoWm').onclick = () => { if (!S.exporting) exportOne(); };
 function doneHide(){
   if (!S.done) return;
+  cmpUi(false);
   S.done = false; document.body.classList.remove('isdone');
   const card = $('#expRow').closest('.card'); card.append($('#result'));
   $('#doneView').hidden = true; expFabUi();
@@ -8182,6 +8249,34 @@ function doneHide(){
 }
 $('#dvEdit').onclick = doneHide;
 $('#dvPro').onclick = () => lockOpen('nowm');
+$('#dvCmpGo').onclick = () => lockOpen('nowm');
+/* the two pictures: the same moment of the edit drawn by the preview, once with the logo (as in the video made) and once
+   without; the one with the logo is the poster of the video made, in the left box */
+let cmpFor = null;
+function cmpUi(on){
+  const box = $('#dvCmp'), v = $('#resultVideo');
+  box.hidden = !on; $('#dvCmpGo').hidden = !on; $('#dvCmpP').hidden = !on;
+  $('#result').classList.toggle('cmpon', on);
+  if (on){
+    if (v.parentNode !== $('#cmpA')) $('#cmpA').append(v);
+    const a = plAmounts('pro'); setT('#dvCmpP', 'cmp.price', { p: plMoney(Math.round(a.y / 12 * 100) / 100, a.cur) });
+    if (cmpFor !== lastBlob){ cmpFor = lastBlob; cmpShots().catch(e => diag('fin d’export : images avec / sans logo impossibles (' + (e && e.message || e) + ')')); }
+  } else if (v.parentNode === $('#cmpA')) $('#dvCmp').before(v);
+}
+async function cmpShots(){
+  const back = S.cursor, d = S.segEnd - S.segStart;
+  const t = lyricsOn(lyricShowTime()) ? lyricShowTime() : S.segStart + d * 0.35;
+  const cB = $('#cmpB'), w = 360, h = Math.round(w * H / W); cB.width = w; cB.height = h;
+  const cA = document.createElement('canvas'); cA.width = w; cA.height = h;
+  try {
+    S.snap = true; S.wmHide = false; await showFrame(t); cA.getContext('2d').drawImage(g.canvas, 0, 0, w, h);
+    S.wmHide = true; await showFrame(t); cB.getContext('2d').drawImage(g.canvas, 0, 0, w, h);
+  } finally { S.snap = false; S.wmHide = false; }
+  showFrame(back);
+  const url = await new Promise(r => cA.toBlob(b => r(b ? URL.createObjectURL(b) : null), 'image/jpeg', 0.85));
+  if (url){ const v = $('#resultVideo'); if (v.dataset.poster) URL.revokeObjectURL(v.dataset.poster); v.dataset.poster = url; v.poster = url; }
+  diag('fin d’export : images avec / sans logo prêtes (' + fmt(t) + ')');
+}
 /* the logo: a new project, everything cleared (asked first when there is something to lose) */
 function homeGo(){ S.cancel = true; try { stop(true); } catch(e){} location.reload(); }
 /* the confirmation box: one question, « Annuler » or the action; resolves true or false */
@@ -9018,6 +9113,9 @@ async function songFromFile(f){
   if (isVid) diag('son importé depuis la vidéo « ' + f.name + ' » (' + buf.duration.toFixed(1) + ' s, ' + (buf.numberOfChannels > 1 ? 'stéréo' : 'mono') + ')');
   return buf;
 }
+/* (22/11, audit mobile n° 1) the first screen's two buttons: the song's file choice, and the example */
+$('#heroSong').onclick = () => $('#songFile').click();
+$('#heroDemo').onclick = () => $('#demoBtn').click();
 $('#songFile').onchange = async e => {
   const f = e.target.files[0]; if (!f) return;
   try { await loadSongFile(f); } finally { e.target.value = ''; }
@@ -9976,6 +10074,7 @@ function plMoney(n, cur){
 function plMoneyC(cents, cur){
   try { return new Intl.NumberFormat(LANG === 'en' ? 'en-IE' : 'fr-FR', { style: 'currency', currency: cur || 'EUR' }).format(cents / 100); } catch(e){ return (cents / 100).toFixed(2) + ' ' + (cur || 'EUR'); }
 }
+const plMonths = a => a.m > 0 ? Math.floor(12 - a.y / a.m + 1e-9) : 0;
 function plAmounts(p){ const P = (plCfg && plCfg.plans && plCfg.plans[p]) || PL_DEFAULT[p]; return { m: +P.month.amount, y: +P.year.amount, cur: P.month.currency || 'USD' }; }
 function plRender(){
   if (!ACCT) return;
@@ -9989,12 +10088,16 @@ function plRender(){
     const a = plAmounts(p), year = plInt === 'year';
     c.querySelector('[data-pl="amt"]').textContent = plMoney(year ? Math.round(a.y / 12 * 100) / 100 : a.m, a.cur);   // 4.17 $, as on the Tarifs page
     setT(c.querySelector('[data-pl="bill"]'), year ? 'pl.billY' : 'pr.month.bill', { y: plMoney(a.y, a.cur) });
-    const pill = c.querySelector('[data-pl="pill"]'), save = Math.floor((1 - a.y / (12 * a.m)) * 100);   // −47 % / −44 %, as on the Tarifs page
-    pill.hidden = !year || !(save > 0); if (!pill.hidden){ pill.classList.add('pr-save'); setT(pill, 'pl.save', { n: save }); }
+    // (owner, 22/11) yearly: the monthly price struck next to it, and the months it gives (12 − yearly ÷ monthly, rounded down:
+    // Pro 12 − 49,99 ÷ 7,99 = 5,7 → 5; Creator Plus 12 − 99,99 ÷ 14,99 = 5,3 → 5)
+    const was = c.querySelector('[data-pl="was"]'), months = plMonths(a);
+    was.hidden = !year || !(months > 0); was.textContent = plMoney(a.m, a.cur);
+    const pill = c.querySelector('[data-pl="pill"]');
+    pill.hidden = !year || !(months > 0); if (!pill.hidden){ pill.classList.add('pr-save'); setT(pill, 'pl.months', { n: months }); }
     const b = c.querySelector('[data-buy]'), note = c.querySelector('[data-pl="note"]');
     const onSale = !!(prices && prices[p] && typeof prices[p] === 'object' && prices[p][plInt]);
     const mine = p === cur && (!curInt || curInt === plInt);
-    b.disabled = mine || !onSale; b.classList.toggle('primary', p === 'pro' && !mine);
+    b.disabled = mine || !onSale; b.classList.toggle('primary', p === 'creator' && !mine);   // the full button on Creator Plus (owner, 22/11)
     setT(b, mine ? 'pl.mine' : !onSale ? 'pl.soon' : paid ? (plConfirm === p ? 'pl.confirm' : 'pl.switch') : 'pl.cta.' + p, { plan: _t('pl.n.' + p) });
     note.hidden = !(paid && plConfirm === p && onSale && !mine);
     if (note.hidden) setT(note, null);
@@ -10003,9 +10106,9 @@ function plRender(){
       setT(note, pv.kind === 'down' ? 'pl.downAt' : amt ? 'pl.upNow' : 'pl.prorata', { a: amt, d: pv.effectiveAt ? acctDate(pv.effectiveAt) : '', plan: _t('pl.n.' + pv.from) });
     } else setT(note, 'pl.checking');
   });
-  // the yearly switch: the biggest saving of the plans
-  const save = Math.max(...PL_PLANS.map(p => { const a = plAmounts(p); return Math.floor((1 - a.y / (12 * a.m)) * 100); }));
-  setT('#plIntSave', 'pl.int.save', { n: save });
+  // the yearly switch: the months given (« jusqu’à » when the plans differ)
+  const ms = PL_PLANS.map(p => plMonths(plAmounts(p))), mMax = Math.max(...ms), mMin = Math.min(...ms);
+  $('#plIntSave').hidden = !(mMax > 0); if (mMax > 0) setT('#plIntSave', mMin === mMax ? 'pl.months' : 'pl.monthsUpTo', { n: mMax });
   $$('#apBuy [data-pl-cmp]').forEach(td => { const a = plAmounts(td.dataset.plCmp); td.textContent = plMoney(a.m, a.cur); });
   // the subscriber's card: what the plan gives (the server's list)
   const ul = $('#apPerks');
