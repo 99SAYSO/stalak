@@ -1,6 +1,9 @@
 Statut : PRÊT
 Branche : social/tiktok-bouton
-Maquette : https://social-tiktok-bouton.stalak-site.pages.dev
+Maquette : https://social-tiktok-bouton.stalak-site.pages.dev/fr/?ttkdemo
+  (la maquette n'a pas les clés TikTok : `?ttkdemo`, lu seulement sur *.pages.dev, affiche quand même les boutons. Connecte-toi,
+  puis « Ton compte » pour « Relier TikTok », et exporte une vidéo pour voir « Publier sur TikTok ». Derrière, rien ne marche sur la
+  maquette ; stalak.app ignore `?ttkdemo`.)
 
 Résumé :
 Demande du Chef de projet du 22/11 (20 h 09), après l'essai réussi en Sandbox.
@@ -24,7 +27,7 @@ Demande du Chef de projet du 22/11 (20 h 09), après l'essai réussi en Sandbox.
      identifiant ni jeton. Ça donnera une trace la prochaine fois, même après un « Délier » (qui efface toujours les envois en base).
    - Un 2ᵉ envoi juste après une publication : vérifié (test serveur brouillon puis publication à la suite, et test interface).
 
-Fichiers touchés : `src/tiktok.js`, `src/tiktok.css`, `functions/_lib/tiktok.js`, `tests/backend/run.mjs`, `tests/ui/tiktok_ui.py`,
+Fichiers touchés : `src/tiktok.js` (dont l'interrupteur de maquette `?ttkdemo`), `src/tiktok.css`, `functions/_lib/tiktok.js`, `tests/backend/run.mjs`, `tests/ui/tiktok_ui.py`,
 `docs/social/TIKTOK_PUBLIER.md`, `docs/STATUS.md`, ce compte rendu, `public/` reconstruit. **`src/app.js` et `src/markup.html` non touchés.**
 
 Migration SQL : aucune.

@@ -157,6 +157,9 @@ const errText = (e) => (TXT.fr['e.' + (e && e.code)] ? t('e.' + e.code) : t('e.g
 const TT = { offered: null, acct: null, loaded: false };
 async function offered() {
   if (TT.offered != null) return TT.offered;
+  // maquettes only (*.pages.dev, règle 9): « ?ttkdemo » shows the TikTok buttons although the maquette has no TikTok keys
+  // (nothing works behind them there; stalak.app ignores it)
+  if (/\.pages\.dev$/.test(location.hostname) && /[?&]ttkdemo\b/.test(location.search)) return (TT.offered = true);
   try { const c = await api('GET', '/api/config'); TT.offered = !!(c.features && Array.isArray(c.features.social) && c.features.social.includes('tiktok')); }
   catch (e) { TT.offered = false; }
   return TT.offered;
