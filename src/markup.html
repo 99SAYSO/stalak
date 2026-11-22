@@ -572,19 +572,26 @@
 <!-- start over: asked before everything is cleared -->
 <!-- the Pro offer after the first video made (free plan, once per device): a frosted window in the middle of the screen -->
 <div class="propop" id="proPop" role="dialog" aria-modal="true" aria-labelledby="proPopT" hidden>
+  <!-- (owner, 23/11) redone: the person's own video with and without the logo is the main thing (the same two pictures as the
+       end screen), one message, the price as on the plans page, « Plus tard » a real button -->
   <div class="card pp-card" id="proPopCard" tabindex="-1">
-    <span class="pp-shine" aria-hidden="true"></span>
-    <button class="pp-x" id="proPopX" type="button" aria-label="Fermer" data-i18n-attr="aria-label:close">×</button>
-    <div class="pp-mascot" aria-hidden="true"></div>
-    <h2 id="proPopT" data-i18n="pp.t">Belle vidéo ! La prochaine, sans filigrane ?</h2>
-    <ul class="pp-list">
-      <li data-i18n="pp.l1">Sans filigrane</li>
-      <li data-i18n="pp.l2">Le mode Clip 16:9, sur tout le son</li>
-      <li data-i18n="pp.l3">Tous les filtres</li>
-    </ul>
-    <p class="pp-price" data-i18n="pp.price"><strong>4,17 $</strong>/mois, facturé à l’année</p>
-    <button class="btn primary big pp-go" id="proPopGo" type="button" data-i18n="pp.go">Passer à Pro</button>
-    <button class="pp-later" id="proPopLater" type="button" data-i18n="pp.later">Plus tard</button>
+    <button class="pp-x" id="proPopX" type="button" aria-label="Fermer" data-i18n-attr="aria-label:close"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 5l14 14M19 5L5 19"/></svg></button>
+    <div class="pp-show">
+      <figure class="pp-f pp-fa"><div class="pp-pic"><img id="ppA" alt="Ta vidéo avec le logo Stalak" data-i18n-attr="alt:pp.a.alt"></div><figcaption data-i18n="pp.a">Avec le logo</figcaption></figure>
+      <figure class="pp-f pp-fb"><div class="pp-pic"><canvas id="ppB" width="360" height="640" role="img" aria-label="La même image de ta vidéo, sans le logo" data-i18n-attr="aria-label:pp.b.alt"></canvas></div><figcaption><span data-i18n="pp.b">Sans le logo</span> <b class="cmp-tag">PRO</b></figcaption></figure>
+      <img class="pp-masc" data-emo="hype" alt="" width="92" height="92">
+    </div>
+    <div class="pp-txt">
+      <h2 id="proPopT" data-i18n="pp.t">Ta vidéo, sans le logo</h2>
+      <p class="pp-s" data-i18n="pp.s">La même vidéo, prête à poster : elle finit sur toi, pas sur le logo Stalak.</p>
+      <div class="pp-pricebox">
+        <p class="pp-price"><s class="pp-was" id="ppWas"></s><strong id="ppAmt">4,17 $</strong><span data-i18n="pr.per">/mois</span><b class="pp-months" id="ppMonths"></b></p>
+        <p class="pp-bill" id="ppBill"></p>
+      </div>
+      <button class="btn primary big pp-go" id="proPopGo" type="button" data-i18n="pp.go">Passer à Pro</button>
+      <button class="btn pp-later" id="proPopLater" type="button" data-i18n="pp.later">Plus tard</button>
+      <p class="pp-also" data-i18n="pp.also">Aussi avec Pro : le mode Clip 16:9 et tous les filtres.</p>
+    </div>
   </div>
 </div>
 

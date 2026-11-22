@@ -101,13 +101,10 @@ def flow(b, base, site, lang, iphone, PW):
     ev(pg, "go(4)"); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=120000)
     ev(pg, "store.set(PP_KEY, 0), " + FAST_EXPORT)
     pg.evaluate('() => { __ev("exportOne()"); }'); pg.wait_for_function('() => __ev("S.done === true")', timeout=120000); pg.wait_for_timeout(2600)
-    if iphone:
-        check(tag + ' : 1re vidéo : la fenêtre Pro n’est pas encore là, « Enregistrer » se voit', not visible(pg, '#proPop .card') and visible(pg, '#dvCmpGo'))
-        pg.locator('#saveBtn').click(); pg.wait_for_timeout(2800)
-        check(tag + ' : après le toucher sur « Enregistrer », la fenêtre Pro', visible(pg, '#proPop .card'))
-    else:
-        check(tag + ' : 1re vidéo : la fenêtre Pro comme avant', visible(pg, '#proPop .card'))
-    if visible(pg, '#proPop .card'): pg.locator('#proPopLater').click(); pg.wait_for_timeout(500)
+    # (23/11) the Pro window: never before the saving, never for the first video saved (fenetre_pro_ui.py tests the rest)
+    check(tag + ' : 1re vidéo : pas de fenêtre Pro, « Enregistrer » se voit', not visible(pg, '#proPop .card') and visible(pg, '#dvCmpGo'))
+    pg.locator('#saveBtn').click(); pg.wait_for_timeout(2800)
+    check(tag + ' : 1re vidéo enregistrée : toujours pas de fenêtre Pro', not visible(pg, '#proPop .card'))
     # 4. paid now: « Enregistrer sans filigrane »
     check(tag + ' : avant le paiement, pas de « %s »' % t['nowm'], not visible(pg, '#dvNoWm') and ev(pg, 'S.lastWm') is True)
     ev(pg, "acctHas = f => true, planTags && planTags(), doneUi()"); pg.wait_for_timeout(200)
