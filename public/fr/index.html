@@ -1686,6 +1686,78 @@ body:has(> .help-cube) > .ft{padding-bottom:calc(env(safe-area-inset-bottom, 0px
   margin-left:calc(-8px - max(16px, env(safe-area-inset-left, 0px)));margin-right:calc(-8px - max(16px, env(safe-area-inset-right, 0px)))}
 body:has(> .help-cube) > .wrap{padding-bottom:0}
 
+/* Réseaux sociaux (21/11): « Publier sur TikTok », « Mes stats », the TikTok card of the account page (src/tiktok.js).
+   Same look as the rest: white cards with the ink outline, Lilita One titles, Rubik text. Only opacity / transform move. */
+.ttk-layer{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:start center;overflow-y:auto;padding:max(16px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom));background:rgba(10,13,20,.55);animation:ttk-in var(--dur-2,180ms) var(--ease-out,ease-out)}
+body.ttk-on{overflow:hidden}
+.ttk-box{position:relative;width:100%;max-width:560px;margin:auto 0;padding:18px 18px 20px;box-sizing:border-box;animation:ttk-up var(--dur-3,240ms) var(--ease-out,ease-out)}
+@keyframes ttk-in{from{opacity:0}to{opacity:1}}
+@keyframes ttk-up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.ttk-layer,.ttk-box{animation:none}}
+.ttk-top{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.ttk-h{flex:1;margin:0;font:400 24px/1.15 var(--display);outline:none}
+.ttk-x{flex:none;width:44px;height:44px;border:var(--stroke,3px) solid var(--ink);border-radius:12px;background:var(--snow);font:700 24px/1 var(--body);color:var(--ink);cursor:pointer}
+.ttk-k{color:var(--muted);font-size:14px}
+.ttk-note{margin:8px 0;color:var(--muted);font-size:14px;line-height:1.45}
+.ttk-err{margin:8px 0;color:#b3261e;font-weight:600;line-height:1.45}
+.ttk-load{margin:24px 0;text-align:center;color:var(--muted)}
+.ttk-who{display:flex;align-items:center;gap:10px;margin:0 0 12px;min-width:0;overflow-wrap:anywhere}
+.ttk-av{width:40px;height:40px;flex:none;border-radius:50%;border:2px solid var(--ink);object-fit:cover;background:var(--ice)}
+.ttk-big .ttk-av{width:56px;height:56px}
+.ttk-big b{font:400 22px/1.15 var(--display)}
+.ttk-prev{display:block;width:100%;max-height:46vh;margin:0 0 12px;border:var(--stroke,3px) solid var(--ink);border-radius:14px;background:#000}
+.ttk-form{display:flex;flex-direction:column;gap:12px}
+.ttk-f{margin:0;padding:0;border:0;min-width:0}
+.ttk-f[hidden]{display:none}
+.ttk-f > label,.ttk-f > legend,.ttk-seg legend{display:block;margin:0 0 6px;font-weight:700}
+.ttk-f textarea,.ttk-f select{width:100%;box-sizing:border-box;min-height:44px;padding:10px 12px;border:2px solid var(--ink);border-radius:12px;background:var(--snow);color:var(--ink);font:400 16px/1.4 var(--body)}
+.ttk-seg{margin:0;padding:0;border:0;display:flex;flex-wrap:wrap;gap:8px 16px}
+.ttk-seg legend{width:100%}
+.ttk-seg label,.ttk-chk{display:inline-flex;align-items:flex-start;gap:8px;min-height:44px;padding:10px 0;cursor:pointer;line-height:1.35}
+.ttk-chk input,.ttk-seg input{width:20px;height:20px;margin:0;flex:none;accent-color:var(--ink)}
+.ttk-chk.is-off{opacity:.55;cursor:not-allowed}
+.ttk-row{display:flex;flex-wrap:wrap;column-gap:20px}
+.ttk-row legend{width:100%}
+.ttk-cc{display:flex;flex-direction:column;padding:4px 0 0 28px}
+.ttk-cc[hidden]{display:none}
+.ttk-consent{margin:4px 0 0;font-size:14px;line-height:1.45}
+.ttk-consent a{color:var(--ink);font-weight:700}
+.ttk-acts{display:flex;flex-wrap:wrap;gap:16px 12px;align-items:center;margin-top:6px}
+.ttk-acts .btn.primary{flex:1 1 200px;justify-content:center}
+.ttk-out{display:flex;flex-direction:column;gap:12px;align-items:stretch;padding:8px 0}
+.ttk-out .btn{justify-content:center}
+.ttk-st{margin:0;font:400 20px/1.25 var(--display)}
+.ttk-bar{width:100%;height:14px;accent-color:var(--sky)}
+.ttk-pubbtn{display:flex;width:100%;justify-content:center;margin:14px 0 4px}
+.ttk-pubbtn[hidden]{display:none}
+.doneview #ttkPub{order:3;margin:0}   /* the end card orders its buttons (theme.css): right under « Enregistrer » / « Partager » */
+#ttkPub.protag::after{content:attr(data-plan);display:inline-block;margin-left:10px;padding:4px 7px;border-radius:999px;border:2px solid var(--ink);background:var(--ink);color:#fff;font:800 11px/1 var(--body);letter-spacing:.06em;vertical-align:2px}
+.ttk-card .ttk-acts{margin-top:4px}
+.ttk-nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:10px;margin:0 0 14px}
+.ttk-num{padding:10px;border:2px solid var(--ink);border-radius:12px;background:var(--frost);text-align:center}
+.ttk-num b{display:block;font:400 24px/1.1 var(--display)}
+.ttk-num span{font-size:13px;color:var(--muted)}
+.ttk-ms h3,.ttk-an h3{margin:16px 0 8px;font:400 20px/1.2 var(--display)}
+.ttk-an h4{margin:14px 0 6px;font-size:16px}
+.ttk-list{display:flex;flex-direction:column;gap:8px}
+.ttk-v{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:10px;align-items:center;min-height:56px;padding:6px 8px;border:2px solid var(--ink);border-radius:12px;background:var(--snow);color:var(--ink);text-decoration:none}
+.ttk-v img,.ttk-vph{width:44px;height:58px;border-radius:8px;object-fit:cover;background:var(--ice)}
+.ttk-vt{display:flex;flex-direction:column;min-width:0}
+.ttk-vtt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.ttk-vn{display:flex;flex-direction:column;align-items:flex-end;text-align:right}
+.ttk-g ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.ttk-g li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:8px 10px;border-radius:10px;background:var(--frost)}
+.ttk-g li .ttk-k{grid-column:1/-1}
+.ttk-g li.is-few{opacity:.7}
+.ttk-gl{overflow-wrap:anywhere;font-weight:600}
+.ttk-pro{margin-top:16px;padding:14px;background:var(--ice)}
+.ttk-pro h3{margin-top:0}
+.ttk-honest{margin-top:14px}
+.ttk-src{margin-top:12px}
+.ttk-toast{position:fixed;left:50%;bottom:max(16px,env(safe-area-inset-bottom));z-index:2147483001;max-width:min(92vw,520px);transform:translateX(-50%);padding:12px 16px;border:var(--stroke,3px) solid var(--ink);border-radius:14px;background:var(--snow);color:var(--ink);box-shadow:var(--pop,0 5px 0 #0a0d14);font-weight:600;line-height:1.4}
+.ttk-toast[hidden]{display:none}
+@media (max-width:420px){.ttk-box{padding:14px 14px 18px}.ttk-h{font-size:21px}.ttk-v{grid-template-columns:40px minmax(0,1fr) auto}}
+
 .about{align-self:center;max-width:760px;width:100%;color:#fff;font-size:14.5px;line-height:1.55;margin-top:18px}.about h2{font:400 22px/1.2 var(--display);margin:0 0 6px;color:#fff;text-shadow:0 2px 0 var(--ink)}.about p{margin:0 0 8px}.about ul{margin:0 0 8px;padding-left:20px}.about strong{font-weight:700}.about a{color:#fff;font-weight:700;text-decoration:underline;text-underline-offset:3px}
 
 .frhint{display:flex;align-items:center;gap:2px;width:max-content;max-width:calc(100% - 32px);margin:0 auto 12px;background:#fff;color:var(--ink,#0a0d14);border:2px solid var(--ink,#0a0d14);border-radius:999px;box-shadow:0 3px 0 var(--ink,#0a0d14);font-size:14.5px;font-weight:600;line-height:1.2}.frhint[hidden]{display:none}.frhint a{color:inherit;text-decoration:none;padding:10px 4px 10px 16px}.frhint button{flex:none;width:40px;height:40px;border:0;border-radius:50%;background:transparent;color:inherit;font:inherit;font-size:20px;line-height:1;cursor:pointer}
@@ -2692,6 +2764,6 @@ body:has(> .help-cube) > .wrap{padding-bottom:0}
   <button class="hp-human" id="helpHuman" type="button" data-i18n="help.human" hidden>Parler à un humain</button>
   <button class="hp-diag" id="helpDiag" type="button" data-i18n="help.diag">Copier les infos pour l’équipe</button>
 </section>
-<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.c9f4369178.js", "/assets/app.8f93f5a722.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
+<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.c9f4369178.js", "/assets/app.1bd8c5c8f0.js", "/assets/tiktok.337086425f.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
 </body>
 </html>
