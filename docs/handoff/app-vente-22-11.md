@@ -1,4 +1,4 @@
-Statut : EN COURS (tests en cours)
+Statut : PRÊT
 Branche : app/vente-22-11 (créée depuis `app/fin-et-minuteur` le 22/11, puis `origin/main` ae45268 fusionnée : fin-et-minuteur et le
 bouton TikTok déjà en ligne).
 Maquette de la branche : https://app-vente-22-11.stalak-site.pages.dev (à faire valider par le propriétaire, règle 9).
@@ -96,4 +96,20 @@ Choix du propriétaire sur la maquette (22/11, 22 h 18) :
     `partager_ui.py`, `audit_ui.py` (glaçon au-dessus de la barre), `audit611_ui.py`.
 
 ## Résultats des tests (22/11 au soir, sur la branche à jour)
-(écrits ci-dessous une fois la série finie)
+- serveur `tests/backend/run.mjs` **114/114**
+- nouveaux ou changés :
+  - `vente_ui` **63/63** ;
+  - `plans_ui` **39/39** ;
+  - `fin_export_ui` **98/98** (82/86 sur `main`) ;
+  - `partager_ui` **92/92** (90/92 sur `main`) ;
+  - `audit_ui` **158/158** ;
+  - `audit611_ui` **91/91**.
+- les autres :
+  - `tiktok_ui` **220/220**, `clip1_ui` **87/87**, `exports_rates_ui` **80/80**, `fluidite_ui` **30/30** ;
+  - `apercu_depart_ui` **10/10**, `gallery_ui` **49/49**, `help_ui` **42/42** ;
+  - `animations_ui` **44/44**, `pied_de_page_ui` **842/842**, `formules_ui` **137/137**.
+- **Corrigé en cours de route** :
+  - un point qui clignotait dans la liste des étapes : refusé par la règle des 300 ms, il est maintenant fixe ;
+  - le glaçon d'aide, au-dessus de la barre, cachait le choix de langue en bas de page sur iPhone : le pied de page garde
+    maintenant la place.
+- `formules_ui` avait raté 1 vérification dans la série (filigrane dans chaque image, machine chargée). Relancé seul : 137/137.
