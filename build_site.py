@@ -156,17 +156,24 @@ RV_JS = ('<script>(function (v) { var l = v && v.firstElementChild; if (!l || !w
          ' if ("IntersectionObserver" in window) new IntersectionObserver(function (e) { seen = e[0].isIntersecting; run(); }, { rootMargin: "120px" }).observe(v); else seen = true;'
          ' document.addEventListener("visibilitychange", run); run();'
          ' })(document.currentScript.previousElementSibling);</script>')
+COUNT = ('<p class="proof-n" id="proofN" hidden><span class="pn-a" data-i18n="proof.a">Déjà</span> <b id="proofNum"></b> <span class="pn-b" data-i18n="proof.b">vidéos montées avec Stalak</span></p>'
+         '<script>(function (p) { if (!p || !window.fetch) return;'
+         ' fetch("/api/stats/exports").then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {'
+         ' var n = j && Number(j.total); if (!(n > 0)) return;'
+         ' var b = document.getElementById("proofNum"), loc = document.documentElement.lang === "en" ? "en-US" : "fr-FR";'
+         ' function show(v){ b.textContent = Math.round(v).toLocaleString(loc); }'
+         ' show(n); p.hidden = false;'
+         ' if (!("IntersectionObserver" in window) || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) return;'
+         ' show(0); var io = new IntersectionObserver(function (e) { if (!e[0].isIntersecting) return; io.disconnect(); var t0 = 0;'
+         '   requestAnimationFrame(function step(t){ if (!t0) t0 = t; var k = Math.min(1, (t - t0) / 900); show(n * (1 - Math.pow(1 - k, 4))); if (k < 1) requestAnimationFrame(step); }); }, { threshold: .6 }); io.observe(p);'
+         ' }).catch(function () {}); })(document.currentScript.previousElementSibling);</script>')
 PROOF = ('<section class="proof"' + (' aria-labelledby="rvT"' if AVIS else '') + '>'
+         + COUNT +
          '<div class="ba"><div class="ba-c ba-no"><h3 data-i18n="ba.no.t">Sans Stalak</h3><p data-i18n="ba.no">Tes prises dorment dans ta galerie. Caler chaque coupe à la main prend des heures, et la bouche décale.</p></div>'
          '<div class="ba-c ba-yes"><div class="ba-yt"><h3 data-i18n="ba.yes.t">Avec Stalak</h3><p data-i18n="ba.yes">Ton son et tes prises, c’est tout. Stalak coupe sur le rythme, garde tes lèvres synchro, et c’est prêt pour TikTok, Reels et Shorts.</p></div>' + BA_VIDEO + '</div></div>'
          + ('<div class="rv-band"><h2 id="rvT" data-i18n="rv.t">Avis clients</h2><p class="rv-avg"><span class="rv-stars" aria-hidden="true">★</span> <span data-i18n="rv.avg">' + rv_avg('fr') + '</span></p>'
             '<div class="rv-view"><ul class="rv-list">' + ''.join(rv_item(r, 'fr') for r in AVIS) + '</ul></div>' + RV_JS + '</div>' if AVIS else '')
-         + '<p class="proof-n" id="proofN" hidden><span data-i18n="proof.a">Déjà</span> <b id="proofNum"></b> <span data-i18n="proof.b">vidéos montées avec Stalak</span></p>'
-         '<script>(function (p) { if (!p || !window.fetch) return;'
-         ' fetch("/api/stats/exports").then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {'
-         ' var n = j && Number(j.total); if (!(n > 0)) return;'
-         ' document.getElementById("proofNum").textContent = n.toLocaleString(document.documentElement.lang === "en" ? "en-US" : "fr-FR"); p.hidden = false;'
-         ' }).catch(function () {}); })(document.currentScript.previousElementSibling);</script></section>\n  ')
+         + '</section>\n  ')
 markup = markup.replace(a, PROOF + '<section class="about" aria-labelledby="aboutT" data-i18n="site.about">' + PAGE['fr']['about'] + '</section>\n  ' + a)
 # the footer: src/footer.py (the same on every page, owner 01/11); in the other language, the app takes it from the dictionary (site.footer)
 assert '<!--FOOTER-->' in markup

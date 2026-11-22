@@ -45,3 +45,8 @@ Les 30 avis envoyés par le propriétaire sont dans `site_src/avis.json`, textes
   Mesuré : pas constant de 0,57 px par image, période = moitié exacte de la liste (pas de saut), pas de défilement horizontal de la page (390, 1280, 1440 px).
 - **Même axe, même largeur** (700 px) : avant / après, avis (titre et note centrés), compteur, « Stalak, c'est quoi ? ».
 - Skills : stalak-da (goûts « tout centré, une chose à regarder, rien de coupé » et « les avis défilent seuls »), taste, motion-design (temps = linéaire, transform seul).
+
+## Compteur mis en avant (23/11, 0 h 20, demande du propriétaire : « il est trop caché »)
+`COUNT` dans `build_site.py`, `.proof-n` dans `theme.css` : le compteur est le premier élément de la partie sous l'éditeur, le chiffre en très gros
+(police de titre, 64 à 104 px), « Déjà » au-dessus et « vidéos montées avec Stalak » dessous. Il compte de 0 au total en 0,9 s à son arrivée à l'écran
+(rien avec « moins d'animations »). Sans réponse de `/api/stats/exports` : toujours caché.
