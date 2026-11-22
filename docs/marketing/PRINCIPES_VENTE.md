@@ -32,6 +32,17 @@ Le propriétaire a envoyé le 22/11/2026 des fiches de conseils marketing à ret
 23. **Le laisser se l'approprier :** on tient plus à ce qui est déjà à soi. Lui montrer SON clip monté, avec son son et son nom, avant de parler de prix.
 24. **Le héros, c'est lui, pas nous.** Personne ne s'intéresse à l'histoire de la marque : raconter son problème et sa victoire. *À concilier avec la décision du 30/10 (« le fondateur parle en son nom : je suis rappeur, j'ai codé Stalak ») : l'histoire du fondateur sert de preuve, en une phrase ; le reste parle du rappeur.*
 
+## Lot 3 (22/11)
+
+25. **Le produit n'est pas la destination, c'est l'outil qui l'y amène.** Personne ne veut « un monteur vidéo » : il veut son snippet posté, qui donne envie d'écouter le son. Vendre le résultat et la transformation.
+26. **L'histoire dans laquelle il se voit est celle qu'il retient.** « Imagine ton snippet posté ce soir, avant la sortie du son » plutôt que « on est les meilleurs » ou « tout a commencé en… ».
+27. **Résultat + émotion + une voix reconnaissable = une marque.** Stalak a déjà la voix (le froid, la mascotte, le « tu ») : s'en servir partout.
+28. **Cinq choses à ne jamais écrire :** commencer par nous (« on est fiers d'annoncer », « voici notre nouveau… ») ; rester vague (« ne rate pas ça », « haute qualité ») ; cacher ce qu'on obtient (« clique pour en savoir plus »). À la place : pourquoi ça le concerne, le problème réglé, une raison précise d'agir, la preuve, et dire exactement ce qu'il a en cliquant.
+29. **Effet de cadrage :** le même fait dit positivement change la décision (« Économise 47 % », « sans filigrane »).
+30. **Montrer le travail :** un résultat instantané paraît sans valeur ; quand on voit l'outil travailler, il vaut plus. Pendant le montage et l'export, dire ce que Stalak fait (« j'écoute ton son », « je cale tes lèvres », « je coupe sur le rythme »).
+31. **Ancrage :** le premier prix vu sert d'échelle. D'où la décision : la formule la plus chère en premier.
+32. **On achète avec l'émotion, on justifie avec la logique.** D'abord faire ressentir (l'histoire, l'avant/après, de vraies transformations d'utilisateurs), ensuite donner les raisons de dire oui (prix, remboursement 14 jours, annulable).
+
 ## Décision liée (22/11)
 
 Sur la page Tarifs et l'écran des formules : **la formule la plus chère en premier**, puis on descend (Creator Plus, Pro, Gratuit). Le prix le plus haut sert de repère et fait paraître Pro raisonnable.
