@@ -222,6 +222,20 @@ test('config exposes only public settings; sign-in providers only when configure
   for (const v of Object.values(OAUTH_ENV)) if (!/client/i.test(v) && v.length > 5 && !v.includes('.')) assert.ok(!JSON.stringify(r.data).includes(v), 'secret leaked');
 });
 
+test('public export counter: the sum of every day of ev_export_ok, nothing else, cached 5 minutes', async () => {
+  const env = makeEnv();
+  let r = await call(env, 'GET', '/api/stats/exports');
+  assert.equal(r.status, 200);
+  assert.deepEqual(r.data, { total: 0 });
+  const ins = env.DB.raw.prepare('INSERT INTO daily_counts (day, name, n) VALUES (?, ?, ?)');
+  ins.run('2026-10-31', 'ev_export_ok', 12); ins.run('2026-11-22', 'ev_export_ok', 263); ins.run('2026-11-22', 'ev_export_fail', 9);
+  r = await call(env, 'GET', '/api/stats/exports');
+  assert.deepEqual(r.data, { total: 275 });
+  assert.match(r.headers.get('cache-control') || '', /max-age=300/);
+  r = await call(env, 'POST', '/api/stats/exports', { body: {} });
+  assert.notEqual(r.status, 200);
+});
+
 test('anonymous /api/me returns free entitlements (no packs)', async () => {
   const r = await call(makeEnv(), 'GET', '/api/me');
   assert.equal(r.status, 200);

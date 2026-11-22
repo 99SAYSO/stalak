@@ -52,8 +52,18 @@
         if ('IntersectionObserver' in window) new IntersectionObserver(function (e) { if (e[0].isIntersecting){ var p = v.play(); if (p && p.catch) p.catch(function () {}); } else v.pause(); }).observe(v);
       })(document.currentScript.previousElementSibling);</script><!--/HEROVIDEO-->
       <div class="hero-txt">
-        <h1 class="hero-h1" data-i18n="hero.h1">Le montage de playback gratuit pour les rappeurs</h1>
-        <p class="hero-s" data-i18n="hero.s">Filme quelques prises sur ton son&nbsp;: Stalak les coupe sur le temps, lèvres synchro.</p>
+        <h1 class="hero-h1" data-i18n="hero.h1">Ton son est prêt. Ton snippet, pas encore ?</h1>
+        <p class="hero-s" data-i18n="hero.s">Filme quelques prises sur ton son. Stalak les coupe sur le rythme, lèvres synchro&nbsp;: ton snippet est prêt à poster ce soir.</p>
+        <!-- Marketing & croissance (22/11, audit vente) : des boutons qui disent ce qu'on obtient. Le premier ouvre le choix du son
+             (le même que « Importer mon son » à l'étape 1), le second lance l'exemple qui existe déjà (#demoBtn) -->
+        <div class="hero-go">
+          <button type="button" class="btn primary hero-start" id="heroStart" data-i18n="hero.go">Monter mon snippet, gratuit</button>
+          <button type="button" class="hero-ex" id="heroEx" data-i18n="hero.ex">Essayer avec un exemple (son et prises fournis)</button>
+        </div>
+        <script>(function (w) { if (!w) return;
+          w.querySelector('#heroStart').addEventListener('click', function () { var f = document.getElementById('songFile'); if (f) f.click(); });
+          w.querySelector('#heroEx').addEventListener('click', function () { var d = document.getElementById('demoBtn'); if (d && !d.disabled) d.click(); });
+        })(document.currentScript.previousElementSibling);</script>
         <!-- Marketing & croissance (07/11, rapport chiffres : le mode Clip, 1re raison d'ouvrir Pro) : choisit « Clip » à l'étape 1
              (#kindSeg, le choix qui existe déjà) et l'amène sous les yeux ; rien d'autre ne change -->
         <button type="button" class="hero-clip" id="heroClip" data-i18n="hero.clip">Essaie le <b>mode Clip</b>&nbsp;: tout ton morceau en 16:9</button>
@@ -87,7 +97,7 @@
         <p class="hint" id="kindHint" data-i18n="kind.hint.reel">Une vidéo verticale 9:16, de tout le son ou de quelques mesures.</p>
       </div>
       <label class="drop" for="songFile" id="songDrop">
-        <strong data-i18n="p1.import">Importer la musique</strong>
+        <strong data-i18n="p1.import">Importer mon son</strong>
         <span data-i18n="p1.import.sub">MP3, WAV, M4A, ou une vidéo : on prend son son</span>
       </label>
       <input type="file" id="songFile" accept="audio/*,video/*,.mp3,.wav,.m4a,.aac,.flac,.ogg,.mp4,.mov,.m4v">

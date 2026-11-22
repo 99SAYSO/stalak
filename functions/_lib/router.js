@@ -19,7 +19,7 @@ import { admin } from './admin.js';
 import { support } from './support.js';
 import { cancelThanks } from './thanks.js';
 import { optinAsk, optinLink } from './optin.js';
-import { presence, bump, event } from './metrics.js';
+import { presence, bump, event, exportTotal } from './metrics.js';
 
 const PROJECT_MAX_BYTES = 256 * 1024; // ~200 KB of project JSON + envelope
 const PROJECT_MAX_COUNT = 200;
@@ -297,6 +297,9 @@ async function dispatch(request, env, ctx) {
     if (STATE_CHANGING.has(method)) checkCsrf(request, env, route === 'me/avatar' && method === 'PUT' ? AVATAR_TYPES : rawUpload || ttChunk ? ['application/octet-stream'] : coverUpload ? COVER_TYPES : []);
 
     switch (route) {
+      case 'stats/exports':   // public: the total of videos exported (home page counter), cached 5 minutes
+        if (method !== 'GET') break;
+        return json(await exportTotal(env), 200, { 'Cache-Control': 'public, max-age=300' });
       case 'config':
         if (method !== 'GET') break;
         return json(config(env), 200, { 'Cache-Control': 'no-store' });

@@ -51,6 +51,13 @@ export async function bump(env, name, n = 1) {
   }
 }
 
+// (22/11, owner's decision) the public counter on the home page: every video exported since the launch, the owner's
+// tests included (« Déjà 275 vidéos montées avec Stalak »). One number, nothing else: no day, no country, no device.
+export async function exportTotal(env) {
+  const r = await env.DB.prepare("SELECT COALESCE(SUM(n), 0) AS t FROM daily_counts WHERE name = 'ev_export_ok'").first();
+  return { total: Number(r && r.t) || 0 };
+}
+
 // +1 on this hour's counter `name` (hourly_counts, migration 0013): only the exports, for the « Heure par heure » page.
 export async function bumpHour(env, name, now = Date.now()) {
   try {

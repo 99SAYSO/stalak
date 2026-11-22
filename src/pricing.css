@@ -156,8 +156,7 @@
 .p4:has(#p4y:checked) .pr-pill.is-y,.p4:has(#p4y:checked) .pr-cta.is-y{display:inline-flex}
 .p4:has(#p4y:checked) .pr-bill.is-y,.p4:has(#p4y:checked) .pr-ribbon.is-y{display:block}
 .p4-plans{display:grid;grid-template-columns:minmax(0,1fr);gap:78px;padding-top:60px;max-width:560px;width:100%;margin:0 auto}
-/* a phone: the highlighted plan first, the free one last */
-.p4-pro{order:-2}.p4-creator{order:-1}
+/* (22/11, owner) the most expensive plan first: Creator Plus, Pro, then Gratuit; the page's order is the same on a phone */
 .p4 .pr-ribbon{position:static;transform:none;animation:none;margin:0 0 10px;white-space:normal;text-align:center;line-height:1.15}
 .p4-free .pr-name{color:#3f5170}.p4-pro .pr-name{color:#0e3f8f}.p4-creator .pr-name{color:#c8186a}
 .p4 .pr-cta.primary{margin-bottom:0}
@@ -205,3 +204,14 @@
 .pr-clip-go{margin:18px 0 0;display:flex;flex-direction:column;align-items:center;gap:22px}   /* room for the button's icicles */
 .pr-clip-go span{font-size:14px;line-height:1.4;color:var(--muted)}
 @media (max-width:600px){ .pr-clip{padding:70px 16px 20px} }
+
+/* Marketing & croissance (22/11, sales audit): the monthly price struck next to the yearly one (the size of « 4,17 $ » unchanged),
+   « Ce que Pro fait pour toi » (results before the features) and one real customer review under each plan (site_src/avis.json) */
+.pr-was{align-self:center;margin-right:9px;color:var(--muted);font:600 21px/1 var(--body);text-decoration:line-through;text-decoration-thickness:2px}
+.pr-does{margin:18px 0 0;padding:12px 14px;background:var(--frost);border:2px solid var(--ink);border-radius:14px;text-align:left}
+.pr-does h4{margin:0 0 6px;font:400 19px/1.2 var(--display)}
+.pr-does ul{margin:0;padding-left:18px}.pr-does li{margin:4px 0;font-size:14.5px;line-height:1.4}
+.pr-rv{align-self:stretch;width:100%;box-sizing:border-box;margin:16px 0 0;padding:12px 0 0;border-top:2px dashed var(--ink);text-align:left}
+.pr-rv blockquote{margin:4px 0 6px;font-size:14.5px;line-height:1.45}
+.rv-stars{color:#e8a200;letter-spacing:1px;font-size:15px;line-height:1}
+.rv-who{margin:0;font:700 13.5px/1.3 var(--body);color:var(--muted)}

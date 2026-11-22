@@ -123,8 +123,10 @@ def inner(lang, page=None, lite=False):
         guides = GUIDES if lang == 'en' else []   # English-only pages: in the English footer only (13/11 audit)
         product = ('<div class="ft-col"><h2 class="ft-h">' + T['product'] + '</h2><ul class="ft-list"><li>' + _a(*T['pricing']) + '</li><li>' + _a(*T['clip']) + '</li>'
                    + ''.join('<li>' + _a('/' + s, n) + '</li>' for s, n in guides) + '<li>' + _a(*T['triller']) + '</li></ul></div>')
-        aide = ('<div class="ft-col"><h2 class="ft-h">' + T['aide'] + '</h2><ul class="ft-list">'
-                + ''.join('<li>' + (_a('/fr/' + fr, nfr) if lang == 'fr' else _a('/' + en, nen)) + '</li>' for fr, en, nfr, nen in AIDE) + '</ul></div>')
+        # Marketing & croissance (22/11, audit: the footer too long under the editor on a phone): the tutorials folded in one group,
+        # opened with a touch (the links stay in the page for search engines)
+        aide = ('<div class="ft-col"><details class="ft-fold"><summary><h2 class="ft-h">' + T['aide'] + ' (' + str(len(AIDE)) + ')</h2></summary><ul class="ft-list">'
+                + ''.join('<li>' + (_a('/fr/' + fr, nfr) if lang == 'fr' else _a('/' + en, nen)) + '</li>' for fr, en, nfr, nen in AIDE) + '</ul></details></div>')
         legal = ('<div class="ft-col"><h2 class="ft-h">' + T['legal'] + '</h2><ul class="ft-list">'
                  + ''.join('<li>' + _a(u, n) + '</li>' for u, n in T['legal_links']) + '</ul></div>')
         cols = brand + product + aide + legal + choices

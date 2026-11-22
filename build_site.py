@@ -80,26 +80,10 @@ PAGE = {
     'ld': 'Stalak est un site de montage de playback (lip sync) : il coupe tes prises sur le rythme de ton son, garde la synchro des lèvres parfaite et exporte pour TikTok, Reels, Shorts et YouTube.',
     'about': """
     <h2 id="aboutT">Stalak, c’est quoi ?</h2>
-    <p><strong>Stalak</strong> est un site de <strong>montage de playback</strong> (lip sync) :
-    tu importes ton son et plusieurs vidéos où tu chantes dessus, et Stalak coupe sur le rythme en passant d’une prise à l’autre,
-    avec une <strong>synchro des lèvres parfaite</strong>. Tu exportes pour <strong>TikTok, Instagram Reels, YouTube Shorts</strong> ou un clip <strong>YouTube</strong> en 16:9.</p>
-    <p><strong>Aucun téléchargement, aucune inscription : 4 étapes et c’est posté.</strong> Stalak marche dans ton navigateur, sur iPhone, Android ou ordinateur, gratuitement et sans créer de compte.</p>
-    <p><strong>Comment faire un playback avec Stalak :</strong></p>
-    <ul>
-      <li>Importe ton son.</li>
-      <li>Ajoute plusieurs prises où tu chantes dessus, filmées avant ou directement avec la caméra de Stalak.</li>
-      <li>Ajoute tes paroles si tu veux : colle-les et cale-les en tapant, ou laisse Stalak les écrire (Stalak Pro).</li>
-      <li>Stalak coupe sur le rythme, passe d’une prise à l’autre, et tu exportes ta vidéo.</li>
-    </ul>
-    <p><strong>Ce que tu peux faire :</strong></p>
-    <ul>
-      <li>Coupes automatiques sur les temps, sur les mots ou par mesure.</li>
-      <li><strong><a href="/fr/clip">Mode Clip</a></strong> : tout ton morceau en clip 16:9 pour YouTube, avec des effets (flash, zoom, rafales de plans, secousses, ralentis) sur les moments forts : drops, refrains, breaks. Essaie-le gratuitement dans l’aperçu ; l’export du clip est avec Stalak Pro.</li>
-      <li>Paroles à l’écran en phrase entière ; mot par mot et karaoké avec Stalak Pro.</li>
-      <li>Paroles écrites et calées automatiquement à partir de ta voix (Stalak Pro).</li>
-      <li>Packs de 5 à 30 vidéos aux coupes différentes du même son, dès 2 prises (Creator Plus).</li>
-      <li>Le montage se fait dans ton navigateur, sur iPhone, Android ou ordinateur : tes vidéos restent sur ton appareil, sauf tes projets en ligne, enregistrés automatiquement avec Creator Plus, et le son envoyé pour tes paroles automatiques.</li>
-    </ul>
+    <p><strong>Stalak</strong> est un site de <strong>montage de playback</strong> (lip sync) : tu importes ton son et quelques prises où tu rappes dessus,
+    Stalak passe d’une prise à l’autre sur le rythme, lèvres synchro, et tu exportes pour <strong>TikTok, Reels et Shorts</strong>,
+    ou tout ton morceau en clip <strong>YouTube</strong> 16:9 avec le <a href="/fr/clip">mode Clip</a> (export avec Stalak Pro).</p>
+    <p>Gratuit, dans ton navigateur, sans compte ni téléchargement. <a href="/fr/comment-faire-un-playback">Comment faire un playback, pas à pas</a></p>
   """,
   },
   'en': {
@@ -109,26 +93,10 @@ PAGE = {
     'ld': 'Stalak is a free, browser-based lip-sync video editor for rappers and singers. It cuts between your takes on the beat of your song, keeps the lip sync tight and exports for TikTok, Reels, YouTube Shorts and YouTube.',
     'about': """
     <h2 id="aboutT">What is Stalak?</h2>
-    <p><strong>Stalak</strong> is a <strong>lip-sync video editor</strong> for rappers and singers.
-    Drop in your song and a few videos of you performing it, and Stalak cuts between your takes on the beat,
-    with <strong>the lip sync locked in</strong>. Export for <strong>TikTok, Instagram Reels and YouTube Shorts</strong>, or a full 16:9 music video for <strong>YouTube</strong>.</p>
-    <p><strong>No download. No sign-up. 4 steps and you’re ready to post.</strong> Stalak runs right in your browser on iPhone, Android or desktop. It’s free, and you don’t need an account.</p>
-    <p><strong>How to make a lip-sync video with Stalak</strong> (<a href="/how-to-make-a-lip-sync-video">step-by-step guide</a>):</p>
-    <ul>
-      <li>Upload your song.</li>
-      <li>Add a few takes of you performing it. Film them ahead of time, or right in Stalak’s camera.</li>
-      <li>Add your lyrics if you want: paste them and tap along, or let Stalak write them (Stalak Pro).</li>
-      <li>Stalak cuts between your takes on the beat. Hit export and post.</li>
-    </ul>
-    <p><strong>What you can do:</strong></p>
-    <ul>
-      <li>Auto cuts that land on the beat: phrase by phrase, on your lines and rhymes, or every bar.</li>
-      <li><strong><a href="/music-video">Music video mode</a></strong>: your whole song as a 16:9 video for YouTube, with effects (flash, zoom, bursts of shots, shakes, slow-mo) on the big moments: drops, choruses, breaks. Try it free in the preview; exporting the video takes Stalak Pro.</li>
-      <li>On-screen lyrics, one line at a time; word-by-word and karaoke styles with Stalak Pro.</li>
-      <li>Auto lyrics: Stalak writes and syncs your lyrics from your vocals (Stalak Pro).</li>
-      <li>Video packs: 5 to 30 differently cut videos from one song, from just 2 takes (Creator Plus).</li>
-      <li>Everything happens in your browser, so your videos stay on your device. The only exceptions: your cloud projects, saved automatically with Creator Plus, and the audio sent for auto lyrics.</li>
-    </ul>
+    <p><strong>Stalak</strong> is a <strong>lip-sync video editor</strong> for rappers and singers: drop in your song and a few takes of you performing it,
+    and Stalak cuts between them on the beat, lips in sync. Export for <strong>TikTok, Reels and Shorts</strong>,
+    or your whole song as a 16:9 <strong>YouTube</strong> video with <a href="/music-video">Music video mode</a> (export with Stalak Pro).</p>
+    <p>Free, in your browser, no account, no download. <a href="/how-to-make-a-lip-sync-video">How to make a lip-sync video, step by step</a></p>
   """,
   },
 }
@@ -139,7 +107,35 @@ if EMAIL:
     js = js.replace("const SUPPORT_EMAIL = '';", 'const SUPPORT_EMAIL = ' + json.dumps(EMAIL) + ';')
 a = '<div class="byalaska" id="byAlaska">by Alaska</div>'
 assert a in markup
-markup = markup.replace(a, '<section class="about" aria-labelledby="aboutT" data-i18n="site.about">' + PAGE['fr']['about'] + '</section>\n  ' + a)
+# Marketing & croissance (22/11, sales audit, owner's decisions): before / after, the customer reviews and the counter, just above
+# « Stalak, c'est quoi ? ». The reviews: site_src/avis.json, word for word as the owner gave them ({pseudo, note 1-5, texte,
+# formule: free | pro | creator}); « Avis clients », the average of all of them, no « achat vérifié » badge (not bought through Paddle).
+# No review in the file: no band. The counter: every video exported since the launch (/api/stats/exports); hidden if it doesn't load.
+AVIS = json.loads((extra / 'avis.json').read_text(encoding='utf-8')) if (extra / 'avis.json').exists() else []
+PLAN_NAME = {'free': {'fr': 'Gratuit', 'en': 'Free'}, 'pro': {'fr': 'Stalak Pro', 'en': 'Stalak Pro'}, 'creator': {'fr': 'Creator Plus', 'en': 'Creator Plus'}}
+for _r in AVIS:
+    assert set(_r) >= {'pseudo', 'note', 'texte', 'formule'}, 'avis.json: pseudo, note, texte and formule for each review'
+    assert _r['note'] in (1, 2, 3, 4, 5) and _r['formule'] in PLAN_NAME and str(_r['texte']).strip(), 'avis.json: a note from 1 to 5 and a known formule'
+def rv_item(r, lang, tag='li', cls=''):
+    n = int(r['note'])
+    return ('<' + tag + (' class="' + cls + '"' if cls else '') + '><span class="rv-stars" role="img" aria-label="' + str(n) + '/5">' + '★' * n + '☆' * (5 - n) + '</span>'
+            '<blockquote lang="fr">' + H.escape(str(r['texte'])) + '</blockquote><p class="rv-who">' + H.escape(str(r['pseudo'])) + ' · ' + PLAN_NAME[r['formule']][lang] + '</p></' + tag + '>')
+def rv_avg(lang):
+    m = sum(int(r['note']) for r in AVIS) / len(AVIS); n = len(AVIS)
+    if lang == 'fr': return ('%.1f' % m).replace('.', ',') + ' sur 5 · ' + str(n) + (' avis clients' if n > 1 else ' avis client')
+    return ('%.1f' % m) + ' out of 5 · ' + str(n) + (' customer reviews' if n > 1 else ' customer review')
+PROOF = ('<section class="proof"' + (' aria-labelledby="rvT"' if AVIS else '') + '>'
+         '<div class="ba"><div class="ba-c ba-no"><h3 data-i18n="ba.no.t">Sans Stalak</h3><p data-i18n="ba.no">Tes prises dorment dans ta galerie. Caler chaque coupe à la main prend des heures, et la bouche décale.</p></div>'
+         '<div class="ba-c ba-yes"><h3 data-i18n="ba.yes.t">Avec Stalak</h3><p data-i18n="ba.yes">Ton son et tes prises, c’est tout. Stalak coupe sur le rythme, garde tes lèvres synchro, et c’est prêt pour TikTok, Reels et Shorts.</p></div></div>'
+         + ('<div class="rv-band"><h2 id="rvT" data-i18n="rv.t">Avis clients</h2><p class="rv-avg"><span class="rv-stars" aria-hidden="true">★</span> <span data-i18n="rv.avg">' + rv_avg('fr') + '</span></p>'
+            '<ul class="rv-list">' + ''.join(rv_item(r, 'fr') for r in AVIS) + '</ul></div>' if AVIS else '')
+         + '<p class="proof-n" id="proofN" hidden><span data-i18n="proof.a">Déjà</span> <b id="proofNum"></b> <span data-i18n="proof.b">vidéos montées avec Stalak</span></p>'
+         '<script>(function (p) { if (!p || !window.fetch) return;'
+         ' fetch("/api/stats/exports").then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {'
+         ' var n = j && Number(j.total); if (!(n > 0)) return;'
+         ' document.getElementById("proofNum").textContent = n.toLocaleString(document.documentElement.lang === "en" ? "en-US" : "fr-FR"); p.hidden = false;'
+         ' }).catch(function () {}); })(document.currentScript.previousElementSibling);</script></section>\n  ')
+markup = markup.replace(a, PROOF + '<section class="about" aria-labelledby="aboutT" data-i18n="site.about">' + PAGE['fr']['about'] + '</section>\n  ' + a)
 # the footer: src/footer.py (the same on every page, owner 01/11); in the other language, the app takes it from the dictionary (site.footer)
 assert '<!--FOOTER-->' in markup
 markup = markup.replace('<!--FOOTER-->', FOOT.render('fr', i18n='site.footer'))
@@ -156,6 +152,10 @@ def block(name):
     return m
 EN = json.loads(block('EN').group(1)); FR = json.loads(block('FR').group(1))
 EN.update({'doc.title': PAGE['en']['title'], 'site.about': PAGE['en']['about'], 'site.footer': FOOT.inner('en')})
+EN.update({'ba.no.t': 'Without Stalak', 'ba.no': 'Your takes sit in your camera roll. Lining up every cut by hand takes hours, and the lips drift.',
+           'ba.yes.t': 'With Stalak', 'ba.yes': 'Your song and your takes, that’s it. Stalak cuts on the beat, keeps your lips in sync, and it’s ready for TikTok, Reels and Shorts.',
+           'rv.t': 'Customer reviews', 'proof.a': 'Already', 'proof.b': 'videos made with Stalak'})
+if AVIS: EN['rv.avg'] = rv_avg('en')
 FR.update({'doc.title': PAGE['fr']['title']})
 
 TAG = re.compile(r'<(\w+)\b([^>]*?)\bdata-i18n="([^"]+)"([^>]*)>(.*?)</\1>', re.S)
@@ -337,6 +337,10 @@ for p in [f for f in list(out.glob('*.html')) + list((out / 'fr').glob('*.html')
                  ('MED_NOM', MED['nom']), ('MED_SITE', MED['site'])):
         t = t.replace('{{' + k + '}}', H.escape(v))
     t = t.replace('<!--DEMO-->', '').replace('<!--/DEMO-->', '') if DEMO else re.sub(r'<!--DEMO-->.*?<!--/DEMO-->', '', t, flags=re.S)
+    # (22/11) one customer review under each plan of Pricing: the first one of avis.json for that plan, or nothing
+    for _k in PLAN_NAME:
+        _r = next((r for r in AVIS if r['formule'] == _k), None)
+        t = t.replace('<!--AVIS:' + _k + '-->', rv_item(_r, 'fr' if fr else 'en', 'div', 'pr-rv') if _r else '')
     assert '{{' not in t, 'a {{…}} is left in ' + str(p)
     # the footer: the same on every page (src/footer.py), in the page's language, with « Français / English » to the same page
     assert t.count('<footer>') == 1 and t.count('</footer>') == 1, 'one <footer> expected in ' + str(p)
