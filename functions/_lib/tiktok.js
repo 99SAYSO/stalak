@@ -57,17 +57,28 @@ const TT_ERRORS = {
   rate_limit_exceeded: [429, 'tt_rate', 'TikTok asks to wait a little. Try again in a minute.'],
 };
 function ttFail(body, status, where) {
+  // 22/11: TikTok did not answer in time (no status): said as such, the page tries again
+  if (!status) return new HttpError(504, 'tt_timeout', 'TikTok did not answer in time. Try again in a moment.');
   const code = String((body && body.error && body.error.code) || '');
   const known = TT_ERRORS[code];
   console.warn('[stalak] tiktok', where, status, code || '-', body && body.error && body.error.log_id);
   if (known) return new HttpError(known[0], known[1], known[2]);
   return new HttpError(502, 'tt_error', 'TikTok did not answer as expected. Try again in a moment.');
 }
+// 22/11 (a draft that « spun forever » on an iPhone on 21/11): every call to TikTok has a time limit, so a request that
+// TikTok never answers can no longer keep the page waiting. No answer = { res: { status: 0 } } (ttFail → 504 tt_timeout).
+export const TT_TIMEOUT_MS = 15000, TT_UPLOAD_TIMEOUT_MS = 60000;
 async function tt(token, path, body, method = 'POST') {
-  const res = await fetch(API + path, {
-    method, headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json; charset=UTF-8' },
-    body: method === 'POST' ? JSON.stringify(body || {}) : undefined,
-  });
+  let res;
+  try {
+    res = await fetch(API + path, {
+      method, headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json; charset=UTF-8' },
+      body: method === 'POST' ? JSON.stringify(body || {}) : undefined, signal: AbortSignal.timeout(TT_TIMEOUT_MS),
+    });
+  } catch (e) {
+    console.warn('[stalak] tiktok no answer', path, (e && e.name) || '-');
+    return { res: { status: 0, ok: false }, body: {}, ok: false, text: '' };
+  }
   const text = await res.text().catch(() => '');
   let b = {};
   try { b = JSON.parse(text); } catch {}
@@ -229,8 +240,15 @@ async function publishChunk(request, env, id, nRaw, now) {
   const buf = await request.arrayBuffer();
   if (buf.byteLength !== want) throw new HttpError(400, 'bad_length', 'Wrong piece size.');
   const url = await openToken(env, row.upload_url_enc, `${user.id}:tiktok:upload:${id}`);
-  const res = await fetch(url, { method: 'PUT', body: buf, headers: {
-    'Content-Type': 'video/mp4', 'Content-Length': String(want), 'Content-Range': `bytes ${first}-${last}/${row.video_size}` } });
+  let res;
+  try {
+    res = await fetch(url, { method: 'PUT', body: buf, signal: AbortSignal.timeout(TT_UPLOAD_TIMEOUT_MS), headers: {
+      'Content-Type': 'video/mp4', 'Content-Length': String(want), 'Content-Range': `bytes ${first}-${last}/${row.video_size}` } });
+  } catch (e) {
+    // 22/11: TikTok's upload address did not answer in time; the page sends this piece again
+    console.warn('[stalak] tiktok upload no answer', (e && e.name) || '-');
+    throw new HttpError(504, 'tt_timeout', 'TikTok did not answer in time. Try again in a moment.');
+  }
   if (!(res.status === 200 || res.status === 201 || res.status === 206)) {
     console.warn('[stalak] tiktok upload', res.status);
     if (res.status === 403) {

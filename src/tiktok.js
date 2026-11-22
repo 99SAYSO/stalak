@@ -58,6 +58,11 @@ const TXT = {
     'e.not_connected': 'Relie d’abord ton compte TikTok.', 'e.tt_rate': 'TikTok demande d’attendre un peu. Réessaie dans une minute.',
     'e.upload_expired': 'L’envoi a pris trop de temps. Recommence.', 'e.rate_limited': 'Trop d’envois pour l’instant. Réessaie plus tard.',
     'e.generic': 'Ça n’a pas marché. Réessaie dans un instant.', 'e.offline': 'Pas de connexion. Vérifie ton réseau.',
+    // Comptes, 22/11: time limits on the sending
+    'e.timeout': 'TikTok met trop de temps à répondre. Réessaie dans un instant.', 'e.tt_timeout': 'TikTok met trop de temps à répondre. Réessaie dans un instant.',
+    'st.stuck': 'L’envoi est bloqué depuis plus de 2 minutes (connexion coupée ou trop lente). Vérifie ton réseau, puis réessaie.',
+    'st.slowDraft': 'TikTok ne nous a pas encore confirmé l’envoi. Ta vidéo est peut-être déjà arrivée : regarde ta boîte de réception dans l’appli TikTok. Sinon, réessaie.',
+    'st.check': 'Vérifier encore',
     'ms.t': 'Mes stats TikTok', 'ms.followers': 'abonnés', 'ms.likes': 'j’aime', 'ms.videos': 'vidéos', 'ms.last': 'Tes dernières vidéos',
     'ms.views': 'vues', 'ms.loading': 'Chargement de tes stats…', 'ms.none': 'Pas encore de vidéo sur ce compte.',
     'ms.proT': 'L’analyse détaillée, avec Pro', 'ms.proP': 'Sur toutes tes vidéos, faites avec Stalak ou non : le jour et l’heure qui marchent le mieux, la durée, les hashtags, et le passage du son qui a le mieux marché pour les vidéos publiées depuis Stalak.',
@@ -108,6 +113,10 @@ const TXT = {
     'e.not_connected': 'Link your TikTok account first.', 'e.tt_rate': 'TikTok asks to wait a little. Try again in a minute.',
     'e.upload_expired': 'Sending took too long. Start again.', 'e.rate_limited': 'Too many sendings for now. Try again later.',
     'e.generic': 'That didn’t work. Try again in a moment.', 'e.offline': 'No connection. Check your network.',
+    'e.timeout': 'TikTok is taking too long to answer. Try again in a moment.', 'e.tt_timeout': 'TikTok is taking too long to answer. Try again in a moment.',
+    'st.stuck': 'Sending has been stuck for more than 2 minutes (connection lost or too slow). Check your network, then try again.',
+    'st.slowDraft': 'TikTok hasn’t confirmed the sending yet. Your video may already be there: check your inbox in the TikTok app. If not, try again.',
+    'st.check': 'Check again',
     'ms.t': 'My TikTok stats', 'ms.followers': 'followers', 'ms.likes': 'likes', 'ms.videos': 'videos', 'ms.last': 'Your latest videos',
     'ms.views': 'views', 'ms.loading': 'Loading your stats…', 'ms.none': 'No video on this account yet.',
     'ms.proT': 'The detailed analysis, with Pro', 'ms.proP': 'Across all your videos, made with Stalak or not: the day and time that work best, length, hashtags, and the part of the song that worked best for videos posted from Stalak.',
@@ -131,14 +140,24 @@ const el = (tag, attrs, ...kids) => {
 const fmt = (n) => { try { return new Intl.NumberFormat(lang() === 'en' ? 'en-US' : 'fr-FR', { notation: n >= 10000 ? 'compact' : 'standard', maximumFractionDigits: 1 }).format(n || 0); } catch (e) { return String(n || 0); } };
 const fdate = (ms) => { try { return new Date(ms).toLocaleDateString(lang() === 'en' ? 'en-US' : 'fr-FR', { day: 'numeric', month: 'short' }); } catch (e) { return ''; } };
 
-async function api(method, path, body, extra) {
+// 22/11 (a draft that « spun forever » on an iPhone, 21/11): every request has a time limit. On an iPhone a request
+// left waiting while Safari is in the background (the person opens TikTok to look) can stay pending for good:
+// it is stopped after `ms` and counts as « timeout ». A piece of video gets more time than a small question.
+// (the tests shorten these times with window.__ttkTimes, set before the page loads; nothing else sets it)
+const TIMES = Object.assign({ api: 25000, chunk: 120000, stuck: 2 * 60e3, wait: 3 * 60e3 }, (window.__ttkTimes && typeof window.__ttkTimes === 'object') ? window.__ttkTimes : {});
+const API_MS = TIMES.api, CHUNK_MS = TIMES.chunk;
+async function api(method, path, body, extra, ms) {
   if (body === undefined && method !== 'GET' && !(extra && extra.body !== undefined)) body = {};   // the server wants JSON on every change (CSRF check)
-  let res;
+  const ctl = typeof AbortController === 'function' ? new AbortController() : null;
+  let late = false;
+  const timer = ctl ? setTimeout(() => { late = true; ctl.abort(); }, ms || API_MS) : 0;
+  let res, data;
   try {
     res = await fetch(path, Object.assign({ method, credentials: 'same-origin', headers: body !== undefined ? { 'Content-Type': 'application/json' } : {},
-      body: body !== undefined ? JSON.stringify(body) : undefined }, extra || {}));
-  } catch (e) { const er = new Error('offline'); er.code = 'offline'; throw er; }
-  const data = await res.json().catch(() => ({}));
+      body: body !== undefined ? JSON.stringify(body) : undefined, signal: ctl ? ctl.signal : undefined }, extra || {}));
+    data = await res.json().catch(() => ({}));
+  } catch (e) { const er = new Error(late ? 'timeout' : 'offline'); er.code = late ? 'timeout' : 'offline'; throw er; }
+  finally { clearTimeout(timer); }
   if (!res.ok) { const er = new Error(data.message || 'error'); er.code = data.error || 'generic'; er.status = res.status; er.data = data; throw er; }
   return data;
 }
@@ -349,36 +368,84 @@ async function send(form, ex, st, caption, dur, c) {
       meta: { song: ex.song, start: ex.start, end: ex.end, format: ex.format },
     });
   } catch (e) { fail(errText(e), e); return; }
-  for (let n = 0; n < start.chunks; n++) {
-    if (layer !== L) return;
-    const a = n * start.chunkSize, b = n === start.chunks - 1 ? ex.blob.size : a + start.chunkSize;
-    let ok = false, last;
-    for (let k = 0; k < 3 && !ok; k++) {
-      try { await api('PUT', `/api/tiktok/publish/${start.id}/chunk/${n}`, undefined, { headers: { 'Content-Type': 'application/octet-stream' }, body: ex.blob.slice(a, b) }); ok = true; }
-      catch (e) { last = e; if (e.code === 'upload_expired' || e.status === 409 || e.status === 404) break; await new Promise((r) => setTimeout(r, 1500 * (k + 1))); }
-    }
-    if (!ok) { fail(errText(last), last); return; }
-    const p = Math.round(((n + 1) / start.chunks) * 100); bar.value = p; msg.textContent = t('st.send', { p });
+  // 22/11 (a draft that « spun forever » on an iPhone, 21/11): a watchdog that does not depend on any request, so a
+  // request left hanging can never block it. While sending: no progress for 2 min → stopped with a clear message. Then
+  // the status is followed for 3 min at most (a draft: « look in your TikTok inbox »), with « Vérifier encore ».
+  // Back on the page (after a look at the TikTok app), the status is asked again at once.
+  const STUCK_MS = TIMES.stuck, WAIT_MS = TIMES.wait;
+  let phase = 'up', beat = Date.now(), over = false, inFlight = false, dog = 0;
+  const dead = () => over || layer !== L;
+  const onShow = () => { if (document.visibilityState === 'visible' && phase === 'wait' && !inFlight && !dead()) { stopPoll(); poll(); } };
+  const check = () => {
+    if (layer !== L) { stop(); return; }
+    if (phase === 'up' && Date.now() - beat > STUCK_MS) end(t('st.stuck'));
+    else if (phase === 'wait' && Date.now() - beat > WAIT_MS) end(st.mode === 'draft' ? t('st.slowDraft') : t('st.later'), true);
+  };
+  function arm() { over = false; clearInterval(dog); dog = setInterval(check, 2000); document.addEventListener('visibilitychange', onShow); }
+  function stop() { over = true; clearInterval(dog); dog = 0; stopPoll(); document.removeEventListener('visibilitychange', onShow); }
+  function end(text, again) {
+    if (dead()) return;
+    stop(); L._busy = false; msg.textContent = text;
+    const btns = [];
+    if (again) btns.push(el('button', { class: 'btn primary', type: 'button', text: t('st.check'), onclick: () => follow() }));
+    btns.push(el('button', { class: 'btn', type: 'button', text: t('pub.close'), onclick: () => close() }));
+    out.replaceChildren(msg, ...btns);
   }
+  const failS = (text, e) => { if (dead()) return; stop(); fail(text, e); };
+  arm();
+  for (let n = 0; n < start.chunks; n++) {
+    if (dead()) return;
+    const a = n * start.chunkSize, b = n === start.chunks - 1 ? ex.blob.size : a + start.chunkSize;
+    let ok = false, last, sentAll = false;
+    for (let k = 0; k < 3 && !ok; k++) {
+      try { await api('PUT', `/api/tiktok/publish/${start.id}/chunk/${n}`, undefined, { headers: { 'Content-Type': 'application/octet-stream' }, body: ex.blob.slice(a, b) }, CHUNK_MS); ok = true; }
+      catch (e) {
+        last = e;
+        if (dead()) return;
+        // the answer to a piece that did arrive was lost: the server already has it (« bad_chunk » says which one is
+        // next), or, after the last piece, the whole video (« not_uploading »)
+        if (e.code === 'bad_chunk' && e.data && e.data.next > n) { ok = true; n = e.data.next - 1; break; }
+        if (e.code === 'not_uploading') { ok = true; sentAll = true; break; }
+        if (e.code === 'upload_expired' || e.status === 409 || e.status === 404) break;
+        await new Promise((r) => setTimeout(r, 1500 * (k + 1)));
+      }
+    }
+    if (dead()) return;
+    if (!ok) { failS(errText(last), last); return; }
+    beat = Date.now();
+    const p = sentAll ? 100 : Math.round(((n + 1) / start.chunks) * 100); bar.value = p; msg.textContent = t('st.send', { p });
+    if (sentAll) break;
+  }
+  if (dead()) return;
   msg.textContent = t('st.proc'); bar.removeAttribute('value');
   out.append(el('p', { class: 'ttk-note', text: t('st.wait') }));
-  const t0 = Date.now();
-  const poll = async () => {
-    if (layer !== L) return;
+  async function poll() {
+    if (dead()) return;
     let s;
+    inFlight = true;
     try { s = await api('GET', `/api/tiktok/publish/${start.id}`); } catch (e) { s = { status: 'processing' }; }
+    inFlight = false;
+    if (dead()) return;
     if (s.status === 'published') {
-      L._busy = false; bar.remove();
+      stop(); L._busy = false;
       msg.textContent = st.privacy === 'SELF_ONLY' ? t('st.pubPriv') : t('st.pub');
       out.replaceChildren(msg, s.url ? el('a', { class: 'btn primary', href: s.url, target: '_blank', rel: 'noopener', text: t('st.see') }) : el('p', { class: 'ttk-note', text: t('st.wait') }),
         el('button', { class: 'btn', type: 'button', text: t('pub.close'), onclick: () => close() }));
       return;
     }
-    if (s.status === 'inbox') { L._busy = false; bar.remove(); msg.textContent = t('st.inbox'); out.replaceChildren(msg, el('button', { class: 'btn', type: 'button', text: t('pub.close'), onclick: () => close() })); return; }
-    if (s.status === 'failed') { fail(t('st.fail') + ' ' + (TXT.fr['f.' + s.failReason] ? t('f.' + s.failReason) : '')); return; }
-    if (Date.now() - t0 > 5 * 60e3) { L._busy = false; bar.remove(); msg.textContent = t('st.later'); out.append(el('button', { class: 'btn', type: 'button', text: t('pub.close'), onclick: () => close() })); return; }
-    pollT = setTimeout(poll, 4000);
-  };
+    if (s.status === 'inbox') { stop(); L._busy = false; msg.textContent = t('st.inbox'); out.replaceChildren(msg, el('button', { class: 'btn', type: 'button', text: t('pub.close'), onclick: () => close() })); return; }
+    if (s.status === 'failed') { failS(t('st.fail') + ' ' + (TXT.fr['f.' + s.failReason] ? t('f.' + s.failReason) : '')); return; }
+    stopPoll(); pollT = setTimeout(poll, 4000);
+  }
+  // « Vérifier encore »: the status is followed again for 3 minutes
+  function follow() {
+    if (layer !== L) return;
+    phase = 'wait'; beat = Date.now(); L._busy = true;
+    msg.textContent = t('st.proc');
+    out.replaceChildren(msg, el('progress', { class: 'ttk-bar', max: '100' }), el('p', { class: 'ttk-note', text: t('st.wait') }));
+    arm(); poll();
+  }
+  phase = 'wait'; beat = Date.now();
   pollT = setTimeout(poll, 2500);
 }
 

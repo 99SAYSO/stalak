@@ -27,9 +27,11 @@ FAST_EXPORT = ("pickVideoConfig = async () => null, renderRealtime = async () =>
                "return { blob: new Blob([new Uint8Array(4096)], { type: 'video/mp4' }), ext: 'mp4' }; }")
 T = {
     'fr': {'pub': 'Publier sur TikTok', 'link': 'Relier TikTok', 'unlink': 'Délier', 'stats': 'Mes stats', 'pick': 'Choisis…',
-           'go': 'Publier', 'see': 'Voir sur TikTok', 'music': 'confirmation d’utilisation de la musique', 'bc': 'politique sur le contenu de marque', 'proT': 'Pro'},
+           'go': 'Publier', 'see': 'Voir sur TikTok', 'music': 'confirmation d’utilisation de la musique', 'bc': 'politique sur le contenu de marque', 'proT': 'Pro',
+           'check': 'Vérifier encore', 'slow': 'regarde ta boîte de réception', 'sent': 'C’est envoyé', 'stuck': 'bloqué'},
     'en': {'pub': 'Post to TikTok', 'link': 'Link TikTok', 'unlink': 'Unlink', 'stats': 'My stats', 'pick': 'Choose…',
-           'go': 'Post', 'see': 'See it on TikTok', 'music': 'Music Usage Confirmation', 'bc': 'Branded Content Policy', 'proT': 'Pro'},
+           'go': 'Post', 'see': 'See it on TikTok', 'music': 'Music Usage Confirmation', 'bc': 'Branded Content Policy', 'proT': 'Pro',
+           'check': 'Check again', 'slow': 'check your inbox', 'sent': 'Sent ✓', 'stuck': 'stuck'},
 }
 PRO_FEATS = ['nowm', 'clip', 'fx', 'text', 'filters', 'lyrics', 'tiktok', 'nologo', 'unlimited']
 AV = 'data:image/svg+xml,' + '%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 4 4%22%3E%3Crect width=%224%22 height=%224%22 fill=%22%231f6fd6%22/%3E%3C/svg%3E'
@@ -75,6 +77,15 @@ def server(ctx, st):
         path = re.sub(r'^https?://[^/]+', '', req.url).split('?')[0]
         m = req.method
         st['calls'].append((m, path))
+        # 22/11: the same rule as the real server (functions/_lib/http.js checkCsrf): every call that changes something
+        # sends JSON (« Délier » sent none on 21/11 and was refused); only the pieces of video are raw bytes
+        if m not in ('GET', 'HEAD', 'OPTIONS'):
+            ct = (req.headers.get('content-type') or '').lower()
+            raw = m == 'PUT' and re.match(r'^/api/tiktok/publish/[^/]+/chunk/\d+$', path)
+            if not (ct.startswith('application/json') or (raw and ct.split(';')[0].strip() == 'application/octet-stream')):
+                st.setdefault('bad', []).append((m, path, ct))
+                return route.fulfill(status=415, content_type='application/json', body=json.dumps({'error': 'json_required'}))
+            st.setdefault('changes', []).append((m, path, ct))
         def js(o, status=200): route.fulfill(status=status, content_type='application/json', body=json.dumps(o))
         if path == '/api/me':
             return js({'user': {'id': 'u1', 'email': 'a@b.c', 'createdAt': '2026-01-01T00:00:00Z'}, 'session': {'id': 's'},
@@ -95,8 +106,14 @@ def server(ctx, st):
             st['sent'] = json.loads(req.post_data or '{}')
             return js({'id': 'ttp_' + '0' * 24, 'mode': st['sent'].get('mode'), 'chunkSize': 4096, 'chunks': 1})
         if re.match(r'^/api/tiktok/publish/ttp_0+/chunk/\d+$', path):
+            if st.get('lostAnswer'):   # the piece arrived but its answer was lost: the next try hears « already sent »
+                st['lostAnswer'] = False; st['chunks'] = st.get('chunks', 0) + 1
+                return route.abort('connectionreset')
+            if st.get('chunks', 0) >= 1 and st.get('mode1'): return js({'error': 'not_uploading'}, 409)
             st['chunks'] = st.get('chunks', 0) + 1; return js({'ok': True, 'done': True})
         if re.match(r'^/api/tiktok/publish/ttp_0+$', path):
+            if st.get('hang'):   # TikTok / the network never answers (the 21/11 iPhone case): the request stays pending
+                st.setdefault('hung', []).append(route); return
             if st['sent'].get('mode') == 'draft': return js({'status': 'inbox'})
             return js({'status': 'published', 'url': 'https://www.tiktok.com/@stalak_app/video/7311111111111111111'})
         if path == '/api/tiktok/stats':
@@ -111,6 +128,8 @@ def new_page(b, base, lang, iphone, PW, st):
     ctx = b.new_context(**opts, locale='en-US' if lang == 'en' else 'fr-FR')
     server(ctx, st)
     ctx.add_init_script("try { localStorage.setItem('stalak:proThanks:u1', '1'); } catch (e) {}")
+    # shorter time limits than on the real site (25 s per call, 2 min without progress, 3 min of waiting)
+    ctx.add_init_script("window.__ttkTimes = { api: 3000, chunk: 4000, stuck: 6000, wait: 6000 };")
     pg = ctx.new_page(); errs = []
     pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
     pg.on('dialog', lambda d: d.accept())
@@ -238,6 +257,44 @@ def flow(b, base, lang, iphone, PW, pro):
         check(tag + ' : brouillon : envoyé dans la boîte de réception TikTok', st['sent'].get('mode') == 'draft' and pg.locator('.ttk-out a.btn.primary').count() == 0
               and pg.locator('.ttk-out .ttk-st').count() == 1, pg.locator('.ttk-out').inner_text())
         pg.keyboard.press('Escape'); pg.wait_for_timeout(200)
+        # 22/11: the draft that « spun forever » (21/11, iPhone): TikTok never answers → after the time limit, a clear
+        # message (look in the TikTok inbox) and « Vérifier encore », which finds the draft once TikTok answers again
+        st['chunks'] = 0; st['hang'] = True
+        pg.locator('#ttkPub').click(); pg.wait_for_selector('#ttkGo', timeout=8000)
+        pg.locator('input[name=ttkMode][value=draft]').check(); pg.locator('#ttkGo').click()
+        pg.wait_for_selector('.ttk-out button.btn.primary', timeout=20000)
+        o = pg.locator('.ttk-out').inner_text()
+        check(tag + ' : brouillon bloqué : message clair après la limite de temps (« %s ») et « %s »' % (t['slow'], t['check']),
+              t['slow'] in o and pg.locator('.ttk-out button.btn.primary').inner_text().strip() == t['check'] and pg.locator('.ttk-out progress').count() == 0, o)
+        check(tag + ' : brouillon bloqué : la fenêtre peut se fermer (Échap)', not pg.evaluate("() => !!(document.querySelector('.ttk-layer') || {})._busy"))
+        st['hang'] = False
+        pg.locator('.ttk-out button.btn.primary').click(); pg.wait_for_timeout(1500)
+        o = pg.locator('.ttk-out').inner_text()
+        check(tag + ' : « %s » : le brouillon est retrouvé (« %s »)' % (t['check'], t['sent']), t['sent'] in o, o)
+        shot(pg, 'tiktok-brouillon-bloque', iphone, lang)
+        pg.keyboard.press('Escape'); pg.wait_for_timeout(200)
+        for r in st.get('hung', []):
+            try: r.abort()
+            except Exception: pass
+        # the answer to the last piece was lost on the way back: the video is not sent twice and the draft is found
+        st['chunks'] = 0; st['lostAnswer'] = True; st['mode1'] = True
+        pg.locator('#ttkPub').click(); pg.wait_for_selector('#ttkGo', timeout=8000)
+        pg.locator('input[name=ttkMode][value=draft]').check(); pg.locator('#ttkGo').click()
+        pg.wait_for_timeout(6000)
+        o = pg.locator('.ttk-out').inner_text()
+        check(tag + ' : réponse perdue après le dernier morceau : pas d’erreur, brouillon retrouvé', t['sent'] in o and st['chunks'] == 1, (o, st['chunks']))
+        st['mode1'] = False
+        pg.keyboard.press('Escape'); pg.wait_for_timeout(200)
+    # « Délier » (broken on 21/11: its DELETE carried no JSON)
+    ev(pg, "acctOpen()"); pg.wait_for_selector('#ttkUnlink', timeout=8000)
+    pg.locator('#ttkUnlink').click()
+    try: pg.wait_for_selector('#ttkLink', timeout=5000)
+    except Exception: pass
+    check(tag + ' : « %s » : le compte TikTok est délié (DELETE en JSON)' % t['unlink'],
+          ('DELETE', '/api/connect/tiktok') in [(m, p) for m, p, _ in st.get('changes', [])] and not st['linked'])
+    ch = sorted(set((m, re.sub(r'ttp_0+', 'ttp_…', re.sub(r'/chunk/\d+', '/chunk/n', p))) for m, p, _ in st.get('changes', [])))
+    check(tag + ' : tous les appels qui modifient quelque chose envoient du JSON (morceaux de vidéo : octets) — %d sortes d’appels' % len(ch),
+          not st.get('bad') and len(ch) >= 2, {'refusés': st.get('bad'), 'vus': ch})
     check(tag + ' : aucune erreur dans la page', not errs, errs)
     ctx.close()
 

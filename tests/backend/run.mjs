@@ -3810,18 +3810,22 @@ test('audit 13/11 n°5: R2 refusing to put the parts together is never a 500: do
 });
 
 // ---- « Publier sur TikTok » and « Mes stats » (tiktok.js, migration 0018, 21/11) ------------------------------------
-const tt = { creator: null, initErr: null, puts: [], inits: [], status: 'PUBLISH_COMPLETE', fail: null, videos: [], statusCalls: 0 };
+const tt = { hang: null, signals: [], creator: null, initErr: null, puts: [], inits: [], status: 'PUBLISH_COMPLETE', fail: null, videos: [], statusCalls: 0 };
 function ttReset() {
   tt.creator = { creator_avatar_url: 'https://p16.tiktokcdn.example/c.jpg', creator_username: 'sayso99', creator_nickname: '99sayso',
     privacy_level_options: ['PUBLIC_TO_EVERYONE', 'MUTUAL_FOLLOW_FRIENDS', 'SELF_ONLY'], comment_disabled: false, duet_disabled: false,
     stitch_disabled: true, max_video_post_duration_sec: 600 };
-  tt.initErr = null; tt.puts = []; tt.inits = []; tt.status = 'PUBLISH_COMPLETE'; tt.fail = null; tt.statusCalls = 0;
+  tt.initErr = null; tt.hang = null; tt.signals = []; tt.puts = []; tt.inits = []; tt.status = 'PUBLISH_COMPLETE'; tt.fail = null; tt.statusCalls = 0;
   tt.videos = Array.from({ length: 25 }, (_, i) => ({ id: String(7300000000000000000n + BigInt(i)), create_time: 1763000000 + i * 86400,
     title: i % 2 ? 'mon snippet #rap #drill' : 'freestyle #rap', duration: 10 + (i % 4) * 15, view_count: 1000 + i * 100,
     like_count: 50 + i, comment_count: 5, share_count: 2, cover_image_url: 'https://p16.tiktokcdn.example/v' + i + '.jpg',
     share_url: 'https://www.tiktok.com/@sayso99/video/' + (7300000000000000000n + BigInt(i)) }));
 }
 async function ttFake(url, init) {
+  // 22/11: every call to TikTok carries a time limit; tt.hang = the parts of TikTok that never answer (the time limit
+  // then stops the call, as AbortSignal.timeout does)
+  tt.signals.push(!!(init.signal && typeof init.signal.aborted === 'boolean'));
+  if (tt.hang && tt.hang.some((h) => url.includes(h))) throw new DOMException('The operation was aborted due to timeout', 'TimeoutError');
   const auth = init.headers && (init.headers.Authorization || (init.headers.get && init.headers.get('Authorization')));
   if (url.startsWith('https://open-upload.tiktokapis.com/')) {
     const h = new Headers(init.headers);
@@ -4028,6 +4032,39 @@ test('tiktok publish: pieces in order, sent to TikTok with the right ranges; sta
   r = await call(env, 'DELETE', '/api/connect/tiktok', { cookie: pro.cookie });
   assert.equal(r.status, 200);
   assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM tiktok_posts WHERE user_id = ?').get(pro.user.id).n, 0);
+});
+
+test('tiktok (22/11, draft stuck on an iPhone): every call to TikTok has a time limit; no answer → 504 tt_timeout, the piece can be sent again, the status keeps « processing »', async () => {
+  ttReset();
+  const env = makeEnv(SOCIAL_ENV);
+  const pro = await ttLinked(env, 'tthang@example.com', 'pro');
+  tt.hang = ['/creator_info/'];
+  let r = await call(env, 'GET', '/api/tiktok/creator', { cookie: pro.cookie });
+  assert.equal(r.status, 504); assert.equal(r.data.error, 'tt_timeout');
+  tt.hang = null;
+  r = await call(env, 'POST', '/api/tiktok/publish', { cookie: pro.cookie, body: { mode: 'draft', size: 1000, duration: 12, consent: true } });
+  assert.equal(r.status, 200);
+  const id = r.data.id;
+  // TikTok's upload address does not answer: 504, the row stays « uploading », the same piece goes through next time
+  tt.hang = ['open-upload.tiktokapis.com'];
+  r = await ttPut(env, id, 0, pro.cookie, bytes(1000));
+  assert.equal(r.status, 504); assert.equal(r.data.error, 'tt_timeout');
+  assert.equal(env.DB.raw.prepare('SELECT status, chunks_done FROM tiktok_posts WHERE id = ?').get(id).status, 'uploading');
+  tt.hang = null;
+  r = await ttPut(env, id, 0, pro.cookie, bytes(1000));
+  assert.equal(r.status, 200); assert.equal(r.data.status, 'processing');
+  // the page asks again for the last piece (its answer was lost): « not_uploading », the page then follows the status
+  r = await ttPut(env, id, 0, pro.cookie, bytes(1000));
+  assert.equal(r.status, 409); assert.equal(r.data.error, 'not_uploading');
+  // the status call to TikTok does not answer: the page gets « processing » at once (not a stuck request), then « inbox »
+  tt.hang = ['/status/fetch/'];
+  r = await call(env, 'GET', `/api/tiktok/publish/${id}`, { cookie: pro.cookie });
+  assert.equal(r.status, 200); assert.equal(r.data.status, 'processing');
+  tt.hang = null; tt.status = 'SEND_TO_USER_INBOX';
+  env.DB.raw.exec('UPDATE tiktok_posts SET checked_at = 1');
+  r = await call(env, 'GET', `/api/tiktok/publish/${id}`, { cookie: pro.cookie });
+  assert.equal(r.data.status, 'inbox');
+  assert.ok(tt.signals.length >= 5 && tt.signals.every(Boolean), JSON.stringify(tt.signals));
 });
 
 test('tiktok chunk plan follows TikTok’s media transfer rules (5 to 64 MB, last one up to 128 MB)', async () => {
