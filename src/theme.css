@@ -1203,7 +1203,9 @@ body.isdone > .help-cube{display:none}
 @media (max-width:480px){ .xsteps li{font-size:14px} }
 /* (22/11, audit vente n° 4) the end of a free export: with and without the logo, side by side, then « Enregistrer la vidéo »
    (the free way out, first) and « Exporter sans le logo » */
-.dvcmp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start}
+.dvcmp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start;width:100%;max-width:380px;margin:0 auto}
+/* small enough that « Enregistrer la vidéo » and « Publier sur TikTok » are seen at once on a phone */
+@media (max-width:600px){ .dvcmp{max-width:260px} .cmp-note{display:none} }
 .dvcmp[hidden]{display:none}
 .cmp-f{margin:0;display:flex;flex-direction:column;gap:6px;min-width:0}
 .cmp-box{position:relative;border:2.5px solid var(--ink);border-radius:16px;overflow:hidden;background:var(--ink);line-height:0}
@@ -1217,6 +1219,8 @@ body.isdone > .help-cube{display:none}
 .cmp-price{margin:-6px 0 0;font:400 13px/1.4 var(--body);color:#3b4a66;text-align:center}
 .doneview .dvcmp{order:1}
 .doneview .dv-cmpgo,.doneview .cmp-price{order:3}
+/* (22/11) the e-mail box (Comptes) under the caption: « Enregistrer la vidéo » is seen at once, without scrolling */
+.doneview .optbox{order:9}
 .doneview .result.cmpon > video{display:none}
 /* (owner, 22/11) the plans: the monthly price struck next to the yearly one, « N mois offerts », what it changes before the
    lists (folded under « Tout ce qui est inclus »); the sizes of the price and of the yearly amount do not change */

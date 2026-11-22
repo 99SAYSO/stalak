@@ -144,7 +144,8 @@ def flow(b, base, lang, iphone, PW):
     order = [bx['save']['y'], bx['copy']['y']]
     check(tag + ' : dans l’ordre Enregistrer, Copier la légende', order == sorted(order) and bx['edit']['y'] > bx['copy']['y'], bx)
     vh = pg.viewport_size['height']
-    check(tag + ' : on voit tout de suite où toucher : les boutons dans l’écran, « Enregistrer » le plus grand', bx['copy']['y'] + bx['copy']['height'] <= vh
+    # (Chef de projet, 22/11) the main button seen whole without scrolling, even with « Publier sur TikTok » and the Pro offer
+    check(tag + ' : on voit tout de suite où toucher : « Enregistrer » en entier dans l’écran, sans défiler, le plus grand', pg.evaluate('scrollY') == 0 and bx['save']['y'] >= 0 and bx['save']['y'] + bx['save']['height'] <= vh
           and bx['save']['height'] >= bx['copy']['height'], (bx, vh))
     big = pg.evaluate("() => parseFloat(getComputedStyle(document.querySelector('#saveBtn')).fontSize) > parseFloat(getComputedStyle(document.querySelector('#dvEdit')).fontSize) + 4")
     check(tag + ' : « Modifier la vidéo » petit et discret', big)

@@ -10,6 +10,8 @@
 3. « Stalak monte ta vidéo »: while the takes are being set on the song, the card says so with the real steps, ticked as they
    are done, then it goes.
 4. The export screen: the 4 real steps of the export, ticked as they are done, all ticked at the end.
+5. The end screen (free plan): with / without the logo, then « Enregistrer la vidéo » seen whole without scrolling (iPhone 12,
+   iPhone SE, computer), then « Publier sur TikTok » and « Exporter sans le logo »; the e-mail box further down.
 French and English, no sideways scrolling, no error in the page."""
 import functools, http.server, os, shutil, subprocess, sys, tempfile, threading
 os.environ.setdefault('PLAYWRIGHT_BROWSERS_PATH', '/opt/pw-browsers')
@@ -119,6 +121,16 @@ def work_and_export(b, base, site, lang, dev, PW):
     pg.wait_for_function('() => __ev("S.done")', timeout=300000)
     xs = pg.evaluate("() => { clearInterval(window.__xsT); return window.__xs.filter((x, i, a) => i === 0 || x !== a[i - 1]); }")
     check(tag + ' : les étapes de l’export avancent dans l’ordre et finissent toutes cochées', 'dddd' in xs and any(x.startswith('dn') for x in xs) and all(list(x) == sorted(x, key='dnt'.index) for x in xs), xs)
+    # 5. (Chef de projet, 22/11) the end screen: « Enregistrer la vidéo » seen whole without scrolling, with the Pro offer (with /
+    # without the logo, « Exporter sans le logo ») and « Publier sur TikTok » (a stand-in where tiktok.js puts it), the e-mail box under
+    pg.wait_for_timeout(2500)
+    if pg.locator('#proPop .card').is_visible(): pg.locator('#proPopLater').click(); pg.wait_for_timeout(500)
+    pg.evaluate("() => { if (!document.querySelector('#ttkPub')){ const b = document.createElement('button'); b.className = 'btn big ttk-pubbtn ttk-tt protag'; b.id = 'ttkPub'; b.dataset.plan = 'PRO'; b.textContent = 'TikTok'; document.querySelector('#saveRow').after(b); } }")
+    pg.wait_for_timeout(300)
+    sv, cm, go, tt = box(pg, '#saveBtn'), box(pg, '#dvCmp'), box(pg, '#dvCmpGo'), box(pg, '#ttkPub')
+    check(tag + ' : fin d’export : avec / sans le logo, puis « Enregistrer la vidéo » en entier dans l’écran, sans défiler', pg.evaluate('scrollY') == 0 and cm and sv and cm['b'] <= sv['y'] and sv['y'] >= 0 and sv['b'] <= vh, (cm, sv, vh))
+    check(tag + ' : … puis « Publier sur TikTok », « Exporter sans le logo », et la case e-mail plus bas', tt and go and sv['b'] <= tt['y'] and tt['b'] <= go['y'] and (box(pg, '#optBox') is None or box(pg, '#optBox')['y'] > go['b']), (sv, tt, go, box(pg, '#optBox')))
+    if SHOTS: pg.screenshot(path=os.path.join(SHOTS, 'fin-%s-%s.png' % (dev.replace(' ', '').lower(), lang)))
     sw = pg.evaluate('document.documentElement.scrollWidth')
     check(tag + ' : pas de défilement de côté', sw <= pg.viewport_size['width'], sw)
     check(tag + ' : aucune erreur dans la page', not errs, errs)
@@ -143,7 +155,7 @@ def main():
         for lang, dev in (('fr', 'iPhone 12'), ('en', 'iPhone 12'), ('fr', 'iPhone SE'), ('en', 'ordinateur')):
             try: first_screen(b, base, lang, dev, p)
             except Exception as e: check(dev + ' ' + lang + ' : premier écran, déroulé complet', False, str(e)[:400])
-        for lang, dev in (('fr', 'iPhone 12'), ('en', 'ordinateur')):
+        for lang, dev in (('fr', 'iPhone 12'), ('en', 'iPhone SE'), ('en', 'ordinateur')):
             try: work_and_export(b, base, site, lang, dev, p)
             except Exception as e: check(dev + ' ' + lang + ' : montage et export, déroulé complet', False, str(e)[:400])
         b.close()
