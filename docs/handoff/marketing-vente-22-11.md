@@ -32,3 +32,16 @@ Après avoir collé les avis : `python3 build_site.py --domain stalak.app --emai
 
 ## Les avis (22/11, 22 h 35)
 Les 30 avis envoyés par le propriétaire sont dans `site_src/avis.json`, textes et pseudos inchangés. La formule est celle que chaque personne cite (15 Pro, 15 Creator Plus ; ceux passés de Pro à Creator Plus comptent pour Creator Plus). Notes telles que données, avec décimales (« 4,8/5 »), étoiles arrondies ; moyenne 4,74 → « 4,7 sur 5 · 30 avis clients ». Vérifié : les 30 textes du site sont identiques au fichier envoyé ; les fonctions citées existent (dont les 60 paroles automatiques par jour de Creator Plus). Tarifs : l’avis de bloody sous Creator Plus, celui de Nasko sous Pro, aucun sous Gratuit.
+
+## Retours du propriétaire sur la maquette (23/11, 0 h 10)
+- **Ordinateur, premier écran** (`src/theme.css`, bloc ≥ 900 px à la fin) : une colonne centrée, titre (1 ligne), phrase (2 lignes), carte « Choisis ton son »,
+  un seul « Essayer avec un exemple » (le `#demoBtn` qui existait). Cachés sur ordinateur : la vidéo du hero et la pastille « mode Clip ».
+  Mes boutons « Monter mon snippet, gratuit » / « Essayer avec un exemple (…) » du 22/11 sont retirés du code.
+- **Téléphone, premier écran** : non touché (App & montage, `app/vente-22-11`, boutons « Choisir mon son » / « Voir un exemple »).
+- **Vidéo d'exemple** : sur ordinateur, à côté de « Avec Stalak » (`BA_VIDEO` dans `build_site.py`, ne se charge que quand elle est visible).
+- **Avis** (`RV_JS` dans `build_site.py`, `.rv-view` dans `theme.css`) : toute la largeur de l'écran, fondu aux deux bords, cartes de même hauteur ;
+  défilement continu vers la gauche par `transform` (liste doublée, les copies `aria-hidden`), vitesse 34 px/s, la vitesse descend à 0 en douceur sous la souris
+  ou le doigt, glissement à la main (pointeur), arrêt quand la bande n'est pas à l'écran ; « moins d'animations » ou sans script : liste à faire glisser.
+  Mesuré : pas constant de 0,57 px par image, période = moitié exacte de la liste (pas de saut), pas de défilement horizontal de la page (390, 1280, 1440 px).
+- **Même axe, même largeur** (700 px) : avant / après, avis (titre et note centrés), compteur, « Stalak, c'est quoi ? ».
+- Skills : stalak-da (goûts « tout centré, une chose à regarder, rien de coupé » et « les avis défilent seuls »), taste, motion-design (temps = linéaire, transform seul).

@@ -54,16 +54,6 @@
       <div class="hero-txt">
         <h1 class="hero-h1" data-i18n="hero.h1">Ton son est prêt. Ton snippet, pas encore ?</h1>
         <p class="hero-s" data-i18n="hero.s">Filme quelques prises sur ton son. Stalak les coupe sur le rythme, lèvres synchro&nbsp;: ton snippet est prêt à poster ce soir.</p>
-        <!-- Marketing & croissance (22/11, audit vente) : des boutons qui disent ce qu'on obtient. Le premier ouvre le choix du son
-             (le même que « Importer mon son » à l'étape 1), le second lance l'exemple qui existe déjà (#demoBtn) -->
-        <div class="hero-go">
-          <button type="button" class="btn primary hero-start" id="heroStart" data-i18n="hero.go">Monter mon snippet, gratuit</button>
-          <button type="button" class="hero-ex" id="heroEx" data-i18n="hero.ex">Essayer avec un exemple (son et prises fournis)</button>
-        </div>
-        <script>(function (w) { if (!w) return;
-          w.querySelector('#heroStart').addEventListener('click', function () { var f = document.getElementById('songFile'); if (f) f.click(); });
-          w.querySelector('#heroEx').addEventListener('click', function () { var d = document.getElementById('demoBtn'); if (d && !d.disabled) d.click(); });
-        })(document.currentScript.previousElementSibling);</script>
         <!-- Marketing & croissance (07/11, rapport chiffres : le mode Clip, 1re raison d'ouvrir Pro) : choisit « Clip » à l'étape 1
              (#kindSeg, le choix qui existe déjà) et l'amène sous les yeux ; rien d'autre ne change -->
         <button type="button" class="hero-clip" id="heroClip" data-i18n="hero.clip">Essaie le <b>mode Clip</b>&nbsp;: tout ton morceau en 16:9</button>
@@ -457,12 +447,13 @@
           <p class="note cover-note" id="coverNote" hidden></p>
           <div class="result" id="result" hidden>
             <video id="resultVideo" controls playsinline hidden></video>
-            <!-- (06/11) « Enregistrer la vidéo » first and big; on a phone, « Partager » under it (app.js postShow moves it
-                 into #shareBox); then the caption to copy -->
+            <!-- (06/11) « Enregistrer la vidéo » first and big, the only button (22/11: on a phone it opens the share list;
+                 app.js postShow moves the hint into #shareBox); then the caption to copy -->
             <div class="row" id="saveRow">
               <button class="btn primary big" id="saveBtn" type="button" data-i18n="save.video">Enregistrer la vidéo</button>
               <span class="note" id="saveNote"></span>
             </div>
+            <a class="savedl" id="saveDl" href="#" hidden data-i18n="save.dlLink">Ou télécharger le fichier</a>
             <div class="sharebox" id="shareBox" hidden></div>
             <div class="capbox" id="capBox">
               <label class="label" for="capText" data-i18n="cap.t">Légende prête à copier</label>
@@ -485,7 +476,6 @@
             <div class="post" id="postBox">
               <p class="label" data-i18n="post.title">Poster ta vidéo</p>
               <div class="row">
-                <button class="btn" id="shareBtn" type="button" hidden data-i18n="post.share">Partager</button>
                 <a class="btn sm" href="https://www.tiktok.com/upload" target="_blank" rel="noopener">TikTok</a>
                 <a class="btn sm" href="https://www.instagram.com/" target="_blank" rel="noopener">Instagram</a>
                 <a class="btn sm" href="https://www.youtube.com/upload" target="_blank" rel="noopener">YouTube Shorts</a>

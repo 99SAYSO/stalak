@@ -169,15 +169,11 @@ def run(b, base, lang, iphone):
     note = pg.locator('#capNote').inner_text()
     clip = pg.evaluate('() => navigator.clipboard.readText().catch(() => null)')
     check(tag + ' : « Copier la légende » copie le texte', ('copied' in note if lang == 'en' else 'copiée' in note) and (clip is None or clip == cap), (note, clip))
-    sb, sv = pg.locator('#shareBtn'), pg.locator('#saveBtn')
+    sv = pg.locator('#saveBtn')
+    check(tag + ' : plus de bouton « Partager » (22/11) : « Enregistrer la vidéo » en grand, le seul', pg.locator('#shareBtn').count() == 0 and 'primary' in sv.get_attribute('class') and 'big' in sv.get_attribute('class'))
     if iphone:
-        first = pg.evaluate("() => document.querySelector('#shareBox').firstElementChild === document.querySelector('#shareBtn') && !document.querySelector('#shareBox').hidden")
-        check(tag + ' : « Enregistrer la vidéo » en grand, « Partager » en grand juste dessous (06/11)', first and 'primary' in sv.get_attribute('class') and 'big' in (sb.get_attribute('class') or '')
-              and sb.inner_text().strip() == ('Share' if lang == 'en' else 'Partager'), (sb.inner_text(), sv.inner_text()))
-        sb.click(); pg.wait_for_timeout(200)
-        check(tag + ' : le bouton ouvre le partage d’iOS', pg.evaluate('window.__shared === true'))
-    else:
-        check(tag + ' : ordinateur : « Enregistrer la vidéo » reste le bouton principal', 'primary' in sv.get_attribute('class') and 'sharemain' not in (sb.get_attribute('class') or ''))
+        sv.click(); pg.wait_for_timeout(200)
+        check(tag + ' : « Enregistrer la vidéo » ouvre le partage d’iOS', pg.evaluate('window.__shared === true'))
     if SHOTS:
         shot(lambda: pg.locator('#result').scroll_into_view_if_needed(timeout=5000)); pg.wait_for_timeout(300)
         shot(lambda: pg.locator('#result').screenshot(path=os.path.join(SHOTS, 'resultat-' + ('iphone' if iphone else 'ordi') + '-' + lang + '.png')))

@@ -124,11 +124,43 @@ def rv_avg(lang):
     m = sum(float(r['note']) for r in AVIS) / len(AVIS); n = len(AVIS)
     if lang == 'fr': return ('%.1f' % m).replace('.', ',') + ' sur 5 · ' + str(n) + (' avis clients' if n > 1 else ' avis client')
     return ('%.1f' % m) + ' out of 5 · ' + str(n) + (' customer reviews' if n > 1 else ' customer review')
+# (23/11, owner) on a computer the example video stands next to « Avec Stalak » (the hero keeps it on a phone); the reviews fill
+# the width of the screen and glide to the left by themselves: the list doubled, moved by transform only, stopped under the
+# mouse or a finger, still dragged by hand; « reduce motion » or no script: a plain list to slide by hand
+BA_VIDEO = ('<figure class="ba-v"><video src="/demo/edit.mp4" poster="/demo/edit.jpg" width="432" height="768" muted loop playsinline preload="none" '
+            'aria-label="Exemple : une vidéo montée par Stalak à partir de trois prises" data-i18n-attr="aria-label:hero.v"></video>'
+            '<script>(function (v) { if (!v) return;'
+            ' if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches){ v.controls = true; return; }'
+            ' if ("IntersectionObserver" in window) new IntersectionObserver(function (e) { if (e[0].isIntersecting){ var p = v.play(); if (p && p.catch) p.catch(function () {}); } else v.pause(); }).observe(v);'
+            ' })(document.currentScript.previousElementSibling);</script>'
+            '<figcaption data-i18n="ba.v">Exemple : 3 prises montées par Stalak</figcaption></figure>') if (extra / 'demo' / 'edit.mp4').exists() else ''
+RV_JS = ('<script>(function (v) { var l = v && v.firstElementChild; if (!l || !window.requestAnimationFrame) return;'
+         ' if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;'
+         ' var n = l.children.length, i, c; for (i = 0; i < n; i++){ c = l.children[i].cloneNode(true); c.setAttribute("aria-hidden", "true"); l.appendChild(c); }'
+         ' v.classList.add("is-auto"); v.scrollLeft = 0;'
+         ' var SPEED = 34, x = 0, vel = SPEED, half = 0, last = 0, raf = 0, over = false, drag = null, seen = false;'
+         ' function size(){ half = l.offsetWidth / 2; }'
+         ' function tick(t){ var dt = last ? Math.min(t - last, 64) / 1000 : 0; last = t;'
+         '   var to = over || drag ? 0 : SPEED; vel += (to - vel) * Math.min(1, dt * 7); if (Math.abs(to - vel) < .5) vel = to; if (!drag) x += vel * dt;'
+         '   if (half > 0){ x %= half; if (x < 0) x += half; }'
+         '   l.style.transform = "translate3d(" + (-x).toFixed(2) + "px,0,0)"; raf = requestAnimationFrame(tick); }'
+         ' function run(){ var on = seen && !document.hidden; if (on && !raf){ last = 0; raf = requestAnimationFrame(tick); } else if (!on && raf){ cancelAnimationFrame(raf); raf = 0; } }'
+         ' v.addEventListener("mouseenter", function () { over = true; }); v.addEventListener("mouseleave", function () { over = false; });'
+         ' v.addEventListener("pointerdown", function (e) { if (e.pointerType === "mouse" && e.button !== 0) return; drag = { id: e.pointerId, px: e.clientX, x0: x, cap: false }; if (e.pointerType !== "mouse") over = true; });'
+         ' v.addEventListener("pointermove", function (e) { if (!drag || e.pointerId !== drag.id) return; var d = e.clientX - drag.px;'
+         '   if (!drag.cap && Math.abs(d) > 5){ drag.cap = true; v.classList.add("is-drag"); try { v.setPointerCapture(e.pointerId); } catch (_) {} }'
+         '   if (drag.cap) x = drag.x0 - d; });'
+         ' function end(e){ if (!drag || (e && e.pointerId !== drag.id)) return; drag = null; v.classList.remove("is-drag"); if (!e || e.pointerType !== "mouse") over = false; }'
+         ' v.addEventListener("pointerup", end); v.addEventListener("pointercancel", end);'
+         ' window.addEventListener("resize", size); if (document.fonts && document.fonts.ready) document.fonts.ready.then(size); size();'
+         ' if ("IntersectionObserver" in window) new IntersectionObserver(function (e) { seen = e[0].isIntersecting; run(); }, { rootMargin: "120px" }).observe(v); else seen = true;'
+         ' document.addEventListener("visibilitychange", run); run();'
+         ' })(document.currentScript.previousElementSibling);</script>')
 PROOF = ('<section class="proof"' + (' aria-labelledby="rvT"' if AVIS else '') + '>'
          '<div class="ba"><div class="ba-c ba-no"><h3 data-i18n="ba.no.t">Sans Stalak</h3><p data-i18n="ba.no">Tes prises dorment dans ta galerie. Caler chaque coupe à la main prend des heures, et la bouche décale.</p></div>'
-         '<div class="ba-c ba-yes"><h3 data-i18n="ba.yes.t">Avec Stalak</h3><p data-i18n="ba.yes">Ton son et tes prises, c’est tout. Stalak coupe sur le rythme, garde tes lèvres synchro, et c’est prêt pour TikTok, Reels et Shorts.</p></div></div>'
+         '<div class="ba-c ba-yes"><div class="ba-yt"><h3 data-i18n="ba.yes.t">Avec Stalak</h3><p data-i18n="ba.yes">Ton son et tes prises, c’est tout. Stalak coupe sur le rythme, garde tes lèvres synchro, et c’est prêt pour TikTok, Reels et Shorts.</p></div>' + BA_VIDEO + '</div></div>'
          + ('<div class="rv-band"><h2 id="rvT" data-i18n="rv.t">Avis clients</h2><p class="rv-avg"><span class="rv-stars" aria-hidden="true">★</span> <span data-i18n="rv.avg">' + rv_avg('fr') + '</span></p>'
-            '<ul class="rv-list">' + ''.join(rv_item(r, 'fr') for r in AVIS) + '</ul></div>' if AVIS else '')
+            '<div class="rv-view"><ul class="rv-list">' + ''.join(rv_item(r, 'fr') for r in AVIS) + '</ul></div>' + RV_JS + '</div>' if AVIS else '')
          + '<p class="proof-n" id="proofN" hidden><span data-i18n="proof.a">Déjà</span> <b id="proofNum"></b> <span data-i18n="proof.b">vidéos montées avec Stalak</span></p>'
          '<script>(function (p) { if (!p || !window.fetch) return;'
          ' fetch("/api/stats/exports").then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {'
@@ -141,7 +173,7 @@ assert '<!--FOOTER-->' in markup
 markup = markup.replace('<!--FOOTER-->', FOOT.render('fr', i18n='site.footer'))
 css += '\n' + (src / 'footer.css').read_text(encoding='utf-8')
 css += '\n' + (src / 'tiktok.css').read_text(encoding='utf-8')   # Réseaux sociaux (21/11)
-css += '\n.about{align-self:center;max-width:760px;width:100%;color:#fff;font-size:14.5px;line-height:1.55;margin-top:18px}.about h2{font:400 22px/1.2 var(--display);margin:0 0 6px;color:#fff;text-shadow:0 2px 0 var(--ink)}.about p{margin:0 0 8px}.about ul{margin:0 0 8px;padding-left:20px}.about strong{font-weight:700}.about a{color:#fff;font-weight:700;text-decoration:underline;text-underline-offset:3px}\n'
+css += '\n.about{color:#fff;font-size:14.5px;line-height:1.55;margin-top:18px}.about h2{font:400 22px/1.2 var(--display);margin:0 0 6px;color:#fff;text-shadow:0 2px 0 var(--ink)}.about p{margin:0 0 8px}.about ul{margin:0 0 8px;padding-left:20px}.about strong{font-weight:700}.about a{color:#fff;font-weight:700;text-decoration:underline;text-underline-offset:3px}\n'
 
 # 3. languages: the dictionaries are in app.js (between /*@EN*/ … /*EN@*/ and /*@FR*/ … /*FR@*/); the French of the page's
 #    fixed texts is read from the markup (data-i18n, data-i18n-attr) and given to the app, so that the English page can
@@ -154,7 +186,7 @@ EN = json.loads(block('EN').group(1)); FR = json.loads(block('FR').group(1))
 EN.update({'doc.title': PAGE['en']['title'], 'site.about': PAGE['en']['about'], 'site.footer': FOOT.inner('en')})
 EN.update({'ba.no.t': 'Without Stalak', 'ba.no': 'Your takes sit in your camera roll. Lining up every cut by hand takes hours, and the lips drift.',
            'ba.yes.t': 'With Stalak', 'ba.yes': 'Your song and your takes, that’s it. Stalak cuts on the beat, keeps your lips in sync, and it’s ready for TikTok, Reels and Shorts.',
-           'rv.t': 'Customer reviews', 'proof.a': 'Already', 'proof.b': 'videos made with Stalak'})
+           'rv.t': 'Customer reviews', 'ba.v': 'Example: 3 takes, edited by Stalak', 'proof.a': 'Already', 'proof.b': 'videos made with Stalak'})
 if AVIS: EN['rv.avg'] = rv_avg('en')
 FR.update({'doc.title': PAGE['fr']['title']})
 

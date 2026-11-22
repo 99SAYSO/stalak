@@ -3829,7 +3829,7 @@ function ttReset() {
   tt.creator = { creator_avatar_url: 'https://p16.tiktokcdn.example/c.jpg', creator_username: 'sayso99', creator_nickname: '99sayso',
     privacy_level_options: ['PUBLIC_TO_EVERYONE', 'MUTUAL_FOLLOW_FRIENDS', 'SELF_ONLY'], comment_disabled: false, duet_disabled: false,
     stitch_disabled: true, max_video_post_duration_sec: 600 };
-  tt.initErr = null; tt.puts = []; tt.inits = []; tt.status = 'PUBLISH_COMPLETE'; tt.fail = null; tt.statusCalls = 0;
+  tt.initErr = null; tt.hang = null; tt.puts = []; tt.inits = []; tt.status = 'PUBLISH_COMPLETE'; tt.fail = null; tt.statusCalls = 0;
   tt.videos = Array.from({ length: 25 }, (_, i) => ({ id: String(7300000000000000000n + BigInt(i)), create_time: 1763000000 + i * 86400,
     title: i % 2 ? 'mon snippet #rap #drill' : 'freestyle #rap', duration: 10 + (i % 4) * 15, view_count: 1000 + i * 100,
     like_count: 50 + i, comment_count: 5, share_count: 2, cover_image_url: 'https://p16.tiktokcdn.example/v' + i + '.jpg',
@@ -3837,6 +3837,10 @@ function ttReset() {
 }
 async function ttFake(url, init) {
   const auth = init.headers && (init.headers.Authorization || (init.headers.get && init.headers.get('Authorization')));
+  // 22/11: TikTok not answering (the Worker gives up after a time limit, like AbortSignal.timeout)
+  const hang = () => Promise.reject(Object.assign(new Error('The operation timed out.'), { name: 'TimeoutError' }));
+  if (tt.hang === 'upload' && url.startsWith('https://open-upload.tiktokapis.com/')) { tt.hang = null; return hang(); }
+  if (tt.hang === 'status' && url.endsWith('/v2/post/publish/status/fetch/')) return hang();
   if (url.startsWith('https://open-upload.tiktokapis.com/')) {
     const h = new Headers(init.headers);
     tt.puts.push({ url, range: h.get('Content-Range'), len: Number(h.get('Content-Length')), type: h.get('Content-Type'), bytes: new Uint8Array(init.body).length });
@@ -4042,6 +4046,61 @@ test('tiktok publish: pieces in order, sent to TikTok with the right ranges; sta
   r = await call(env, 'DELETE', '/api/connect/tiktok', { cookie: pro.cookie });
   assert.equal(r.status, 200);
   assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM tiktok_posts WHERE user_id = ?').get(pro.user.id).n, 0);
+});
+
+test('tiktok publish never stays stuck: TikTok not answering a piece or the status (22/11)', async () => {
+  ttReset();
+  const env = makeEnv(SOCIAL_ENV);
+  const pro = await ttLinked(env, 'tthang@example.com', 'pro');
+  // a draft, then a direct post right after it (the order of the 21/11 try)
+  for (const mode of ['draft', 'direct']) {
+    let r = await call(env, 'POST', '/api/tiktok/publish', { cookie: pro.cookie, body: mode === 'draft' ? { mode, size: 1000, duration: 12, consent: true } : PUB() });
+    assert.equal(r.status, 200, JSON.stringify(r.data));
+    const id = r.data.id, file = bytes(1000, 3);
+    // TikTok does not answer the piece: a clear error, and the same piece can be sent again
+    tt.hang = 'upload';
+    r = await ttPut(env, id, 0, pro.cookie, file);
+    assert.equal(r.status, 504); assert.equal(r.data.error, 'tt_upload');
+    r = await ttPut(env, id, 0, pro.cookie, file);
+    assert.equal(r.status, 200); assert.equal(r.data.status, 'processing');
+    // the answer to the last piece was lost and the app sends it again: « already sent », never a second copy to TikTok
+    const puts = tt.puts.length;
+    r = await ttPut(env, id, 0, pro.cookie, file);
+    assert.equal(r.status, 409); assert.equal(r.data.error, 'not_uploading');
+    assert.equal(tt.puts.length, puts);
+    // TikTok does not answer the status: the sending stays « processing », the request answers at once
+    tt.hang = 'status'; tt.status = mode === 'draft' ? 'SEND_TO_USER_INBOX' : 'PUBLISH_COMPLETE';
+    r = await call(env, 'GET', `/api/tiktok/publish/${id}`, { cookie: pro.cookie });
+    assert.equal(r.status, 200); assert.equal(r.data.status, 'processing');
+    // TikTok answers again: the status moves on (at most one question to TikTok every 3 s)
+    tt.hang = null;
+    env.DB.raw.exec(`UPDATE tiktok_posts SET checked_at = 1 WHERE id = '${id}'`);
+    r = await call(env, 'GET', `/api/tiktok/publish/${id}`, { cookie: pro.cookie });
+    assert.equal(r.data.status, mode === 'draft' ? 'inbox' : 'published');
+  }
+  // a piece sent twice after a lost answer (not the last one): the server says which piece it waits for
+  let r = await call(env, 'POST', '/api/tiktok/publish', { cookie: pro.cookie, body: PUB({ size: 23 * 1024 * 1024 }) });
+  const id = r.data.id, file = bytes(23 * 1024 * 1024, 5);
+  r = await ttPut(env, id, 0, pro.cookie, file.subarray(0, 10 * 1024 * 1024));
+  assert.equal(r.status, 200);
+  r = await ttPut(env, id, 0, pro.cookie, file.subarray(0, 10 * 1024 * 1024));
+  assert.equal(r.status, 409); assert.equal(r.data.error, 'bad_chunk'); assert.equal(r.data.next, 1);
+});
+
+test('tiktok « Délier »: the change must come as JSON (CSRF); the app sends {} (22/11)', async () => {
+  ttReset();
+  const env = makeEnv(SOCIAL_ENV);
+  const u = await ttLinked(env, 'ttunlink@example.com', 'pro');
+  // without a JSON body (what the app did before the 21/11 fix): refused, still linked
+  let r = await call(env, 'DELETE', '/api/connect/tiktok', { cookie: u.cookie, raw: new Uint8Array(0), ct: 'text/plain' });
+  assert.equal(r.status, 415);
+  r = await call(env, 'GET', '/api/connect', { cookie: u.cookie });
+  assert.equal(r.data.accounts.length, 1);
+  // with {} (src/tiktok.js api() since 21/11): unlinked, and the TikTok sendings are erased
+  r = await call(env, 'DELETE', '/api/connect/tiktok', { cookie: u.cookie, body: {} });
+  assert.equal(r.status, 200);
+  r = await call(env, 'GET', '/api/connect', { cookie: u.cookie });
+  assert.equal(r.data.accounts.length, 0);
 });
 
 test('tiktok chunk plan follows TikTok’s media transfer rules (5 to 64 MB, last one up to 128 MB)', async () => {

@@ -1006,12 +1006,13 @@ header .stepper{margin-left:auto}
 /* caption to copy, Pro filter question (audit 30/10) */
 .capbox{margin-top:14px;display:flex;flex-direction:column;gap:6px}
 .capbox textarea{width:100%;box-sizing:border-box;font:500 14px/1.45 var(--body);padding:10px 12px;border:2px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink);resize:vertical}
-.result .sharemain{width:100%;justify-content:center}
 .result .savemain{width:100%;justify-content:center}
 /* (05/11, 06/11) under « Enregistrer la vidéo »: « Partager » on a phone, its hint, then the caption to copy */
 .sharebox{display:flex;flex-direction:column;gap:8px;margin:2px 0 0;width:100%}
 .sharebox[hidden]{display:none}
-.sharebox .sharemain{min-height:56px;font-size:19px}
+.savedl{align-self:center;font:500 14px var(--body);color:var(--ink);opacity:.75;text-decoration:underline;text-underline-offset:3px;padding:10px 6px;min-height:44px;display:inline-flex;align-items:center}
+.savedl[hidden]{display:none}
+@media (hover:hover){ .savedl:hover{opacity:1} }
 .sharebox .hint{margin:0}
 .result #saveRow{width:100%;flex-direction:column;align-items:stretch;gap:6px}
 .result #saveNote:empty{display:none}
@@ -1105,12 +1106,12 @@ body.isdone header .stepper,body.isdone header .hdtools{display:none !important}
   .dv-card h2{margin-bottom:10px}
   .doneview .result video{max-height:36vh}
 }
-/* the three buttons together, at once on a phone's screen: Enregistrer, Partager, Copier la légende; the hint and the text
-   of the caption under them */
+/* the buttons together, at once on a phone's screen: Enregistrer (22/11: the only one, it opens the share list), the small
+   download link on Android, Copier la légende; the hint and the text of the caption under them */
 .doneview .result > video{order:1}
 .doneview #saveRow{order:2}
 .doneview .sharebox,.doneview .capbox{display:contents}
-.doneview .sharebox .sharemain{order:3}
+.doneview .savedl{order:3;margin-top:-6px}
 .doneview .capbox .row{order:4}
 .doneview .sharebox .hint{order:5}
 .doneview .capbox .label{order:6;margin-top:6px}
@@ -1162,25 +1163,58 @@ body.isdone > .help-cube{display:none}
 @media (prefers-reduced-motion:reduce){ .hero-clip{transition:none} .hero-clip:active{transform:none} }
 @media (min-width:900px){ .hero-clip{font-size:14.5px;margin-top:4px} }
 
-/* Marketing & croissance (22/11, sales audit): the hero's two buttons (what you get), the before / after, the customer reviews
-   and the counter (build_site.py builds the reviews from site_src/avis.json; the counter reads /api/stats/exports) */
-.hero-go{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin:12px 0 0}
-.hero-start{min-height:46px}
-.hero-ex{background:none;border:0;padding:6px 0;min-height:44px;color:var(--snow);font:700 14px/1.25 var(--body);text-decoration:underline;text-underline-offset:3px;cursor:pointer;text-align:left}
-.proof{align-self:center;max-width:760px;width:100%;margin-top:22px;color:#fff}
-.proof h2{font:400 22px/1.2 var(--display);margin:0 0 6px;color:#fff;text-shadow:0 2px 0 var(--ink)}
-.ba{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.ba-c{background:#fff;color:var(--ink);border:2.5px solid var(--ink);border-radius:16px;box-shadow:0 4px 0 var(--ink);padding:12px 13px}
-.ba-c h3{margin:0 0 5px;font:400 19px/1.15 var(--display)}
+/* Marketing & croissance (22/11 and 23/11, sales audit + the owner's notes on the mock-up): the before / after, the customer
+   reviews and the counter (build_site.py builds them; reviews from site_src/avis.json, counter from /api/stats/exports).
+   Owner's taste (23/11): everything centred on one axis, one thing to look at, nothing cut at an edge; the reviews move by themselves. */
+.proof,.about{align-self:center;max-width:700px;width:100%}
+.proof{margin-top:30px;color:#fff}
+.proof h2{font:400 26px/1.2 var(--display);margin:0 0 4px;color:#fff;text-shadow:0 2px 0 var(--ink);text-align:center}
+.ba{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.ba-c{background:#fff;color:var(--ink);border:2.5px solid var(--ink);border-radius:16px;box-shadow:0 4px 0 var(--ink);padding:14px 15px}
+.ba-c h3{margin:0 0 5px;font:400 20px/1.15 var(--display)}
+.ba-c{display:flex;flex-direction:column;justify-content:center}
 .ba-no h3{color:#b3261e}.ba-yes h3{color:var(--sky-deep)}
-.ba-c p{margin:0;font-size:14px;line-height:1.4}
-.rv-band{margin-top:22px}
-.rv-avg{margin:0 0 10px;font:700 15px/1.3 var(--body)}
-.rv-list{list-style:none;margin:0;padding:4px 4px 12px 0;display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
-.rv-list li{flex:0 0 min(78%,280px);scroll-snap-align:start;background:#fff;color:var(--ink);border:2.5px solid var(--ink);border-radius:16px;box-shadow:0 4px 0 var(--ink);padding:12px 13px}
-.rv-list blockquote{margin:6px 0 8px;font-size:14.5px;line-height:1.45}
+.ba-c p{margin:0;font-size:14.5px;line-height:1.45}
+.ba-v{display:none;margin:0}
+.rv-band{margin-top:34px}
+.rv-avg{margin:0 0 12px;font:700 15.5px/1.3 var(--body);text-align:center}
+/* the band: the whole width of the screen (the page clips what goes past it), its two edges fading out. Without the script
+   (or « reduce motion »): a list to slide by hand, its first card on the page's axis. With it (.is-auto): the list, doubled,
+   glides to the left by transform only */
+.rv-view{width:100vw;margin-left:calc(50% - 50vw);overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 9%,#000 91%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 9%,#000 91%,transparent 100%)}
+.rv-view::-webkit-scrollbar{display:none}
+/* the page's column clips what goes past it (style.css .wrap): with the band, the page itself does it instead */
+.wrap:has(.rv-view){overflow-x:visible}
+body:has(.rv-view){overflow-x:clip}
+.rv-list{list-style:none;margin:0;padding:4px max(16px,calc(50vw - 350px)) 10px;display:flex;align-items:stretch;width:max-content}
+.rv-list li{flex:none;width:min(80vw,372px);margin-right:16px;box-sizing:border-box;display:flex;flex-direction:column;background:#fff;color:var(--ink);border:2.5px solid var(--ink);border-radius:16px;box-shadow:0 4px 0 var(--ink);padding:14px 15px}
+.rv-list blockquote{margin:8px 0 12px;font-size:14.5px;line-height:1.45}
+.rv-list .rv-who{margin-top:auto}
+.rv-view.is-auto{overflow:hidden;touch-action:pan-y;cursor:grab;-webkit-user-select:none;user-select:none}
+.rv-view.is-auto.is-drag{cursor:grabbing}
+.rv-view.is-auto .rv-list{padding-left:0;padding-right:0;will-change:transform}
 .rv-stars{color:#e8a200;letter-spacing:1px;font-size:15px;line-height:1}
-.rv-who{margin:0;font:700 13.5px/1.3 var(--body);color:#3b4150}
-.proof-n{margin:14px 0 0;text-align:center;font:700 15px/1.3 var(--body)}
-@media (max-width:420px){ .ba{grid-template-columns:1fr} }
 .rv-note{display:flex;align-items:center;gap:6px;font:700 14px/1 var(--body)}
+.rv-who{margin:0;font:700 13.5px/1.3 var(--body);color:#3b4150}
+.proof-n{margin:26px 0 0;text-align:center;font:700 16px/1.3 var(--body)}
+.about{margin-top:30px;text-align:center}
+@media (max-width:420px){ .ba{grid-template-columns:1fr} }
+@media (max-width:640px){ .rv-view{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 5%,#000 95%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 5%,#000 95%,transparent 100%)} }
+/* computer: the first screen in one centred column: the title and its sentence, then the card « Choisis ton son » (the one
+   action). The example video leaves the top and stands next to « Avec Stalak », as the proof; the « mode Clip » pill goes
+   (the choice TikTok / Clip is in the card). A phone keeps its own first screen (App & montage). */
+@media (min-width:900px){
+  #p1:has(#songBox[hidden]):not(:has(> .lpoffer:not([hidden]))):has(> .hero){display:flex;max-width:700px}
+  #p1:has(#songBox[hidden]):not(:has(> .lpoffer:not([hidden]))):has(> .hero) > .hero{align-self:center;width:min(960px,calc(100vw - 64px));margin:-58px 0 92px;flex-direction:column;align-items:center;text-align:center;gap:0}
+  #p1 > .hero .hero-v,#p1 > .hero .hero-clip{display:none}
+  .hero-h1{font-size:clamp(36px,3.6vw,46px);margin-bottom:12px}
+  .hero-s{font-size:17.5px;max-width:46em;margin-left:auto;margin-right:auto}
+  .ba{grid-template-columns:minmax(0,5fr) minmax(0,8fr);gap:16px}
+  .ba-c{padding:18px 20px}
+  .ba-yes{flex-direction:row;align-items:center;justify-content:flex-start;gap:18px}
+  .ba-yt{flex:1;min-width:0}
+  .ba-v{display:block;flex:none;width:102px;text-align:center}
+  .ba-v video{display:block;width:100%;height:auto;aspect-ratio:9/16;object-fit:cover;border:2.5px solid var(--ink);border-radius:14px;box-shadow:0 4px 0 var(--ink);background:var(--ink)}
+  .ba-v figcaption{margin-top:9px;font:700 12px/1.25 var(--body);color:#3b4150}
+}
