@@ -1270,6 +1270,8 @@ header .stepper{margin-left:auto}
 .expbar-i{order:1;flex:none;max-width:34%;color:var(--ice);font:500 12.5px/1.35 var(--body);white-space:pre-line}
 .expbar-i:empty{display:none}
 body.fabon .help-cube{bottom:calc(var(--fabh) + 10px)}
+/* at the bottom of the page, the footer keeps room for the bar and the cube above it: no link under them */
+body.fabon:has(> .help-cube) > .ft{padding-bottom:calc(env(safe-area-inset-bottom,0px) + var(--fabh) + 76px)}
 @media (max-width:480px){ body.fabon .help-panel{bottom:calc(var(--fabh) + 66px)} }
 /* the help ice cube (audit 30/10): smaller on a phone, it stops bobbing after a few seconds, and the page keeps room at the
    bottom so that it never sits on « Continuer » once scrolled down */
