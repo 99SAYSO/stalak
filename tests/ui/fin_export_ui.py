@@ -77,13 +77,16 @@ def camera(b, base, site, lang, iphone, PW):
     pg.locator('#takeList button[aria-label="%s"]' % ev(pg, "_t('tk.remove')")).first.click(); pg.wait_for_timeout(300)
     check(tag + ' : prise supprimée → « %s » (le numéro suit les prises qui restent)' % t['go1'], ev(pg, 'S.takes.length') == 0 and pg.locator('#recGo').inner_text().strip() == t['go1'] and not visible(pg, '#recDone') and not visible(pg, '#recN'),
           (pg.locator('#recGo').inner_text(), ev(pg, 'S.takes.length')))
-    # with a timer: 3, 2, 1 (and only then the beats)
-    ev(pg, 'recTimerSet(3)'); pg.locator('#recGo').click()
-    seen = pg.evaluate("""() => new Promise(res => { const out = []; const t0 = performance.now();
-      const look = () => { const e = document.querySelector('#recCd'); const v = e && !e.hidden ? e.textContent.trim() : ''; if (v && out[out.length - 1] !== v) out.push(v);
-        if (performance.now() - t0 < 3400) requestAnimationFrame(look); else res(out); }; look(); })""")
-    check(tag + ' : avec le minuteur de 3 s : 3, 2, 1', seen == ['3', '2', '1'], seen)
-    pg.wait_for_timeout(500); pg.locator('#recStop').click()
+    # with a timer: 3, 2, 1, once, before the song; nothing more once the song plays (owner, 22/11: the count came back a 2nd time)
+    # (a passage that starts later in the song: a whole bar is played before it, as in a real song)
+    ev(pg, 'S.segStart = 6, S.segEnd = Math.max(S.segEnd, 14), recTimerSet(3)'); pg.locator('#recGo').click()
+    seen = pg.evaluate("""() => new Promise(res => { const out = []; const t0 = performance.now(); let songAt = null;
+      const look = () => { if (songAt == null && __ev('!player.paused && !player.muted')) songAt = out.length;
+        for (const s of ['#recCd', '#recCount']){ const e = document.querySelector(s); const v = e && !e.hidden ? e.textContent.trim() : ''; if (v && out[out.length - 1] !== s + v) out.push(s + v); }
+        if (performance.now() - t0 < 8000) requestAnimationFrame(look); else res({ out, songAt, seg: __ev('[S.segStart, recFrom()]') }); }; look(); })""")
+    check(tag + ' : avec le minuteur de 3 s : 3, 2, 1, une seule fois, avant la musique ; plus aucun chiffre une fois la musique partie',
+          seen['out'] == ['#recCd3', '#recCd2', '#recCd1'] and seen['songAt'] == 3 and seen['seg'][0] - seen['seg'][1] > 1, seen)
+    pg.locator('#recStop').click()
     pg.wait_for_function('() => __ev("S.takes.length === 1")', timeout=60000)
     check(tag + ' : aucune erreur dans la page', not errs, errs)
     ctx.close()
@@ -116,19 +119,20 @@ def flow(b, base, lang, iphone, PW):
     ev(pg, "S.song.demo = false, store.set(PP_KEY, 1), " + FAST_EXPORT)
     pg.evaluate('() => { __ev("exportOne()"); }')
     pg.wait_for_function('() => __ev("S.done === true")', timeout=30000); pg.wait_for_timeout(400)
-    vis = {k: visible(pg, s) for k, s in (('save', '#saveBtn'), ('share', '#shareBtn'), ('copy', '#capCopy'), ('pro', '#dvPro'), ('edit', '#dvEdit'),
+    vis = {k: visible(pg, s) for k, s in (('save', '#saveBtn'), ('dl', '#saveDl'), ('copy', '#capCopy'), ('pro', '#dvPro'), ('edit', '#dvEdit'),
                                          ('steps', '#stepper'), ('work', '#work'), ('stage', '#view'), ('exportBtn', '#exportBtn'), ('fab', '#expFab'), ('links', '#postBox'))}
-    want = {'save': True, 'share': iphone, 'copy': True, 'pro': True, 'edit': True, 'steps': False, 'work': False, 'stage': False, 'exportBtn': False, 'fab': False, 'links': False}
-    check(tag + ' : fin d’export : seulement l’essentiel (Enregistrer, %sCopier la légende, Sans filigrane → Pro, Modifier), plus de montage ni d’onglets' % ('Partager, ' if iphone else ''), vis == want, vis)
+    vis['share'] = pg.locator('#shareBtn').count() > 0
+    want = {'save': True, 'dl': False, 'share': False, 'copy': True, 'pro': True, 'edit': True, 'steps': False, 'work': False, 'stage': False, 'exportBtn': False, 'fab': False, 'links': False}
+    check(tag + ' : fin d’export : seulement l’essentiel (Enregistrer, le seul bouton, 22/11 ; Copier la légende, Sans filigrane → Pro, Modifier), plus de montage ni d’onglets', vis == want, vis)
     txt = {k: pg.locator(s).inner_text().strip() for k, s in (('save', '#saveBtn'), ('copy', '#capCopy'), ('pro', '#dvPro'), ('edit', '#dvEdit'), ('ready', '#dvT'))}
     check(tag + ' : textes de la fin d’export', txt == {'save': t['save'], 'copy': t['copy'], 'pro': t['pro'], 'edit': t['edit'], 'ready': t['ready']}, txt)
-    if iphone: check(tag + ' : « %s » sous « %s »' % (t['share'], t['save']), pg.locator('#shareBtn').inner_text().strip() == t['share'])
-    bx = {k: pg.locator(s).bounding_box() for k, s in (('save', '#saveBtn'), ('share', '#shareBtn'), ('copy', '#capCopy'), ('edit', '#dvEdit'))}
-    order = [bx['save']['y'], bx['share']['y'] if iphone else bx['save']['y'] + 1, bx['copy']['y']]
-    check(tag + ' : dans l’ordre Enregistrer, %sCopier la légende' % ('Partager, ' if iphone else ''), order == sorted(order) and bx['edit']['y'] > bx['copy']['y'], bx)
+    if iphone: check(tag + ' : sur iPhone, l’explication dit de toucher « Enregistrer la vidéo » dans la liste pour Photos', 'Photos' in pg.locator('#postHint').inner_text() and visible(pg, '#postHint'), pg.locator('#postHint').inner_text())
+    bx = {k: pg.locator(s).bounding_box() for k, s in (('save', '#saveBtn'), ('copy', '#capCopy'), ('edit', '#dvEdit'))}
+    order = [bx['save']['y'], bx['copy']['y']]
+    check(tag + ' : dans l’ordre Enregistrer, Copier la légende', order == sorted(order) and bx['edit']['y'] > bx['copy']['y'], bx)
     vh = pg.viewport_size['height']
     check(tag + ' : on voit tout de suite où toucher : les boutons dans l’écran, « Enregistrer » le plus grand', bx['copy']['y'] + bx['copy']['height'] <= vh
-          and bx['save']['height'] >= max(bx['copy']['height'], (bx['share'] or {'height': 0})['height'] if iphone else 0), (bx, vh))
+          and bx['save']['height'] >= bx['copy']['height'], (bx, vh))
     big = pg.evaluate("() => parseFloat(getComputedStyle(document.querySelector('#saveBtn')).fontSize) > parseFloat(getComputedStyle(document.querySelector('#dvEdit')).fontSize) + 4")
     check(tag + ' : « Modifier la vidéo » petit et discret', big)
     sw = pg.evaluate('document.documentElement.scrollWidth')
@@ -144,7 +148,7 @@ def flow(b, base, lang, iphone, PW):
     pg.evaluate('() => { __ev("exportPack()"); }')
     pg.wait_for_function('() => __ev("S.done === true && /zip$/.test(lastName)")', timeout=30000); pg.wait_for_timeout(300)
     check(tag + ' : fin d’un pack : « %s », « %s », ni légende, ni partage, ni Pro' % (t['readyp'], t['pack']),
-          pg.locator('#dvT').inner_text().strip() == t['readyp'] and pg.locator('#saveBtn').inner_text().strip() == t['pack'] and not visible(pg, '#capCopy') and not visible(pg, '#shareBtn') and not visible(pg, '#dvPro'))
+          pg.locator('#dvT').inner_text().strip() == t['readyp'] and pg.locator('#saveBtn').inner_text().strip() == t['pack'] and not visible(pg, '#capCopy') and not visible(pg, '#saveDl') and not visible(pg, '#postHint') and not visible(pg, '#dvPro'))
     check(tag + ' : aucune erreur dans la page', not errs, errs)
     ctx.close()
 

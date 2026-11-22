@@ -1006,12 +1006,13 @@ header .stepper{margin-left:auto}
 /* caption to copy, Pro filter question (audit 30/10) */
 .capbox{margin-top:14px;display:flex;flex-direction:column;gap:6px}
 .capbox textarea{width:100%;box-sizing:border-box;font:500 14px/1.45 var(--body);padding:10px 12px;border:2px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink);resize:vertical}
-.result .sharemain{width:100%;justify-content:center}
 .result .savemain{width:100%;justify-content:center}
 /* (05/11, 06/11) under « Enregistrer la vidéo »: « Partager » on a phone, its hint, then the caption to copy */
 .sharebox{display:flex;flex-direction:column;gap:8px;margin:2px 0 0;width:100%}
 .sharebox[hidden]{display:none}
-.sharebox .sharemain{min-height:56px;font-size:19px}
+.savedl{align-self:center;font:500 14px var(--body);color:var(--ink);opacity:.75;text-decoration:underline;text-underline-offset:3px;padding:10px 6px;min-height:44px;display:inline-flex;align-items:center}
+.savedl[hidden]{display:none}
+@media (hover:hover){ .savedl:hover{opacity:1} }
 .sharebox .hint{margin:0}
 .result #saveRow{width:100%;flex-direction:column;align-items:stretch;gap:6px}
 .result #saveNote:empty{display:none}
@@ -1105,12 +1106,12 @@ body.isdone header .stepper,body.isdone header .hdtools{display:none !important}
   .dv-card h2{margin-bottom:10px}
   .doneview .result video{max-height:36vh}
 }
-/* the three buttons together, at once on a phone's screen: Enregistrer, Partager, Copier la légende; the hint and the text
-   of the caption under them */
+/* the buttons together, at once on a phone's screen: Enregistrer (22/11: the only one, it opens the share list), the small
+   download link on Android, Copier la légende; the hint and the text of the caption under them */
 .doneview .result > video{order:1}
 .doneview #saveRow{order:2}
 .doneview .sharebox,.doneview .capbox{display:contents}
-.doneview .sharebox .sharemain{order:3}
+.doneview .savedl{order:3;margin-top:-6px}
 .doneview .capbox .row{order:4}
 .doneview .sharebox .hint{order:5}
 .doneview .capbox .label{order:6;margin-top:6px}

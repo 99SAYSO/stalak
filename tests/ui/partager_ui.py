@@ -1,14 +1,15 @@
-"""Test of « Partager » at the export (owner, 05/11, « comme CapCut »). Python Playwright (chromium).
+"""Test of « Enregistrer la vidéo » at the end of an export (owner, 22/11: « Enregistrer » and « Partager » made one).
+Python Playwright (chromium).
 
     python3 /abs/path/tests/ui/partager_ui.py <built public/ folder> [folder for screenshots]
 
-- iPhone (390 px) and Android (Pixel 7): « Partager » is the main button. It opens the phone's share list with the video file
-  (one MP4 file, the very video made), its hint says to pick TikTok or Instagram, and « Copier la légende » (with « made with
-  stalak.app ») is right under it. The download is a small « Télécharger le fichier » link.
-- Closing the share list changes nothing. If the phone refuses to share the file, the download comes back as the main button.
+- iPhone (390 px) and Android (Pixel 7): one big button, « Enregistrer la vidéo ». It opens the phone's share list with the
+  video file (one MP4 file, the very video made); its hint says how to keep it in Photos and to pick TikTok or Instagram.
+  No « Partager » button any more. On Android a small « Ou télécharger le fichier » link stays under it.
+- Closing the share list changes nothing. If the phone refuses to share the file, the video is downloaded at once instead.
 - A phone that cannot share a file, and a computer (1280 px) even when its browser could share: the download as before.
 - The same for the free plan and for Pro. French and English, no sideways scrolling, no error.
-The phone's share list is replaced by a stand-in: the test sees what Stalak hands to it."""
+The phone's share list and the download are replaced by stand-ins: the test sees what Stalak hands to them."""
 import functools, http.server, os, shutil, sys, tempfile, threading
 os.environ.setdefault('PLAYWRIGHT_BROWSERS_PATH', '/opt/pw-browsers')
 from playwright.sync_api import sync_playwright
@@ -20,8 +21,8 @@ PW = None
 FAST_EXPORT = """pickVideoConfig = async () => null;
   renderRealtime = async () => { await new Promise(r => setTimeout(r, 120)); return { blob: new Blob([new Uint8Array(4096)], { type: 'video/mp4' }), ext: 'mp4' }; }"""
 TXT = {
-    'fr': {'share': 'Partager', 'save': 'Enregistrer la vidéo', 'copied': 'copiée', 'sent': 'Envoyé', 'noshare': 'partage direct'},
-    'en': {'share': 'Share', 'save': 'Save video', 'copied': 'copied', 'sent': 'Sent', 'noshare': 'Direct sharing'},
+    'fr': {'save': 'Enregistrer la vidéo', 'copied': 'copiée', 'sent': 'Envoyé', 'fail': 'téléchargée à la place', 'photos': 'Photos', 'dl': 'Ou télécharger le fichier'},
+    'en': {'save': 'Save video', 'copied': 'copied', 'sent': 'Sent', 'fail': 'downloaded instead', 'photos': 'Photos', 'dl': 'Or download the file'},
 }
 
 
@@ -42,7 +43,8 @@ LAYOUT_JS = """() => {
   const q = s => document.querySelector(s), vis = e => !!e && !e.closest('[hidden]') && e.getClientRects().length > 0;
   const box = q('#shareBox');
   return { box: !box.hidden && !box.closest('[hidden]'), note: q('#saveNote').textContent, kids: [...box.children].map(e => e.id), before: box.previousElementSibling && box.previousElementSibling.id,
-           share: vis(q('#shareBtn')), shareTxt: q('#shareBtn').textContent.trim(), shareCls: q('#shareBtn').className,
+           shareBtn: !!q('#shareBtn'), dl: vis(q('#saveDl')), dlTxt: q('#saveDl').textContent.trim(),
+           buttons: [...document.querySelectorAll('#result button')].filter(vis).map(e => e.id),
            save: vis(q('#saveBtn')), saveTxt: q('#saveBtn').textContent.trim(), saveCls: q('#saveBtn').className,
            post: vis(q('#postBox')), hint: q('#postHint').textContent, cap: vis(q('#capCopy')), capTxt: q('#capText').value,
            sw: document.documentElement.scrollWidth, vw: document.documentElement.clientWidth };
@@ -51,7 +53,8 @@ LAYOUT_JS = """() => {
 
 def make_video(pg, pro=False, share='ok'):
     """the example song, then an export (made fast: the video itself is tested elsewhere)"""
-    pg.evaluate("""mode => { window.__share = null;
+    pg.evaluate("""mode => { window.__share = null; window.__dl = 0;
+      if (!window.__dlHook){ window.__dlHook = 1; const ck = HTMLAnchorElement.prototype.click; HTMLAnchorElement.prototype.click = function(){ if (this.download){ window.__dl++; return; } return ck.call(this); }; }
       navigator.canShare = d => mode !== 'nofile' && !!(d && d.files && d.files.length);
       navigator.share = async d => { window.__share = { n: d.files.length, name: d.files[0].name, type: d.files[0].type, size: d.files[0].size, text: d.text || null };
         if (mode === 'abort') throw new DOMException('closed', 'AbortError');
@@ -78,14 +81,17 @@ def phone(b, base, lang, dev):
     T = TXT[lang]
     make_video(pg)
     pg.wait_for_function('() => __ev("S.done === true")', timeout=10000); pg.wait_for_timeout(500)
-    v = pg.evaluate('''() => { const a = document.querySelector('#saveBtn').getBoundingClientRect(), b = document.querySelector('#shareBtn').getBoundingClientRect();
-      return { save: Math.round(a.top), top: Math.round(b.top), bottom: Math.round(b.bottom), h: innerHeight, focus: document.activeElement && document.activeElement.id }; }''')
-    check(tag + ' : la vidéo prête (écran de fin, 06/11) : « ' + T['save'] + ' » puis « ' + T['share'] + ' » dessous, à l’écran', v['save'] < v['top'] and v['bottom'] <= v['h'] and v['focus'] == 'saveBtn', v)
+    v = pg.evaluate('''() => { const a = document.querySelector('#saveBtn').getBoundingClientRect();
+      return { top: Math.round(a.top), bottom: Math.round(a.bottom), h: innerHeight, focus: document.activeElement && document.activeElement.id }; }''')
+    check(tag + ' : la vidéo prête (écran de fin) : « ' + T['save'] + ' » à l’écran, sélectionné', v['bottom'] <= v['h'] and v['focus'] == 'saveBtn', v)
     if SHOTS: pg.screenshot(path=os.path.join(SHOTS, 'tel-' + dev.lower() + '-' + lang + '.png'))
     L = pg.evaluate(LAYOUT_JS)
-    check(tag + ' : « ' + T['share'] + ' » en grand bouton, juste sous « ' + T['save'] + ' » (le plus grand, 06/11)', L['box'] and L['share'] and L['shareTxt'] == T['share'] and 'big' in L['shareCls']
-          and L['before'] == 'saveRow' and L['saveTxt'] == T['save'] and 'primary' in L['saveCls'] and 'big' in L['saveCls'], L)
-    check(tag + ' : l’explication (TikTok ou Instagram) et la légende à copier', L['kids'] == ['shareBtn', 'postHint'] and 'TikTok' in L['hint'] and 'Instagram' in L['hint'] and L['cap'], L)
+    check(tag + ' : un seul bouton, « ' + T['save'] + ' », en grand ; plus de bouton « Partager »', not L['shareBtn'] and L['save'] and L['saveTxt'] == T['save']
+          and 'primary' in L['saveCls'] and 'big' in L['saveCls'] and 'saveBtn' in L['buttons'] and L['buttons'][0] == 'saveBtn', L)
+    want_dl = dev == 'Android'
+    check(tag + ' : ' + ('le petit lien « ' + T['dl'] + ' » dessous' if want_dl else 'pas de lien de téléchargement en plus'), L['dl'] == want_dl and (not want_dl or L['dlTxt'] == T['dl']), L)
+    check(tag + ' : l’explication (Photos, TikTok ou Instagram) et la légende à copier', L['box'] and L['before'] == 'saveRow' and 'postHint' in L['kids'] and 'TikTok' in L['hint']
+          and 'Instagram' in L['hint'] and T['photos'] in L['hint'] and L['cap'], L)
     check(tag + ' : plus de liens vers les sites des réseaux (le partage du téléphone les remplace)', not L['post'], L)
     check(tag + ' : légende courte avec « made with stalak.app »', 'made with stalak.app' in L['capTxt'] and '#madewithstalak' in L['capTxt'] and len(L['capTxt']) < 140, L['capTxt'])
     pg.locator('#capCopy').click(); pg.wait_for_timeout(300)
@@ -96,24 +102,29 @@ def phone(b, base, lang, dev):
         pg.locator('#result').scroll_into_view_if_needed(); pg.wait_for_timeout(200)
         pg.locator('#result').screenshot(path=os.path.join(SHOTS, 'partager-' + dev.lower() + '-' + lang + '.png'))
     size = ev(pg, 'lastBlob.size')
-    pg.locator('#shareBtn').click(); pg.wait_for_timeout(300)
+    pg.locator('#saveBtn').click(); pg.wait_for_timeout(300)
     s = pg.evaluate('window.__share')
-    check(tag + ' : « ' + T['share'] + ' » ouvre le partage du téléphone avec le fichier vidéo (la vidéo faite, en MP4)',
-          s and s['n'] == 1 and s['type'] == 'video/mp4' and s['name'].endswith('.mp4') and s['size'] == size and not s['text'], s)
-    check(tag + ' : après le partage, « ' + T['sent'] + ' »', T['sent'] in pg.locator('#postHint').inner_text())
+    check(tag + ' : « ' + T['save'] + ' » ouvre le partage du téléphone avec le fichier vidéo (la vidéo faite, en MP4), sans télécharger',
+          s and s['n'] == 1 and s['type'] == 'video/mp4' and s['name'].endswith('.mp4') and s['size'] == size and not s['text'] and pg.evaluate('window.__dl') == 0, (s, pg.evaluate('window.__dl')))
+    check(tag + ' : après le partage, « ' + T['sent'] + ' »', T['sent'] in pg.locator('#saveNote').inner_text(), pg.locator('#saveNote').inner_text())
+    if want_dl:
+        pg.locator('#saveDl').click(); pg.wait_for_timeout(200)
+        check(tag + ' : « ' + T['dl'] + ' » télécharge le fichier', pg.evaluate('window.__dl') == 1)
     # closing the share list: nothing changes
-    make_video(pg, share='abort'); pg.locator('#shareBtn').click(); pg.wait_for_timeout(300)
+    make_video(pg, share='abort'); pg.locator('#saveBtn').click(); pg.wait_for_timeout(300)
     L2 = pg.evaluate(LAYOUT_JS)
-    check(tag + ' : fermer le partage sans choisir ne change rien', L2['box'] and L2['share'] and not L2['post'] and T['sent'] not in L2['hint'], L2)
+    check(tag + ' : fermer le partage sans choisir ne change rien (pas de téléchargement)', L2['box'] and not L2['post'] and T['sent'] not in L2['note'] and pg.evaluate('window.__dl') == 0, L2)
     # Pro: the same
     make_video(pg, pro=True)
     L3 = pg.evaluate(LAYOUT_JS)
-    check(tag + ' : Pro : le même « ' + T['share'] + ' »', L3['box'] and L3['share'] and L3['kids'] == ['shareBtn', 'postHint'], L3)
-    # the phone refuses to share the file: the download comes back as the main button
-    make_video(pg, share='refuse'); pg.locator('#shareBtn').click(); pg.wait_for_timeout(300)
+    check(tag + ' : Pro : le même bouton unique', L3['box'] and L3['save'] and not L3['shareBtn'] and L3['buttons'][0] == 'saveBtn', L3)
+    # the phone refuses to share the file: the video is downloaded at once instead
+    make_video(pg, share='refuse'); pg.locator('#saveBtn').click(); pg.wait_for_timeout(300)
     L4 = pg.evaluate(LAYOUT_JS)
-    check(tag + ' : partage refusé par le téléphone → « ' + T['save'] + ' » redevient le bouton principal, avec une explication',
-          not L4['box'] and not L4['share'] and L4['saveTxt'] == T['save'] and 'primary' in L4['saveCls'] and T['noshare'] in L4['note'] and L4['cap'], L4)
+    check(tag + ' : partage refusé par le téléphone → la vidéo est téléchargée tout de suite, avec une explication',
+          pg.evaluate('window.__dl') == 1 and not L4['box'] and L4['saveTxt'] == T['save'] and T['fail'] in L4['note'] and L4['cap'], (L4, pg.evaluate('window.__dl')))
+    pg.locator('#saveBtn').click(); pg.wait_for_timeout(300)
+    check(tag + ' : … et la fois suivante, « ' + T['save'] + ' » télécharge directement', pg.evaluate('window.__dl') == 2 and pg.evaluate('window.__share') and True)
     check(tag + ' : aucune erreur dans la page', not errs, errs)
     ctx.close()
     # a phone that cannot share a file
@@ -125,7 +136,9 @@ def phone(b, base, lang, dev):
     make_video(pg, share='nofile')
     L5 = pg.evaluate(LAYOUT_JS)
     check(tag + ' : téléphone qui ne sait pas partager un fichier → « ' + T['save'] + ' » comme aujourd’hui',
-          not L5['box'] and not L5['share'] and L5['saveTxt'] == T['save'] and 'primary' in L5['saveCls'] and L5['cap'], L5)
+          not L5['box'] and not L5['dl'] and L5['saveTxt'] == T['save'] and 'primary' in L5['saveCls'] and L5['cap'], L5)
+    pg.locator('#saveBtn').click(); pg.wait_for_timeout(300)
+    check(tag + ' : … et il télécharge le fichier', pg.evaluate('window.__dl') == 1 and not pg.evaluate('window.__share'))
     check(tag + ' : aucune erreur dans la page (sans partage de fichier)', not errs, errs)
     ctx.close()
 
@@ -144,7 +157,9 @@ def computer(b, base, lang):
         make_video(pg, pro=pro)   # (its browser says it could share a file: a computer keeps the download all the same)
         L = pg.evaluate(LAYOUT_JS)
         check(tag + (' Pro' if pro else ' gratuit') + ' : « ' + T['save'] + ' » reste le bouton principal, pas de bouton Partager',
-              not L['box'] and not L['share'] and L['saveTxt'] == T['save'] and 'primary' in L['saveCls'], L)
+              not L['box'] and not L['shareBtn'] and not L['dl'] and L['saveTxt'] == T['save'] and 'primary' in L['saveCls'], L)
+        pg.locator('#saveBtn').click(); pg.wait_for_timeout(300)
+        check(tag + (' Pro' if pro else ' gratuit') + ' : « ' + T['save'] + ' » télécharge le fichier (pas de partage)', pg.evaluate('window.__dl') == 1 and not pg.evaluate('window.__share'))
         check(tag + (' Pro' if pro else ' gratuit') + ' : la légende à copier, avec « made with stalak.app »', L['cap'] and 'made with stalak.app' in L['capTxt'], L['capTxt'])
     pg.locator('#capCopy').click(); pg.wait_for_timeout(300)
     check(tag + ' : « Copier la légende » copie le texte', T['copied'] in pg.locator('#capNote').inner_text())
