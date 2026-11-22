@@ -62,7 +62,26 @@ Branche `social/tiktok-publier`. Demande du Chef de projet du 21/11 (0 h 17). Po
 ## Avant la validation et la mise en ligne
 
 - Migration 0018 dans D1 **avant** la mise en ligne ; `SOCIAL_CONNECT_ENABLED = "1"` (Chef de projet, à la fusion).
-- Tant que l'appli n'est pas validée : clés du bac à sable, seul @stalak_app (testeur) peut relier, et seulement « Seulement moi ».
-  L'app le dit clairement si TikTok refuse une vidéo publique.
+- Tant que l'appli n'est pas validée : clés du bac à sable, seul @stalak_app (testeur) peut relier, et **le compte TikTok doit être
+  privé** (règle de TikTok avant l'audit, corrigée le 21/11 par le Chef de projet). L'app le dit clairement si TikTok refuse.
 - Juridique (6) : page de confidentialité (données lues sur TikTok, envoi des vidéos, effacement en déliant).
 - Après validation : le propriétaire remplace les clés du bac à sable par celles de Production dans Cloudflare.
+
+## 22/11 : le bouton aux couleurs de TikTok, et plus rien ne reste bloqué (branche `social/tiktok-bouton`)
+
+- **Bouton « Publier sur TikTok » et « Relier TikTok »** : fond noir des boutons officiels de TikTok (#121212), texte blanc,
+  **logo officiel blanc** pris tel quel dans le « Logo and Button pack » de TikTok for Developers (`Button_Black.svg`, la note blanche
+  du bouton « Continue with TikTok »), jamais redessiné ni recoloré, avec de l'espace autour et toujours à côté du texte. L'ombre dure
+  de Stalak prend les deux couleurs de TikTok (cyan #25F4EE, rouge #FE2C55) pour qu'on ne le confonde pas avec « Enregistrer ».
+  Le menu du compte montre le même logo (en noir, couleur du texte). Contraste du texte : 18:1.
+  Règles suivies : https://developers.tiktok.com/doc/getting-started-design-guidelines (logos seulement depuis leur pack,
+  pas de modification ; logo blanc sur fond sombre, noir sur fond clair).
+- **Le brouillon qui tournait sans fin** : causes possibles trouvées et corrigées.
+  - Aucune limite de temps : si TikTok ne répondait pas pendant l'envoi d'un morceau, l'écran restait bloqué (et ne se fermait
+    pas, l'envoi bloquant Échap). Maintenant : 2 min par morceau et 30 s par question côté app ; 90 s (envoi) et 20 s (questions)
+    côté serveur, puis message clair et nouvel essai.
+  - Un morceau bien reçu dont la réponse se perdait était renvoyé et refusé (« déjà envoyé ») : l'app le compte maintenant comme reçu.
+  - Pendant que TikTok prépare la vidéo, on peut fermer la fenêtre (« Fermer » + Échap) ; TikTok continue. Le texte du brouillon
+    parle de la boîte de réception TikTok. Après 5 erreurs de suite, ou 5 minutes, l'app s'arrête avec un message.
+  - Traces dans les journaux Cloudflare (sans identifiants ni jeton) : chaque changement de statut TikTok (`[stalak] tiktok status
+    draft SEND_TO_USER_INBOX`), les délais dépassés. Les lignes de `tiktok_posts` sont toujours effacées en déliant (confidentialité).
