@@ -1183,3 +1183,4 @@ body.isdone > .help-cube{display:none}
 .rv-who{margin:0;font:700 13.5px/1.3 var(--body);color:#3b4150}
 .proof-n{margin:14px 0 0;text-align:center;font:700 15px/1.3 var(--body)}
 @media (max-width:420px){ .ba{grid-template-columns:1fr} }
+.rv-note{display:flex;align-items:center;gap:6px;font:700 14px/1 var(--body)}

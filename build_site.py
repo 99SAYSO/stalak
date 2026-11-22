@@ -109,19 +109,19 @@ a = '<div class="byalaska" id="byAlaska">by Alaska</div>'
 assert a in markup
 # Marketing & croissance (22/11, sales audit, owner's decisions): before / after, the customer reviews and the counter, just above
 # « Stalak, c'est quoi ? ». The reviews: site_src/avis.json, word for word as the owner gave them ({pseudo, note 1-5, texte,
-# formule: free | pro | creator}); « Avis clients », the average of all of them, no « achat vérifié » badge (not bought through Paddle).
+# formule: free | pro | creator}; the note as the person gave it, 1 to 5, decimals allowed); « Avis clients », the average of all of them, no « achat vérifié » badge (not bought through Paddle).
 # No review in the file: no band. The counter: every video exported since the launch (/api/stats/exports); hidden if it doesn't load.
 AVIS = json.loads((extra / 'avis.json').read_text(encoding='utf-8')) if (extra / 'avis.json').exists() else []
 PLAN_NAME = {'free': {'fr': 'Gratuit', 'en': 'Free'}, 'pro': {'fr': 'Stalak Pro', 'en': 'Stalak Pro'}, 'creator': {'fr': 'Creator Plus', 'en': 'Creator Plus'}}
 for _r in AVIS:
     assert set(_r) >= {'pseudo', 'note', 'texte', 'formule'}, 'avis.json: pseudo, note, texte and formule for each review'
-    assert _r['note'] in (1, 2, 3, 4, 5) and _r['formule'] in PLAN_NAME and str(_r['texte']).strip(), 'avis.json: a note from 1 to 5 and a known formule'
+    assert isinstance(_r['note'], (int, float)) and 1 <= _r['note'] <= 5 and _r['formule'] in PLAN_NAME and str(_r['texte']).strip(), 'avis.json: a note from 1 to 5 and a known formule'
 def rv_item(r, lang, tag='li', cls=''):
-    n = int(r['note'])
-    return ('<' + tag + (' class="' + cls + '"' if cls else '') + '><span class="rv-stars" role="img" aria-label="' + str(n) + '/5">' + '★' * n + '☆' * (5 - n) + '</span>'
+    v = float(r['note']); n = int(v + .5); s = ('%g' % v).replace('.', ',' if lang == 'fr' else '.')   # 4,8/5 as given; the stars rounded
+    return ('<' + tag + (' class="' + cls + '"' if cls else '') + '><span class="rv-note"><span class="rv-stars" aria-hidden="true">' + '★' * n + '☆' * (5 - n) + '</span> <b>' + s + '/5</b></span>'
             '<blockquote lang="fr">' + H.escape(str(r['texte'])) + '</blockquote><p class="rv-who">' + H.escape(str(r['pseudo'])) + ' · ' + PLAN_NAME[r['formule']][lang] + '</p></' + tag + '>')
 def rv_avg(lang):
-    m = sum(int(r['note']) for r in AVIS) / len(AVIS); n = len(AVIS)
+    m = sum(float(r['note']) for r in AVIS) / len(AVIS); n = len(AVIS)
     if lang == 'fr': return ('%.1f' % m).replace('.', ',') + ' sur 5 · ' + str(n) + (' avis clients' if n > 1 else ' avis client')
     return ('%.1f' % m) + ' out of 5 · ' + str(n) + (' customer reviews' if n > 1 else ' customer review')
 PROOF = ('<section class="proof"' + (' aria-labelledby="rvT"' if AVIS else '') + '>'

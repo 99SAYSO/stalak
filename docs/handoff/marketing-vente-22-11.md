@@ -29,3 +29,6 @@ Après avoir collé les avis : `python3 build_site.py --domain stalak.app --emai
 - Tests serveur : 113/113 (nouveau test : total, cache, rien d'autre).
 - Captures téléphone (390 px) et ordinateur (1280 px), FR et EN, avec 3 avis d'essai jamais enregistrés : rien de coupé, aucune erreur dans la page ;
   le compteur affiche « Déjà 275 vidéos montées avec Stalak » avec une réponse simulée.
+
+## Les avis (22/11, 22 h 35)
+Les 30 avis envoyés par le propriétaire sont dans `site_src/avis.json`, textes et pseudos inchangés. La formule est celle que chaque personne cite (15 Pro, 15 Creator Plus ; ceux passés de Pro à Creator Plus comptent pour Creator Plus). Notes telles que données, avec décimales (« 4,8/5 »), étoiles arrondies ; moyenne 4,74 → « 4,7 sur 5 · 30 avis clients ». Vérifié : les 30 textes du site sont identiques au fichier envoyé ; les fonctions citées existent (dont les 60 paroles automatiques par jour de Creator Plus). Tarifs : l’avis de bloody sous Creator Plus, celui de Nasko sous Pro, aucun sous Gratuit.
