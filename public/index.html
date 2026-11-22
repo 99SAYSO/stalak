@@ -1473,9 +1473,10 @@ body.isdone > .help-cube{display:none}
 .rv-view{width:100vw;margin-left:calc(50% - 50vw);overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;
   -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 9%,#000 91%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 9%,#000 91%,transparent 100%)}
 .rv-view::-webkit-scrollbar{display:none}
-/* the page's column clips what goes past it (style.css .wrap): with the band, the page itself does it instead */
-.wrap:has(.rv-view){overflow-x:visible}
-body:has(.rv-view){overflow-x:clip}
+/* the page's column clips what goes past it (style.css .wrap). Wider than the column (1100 px), the page itself does it
+   instead, so the band reaches the edges of the screen; narrower, the column is the screen and nothing changes (a 320 px
+   phone at the Montage step needs the column's own clip: tests/ui/vente_ui.py) */
+@media (min-width:1101px){ .wrap:has(.rv-view){overflow-x:visible} body:has(.rv-view){overflow-x:clip} }
 .rv-list{list-style:none;margin:0;padding:4px max(16px,calc(50vw - 350px)) 10px;display:flex;align-items:stretch;width:max-content}
 .rv-list li{flex:none;width:min(80vw,372px);margin-right:16px;box-sizing:border-box;display:flex;flex-direction:column;background:#fff;color:var(--ink);border:2.5px solid var(--ink);border-radius:16px;box-shadow:0 4px 0 var(--ink);padding:14px 15px}
 .rv-list blockquote{margin:8px 0 12px;font-size:14.5px;line-height:1.45}
@@ -1493,7 +1494,10 @@ body:has(.rv-view){overflow-x:clip}
 .proof-n .pn-a{display:block}
 .about{margin-top:30px;text-align:center}
 @media (max-width:420px){ .ba{grid-template-columns:1fr} }
-@media (max-width:640px){ .rv-view{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 5%,#000 95%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 5%,#000 95%,transparent 100%)} }
+/* up to 1100 px the column (24 px from each edge of the screen) clips the band: the band is exactly that wide, so the
+   fade does the cut, never the clip */
+@media (max-width:1100px){ .rv-view{width:calc(100vw - 48px);margin-left:calc(50% - 50vw + 24px);-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 8%,#000 92%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 8%,#000 92%,transparent 100%)}
+  .rv-list{padding-left:max(4px,calc(50vw - 374px));padding-right:max(4px,calc(50vw - 374px))} }
 /* computer: the first screen in one centred column: the title and its sentence, then the card « Choisis ton son » (the one
    action). The example video leaves the top and stands next to « Avec Stalak », as the proof; the « mode Clip » pill goes
    (the choice TikTok / Clip is in the card). A phone keeps its own first screen (App & montage). */
