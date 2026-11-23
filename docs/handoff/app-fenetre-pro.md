@@ -1,4 +1,4 @@
-Statut : EN COURS (tests en cours)
+Statut : PRÊT
 Branche : app/fenetre-pro (créée depuis `main` 5c7d0ed du 23/11, « Fusion app/vente-22-11 »).
 Maquette de la branche : https://app-fenetre-pro.stalak-site.pages.dev (à faire valider par le propriétaire, règle 9).
 Maquette dessinée avant de coder : artifact « Maquette app Stalak 22/11 », partie 6 (validée le 23/11, 0 h 28).
@@ -48,4 +48,13 @@ fenêtre sont remplacées par « pas de fenêtre avant l'enregistrement ni à la
 Rien pour Marketing. Pour Comptes : la fenêtre lit les prix avec `plAmounts` et `plMonths`, comme l'écran des formules.
 
 ## Résultats des tests
-(à venir)
+(23/11, sur la branche)
+- serveur `tests/backend/run.mjs` **114/114**
+- nouveau `fenetre_pro_ui` **84/84** (iPhone 12, iPhone SE, ordinateur, FR et EN)
+- `audit_ui` **122/122** (moins de vérifications qu'avant : celles de l'ancienne fenêtre sont dans le nouveau test),
+  `audit611_ui` **93/93**, `animations_ui` **44/44**
+- `fin_export_ui` **98/98**, `partager_ui` **92/92**, `vente_ui` **63/63**, `tiktok_ui` **220/220**, `clip1_ui` **87/87**
+- `exports_rates_ui` **80/80**, `formules_ui` **137/137**, `fluidite_ui` **30/30**, `pied_de_page_ui` **842/842**
+- La branche part de `main` 5c7d0ed, avant la fusion de `marketing/vente-22-11`. À la fusion, attendre un conflit dans
+  `public/` (à reconstruire) et dans `tests/ui/audit611_ui.py` avec `app/accueil-A` (les deux y touchent, à des endroits
+  différents).
