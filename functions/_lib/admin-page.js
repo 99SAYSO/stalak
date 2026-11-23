@@ -487,6 +487,12 @@ __DEMO_BANNER__<header class="top"><div class="in">
       <div class="hbest"><span>🎁 Essai gratuit de Pro (7 jours)</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
       <p class="he">Les essais commencés sur la période (avec carte, Pro seulement), puis ce qu’ils sont devenus : annulés pendant l’essai (rien prélevé), devenus payants au bout de 7 jours, ou 1er prélèvement raté. Le % compte les essais déjà finis. Les comptes supprimés ne comptent plus.</p>
       <p class="vsum" id="trialSum">…</p><p class="note" id="trialNote"></p>
+      <p class="note" id="offerNote"></p>
+    </div>
+    <div class="card hq" id="consentCard">
+      <div class="hbest"><span>🍪 Bandeau cookies</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
+      <p class="he">Combien de personnes ont accepté ou refusé la mesure (Clarity, Google Analytics, TikTok) sur la période. Seules celles qui acceptent sont vues dans Clarity et Google Analytics ; les compteurs de ce tableau de bord comptent tout le monde, sans cookie.</p>
+      <p class="vsum" id="ccSum">…</p><p class="note" id="ccNote"></p>
     </div>
     <div class="card hq" id="optCard">
       <div class="hbest"><span>📩 E-mails récoltés</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
@@ -526,6 +532,7 @@ __DEMO_BANNER__<header class="top"><div class="in">
       <div class="head"><h2>E-mail de remerciement aux nouveaux abonnés</h2>
         <p>Environ 3 heures après un nouvel abonnement (Pro ou Creator Plus), le client reçoit un e-mail simple de « 99sayso de Stalak », dans sa langue. Une seule fois par personne, jamais pour un renouvellement ni pour un paiement de test. Ses réponses arrivent sur contact@stalak.app.</p></div>
       <div class="row"><button class="btn" type="button" id="thanksBtn">M’envoyer l’e-mail de remerciement</button><span class="note" id="thanksOut" role="status"></span></div>
+      <div class="row"><button class="btn" type="button" id="offer1Btn">Créer le prix « Pro, 7 jours à 1 € » dans Paddle</button><span class="note" id="offer1Out" role="status"></span></div>
     </div>
     <div class="grid2" id="limits"></div>
     <div class="charts" id="healthCharts" data-mt></div>
@@ -1159,6 +1166,11 @@ __DEMO_BANNER__<header class="top"><div class="in">
         var tr = fu.trial || {};
         set('#trialSum', nf.format(tr.started || 0) + ' essai' + ((tr.started || 0) > 1 ? 's' : '') + ' commencé' + ((tr.started || 0) > 1 ? 's' : '') + ' · ' + nf.format(tr.paid || 0) + ' devenu' + ((tr.paid || 0) > 1 ? 's' : '') + ' payant' + ((tr.paid || 0) > 1 ? 's' : '') + (tr.paidRate != null ? ' (' + String(tr.paidRate).replace('.', ',') + ' % des essais finis)' : ''));
         set('#trialNote', nf.format(tr.canceled || 0) + ' annulé' + ((tr.canceled || 0) > 1 ? 's' : '') + ' pendant l’essai · ' + nf.format(tr.failed || 0) + ' prélèvement' + ((tr.failed || 0) > 1 ? 's' : '') + ' raté' + ((tr.failed || 0) > 1 ? 's' : '') + ' · ' + nf.format(tr.running || 0) + ' en cours');
+        var of = fu.offer1 || {};
+        set('#offerNote', '💶 Offre à 1 € (écran de fin avec filigrane) : ' + nf.format(of.started || 0) + ' prise' + ((of.started || 0) > 1 ? 's' : '') + ' · ' + nf.format(of.paid || 0) + ' passée' + ((of.paid || 0) > 1 ? 's' : '') + ' à Pro mensuel' + (of.paidRate != null ? ' (' + String(of.paidRate).replace('.', ',') + ' % des finies)' : '') + ' · ' + nf.format(of.canceled || 0) + ' annulée' + ((of.canceled || 0) > 1 ? 's' : '') + ' · ' + nf.format(of.running || 0) + ' en cours');
+        var cc = fu.consent || {}, cct = (cc.yes || 0) + (cc.no || 0), tc = fu.ttConv || {};
+        set('#ccSum', cct ? nf.format(cc.yes || 0) + ' acceptent · ' + nf.format(cc.no || 0) + ' refusent (' + Math.round((cc.yes || 0) / cct * 100) + ' % acceptent)' : 'Pas encore de réponse (le bandeau apparaît une fois Clarity ou Google Analytics réglés)');
+        set('#ccNote', 'Achats envoyés à TikTok (API de conversion, avec accord) : ' + nf.format(tc.ok || 0) + (tc.fail ? ' · ' + nf.format(tc.fail) + ' refusé' + (tc.fail > 1 ? 's' : '') + ' par TikTok' : ''));
         var op = fu.optins || {};
         set('#optSum', nf.format(op.confirmed || 0) + ' e-mail' + ((op.confirmed || 0) > 1 ? 's' : '') + ' confirmé' + ((op.confirmed || 0) > 1 ? 's' : '') +
           ' (dont ' + nf.format(op.week || 0) + ' cette semaine) · ' + nf.format(op.waiting || 0) + ' en attente de confirmation');
@@ -1208,6 +1220,13 @@ __DEMO_BANNER__<header class="top"><div class="in">
         : (r.fr || r.en) ? 'Un seul est parti (' + (r.fr ? 'français' : 'anglais') + '). Réessaie dans une minute.'
         : 'Pas envoyés : Resend n’a pas répondu (ou la clé RESEND_API_KEY manque).';
     }).catch(function (e) { out.textContent = 'Pas envoyés : ' + e.message; }).then(function () { b.disabled = false; });
+  });
+  // Comptes (23/11): the Paddle price of the 1 € offer, made by the server with its own Paddle key (no key to type)
+  $('#offer1Btn').addEventListener('click', function () {
+    var b = this, out = $('#offer1Out'); b.disabled = true; out.textContent = 'Création…';
+    api('POST', 'paddle-offer1', {}).then(function (r) {
+      out.textContent = (r.existed ? 'Il existait déjà : ' : 'Créé : ') + r.priceId + ' (' + r.environment + '). Donne cet identifiant au Chef de projet (PADDLE_PRICE_PRO_OFFER1).';
+    }).catch(function (e) { out.textContent = 'Pas créé : ' + e.message; }).then(function () { b.disabled = false; });
   });
   var TG_ERR = { telegram_no_start: 'Je ne trouve pas ton /start : ouvre ton bot dans Telegram, envoie /start, puis réessaie (dans les 15 minutes).',
     telegram_several: 'Plusieurs personnes ont écrit /start à ton bot : renvoie /start toi-même, attends 15 minutes que les autres expirent, puis réessaie.',
@@ -1367,6 +1386,7 @@ const DEMO_JS = String.raw`var DD = __DEMO_DATA__, DS = { avail: false, tickets:
     else if (p === 'available') { DS.avail = !!body.available; r = { availableSwitch: DS.avail }; }
     else if (p === 'notify-test' || p === 'ntfy-test') r = { configured: true, sent: true, telegram: 'sent', ntfy: false };
     else if (p === 'thanks-test') r = { to: 'toi@demo.stalak', fr: true, en: true };
+    else if (p === 'paddle-offer1') r = { priceId: 'pri_demo_offre1', existed: false, environment: 'sandbox' };
     else if (p === 'telegram-link') r = { linked: true, name: 'Démo' };
     else if (p === 'telegram-unlink') r = { linked: false };
     else return Promise.reject(Object.assign(new Error('Pas dans la démo'), { code: 'demo' }));

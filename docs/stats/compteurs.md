@@ -25,6 +25,9 @@ seulement le temps de l'onglet (`sessionStorage` « stalak:vsrc »). Un `?ref=` 
 | `ev_plans_open`, `ev_plans_why_<raison>` | page des formules ouverte, et pourquoi : une fonction Pro (`filters`, `clip`, `fx`, `text`, `lyrics`, `pack`, `cloud`, `human`, `wm`) ou, **13/11**, d'où vient la personne sans fonction précise : `menu` (menu du compte ou bouton Pro en haut), `account` (page Mon compte), `pricing` (page Tarifs, « Choose Pro »), `link` (lien `#pro`) ; `other` = le reste (retour en arrière…) |
 | `ev_clip_ask_pro` / `_reel` / `_none` | **7/11** : réponse à la question « Clip sans Pro » (Pro / TikTok-Reels / Annuler). `ev_plans_why_clip` ne compte que ceux qui ont choisi « Pro » ici : c'est pourquoi il est tombé à 0 après le 7/11 |
 | `trial_start`, `trial_paid`, `trial_canceled`, `trial_failed`, `trial_refused`, `trial_cancel_link` | **23/11**, essai gratuit de 7 jours de Pro (`trial.js`) : essai commencé, devenu payant, annulé pendant l'essai, 1er prélèvement raté, essai refusé (le compte y avait déjà eu droit), annulé depuis le lien de l'e-mail. Le tableau de bord compte à partir des abonnements (colonnes `trial_*`) |
+| `ev_consent_yes`, `ev_consent_no` | **23/11** : réponse au bandeau cookies (Accepter / Refuser), rien d'autre |
+| `tt_conv_ok`, `tt_conv_fail` | **23/11** : achats envoyés à l'API de conversion TikTok (avec accord), ou refusés par TikTok |
+| `offer1_refunded` | **23/11** : offre à 1 € prise sans droit (déjà eu un essai) : arrêtée et remboursée |
 | `ev_clip_open` | **13/11** : le mode Clip choisi (une fois par page) ; envoyé par l'app à partir de la branche App qui l'ajoute |
 | `ev_checkout_open` | fenêtre de paiement Paddle ouverte |
 | `ev_checkout_done` | **7/11** : la fenêtre a fini par un achat (vu par la page) |
@@ -54,3 +57,7 @@ SELECT name, SUM(n) FROM daily_counts WHERE name LIKE 'ev_checkout_close_%' AND 
 -- e-mails confirmés
 SELECT COUNT(*) FROM email_optins WHERE confirmed_at IS NOT NULL;
 ```
+
+
+## GA4 (23/11, après « Accepter » seulement)
+Les mêmes étapes partent aussi dans Google Analytics 4 quand la personne a accepté les cookies (`src/consent.js`). Correspondance : `ev_export_start` → `export_lance`, `ev_export_ok` → `export_ok`, `ev_plans_open` → `paywall_vu` (paramètre `endroit` = la raison), `ev_checkout_open` → `checkout_ouvert`, `ev_clip_open` → `clip_ouvert`, achat vu par la page → `achat` (`formule`, `periode`, `offre`, `value`, `currency`), page d'accueil → `accueil_vue`. L'app envoie elle-même `onboarding_etape_N` et `montage_lance` (`StalakConsent.track`). Les compteurs anonymes ci-dessus restent : eux comptent tout le monde, sans cookie.

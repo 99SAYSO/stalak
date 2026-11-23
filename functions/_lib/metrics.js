@@ -16,7 +16,8 @@ export const METRICS = ['help_q', 'help_fail', 'cloud_save', 'ticket', 'ticket_m
 // clip_ask (7/11, Clip mode): a 16:9 clip exported without Pro, the answer to the question (pro / reel / none)
 export const EVENTS = ['export_start', 'export_ok', 'export_fail', 'export_retry', 'export_saved', 'export_refused', 'clip_ask', 'pro_offer', 'ad_offer', 'ad_shown', 'ad_ok', 'plans_open', 'checkout_open',
   'checkout_close', 'checkout_done',   // 7/11: the payment window closed without buying ({stage}), or paid
-  'clip_open'];   // audit of 13/11: the Clip mode opened (App sends it once per page, when the person chooses Clip)
+  'clip_open',    // audit of 13/11: the Clip mode opened (App sends it once per page, when the person chooses Clip)
+  'consent_yes', 'consent_no'];   // 23/11: the cookie banner answered (consent.js): « Accepter » / « Refuser », nothing else
 // why an export failed, as a category only (App sends it): nothing about the person or the video
 // (7/11) + encoder; closed: the page closed during the export; crash: an export that never ended, found at the next visit
 // (the browser closed the tab: usually out of memory on a phone)

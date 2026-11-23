@@ -1,6 +1,6 @@
 // What each plan unlocks. The server is the source of truth; the client only reads this (GET /api/me → entitlements).
 import { HttpError } from './http.js';
-import { trialEligible, TRIAL_DAYS } from './trial.js';
+import { trialEligible, offer1Eligible, TRIAL_DAYS } from './trial.js';
 
 // Offer of 30/10/2026 (evening), STALAK_CONTEXTE.md section 2: Gratuit (no account needed, unlimited, watermark that a
 // rewarded ad removes for one video) + Stalak Pro + Stalak Creator Plus.
@@ -94,6 +94,8 @@ export function priceTable(env) {
   // 23/11: the two Stalak Pro prices with a 7-day free trial (trial.js), same amounts as the prices on sale
   add(env.PADDLE_PRICE_PRO_MONTH_TRIAL, 'pro', 'month');
   add(env.PADDLE_PRICE_PRO_YEAR_TRIAL, 'pro', 'year');
+  // 23/11 (evening): the 1 € offer, Stalak Pro monthly with 7 paid days (trial.js)
+  add(env.PADDLE_PRICE_PRO_OFFER1, 'pro', 'month');
   add(env.PADDLE_PRICE_YEAR, 'pro', 'year');
   for (const part of String(env.PADDLE_PRICES_OLD || '').split(',')) {
     const [id, plan, iv] = part.trim().split(':');
@@ -145,10 +147,12 @@ export async function planFor(env, user) {
 export async function entitlementsFor(env, user) {
   // 23/11, free trial (trial.js): trialEligible = this account may start the 7-day Stalak Pro trial (open the checkout
   // with config.paddle.prices.proTrial); trialDays = 7
-  if (!user) return { entitlements: { ...FREE, features: [...FREE.features], limits: { ...FREE.limits }, trialEligible: false, trialDays: TRIAL_DAYS }, subscription: null };
+  // offer1Eligible (23/11, evening): the « 1 € » offer of the end screen with the watermark (same right: one trial per person)
+  if (!user) return { entitlements: { ...FREE, features: [...FREE.features], limits: { ...FREE.limits }, trialEligible: false, offer1Eligible: false, trialDays: TRIAL_DAYS }, subscription: null };
   const { plan, sub } = await planFor(env, user);
   return {
-    entitlements: { ...entitlementsOf(plan), trialEligible: plan === 'free' ? await trialEligible(env, user) : false, trialDays: TRIAL_DAYS },
+    entitlements: { ...entitlementsOf(plan), trialEligible: plan === 'free' ? await trialEligible(env, user) : false,
+      offer1Eligible: plan === 'free' ? await offer1Eligible(env, user) : false, trialDays: TRIAL_DAYS },
     subscription: sub ? {
       status: sub.status,
       plan: planOfSub(env, sub),

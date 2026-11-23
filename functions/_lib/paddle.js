@@ -1,6 +1,7 @@
 // Paddle Billing: webhook signature, subscription sync, customer portal, cancellation.
 // Docs: https://developer.paddle.com/webhooks/about/signature-verification
 //       https://developer.paddle.com/api-reference/customer-portals/create-customer-portal-session
+import { tiktokPurchase, tiktokConversionsOn } from './conversions.js';
 import { trialAfterWebhook } from './trial.js';
 import { HttpError, readText } from './http.js';
 import { hmacSha256Hex, timingSafeEqual } from './crypto.js';
@@ -127,6 +128,18 @@ async function applyTransaction(env, data) {
       ms(data.billed_at) || ms(data.updated_at) || Date.now(), Date.now(), payEnv(env)).run();
     // the last step of the funnel (dashboard): a first payment (not a renewal)
     if (!known && String(data.origin || '') !== 'subscription_recurring') await bump(env, 'paid_first');
+    // 23/11: the TikTok conversion (conversions.js, sent after the answer to Paddle): the first real payment of a subscription
+    // (a purchase, the 1 € of the offer, or the first payment after a free trial), never a renewal; only with the consent
+    if (!known && total > 0 && tiktokConversionsOn(env)) {
+      const prior = data.subscription_id ? await env.DB.prepare('SELECT COUNT(*) AS n FROM payments WHERE subscription_id = ?1 AND id != ?2 AND total > 0')
+        .bind(data.subscription_id, data.id).first() : { n: 0 };
+      if (!(prior && prior.n)) {
+        const u = userId ? await env.DB.prepare('SELECT email FROM users WHERE id = ?1').bind(userId).first() : null;
+        const t = item && priceTable(env)[item.price.id];
+        return { applied: true, userId, conversion: { data, plan: t ? t.plan : null, userId, email: u && u.email,
+          totalCents: total, currency: String(totals.currency_code || data.currency_code || 'USD') } };
+      }
+    }
   }
   return { applied: true, userId };
 }
@@ -236,6 +249,12 @@ export async function handleWebhook(request, env, ctx) {
         r.trial ? trialNotice(env, event.data, info, r.trial).catch(() => null) : null,
         r.trial === 'paid' ? thanksAfterPurchase(env, { ...info, live: !info.test }) : null,
       ]);
+      if (ctx && typeof ctx.waitUntil === 'function') ctx.waitUntil(p); else await p;
+    }
+    // 23/11: the TikTok conversion of a first payment, after the answer to Paddle (it can never fail nor slow the webhook)
+    if (r.conversion) {
+      const c = r.conversion; delete r.conversion;
+      const p = tiktokPurchase(env, c.data, c).catch(() => null);
       if (ctx && typeof ctx.waitUntil === 'function') ctx.waitUntil(p); else await p;
     }
     return { ok: true, ...r };

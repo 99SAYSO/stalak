@@ -1684,6 +1684,10 @@ body.isdone > .bands{display:none}
 /* (owner, 23/11) the 7-day free trial of Pro: what it costs then and that it can be cancelled, always under the button */
 .tr-terms{margin:4px 0 0;font:500 13.5px/1.4 var(--body);color:#3b4a66;text-align:center}
 .tr-terms[hidden]{display:none}
+/* Comptes (23/11): the 1 € offer's terms next to its button, in clear (owner's decision; Juridique: not hidden) */
+.of1-terms{margin:6px 0 0;font:600 14px/1.4 var(--body);color:#0a0d14;text-align:center}
+.of1-terms[hidden]{display:none}
+.doneview #dvOffer1{order:3;margin-top:-6px}
 .fa-row .tr-terms{flex-basis:100%;order:0;margin:-2px 0 4px}
 .propop .tr-terms{margin:-4px 0 0}
 #apBuy .tr-terms{margin:12px 0 0;font-size:13px}   /* below the button's hard shadow */
@@ -2121,6 +2125,7 @@ body.ttk-on{overflow:hidden}
 
 .frhint{display:flex;align-items:center;gap:2px;width:max-content;max-width:calc(100% - 32px);margin:0 auto 12px;background:#fff;color:var(--ink,#0a0d14);border:2px solid var(--ink,#0a0d14);border-radius:999px;box-shadow:0 3px 0 var(--ink,#0a0d14);font-size:14.5px;font-weight:600;line-height:1.2}.frhint[hidden]{display:none}.frhint a{color:inherit;text-decoration:none;padding:10px 4px 10px 16px}.frhint button{flex:none;width:40px;height:40px;border:0;border-radius:50%;background:transparent;color:inherit;font:inherit;font-size:20px;line-height:1;cursor:pointer}
 </style>
+<script defer src="/assets/consent.a66a80ab81.js"></script>
 </head>
 <body>
 
@@ -2632,6 +2637,8 @@ body.ttk-on{overflow:hidden}
             <button class="btn big dv-cmpgo" id="dvCmpGo" type="button" hidden><span data-i18n="cmp.go">Exporter sans le logo</span> <b class="cmp-tag">PRO</b></button>
             <p class="cmp-price" id="dvCmpP" hidden></p>
             <p class="tr-terms" id="dvTrial" data-trial-int="year" hidden></p>
+            <!-- Comptes (23/11): the 1 € offer's terms, next to its button, always readable (app.js offer1Ui) -->
+            <p class="of1-terms" id="dvOffer1" hidden></p>
             <div class="sharebox" id="shareBox" hidden></div>
             <div class="capbox" id="capBox">
               <label class="label" for="capText" data-i18n="cap.t">Légende prête à copier</label>
@@ -3243,6 +3250,6 @@ body.ttk-on{overflow:hidden}
   <button class="hp-human" id="helpHuman" type="button" data-i18n="help.human" hidden>Parler à un humain</button>
   <button class="hp-diag" id="helpDiag" type="button" data-i18n="help.diag">Copier les infos pour l’équipe</button>
 </section>
-<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.c9f4369178.js", "/assets/app.df2b5072c7.js", "/assets/tiktok.8fcf3f7d25.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v||!v.offsetParent)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
+<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.010fef0df6.js", "/assets/app.f98df7ff89.js", "/assets/tiktok.8fcf3f7d25.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v||!v.offsetParent)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
 </body>
 </html>

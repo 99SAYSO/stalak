@@ -55,6 +55,13 @@ async function meResponse(env, user, headers) {
 
 function config(env) {
   return {
+    // 23/11: the free trial as the app reads it (App, app/essai-pro: config.trial = {days, plans}); null without its prices
+    trial: (trialPrices(env).month || trialPrices(env).year) ? { days: TRIAL_DAYS, plans: ['pro'] } : null,
+    // 23/11 (owner): the measuring tools, loaded by src/consent.js only after « Accepter » (ids, not secrets; none = no banner)
+    measure: {
+      clarity: env.CLARITY_PROJECT_ID || null, ga4: env.GA4_MEASUREMENT_ID || null,
+      tiktok: !!(env.TIKTOK_PIXEL_ID && env.TIKTOK_EVENTS_TOKEN),
+    },
     paddle: {
       environment: env.PADDLE_ENV === 'production' ? 'production' : 'sandbox',
       clientToken: env.PADDLE_CLIENT_TOKEN || null,
@@ -67,6 +74,9 @@ function config(env) {
         // 23/11: Stalak Pro with a 7-day free trial (same amounts). Only for an account with entitlements.trialEligible;
         // a trial taken without the right to it is ended at once by the server (trial.js)
         proTrial: trialPrices(env),
+        // 23/11 (evening): « Retire le filigrane pour 1 € » (end screen with the watermark only): 7 days of Pro for 1 €, then
+        // Pro monthly. Only with entitlements.offer1Eligible (checked again by the server at the webhook)
+        proOffer1: env.PADDLE_PRICE_PRO_OFFER1 || null,
       },
       trialDays: TRIAL_DAYS,
     },

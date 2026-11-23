@@ -27,7 +27,12 @@ const REMIND_SLACK_MS = 3 * 3600e3;                       // the daily tasks run
 
 // the two trial prices (public ids, not secrets)
 export const trialPrices = (env) => ({ month: env.PADDLE_PRICE_PRO_MONTH_TRIAL || null, year: env.PADDLE_PRICE_PRO_YEAR_TRIAL || null });
-export const isTrialPrice = (env, id) => !!id && (id === env.PADDLE_PRICE_PRO_MONTH_TRIAL || id === env.PADDLE_PRICE_PRO_YEAR_TRIAL);
+export const isTrialPrice = (env, id) => !!id && (id === env.PADDLE_PRICE_PRO_MONTH_TRIAL || id === env.PADDLE_PRICE_PRO_YEAR_TRIAL || id === env.PADDLE_PRICE_PRO_OFFER1);
+// 23/11 (evening), the 1 € offer (only on the end screen of an export with the watermark): a Paddle price of its own, Stalak Pro
+// monthly with a PAID trial of 7 days (trial_period.unit_price = 1 €). Same rules as the free trial: once per person (one trial
+// of either kind per account), checked again at the webhook (a refused one is stopped and its 1 € paid back), same refunds.
+export const offer1Price = (env) => env.PADDLE_PRICE_PRO_OFFER1 || null;
+export const isOffer1 = (env, id) => !!id && id === env.PADDLE_PRICE_PRO_OFFER1;
 
 // One form per mailbox: « +anything » removed before the @, and the dots of a Gmail address.
 export function mailboxOf(email) {
@@ -49,6 +54,14 @@ export async function trialMark(env, email) {
 export async function trialEligible(env, user) {
   const p = trialPrices(env);
   if (!user || !user.id || !(p.month || p.year)) return false;
+  return trialRight(env, user);
+}
+// the 1 € offer: the same right (one trial of either kind per person) and its price set
+export async function offer1Eligible(env, user) {
+  if (!user || !user.id || !offer1Price(env)) return false;
+  return trialRight(env, user);
+}
+async function trialRight(env, user) {
   const key = await trialMark(env, user.email);
   const r = await env.DB.prepare(`SELECT u.trial_used_at AS used,
       (SELECT COUNT(*) FROM subscriptions s WHERE s.user_id = u.id AND s.env = ?2) AS subs,
@@ -57,6 +70,18 @@ export async function trialEligible(env, user) {
   return !!r && r.used == null && !r.subs && !r.marked;
 }
 
+const priceOf = (data) => { const it = (data.items || []).find((i) => i && i.price && i.price.id); return it ? it.price.id : null; };
+// the completed payment of a subscription (the 1 € of the offer), refunded in full (Paddle adjustment « refund », type full)
+async function refundTrialPayment(env, subId) {
+  const r = await paddleApi(env, 'GET', `/transactions?subscription_id=${encodeURIComponent(subId)}&status=completed,paid&per_page=5`);
+  const txn = ((r && r.data) || [])[0];
+  if (!txn) return null;
+  const items = ((txn.details && txn.details.line_items) || []).map((li) => ({ item_id: li.id, type: 'full' }));
+  if (!items.length) return null;
+  await paddleApi(env, 'POST', '/adjustments', { action: 'refund', transaction_id: txn.id, reason: 'Stalak: this account already had its trial', items });
+  await bump(env, 'offer1_refunded').catch(() => {});
+  return txn.id;
+}
 const ms = (iso) => { const t = iso ? Date.parse(iso) : NaN; return Number.isFinite(t) ? t : null; };
 // the end of the trial: the trial dates of the item, else the next billing date
 export function trialEndOf(data) {
@@ -93,6 +118,8 @@ export async function trialAfterWebhook(env, data, r, now = Date.now()) {
     await bump(env, 'trial_refused').catch(() => {});
     try { await paddleApi(env, 'POST', `/subscriptions/${encodeURIComponent(data.id)}/cancel`, { effective_from: 'immediately' }); }
     catch (e) { console.error('[stalak] trial refused but Paddle did not cancel it', data.id, e && e.paddleStatus, e && e.paddleCode); }
+    // a paid trial (the 1 € offer): its payment is given back in full
+    if (isOffer1(env, priceOf(data))) await refundTrialPayment(env, data.id).catch((e) => console.error('[stalak] refused 1 € offer not refunded', data.id, e && e.paddleStatus, e && e.paddleCode));
     return { trial: 'refused' };
   }
   if (sub.trial_ends_at == null || sub.trial_result === 'refused') return null;
@@ -285,11 +312,14 @@ export async function trialReminders(env, now = Date.now(), { max = 20 } = {}) {
 
 // Dashboard (admin.js): trials started in the period (refused ones apart), what they became, and the share that pays
 // among the finished ones. From the subscription rows (an account deleted takes its rows with it).
-export async function trialCounts(env, fromMs) {
+// kind: 'free' (the 7 free days) or 'offer1' (the 1 € offer, its own price)
+export async function trialCounts(env, fromMs, kind = 'free') {
+  const offer = offer1Price(env) || '-';
   const r = await env.DB.prepare(`SELECT COUNT(*) AS started,
       SUM(trial_result = 'canceled') AS canceled, SUM(trial_result = 'paid') AS paid, SUM(trial_result = 'failed') AS failed,
       SUM(trial_result IS NULL) AS running
-    FROM subscriptions WHERE env = ?1 AND trial_started_at >= ?2 AND COALESCE(trial_result, '') != 'refused'`).bind(payEnv(env), fromMs).first().catch(() => null);
+    FROM subscriptions WHERE env = ?1 AND trial_started_at >= ?2 AND COALESCE(trial_result, '') != 'refused'
+      AND ${kind === 'offer1' ? 'price_id = ?3' : 'COALESCE(price_id, \'\') != ?3'}`).bind(payEnv(env), fromMs, offer).first().catch(() => null);
   const n = (k) => (r && r[k]) || 0;
   const done = n('canceled') + n('paid') + n('failed');
   return { started: n('started'), canceled: n('canceled'), paid: n('paid'), failed: n('failed'), running: n('running'),
