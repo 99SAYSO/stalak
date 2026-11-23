@@ -1295,6 +1295,9 @@ body.isdone > .help-cube{display:none}
 .about{margin:0;text-align:center}
 .band-frost .about h2{color:#0a0d14;text-shadow:none}
 .band-frost .about p{text-wrap:pretty}
+/* (23/11) the Pro trial, one quiet line under « Stalak, c'est quoi ? » (always with « card required » and what comes after) */
+.trial-line{margin:16px auto 0;max-width:46em;text-align:center;font-size:14px;line-height:1.45;color:#26344d;text-wrap:balance}
+.trial-line a{font-weight:700}
 .band-frost .byalaska{display:flex;width:max-content;margin:22px auto 0}
 .band-night .rv-fill{color:rgba(255,255,255,.3)}
 body.isdone > .bands{display:none}

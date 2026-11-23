@@ -205,6 +205,7 @@ RV_BAND = (('<section class="band band-night rv-band" aria-labelledby="rvT"><div
 # reviews on a night-blue band, « Stalak, c'est quoi ? » and the « by Alaska » badge on a frost band, then the footer (ink)
 BANDS = ('<div class="bands" id="bands">' + RV_BAND
          + '<div class="band band-frost"><div class="band-in"><section class="about" aria-labelledby="aboutT" data-i18n="site.about">' + PAGE['fr']['about'] + '</section>'
+         + '<p class="trial-line" data-i18n="trial.line">Stalak Pro : <a href="/fr/tarifs#essai">essai de 7 jours</a>, carte demandée. Ensuite 7,99 $ par mois sauf si tu annules avant la fin.</p>'
          + a + '</div></div></div>\n')
 markup = markup.replace(a, PROOF + FX_TAG + '\n  ')
 assert markup.count('<!--FOOTER-->') == 1
@@ -229,7 +230,7 @@ EN = json.loads(block('EN').group(1)); FR = json.loads(block('FR').group(1))
 EN.update({'doc.title': PAGE['en']['title'], 'site.about': PAGE['en']['about'], 'site.footer': FOOT.inner('en')})
 EN.update({'ba.no.t': 'Without Stalak', 'ba.no': 'Your takes sit in your camera roll. Lining up every cut by hand takes hours, and the lips drift.',
            'ba.yes.t': 'With Stalak', 'ba.yes': 'Your song and your takes, that’s it. Stalak cuts on the beat, keeps your lips in sync, and it’s ready for TikTok, Reels and Shorts.',
-           'rv.t': 'Customer reviews', 'ba.v': '3 takes, 1 edit. Stalak switches takes on every bar.', 'proof.a': 'Already', 'proof.b': 'videos made with Stalak'})
+           'trial.line': 'Stalak Pro: <a href="/pricing#trial">7-day trial</a>, card required. Then $7.99 a month unless you cancel before it ends.', 'rv.t': 'Customer reviews', 'ba.v': '3 takes, 1 edit. Stalak switches takes on every bar.', 'proof.a': 'Already', 'proof.b': 'videos made with Stalak'})
 if AVIS: EN['rv.avg'] = rv_avg('en')
 FR.update({'doc.title': PAGE['fr']['title']})
 
