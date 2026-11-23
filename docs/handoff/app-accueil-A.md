@@ -1,4 +1,4 @@
-Statut : EN COURS (tests en cours)
+Statut : PRÊT
 Branche : app/accueil-A (créée depuis `main` ead6f07 du 23/11, « Maquette A choisie pour l'accueil téléphone »).
 Maquette de la branche : https://app-accueil-a.stalak-site.pages.dev (à faire valider par le propriétaire, règle 9).
 
@@ -43,7 +43,17 @@ Sur iPhone 12, tout le bloc tient dans le premier écran, pastille comprise (jus
     lancée quand elle est cachée ;
   - `src/markup.html`, bloc `.hero` : le titre contient un retour à la ligne (`<br class="hero-br">`) qui ne joue que sous
     900 px. L'animation mot par mot de l'ordinateur n'est pas touchée.
-- Tests : nouveau `tests/ui/accueil_a_ui.py`.
+- Tests : nouveau `tests/ui/accueil_a_ui.py` ; `audit611_ui.py` mis à jour (il attendait l'ancien titre de l'accueil, changé par
+  Marketing le 23/11, et lit maintenant la phrase courte sous 900 px).
 
 ## Résultats des tests
-(à venir)
+(23/11, sur la branche)
+- serveur `tests/backend/run.mjs` **115/115**
+- nouveau `accueil_a_ui` **77/77** (iPhone 12, iPhone SE, tablette 768 px, ordinateur, FR et EN ; pastille sans le total)
+- `vente_ui` **63/63**, `audit_ui` **158/158**, `audit611_ui` **91/91** (41/49 avant sa mise à jour), `pied_de_page_ui` **842/842**
+- **Pareil sur `main` (ead6f07), donc sans lien avec cette branche** :
+  - `animations_ui` 28/44 : il refuse les nouvelles animations de l'accueil de Marketing choisies par le propriétaire le 23/11
+    (`rv-fill`, `hw-in`, `drop-march`, `fx-rise`, `fx-burst` : plus de 300 ms, ou autre chose que transform / opacity). À
+    décider par Marketing et le Chef de projet : adapter le test ou les animations.
+  - `formules_ui` 136/137 : « le filigrane est dans chaque image » échoue aussi sur `main`, lancé seul. Il passait (137/137)
+    avant la fusion de `marketing/vente-22-11`. À regarder : je ne connais pas encore la cause.
