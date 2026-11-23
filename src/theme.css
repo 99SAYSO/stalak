@@ -1411,3 +1411,17 @@ body.isdone > .bands{display:none}
   .hero-go .hero-song{min-height:56px}
 }
 @media (prefers-reduced-motion:reduce){ .hero-m{animation:none} }
+
+/* (owner, 23/11) the first video without the watermark, offered once per account: the line to sign in, the button, the
+   sentence asked before the export */
+.dv-free{margin:-2px 0 0;font:500 14px/1.4 var(--body);color:var(--ink);text-align:center}
+.dv-free .linkbtn{font-weight:700;min-height:44px}
+.dv-free[hidden],.dv-freego[hidden],.dv-freeask[hidden],.dv-freemsg[hidden]{display:none}
+.dv-freego{width:100%;justify-content:center;min-height:56px;font-size:18px;background:var(--ice)}
+.dv-freeask{display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 14px;border:2.5px solid var(--ink);border-radius:16px;background:var(--ice);box-shadow:0 3px 0 var(--ink);text-align:center}
+.dv-freeask p{margin:0;font:700 15px/1.35 var(--body);color:var(--ink)}
+.dv-freeask .dv-freeok{width:100%;justify-content:center;min-height:52px}
+.dv-freeask .linkbtn{min-height:44px}
+.dv-freemsg{margin:0;font:500 13.5px/1.4 var(--body);color:#8a1c1c;text-align:center}
+.cmp-tag.is-free{background:var(--sky-deep)}
+.doneview .dv-free,.doneview .dv-freego,.doneview .dv-freeask,.doneview .dv-freemsg{order:3}

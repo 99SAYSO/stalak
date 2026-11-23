@@ -494,7 +494,7 @@
                  side (the same moment, drawn by the preview: app.js cmpShots); the video made goes in the left box -->
             <div class="dvcmp" id="dvCmp" hidden>
               <figure class="cmp-f"><div class="cmp-box" id="cmpA"></div><figcaption data-i18n="cmp.a">Avec le logo · Gratuit</figcaption></figure>
-              <figure class="cmp-f cmp-pro"><div class="cmp-box"><canvas id="cmpB" width="360" height="640" role="img" aria-label="Ta vidéo sans le logo" data-i18n-attr="aria-label:cmp.b.aria"></canvas></div><figcaption><span data-i18n="cmp.b">Sans le logo</span> <b class="cmp-tag">PRO</b></figcaption></figure>
+              <figure class="cmp-f cmp-pro"><div class="cmp-box"><canvas id="cmpB" width="360" height="640" role="img" aria-label="Ta vidéo sans le logo" data-i18n-attr="aria-label:cmp.b.aria"></canvas></div><figcaption><span data-i18n="cmp.b">Sans le logo</span> <b class="cmp-tag" id="cmpBTag">PRO</b></figcaption></figure>
               <p class="cmp-note" id="cmpNote" data-i18n="cmp.note">Ton montage, à gauche tel que tu l’as exporté, à droite sans le logo.</p>
             </div>
             <!-- (06/11) « Enregistrer la vidéo » first and big, the only button (22/11: on a phone it opens the share list;
@@ -506,6 +506,16 @@
             <a class="savedl" id="saveDl" href="#" hidden data-i18n="save.dlLink">Ou télécharger le fichier</a>
             <button class="btn big dv-cmpgo" id="dvCmpGo" type="button" hidden><span data-i18n="cmp.go">Exporter sans le logo</span> <b class="cmp-tag">PRO</b></button>
             <p class="cmp-price" id="dvCmpP" hidden></p>
+            <!-- (owner, 23/11) the first video without the watermark, offered once per account (app.js freeUi): signed out, a line
+                 to sign in; signed in with it still there, a button and, before the export, a sentence to confirm -->
+            <p class="dv-free" id="dvFreeIn" hidden><span data-i18n="free.in">Ta 1re vidéo sans filigrane est offerte :</span> <button class="linkbtn" id="dvFreeLogin" type="button" data-i18n="free.login">connecte-toi</button></p>
+            <button class="btn big dv-freego" id="dvFreeGo" type="button" hidden data-i18n="free.go">Exporter sans filigrane (offert)</button>
+            <div class="dv-freeask" id="dvFreeAsk" role="group" aria-labelledby="dvFreeAskT" hidden>
+              <p id="dvFreeAskT" data-i18n="free.ask">C’est ta seule vidéo offerte sans filigrane.</p>
+              <button class="btn primary dv-freeok" id="dvFreeOk" type="button" data-i18n="free.ok">Exporter sans filigrane</button>
+              <button class="linkbtn" id="dvFreeNo" type="button" data-i18n="free.no">Pas maintenant</button>
+            </div>
+            <p class="dv-freemsg" id="dvFreeMsg" role="status" hidden></p>
             <div class="sharebox" id="shareBox" hidden></div>
             <div class="capbox" id="capBox">
               <label class="label" for="capText" data-i18n="cap.t">Légende prête à copier</label>

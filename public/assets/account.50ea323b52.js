@@ -26,6 +26,11 @@
      changePlan(plan, interval[, preview]) -> Promise<{kind: 'up'|'down', from, to, amount?, currency?, effectiveAt?}>: a subscriber
                              moves to another plan on the same subscription (up: now, prorated; down: at the renewal); preview: the price only
      deleteAccount()
+     freeNoWm()           -> bool: this account still has its one free video without the watermark (owner, 23/11). Read in
+                             entitlements.freeNoWm (true / false), or 'freeNoWm' in entitlements.features
+     freeNoWmClaim()      -> Promise<{claim}>: uses it, when the export starts (error 'free_nowm_used' if already used)
+     freeNoWmRelease(claim) -> Promise: the export failed or was cancelled: given back
+     freeNoWmConfirm(claim) -> Promise: the video is made: used for good (the server gives back a claim never confirmed)
      projects.list() / get(id) / save(id, name, state[, fileIds]) / remove(id)   (name null: the name online is kept)
      projects.listAll()   -> Promise<{projects, storage: {available, used, quota, partSize, maxFile}}>
      projects.rename(id, name)
@@ -374,6 +379,12 @@
     me: me,
     config: config,
     has: has,
+    // (App & montage, 23/11) the one free video without the watermark of each account: the server's side is Comptes'
+    // (proposed: POST /api/free-nowm/claim → {claim}; POST /api/free-nowm/release {claim}; POST /api/free-nowm/confirm {claim})
+    freeNoWm: function () { var e = state.entitlements || FREE; return !!state.user && (e.freeNoWm === true || (Array.isArray(e.features) && e.features.indexOf('freeNoWm') >= 0)); },
+    freeNoWmClaim: function () { return api('POST', 'free-nowm/claim', {}); },
+    freeNoWmRelease: function (claim) { return api('POST', 'free-nowm/release', { claim: claim }); },
+    freeNoWmConfirm: function (claim) { return api('POST', 'free-nowm/confirm', { claim: claim }); },
     providers: function () { return config().then(function (c) { return (c.auth && c.auth.providers) || []; }); },
     signup: function (email, password, displayName) {
       return turnstileToken('signup').then(function (t) {
