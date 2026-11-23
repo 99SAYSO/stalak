@@ -8,4 +8,4 @@ But : savoir si le nouvel accueil et les nouvelles formules marchent mieux que l
 |---|---|---|---|---|---|---|---|---|
 | **Avant** : 9 au 22/11 (14 jours) | 994 | 193 | 166 | 97 | 15 | 5 | 16,7 | 9,8 |
 
-Mises en ligne : écran d'app et formules le 23/11 à 0 h 30 ; accueil et Tarifs (Marketing) à la fusion de `marketing/vente-22-11`.
+Mises en ligne : écran d'app et formules le 23/11 à 0 h 30 ; accueil et Tarifs (Marketing) le 23/11 à 1 h 35.
