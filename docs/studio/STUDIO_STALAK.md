@@ -22,7 +22,8 @@ Une fiche par élément : `{categorie: "personnage" | "decor" | "habillage" | "m
 | Champ | Contenu |
 |---|---|
 | `date` | jour de publication, `AAAA-MM-JJ` |
-| `slot` | 1, 2 ou 3 (ordre dans la journée) ; `heure` : texte libre (« 12 h 30 ») |
+| `slot` | 1, 2 ou 3 (ordre dans la journée) ; `heure` : « 12 h 30 » (le calendrier trie par heure) |
+| `deplaceLe`, `aReprogrammer` | (23/11) le propriétaire déplace lui-même une vidéo (glisser sur un autre jour, ou jour + heure dans sa fenêtre). Si elle est déjà `programme`, la page change aussi l'heure dans Zernio (`posts_update` avec `zernioId`) ; si ça échoue, `aReprogrammer: true` : **Réseaux sociaux** reprogramme dans Zernio à `date` + `heure` puis remet `aReprogrammer` à `false`. Toujours relire `date` et `heure` de la fiche avant de programmer : c'est le propriétaire qui décide. |
 | `titre`, `serie` | titre court ; série et numéro d'épisode |
 | `accroche` | la phrase de la première seconde |
 | `script` | le script complet, en texte (plans, voix, textes à l'écran) |
