@@ -258,6 +258,9 @@ async function nextAmount(env, subId, fr) {
 // Without the exact amount (Paddle not answering) the e-mail waits for the next run (6 hours at most).
 export async function trialReminders(env, now = Date.now(), { max = 20 } = {}) {
   const out = { trialReminded: 0 };
+  // (23/11, the owner) our own reminder e-mail is turned off: Paddle sends its own before the end of the trial.
+  // Kept in the code; TRIAL_REMINDER_EMAIL = "1" in wrangler.toml turns it back on.
+  if (String(env.TRIAL_REMINDER_EMAIL || '') !== '1') return out;
   const { results } = await env.DB.prepare(
     `SELECT s.id, s.price_id, s.trial_ends_at, u.email, u.lang FROM subscriptions s JOIN users u ON u.id = s.user_id
      WHERE s.env = ?1 AND s.status = 'trialing' AND s.cancel_at IS NULL AND s.trial_reminded_at IS NULL AND s.trial_result IS NULL

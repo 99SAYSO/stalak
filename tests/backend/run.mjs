@@ -637,8 +637,23 @@ test('23/11 free trial: a deleted account (trial or subscription) leaves an HMAC
   } finally { extraFetch = null; }
 });
 
-test('23/11 free trial: e-mail 2 days before the 1st payment (date, exact amount from Paddle, cancel link); one-button page; cancelled = Pro until the end, nothing billed', async () => {
+test('23/11 free trial: our reminder e-mail is off by default (the owner); Paddle sends its own', async () => {
   const env = makeEnv({ AUTH_SECRET: TRIAL_SECRET });
+  const calls = []; extraFetch = paddleFake(calls, { amount: '959', currency: 'USD' });
+  try {
+    const a = await login(env, 'trial9@example.com');
+    const ts = trialSub(a.user.id);
+    await webhook(env, subEvent('subscription.created', ts));
+    env.DB.raw.prepare('UPDATE subscriptions SET trial_ends_at = ? WHERE id = ?').run(Date.now() + 2 * 864e5 - 3600e3, ts.id);
+    outbound.length = 0;
+    const { trialReminders } = await import('../../functions/_lib/trial.js');
+    assert.equal((await trialReminders(env)).trialReminded, 0);
+    assert.ok(!outbound.some((o) => o.url === 'https://api.resend.com/emails'));
+  } finally { extraFetch = null; }
+});
+
+test('23/11 free trial (if turned back on): e-mail 2 days before the 1st payment (date, exact amount from Paddle, cancel link); one-button page; cancelled = Pro until the end, nothing billed', async () => {
+  const env = makeEnv({ AUTH_SECRET: TRIAL_SECRET, TRIAL_REMINDER_EMAIL: '1' });
   const calls = []; extraFetch = paddleFake(calls, { amount: '959', currency: 'USD' });
   try {
     const a = await login(env, 'trial4@example.com');

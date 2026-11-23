@@ -119,7 +119,7 @@ for _r in AVIS:
 def rv_item(r, lang, tag='li', cls=''):
     v = float(r['note']); n = int(v + .5); s = ('%g' % v).replace('.', ',' if lang == 'fr' else '.')   # 4,8/5 as given; the stars rounded
     return ('<' + tag + (' class="' + cls + '"' if cls else '') + '><span class="rv-note"><span class="rv-stars" aria-hidden="true">' + '★' * n + '☆' * (5 - n) + '</span> <b>' + s + '/5</b></span>'
-            '<blockquote lang="fr">' + H.escape(str(r['texte'])) + '</blockquote><p class="rv-who">' + H.escape(str(r['pseudo'])) + ' · ' + PLAN_NAME[r['formule']][lang] + '</p></' + tag + '>')
+            '<blockquote lang="' + ('en' if lang == 'en' and r.get('texte_en') else 'fr') + '"' + (' data-i18n="rv.q.' + str(AVIS.index(r)) + '"' if tag == 'li' else '') + '>' + H.escape(str(r['texte_en'] if lang == 'en' and r.get('texte_en') else r['texte'])) + '</blockquote><p class="rv-who">' + H.escape(str(r['pseudo'])) + ' · ' + PLAN_NAME[r['formule']][lang] + '</p></' + tag + '>')
 RV_MEAN = sum(float(r['note']) for r in AVIS) / len(AVIS) if AVIS else 0
 # App & montage (23/11, maquette A): the same average for the pill of the phone's first screen (app.js heroProof)
 assert 'id="heroProof" data-mean=""' in markup
@@ -232,6 +232,9 @@ EN.update({'ba.no.t': 'Without Stalak', 'ba.no': 'Your takes sit in your camera 
            'ba.yes.t': 'With Stalak', 'ba.yes': 'Your song and your takes, that’s it. Stalak cuts on the beat, keeps your lips in sync, and it’s ready for TikTok, Reels and Shorts.',
            'trial.line': 'Stalak Pro: <a href="/pricing#trial">7-day trial</a>, card required. Then $7.99 a month unless you cancel before it ends.', 'rv.t': 'Customer reviews', 'ba.v': '3 takes, 1 edit. Stalak switches takes on every bar.', 'proof.a': 'Already', 'proof.b': 'videos made with Stalak'})
 if AVIS: EN['rv.avg'] = rv_avg('en')
+# (23/11, the owner) the reviews in English on the English site: each one's « texte_en » in avis.json (French kept word for word)
+for _i, _r in enumerate(AVIS):
+    if _r.get('texte_en'): EN['rv.q.%d' % _i] = H.escape(_r['texte_en'])
 FR.update({'doc.title': PAGE['fr']['title']})
 
 TAG = re.compile(r'<(\w+)\b([^>]*?)\bdata-i18n="([^"]+)"([^>]*)>(.*?)</\1>', re.S)
