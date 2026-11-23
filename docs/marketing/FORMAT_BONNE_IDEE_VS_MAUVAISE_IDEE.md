@@ -22,13 +22,20 @@ voient la partie Stalak, qui arrivait vers 55 s. D'où trois règles du proprié
      puis **vérifiée à l'écoute** ; si ça ne crie pas vraiment, on regénère avant de monter. Pas de musique sous le cri : il claque seul.
    - Écrit en très gros dès l'image 0, mot par mot, le mot choc en couleur, qui grossit quand il tombe ; petit tremblement de l'image.
    - **Pour chaque script, 3 hooks** : on dit lequel on garde et pourquoi il est « vache bleue » ; le propriétaire choisit.
+4. **C'est TOUJOURS Liam qui crie le hook, avec un juron** (règle du 23/11, 12 h 05).
+   - Le juron est **dit en entier à l'oral** et **censuré à l'écran avec une étoile** : à l'oral « Putain, mon TikTok est bloqué à 300 vues ! », à l'écran
+     « P*TAIN, MON TIKTOK EST BLOQUÉ À 300 VUES ! ». Autres exemples du propriétaire : « C'EST QUOI CETTE M*RDE ? », « FAIS CH*ER P*TAIN POURQUOI ? »,
+     « MA MUSIQUE PUE LA M*RDE OU QUOI ? ».
+   - Toujours un vrai gros cri, une phrase « vache bleue », finie avant 3 s (8 mots au plus), le mot choc en couleur.
+   - Le juron reste dans le hook : **jamais d'insulte envers une personne, un groupe ou un vrai artiste**, et le reste de la vidéo garde le ton habituel.
+   - Dans la fiche de Studio Stalak, chaque hook a `texte` (l'oral, juron en entier) et `ecran` (la version censurée) ; le propriétaire coche celui qu'il veut.
 
 ## Le squelette (version du 23/11, 40 à 50 s)
 
 | Temps | Contenu | Règles |
 |---|---|---|
 | **Image 0** | En haut : le **sujet en 2 ou 3 mots, en majuscules**, et dessous **la barre « BONNE IDÉE » (vert) · « VS » · « MAUVAISE IDÉE » (rouge)**. Les personnages sont déjà là, en pleine dispute. | La barre reste jusqu'au verdict. Rien d'autre en haut. |
-| **0 – 3 s · le hook** | Un personnage **crie** la phrase « vache bleue ». Elle s'écrit en très gros, mot par mot, le mot choc en couleur. | Finie avant 3 s. Vraie. Vrai cri, vérifié à l'écoute. |
+| **0 – 3 s · le hook** | **Liam crie**, avec un juron, la phrase « vache bleue ». Elle s'écrit en très gros, mot par mot, le juron censuré (« P*TAIN »), le mot choc en couleur. | Finie avant 3 s. Vraie. Vrai cri, vérifié à l'écoute. |
 | **3 – 14 s · la dispute, courte** | Liam défend son idée, l'autre est contre. Deux ou trois répliques chacun, pas plus. | Étiquette avec le nom au premier passage. Un plan toutes les 2 à 4 s. |
 | **14 – 22 s · Big Mo** | Big Mo entre en marchant et explique **avec un seul fait vérifié**, sur une carte (source en petit). | Une phrase ou deux, 20 mots au plus. |
 | **22 – 25 s · le verdict** | Le tampon plein écran : « MAUVAISE IDÉE » (rouge) ou « BONNE IDÉE » (vert). | Il surprend au moins une fois sur trois. |
