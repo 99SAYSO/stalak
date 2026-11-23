@@ -229,3 +229,8 @@
 .band .pr-compare::before,.band .pr-faq::before{content:none}
 .band .pr-compare{padding-top:22px}
 .band .pr-faq{padding-top:22px}
+/* (23/11, Marketing) the 7-day trial of Pro: under its button, what happens after it (card asked, what is charged, when) */
+.pr-trial{display:none;margin:10px 0 0;color:var(--muted);font-size:13.5px;font-weight:500;line-height:1.4;text-wrap:pretty}
+.p4:has(#p4m:checked) .pr-trial.is-m,.p4:not(:has(#p4y:checked)) .pr-trial.is-m,.p4:has(#p4y:checked) .pr-trial.is-y{display:block}
+.p4:has(#p4y:checked) .pr-trial.is-m{display:none}
+.p4-pro .pr-cta.primary + .pr-trial{margin-top:20px}   /* under the button's own little icicles */
