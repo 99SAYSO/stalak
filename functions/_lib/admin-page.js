@@ -483,11 +483,6 @@ __DEMO_BANNER__<header class="top"><div class="in">
       <div class="card hq"><div class="hbest"><span>💳 Paiement fermé sans acheter</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
         <p class="he">Quand la fenêtre de paiement Paddle est fermée sans achat, à quel moment : tout de suite, après avoir donné son e-mail (et son pays), ou en payant (carte remplie ou paiement essayé).</p><ul class="blist" id="bClose"></ul><p class="note" id="closeNote"></p></div>
     </div>
-    <div class="card hq" id="fvCard">
-      <div class="hbest"><span>🎁 Vidéos offertes utilisées</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
-      <p class="he">Chaque compte gratuit a droit à une seule vidéo sans filigrane, une fois. Ici : combien l’ont prise, puis combien de ces comptes sont passés à Pro ou Creator Plus après. Les comptes supprimés ne comptent plus.</p>
-      <p class="vsum" id="fvSum">…</p><p class="note" id="fvNote"></p>
-    </div>
     <div class="card hq" id="optCard">
       <div class="hbest"><span>📩 E-mails récoltés</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
       <p class="he">À la fin d’une vidéo, les gratuits peuvent laisser leur e-mail pour recevoir des conseils (case à cocher, puis lien de confirmation). Seuls les e-mails confirmés comptent. Aucun envoi en masse pour l’instant.</p>
@@ -1156,9 +1151,6 @@ __DEMO_BANNER__<header class="top"><div class="in">
         blist($('#bClose'), { 'Tout de suite': cc.start || 0, 'Après l’e-mail': cc.details || 0, 'En payant': cc.payment || 0 }, function (x) { return x; },
           { order: ['Tout de suite', 'Après l’e-mail', 'En payant'], keepZero: true });
         set('#closeNote', (fu.checkoutOpen ? 'Fenêtre ouverte ' + nf.format(fu.checkoutOpen) + ' fois, fermée sans acheter ' + nf.format(closed) + ' fois' + (fu.checkoutDone ? ', achats ' + nf.format(fu.checkoutDone) : '') + '.' : 'Pas encore de fenêtre de paiement ouverte sur la période.'));
-        var fv = fu.freeVideo || {}, pc = function (a, b) { return b ? ' (' + Math.round(a / b * 100) + ' %)' : ''; };
-        set('#fvSum', nf.format(fv.period || 0) + ' sur la période · ' + nf.format(fv.periodPro || 0) + ' passé' + ((fv.periodPro || 0) > 1 ? 's' : '') + ' à Pro ensuite' + pc(fv.periodPro || 0, fv.period || 0));
-        set('#fvNote', 'Depuis le début : ' + nf.format(fv.taken || 0) + ' vidéo' + ((fv.taken || 0) > 1 ? 's' : '') + ' offerte' + ((fv.taken || 0) > 1 ? 's' : '') + ', ' + nf.format(fv.pro || 0) + ' compte' + ((fv.pro || 0) > 1 ? 's' : '') + ' passé' + ((fv.pro || 0) > 1 ? 's' : '') + ' à Pro ensuite' + pc(fv.pro || 0, fv.taken || 0) + '.');
         var op = fu.optins || {};
         set('#optSum', nf.format(op.confirmed || 0) + ' e-mail' + ((op.confirmed || 0) > 1 ? 's' : '') + ' confirmé' + ((op.confirmed || 0) > 1 ? 's' : '') +
           ' (dont ' + nf.format(op.week || 0) + ' cette semaine) · ' + nf.format(op.waiting || 0) + ' en attente de confirmation');

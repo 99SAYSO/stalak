@@ -24,7 +24,6 @@ seulement le temps de l'onglet (`sessionStorage` « stalak:vsrc »). Un `?ref=` 
 | `ev_pro_offer` | offre Pro vue après la 1ʳᵉ vidéo |
 | `ev_plans_open`, `ev_plans_why_<raison>` | page des formules ouverte, et pourquoi : une fonction Pro (`filters`, `clip`, `fx`, `text`, `lyrics`, `pack`, `cloud`, `human`, `wm`) ou, **13/11**, d'où vient la personne sans fonction précise : `menu` (menu du compte ou bouton Pro en haut), `account` (page Mon compte), `pricing` (page Tarifs, « Choose Pro »), `link` (lien `#pro`) ; `other` = le reste (retour en arrière…) |
 | `ev_clip_ask_pro` / `_reel` / `_none` | **7/11** : réponse à la question « Clip sans Pro » (Pro / TikTok-Reels / Annuler). `ev_plans_why_clip` ne compte que ceux qui ont choisi « Pro » ici : c'est pourquoi il est tombé à 0 après le 7/11 |
-| `free_video` | **23/11** : un compte gratuit a pris sa vidéo offerte sans filigrane (`POST /api/free-video`, une fois par compte et par adresse). Le tableau de bord montre aussi, à partir des comptes, combien sont passés à Pro ensuite |
 | `ev_clip_open` | **13/11** : le mode Clip choisi (une fois par page) ; envoyé par l'app à partir de la branche App qui l'ajoute |
 | `ev_checkout_open` | fenêtre de paiement Paddle ouverte |
 | `ev_checkout_done` | **7/11** : la fenêtre a fini par un achat (vu par la page) |

@@ -1,6 +1,5 @@
 // What each plan unlocks. The server is the source of truth; the client only reads this (GET /api/me → entitlements).
 import { HttpError } from './http.js';
-import { freeVideoAvailable } from './freevideo.js';
 
 // Offer of 30/10/2026 (evening), STALAK_CONTEXTE.md section 2: Gratuit (no account needed, unlimited, watermark that a
 // rewarded ad removes for one video) + Stalak Pro + Stalak Creator Plus.
@@ -136,12 +135,10 @@ export async function planFor(env, user) {
 }
 
 export async function entitlementsFor(env, user) {
-  // 23/11: freeNoWm = the free account still has its one video without the watermark (freevideo.js); always false
-  // without an account and for Pro / Creator Plus (no watermark at all)
-  if (!user) return { entitlements: { ...FREE, features: [...FREE.features], limits: { ...FREE.limits }, freeNoWm: false }, subscription: null };
+  if (!user) return { entitlements: { ...FREE, features: [...FREE.features], limits: { ...FREE.limits } }, subscription: null };
   const { plan, sub } = await planFor(env, user);
   return {
-    entitlements: { ...entitlementsOf(plan), freeNoWm: plan === 'free' ? await freeVideoAvailable(env, user) : false },
+    entitlements: entitlementsOf(plan),
     subscription: sub ? {
       status: sub.status,
       plan: planOfSub(env, sub),

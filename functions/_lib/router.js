@@ -3,8 +3,7 @@ import { HttpError, json, errorResponse, checkCsrf, readJson, readText, clearSes
 import { currentUser, requireUser, logout, loginPassword, setPassword, recentCodeSession, signup, signupVerify, loginVerify, forgot, reset, failKey } from './auth.js';
 import { oauthStart, oauthCallback, enabledProviders, PROVIDERS } from './oauth.js';
 import { updateProfile, avatar, avatarUrl, AVATAR_TYPES } from './profile.js';
-import { entitlementsFor, requirePlan, planFor, FEATURES, LIMITS, payEnv } from './entitlements.js';
-import { claimFreeVideo, freeVideoMarkOnDelete } from './freevideo.js';
+import { entitlementsFor, requirePlan, FEATURES, LIMITS, payEnv } from './entitlements.js';
 import { alertOwner } from './alerts.js';
 import { turnstileSiteKey } from './turnstile.js';
 import { yearlyReminders } from './reminders.js';
@@ -207,10 +206,7 @@ async function deleteAccount(request, env) {
   await deleteSocialAccounts(env, user.id);
   // the media files saved online (R2), then their rows with the rest
   await deleteUserMedia(env, user.id);
-  // 23/11: the account took its free video → the mark of its address (HMAC), erased 12 months later (freevideo.js)
-  const fvMark = await freeVideoMarkOnDelete(env, user);
   await env.DB.batch([
-    ...(fvMark ? [fvMark] : []),
     env.DB.prepare('DELETE FROM file_parts WHERE user_id = ?1').bind(user.id),
     env.DB.prepare('DELETE FROM project_files WHERE user_id = ?1').bind(user.id),
     env.DB.prepare('DELETE FROM projects WHERE user_id = ?1').bind(user.id),
@@ -372,18 +368,6 @@ async function dispatch(request, env, ctx) {
         const r = await env.DB.prepare('UPDATE users SET signup_source = ?2 WHERE id = ?1 AND signup_source IS NULL AND created_at > ?3')
           .bind(u.id, src, Date.now() - 3600e3).run();
         return json({ ok: true, saved: !!(r.meta && r.meta.changes) });
-      }
-      case 'free-video': {
-        // 23/11 « 1re vidéo sans filigrane offerte »: the app asks when a free account starts an export without the
-        // watermark. { granted: true } once in the life of the account (and of its e-mail address), never twice.
-        if (method !== 'POST') break;
-        const u = await requireUser(request, env);
-        await readJson(request, 256);
-        await limit(env, `freevideo:${u.id}`, 30, 3600e3, 'Too many requests, try again later.');
-        const { plan } = await planFor(env, u);
-        if (plan !== 'free') return json({ granted: false, reason: 'pro' });
-        const granted = await claimFreeVideo(env, u);
-        return json(granted ? { granted: true } : { granted: false, reason: 'used' });
       }
       case 'lyrics/transcribe':
         // « Paroles automatiques » (Stalak Pro): one piece of the song's voice → timed words (functions/_lib/lyrics.js)
