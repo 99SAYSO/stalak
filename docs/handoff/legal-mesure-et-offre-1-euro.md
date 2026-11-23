@@ -23,6 +23,11 @@ Manque pour la CNIL (Clarity) : masquage vérifié dans un vrai replay, pas d'id
 - Relecture par un professionnel avant d'activer TikTok (transferts) et avant les vrais paiements.
 - Page Tarifs : phrase proposée dans le document (domaine de Marketing, non modifiée).
 
+Complément du 23/11 (23 h) :
+- Confidentialité FR/EN : nouvelle section « Ton profil d'artiste » (`#artist-profile` / `#profil-artiste`) : nom d'artiste, genres, liens Spotify / Apple Music / SoundCloud / Instagram, auditeurs déclarés (tranche puis chiffre hebdomadaire), où il publie, blocages, objectifs. Sert au plan, à la courbe « Stats », aux décisions produit regroupées ; jamais envoyé à GA4, Clarity, TikTok ; pas de connexion aux comptes ni de lecture des pages ; durée = jusqu'à modification ou suppression du compte (sans compte : navigateur seulement). Ajouté aussi à la liste des données de la section États-Unis.
+- Relu (maquettes `14-paywall`, `15-offre-1-euro`, onboarding) : détail dans le § 8 du document. À corriger par App : carte bancaire non mentionnée sur le paywall ; prix annuel plus petit que « 4,17 $/mois » ; ligne du bas trop petite et peu contrastée ; date réelle du 1er prélèvement ; offre à 1 € : « 7 jours de Pro pour 1 € » et non « pour 1 € » ; « On s'en sert pour suivre tes écoutes » est faux (on ne lit pas ces pages) : « On garde ces liens sur ton profil » ; avis « Nirox » : vérifier qu'il est un vrai abonné payant et d'accord (pas un ami présenté comme client).
+- Comptes Clarity et GA4 : conditions RGPD de Google acceptées (à garder). À régler avant la mise en ligne : GA4 conservation 14 mois, « interactions avec les formulaires » désactivées, signaux Google désactivés ; Clarity masquage « Strict ». Après installation, noms réels des cookies à vérifier et à mettre dans la page.
+
 Fichiers touchés :
 - site_src/privacy.html, terms.html, refunds.html, fr/confidentialite.html, fr/conditions.html, fr/remboursement.html
 - public/ : les mêmes pages + sitemap.xml (build_site.py --domain stalak.app --email contact@stalak.app)

@@ -67,3 +67,43 @@ Ce qui est bon : prix, durée, prix ensuite, annulation **au même endroit que l
 
 ## 7. Page Tarifs (Marketing)
 À compléter par Marketing avec une phrase proche des conditions : « Offre sur l'écran de fin d'export : 7 jours de Pro pour 1 €, puis 7,99 $/mois, annulable à tout moment. Une fois par compte. » et un lien vers `/terms#intro-offer`. Je n'ai pas modifié la page Tarifs (domaine de Marketing).
+
+## 8. Mise à jour du 23/11 (23 h) : comptes créés, onboarding, paywall
+
+### Comptes Clarity et GA4 (ID `zic7crm0mc` et `G-LY6HDYZKEK`, pas des secrets)
+- Conditions de traitement des données de Google (RGPD) acceptées : bien ; **à garder** (dossier). Chez Microsoft, la protection des données de Clarity est dans les conditions Microsoft : rien à signer.
+- Compte Google : `stalak.alaska@gmail.com` (adresse perso/projet). À terme, mettre le nom de la micro-entreprise comme organisation dans GA4 et Clarity (cohérence avec les mentions légales).
+- **GA4 à régler** (avant mise en ligne) : conservation des données **14 mois** (le défaut est 2 mois : choisir 14 si on veut comparer d'une année à l'autre, sinon laisser) ; **désactiver « Interactions avec les formulaires »** dans la mesure améliorée (inutile, et on évite que des noms de champs partent) ; signaux Google et personnalisation de la pub désactivés ; pas de lien avec Google Ads tant qu'il n'y en a pas.
+- **Clarity à régler** : masquage **« Strict »** ; ne pas activer le partage avec Google Analytics tant que ce n'est pas utile (il faudrait alors un consentement commun, ce que le bandeau couvre déjà).
+
+### Onboarding : nouvelles données (écrit dans la confidentialité, `#artist-profile` / `#profil-artiste`)
+- Nom d'artiste, genres, déjà sur les plateformes, **liens** Spotify / Apple Music / SoundCloud / Instagram, **auditeurs mensuels déclarés** (tranche), puis un chiffre **chaque semaine** dans « Stats », où il publie, ce qui le bloque, auditeurs visés, objectifs.
+- Servent à : plan et messages de l'app, courbe dans « Stats », décisions produit **regroupées et sans nom**. **Pas** de publicité, pas de vente, **jamais** envoyés à GA4, Clarity ni TikTok (à respecter par Comptes et App : aucun de ces champs dans les évènements GA4 ou l'API TikTok).
+- **Durée** : sans compte, seulement dans le navigateur ; avec compte, **jusqu'à modification ou suppression du compte** (effacées avec lui). Il n'existe pas aujourd'hui de règle de suppression des comptes inactifs : si on en veut une (par exemple 24 mois), je l'ajoute.
+- Base : la demande de la personne (elle choisit de répondre, tout est facultatif). Aucune donnée « sensible » au sens du RGPD (pas de santé, de religion, etc.) : à ne pas changer.
+- **Ce qu'on ne peut pas dire** : « On s'en sert pour suivre tes écoutes » (écran « Colle tes liens »). C'est **faux tant qu'on ne lit pas** ces pages : l'API Spotify ne donne plus ces chiffres et lire la page publique est contraire à ses conditions. Texte à mettre : « On garde ces liens sur ton profil » (et c'est tout). Si un jour Stalak lit ces comptes, il faudra l'accord de la personne et une mise à jour de la page **avant**.
+- Le message de chargement « Tu pars de 100 à 1 000 auditeurs » est vrai (c'est sa réponse) : bien, c'est la règle « chaque message vrai ».
+- La mention « Regarde dans Spotify for Artists » : sans souci (simple conseil).
+
+### Paywall (`14-paywall.jpg`) : relecture
+Bon : prix visible, « Rien aujourd'hui. Puis 49,99 $ par an dans 7 jours. Annulable à tout moment. », pas de compte à rebours ni de prix barré.
+À corriger :
+1. **La carte bancaire n'est pas mentionnée.** Le bouton « Essayer gratuitement » laisse croire que rien n'est demandé. Ajouter : « **Carte bancaire demandée.** Rien aujourd'hui. Puis 49,99 $ par an le [date] sauf si tu annules avant. » C'est la mention qui manque pour que « rien ne soit caché ».
+2. **La date réelle** (« le 30 novembre ») plutôt que « dans 7 jours » seulement : plus clair.
+3. **Prix : le prix réellement débité doit être aussi visible que le prix par mois.** « 4,17 $/mois » est en gros, « 49,99 $ par an » en petit : un prix par mois calculé qui éclipse le montant débité peut être jugé trompeur. Mettre **49,99 $ par an** en gros, et « soit 4,17 $/mois » en plus petit.
+4. **Annuel présélectionné** : permis, mais alors le bouton et la ligne en dessous doivent annoncer **le prix annuel** (c'est le cas) et le rappel par e-mail 2 jours avant doit aussi dire « 49,99 $ ».
+5. **Lisibilité** : la ligne du bas est en 11,5 px gris-bleu sur fond bleu clair : trop petite et pas assez contrastée. Au moins 13 px, texte foncé, **juste sous le bouton** (comme dans la maquette), contraste suffisant.
+6. **Avis client « Nirox · Creator Plus »** : il doit être **réel, mot pour mot, d'un client qui a payé et qui est d'accord** pour qu'on le montre. Pas d'avis d'amis ni de testeurs présentés comme « clients » (règle européenne sur les faux avis, et règle FTC de 2024 aux États-Unis). Vérifier que Nirox est bien un abonné payant (vente réelle) et garder son accord. Un avis sur Creator Plus affiché sur un paywall Pro : le nom de la formule est indiqué, c'est correct.
+7. « **Meilleur prix · -48 %** » : exact (49,99 $ contre 12 × 7,99 = 95,88 $, soit -47,9 %), à garder tant que les prix sont ceux-là.
+8. **Lien « Voir Creator Plus »** et croix de fermeture visibles : bien (pas d'obstacle pour refuser).
+
+### Offre à 1 € (`15-offre-1-euro.jpg`) : relecture
+Le texte en dessous (« 1 € aujourd'hui, puis Stalak Pro à 7,99 $/mois dans 7 jours. Annulable à tout moment. ») est bon sur le fond. Mêmes corrections qu'au point 6 ci-dessus (libellé, devises), plus :
+1. **Titre et bouton** « Retire le filigrane pour 1 € » / « Retirer pour 1 € » : à remplacer par « **7 jours de Pro, sans filigrane, pour 1 €** » et le bouton « **Commencer pour 1 €** » (pas d'achat unique).
+2. **Date** du 1er prélèvement au prix normal à la place de « dans 7 jours » ; et **« pendant 7 jours, puis chaque mois »**.
+3. **Lisibilité** : ligne du bas en 12,5 px gris-bleu : au moins 13 px, texte foncé, même bloc que le bouton.
+4. **« Enregistrer avec le filigrane »** : bien qu'il soit petit, il doit rester **lisible** (même contraste que le reste, pas gris pâle) et sans phrase culpabilisante.
+5. Devise : « 1 € » mais « 7,99 $ » : voir §6.2.
+
+### Bandeau
+Le texte du §1 reste le bon. Une fois Clarity et GA4 installés par Comptes, **mettre à jour la liste des cookies** (noms réels posés : `_clck`, `_clsk`, `_ga`, `_ga_LY6HDYZKEK`) dans la page : je le fais sur demande après vérification en ligne.
