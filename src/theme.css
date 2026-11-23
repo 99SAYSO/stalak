@@ -1411,3 +1411,12 @@ body.isdone > .bands{display:none}
   .hero-go .hero-song{min-height:56px}
 }
 @media (prefers-reduced-motion:reduce){ .hero-m{animation:none} }
+
+/* (owner, 23/11) the 7-day free trial of Pro: what it costs then and that it can be cancelled, always under the button */
+.tr-terms{margin:4px 0 0;font:500 13.5px/1.4 var(--body);color:#3b4a66;text-align:center}
+.tr-terms[hidden]{display:none}
+.fa-row .tr-terms{flex-basis:100%;order:0;margin:-2px 0 4px}
+.propop .tr-terms{margin:-4px 0 0}
+#apBuy .tr-terms{margin:12px 0 0;font-size:13px}   /* below the button's hard shadow */
+.btn.primary:not(.sm) + .tr-terms{margin-top:18px}   /* under the icicles of a primary button */
+.doneview #dvTrial{order:3;margin-top:-6px}

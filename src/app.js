@@ -1257,6 +1257,18 @@ const I18N_EN = /*@EN*/{
   "pp.bill": "{y} billed once a year · cancel anytime",
   "pp.also": "Also with Pro: Music video mode (16:9) and every filter.",
   "pp.go": "Go Pro",
+  "tr.go": "Try Pro free for {n} days",
+  "tr.thenY": "Then {m}/month, billed {y} a year.",
+  "tr.thenM": "Then {m}/month, billed monthly.",
+  "tr.cancel": "Cancel anytime before the trial ends.",
+  "tr.first": "Today: {z}. First payment on {d}: {a}.",
+  "tr.left": "Pro trial: {n} day left · first payment on {d} ·",
+  "tr.leftEnds": "Pro trial: {n} day left · ends on {d}, nothing will be charged ·",
+  "tr.manage": "Manage or cancel",
+  "tr.menu": "Pro trial: {n} day left",
+  "tr.menu_p": "Pro trial: {n} days left",
+  "tr.left_p": "Pro trial: {n} days left · first payment on {d} ·",
+  "tr.leftEnds_p": "Pro trial: {n} days left · ends on {d}, nothing will be charged ·",
   "pp.later": "Maybe later"
 }/*EN@*/;
 const I18N_FR = /*@FR*/{
@@ -1964,6 +1976,18 @@ const I18N_FR = /*@FR*/{
   "pp.t": "Ta vidéo, sans le logo",
   "pp.bill": "{y} facturés une fois par an · annulable à tout moment",
   "pp.go": "Passer à Pro",
+  "tr.go": "Essayer Pro {n} jours gratuits",
+  "tr.thenY": "Puis {m}/mois, facturé {y} par an.",
+  "tr.thenM": "Puis {m}/mois, facturé chaque mois.",
+  "tr.cancel": "Annulable à tout moment avant la fin de l’essai.",
+  "tr.first": "Aujourd’hui : {z}. 1er prélèvement le {d} : {a}.",
+  "tr.left": "Essai Pro : encore {n} jour · 1er prélèvement le {d} ·",
+  "tr.left_p": "Essai Pro : encore {n} jours · 1er prélèvement le {d} ·",
+  "tr.leftEnds": "Essai Pro : encore {n} jour · se termine le {d}, rien ne sera prélevé ·",
+  "tr.leftEnds_p": "Essai Pro : encore {n} jours · se termine le {d}, rien ne sera prélevé ·",
+  "tr.manage": "Gérer ou annuler",
+  "tr.menu": "Essai Pro : encore {n} jour",
+  "tr.menu_p": "Essai Pro : encore {n} jours",
   "pp.later": "Plus tard"
 }/*FR@*/;
 let STATIC_FR = /*@STATIC_FR*/null/*STATIC_FR@*/;
@@ -8236,7 +8260,7 @@ function doneUi(){
   // (22/11) a free video with the logo: the person's own edit with and without it, side by side, and « Exporter sans le logo »
   const cmp = !!S.done && !!ACCT && !can('nowm') && !zip && !demo && !!S.lastWm;
   $('#dvPro').hidden = !ACCT || can('nowm') || zip || demo || cmp;
-  cmpUi(cmp);
+  cmpUi(cmp); trialUi();
   $('#saveBtn').classList.toggle('primary', !demo && !redo);
   if (S.done) setT('#saveBtn', zip ? 'save.packBtn' : redo ? 'save.videoWm' : 'save.video');
 }
@@ -8393,6 +8417,7 @@ function ppOpen(){
   $('#ppWas').textContent = plMoney(a.m, a.cur); $('#ppWas').hidden = !(months > 0);
   $('#ppMonths').hidden = !(months > 0); if (months > 0) setT('#ppMonths', 'pl.months', { n: months });
   setT('#ppBill', 'pp.bill', { y: plMoney(a.y, a.cur) });
+  trialUi();
   store.set(PP_KEY, Date.now());
   ppBack = document.activeElement;
   const box = $('#proPop'); box.hidden = false; box.classList.remove('pp-in'); void box.offsetWidth; box.classList.add('pp-in');
@@ -10049,7 +10074,9 @@ async function apRun(fn, ctx){
   try { await fn(); } catch(e){ apErr(e, ctx); } finally { apBusy = false; $('#acctPage').removeAttribute('aria-busy'); }
 }
 function apSubLine(){
-  const st = ACCT.state, sub = st.subscription, pro = acctPaid();
+  const st = ACCT.state, sub = st.subscription, pro = acctPaid(), tl = trialLeft();
+  // (23/11) the trial running: the days left, and the link to manage or cancel it
+  if (tl){ setT('#apSubT', null); $('#apSubT').textContent = tn(tl.cancel ? 'tr.leftEnds' : 'tr.left', tl.n, { d: acctDate(tl.d) }); setT('#apSubGo', 'tr.manage'); return; }
   if (pro){
     setT('#apSubT', sub && sub.cancelAt ? 'ap.subEnds' : sub && sub.currentPeriodEnd ? 'ap.subRenew' : 'ap.subPro', { d: acctDate(sub && (sub.cancelAt || sub.currentPeriodEnd)), ...acctPlanVars() });
     setT('#apSubGo', 'ap.manage');
@@ -10097,7 +10124,8 @@ function apRender(){
     $('#apBuy').hidden = false; $('#apIsPro').hidden = !pro; $('#apPromo').hidden = pro; $('#apProSub').hidden = pro;
     setT('#apProT', pro ? 'acct.tPro' : 'acct.proT', acctPlanVars());
     const sub = st.subscription;
-    if (pro) setT('#apProTxt', sub && sub.cancelAt ? 'acct.proEnds' : sub && sub.currentPeriodEnd ? 'acct.proRenew' : 'acct.proOn', { d: acctDate(sub && (sub.cancelAt || sub.currentPeriodEnd)), ...acctPlanVars() });
+    if (pro && trialLeft()){ const tl = trialLeft(); setT('#apProTxt', null); $('#apProTxt').textContent = tn(tl.cancel ? 'tr.leftEnds' : 'tr.left', tl.n, { d: acctDate(tl.d) }).replace(/ ·$/, '.'); }
+    else if (pro) setT('#apProTxt', sub && sub.cancelAt ? 'acct.proEnds' : sub && sub.currentPeriodEnd ? 'acct.proRenew' : 'acct.proOn', { d: acctDate(sub && (sub.cancelAt || sub.currentPeriodEnd)), ...acctPlanVars() });
     plRender();
     const w = $('#apProWhy'); w.hidden = !apWhyK; if (apWhyK) setT(w, apWhyK); else setT(w, null);
   }
@@ -10122,6 +10150,53 @@ function plMoneyC(cents, cur){
   try { return new Intl.NumberFormat(LANG === 'en' ? 'en-IE' : 'fr-FR', { style: 'currency', currency: cur || 'EUR' }).format(cents / 100); } catch(e){ return (cents / 100).toFixed(2) + ' ' + (cur || 'EUR'); }
 }
 const plMonths = a => a.m > 0 ? Math.floor(12 - a.y / a.m + 1e-9) : 0;
+/* ---- (owner, 23/11) the 7-day free trial of Stalak Pro: with a card (Paddle), charged at the end unless cancelled, once per
+   person, Pro only (Creator Plus is paid from day 1). The server's side is Comptes'. Offered only when the server says so:
+     /api/config → trial: {days: 7, plans: ['pro']}   (the trial exists: shown to someone signed out)
+     /api/me → entitlements.trialEligible: true        (this account may still have it)
+     /api/me → subscription.status 'trialing', with trialEndsAt (else currentPeriodEnd): the trial running
+   Everywhere Pro is offered (the Pro window, the end screen, the plans page, the Pro features asked), the button says
+   « Essayer Pro 7 jours gratuits » and under it, always: what it costs then (the yearly or the monthly price) and that it can
+   be cancelled before the end. On the plans page, before paying: the date and the amount of the first payment.
+   Nothing changes without the trial. ---- */
+function trialDays(){ const t = plCfg && plCfg.trial; return t && +t.days > 0 && (!Array.isArray(t.plans) || t.plans.includes('pro')) ? Math.round(+t.days) : 0; }
+function trialOn(){
+  if (!ACCT || !trialDays() || acctPaid()) return false;
+  const st = ACCT.state; return st.user ? !!(st.entitlements && st.entitlements.trialEligible === true) : true;
+}
+function trialThen(int){
+  const a = plAmounts('pro');
+  return int === 'year' ? _t('tr.thenY', { m: plMoney(Math.round(a.y / 12 * 100) / 100, a.cur), y: plMoney(a.y, a.cur) }) : _t('tr.thenM', { m: plMoney(a.m, a.cur) });
+}
+function trialFirst(int){
+  const a = plAmounts('pro'), d = new Date(Date.now() + trialDays() * 864e5);
+  return _t('tr.first', { z: plMoney(0, a.cur), d: acctDate(d.toISOString()), a: plMoney(int === 'year' ? a.y : a.m, a.cur) });
+}
+// the trial that is running: the days left and its end
+function trialLeft(){
+  const sub = ACCT && ACCT.state.subscription; if (!sub || sub.status !== 'trialing') return null;
+  const end = sub.trialEndsAt || sub.currentPeriodEnd; if (!end) return null;
+  return { n: Math.max(1, Math.ceil((new Date(end) - Date.now()) / 864e5)), d: end, cancel: !!sub.cancelAt };
+}
+function trialUi(){
+  const on = trialOn(), days = trialDays();
+  $$('.tr-terms').forEach(p => {
+    const int = p.dataset.trialInt === 'plan' ? plInt : 'year';
+    p.hidden = !on; if (!on) return;
+    const txt = trialThen(int) + ' ' + _t('tr.cancel') + (p.dataset.trialInt === 'plan' ? ' ' + trialFirst(int) : '');
+    if (p.textContent !== txt) p.textContent = txt;
+  });
+  const go = k => on ? _t('tr.go', { n: days }) : _t(k);
+  [['#proPopGo', 'pp.go'], ['#faPro', 'fa.pro'], ['#caPro', 'fa.pro']].forEach(([s, k]) => { const b = $(s); if (b && b.textContent !== go(k)) b.textContent = go(k); });
+  const cg = $('#dvCmpGo span[data-i18n="cmp.go"]'); if (cg){ const t = on ? _t('tr.go', { n: days }) : _t('cmp.go'); if (cg.textContent !== t) cg.textContent = t; }
+  const tag = $('#dvCmpGo .cmp-tag'); if (tag) tag.hidden = on;
+  // the Pro window: the trial's lines under the button say the yearly amount and « annulable », so its own line goes
+  const pb = $('#ppBill'); if (pb) pb.hidden = on;
+  // the end screen: the trial's lines in place of « Pro dès … » under the Pro button, when that button is there
+  const dp = $('#dvTrial'), cp = $('#dvCmpP'), cmpGo = $('#dvCmpGo');
+  if (dp && cp && cmpGo){ const there = !cmpGo.hidden; dp.hidden = !(on && there); if (on && there) cp.hidden = true; }
+}
+
 function plAmounts(p){ const P = (plCfg && plCfg.plans && plCfg.plans[p]) || PL_DEFAULT[p]; return { m: +P.month.amount, y: +P.year.amount, cur: P.month.currency || 'USD' }; }
 function plRender(){
   if (!ACCT) return;
@@ -10145,7 +10220,7 @@ function plRender(){
     const onSale = !!(prices && prices[p] && typeof prices[p] === 'object' && prices[p][plInt]);
     const mine = p === cur && (!curInt || curInt === plInt);
     b.disabled = mine || !onSale; b.classList.toggle('primary', p === 'creator' && !mine);   // the full button on Creator Plus (owner, 22/11)
-    setT(b, mine ? 'pl.mine' : !onSale ? 'pl.soon' : paid ? (plConfirm === p ? 'pl.confirm' : 'pl.switch') : 'pl.cta.' + p, { plan: _t('pl.n.' + p) });
+    setT(b, mine ? 'pl.mine' : !onSale ? 'pl.soon' : paid ? (plConfirm === p ? 'pl.confirm' : 'pl.switch') : p === 'pro' && trialOn() ? 'tr.go' : 'pl.cta.' + p, { plan: _t('pl.n.' + p), n: trialDays() });
     note.hidden = !(paid && plConfirm === p && onSale && !mine);
     if (note.hidden) setT(note, null);
     else if (plPreview && plPreview.to === p && plPreview.interval === plInt){
@@ -10168,6 +10243,7 @@ function plRender(){
     }
   }
   const ch = $('#plChange'); if (ch) ch.hidden = !paid;
+  trialUi();
 }
 // the plans page opened on one plan (acctOpen(why, {plan})): that card in view, its button focused
 function plFocus(plan){
@@ -10223,7 +10299,8 @@ function plBuy(plan, btn){
     return;
   }
   flurry(btn);
-  apRun(async () => { apSay('acct.paying'); diag('compte : paiement ' + plan + ' ' + plInt); await ACCT.checkout(plan, plInt); apSay(null); });
+  const trial = plan === 'pro' && trialOn();
+  apRun(async () => { apSay('acct.paying'); diag('compte : paiement ' + plan + ' ' + plInt + (trial ? ' (essai de ' + trialDays() + ' jours)' : '')); await ACCT.checkout(plan, plInt, trial ? { trial: true } : undefined); apSay(null); });
 }
 function plInit(){
   // yearly by default, as on the Tarifs page (a choice made here is remembered)
@@ -10241,6 +10318,7 @@ function plInit(){
   ACCT.config().then(c => { plCfg = c; plRender(); }).catch(() => {});
   plRender();
 }
+if (ACCT){ ACCT.onChange(() => trialUi()); ACCT.config().then(c => { if (!plCfg) plCfg = c; trialUi(); }).catch(() => {}); }
 
 
 /* the header button: the photo or the initials, the pseudo (on a computer), PRO */
@@ -10256,7 +10334,7 @@ function acctSync(){
   b.setAttribute('aria-label', lbl); b.title = lbl;
   // signed in: the button opens the account menu; signed out: « Se connecter »
   b.setAttribute('aria-haspopup', u ? 'menu' : 'dialog'); b.setAttribute('aria-controls', u ? 'acctMenu' : 'acctPage');
-  if (!u) acctMenu(false); else setT('#amProT', paid ? 'am.manage' : 'am.pro');
+  if (!u) acctMenu(false); else { const tl = trialLeft(); if (tl){ setT('#amProT', null); $('#amProT').textContent = tn('tr.menu', tl.n); } else setT('#amProT', paid ? 'am.manage' : 'am.pro'); }
   planTags();   // the padlocks of the plans (App & montage)
   textGate();
   // (audit 6/11, n° 18: the Clip mode stays, tried in the preview; only its export asks for Pro)
@@ -10349,7 +10427,7 @@ function acctMenu(on, focusFirst){
   on = !!on; if (on === amOpen) return;
   amOpen = on; m.hidden = !on; b.setAttribute('aria-expanded', on ? 'true' : 'false');
   if (on){
-    setT('#amProT', acctPaid() ? 'am.manage' : 'am.pro');
+    { const tl = trialLeft(); if (tl){ setT('#amProT', null); $('#amProT').textContent = tn('tr.menu', tl.n); } else setT('#amProT', acctPaid() ? 'am.manage' : 'am.pro'); }
     const it = amItems()[0]; if (it) try { it.focus({ preventScroll: true }); } catch(e){}
     if (!focusFirst) m.classList.add('am-touch'); else m.classList.remove('am-touch');
   }
