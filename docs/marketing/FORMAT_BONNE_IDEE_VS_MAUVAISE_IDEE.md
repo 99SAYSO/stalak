@@ -28,6 +28,13 @@ voient la partie Stalak, qui arrivait vers 55 s. D'où trois règles du proprié
      « MA MUSIQUE PUE LA M*RDE OU QUOI ? ».
    - Toujours un vrai gros cri, une phrase « vache bleue », finie avant 3 s (8 mots au plus), le mot choc en couleur.
    - Le juron reste dans le hook : **jamais d'insulte envers une personne, un groupe ou un vrai artiste**, et le reste de la vidéo garde le ton habituel.
+5. **Le hook montre une galère que TOUS les mecs qui font du son sur TikTok reconnaissent tout de suite** (règle du 23/11, 12 h 15, aussi dans « Mes goûts »).
+   Celui qui regarde doit se dire « c'est moi ça » en 1 seconde.
+   - Exemples du propriétaire : ses TikToks percent pas, bloqué à 300 vues, il veut acheter des streams, il veut payer une promo TikTok.
+     Du même genre : personne écoute son son, il poste tous les jours et rien, l'algo l'a oublié, ses potes likent même pas, il a payé un clip et 200 vues.
+   - **Pas de gag que seul notre personnage vit** dans le hook (« Deuce s'est endormi pendant mon intro », « même hashtag chaton » : drôles, mais personne ne s'y reconnaît).
+     Le gag vient juste après, dans la dispute.
+   - Ceux qui marchent : « Trois écoutes… et DEUX C'EST MA MÈRE ! », « Ils swipent AVANT MON PREMIER MOT ! ».
    - Dans la fiche de Studio Stalak, chaque hook a `texte` (l'oral, juron en entier) et `ecran` (la version censurée) ; le propriétaire coche celui qu'il veut.
 
 ## Le squelette (version du 23/11, 40 à 50 s)
