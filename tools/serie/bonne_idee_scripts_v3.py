@@ -57,22 +57,23 @@ def son(verdict, extra):
             % (extra, ('%.2f' % (extra * 0.013)).replace('.', ',')))
 
 V = []
-V.append(dict(id='bonne-idee-01', num=1, titre='Des robots pour son clip', sujet='ACHETER DES VUES', verdict='MAUVAISE IDÉE', decor="La cuisine de Nadia, le soir.",
-  hooks=[("NADIA", "Mon fils a payé des ROBOTS pour regarder son clip !", "ROBOTS",
-          "GARDÉ. Personne n'a jamais entendu une mère crier ça. L'image (des robots devant un clip de rap) est absurde, et on reste pour savoir si c'est vrai : c'est vrai, Big Mo le prouve (les vues achetées viennent de faux comptes)."),
-         ("NADIA", "T'as acheté des fans qui EXISTENT PAS ?!", "EXISTENT PAS", "Fort, mais on a déjà entendu « faux fans »."),
-         ("LIAM", "Dix mille vues et PAS UN SEUL j'aime !", "PAS UN SEUL", "Vrai et drôle, mais c'est un constat : pas de choc.")],
-  scenes=[("0:03–0:08", "Étiquettes « LIAM, ALIAS T-CRAZY » et « NADIA, SA MÈRE ». Liam tend son téléphone, fier : « 10 000 vues », le cœur à 0.",
-           ["LIAM : « J'étais bloqué à trois cents vues ! C'était en promo ! »"]),
-          ("0:08–0:14", "Nadia zoome sur la vidéo.", ["NADIA : « Dix mille vues… et pas un seul j'aime ? »", "LIAM : « Ils sont timides. »"]),
+V.append(dict(id='bonne-idee-01', num=1, titre='Bloqué à 300 vues', sujet='ACHETER DES VUES', verdict='MAUVAISE IDÉE', decor="La cuisine de Nadia, le soir.",
+  ecran="MAIS P*TAIN, MON TIKTOK EST BLOQUÉ À 300 VUES !",
+  head="Corrigé le 23/11 selon ta remarque : c'est Liam qui crie le hook, ta phrase mot pour mot ; à l'écran, « p*tain ».",
+  hooks=[("LIAM", "Mais putain, mon TikTok est bloqué à 300 VUES !", "300 VUES",
+          "TON HOOK (ta remarque du 23/11), mot pour mot. Dit à pleine voix, il est écrit « P*TAIN » à l'écran."),
+         ("NADIA", "Mon fils a payé des ROBOTS pour regarder son clip !", "ROBOTS", "Ma proposition d'avant."),
+         ("NADIA", "T'as acheté des fans qui EXISTENT PAS ?!", "EXISTENT PAS", "Fort, mais on a déjà entendu « faux fans ».")],
+  scenes=[("0:03–0:08", "Étiquettes « LIAM, ALIAS T-CRAZY » et « NADIA, SA MÈRE ». Nadia, sans lever les yeux de sa tasse.",
+           ["NADIA : « Et t'as fait quoi ? »", "LIAM (fier) : « J'en ai acheté dix mille ! C'était en promo ! »"]),
+          ("0:08–0:14", "Liam tend son téléphone : « 10 000 vues », le cœur à 0. Nadia zoome.", ["NADIA : « Dix mille vues… et pas un seul j'aime ? »", "LIAM : « Ils sont timides. »"]),
           ("0:14–0:22", "Big Mo entre en marchant, lunettes qui brillent (étiquette « BIG MO »). Sur l'écran : derrière les vues, des profils vides, sans photo. Carte : « FAUX ENGAGEMENT : INTERDIT » (source en petit : TikTok).",
            ["BIG MO : « Des vues achetées, c'est des FAUX COMPTES. Et TikTok l'interdit noir sur blanc. »"])],
-  end="LIAM : « Bon… je débranche les robots. »", prochain='UN FEAT À 0 ABONNÉ',
-  legende="Il a payé des robots pour regarder son clip 🤖 Bonne idée ou mauvaise idée ? Dis-le en commentaire 👇 #rap #rappeur #promo #vues",
-  motsCles=['acheter des vues', 'faux comptes', 'robots', 'promo musique', 'rap', 'snippet', 'playback'],
+  end="LIAM : « Bon… je me fais rembourser les vues. »", prochain='UN FEAT À 0 ABONNÉ',
+  legende="Bloqué à 300 vues, il en a acheté 10 000. Bonne idée ou mauvaise idée ? Dis-le en commentaire 👇 #rap #rappeur #promo #vues",
+  motsCles=['acheter des vues', 'bloqué à 300 vues', 'faux comptes', 'promo musique', 'rap', 'snippet', 'playback'],
   sources=["Le faux engagement est interdit par TikTok : « We do not allow fake engagement, such as facilitating the trade or marketing of services » qui gonflent artificiellement l'engagement (« How TikTok counters deceptive behaviour », 9/12/2024, https://newsroom.tiktok.com/en-eu/how-tiktok-counters-deceptive-behaviour).",
-           "« Robots » : on dit « faux comptes » dans l'explication (le mot de TikTok) ; « robots » est la façon de parler de Nadia, et les profils vides montrés sont dessinés.",
-           "Les 300 et 10 000 vues de Liam sont de la fiction."], extra=6))
+           "Les 300 et 10 000 vues de Liam sont de la fiction."], extra=7))
 V.append(dict(id='bonne-idee-02', num=2, titre='Même sa mère le suit pas', sujet='UN FEAT À 0 ABONNÉ', verdict='BONNE IDÉE', decor="La chambre-studio de Liam, de jour.",
   hooks=[("MAYA", "Il a pris en feat un mec que MÊME SA MÈRE suit pas !", "MÊME SA MÈRE",
           "GARDÉ. Phrase jamais entendue, très visuelle, et elle pose la question qu'on veut vérifier : un feat avec 0 abonné, c'est vraiment nul ? Le verdict surprend (bonne idée)."),
@@ -158,11 +159,11 @@ for v in V:
     big = line.replace(shock, '« ' + shock + ' »')
     hk = ["LES 3 HOOKS PROPOSÉS (tu choisis ; règle « vache bleue » du 23/11) :"]
     for i, (w, l, s, r) in enumerate(v['hooks'], 1):
-        hk.append("%d. %s (crie) : « %s »%s — %s" % (i, w, l, '  ← celui que je garde' if i == 1 else '', r))
+        hk.append("%d. %s (crie) : « %s »%s — %s" % (i, w, l, ('  ← ton choix' if v.get('ecran') else '  ← celui que je garde') if i == 1 else '', r))
     parts = ["VERSION 3 (23/11, nouvelles règles : 40-50 s, hook « vache bleue », Stalak à 0:29, pas de stalak.app avant) · format « BONNE IDÉE VS MAUVAISE IDÉE », vidéo n° %d. Sujet : %s. Verdict : %s. Même histoire et mêmes faits que la version 2 (vérifiés le 20/11), en plus court." % (v['num'], v['sujet'], v['verdict']),
-             RULES, "", "\n".join(hk), "", CRI, "",
+             RULES, "", "\n".join(hk), "", CRI, ""] + ([v['head'], ""] if v.get('head') else []) + [
              "0:00–0:03 · %s Les personnages déjà en pleine dispute. En haut : %s, et la barre." % (v['decor'], v['sujet']),
-             "%s (CRIE, à pleine voix) : « %s » — écrit en très gros dès l'image 0, mot par mot, « %s » en couleur." % (who, line, shock), ""]
+             "%s (CRIE, à pleine voix) : « %s » — écrit en très gros dès l'image 0, mot par mot%s, « %s » en couleur." % (who, line, (' : « ' + v['ecran'] + ' »') if v.get('ecran') else '', shock), ""]
     story = [line]
     for t, desc, lines in v['scenes']:
         parts += ["%s · %s" % (t, desc)] + lines + [""]
