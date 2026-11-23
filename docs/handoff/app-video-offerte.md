@@ -61,8 +61,9 @@ fois par compte.
 ## Résultats des tests
 (23/11, sur la branche)
 - serveur `tests/backend/run.mjs` **115/115**
-- nouveau `video_offerte_ui` **68/68** (iPhone 12 et ordinateur, FR et EN)
-- `fenetre_pro_ui` **84/84**, `fin_export_ui` **98/98**, `partager_ui` **92/92** (après adaptation), `vente_ui` **63/63**
+- nouveau `video_offerte_ui` **64/64** (iPhone 12 et ordinateur, FR et EN, avec le serveur de Comptes joué par le test)
+- `fenetre_pro_ui` **84/84**, `fin_export_ui` **98/98**, `partager_ui` **92/92** (après adaptation ; ces trois relancés après
+  le passage au serveur de Comptes), `vente_ui` **63/63**
 - `audit_ui` **122/122**, `audit611_ui` **93/93**, `exports_rates_ui` **80/80**, `accueil_a_ui` **77/77**, `tiktok_ui` **220/220**
 - `clip1_ui` 83/87 : les 4 échecs viennent de `.band-frost a:hover` dans `src/bands.css` (Marketing, « Bandes de glace »,
   e1c72fb, déjà sur `main`) : un survol qui n'est pas réservé à la souris. Sans lien avec cette branche. **Pour Marketing** :
