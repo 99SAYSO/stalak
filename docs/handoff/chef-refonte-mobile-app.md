@@ -41,3 +41,11 @@ Dossier `docs/audit/maquettes/mobile-2026-11-23/` (images et vidéos) et `source
 
 - La mascotte n'existe qu'en petit (266 px) : floue en grand. Le propriétaire a été prévenu ; s'il envoie le dessin en grande taille, je le transmets.
 - À la fin de chaque lot : tests habituels (serveur, écran 390 px et 1280 px, FR et EN), `docs/STATUS.md`, compte rendu `docs/handoff/app-refonte-mobile.md` avec le lien de la maquette.
+
+## Ajout du 23/11, 23 h : onboarding, paywall, offre à 1 € (en attente du « ok » final du propriétaire sur le paywall et l'offre)
+
+| N° | Écran | Fichier | À retenir |
+|---|---|---|---|
+| 13 | Onboarding (après l'ouverture, au premier lancement) | `13-onboarding-v2.mp4` | Une question par écran, barre jaune en haut, la mascotte réagit à chaque réponse. Questions : nom d'artiste ; genre (**plusieurs choix**) ; déjà sur les plateformes de streaming ? ; si oui, liens Spotify et Apple Music + Instagram ; où il poste (**plusieurs choix**) ; ce qui le bloque (**plusieurs choix**) ; auditeurs par mois visés (1 000 / 10  000 / 100 000 / 1 million et plus) ; objectif (**plusieurs choix**). Puis un **écran de chargement** (cercle jaune, messages tirés de SES réponses), puis « Ton plan est prêt, <nom> ! » et « Faire ma 1re vidéo ». **Chaque message du chargement doit être vrai** : tant que Stalak ne lit pas les écoutes, écrire « Liens enregistrés pour ton suivi » et pas « Lecture de ton profil Spotify ». Réponses gardées sur le compte (avec Comptes) : elles servent à l'analyse et aux futurs outils (stats, planification, idées de contenu). |
+| 14 | Paywall | `14-paywall.jpg` | Son nom et son objectif en titre, un avis client réel **mot pour mot** (défilent), l'annuel mis en avant ramené au mois, un seul bouton « Essayer gratuitement », les conditions en clair dessous. Pas de faux compte à rebours, pas de prix barré. Creator Plus par un petit lien. |
+| 15 | Fin d'export avec filigrane : offre à 1 € | `15-offre-1-euro.jpg` | Seulement sur cet écran (avec Comptes). « Retirer pour 1 € » + en clair « 1 € aujourd'hui, puis Stalak Pro à 7,99 $/mois dans 7 jours. Annulable à tout moment. » + « Enregistrer avec le filigrane » en petit. |
