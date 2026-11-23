@@ -1683,6 +1683,15 @@ body.isdone > .bands{display:none}
 }
 @media (prefers-reduced-motion:reduce){ .hero-m{animation:none} }
 
+/* (owner, 23/11) the 7-day free trial of Pro: what it costs then and that it can be cancelled, always under the button */
+.tr-terms{margin:4px 0 0;font:500 13.5px/1.4 var(--body);color:#3b4a66;text-align:center}
+.tr-terms[hidden]{display:none}
+.fa-row .tr-terms{flex-basis:100%;order:0;margin:-2px 0 4px}
+.propop .tr-terms{margin:-4px 0 0}
+#apBuy .tr-terms{margin:12px 0 0;font-size:13px}   /* below the button's hard shadow */
+.btn.primary:not(.sm) + .tr-terms{margin-top:18px}   /* under the icicles of a primary button */
+.doneview #dvTrial{order:3;margin-top:-6px}
+
 /* ---- pricing: promo, plan cards, trust line, comparison, FAQ ----
    One component for the Stalak Pro page in the app (#pro, appended to the theme by build.py / build_site.py) and the
    static pages /pricing and /fr/tarifs (served as /pricing.css). Tokens: the theme's (--ink, --sky-deep, --ice, --fur…).
@@ -2630,6 +2639,7 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
             <a class="savedl" id="saveDl" href="#" hidden data-i18n="save.dlLink">Or download the file</a>
             <button class="btn big dv-cmpgo" id="dvCmpGo" type="button" hidden><span data-i18n="cmp.go">Export without the logo</span> <b class="cmp-tag">PRO</b></button>
             <p class="cmp-price" id="dvCmpP" hidden></p>
+            <p class="tr-terms" id="dvTrial" data-trial-int="year" hidden></p>
             <div class="sharebox" id="shareBox" hidden></div>
             <div class="capbox" id="capBox">
               <label class="label" for="capText" data-i18n="cap.t">Caption, ready to copy</label>
@@ -2775,6 +2785,7 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
         <p class="pp-bill" id="ppBill"></p>
       </div>
       <button class="btn primary big pp-go" id="proPopGo" type="button" data-i18n="pp.go">Go Pro</button>
+      <p class="tr-terms" data-trial-int="year" hidden></p>
       <button class="btn pp-later" id="proPopLater" type="button" data-i18n="pp.later">Maybe later</button>
       <p class="pp-also" data-i18n="pp.also">Also with Pro: Music video mode (16:9) and every filter.</p>
     </div>
@@ -2789,6 +2800,7 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
     <p data-i18n="fa.p">You can try it in the preview. To export it, go Pro, or export your video without this filter.</p>
     <div class="row fa-row">
       <button class="btn primary" id="faPro" type="button" data-i18n="fa.pro">Go Pro, from $4.17/mo</button>
+      <p class="tr-terms" data-trial-int="year" hidden></p>
       <button class="btn" id="faWithout" type="button" data-i18n="fa.without">Export without this filter</button>
       <button class="linkbtn" id="faNo" type="button" data-i18n="cancel">Cancel</button>
     </div>
@@ -2802,6 +2814,7 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
     <p id="clipAskP" data-i18n="ca.p">You can try it in the preview. To export your 16:9 clip, go Pro, or export your video as TikTok / Reels.</p>
     <div class="row fa-row">
       <button class="btn primary" id="caPro" type="button" data-i18n="fa.pro">Go Pro, from $4.17/mo</button>
+      <p class="tr-terms" data-trial-int="year" hidden></p>
       <button class="btn" id="caReel" type="button" data-i18n="ca.reel">Export as TikTok / Reels</button>
       <button class="linkbtn" id="caNo" type="button" data-i18n="cancel">Cancel</button>
     </div>
@@ -3092,6 +3105,9 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
             <p class="pr-bill" data-pl="bill" data-i18n="pr.month.bill">Billed every month</p>
             <p class="pr-pill pl-pill" data-pl="pill" hidden></p>
             <button class="btn pr-cta" type="button" data-buy="pro" data-i18n="pl.cta.pro">Choose Pro</button>
+            <!-- (owner, 23/11) the 7-day free trial of Pro: then what it costs, cancel before the end, and the first payment written
+                 before paying (app.js trialUi) -->
+            <p class="tr-terms" id="plTrialTerms" data-trial-int="plan" hidden></p>
             <p class="pl-note" data-pl="note" hidden></p>
             <div class="pl-res">
               <p class="pl-res-t" data-i18n="pl.res.t">What it changes for you</p>
@@ -3235,6 +3251,6 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
   <button class="hp-human" id="helpHuman" type="button" data-i18n="help.human" hidden>Talk to a human</button>
   <button class="hp-diag" id="helpDiag" type="button" data-i18n="help.diag">Copy info for the team</button>
 </section>
-<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.c9f4369178.js", "/assets/app.77b4b1270d.js", "/assets/tiktok.8fcf3f7d25.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v||!v.offsetParent)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
+<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.c9f4369178.js", "/assets/app.6c62775746.js", "/assets/tiktok.8fcf3f7d25.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v||!v.offsetParent)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
 </body>
 </html>

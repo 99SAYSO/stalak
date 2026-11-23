@@ -506,6 +506,7 @@
             <a class="savedl" id="saveDl" href="#" hidden data-i18n="save.dlLink">Ou télécharger le fichier</a>
             <button class="btn big dv-cmpgo" id="dvCmpGo" type="button" hidden><span data-i18n="cmp.go">Exporter sans le logo</span> <b class="cmp-tag">PRO</b></button>
             <p class="cmp-price" id="dvCmpP" hidden></p>
+            <p class="tr-terms" id="dvTrial" data-trial-int="year" hidden></p>
             <div class="sharebox" id="shareBox" hidden></div>
             <div class="capbox" id="capBox">
               <label class="label" for="capText" data-i18n="cap.t">Légende prête à copier</label>
@@ -613,6 +614,7 @@
         <p class="pp-bill" id="ppBill"></p>
       </div>
       <button class="btn primary big pp-go" id="proPopGo" type="button" data-i18n="pp.go">Passer à Pro</button>
+      <p class="tr-terms" data-trial-int="year" hidden></p>
       <button class="btn pp-later" id="proPopLater" type="button" data-i18n="pp.later">Plus tard</button>
       <p class="pp-also" data-i18n="pp.also">Aussi avec Pro : le mode Clip 16:9 et tous les filtres.</p>
     </div>
@@ -627,6 +629,7 @@
     <p data-i18n="fa.p">Tu peux l’essayer dans l’aperçu. Pour l’exporter, passe à Pro, ou exporte ta vidéo sans ce filtre.</p>
     <div class="row fa-row">
       <button class="btn primary" id="faPro" type="button" data-i18n="fa.pro">Passer à Pro, dès 4,17 $/mois</button>
+      <p class="tr-terms" data-trial-int="year" hidden></p>
       <button class="btn" id="faWithout" type="button" data-i18n="fa.without">Exporter sans ce filtre</button>
       <button class="linkbtn" id="faNo" type="button" data-i18n="cancel">Annuler</button>
     </div>
@@ -640,6 +643,7 @@
     <p id="clipAskP" data-i18n="ca.p">Tu peux l’essayer dans l’aperçu. Pour exporter ton clip en 16:9, passe à Pro, ou exporte ta vidéo au format TikTok / Reels.</p>
     <div class="row fa-row">
       <button class="btn primary" id="caPro" type="button" data-i18n="fa.pro">Passer à Pro, dès 4,17 $/mois</button>
+      <p class="tr-terms" data-trial-int="year" hidden></p>
       <button class="btn" id="caReel" type="button" data-i18n="ca.reel">Exporter en TikTok / Reels</button>
       <button class="linkbtn" id="caNo" type="button" data-i18n="cancel">Annuler</button>
     </div>
@@ -930,6 +934,9 @@
             <p class="pr-bill" data-pl="bill" data-i18n="pr.month.bill">Facturé chaque mois</p>
             <p class="pr-pill pl-pill" data-pl="pill" hidden></p>
             <button class="btn pr-cta" type="button" data-buy="pro" data-i18n="pl.cta.pro">Choisir Pro</button>
+            <!-- (owner, 23/11) the 7-day free trial of Pro: then what it costs, cancel before the end, and the first payment written
+                 before paying (app.js trialUi) -->
+            <p class="tr-terms" id="plTrialTerms" data-trial-int="plan" hidden></p>
             <p class="pl-note" data-pl="note" hidden></p>
             <div class="pl-res">
               <p class="pl-res-t" data-i18n="pl.res.t">Ce que ça change pour toi</p>
