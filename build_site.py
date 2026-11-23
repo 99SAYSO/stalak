@@ -217,6 +217,11 @@ css += '\n' + (src / 'footer.css').read_text(encoding='utf-8')
 css += '\n' + (src / 'fx.css').read_text(encoding='utf-8')   # Marketing (23/11): the animation ideas the owner picked
 css += '\n' + (src / 'bands.css').read_text(encoding='utf-8')   # Marketing (23/11): « Bandes de glace »
 css += '\n' + (src / 'tiktok.css').read_text(encoding='utf-8')   # Réseaux sociaux (21/11)
+css += '\n' + (src / 'mobile.css').read_text(encoding='utf-8')   # App & montage (23/11): refonte mobile (phones only)
+# the opening « le glaçon » (phones, once per session) and where the app finds GSAP: served by the site, loaded only on a phone
+GSAP_URL = '/vendor/gsap-3.15.0.min.js'
+assert (extra / 'vendor' / 'gsap-3.15.0.min.js').exists()
+SPLASH_JS = ('<script>window.STALAK_GSAP=' + json.dumps(GSAP_URL) + ';</script>\n<script>' + (src / 'splash.js').read_text(encoding='utf-8').replace('</', '<\\/') + '</script>\n')
 css += '\n.about{font-size:15px;line-height:1.6}.about h2{font:400 24px/1.2 var(--display);margin:0 0 8px}.about p{margin:0 0 8px}.about ul{margin:0 0 8px;padding-left:20px}.about strong{font-weight:700}.about a{font-weight:700;text-decoration:underline;text-underline-offset:3px}\n'
 
 # 3. languages: the dictionaries are in app.js (between /*@EN*/ … /*EN@*/ and /*@FR*/ … /*FR@*/); the French of the page's
@@ -355,6 +360,7 @@ def page(lang, body):
     h = meta(lang) + head.replace('<title>Stalak</title>', '<title>' + H.escape(PAGE[lang]['title']) + '</title>')
     # the banner and its script come first in the page: shown or not before the first paint, so nothing moves afterwards
     if lang == 'en': h, body = h + PWA_LANG_JS, FR_HINT_HTML + FR_HINT_JS + body
+    body = SPLASH_JS + body   # first in <body>: the curtain is there before the first picture
     tail = ''
     # App & montage (audit 6/11, n° 10): the app's code is no longer written inside the page (860 KB downloaded again at every
     # visit, the page being « no-cache »): two files whose name carries their version (/assets/…), kept a year by the browser

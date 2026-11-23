@@ -18,6 +18,7 @@ assert '<!--FOOTER-->' in markup and '/*@EN*/{' in js
 markup = markup.replace('<!--FOOTER-->', footer.render('fr', lite=True, i18n='site.footer'))
 js = js.replace('/*@EN*/{', '/*@EN*/{' + json.dumps('site.footer') + ': ' + json.dumps(footer.inner('en', lite=True), ensure_ascii=False).replace('</', '<\\/') + ', ', 1)
 css += '\n' + (src/'footer.css').read_text(encoding='utf-8')
+css += '\n' + (src/'mobile.css').read_text(encoding='utf-8')   # App & montage (23/11): refonte mobile (phones only; no opening animation here)
 out = head + '<style>' + css + '</style>' + markup + '<script>' + js + '</script>\n'
 dest = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else root / 'shuffle-lab.html'
 dest.write_text(out, encoding='utf-8'); print('built', dest, len(out), 'bytes')
