@@ -27,7 +27,8 @@ FR_PAGES = ['/fr/', '/fr/tarifs', '/fr/conditions', '/fr/remboursement', '/fr/co
 OTHER = dict([('/fr/', '/'), ('/fr/tarifs', '/pricing'), ('/fr/conditions', '/terms'), ('/fr/remboursement', '/refunds'), ('/fr/confidentialite', '/privacy'),
               ('/fr/mentions-legales', '/legal-notice'), ('/fr/alternative-triller', '/triller-alternative'), ('/fr/clip', '/music-video')] + list(zip(AIDE_FR, AIDE_EN)))
 OTHER.update({v: k for k, v in list(OTHER.items())})
-HEADS = {'fr': ['Produit', 'Tutos', 'Légal', 'Tes choix'], 'en': ['Product', 'Tutorials', 'Legal', 'Your choices']}
+# (23/11, Marketing) the tutorials are folded under their title, which says how many there are
+HEADS = {'fr': ['Produit', 'Tutos (10)', 'Légal', 'Tes choix'], 'en': ['Product', 'Tutorials (10)', 'Legal', 'Your choices']}
 MUST = {'fr': ['/fr/tarifs', '/fr/clip', '/fr/alternative-triller', '/fr/conditions', '/fr/remboursement', '/fr/confidentialite', '/fr/mentions-legales'] + AIDE_FR,
         'en': ['/pricing', '/music-video', '/triller-alternative', '/terms', '/refunds', '/privacy', '/legal-notice'] + AIDE_EN}
 GUIDES = ['/lip-sync-video-editor', '/music-video-maker-for-rappers', '/rap-snippet-video', '/lip-sync-videos-for-singers',
@@ -131,7 +132,8 @@ def app(b, base, site, lang, iphone):
     pg.evaluate('window.scrollTo(0, document.documentElement.scrollHeight)'); pg.wait_for_timeout(900)
     fab = pg.locator('#expFab'); cube = pg.locator('#helpBtn').bounding_box()
     fb = fab.bounding_box() if fab.count() and fab.is_visible() else None
-    boxes = pg.evaluate("() => [...document.querySelectorAll('#siteFoot a, #siteFoot button, #siteFoot .ft-bottom, #siteFoot .ft-tag')].map(e => { const r = e.getBoundingClientRect(); return { x: r.left, y: r.top, width: r.width, height: r.height }; })")
+    # (23/11, Marketing) the links of the folded tutorials are not on the screen: only what is displayed counts
+    boxes = pg.evaluate("() => [...document.querySelectorAll('#siteFoot a, #siteFoot button, #siteFoot .ft-bottom, #siteFoot .ft-tag')].filter(e => !e.checkVisibility || e.checkVisibility()).map(e => { const r = e.getBoundingClientRect(); return { x: r.left, y: r.top, width: r.width, height: r.height }; })")
     hit = [bx for bx in boxes if overlap(bx, cube) or overlap(bx, fb)]
     check(tag + ' : en bas de la page, la bulle d’aide et le bouton Exporter ne cachent aucun lien' + (' (bouton Exporter affiché)' if fb else ''), not hit, (hit, cube, fb))
     if SHOTS: pg.screenshot(path=os.path.join(SHOTS, 'pied-app-' + ('iphone' if iphone else 'ordi') + '-' + lang + '.png'))
