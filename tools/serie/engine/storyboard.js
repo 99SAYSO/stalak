@@ -1382,11 +1382,173 @@
     { t: '1:14', cap: 'La carte de fin : « Prochain épisode : bientôt » (son choix du 18/11)', plain: true, over: () => endCard('BIENTÔT') },
   ], "Sort le 23/11 à 21 h. La cuisine en fin d'après-midi, puis le soir, une fois rangée.");
 
+  // ---------------- « BONNE IDÉE VS MAUVAISE IDÉE » : the videos of 23/11 (rules of 23/11 : 40 to 50 s, the hook shouted by Liam,
+  // censored on screen, the shock words in colour, no « stalak.app » before Big Mo presents Stalak). The words come from the validated
+  // cards (bonne-idee-NN) ; tools/serie/bonne_idee.py builds each video and lays the Stalak part (the owner's recordings) over shot 08.
+  const GREEN = '#1f9d55', RED = '#e5484d';
+  // the two halves « BONNE IDÉE · VS · MAUVAISE IDÉE » ; y : its top
+  function biVs(y, k = 1) { // (owner, 23/11 at 13 h 01 : the bar takes the whole width of the screen, edge to edge)
+    const bx = -40, bw = 1160, bh = 100;
+    let s = `<g transform="translate(540 ${y + bh / 2}) scale(${k}) translate(-540 ${-(y + bh / 2)})"><rect x="${bx}" y="${y + 10}" width="${bw}" height="${bh}" fill="${INK}"/>`;
+    s += `<rect x="${bx}" y="${y}" width="${bw / 2}" height="${bh}" fill="${GREEN}"/><rect x="540" y="${y}" width="${bw / 2}" height="${bh}" fill="${RED}"/>`;
+    s += `<rect x="${bx}" y="${y}" width="${bw}" height="${bh}" fill="none" stroke="${INK}" stroke-width="8"/>`;
+    s += T(278, y + 69, 'BONNE IDÉE', 54, SNOW, { stroke: INK, sw: 10 }) + T(806, y + 69, 'MAUVAISE IDÉE', 54, SNOW, { stroke: INK, sw: 10 });
+    return s + `<circle cx="540" cy="${y + bh / 2}" r="56" fill="${SNOW}" stroke="${INK}" stroke-width="8"/>` + T(540, y + 67, 'VS', 48, INK) + '</g>';
+  }
+  // the bar at the top, from the very first image to Big Mo's fact : the subject in capitals, and the two halves under it
+  function biBar(sujet, cont) {
+    let fs = 66; while (fs > 40 && FRAME.width(sujet, `${fs}px "Lilita One"`) > 780) fs -= 2;
+    const w = FRAME.width(sujet, `${fs}px "Lilita One"`) + 84, x = 540 - w / 2, y = 166;
+    return `<g class="bandeau"${cont ? ' data-cont="1"' : ''}><g transform="rotate(-1.5 540 280)"><rect x="${x + 8}" y="${y + 10}" width="${w}" height="98" rx="24" fill="${INK}"/><rect x="${x}" y="${y}" width="${w}" height="98" rx="24" fill="${SNOW}" stroke="${INK}" stroke-width="7"/>` +
+      T(540, y + 49 + fs * 0.35, sujet, fs, INK) + biVs(y + 116) + '</g></g>';
+  }
+  // the verdict : a stamp that slams down on the picture
+  function biStamp(v) {
+    const col = v === 'BONNE IDÉE' ? GREEN : RED, [a, b] = v.split(' ');
+    const body = `<g transform="translate(500 850) rotate(-9)"><rect x="-390" y="-222" width="800" height="460" rx="44" fill="${INK}"/><rect x="-400" y="-236" width="800" height="460" rx="44" fill="${SNOW}" stroke="${INK}" stroke-width="10"/>` +
+      `<rect x="-374" y="-210" width="748" height="408" rx="28" fill="none" stroke="${col}" stroke-width="20"/>` + T(0, -36, a, a.length > 6 ? 150 : 176, col, { stroke: INK, sw: 9 }) + T(0, 138, b, 176, col, { stroke: INK, sw: 9 }) + '</g>';
+    return K({ fadein: [0, 0.15] }, `<rect width="1080" height="1920" fill="${INK}" opacity="0.42"/>`) + K({ in: 0.1, pop: 2.7, ks: 520, kd: 32 }, body);
+  }
+  // Big Mo's fact : a white card, the words big, where it comes from in small under it. lines : [[text, colour]], at : when it pops (s)
+  function biFact(lines, src, at, o = {}) {
+    const fs = o.fs || 76, lh = Math.round(fs * 1.14), eh = o.extraH || 0, h = 56 + lines.length * lh + eh + 74, w = 900, x = 500 - w / 2, y = (o.cy || 850) - h / 2;
+    let s = `<rect x="${x + 10}" y="${y + 12}" width="${w}" height="${h}" rx="34" fill="${INK}"/><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="34" fill="${SNOW}" stroke="${INK}" stroke-width="8"/>`;
+    lines.forEach(([tx, c], i) => { s += T(500, y + 40 + (i + 1) * lh - Math.round(fs * 0.18), tx, fs, c || INK); });
+    if (o.extra) s += `<g transform="translate(${x} ${y + 56 + lines.length * lh})">${o.extra}</g>`;
+    s += `<path d="M ${x + 60} ${y + h - 66} L ${x + w - 60} ${y + h - 66}" stroke="#d5dbe6" stroke-width="3"/>` + T(500, y + h - 28, src, 25, '#5b6170', { font: 'Rubik', weight: 700 });
+    const k = Object.assign({ in: at, pop: 0.4 }, o.out != null ? { out: o.out } : {});
+    return K(Object.assign({ fadein: [at, at + 0.2] }, o.out != null ? { out: o.out } : {}), `<rect width="1080" height="1920" fill="${INK}" opacity="0.45"/>`) + K(k, s);
+  }
+  // the phone a little lower than usual : clear of the bar at the top
+  const biPhone = (inner, o = {}) => `<g transform="translate(0 84)">${phoneBig(inner, 0.92, o)}</g>`;
+  // Liam's post : ten thousand views bought, not one like (video 1)
+  function boughtViews() {
+    let s = feed(clipPic('placard', 'fierte'), { user: 't.crazy', caption: 'Nouveau son, lâchez un like', sound: 'T-Crazy · son original', likes: 0, comments: 0, shares: 0 });
+    s += `<g transform="rotate(-3 150 760)"><rect x="22" y="722" width="330" height="76" rx="18" fill="#ffd84a" stroke="${INK}" stroke-width="5"/>${T(187, 776, '▶ 10 000 vues', 40, INK)}</g>`;
+    return s + K({ in: 1.1, pop: 2.2, ks: 300, kd: 20 }, `<circle cx="498" cy="610" r="62" fill="none" stroke="${RED}" stroke-width="9"/>`);
+  }
+  // behind the bought views : accounts with no picture and no name
+  function ghosts() {
+    let s = '';
+    ['user48213', 'user90377', 'user15502', 'user66184', 'user30951'].forEach((n, i) => {
+      const cx = 110 + i * 170;
+      s += `<circle cx="${cx}" cy="56" r="50" fill="#d5dbe6" stroke="${INK}" stroke-width="5"/><circle cx="${cx}" cy="42" r="17" fill="#9aa3b5"/><path d="M ${cx - 30} 86 C ${cx - 30} 58 ${cx + 30} 58 ${cx + 30} 86 Z" fill="#9aa3b5"/>` + T(cx, 138, n, 22, '#5b6170', { font: 'Rubik', weight: 700 });
+    });
+    return s;
+  }
+  // a small phone with a post on it (two of them : a feat, two videos)
+  const miniPost = (x, y, user, col, label, at) => K({ in: at, pop: 0.3 }, `<g transform="translate(${x} ${y})"><rect x="-164" y="-300" width="340" height="620" rx="40" fill="${INK}" opacity="0.5"/><rect x="-170" y="-310" width="340" height="620" rx="40" fill="#2a2d36" stroke="${INK}" stroke-width="9"/>` +
+    `<rect x="-152" y="-286" width="304" height="572" rx="26" fill="${col}"/><circle cx="0" cy="-90" r="74" fill="${SNOW}" stroke="${INK}" stroke-width="6"/><path d="M -24 -128 L 40 -90 L -24 -52 Z" fill="${INK}"/>` +
+    T(0, 60, '@' + user, 32, SNOW, { font: 'Rubik', weight: 800, stroke: INK, sw: 6 }) + `<rect x="-132" y="96" width="264" height="58" rx="16" fill="${SNOW}" stroke="${INK}" stroke-width="4"/>` + T(0, 136, '♫ le même son', 27, INK, { font: 'Rubik', weight: 800 }) +
+    `<g transform="rotate(-5)"><rect x="-116" y="186" width="232" height="70" rx="18" fill="#ffd84a" stroke="${INK}" stroke-width="5"/>${T(0, 236, label, 40, INK)}</g></g>`);
+  // thirty hashtags under a rap song (video 3). hl : the one Deuce reads out ; cut : after the 5th, they turn red (Big Mo's rule)
+  const HASH = ['#rap', '#rapfr', '#musique', '#viral', '#fyp', '#recette', '#chaton', '#foot', '#humour', '#danse', '#mode', '#voyage', '#gaming', '#cuisine', '#manga', '#chien', '#fitness', '#astuce', '#love', '#paris', '#vacances', '#bricolage', '#nba', '#cinema', '#mood', '#trend', '#maquillage', '#voiture', '#sport', '#drole'];
+  function hashScreen(hl, at = 0.5) {
+    let s = `<rect width="560" height="1000" fill="#0b0d12"/><g transform="translate(0 -150)">${clipPic('rue', 'fierte')}</g><rect x="0" y="470" width="560" height="530" fill="${SNOW}"/><path d="M 0 470 L 560 470" stroke="${INK}" stroke-width="5"/>`;
+    s += T(26, 524, '@t.crazy', 32, INK, { font: 'Rubik', weight: 800, anchor: 'start' }) + T(534, 524, '30 hashtags', 24, '#5b6170', { font: 'Rubik', weight: 700, anchor: 'end' }) + T(26, 568, 'Nouveau son dispo !!', 28, INK, { font: 'Rubik', weight: 700, anchor: 'start' });
+    let x = 24, y = 620;
+    HASH.forEach((h) => {
+      const w = FRAME.width(h, '800 27px Rubik');
+      if (x + w > 540) { x = 24; y += 52; }
+      if (h === hl) s += K({ in: at, pop: 0.3 }, `<rect x="${x - 10}" y="${y - 34}" width="${w + 20}" height="48" rx="12" fill="#ffd84a" stroke="${INK}" stroke-width="4"/>`);
+      s += T(x, y, h, 27, h === hl ? INK : BLUE, { font: 'Rubik', weight: 800, anchor: 'start' });
+      x += w + 16;
+    });
+    return s;
+  }
+  // five kept, the others crossed out
+  function fiveTags() {
+    let s = '', x = 40;
+    ['#rap', '#rapfr', '#musique', '#son', '#clip'].forEach(h => { const w = FRAME.width(h, '800 30px Rubik') + 34; s += `<rect x="${x}" y="6" width="${w}" height="52" rx="26" fill="${BLUE}" stroke="${INK}" stroke-width="4"/>` + T(x + w / 2, 43, h, 30, SNOW, { font: 'Rubik', weight: 800 }); x += w + 12; });
+    x = 150;
+    ['#chaton', '#recette', '#foot'].forEach((h, i) => { const w = FRAME.width(h, '800 30px Rubik') + 34; s += K({ in: -2.6 + i * 0.25, pop: 0.3 }, `<rect x="${x}" y="76" width="${w}" height="52" rx="26" fill="#fde3e4" stroke="${RED}" stroke-width="4"/>` + T(x + w / 2, 113, h, 30, RED, { font: 'Rubik', weight: 800 }) + `<path d="M ${x + 12} 102 L ${x + w - 12} 102" stroke="${RED}" stroke-width="6" stroke-linecap="round"/>`); x += w + 12; });
+    return s;
+  }
+  // Big Mo's own snippet in a feed : two takes, cut on the beat of the music (anim.js, class stk), comments coming in. No text
+  // laid over it and no watermark : nothing says « stalak.app » before he presents Stalak (rule of 23/11)
+  function moClip() {
+    const tk = (kind, j) => `<g class="tk"${j ? ' display="none"' : ''}><g transform="translate(-60 160) scale(1.31)">${takeScene(kind)}${moBust(j ? 96 : 20, -216, 420)}</g></g>`;
+    const pic = `<g class="stk" data-ti="0" data-n="2">${tk('terrain', 0)}${tk('rue', 1)}</g>`;
+    let s = feed(pic, { user: 'bigmo.officiel', caption: 'Nouveau snippet', sound: 'Big Mo · son original', likes: '12 k', comments: 384, shares: 96 });
+    const cm = (y, who, text, col, at) => K({ in: at, pop: 0.3 }, `<rect x="20" y="${y}" width="${FRAME.width(text, '800 25px Rubik') + 92}" height="58" rx="29" fill="${SNOW}" stroke="${INK}" stroke-width="4"/><circle cx="50" cy="${y + 29}" r="20" fill="${col}"/>` + T(50, y + 38, who, 24, SNOW) + T(82, y + 38, text, 25, INK, { font: 'Rubik', weight: 800, anchor: 'start' }));
+    return s + cm(668, 'S', 'Le montage est trop propre', '#7d55c7', 0.5) + cm(736, 'K', 'Tu montes ça comment ??', '#23845a', 1.1);
+  }
+  // the end card of the format : the round logo, the two halves, the next subject. No address on it (rule of 23/11)
+  function biEnd(next) {
+    let s = `<rect width="1080" height="1920" fill="${BLUE}"/><path d="M 0 0 L 1080 0 L 1080 200 C 980 210 960 290 900 280 C 850 272 860 210 790 210 C 720 210 730 320 660 310 C 600 302 610 220 540 220 C 470 220 480 340 410 330 C 350 322 360 230 290 230 C 220 230 230 300 170 290 C 110 280 110 210 0 210 Z" fill="${ICE}" stroke="${INK}" stroke-width="8"/>`;
+    s += `<g class="ec-logo"><circle cx="510" cy="572" r="168" fill="${INK}"/>` + img('/site_src/icons/icon.svg', 340, 400, 330, 330) + '</g>';
+    s += `<g class="ec-url">${biVs(790)}</g>`;
+    return s + `<g transform="translate(-40 880)">${bandeau(2, 'PROCHAIN SUJET :\n' + next, '')}</g>`;
+  }
+  const BIGMO_TAG = (x, y, dl) => tag('BIG MO, LA STAR DU QUARTIER', x, y, 3).replace('class="tag"', `class="tag" data-dl="${dl}"`);
+  const MO_IN = { k: { walk: [[0, 760, 0], [1.3, 0, 0]] } };
+  const RAISE = { pose: { raise: 'r' } };
+  // what is common to the 3 videos : the snippet, the bridge, (08 = the Stalak part, bima-stalak-0N), the end card
+  const biTail = (set, others, chute, next) => [
+    { t: '0:25', cap: 'Big Mo montre son propre snippet', set, chars: [others[0], MO('fierte', 820, 1846, 1350)], over: () => biPhone(moClip()) },
+    { t: '0:27', cap: 'Le pont : « Mais comment t\'as fait ce clip ? » « C\'est simple. »', set, chars: [LI(310, 1846, 1250, 'panique'), MO('frime', 790, 1846, 1380)] },
+    { t: '0:29', cap: 'Stalak : la partie commune (tes enregistrements sur le téléphone de Big Mo)', set, setOver: DIMSET(0.42), chars: [CH('bigmo', 1, 215, 1846, 1300, 'frime')] },
+    chute,
+    { t: '0:46', cap: 'La carte de fin : le prochain sujet', plain: true, over: () => biEnd(next) },
+  ];
+  const DIMSET = (k) => () => `<rect width="1080" height="1920" fill="${INK}" opacity="${k}"/>`;
+
+  // ---- n° 1 : ACHETER DES VUES (mauvaise idée), the kitchen in the evening
+  const S1 = 'ACHETER DES VUES', H1 = ['MAIS P*TAIN, MON TIKTOK EST BLOQUÉ À 300 VUES !', '300 VUES'];
+  ep('bi1', S1, 1, [
+    { t: '0:00', cap: 'Le hook : Liam crie', set: KITCHEN_N, criY: 640, chars: [CH('nadia', 2, 880, 1800, 1020, 'frime', mug(580, 1150)), LI(450, 2230, 1500, 'colere', P.phone(606, 760), RAISE)],
+      over: () => biBar(S1) + FRAME.cri('liam', H1[0], 640, H1[1]) },
+    { t: '0:03', cap: 'Nadia, sans lever les yeux de sa tasse', set: KITCHEN_N, chars: [CH('nadia', 2, 800, 1846, 1250, 'frime', mug(580, 1150)), LI(300, 1846, 1200, 'fierte', P.phone(606, 760), RAISE)],
+      over: () => biBar(S1, true) + tag('LIAM, ALIAS T-CRAZY', 290, 590, -3) + tag('NADIA, SA MÈRE', 800, 500, 3) },
+    { t: '0:08', cap: 'Dix mille vues, zéro j\'aime', set: KITCHEN_N, chars: [CH('nadia', 2, 860, 1846, 1250, 'colere'), LI(230, 1846, 1200, 'frime')], over: () => biBar(S1, true) + biPhone(boughtViews()) },
+    { t: '0:14', cap: 'Big Mo entre en marchant : des faux comptes, et TikTok l\'interdit', set: KITCHEN_N, chars: [CH('nadia', 2, 130, 1800, 1050, 'panique'), LI(400, 1846, 1200, 'panique'), MO('frime', 800, 1846, 1380, '', MO_IN)],
+      over: () => biBar(S1, true) + BIGMO_TAG(600, 462, 1.3) + biFact([['FAUX ENGAGEMENT :', INK], ['INTERDIT', RED]], 'Source : les règles de TikTok', 2.9, { extra: ghosts(), extraH: 170, fs: 80 }) },
+    { t: '0:22', cap: 'Le tampon : MAUVAISE IDÉE', set: KITCHEN_N, chars: [LI(330, 1846, 1200, 'panique'), MO('colere', 790, 1846, 1380)], over: () => biStamp('MAUVAISE IDÉE') },
+    ...biTail(KITCHEN_N, [LI(260, 1846, 1200, 'panique')],
+      { t: '0:42', cap: 'La chute', set: KITCHEN_N, zoom: [540, 1150, 1.3], chars: [LI(540, 2730, 2250, 'panique', P.phone(606, 760), RAISE)] }, 'UN FEAT À 0 ABONNÉ'),
+  ], 'Lundi 23/11, 12 h 30. La cuisine, le soir.');
+
+  // ---- n° 2 : UN FEAT À 0 ABONNÉ (bonne idée), the bedroom studio
+  const S2 = 'UN FEAT À 0 ABONNÉ', H2 = ['P*TAIN, PERSONNE VEUT FAIRE UN FEAT AVEC MOI !', 'UN FEAT'];
+  const hpHand = `<g transform="translate(606 700) scale(0.62)">${hp()}</g>`;
+  ep('bi2', S2, 2, [
+    { t: '0:00', cap: 'Le hook : Liam crie', set: ROOM, criY: 640, chars: [CH('deuce', 1, 150, 1800, 1080, 'frime'), CH('maya', 1, 910, 1800, 980, 'frime', P.phone(580, 1130)), LI(520, 2230, 1500, 'colere')],
+      over: () => biBar(S2) + FRAME.cri('liam', H2[0], 640, H2[1]) },
+    { t: '0:03', cap: 'Deuce se propose, Maya n\'en revient pas', set: ROOM, chars: [LI(210, 1846, 1150, 'frime'), CH('maya', 1, 900, 1846, 1100, 'colere', P.phone(580, 1130)), CH('deuce', 1, 560, 1846, 1280, 'fierte')],
+      over: () => biBar(S2, true) + tag('LIAM, ALIAS T-CRAZY', 250, 640, -3) + tag('DEUCE, SON MANAGER', 560, 470, 2) + tag('MAYA, LA VOISINE', 850, 690, 3) },
+    { t: '0:08', cap: 'Liam tend un casque à Deuce', set: ROOM, chars: [CH('maya', 1, 900, 1846, 1100, 'colere', P.phone(580, 1130)), CH('deuce', 1, 590, 1846, 1280, 'fierte'), LI(250, 1846, 1200, 'fierte', hpHand, RAISE)], over: () => biBar(S2, true) },
+    { t: '0:14', cap: 'Big Mo entre en marchant : les abonnés ne comptent pas directement', set: ROOM, chars: [CH('deuce', 1, 130, 1800, 1100, 'panique'), LI(400, 1846, 1200, 'panique'), MO('frime', 800, 1846, 1380, '', MO_IN)],
+      over: () => biBar(S2, true) + BIGMO_TAG(600, 462, 1.3) + biFact([["LE NOMBRE D'ABONNÉS", INK], ['NE COMPTE PAS', RED], ['DIRECTEMENT', INK]], 'Source : TikTok, « How TikTok recommends videos »', 1.6, { out: -3.3, fs: 74 }) +
+        K({ fadein: [-3.3, -3.1] }, `<rect width="1080" height="1920" fill="${INK}" opacity="0.45"/>`) + miniPost(310, 880, 't.crazy', BLUE, 'VIDÉO 1', -3.2) + miniPost(700, 880, 'deuce.manager', '#23845a', 'VIDÉO 2', -2.5) },
+    { t: '0:22', cap: 'Le tampon : BONNE IDÉE', set: ROOM, chars: [CH('deuce', 1, 150, 1800, 1100, 'fierte'), LI(420, 1846, 1200, 'fierte'), MO('fierte', 800, 1846, 1380)], over: () => biStamp('BONNE IDÉE') },
+    ...biTail(ROOM, [LI(260, 1846, 1200, 'panique')],
+      { t: '0:42', cap: 'La chute : Deuce et Maya', set: ROOM, chars: [CH('deuce', 1, 330, 1900, 1420, 'fierte'), CH('maya', 1, 820, 1846, 1180, 'frime', P.phone(580, 1130))] }, 'METTRE 30 HASHTAGS'),
+  ], 'Lundi 23/11, 18 h. La chambre-studio.');
+
+  // ---- n° 3 : METTRE 30 HASHTAGS (mauvaise idée), in front of the Reyes shop
+  const S3 = 'METTRE 30 HASHTAGS', H3 = ['P*TAIN, JE POSTE TOUS LES JOURS ET RIEN !', 'ET RIEN'];
+  ep('bi3', S3, 3, [
+    { t: '0:00', cap: 'Le hook : Liam crie', set: STREET, criY: 640, chars: [CH('deuce', 1, 880, 1800, 1100, 'frime'), LI(450, 2230, 1500, 'colere', P.phone(606, 760), RAISE)],
+      over: () => biBar(S3) + FRAME.cri('liam', H3[0], 640, H3[1]) },
+    { t: '0:03', cap: 'Deuce lit la légende : hashtag chaton', set: STREET, chars: [CH('deuce', 1, 880, 1846, 1280, 'panique'), LI(210, 1846, 1200, 'fierte')],
+      over: () => biBar(S3, true) + K({ in: 0.25, pop: 0.3, gone: [1.5, 1.7] }, tag('LIAM, ALIAS T-CRAZY', 250, 590, -3).replace(' class="tag"', '') + tag('DEUCE, SON MANAGER', 800, 500, 3).replace(' class="tag"', '')) + biPhone(hashScreen('#chaton', 2.1), { dl: 1.6 }) },
+    { t: '0:08', cap: 'Hashtag recette', set: STREET, chars: [CH('deuce', 1, 880, 1846, 1280, 'panique'), LI(210, 1846, 1200, 'frime')], over: () => biBar(S3, true) + biPhone(hashScreen('#recette')) },
+    { t: '0:14', cap: 'Big Mo sort de l\'épicerie : cinq hashtags maximum', set: STREET, chars: [CH('deuce', 1, 130, 1800, 1100, 'panique'), LI(400, 1846, 1200, 'panique'), MO('frime', 800, 1846, 1380, P.icebag(590, 1150, 6), MO_IN)],
+      over: () => biBar(S3, true) + BIGMO_TAG(600, 462, 1.3) + biFact([['INSTAGRAM :', INK], ['5 HASHTAGS', BLUE], ['MAXIMUM', INK]], 'Source : Instagram (@creators), décembre 2025', 1.6, { extra: fiveTags(), extraH: 150, fs: 80 }) },
+    { t: '0:22', cap: 'Le tampon : MAUVAISE IDÉE', set: STREET, chars: [LI(330, 1846, 1200, 'panique'), MO('colere', 790, 1846, 1380, P.icebag(590, 1150, 6))], over: () => biStamp('MAUVAISE IDÉE') },
+    ...biTail(STREET, [LI(260, 1846, 1200, 'panique')],
+      { t: '0:42', cap: 'La chute', set: STREET, zoom: [540, 1150, 1.3], chars: [LI(540, 2730, 2250, 'panique', P.phone(606, 760), RAISE)] }, 'QUE SUR SPOTIFY'),
+  ], 'Lundi 23/11, 21 h. Devant l\'épicerie Reyes.');
+  // their thumbnails : the bar, the hook, the faces big
+  const biThumb = (set, chars, S, H) => ({ set, chars, over: () => `<g transform="translate(0 120)">${biBar(S)}</g>` + FRAME.cri('liam', H[0], 800, H[1]) });
+  FRAMES['thumb-bi1'] = biThumb(KITCHEN_N, [CH('nadia', 2, 830, 2900, 2200, 'frime'), LI(330, 3200, 2330, 'colere')], S1, H1);
+  FRAMES['thumb-bi2'] = biThumb(ROOM, [CH('deuce', 1, 820, 2950, 2300, 'fierte'), LI(330, 3200, 2330, 'colere')], S2, H2);
+  FRAMES['thumb-bi3'] = biThumb(STREET, [CH('deuce', 1, 820, 2950, 2300, 'panique'), LI(330, 3200, 2330, 'colere')], S3, H3);
+
   // ---------------- « BONNE IDÉE VS MAUVAISE IDÉE » (owner, 20/11) : the Stalak part, the last 20 to 22 s, the same in every video.
   // Big Mo stands on the left of the set of the video, the set darkened behind him ; tools/serie/stalak_part.py lays over it the
   // phone with the owner's real iPhone recordings of stalak.app, the steps, the store card and Big Mo's words (HyperFrames).
   // One frame per set : 01 the kitchen in the evening, 02 the bedroom, 03 the street, 04 the roof, 05 the kitchen in the morning, 06 the court.
-  const DIMSET = (k) => () => `<rect width="1080" height="1920" fill="${INK}" opacity="${k}"/>`;
   ep('bima-stalak', 'STALAK', 0, [KITCHEN_N, ROOM, STREET, ROOF, KITCHEN, TERRAIN].map((set, i) => (
     { t: '0:00', cap: 'La partie Stalak : Big Mo et son téléphone (' + set[0] + ', ' + set[2] + ')', set, setOver: DIMSET(0.42), chars: [CH('bigmo', 1, 215, 1846, 1300, 'frime')] })));
 

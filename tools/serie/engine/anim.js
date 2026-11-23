@@ -253,10 +253,10 @@
       R.subs.innerHTML = sb && sb.kind !== 'cri' ? FRAME.sub(1, sb.who, sb.text) : '';
       R.cri.innerHTML = ''; R.criW = null;
       if (sb && sb.kind === 'cri') {
-        const L = FRAME.criLayout(sb.who, sb.text, R.criY);
+        const L = FRAME.criLayout(sb.who, sb.text, R.criY, sb.shock || '');
         R.cri.innerHTML = `<g transform="rotate(-3 500 ${R.criY})"><g class="cn">${FRAME.criName(sb.who, L)}</g>` + L.words.map(o => `<g class="cw">${FRAME.criWord(o)}</g>`).join('') + '</g>';
         const els = [...R.cri.querySelectorAll('.cw')], wt = sb.words || [];
-        R.criW = els.map((el, q) => ({ el, c: [L.words[q].x + L.words[q].ww / 2, L.words[q].y - L.size * 0.34], t: wt[q] != null ? wt[q] : sb.t0 + q * 0.22 }));
+        R.criW = els.map((el, q) => ({ el, c: [L.words[q].x + L.words[q].ww / 2, L.words[q].y - L.size * 0.34], t: wt[q] != null ? wt[q] : sb.t0 + q * 0.22, shock: !!L.words[q].col }));
         R.criN = { el: R.cri.querySelector('.cn'), c: [L.left + 60, L.top - 40] };
       }
       R.lastSub = key;
@@ -266,8 +266,11 @@
       for (const w of R.criW) {
         w.el.setAttribute('display', t >= w.t ? 'inline' : 'none');
         // each word grows from small with a little bounce (never bigger than its place : it does not cover its neighbours)
-        if (t >= w.t) scaleAt(w.el, w.c, Math.max(0.001, 0.25 + 0.75 * spring(t, w.t, 520, 26)), `rotate(${(6 * (1 - spring(t, w.t, 300, 16))).toFixed(2)} ${w.c[0].toFixed(1)} ${w.c[1].toFixed(1)})`);
+        // (23/11 : the shock words land bigger, then settle)
+        if (t >= w.t) scaleAt(w.el, w.c, Math.max(0.001, (0.25 + 0.75 * spring(t, w.t, 520, 26)) * (w.shock ? 1 + 0.32 * (1 - spring(t, w.t + 0.04, 150, 11)) : 1)), `rotate(${(6 * (1 - spring(t, w.t, 300, 16))).toFixed(2)} ${w.c[0].toFixed(1)} ${w.c[1].toFixed(1)})`);
       }
+      // (23/11 : the picture shakes a little while the hook is shouted)
+      if (sb.shake) { const a = 7 * Math.max(0, Math.min(1, (sb.t1 - 0.6 - t) / 0.4 + 1)), jx = noise(t * 31, 3) * a, jy = noise(t * 37, 8) * a; R.cam.setAttribute('transform', `translate(${jx.toFixed(1)} ${jy.toFixed(1)}) ` + R.cam.getAttribute('transform')); }
     } else if (sb) { const k = 0.86 + 0.14 * spring(t, sb.t0, 320, 22); R.subs.setAttribute('transform', `translate(500 1420) scale(${k.toFixed(4)}) translate(-500 -1420)`); }
     // a change of time or place (a shot with dip : true, the one with its caption) : the picture goes dark, then the new
     // moment appears, so that a child understands that time has passed (owner, 16/11 at 17 h 04 : « pas de passage trop rapide »)

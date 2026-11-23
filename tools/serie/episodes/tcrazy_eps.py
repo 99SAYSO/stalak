@@ -378,3 +378,30 @@ EPISODES = {
                   9: 'very proud of his new idea', 10: 'shouting from another room, firm', 11: 'casual, saying hi, amused', 12: 'whining, frustrated',
                   13: 'calm, explaining simply', 14: 'suspicious', 15: 'dry, amused', 16: 'warm', 17: 'very proud, convinced he was right', 18: 'flat, ironic', 19: CTA}),
 }
+
+
+# ---------------------------------------------------------------- « BONNE IDÉE VS MAUVAISE IDÉE », the videos of 23/11
+# (tools/serie/bonne_idee.py ; 40 to 50 s : no padding, tighter gaps). Shot 08 is the Stalak part : the owner's recordings are
+# laid over it afterwards. The lines 8 to 14 (and the verdict) are the same in every video : recorded once, in bi1.
+TRACKS['silence'] = 'silence.wav'  # no music under the Stalak part (the sound of the recordings plays there)
+
+
+def _bi(n, card, verdict, chute, hold=2.4):
+    e = 'bi%d' % n
+    return dict(card=card, same={}, direction={}, gap=0.16, cut=0.24, tempo=1.06, shots=[  # tempo : a little faster as a whole, to stay under 50 s
+        (e + '-01', [1], dict(after=0.1)),
+        (e + '-02', [2, 3], dict(music='plan')),
+        (e + '-03', [4, 5], {}),
+        (e + '-04', [6], dict(music='hustle', lead=1.0, sfx=[('steps.wav', 0.0, 0.5)])),
+        # (owner, 23/11 at 13 h 01 : the video never says whether it is a good or a bad idea : no stamp shot, no verdict line)
+        (e + '-06', [8], dict(lead=0.4, after=0.5)),
+        (e + '-07', [9, 10], {}),
+        (e + '-08', [11, 12, 13, 14], dict(music='silence', after=1.5)),
+        (e + '-09', chute, dict(music='plan')),
+        (e + '-10', [], dict(hold=hold, sfx=[('whoosh-short.mp3', 0.0, 0.3)])),
+    ])
+
+
+EPISODES['bi1'] = _bi(1, 'bonne-idee-01', 'galere', [15])
+EPISODES['bi2'] = _bi(2, 'bonne-idee-02', 'victoire', [15], hold=2.0)  # (« Le feat, oui. » gave the verdict : cut)
+EPISODES['bi3'] = _bi(3, 'bonne-idee-03', 'galere', [15])

@@ -283,7 +283,8 @@
   // every other line, even shouted, is a normal subtitle (owner, 16/11 at 16 h 34, « pas comme celui de l'intro »).
   // The speaker's name stays next to them (rule of 15/11). cy : the middle of the block. The character stays centred and
   // fully visible : the words may pass over him (owner, 16/11 at 16 h 32), so the block is kept short (2 lines when it fits).
-  function criLayout(who, text, cy = 660) {
+  // shock (23/11, « BONNE IDÉE VS MAUVAISE IDÉE ») : the words of the shout written in colour (« 300 VUES »), a little bigger when they land
+  function criLayout(who, text, cy = 660, shock = '') {
     const maxW = 840;
     let size = 104, font, lines;
     const fit = n => { for (const sz of [104, 92, 82]) { const f = `${sz}px "Lilita One"`, l = wrap(text, f, maxW); if (l.length <= n) return [sz, f, l]; } return null; };
@@ -293,17 +294,22 @@
       let x = 500 - width(ln, font) / 2; // centred on x = 500 : clear of the buttons on the right edge
       ln.split(' ').forEach(w => { const ww = width(w, font); words.push({ w, x, y: top + (li + 1) * lh - 20, ww, size }); x += ww + sp; });
     });
+    if (shock) { // the run of words that makes the shock phrase (compared without punctuation)
+      const norm = s => s.replace(/[\s\u00a0!?,.;:…]+/g, ' ').trim().toUpperCase(), sw = norm(shock).split(' ');
+      const flat = []; words.forEach((o, i) => norm(o.w).split(' ').filter(Boolean).forEach(x => flat.push([x, i])));
+      for (let i = 0; i + sw.length <= flat.length; i++) if (sw.every((x, j) => flat[i + j][0] === x)) { for (let j = 0; j < sw.length; j++) words[flat[i + j][1]].col = '#ffd84a'; break; }
+    }
     return { size, lh, top, cy, words, left: Math.min(...words.map(o => o.x)) };
   }
   // one word : an ink shadow, then white with a thick ink outline
-  const criWord = (o) => T(o.x + 7, o.y + 9, o.w, o.size, INK, { anchor: 'start', stroke: INK, sw: 18 }) + T(o.x, o.y, o.w, o.size, SNOW, { anchor: 'start', stroke: INK, sw: 18 });
+  const criWord = (o) => T(o.x + 7, o.y + 9, o.w, o.size, INK, { anchor: 'start', stroke: INK, sw: 18 }) + T(o.x, o.y, o.w, o.size, o.col || SNOW, { anchor: 'start', stroke: INK, sw: 18 });
   function criName(who, L) {
     const [name, col] = WHO[who], nw = width(name, '34px "Lilita One"') + 44, x = L.left - 4, y = L.top - 14;
     return `<g transform="rotate(-4 ${x} ${y})"><rect x="${x}" y="${y - 34}" width="${nw}" height="52" rx="26" fill="${col}" stroke="${INK}" stroke-width="5"/>${T(x + nw / 2, y + 4, name, 34, who === 'narrateur' ? ICE : SNOW)}</g>`;
   }
-  function cri(who, text, cy = 660) {
+  function cri(who, text, cy = 660, shock = '') {
     if (FRAME.MUTE_SUB) return '';
-    const L = criLayout(who, text, cy);
+    const L = criLayout(who, text, cy, shock);
     return `<g transform="rotate(-3 500 ${cy})">${criName(who, L)}${L.words.map(criWord).join('')}</g>`;
   }
 

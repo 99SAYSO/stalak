@@ -37,6 +37,13 @@ voient la partie Stalak, qui arrivait vers 55 s. D'où trois règles du proprié
    - Ceux qui marchent : « Trois écoutes… et DEUX C'EST MA MÈRE ! », « Ils swipent AVANT MON PREMIER MOT ! ».
    - Dans la fiche de Studio Stalak, chaque hook a `texte` (l'oral, juron en entier) et `ecran` (la version censurée) ; le propriétaire coche celui qu'il veut.
 
+6. **On ne dit jamais si c'est une bonne ou une mauvaise idée** (règle du propriétaire du 23/11, 13 h 01, aussi dans « Mes goûts »).
+   - Pas de tampon du verdict, pas de « Bonne idée. » ni de « Mauvaise idée. » dit par Big Mo, aucun personnage qui tranche (la réplique
+     « Le feat, oui. » de la vidéo n° 2 est retirée pour cette raison). Celui qui regarde décide lui-même, en commentaire.
+   - Big Mo donne son fait vérifié, puis enchaîne directement sur son snippet (« Ce qui marche, c'est ça. »).
+   - Dans le tableau ci-dessous, la ligne « tampon » ne s'applique plus.
+7. **La barre « BONNE IDÉE VS MAUVAISE IDÉE » prend toute la largeur de l'écran**, d'un bord à l'autre (même règle, même heure).
+
 ## Le squelette (version du 23/11, 40 à 50 s)
 
 | Temps | Contenu | Règles |
