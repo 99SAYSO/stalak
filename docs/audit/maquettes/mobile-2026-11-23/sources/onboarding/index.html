@@ -28,7 +28,7 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:#d6ecff}
 .op{height:140px;border-radius:44px;border:8px solid #0a0d14;background:#fff;box-shadow:0 11px 0 #0a0d14;display:flex;align-items:center;gap:28px;padding:0 40px;font:700 46px "DM Sans";position:relative}
 .op i{font-style:normal;font-size:58px}
 .op .ck{position:absolute;right:30px;width:62px;height:62px;border-radius:18px;border:6px solid #0a0d14;background:#fff;font:900 40px/50px "DM Sans";text-align:center;color:#fff}
-.inp{height:150px;border-radius:44px;border:8px solid #0a0d14;background:#fff;box-shadow:inset 0 10px 0 #eaf4ff;display:flex;align-items:center;gap:26px;padding:0 40px;font:600 42px "DM Sans";color:#0a0d14;white-space:nowrap;overflow:hidden}
+.inp{height:132px;border-radius:44px;border:8px solid #0a0d14;background:#fff;box-shadow:inset 0 10px 0 #eaf4ff;display:flex;align-items:center;gap:26px;padding:0 40px;font:600 42px "DM Sans";color:#0a0d14;white-space:nowrap;overflow:hidden}
 .inp i{font-style:normal;width:76px;height:76px;border-radius:22px;border:5px solid #0a0d14;flex:none;font:900 40px/66px "DM Sans";text-align:center;color:#fff}
 .inp small{display:block;font:600 30px "DM Sans";color:#7a8aa6}
 .inp .ok{margin-left:auto;width:58px;height:58px;border-radius:50%;background:#2ecc71;border:5px solid #0a0d14;color:#fff;font:900 34px/48px "DM Sans";text-align:center;flex:none}
@@ -51,41 +51,42 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:#d6ecff}
 </style>
 </head>
 <body>
-<div id="root" data-composition-id="main" data-start="0" data-duration="26" data-width="1080" data-height="1920">
- <div id="scene" class="clip" data-start="0" data-duration="26" data-track-index="0" data-layout-allow-overflow>
+<div id="root" data-composition-id="main" data-start="0" data-duration="28" data-width="1080" data-height="1920">
+ <div id="scene" class="clip" data-start="0" data-duration="28" data-track-index="0" data-layout-allow-overflow>
   <div id="top"><div id="snow"></div></div>
   <div id="back">‹</div><div id="prog"><div id="bar"></div></div>
-  <div id="masc"><img id="m0" src="assets/img/hello.png" alt=""><img id="m1" src="assets/img/hype.png" alt=""><img id="m2" src="assets/img/cool.png" alt=""><img id="m3" src="assets/img/focus.png" alt=""><img id="m4" src="assets/img/love.png" alt=""><img id="m5" src="assets/img/think.png" alt=""><img id="m6" src="assets/img/focus.png" alt=""><img id="m7" src="assets/img/hype.png" alt=""><img id="m8" src="assets/img/gg.png" alt=""></div>
+  <div id="masc"><img id="m0" src="assets/img/hello.png" alt=""><img id="m1" src="assets/img/hype.png" alt=""><img id="m2" src="assets/img/cool.png" alt=""><img id="m3" src="assets/img/focus.png" alt=""><img id="m4" src="assets/img/love.png" alt=""><img id="m5" src="assets/img/think.png" alt=""><img id="m6" src="assets/img/focus.png" alt=""><img id="m7" src="assets/img/hype.png" alt=""><img id="m8" src="assets/img/hype.png" alt=""><img id="m9" src="assets/img/gg.png" alt=""></div>
   <div id="bub">Salut !</div>
   <div class="q" id="q0"><h1>Ton nom d'artiste ?</h1><div class="ops"><div class="inp big" id="typed"><span id="tt"></span></div></div></div>
   <div class="q" id="q1"><h1>Tu fais quoi ?</h1><div class="hint">Plusieurs choix possibles</div><div class="ops grid"><div class="op" id="a1"><i>🎤</i>Rap<span class="ck">✓</span></div><div class="op" id="a2"><i>🔥</i>Drill<span class="ck">✓</span></div><div class="op"><i>🎶</i>Chant<span class="ck">✓</span></div><div class="op"><i>✨</i>Autre<span class="ck">✓</span></div></div></div>
   <div class="q" id="q2"><h1>Ta musique est déjà<br>sur les plateformes ?</h1><div class="ops" style="top:900px"><div class="op" id="b1"><i>✅</i>Oui, déjà en ligne</div><div class="op"><i>⏳</i>Pas encore</div></div></div>
-  <div class="q" id="q3"><h1>Colle tes liens</h1><div class="hint">On s'en sert pour suivre tes écoutes</div><div class="ops"><div class="inp" id="l1"><i style="background:#1db954">♫</i><span><small>Spotify</small><span id="t1"></span></span><span class="ok" id="k1">✓</span></div><div class="inp" id="l2"><i style="background:#fa2d48"></i><span><small>Apple Music</small><span id="t2"></span></span><span class="ok" id="k2">✓</span></div><div class="inp" id="l3"><i style="background:linear-gradient(45deg,#f9a12e,#e1306c,#833ab4)">@</i><span><small>Instagram</small><span id="t3"></span></span><span class="ok" id="k3">✓</span></div></div></div>
-  <div class="q" id="q4"><h1>Où tu postes<br>tes vidéos ?</h1><div class="hint">Plusieurs choix possibles</div><div class="ops"><div class="op" id="c1"><i>📱</i>TikTok<span class="ck">✓</span></div><div class="op" id="c2"><i>📸</i>Reels<span class="ck">✓</span></div><div class="op"><i>▶️</i>YouTube Shorts<span class="ck">✓</span></div></div></div>
-  <div class="q" id="q5"><h1>Ce qui te bloque ?</h1><div class="hint">Plusieurs choix possibles</div><div class="ops"><div class="op" id="d1"><i>👀</i>Mes vidéos font peu de vues<span class="ck">✓</span></div><div class="op" id="d2"><i>⏳</i>Le montage me prend du temps<span class="ck">✓</span></div><div class="op"><i>🤷</i>Je sais pas quoi poster<span class="ck">✓</span></div></div></div>
-  <div class="q" id="q6"><h1>Combien d'auditeurs<br>par mois tu vises ?</h1><div class="ops"><div class="op"><i>🌱</i>1 000</div><div class="op" id="e1"><i>🔥</i>10 000</div><div class="op"><i>🚀</i>100 000</div><div class="op"><i>👑</i>1 million et plus</div></div></div>
-  <div class="q" id="q7"><h1>Ton objectif ?</h1><div class="hint">Plusieurs choix possibles</div><div class="ops"><div class="op" id="f1"><i>💿</i>Faire décoller un son<span class="ck">✓</span></div><div class="op" id="f2"><i>📅</i>Poster plus souvent<span class="ck">✓</span></div><div class="op"><i>🎤</i>Remplir mes concerts<span class="ck">✓</span></div></div></div>
+  <div class="q" id="q3"><h1>Colle tes liens</h1><div class="hint">On s'en sert pour suivre tes écoutes</div><div class="ops"><div class="inp" id="l1"><i style="background:#1db954">♫</i><span><small>Spotify</small><span id="t1"></span></span><span class="ok" id="k1">✓</span></div><div class="inp" id="l2"><i style="background:#fa2d48"></i><span><small>Apple Music</small><span id="t2"></span></span><span class="ok" id="k2">✓</span></div><div class="inp" id="l4"><i style="background:#ff5500">☁</i><span><small>SoundCloud</small><span id="t4"></span></span><span class="ok" id="k4">✓</span></div><div class="inp" id="l3"><i style="background:linear-gradient(45deg,#f9a12e,#e1306c,#833ab4)">@</i><span><small>Instagram</small><span id="t3"></span></span><span class="ok" id="k3">✓</span></div></div></div>
+  <div class="q" id="q4"><h1>Tu as combien d'auditeurs<br>par mois aujourd'hui ?</h1><div class="hint">Regarde dans Spotify for Artists</div><div class="ops"><div class="op"><i>🌱</i>Moins de 100</div><div class="op" id="g1"><i>🔥</i>100 à 1 000</div><div class="op"><i>🚀</i>1 000 à 10 000</div><div class="op"><i>👑</i>Plus de 10 000</div></div></div>
+  <div class="q" id="q5"><h1>Où tu postes<br>tes vidéos ?</h1><div class="hint">Plusieurs choix possibles</div><div class="ops"><div class="op" id="c1"><i>📱</i>TikTok<span class="ck">✓</span></div><div class="op" id="c2"><i>📸</i>Reels<span class="ck">✓</span></div><div class="op"><i>▶️</i>YouTube Shorts<span class="ck">✓</span></div></div></div>
+  <div class="q" id="q6"><h1>Ce qui te bloque ?</h1><div class="hint">Plusieurs choix possibles</div><div class="ops"><div class="op" id="d1"><i>👀</i>Mes vidéos font peu de vues<span class="ck">✓</span></div><div class="op" id="d2"><i>⏳</i>Le montage me prend du temps<span class="ck">✓</span></div><div class="op"><i>🤷</i>Je sais pas quoi poster<span class="ck">✓</span></div></div></div>
+  <div class="q" id="q7"><h1>Combien d'auditeurs<br>par mois tu vises ?</h1><div class="ops"><div class="op"><i>🌱</i>1 000</div><div class="op" id="e1"><i>🔥</i>10 000</div><div class="op"><i>🚀</i>100 000</div><div class="op"><i>👑</i>1 million et plus</div></div></div>
+  <div class="q" id="q8"><h1>Ton objectif ?</h1><div class="hint">Plusieurs choix possibles</div><div class="ops"><div class="op" id="f1"><i>💿</i>Faire décoller un son<span class="ck">✓</span></div><div class="op" id="f2"><i>📅</i>Poster plus souvent<span class="ck">✓</span></div><div class="op"><i>🎤</i>Remplir mes concerts<span class="ck">✓</span></div></div></div>
   <div id="cta"><span id="cx1">Continuer</span><span id="cx2">Faire ma 1re vidéo</span></div>
   <div id="load"><svg id="ring" viewBox="0 0 500 500"><circle cx="250" cy="250" r="220" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="34"/><circle id="arc" cx="250" cy="250" r="220" fill="none" stroke="#ffd23f" stroke-width="34" stroke-linecap="round" transform="rotate(-90 250 250)" stroke-dasharray="1382.3" stroke-dashoffset="1382.3"/></svg>
     <img id="lm" src="assets/img/think.png" alt=""><div id="pct">0 %</div><div id="ltitle">On prépare ton plan…</div>
-    <div class="ln" id="n1"><u>🎧</u><span>Lecture de ton profil Spotify et Apple Music</span></div>
+    <div class="ln" id="n1"><u>🎧</u><span>Tu pars de <b>100 à 1 000</b> auditeurs par mois</span></div>
     <div class="ln" id="n2"><u>🔥</u><span>Rap et drill : coupes calées sur des tempos rapides</span></div>
     <div class="ln" id="n3"><u>📱</u><span>Format <b>9:16</b> pour TikTok et Reels</span></div>
     <div class="ln" id="n4"><u>🎯</u><span>Objectif : <b>10 000 auditeurs</b> par mois</span></div></div>
-  <div class="q" id="q8"><h1>Ton plan est prêt,<br>T-Crazy !</h1>
-    <div id="plan"><div><u>✓</u>Rap et drill, sur TikTok et Reels</div><div><u>✓</u>Cap : 10 000 auditeurs par mois</div><div><u>✓</u>3 vidéos par semaine, coupées sur le rythme</div><div><u>✓</u>Tes écoutes Spotify suivies dans « Stats »</div><div><u>✓</u>Ta 1re vidéo en 1 minute</div></div></div>
+  <div class="q" id="q9"><h1>Ton plan est prêt,<br>T-Crazy !</h1>
+    <div id="plan"><div><u>✓</u>Rap et drill, sur TikTok et Reels</div><div><u>✓</u>De 100-1 000 à 10 000 auditeurs par mois</div><div><u>✓</u>3 vidéos par semaine, coupées sur le rythme</div><div><u>✓</u>Tes auditeurs suivis chaque semaine dans « Stats »</div><div><u>✓</u>Ta 1re vidéo en 1 minute</div></div></div>
   <div id="finger"></div>
  </div>
 </div>
 <script>
 const tl = gsap.timeline({ paused: true });
-let seed = 3; const R = () => (seed = (seed * 16807) % 2147483647) / 2147483647; const D = 26;
+let seed = 3; const R = () => (seed = (seed * 16807) % 2147483647) / 2147483647; const D = 28;
 const sn = document.getElementById("snow");
 for (let i = 0; i < 24; i++) { const f = document.createElement("div"); f.className = "fl"; const z = 8 + R() * 18; f.style.cssText = `left:${R() * 1080}px;top:${-100 + R() * 520}px;width:${z}px;height:${z}px;opacity:${0.3 + R() * 0.5}`; sn.append(f); tl.fromTo(f, { y: 0 }, { y: 120 + R() * 200, duration: D, ease: "none" }, 0); }
-const NQ = 8, T = [0, 2.2, 4.4, 6.2, 9.0, 10.9, 12.8, 14.6], TL = 16.6, TP = 21.4;
-const bubs = ["Salut !", "Enchanté, T-Crazy !", "Rap et drill 🔥", "Trop bien !", "Je note tout", "TikTok et Reels, top", "On règle ça ensemble", "Gros objectif, j'aime", "C'est parti !"];
-gsap.set("#bar", { scaleX: 0 }); gsap.set("#bub", { opacity: 0 }); gsap.set("#cx2", { opacity: 0 }); gsap.set("#finger", { opacity: 0 }); gsap.set("#load", { yPercent: 100 }); gsap.set("#q8", { opacity: 0 });
-for (let i = 0; i <= 8; i++) gsap.set("#m" + i, { opacity: i ? 0 : 1 });
+const NQ = 9, T = [0, 2.2, 4.4, 6.2, 9.4, 11.2, 13.1, 15.0, 16.8], TL = 18.8, TP = 23.6;
+const bubs = ["Salut !", "Enchanté, T-Crazy !", "Rap et drill 🔥", "Trop bien !", "Je note tout", "Bien, on part de là", "TikTok et Reels, top", "On règle ça ensemble", "Gros objectif, j'aime", "C'est parti !"];
+gsap.set("#bar", { scaleX: 0 }); gsap.set("#bub", { opacity: 0 }); gsap.set("#cx2", { opacity: 0 }); gsap.set("#finger", { opacity: 0 }); gsap.set("#load", { yPercent: 100 }); gsap.set("#q9", { opacity: 0 });
+for (let i = 0; i <= 9; i++) gsap.set("#m" + i, { opacity: i ? 0 : 1 });
 for (let i = 1; i < NQ; i++) gsap.set("#q" + i, { x: 1080 });
 gsap.set(".ok", { scale: 0 });
 function bubble(t, txt) { tl.set("#bub", { textContent: txt }, t); tl.fromTo("#bub", { opacity: 0, scale: 0.4, rotation: -8 }, { opacity: 1, scale: 1, rotation: 4, duration: 0.4, ease: "back.out(2.5)", immediateRender: false }, t); }
@@ -104,7 +105,7 @@ tl.fromTo("#typed", { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration
 typeIn("#tt", "T-Crazy", 0.8, 0.1);
 tl.fromTo("#cta", { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.45, ease: "back.out(1.8)" }, 0.5);
 tap(1.85, "#cta");
-const taps = { 1: ["#a1", "#a2"], 2: ["#b1"], 4: ["#c1", "#c2"], 5: ["#d1", "#d2"], 6: ["#e1"], 7: ["#f1", "#f2"] };
+const taps = { 1: ["#a1", "#a2"], 2: ["#b1"], 4: ["#g1"], 5: ["#c1", "#c2"], 6: ["#d1", "#d2"], 7: ["#e1"], 8: ["#f1", "#f2"] };
 for (let i = 1; i < NQ; i++) { const t = T[i];
   tl.to("#q" + (i - 1), { x: -1080, filter: "blur(12px)", duration: 0.3, ease: "power3.in" }, t - 0.05);
   tl.fromTo("#q" + i, { x: 1080, filter: "blur(12px)" }, { x: 0, filter: "blur(0px)", duration: 0.42, ease: "power4.out", immediateRender: false }, t + 0.12);
@@ -112,11 +113,12 @@ for (let i = 1; i < NQ; i++) { const t = T[i];
   mascot(i, t + 0.1); bubble(t + 0.2, bubs[i]);
   document.querySelectorAll(`#q${i} .op, #q${i} .inp`).forEach((o, k) => tl.fromTo(o, { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.33, ease: "back.out(2)", immediateRender: false }, t + 0.32 + k * 0.06));
   (taps[i] || []).forEach((s, k) => tap(t + 0.95 + k * 0.4, s));
-  const nxt = (i === 3) ? t + 2.5 : t + 1.0 + (taps[i] || [0]).length * 0.4 + 0.15; if (i < NQ - 1 || true) tap(nxt, "#cta"); }
+  const nxt = (i === 3) ? t + 2.9 : t + 1.0 + (taps[i] || [0]).length * 0.4 + 0.15; if (i < NQ - 1 || true) tap(nxt, "#cta"); }
 // liens collés
 typeIn("#t1", "open.spotify.com/artist/…", T[3] + 0.7, 0.025); tl.to("#k1", { scale: 1, duration: 0.3, ease: "back.out(3)" }, T[3] + 1.35);
 typeIn("#t2", "music.apple.com/fr/artist/…", T[3] + 1.4, 0.025); tl.to("#k2", { scale: 1, duration: 0.3, ease: "back.out(3)" }, T[3] + 2.05);
-typeIn("#t3", "@tcrazy", T[3] + 2.0, 0.05); tl.to("#k3", { scale: 1, duration: 0.3, ease: "back.out(3)" }, T[3] + 2.4);
+typeIn("#t4", "soundcloud.com/tcrazy", T[3] + 2.0, 0.025); tl.to("#k4", { scale: 1, duration: 0.3, ease: "back.out(3)" }, T[3] + 2.5);
+typeIn("#t3", "@tcrazy", T[3] + 2.5, 0.04); tl.to("#k3", { scale: 1, duration: 0.3, ease: "back.out(3)" }, T[3] + 2.8);
 // chargement
 tl.to("#bar", { scaleX: 1, duration: 0.4 }, TL - 0.2);
 tl.to("#load", { yPercent: 0, duration: 0.55, ease: "power3.inOut" }, TL);
@@ -129,9 +131,9 @@ tl.fromTo("#lm", { rotation: -6 }, { rotation: 6, duration: 0.5, ease: "sine.inO
   if (k < 3) tl.to(n, { opacity: 0, y: -60, filter: "blur(8px)", duration: 0.22, ease: "power2.in" }, t + 0.85); });
 // plan
 tl.to("#load", { yPercent: -105, duration: 0.55, ease: "power3.in" }, TP - 0.4);
-mascot(8, TP); bubble(TP + 0.1, bubs[8]);
-tl.set("#q7", { opacity: 0 }, TP - 0.4).set("#q8", { opacity: 1 }, TP - 0.4);
-tl.fromTo("#q8 h1", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.4, ease: "back.out(2)", immediateRender: false }, TP);
+mascot(9, TP); bubble(TP + 0.1, bubs[9]);
+tl.set("#q8", { opacity: 0 }, TP - 0.4).set("#q9", { opacity: 1 }, TP - 0.4);
+tl.fromTo("#q9 h1", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.4, ease: "back.out(2)", immediateRender: false }, TP);
 tl.fromTo("#plan", { opacity: 0, y: 80 }, { opacity: 1, y: 0, duration: 0.5, ease: "back.out(1.6)", immediateRender: false }, TP + 0.2);
 document.querySelectorAll("#plan div").forEach((d, k) => { tl.fromTo(d, { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.33, ease: "back.out(2)", immediateRender: false }, TP + 0.4 + k * 0.25);
   tl.fromTo(d.querySelector("u"), { scale: 0, rotation: -90 }, { scale: 1, rotation: 0, duration: 0.4, ease: "back.out(3)", immediateRender: false }, TP + 0.45 + k * 0.25); });
