@@ -95,7 +95,11 @@ def run(b, base, site, lang, iphone):
     pg.reload(wait_until='load'); ready(pg); pg.wait_for_selector('#lpOffer:not([hidden])', timeout=10000)
     pg.locator('#lpNo').click()
     check(tag + ' : « Non merci » ferme la carte', not pg.locator('#lpOffer').is_visible() and ev(pg, '!S.song'))
-    # a missing file: a clear message
+    # (23/11) after « Non merci », the same project is not offered again at the next opening
+    pg.wait_for_timeout(300); pg.reload(wait_until='load'); ready(pg); pg.wait_for_timeout(1500)
+    check(tag + ' : après « Non merci », plus proposé à l’ouverture suivante', not pg.locator('#lpOffer').is_visible())
+    # a missing file: a clear message (offered again: the « no » is forgotten, as if a new project had been kept)
+    ev(pg, "lpDel('kv', 'declined')")
     ev(pg, "lpKeys('media').then(ks => lpDel('media', ks[0]))"); pg.wait_for_timeout(300)
     pg.reload(wait_until='load'); ready(pg); pg.wait_for_selector('#lpOffer:not([hidden])', timeout=10000)
     pg.locator('#lpYes').click(); pg.wait_for_function('() => __ev("!LP.applying")', timeout=30000)

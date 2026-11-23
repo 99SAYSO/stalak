@@ -9505,6 +9505,9 @@ async function lpOffer(){
   try { if (sessionStorage.getItem(CL_OPEN_KEY)) return; } catch(e){}
   let last; try { last = await lpGet('kv', 'last'); } catch(e){ return; }
   if (!last || !last.state || S.song) return;
+  // « Non merci » (23/11, the owner: it came back at every visit): this project is not offered again; a new one will be
+  let no; try { no = await lpGet('kv', 'declined'); } catch(e){}
+  if (no && no === last.at) return;
   LP.offered = last; lpOfferUi();
 }
 function lpOfferUi(){
@@ -9538,7 +9541,8 @@ async function lpResume(){
 }
 if (LP.ok){
   $('#lpYes').onclick = lpResume;
-  $('#lpNo').onclick = () => { LP.offered = null; $('#lpOffer').hidden = true; };
+  $('#lpNo').onclick = () => { const l = LP.offered; LP.offered = null; $('#lpOffer').hidden = true;
+    if (l && l.at) lpPut('kv', 'declined', l.at).catch(() => {}); };
   setInterval(() => { lpSave(false).catch(() => {}); if (LP.offered && S.song && !LP.applying) lpOfferUi(); }, 3000);
   // going to Photos, TikTok or the camera: kept at once
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') lpSave(true).catch(() => {}); });
