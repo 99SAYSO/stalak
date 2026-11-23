@@ -606,6 +606,9 @@
 Ces montants sont avant TVA et frais. Réaliste : 10 000 € par mois en avril 2027.
 
 ### Juridique & business
+- **Fait (branche `legal/essai-gratuit`, 23/11)** : essai gratuit de Stalak Pro (7 jours, carte, prélèvement automatique, une fois par personne, rappel 2 jours avant) écrit dans les conditions FR/EN (section 5 `#trial` / `#essai`, formule Pro, encadré, annulation, remboursement), la page remboursement FR/EN (« Essai gratuit de Stalak Pro » : jusqu'à 21 jours pour changer d'avis) et la confidentialité FR/EN (`#trial` / `#essai` : carte chez Paddle, indicateur, e-mail de rappel = e-mail de service, empreinte d'e-mail effacée 12 mois après la suppression du compte). Règles : `docs/juridique/ESSAI_GRATUIT.md`.
+  - **À faire par Comptes** : empreinte avec clé secrète (HMAC) et e-mail normalisé, effacée 12 mois après la suppression ; sinon me le dire pour retirer la phrase. E-mail de rappel sans aucune offre. **App** : écran de paiement avec le prix et la date du 1er prélèvement, bouton clair, annulation en un clic.
+  - **À décider** : ce qui se passe si on passe à Creator Plus pendant l'essai.
 - **Fait (branche `legal/tiktok`, 21/11)** : TikTok dans la confidentialité FR/EN et les conditions FR/EN, pour la validation de l'appli par TikTok. Détail et tableau des promesses dans `docs/juridique/TIKTOK.md`.
   - Confidentialité `#tiktok` : ce qu'on reçoit (profil, stats du compte, vidéos publiques avec vues et likes, jetons chiffrés), à quoi ça sert (publier les clips choisis, stats visibles par la personne seule), durées, comment délier et tout effacer, rien vendu ni partagé.
     - Durées annoncées : nom et photo tant que relié ; stats et liste 24 h ; vidéo pas gardée ; état de publication 30 jours ; effacement immédiat à la déliaison ; 30 jours si l'accès est retiré depuis TikTok.
