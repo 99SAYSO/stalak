@@ -8,7 +8,12 @@
    - Pro / Creator Plus : `{ granted: false, reason: 'pro' }` (rien n'est consommé) ;
    - deux exports en même temps : un seul « oui » (une seule requête SQL décide) ;
    - 30 demandes par heure au plus.
-3. **Compte supprimé puis recréé** avec la même adresse : pas de 2e vidéo. Seule une empreinte de l'adresse est gardée (comme pour l'e-mail de remerciement), 3 ans. Les copies d'une même boîte comptent pour une : `nom+1@…` et les points d'une adresse Gmail.
+3. **Compte supprimé puis recréé** avec la même adresse : pas de 2e vidéo. Révisé le 23/11 (6 h 45) pour coller aux pages de Juridique (`legal/video-offerte`) :
+   - tant que le compte existe, seule `users.free_nowm_at` est gardée ;
+   - à la suppression d'un compte **qui a pris sa vidéo**, une empreinte de l'adresse est écrite avec la clé secrète **`AUTH_SECRET`** (HMAC, déjà utilisée pour les codes de connexion : pas de nouvelle clé) ; on ne peut pas la retrouver en essayant des adresses ;
+   - elle est **effacée 12 mois après la suppression** (tâche quotidienne). Rien d'autre n'est gardé ;
+   - les copies d'une même boîte comptent pour une : `nom+1@…` et les points d'une adresse Gmail ;
+   - **à vérifier par le propriétaire** : `AUTH_SECRET` existe dans Cloudflare → stalak-site → Variables and secrets (production). Sans elle, aucune empreinte n'est écrite et un compte supprimé puis recréé pourrait reprendre une vidéo.
 4. **Tableau de bord**, page Entonnoir, carte « 🎁 Vidéos offertes utilisées » : nombre sur la période et depuis le début, et combien de ces comptes ont pris Pro ou Creator Plus **après** leur vidéo offerte (avec le %). Compteur anonyme `free_video` en plus.
 
 ## Pour App (contrat)
@@ -24,14 +29,13 @@ CREATE INDEX IF NOT EXISTS users_free_nowm ON users(free_nowm_at) WHERE free_now
 (0014 est pris par `compte/provenance-ue`, 0018 par TikTok.)
 
 ## Tests
-- `node tests/backend/run.mjs` : 118/118, dont 3 nouveaux : une seule fois, même pour deux exports en même temps ; Pro non concerné ; compte supprimé puis recréé, copies d'une même boîte, effacement après 3 ans ; tableau de bord.
+- `node tests/backend/run.mjs` : 119/119, dont 4 nouveaux : une seule fois, même pour deux exports en même temps ; Pro non concerné ; compte supprimé puis recréé (empreinte HMAC écrite à la suppression, pas un SHA-256), copies d'une même boîte, effacement 12 mois après ; sans `AUTH_SECRET`, rien d'écrit ; tableau de bord.
 - `tests/ui/support_ui.py` : 64/64.
 - Carte vérifiée sur téléphone et ordinateur : `/admin-demo/#funnel`.
 - Relecture de sécurité : `docs/appsec-review-video-offerte.md`.
 
 ## Juridique
-- Dire dans la page de confidentialité : empreinte de l'adresse gardée 3 ans pour la vidéo offerte (comme pour le remerciement).
-- Conditions : « une vidéo sans filigrane offerte par compte, une seule fois ».
+- Aligné sur `legal/video-offerte` : empreinte (HMAC) de l'adresse écrite seulement à la suppression d'un compte qui a pris sa vidéo, effacée 12 mois après ; rien d'autre.
 
 ## Reste
 - App : l'appel et l'écran.

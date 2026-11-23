@@ -1,7 +1,8 @@
 // Audit of 6/11, point 12: what is kept no longer than the privacy page says, with a real purge (not only now and then).
 // Run with the daily tasks (cloud.js maybeCleanup, at most every 6 hours, and the daily Worker workers/cloud-cleanup).
 //   - the thank-you hashes (webhook_events « thanks:… »): 3 years (purgeOldThanks, thanks.js);
-//   - (23/11) the hashes of the addresses that took their free video (« freevideo:… »): 3 years (freevideo.js);
+//   - (23/11) the marks of the addresses of deleted accounts that took their free video (« freevideo:… », HMAC):
+//     12 months after the deletion (freevideo.js);
 //   - the daily use of the automatic lyrics (lyrics_usage): 90 days;
 //   - the e-mails given at the end of a video (optin.js): unconfirmed 7 days, confirmed 3 years;
 //   - the rate-limit counters (rate_limits: hashed IP addresses and e-mails), expired codes, sessions, devices: 24 hours after

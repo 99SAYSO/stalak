@@ -4,7 +4,7 @@ import { currentUser, requireUser, logout, loginPassword, setPassword, recentCod
 import { oauthStart, oauthCallback, enabledProviders, PROVIDERS } from './oauth.js';
 import { updateProfile, avatar, avatarUrl, AVATAR_TYPES } from './profile.js';
 import { entitlementsFor, requirePlan, planFor, FEATURES, LIMITS, payEnv } from './entitlements.js';
-import { claimFreeVideo } from './freevideo.js';
+import { claimFreeVideo, freeVideoMarkOnDelete } from './freevideo.js';
 import { alertOwner } from './alerts.js';
 import { turnstileSiteKey } from './turnstile.js';
 import { yearlyReminders } from './reminders.js';
@@ -207,7 +207,10 @@ async function deleteAccount(request, env) {
   await deleteSocialAccounts(env, user.id);
   // the media files saved online (R2), then their rows with the rest
   await deleteUserMedia(env, user.id);
+  // 23/11: the account took its free video → the mark of its address (HMAC), erased 12 months later (freevideo.js)
+  const fvMark = await freeVideoMarkOnDelete(env, user);
   await env.DB.batch([
+    ...(fvMark ? [fvMark] : []),
     env.DB.prepare('DELETE FROM file_parts WHERE user_id = ?1').bind(user.id),
     env.DB.prepare('DELETE FROM project_files WHERE user_id = ?1').bind(user.id),
     env.DB.prepare('DELETE FROM projects WHERE user_id = ?1').bind(user.id),

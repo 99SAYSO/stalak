@@ -529,16 +529,15 @@ test('23/11 free video: one export without the watermark per free account, once;
   r = await call(env, 'GET', '/api/me', { cookie: a.cookie });
   assert.equal(r.data.entitlements.freeNoWm, false);
   assert.ok(env.DB.raw.prepare('SELECT free_nowm_at FROM users WHERE id = ?').get(a.user.id).free_nowm_at > 0);
-  // only a hash of the address is kept, never the address
-  const marks = env.DB.raw.prepare("SELECT event_id FROM webhook_events WHERE event_type = 'freevideo'").all();
-  assert.equal(marks.length, 1); assert.ok(/^freevideo:[0-9a-f]{64}$/.test(marks[0].event_id) && !marks[0].event_id.includes('gift1'));
+  // while the account exists, nothing else is kept (no mark of the address)
+  assert.equal(env.DB.raw.prepare("SELECT COUNT(*) AS n FROM webhook_events WHERE event_type = 'freevideo'").get().n, 0);
   // without an account: false
   r = await call(env, 'GET', '/api/me');
   assert.equal(r.data.entitlements.freeNoWm, false);
 });
 
 test('23/11 free video: Pro / Creator Plus are not concerned; a deleted then re-created account (same address) gets no 2nd one', async () => {
-  const env = makeEnv();
+  const env = makeEnv({ AUTH_SECRET: 'test-secret-for-the-free-video-0123456789' });
   const p = await proUser(env, 'gift2@example.com', 'pro');
   let r = await call(env, 'GET', '/api/me', { cookie: p.cookie });
   assert.equal(r.data.entitlements.freeNoWm, false);
@@ -551,6 +550,13 @@ test('23/11 free video: Pro / Creator Plus are not concerned; a deleted then re-
   assert.equal(r.data.granted, true);
   r = await call(env, 'DELETE', '/api/account', { cookie: a.cookie, body: { confirm: true } });
   assert.equal(r.status, 200);
+  // the mark is written at the deletion: an HMAC with the server secret (not a plain SHA-256 that trying addresses finds)
+  const { sha256Hex, hmacSha256Hex } = await import('../../functions/_lib/crypto.js');
+  const marks = env.DB.raw.prepare("SELECT event_id, received_at FROM webhook_events WHERE event_type = 'freevideo'").all();
+  assert.equal(marks.length, 1);
+  assert.equal(marks[0].event_id, 'freevideo:' + await hmacSha256Hex('test-secret-for-the-free-video-0123456789', 'freevideo:gift3@example.com'));
+  for (const guess of ['gift3@example.com', 'freevideo:gift3@example.com']) assert.notEqual(marks[0].event_id, 'freevideo:' + await sha256Hex(guess));
+  assert.ok(Math.abs(marks[0].received_at - Date.now()) < 60e3);
   const b = await login(env, 'gift3@example.com');
   assert.notEqual(b.user.id, a.user.id);
   r = await call(env, 'GET', '/api/me', { cookie: b.cookie });
@@ -560,22 +566,37 @@ test('23/11 free video: Pro / Creator Plus are not concerned; a deleted then re-
   // the usual copies of one mailbox count as one: « +something », the dots of a Gmail address
   const g = await login(env, 'jean.dupont@gmail.com');
   assert.equal((await call(env, 'POST', '/api/free-video', { cookie: g.cookie, body: {} })).data.granted, true);
+  await call(env, 'DELETE', '/api/account', { cookie: g.cookie, body: { confirm: true } });
   for (const other of ['jeandupont+2@gmail.com', 'j.e.a.n.dupont@googlemail.com']) {
     const h = await login(env, other);
     assert.deepEqual((await call(env, 'POST', '/api/free-video', { cookie: h.cookie, body: {} })).data, { granted: false, reason: 'used' }, other);
   }
   const { mailboxOf } = await import('../../functions/_lib/freevideo.js');
   assert.equal(mailboxOf('Ana.B+promo@Outlook.com'), 'ana.b@outlook.com');
-  // a deleted account that had NOT taken it: the new one still has it
+  // a deleted account that had NOT taken it: no mark, the new one still has it
+  const n0 = env.DB.raw.prepare("SELECT COUNT(*) AS n FROM webhook_events WHERE event_type = 'freevideo'").get().n;
   const c = await login(env, 'gift4@example.com');
   await call(env, 'DELETE', '/api/account', { cookie: c.cookie, body: { confirm: true } });
+  assert.equal(env.DB.raw.prepare("SELECT COUNT(*) AS n FROM webhook_events WHERE event_type = 'freevideo'").get().n, n0);
   const d = await login(env, 'gift4@example.com');
   r = await call(env, 'GET', '/api/me', { cookie: d.cookie });
   assert.equal(r.data.entitlements.freeNoWm, true);
-  // the address hashes go after 3 years, with the daily tasks
-  env.DB.raw.exec("UPDATE webhook_events SET received_at = 1 WHERE event_type = 'freevideo'");
+  // the marks go 12 months after the deletion, with the daily tasks: 11 months old stays, 13 months old goes
   const { purgeOldFreeVideoMarks } = await import('../../functions/_lib/freevideo.js');
-  assert.equal(await purgeOldFreeVideoMarks(env), 2);
+  const ids = env.DB.raw.prepare("SELECT event_id FROM webhook_events WHERE event_type = 'freevideo' ORDER BY event_id").all().map((x) => x.event_id);
+  assert.equal(ids.length, 2);
+  env.DB.raw.prepare('UPDATE webhook_events SET received_at = ? WHERE event_id = ?').run(Date.now() - 335 * 864e5, ids[0]);
+  env.DB.raw.prepare('UPDATE webhook_events SET received_at = ? WHERE event_id = ?').run(Date.now() - 396 * 864e5, ids[1]);
+  assert.equal(await purgeOldFreeVideoMarks(env), 1);
+  assert.deepEqual(env.DB.raw.prepare("SELECT event_id FROM webhook_events WHERE event_type = 'freevideo'").all().map((x) => x.event_id), [ids[0]]);
+});
+
+test('23/11 free video without AUTH_SECRET: no mark of the address is ever written (nothing that trying addresses could find)', async () => {
+  const env = makeEnv();
+  const a = await login(env, 'gift7@example.com');
+  assert.equal((await call(env, 'POST', '/api/free-video', { cookie: a.cookie, body: {} })).data.granted, true);
+  assert.equal((await call(env, 'DELETE', '/api/account', { cookie: a.cookie, body: { confirm: true } })).status, 200);
+  assert.equal(env.DB.raw.prepare("SELECT COUNT(*) AS n FROM webhook_events WHERE event_type = 'freevideo'").get().n, 0);
 });
 
 test('23/11 free video on the dashboard: used on the period / since the start, and how many of these accounts took Pro after', async () => {
