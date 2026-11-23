@@ -32,8 +32,8 @@ PADDLE_PRICE_PRO_OFFER1 = ""
 # 23/11 (owner): the measuring tools, loaded by src/consent.js only after « Accepter » on the cookie banner. Not secrets.
 # Empty = no banner, nothing loaded. The TikTok conversion API also needs the SECRET TIKTOK_EVENTS_TOKEN (typed by the owner
 # in Cloudflare → Variables and secrets), and is on only when both are set.
-CLARITY_PROJECT_ID = ""             # Microsoft Clarity → Settings → Overview → Project ID
-GA4_MEASUREMENT_ID = ""             # Google Analytics → Admin → Data streams → Measurement ID (G-…)
+CLARITY_PROJECT_ID = "zic7crm0mc"           # Microsoft Clarity → Settings → Overview → Project ID
+GA4_MEASUREMENT_ID = "G-LY6HDYZKEK"           # Google Analytics → Admin → Data streams → Measurement ID (G-…)
 TIKTOK_PIXEL_ID = ""                # TikTok Ads Manager → Events → Web events → the pixel's id (for the conversion API)
 # Older prices of 30/10 (test subscriptions only), still recognised so their subscribers keep their price:
 # Basic and Pro in euros → pro, Max → creator. Format: id:plan:interval, comma between them.

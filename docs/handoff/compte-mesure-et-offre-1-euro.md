@@ -1,5 +1,8 @@
 # Compte rendu — compte/mesure-et-offre-1-euro
-**Statut : PRÊT.** Aucune migration. Rien ne change sur le site tant que les identifiants (Clarity, GA4, pixel TikTok) et le prix de l'offre ne sont pas remplis dans `wrangler.toml`.
+**Statut : PRÊT.** **Migration 0021** (réponses de l'onboarding et auditeurs) à lancer dans la console D1 avant la mise en ligne.
+- Mise à jour du 23/11, 23 h : identifiants Clarity (`zic7crm0mc`) et GA4 (`G-LY6HDYZKEK`) **mis dans `wrangler.toml`** : le bandeau apparaîtra dès la mise en ligne.
+- Ajoutés aussi : l'enregistrement des réponses de l'onboarding, et la saisie hebdomadaire des auditeurs (sections 8 et 9).
+- Le prix de l'offre (`PADDLE_PRICE_PRO_OFFER1`) et le pixel TikTok restent à remplir.
 Demande : `docs/handoff/chef-mesure-offre-1-euro.md`, partie « Pour Comptes » (décisions du propriétaire du 23/11).
 
 ## 1. Bandeau cookies (`src/consent.js`, toutes les pages de stalak.app)
@@ -53,11 +56,41 @@ Demande : `docs/handoff/chef-mesure-offre-1-euro.md`, partie « Pour Comptes » 
 ## 7. Après un achat réussi (pour App)
 La page envoie l'évènement `window` **`stalak:purchase`** (`detail: { plan, interval, offer, trial }`) dès que Paddle dit « payé ». C'est le moment de l'écran « Bienvenue dans Stalak Pro » (démo `08-achat-confettis.mp4`). Le compte devient Pro quelques secondes après (`StalakAccount.onChange`).
 
+## 8. Réponses de l'onboarding gardées sur le compte (refonte mobile, point 13)
+- **Migration 0021**, table `artist_profiles`. Une ligne par compte : nom d'artiste, genres, déjà sur les plateformes, liens Spotify / Apple Music / SoundCloud / Instagram, auditeurs aujourd'hui, où il poste, ce qui le bloque, auditeurs visés, objectifs.
+- **Listes fermées**, reprises des choix de la démo `13-onboarding-v3` :
+  - genres `rap` `drill` `chant` `autre` ;
+  - auditeurs aujourd'hui `lt100` `100_1k` `1k_10k` `gt10k` ;
+  - plateformes `tiktok` `reels` `shorts` ;
+  - blocages `few_views` `editing_time` `no_ideas` ;
+  - auditeurs visés `1k` `10k` `100k` `1m` ;
+  - objectifs `song_launch` `post_more` `fill_concerts`.
+  - Une autre valeur est ignorée. Pour ajouter un choix, il faut le dire à Comptes.
+- **Liens** : seulement vers leur site (open.spotify.com, music.apple.com, soundcloud.com, instagram.com ; « @nom » accepté pour Instagram). Sinon 400 `bad_link`.
+- **Adresses** : `GET /api/artist` ; `PUT /api/artist` (les champs envoyés seulement). Compte obligatoire.
+- **Pour App** : `StalakAccount.artist()`, `StalakAccount.saveArtist({...})`.
+  - Si l'onboarding a lieu **avant** la connexion, garder les réponses dans le téléphone et les envoyer juste après la connexion.
+  - Les messages de l'écran de chargement viennent de ces réponses.
+- **Tableau de bord** (Entonnoir), carte « 🎤 Profils d'artistes » : **totaux seulement**, jamais les réponses d'une personne. Elle montre le nombre de profils, combien sont déjà en ligne, et chaque choix de chaque question.
+- **Suppression du compte** : tout part avec lui.
+
+## 9. Auditeurs mensuels de la semaine, dans « Stats »
+- Spotify ne donne plus ce chiffre par son API (février 2026) : **c'est l'artiste qui le tape** (Spotify for Artists).
+- **Migration 0021**, table `listener_counts` : une valeur par semaine ISO (« 2026-W48 »), Spotify pour l'instant.
+- **Adresse** : `PUT /api/artist/listeners {listeners, week?}`.
+  - Cette semaine par défaut, ou une des 8 dernières pour corriger. Un nombre entier, ou les chiffres tapés.
+  - `null` efface la valeur. La même semaine renvoyée remplace l'ancienne valeur.
+- **`GET /api/artist`** rend :
+  - la courbe (52 dernières semaines) ;
+  - `listenersDue: true` tant que la semaine en cours n'a pas de chiffre : « Stats » pose la question une fois par semaine.
+- **Pour App** : `StalakAccount.saveListeners(1200)`, puis tracer `listeners`.
+- **Tableau de bord** : combien ont donné leurs auditeurs cette semaine et sur 4 semaines.
+
 ## Trouvé en passant (corrigé)
 L'app (branche `app/essai-pro`, déjà sur `main`) lit l'essai dans `/api/config` sous la forme `trial: {days, plans}` et paie avec `{ trial: true }`. Le serveur ne donnait ni l'un ni l'autre : l'essai gratuit ne s'affichait donc jamais. Ajoutés tous les deux.
 
 ## Tests
-- `node tests/backend/run.mjs` : 125/125, dont 5 nouveaux :
+- `node tests/backend/run.mjs` : 127/127. Les 2 derniers couvrent les réponses de l'onboarding et les auditeurs (listes fermées, liens, champs partiels, totaux seulement, suppression ; semaines, nombres, correction, effacement, autre compte). Les 5 de la 1re partie :
   - config ;
   - TikTok : accord, hachage, une seule fois, refus, éteint ;
   - offre à 1 : droit, refus remboursé, tableau de bord ;
@@ -72,7 +105,7 @@ L'app (branche `app/essai-pro`, déjà sur `main`) lit l'essai dans `/api/config
 - Relecture de sécurité : `docs/appsec-review-mesure-et-offre-1-euro.md`.
 
 ## Reste
-- **Chef de projet** : identifiants Clarity / GA4 (puis pixel TikTok) dans `wrangler.toml` ; `PADDLE_PRICE_PRO_OFFER1` ; un essai réel en Sandbox.
+- **Chef de projet** : **migration 0021** ; `PADDLE_PRICE_PRO_OFFER1` ; plus tard le pixel TikTok ; un essai réel en Sandbox. (Clarity et GA4 : faits.)
 - **Propriétaire** :
   - le bouton « Créer le prix » (Sandbox puis Live) ;
   - Clarity « Strict » ;
@@ -80,4 +113,5 @@ L'app (branche `app/essai-pro`, déjà sur `main`) lit l'essai dans `/api/config
 - **Juridique** :
   - texte du bandeau, confidentialité (Clarity, GA4, TikTok), taxes du 1 € ;
   - conditions de l'offre (un seul essai par personne, gratuit ou à 1 €).
-- **App** : `onboarding_etape_N`, `montage_lance`, l'écran « Bienvenue » sur `stalak:purchase`, le choix du moyen de paiement.
+- **App** : `onboarding_etape_N`, `montage_lance`, l'écran « Bienvenue » sur `stalak:purchase`, le choix du moyen de paiement, l'envoi des réponses de l'onboarding (`saveArtist`) et la question hebdomadaire dans « Stats » (`saveListeners`, `listenersDue`).
+- **Juridique** (en plus) : confidentialité, données de profil d'artiste (réponses de l'onboarding, liens publics, auditeurs déclarés) gardées tant que le compte existe ; finalités : statistiques de l'artiste, conseils, analyse interne en totaux.

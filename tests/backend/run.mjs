@@ -897,6 +897,76 @@ test('23/11 the 1 € offer price: made from the dashboard with the server’s P
   } finally { extraFetch = null; }
 });
 
+test('23/11 onboarding answers on the account: closed lists, links of their own site only, some or all fields, gone with the account; totals only on the dashboard', async () => {
+  const env = makeEnv(ADMIN_ENV), token = await accessToken();
+  let r = await call(env, 'GET', '/api/artist');
+  assert.equal(r.status, 401);
+  const a = await login(env, 'artist1@example.com');
+  r = await call(env, 'GET', '/api/artist', { cookie: a.cookie });
+  assert.equal(r.data.profile, null); assert.deepEqual(r.data.listeners, []); assert.equal(r.data.listenersDue, true);
+  r = await call(env, 'PUT', '/api/artist', { cookie: a.cookie, body: { artistName: '  T-Crazy​  ', genres: ['rap', 'drill', 'jazz', 'rap'], onPlatforms: true,
+    links: { spotify: 'open.spotify.com/artist/7abc', instagram: '@t.crazy', soundcloud: '' }, listenersNow: '100_1k', postsOn: ['tiktok', 'reels'],
+    blockers: ['few_views', 'hack'], listenersGoal: '10k', goals: ['song_launch'] } });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  const p = r.data.profile;
+  assert.equal(p.artistName, 'T-Crazy'); assert.deepEqual(p.genres, ['rap', 'drill']); assert.equal(p.onPlatforms, true);
+  assert.deepEqual(p.links, { spotify: 'https://open.spotify.com/artist/7abc', appleMusic: '', soundcloud: '', instagram: 'https://www.instagram.com/t.crazy/' });
+  assert.equal(p.listenersNow, '100_1k'); assert.deepEqual(p.postsOn, ['tiktok', 'reels']); assert.deepEqual(p.blockers, ['few_views']);
+  assert.equal(p.listenersGoal, '10k'); assert.deepEqual(p.goals, ['song_launch']); assert.ok(p.answeredAt);
+  // a link of another site: refused, nothing changed
+  r = await call(env, 'PUT', '/api/artist', { cookie: a.cookie, body: { links: { spotify: 'https://evil.example/artist' } } });
+  assert.equal(r.status, 400); assert.equal(r.data.error, 'bad_link');
+  r = await call(env, 'PUT', '/api/artist', { cookie: a.cookie, body: { links: { appleMusic: 'javascript:alert(1)' } } });
+  assert.equal(r.status, 400);
+  // some fields only: the others stay
+  r = await call(env, 'PUT', '/api/artist', { cookie: a.cookie, body: { listenersGoal: '100k', unknown: 'x' } });
+  assert.equal(r.data.profile.listenersGoal, '100k'); assert.equal(r.data.profile.artistName, 'T-Crazy'); assert.deepEqual(r.data.profile.genres, ['rap', 'drill']);
+  // no JSON: refused (CSRF rule)
+  r = await call(env, 'PUT', '/api/artist', { cookie: a.cookie, raw: 'x', ct: 'text/plain' });
+  assert.equal(r.status, 415);
+  // the dashboard: totals only
+  const b = await login(env, 'artist2@example.com');
+  await call(env, 'PUT', '/api/artist', { cookie: b.cookie, body: { genres: ['chant'], onPlatforms: false, listenersNow: 'lt100', blockers: ['no_ideas', 'few_views'] } });
+  r = await adminCall(env, 'GET', '/api/admin/stats?days=7', { token });
+  const t = r.data.usage.funnel.artists;
+  assert.equal(t.profiles, 2); assert.equal(t.onPlatforms, 1);
+  assert.deepEqual(t.genres, { rap: 1, drill: 1, chant: 1, autre: 0 });
+  assert.deepEqual(t.blockers, { few_views: 2, editing_time: 0, no_ideas: 1 });
+  assert.deepEqual(t.listenersNow, { lt100: 1, '100_1k': 1, '1k_10k': 0, gt10k: 0 });
+  assert.ok(!JSON.stringify(r.data).includes('T-Crazy') && !JSON.stringify(r.data).includes('open.spotify.com/artist/7abc'));
+  // gone with the account
+  assert.equal((await call(env, 'DELETE', '/api/account', { cookie: a.cookie, body: { confirm: true } })).status, 200);
+  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM artist_profiles WHERE user_id = ?').get(a.user.id).n, 0);
+});
+
+test('23/11 monthly listeners given each week in « Stats »: this week (or one of the last 8 to fix), whole numbers, Spotify, the curve back, « due » once a week', async () => {
+  const env = makeEnv();
+  const a = await login(env, 'artist3@example.com');
+  const { isoWeek } = await import('../../functions/_lib/artist.js');
+  const now = Date.now(), wk = isoWeek(now), w2 = isoWeek(now - 14 * 864e5), old = isoWeek(now - 70 * 864e5);
+  let r = await call(env, 'PUT', '/api/artist/listeners', { cookie: a.cookie, body: { listeners: 850 } });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.deepEqual(r.data.listeners, [{ week: wk, platform: 'spotify', listeners: 850 }]); assert.equal(r.data.listenersDue, false);
+  r = await call(env, 'PUT', '/api/artist/listeners', { cookie: a.cookie, body: { listeners: 600, week: w2 } });
+  assert.deepEqual(r.data.listeners.map((x) => [x.week, x.listeners]), [[w2, 600], [wk, 850]]);
+  r = await call(env, 'PUT', '/api/artist/listeners', { cookie: a.cookie, body: { listeners: 900 } });   // the same week again: replaced
+  assert.deepEqual(r.data.listeners.map((x) => x.listeners), [600, 900]);
+  for (const [body, code] of [[{ listeners: 5, week: old }, 'bad_week'], [{ listeners: -1 }, 'bad_listeners'], [{ listeners: 1.5 }, 'bad_listeners'],
+    [{ listeners: '12a' }, 'bad_listeners'], [{ listeners: '' }, 'bad_listeners'], [{ listeners: 5, platform: 'deezer' }, 'bad_platform'], [{ listeners: 5, week: '2026-W99x' }, 'bad_week']]) {
+    r = await call(env, 'PUT', '/api/artist/listeners', { cookie: a.cookie, body });
+    assert.equal(r.status, 400, JSON.stringify(body)); assert.equal(r.data.error, code, JSON.stringify(body));
+  }
+  r = await call(env, 'PUT', '/api/artist/listeners', { cookie: a.cookie, body: { listeners: null, week: w2 } });   // removed
+  assert.deepEqual(r.data.listeners.map((x) => x.week), [wk]);
+  // another account sees nothing of it
+  const b = await login(env, 'artist4@example.com');
+  r = await call(env, 'GET', '/api/artist', { cookie: b.cookie });
+  assert.deepEqual(r.data.listeners, []); assert.equal(r.data.listenersDue, true);
+  assert.equal((await call(env, 'PUT', '/api/artist/listeners', { body: { listeners: 1 } })).status, 401);
+  await call(env, 'DELETE', '/api/account', { cookie: a.cookie, body: { confirm: true } });
+  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM listener_counts WHERE user_id = ?').get(a.user.id).n, 0);
+});
+
 test('account delete: removes devices, identities and pending codes too', async () => {
   const env = makeEnv();
   const a = await login(env, 'gone3@example.com');

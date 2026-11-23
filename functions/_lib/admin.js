@@ -7,6 +7,7 @@
 //     for this application (aud = ACCESS_AUD), not expired, for an e-mail listed in ADMIN_EMAILS.
 // Missing settings = the dashboard is off (404). Changes (POST, DELETE) also need JSON and the dashboard's own Origin.
 // Docs: developers.cloudflare.com/cloudflare-one/access-controls/applications/http-apps/authorization-cookie/validating-json/
+import { artistTotals } from './artist.js';
 import { createOffer1Price } from './paddle-offer.js';
 import { trialCounts } from './trial.js';
 import { HttpError, json, readJson } from './http.js';
@@ -213,6 +214,7 @@ export async function stats(env, days = 30, now = Date.now()) {
         // 23/11: the cookie banner (consent.js) and the TikTok conversions sent (conversions.js)
         consent: { yes: ev.ev_consent_yes || 0, no: ev.ev_consent_no || 0 },
         ttConv: { ok: ev.tt_conv_ok || 0, fail: ev.tt_conv_fail || 0 },
+        artists: await artistTotals(env),   // 23/11: the onboarding answers, as totals (artist.js)
       },
       health: { errors30: ev.err_5xx || 0, alerts30: ev.alert || 0, codeMails30: ev.code_mail || 0,
         codeMailsToday: R(counts).filter((r) => r.d === list[list.length - 1] && r.name === 'code_mail').reduce((n, r) => n + r.n, 0) },

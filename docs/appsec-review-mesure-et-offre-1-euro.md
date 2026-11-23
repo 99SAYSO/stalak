@@ -17,6 +17,7 @@ Release advice : **proceed within reviewed scope** (rien ne s'allume tant que le
 | M5 | Moyen / confirmé (protégé) | trial.js | L'identifiant du prix à 1 € est public : quelqu'un qui a déjà eu un essai peut le forcer dans Paddle. | Même contrôle au webhook que l'essai gratuit (une seule requête SQL) : arrêt immédiat, **1 € remboursé en entier** (ajustement Paddle), jamais de Pro. Tests. |
 | M6 | Faible / confirmé (protégé) | admin.js, paddle-offer.js | Créer un prix Paddle depuis le web. | Route du tableau de bord seulement (Cloudflare Access + contrôle serveur, test « pas le propriétaire : refusé ») ; aucune clé tapée ni affichée ; idempotent (même prix redonné). |
 | M7 | Info / à vérifier | offre à 1 € | Avec des prix hors taxes, « 1 € » deviendrait 1,20 € TTC en France. | Le bouton et le texte affichent le montant **donné par Paddle** (taxes comprises, monnaie de la personne) ; « 1 € » n'est qu'un repli. À voir par Juridique / propriétaire : mode de taxe des prix Paddle. |
+| M9 | Moyen / confirmé (protégé) | artist.js | Réponses de l'onboarding et auditeurs = données personnelles ; liens fournis par l'utilisateur (risque de lien piégé affiché plus tard). | Compte obligatoire, chaque compte ne lit et n'écrit que les siennes ; listes fermées ; liens réécrits en https et limités à open.spotify.com, music.apple.com, soundcloud.com, instagram.com (pas de `javascript:`, pas d'identifiants dans l'URL) ; nom nettoyé (caractères de contrôle et d'inversion de sens retirés, 60 caractères) ; JSON obligatoire ; limites 120 / 60 par heure ; supprimé avec le compte ; tableau de bord en totaux seulement (test : aucun nom ni lien dans la réponse). |
 | M8 | Info | consent.js | Scripts tiers chargés après accord = code de Microsoft et Google dans la page. | Accepté (décision du propriétaire). Pas de CSP aujourd'hui ; quand elle viendra (audit 13/11 n° 4), autoriser `www.clarity.ms`, `*.clarity.ms`, `www.googletagmanager.com`, `*.google-analytics.com`. |
 
 Dependencies : aucune ajoutée (scripts tiers chargés à la demande, pas dans le dépôt).
@@ -24,7 +25,7 @@ Secrets hygiene : `TIKTOK_EVENTS_TOKEN` lu dans l'environnement, jamais dans `/a
 
 | Check | Statut | Commande | Résultat |
 |---|---|---|---|
-| Tests serveur | PASS | `node tests/backend/run.mjs` | 125/125 (5 nouveaux) |
+| Tests serveur | PASS | `node tests/backend/run.mjs` | 127/127 (7 nouveaux) |
 | Bandeau, outils, entonnoir, offre à 1 € | PASS | `tests/ui/mesure_ui.py public` | 98/98 (iPhone 12 et ordinateur, FR / EN) |
 | Essai gratuit (non-régression) | voir compte rendu | `tests/ui/essai_pro_ui.py public` | |
 | Compteurs de la page | voir compte rendu | `tests/ui/audit_ui.py public` | |

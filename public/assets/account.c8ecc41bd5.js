@@ -451,6 +451,13 @@
     removeAvatar: function () { return api('DELETE', 'me/avatar').then(me); },
     logout: function () { return api('POST', 'auth/logout').then(function () { return setState({}); }); },
     checkout: checkout, offerPrices: offerPrices,
+    // 23/11: the onboarding answers (mobile redesign, point 13) and the monthly listeners given each week in « Stats ».
+    // artist() → { profile, listeners: [{week, platform, listeners}], week, listenersDue }; saveArtist({artistName, genres,
+    // onPlatforms, links: {spotify, appleMusic, soundcloud, instagram}, listenersNow, postsOn, blockers, listenersGoal, goals})
+    // (only the fields given change); saveListeners(n[, week]) (this week by default; null removes it). Signed in only.
+    artist: function () { return api('GET', 'artist'); },
+    saveArtist: function (answers) { return api('PUT', 'artist', answers || {}); },
+    saveListeners: function (n, week) { var b = { listeners: n }; if (week) b.week = week; return api('PUT', 'artist/listeners', b); },
     event: event, setSource: setSource,
     portal: function () { return api('POST', 'paddle/portal'); },
     // a subscriber moves to another plan (same subscription, the difference billed now): then wait for the webhook
