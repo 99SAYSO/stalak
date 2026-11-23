@@ -23,9 +23,9 @@ results = []
 FAST_EXPORT = ("pickVideoConfig = async () => null, renderRealtime = async () => { await new Promise(r => setTimeout(r, 120)); "
                "return { blob: new Blob([new Uint8Array(4096)], { type: 'video/mp4' }), ext: 'mp4' }; }")
 T = {
-    'fr': {'h1': 'Le montage de playback gratuit pour les rappeurs', 'try': 'Essaie avec ton son', 'nowm': 'Enregistrer sans filigrane',
+    'fr': {'h1': 'Ton son est prêt. Ton snippet, pas encore ?', 'try': 'Essaie avec ton son', 'nowm': 'Enregistrer sans filigrane',
            'savewm': 'Enregistrer celle-ci (avec filigrane)', 'save': 'Enregistrer la vidéo', 'ca': 'Le mode Clip est réservé à Pro'},
-    'en': {'h1': 'Free lip-sync video editor for rappers', 'try': 'Now try it with your song', 'nowm': 'Save without watermark',
+    'en': {'h1': 'Your song is done. Where’s the snippet?', 'try': 'Now try it with your song', 'nowm': 'Save without watermark',
            'savewm': 'Save this one (with watermark)', 'save': 'Save video', 'ca': 'Clip mode is a Pro feature'},
 }
 
@@ -72,13 +72,15 @@ def flow(b, base, site, lang, iphone, PW):
     t = T[lang]
     ctx, pg, errs = new_page(b, base, lang, iphone, PW)
     # 6. the real title
-    h1 = pg.evaluate("() => [...document.querySelectorAll('h1')].filter(e => e.getClientRects().length).map(e => e.textContent.trim())")
+    h1 = pg.evaluate("() => [...document.querySelectorAll('h1')].filter(e => e.getClientRects().length).map(e => e.textContent.replace(/\\s+/g, ' ').trim())")
     check(tag + ' : un seul H1, « %s », au-dessus du formulaire' % t['h1'], h1 == [t['h1']] and pg.locator('#heroPitch').bounding_box()['y'] < pg.locator('#songDrop').bounding_box()['y']
           and not pg.evaluate("() => !!document.querySelector('#homeBtn').closest('h1')"), h1)
-    tag_ok = pg.locator('.hero-s').inner_text().strip()
+    # (23/11) under 900 px the short sentence (.hero-s2) is the one shown, the long one on a computer
+    HS = '.hero-s2' if iphone else '.hero-s:not(.hero-s2)'
+    tag_ok = pg.locator(HS).inner_text().strip()
     check(tag + ' : une ligne d’accroche sous le titre', len(tag_ok) > 30, tag_ok)
-    hb, mb = pg.evaluate("() => { const r = document.createRange(); r.selectNodeContents(document.querySelector('.hero-s')); const b = r.getBoundingClientRect(); return { x: b.x, y: b.y, width: b.width, height: b.height }; }"), pg.evaluate("() => { const c = document.querySelector('#p1 > .card:not(.lpoffer)'); const r = c.getBoundingClientRect(), a = getComputedStyle(c, '::after'); return { right: r.right - parseFloat(a.right), w: parseFloat(a.width) }; }")
-    check(tag + ' : l’accroche ne passe pas sous la mascotte', hb['x'] + hb['width'] <= mb['right'] - mb['w'] + 4 or hb['y'] + hb['height'] <= pg.evaluate("() => { const c = document.querySelector('#p1 > .card:not(.lpoffer)'), a = getComputedStyle(c, '::after'); return c.getBoundingClientRect().top + 22 - parseFloat(a.height); }") + 4, (hb, mb))   # (beside it, or above its head)
+    hb, mb = pg.evaluate("() => { const r = document.createRange(); r.selectNodeContents(document.querySelector('%s')); const b = r.getBoundingClientRect(); return { x: b.x, y: b.y, width: b.width, height: b.height }; }" % HS), pg.evaluate("() => { const c = document.querySelector('#p1 > .card:not(.lpoffer)'); const r = c.getBoundingClientRect(), a = getComputedStyle(c, '::after'); return { right: r.right - parseFloat(a.right), w: parseFloat(a.width) }; }")
+    check(tag + ' : l’accroche ne passe pas sous la mascotte', iphone or hb['x'] + hb['width'] <= mb['right'] - mb['w'] + 4 or hb['y'] + hb['height'] <= pg.evaluate("() => { const c = document.querySelector('#p1 > .card:not(.lpoffer)'), a = getComputedStyle(c, '::after'); return c.getBoundingClientRect().top + 22 - parseFloat(a.height); }") + 4, (hb, mb))   # (beside it, or above its head)
     if SHOTS: shot(pg, os.path.join(SHOTS, 'accueil-%s-%s.png' % ('iphone' if iphone else 'ordi', lang)))
     # (6/11, Chef de projet: the home title is Marketing's « version compacte », chosen by the owner: #heroPitch, .hero-s)
     # 22. the example: the keyboard on « Lecture »
