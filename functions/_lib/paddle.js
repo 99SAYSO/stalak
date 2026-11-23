@@ -1,11 +1,12 @@
 // Paddle Billing: webhook signature, subscription sync, customer portal, cancellation.
 // Docs: https://developer.paddle.com/webhooks/about/signature-verification
 //       https://developer.paddle.com/api-reference/customer-portals/create-customer-portal-session
+import { trialAfterWebhook } from './trial.js';
 import { HttpError, readText } from './http.js';
 import { hmacSha256Hex, timingSafeEqual } from './crypto.js';
 import { planOfPrice, normPlan, salePrices, priceTable, subscriptionActive, planOfSub, payEnv, intervalOf } from './entitlements.js';
 import { bump } from './metrics.js';
-import { subscriptionNotice, isNewPurchase, notifyOwner } from './notify.js';
+import { subscriptionNotice, isNewPurchase, notifyOwner, trialNotice } from './notify.js';
 import { thanksAfterPurchase } from './thanks.js';
 
 export const SIGNATURE_TOLERANCE_S = 300;
@@ -220,15 +221,20 @@ export async function handleWebhook(request, env, ctx) {
   try {
     const r = type.startsWith('subscription.') ? await applySubscription(env, event.data, occurredAt)
       : type.startsWith('adjustment.') ? await applyAdjustment(env, event.data, occurredAt) : await applyTransaction(env, event.data);
+    // 23/11: the free trial (trial.js): start (and the once-per-person check), cancelled, paid, first payment failed
+    if (type.startsWith('subscription.')) Object.assign(r, (await trialAfterWebhook(env, event.data, r)) || {});
     // the owner's phone (ntfy): new subscription or cancellation, after the answer to Paddle; it can never fail the webhook
     if (type.startsWith('subscription.') && r.applied) {
       const item = (event.data.items || []).find((i) => i && i.status !== 'inactive') || (event.data.items || [])[0];
       const info = { plan: r.plan, interval: intervalOf(env, item && item.price && item.price.id) ||
-        (item && item.price && item.price.billing_cycle && item.price.billing_cycle.interval), isNew: r.isNew, userId: r.userId, test: payEnv(env) !== 'production' };
+        (item && item.price && item.price.billing_cycle && item.price.billing_cycle.interval), isNew: r.isNew, userId: r.userId, test: payEnv(env) !== 'production', trial: r.trial };
       const p = Promise.all([
         subscriptionNotice(env, event.data, info).catch((e) => console.warn('[stalak] ntfy notice', String(e && e.message || e).slice(0, 80))),
         // the thank-you e-mail (thanks.js): same trigger, real payments only, once per person, sent ~3 hours later
         isNewPurchase(event.data, info) ? thanksAfterPurchase(env, { ...info, live: !info.test }) : null,
+        // 23/11, free trial: its own notices; the thank-you e-mail once it is paid (a trial is not a purchase yet)
+        r.trial ? trialNotice(env, event.data, info, r.trial).catch(() => null) : null,
+        r.trial === 'paid' ? thanksAfterPurchase(env, { ...info, live: !info.test }) : null,
       ]);
       if (ctx && typeof ctx.waitUntil === 'function') ctx.waitUntil(p); else await p;
     }
@@ -240,7 +246,7 @@ export async function handleWebhook(request, env, ctx) {
   }
 }
 
-async function paddleApi(env, method, path, body) {
+export async function paddleApi(env, method, path, body) {
   if (!env.PADDLE_API_KEY) throw new HttpError(500, 'not_configured', 'PADDLE_API_KEY is not set.');
   const res = await fetch(apiBase(env) + path, {
     method,
@@ -302,6 +308,9 @@ export async function changePlan(env, user, body) {
   const { results } = await env.DB.prepare('SELECT * FROM subscriptions WHERE user_id = ?1 AND env = ?2 ORDER BY updated_at DESC').bind(user.id, payEnv(env)).all();
   const sub = results.find((s) => subscriptionActive(s) && s.status !== 'past_due');
   if (!sub) throw new HttpError(404, 'no_subscription', 'No running subscription to change: buy a plan instead.');
+  // 23/11: during the free trial the plan does not change (Creator Plus is paid from day 1, and Paddle bills nothing
+  // during a trial): wait for the end of the trial, or cancel it and buy the other plan
+  if (sub.status === 'trialing') throw new HttpError(409, 'in_trial', 'The plan cannot change during the free trial.');
   if (sub.cancel_at) throw new HttpError(409, 'subscription_ending', 'This subscription is ending: buy a new plan once it has stopped, or resume it first.');
   if (sub.price_id === priceId) throw new HttpError(409, 'same_plan', 'This is already your plan.');
   // the plan paid for now (a smaller plan already chosen does not count: the comparison is with what the person has)

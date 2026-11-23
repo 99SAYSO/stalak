@@ -113,6 +113,7 @@ function makeEnv(extra = {}) {
     APP_ORIGIN: ORIGIN, PADDLE_ENV: 'sandbox', PADDLE_WEBHOOK_SECRET: WEBHOOK_SECRET, PADDLE_API_KEY: 'pdl_sdbx_apikey_test',
     PADDLE_CLIENT_TOKEN: 'test_clienttoken', PADDLE_PRICE_MONTH: 'pri_month', PADDLE_PRICE_YEAR: 'pri_year',
     PADDLE_PRICE_PRO_MONTH: 'pri_pro_m', PADDLE_PRICE_PRO_YEAR: 'pri_pro_y', PADDLE_PRICE_CREATOR_MONTH: 'pri_creator_m', PADDLE_PRICE_CREATOR_YEAR: 'pri_creator_y',
+    PADDLE_PRICE_PRO_MONTH_TRIAL: 'pri_pro_m_trial', PADDLE_PRICE_PRO_YEAR_TRIAL: 'pri_pro_y_trial',
     // older prices of 30/10 (Basic / Pro in euros → pro, Max → creator)
     PADDLE_PRICES_OLD: 'pri_basic_m:pro:month,pri_basic_y:pro:year,pri_proeur_m:pro:month,pri_max_m:creator:month,pri_max_y:creator:year',
     RESEND_API_KEY: 're_test', ...extra,
@@ -194,17 +195,17 @@ function sub(userId, over = {}) {
 const tests = [];
 const test = (name, fn) => tests.push({ name, fn });
 const FREE_ENT = { plan: 'free', features: ['unlimited'], limits: { lyricsPerDay: 0, lyricsMinutesPerDay: 0, cloudBytes: 0 },
-  outro: false, cloudSave: false, clipMode: false, autoLyrics: false, packs: false };
+  outro: false, cloudSave: false, clipMode: false, autoLyrics: false, packs: false, trialEligible: false, trialDays: 7 };
 const PRO_ENT = { plan: 'pro', features: ['nowm', 'clip', 'fx', 'text', 'filters', 'lyrics', 'tiktok', 'nologo', 'unlimited'],
   limits: { lyricsPerDay: 20, lyricsMinutesPerDay: 90, cloudBytes: 0 },
-  outro: false, cloudSave: false, clipMode: true, autoLyrics: true, packs: false };
+  outro: false, cloudSave: false, clipMode: true, autoLyrics: true, packs: false, trialEligible: false, trialDays: 7 };
 
 test('config exposes only public settings; sign-in providers only when configured', async () => {
   let r = await call(makeEnv(), 'GET', '/api/config');
   assert.equal(r.status, 200);
   assert.deepEqual(r.data.paddle, { environment: 'sandbox', clientToken: 'test_clienttoken', prices: {
     pro: { month: 'pri_pro_m', year: 'pri_pro_y' }, creator: { month: 'pri_creator_m', year: 'pri_creator_y' },
-    month: 'pri_pro_m', year: 'pri_pro_y' } });
+    month: 'pri_pro_m', year: 'pri_pro_y', proTrial: { month: 'pri_pro_m_trial', year: 'pri_pro_y_trial' } }, trialDays: 7 });
   assert.deepEqual(Object.keys(r.data.plans), ['pro', 'creator']);
   assert.deepEqual(r.data.plans.pro.month, { amount: '7.99', currency: 'USD' });
   assert.deepEqual(r.data.plans.creator.year, { amount: '99.99', currency: 'USD' });
@@ -507,6 +508,229 @@ test('accounts made with a code only (v2): sign-in refused like a wrong password
   assert.equal(r.data.user.id, old.id); assert.equal(r.data.user.hasPassword, true);
   r = await call(env, 'POST', '/api/auth/login', { body: { email: 'legacy@example.com', password: 'mon-premier-mdp' }, cookie: r.jar('stalak_d') });
   assert.equal(r.data.user.id, old.id);
+});
+
+// ---- 23/11: the 7-day free trial of Stalak Pro (functions/_lib/trial.js) ----
+const TRIAL_SECRET = 'test-secret-for-the-trial-0123456789abcdef';
+let trialN = 0;
+function trialSub(userId, over = {}) {
+  const now = Date.now(), end = new Date(now + 7 * 864e5).toISOString();
+  trialN++;
+  return sub(userId, { id: 'sub_trial' + String(trialN).padStart(8, '0'), customer_id: 'ctm_tr' + trialN, status: 'trialing',
+    started_at: new Date(now).toISOString(), next_billed_at: end,
+    items: [{ status: 'trialing', quantity: 1, price: { id: 'pri_pro_m_trial', product_id: 'pro_pro', billing_cycle: { interval: 'month', frequency: 1 }, unit_price: { amount: '799', currency_code: 'USD' } },
+      trial_dates: { starts_at: new Date(now).toISOString(), ends_at: end } }],
+    current_billing_period: { starts_at: new Date(now).toISOString(), ends_at: end }, ...over });
+}
+function paddleFake(calls, { amount = '959', currency = 'USD' } = {}) {
+  return async (url, init) => {
+    let m = url.match(/paddle\.com\/subscriptions\/(sub_\w+)\/activate$/);
+    if (m) { calls.push(['activate', m[1]]); return Response.json({ data: { id: m[1], status: 'active' } }); }
+    m = url.match(/paddle\.com\/subscriptions\/(sub_\w+)\/cancel$/);
+    if (m) { calls.push(['cancel', m[1], JSON.parse(init.body)]); return Response.json({ data: { id: m[1], status: 'trialing' } }); }
+    m = url.match(/paddle\.com\/subscriptions\/(sub_\w+)\?include=next_transaction$/);
+    if (m) { calls.push(['next', m[1]]); return amount == null ? Response.json({ error: { code: 'x' } }, { status: 500 })
+      : Response.json({ data: { id: m[1], currency_code: currency, next_transaction: { details: { totals: { grand_total: amount, currency_code: currency } } } } }); }
+    return null;
+  };
+}
+const me = async (env, u) => (await call(env, 'GET', '/api/me', { cookie: u.cookie })).data;
+
+test('23/11 free trial: right to it, start with all of Pro « en essai jusqu’au … », once per account, no change of plan during it', async () => {
+  const env = makeEnv({ AUTH_SECRET: TRIAL_SECRET });
+  const calls = []; extraFetch = paddleFake(calls);
+  try {
+    const a = await login(env, 'trial1@example.com');
+    let d = await me(env, a);
+    assert.equal(d.entitlements.trialEligible, true); assert.equal(d.entitlements.trialDays, 7);
+    const ts = trialSub(a.user.id);
+    let r = await webhook(env, subEvent('subscription.created', ts));
+    assert.equal(r.status, 200, JSON.stringify(r.data)); assert.equal(r.data.trial, 'started');
+    r = await webhook(env, subEvent('subscription.trialing', ts));   // the same trial again: nothing more
+    assert.equal(r.data.trial, undefined);
+    d = await me(env, a);
+    assert.equal(d.entitlements.plan, 'pro'); assert.ok(d.entitlements.features.includes('nowm'));
+    assert.equal(d.subscription.status, 'trialing');
+    assert.equal(d.subscription.trialEndsAt, ts.items[0].trial_dates.ends_at.replace(/\.\d+Z$/, (x) => x));
+    assert.equal(d.entitlements.trialEligible, false);
+    assert.ok(env.DB.raw.prepare('SELECT trial_used_at FROM users WHERE id = ?').get(a.user.id).trial_used_at > 0);
+    assert.deepEqual(calls, []);   // never activated: the account had the right to it
+    assert.equal(env.DB.raw.prepare("SELECT SUM(n) AS n FROM daily_counts WHERE name = 'trial_start'").get().n, 1);
+    // during the trial: no change of plan (Creator Plus is paid from day 1)
+    r = await call(env, 'POST', '/api/paddle/change', { cookie: a.cookie, body: { plan: 'creator', interval: 'month' } });
+    assert.equal(r.status, 409); assert.equal(r.data.error, 'in_trial');
+    // a trial price is Stalak Pro, monthly
+    const row = env.DB.raw.prepare('SELECT plan, trial_ends_at, trial_result FROM subscriptions WHERE id = ?').get(ts.id);
+    assert.equal(row.plan, 'pro'); assert.equal(row.trial_result, null); assert.ok(row.trial_ends_at > Date.now() + 6 * 864e5);
+  } finally { extraFetch = null; }
+});
+
+test('23/11 free trial: an account that already had a subscription or a trial has no right to it; if it starts one anyway, the server stops it at once, nothing billed, no Pro', async () => {
+  const env = makeEnv({ AUTH_SECRET: TRIAL_SECRET });
+  const calls = []; extraFetch = paddleFake(calls);
+  try {
+    // had a subscription before (stopped since)
+    const b = await login(env, 'trial2@example.com');
+    await webhook(env, subEvent('subscription.created', sub(b.user.id, { id: 'sub_old00000001', customer_id: 'ctm_old1', status: 'canceled',
+      items: [{ status: 'active', quantity: 1, price: { id: 'pri_pro_m', product_id: 'pro_pro' } }] })));
+    let d = await me(env, b);
+    assert.equal(d.entitlements.plan, 'free'); assert.equal(d.entitlements.trialEligible, false);
+    const ts = trialSub(b.user.id);
+    let r = await webhook(env, subEvent('subscription.created', ts));
+    assert.equal(r.status, 200); assert.equal(r.data.trial, 'refused');
+    assert.deepEqual(calls, [['cancel', ts.id, { effective_from: 'immediately' }]]);
+    assert.equal(env.DB.raw.prepare('SELECT trial_result FROM subscriptions WHERE id = ?').get(ts.id).trial_result, 'refused');
+    assert.equal((await me(env, b)).entitlements.plan, 'free');   // no Pro from it, even before Paddle confirms
+    await webhook(env, subEvent('subscription.trialing', ts));   // a late message of the same trial: still nothing
+    assert.equal((await me(env, b)).entitlements.plan, 'free');
+    r = await webhook(env, subEvent('subscription.canceled', { ...ts, status: 'canceled' }));
+    assert.equal(r.status, 200); assert.equal(r.data.trial, undefined);
+    assert.equal((await me(env, b)).entitlements.plan, 'free');
+    // a second trial on the same account (two checkouts at once): the second is refused
+    const c = await login(env, 'trial3@example.com');
+    const t1 = trialSub(c.user.id), t2 = trialSub(c.user.id);
+    assert.equal((await webhook(env, subEvent('subscription.created', t1))).data.trial, 'started');
+    assert.equal((await webhook(env, subEvent('subscription.created', t2))).data.trial, 'refused');
+    assert.deepEqual(calls.at(-1), ['cancel', t2.id, { effective_from: 'immediately' }]);
+    // the dashboard does not count the refused ones
+    const { trialCounts } = await import('../../functions/_lib/trial.js');
+    const k = await trialCounts(env, 0);
+    assert.equal(k.started, 1); assert.equal(k.running, 1);
+  } finally { extraFetch = null; }
+});
+
+test('23/11 free trial: a deleted account (trial or subscription) leaves an HMAC mark of its address, 12 months; the same address gets no 2nd trial; without AUTH_SECRET no mark', async () => {
+  const env = makeEnv({ AUTH_SECRET: TRIAL_SECRET });
+  const calls = []; extraFetch = paddleFake(calls);
+  try {
+    const a = await login(env, 'jo.trial@gmail.com');
+    await webhook(env, subEvent('subscription.created', trialSub(a.user.id)));
+    assert.equal(env.DB.raw.prepare("SELECT COUNT(*) AS n FROM webhook_events WHERE event_type = 'trialmark'").get().n, 0);   // nothing while the account exists
+    assert.equal((await call(env, 'DELETE', '/api/account', { cookie: a.cookie, body: { confirm: true } })).status, 200);
+    const { sha256Hex, hmacSha256Hex } = await import('../../functions/_lib/crypto.js');
+    const mk = env.DB.raw.prepare("SELECT event_id, received_at FROM webhook_events WHERE event_type = 'trialmark'").all();
+    assert.equal(mk.length, 1);
+    assert.equal(mk[0].event_id, 'trial:' + await hmacSha256Hex(TRIAL_SECRET, 'trial:jotrial@gmail.com'));
+    assert.notEqual(mk[0].event_id, 'trial:' + await sha256Hex('jotrial@gmail.com'));
+    // back with the same mailbox (a copy of it): no right to a trial, and a trial started anyway is ended
+    const b = await login(env, 'jotrial+again@gmail.com');
+    assert.equal((await me(env, b)).entitlements.trialEligible, false);
+    const tb = trialSub(b.user.id);
+    assert.equal((await webhook(env, subEvent('subscription.created', tb))).data.trial, 'refused');
+    // an account deleted with nothing paid nor tried: no mark, the new one has its trial
+    const c = await login(env, 'nothing@example.com');
+    await call(env, 'DELETE', '/api/account', { cookie: c.cookie, body: { confirm: true } });
+    assert.equal(env.DB.raw.prepare("SELECT COUNT(*) AS n FROM webhook_events WHERE event_type = 'trialmark'").get().n, 1);
+    assert.equal((await me(env, await login(env, 'nothing@example.com'))).entitlements.trialEligible, true);
+    // 12 months after the deletion: gone (11 months: kept)
+    const { purgeOldTrialMarks } = await import('../../functions/_lib/trial.js');
+    env.DB.raw.prepare("UPDATE webhook_events SET received_at = ? WHERE event_type = 'trialmark'").run(Date.now() - 335 * 864e5);
+    assert.equal(await purgeOldTrialMarks(env), 0);
+    env.DB.raw.prepare("UPDATE webhook_events SET received_at = ? WHERE event_type = 'trialmark'").run(Date.now() - 366 * 864e5);
+    assert.equal(await purgeOldTrialMarks(env), 1);
+    // without AUTH_SECRET: never a mark of an address
+    const env2 = makeEnv();
+    const e = await login(env2, 'nosecret@example.com');
+    await webhook(env2, subEvent('subscription.created', trialSub(e.user.id)));
+    await call(env2, 'DELETE', '/api/account', { cookie: e.cookie, body: { confirm: true } });
+    assert.equal(env2.DB.raw.prepare("SELECT COUNT(*) AS n FROM webhook_events WHERE event_type = 'trialmark'").get().n, 0);
+  } finally { extraFetch = null; }
+});
+
+test('23/11 free trial: e-mail 2 days before the 1st payment (date, exact amount from Paddle, cancel link); one-button page; cancelled = Pro until the end, nothing billed', async () => {
+  const env = makeEnv({ AUTH_SECRET: TRIAL_SECRET });
+  const calls = []; extraFetch = paddleFake(calls, { amount: '959', currency: 'USD' });
+  try {
+    const a = await login(env, 'trial4@example.com');
+    const ts = trialSub(a.user.id);
+    await webhook(env, subEvent('subscription.created', ts));
+    const { trialReminders } = await import('../../functions/_lib/trial.js');
+    // 5 days before: nothing yet
+    let r = await trialReminders(env);
+    assert.equal(r.trialReminded, 0);
+    // 2 days before: the e-mail, once
+    const end = Date.now() + 2 * 864e5 - 3600e3;
+    env.DB.raw.prepare('UPDATE subscriptions SET trial_ends_at = ? WHERE id = ?').run(end, ts.id);
+    outbound.length = 0;
+    r = await trialReminders(env);
+    assert.equal(r.trialReminded, 1);
+    const m = outbound.find((o) => o.url === 'https://api.resend.com/emails');
+    assert.ok(m && m.body.to[0] === 'trial4@example.com');
+    const day = new Date(end).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+    assert.ok(m.body.subject.includes(day), m.body.subject);
+    assert.ok(/9,59\s\$US|9,59\s\$/.test(m.body.text), m.body.text);   // the exact amount, tax included, from Paddle
+    const link = (m.body.text.match(/https:\/\/\S+\/api\/trial\/cancel\?\S+/) || [])[0];
+    assert.ok(link && link.includes('s=' + ts.id) && /t=[0-9a-f]{64}/.test(link), m.body.text);
+    assert.equal((await trialReminders(env)).trialReminded, 0);
+    // Paddle does not give the amount: no e-mail with a wrong one (it waits for the next run)
+    const b = await login(env, 'trial5@example.com'), tb = trialSub(b.user.id);
+    await webhook(env, subEvent('subscription.created', tb));
+    env.DB.raw.prepare('UPDATE subscriptions SET trial_ends_at = ? WHERE id = ?').run(end, tb.id);
+    extraFetch = paddleFake(calls, { amount: null });
+    assert.equal((await trialReminders(env)).trialReminded, 0);
+    extraFetch = paddleFake(calls);
+    // the link: a page with ONE button, nothing cancelled by opening it
+    const u = new URL(link);
+    let p = await call(env, 'GET', u.pathname + u.search);
+    assert.equal(p.status, 200);
+    assert.ok(String(p.text || p.data).includes('Annuler mon essai'));
+    assert.ok(!calls.some((c) => c[0] === 'cancel'));
+    // a wrong key: nothing
+    r = await call(env, 'POST', '/api/trial/cancel', { body: { s: ts.id, t: '0'.repeat(64) } });
+    assert.equal(r.status, 404);
+    // the button: Paddle cancels at the end of the trial; Pro stays until then
+    r = await call(env, 'POST', '/api/trial/cancel', { body: { s: ts.id, t: u.searchParams.get('t') } });
+    assert.equal(r.status, 200, JSON.stringify(r.data));
+    assert.deepEqual(calls.filter((c) => c[0] === 'cancel'), [['cancel', ts.id, { effective_from: 'next_billing_period' }]]);
+    let d = await me(env, a);
+    assert.equal(d.entitlements.plan, 'pro'); assert.ok(d.subscription.cancelAt);
+    r = await call(env, 'POST', '/api/trial/cancel', { body: { s: ts.id, t: u.searchParams.get('t') } });
+    assert.equal(r.data.already, true);
+    // Paddle confirms (scheduled cancel), then at the end of the trial: canceled → Free, nothing billed
+    await webhook(env, subEvent('subscription.updated', { ...ts, scheduled_change: { action: 'cancel', effective_at: ts.next_billed_at, resume_at: null } }));
+    await webhook(env, subEvent('subscription.canceled', { ...ts, status: 'canceled', scheduled_change: null }));
+    d = await me(env, a);
+    assert.equal(d.entitlements.plan, 'free'); assert.equal(d.entitlements.trialEligible, false);
+    assert.equal(env.DB.raw.prepare('SELECT trial_result FROM subscriptions WHERE id = ?').get(ts.id).trial_result, 'canceled');
+    // the signed-in account can cancel its own trial without the link; another account cannot
+    const other = await login(env, 'trial6@example.com');
+    r = await call(env, 'POST', '/api/trial/cancel', { cookie: other.cookie, body: { s: tb.id } });
+    assert.equal(r.status, 404);
+    r = await call(env, 'POST', '/api/trial/cancel', { cookie: b.cookie, body: { s: tb.id } });
+    assert.equal(r.status, 200);
+  } finally { extraFetch = null; }
+});
+
+test('23/11 free trial: paid after 7 days, or 1st payment failed (Pro stops until Paddle gets it); dashboard: started, cancelled, paid, %', async () => {
+  const env = makeEnv({ ...ADMIN_ENV, AUTH_SECRET: TRIAL_SECRET }), token = await accessToken();
+  const calls = []; extraFetch = paddleFake(calls);
+  try {
+    const a = await login(env, 'trial7@example.com'), b = await login(env, 'trial8@example.com'), c = await login(env, 'trial9@example.com');
+    const ta = trialSub(a.user.id), tb = trialSub(b.user.id), tc = trialSub(c.user.id);
+    for (const t of [ta, tb, tc]) await webhook(env, subEvent('subscription.created', t));
+    // a: paid at the end of the trial
+    let r = await webhook(env, subEvent('subscription.activated', { ...ta, status: 'active' }));
+    assert.equal(r.data.trial, 'paid');
+    assert.equal((await me(env, a)).entitlements.plan, 'pro');
+    // b: the 1st payment fails → past_due → no Pro (nothing paid yet); then Paddle gets it → paid, Pro again
+    r = await webhook(env, subEvent('subscription.past_due', { ...tb, status: 'past_due' }));
+    assert.equal(r.data.trial, 'failed');
+    assert.equal((await me(env, b)).entitlements.plan, 'free');
+    // c: cancelled during the trial (from Paddle's portal): still Pro until the end
+    r = await webhook(env, subEvent('subscription.updated', { ...tc, scheduled_change: { action: 'cancel', effective_at: tc.next_billed_at, resume_at: null } }));
+    assert.equal(r.data.trial, 'canceled');
+    assert.equal((await me(env, c)).entitlements.plan, 'pro');
+    let s = (await adminCall(env, 'GET', '/api/admin/stats?days=7', { token })).data.usage.funnel.trial;
+    assert.deepEqual(s, { started: 3, canceled: 1, paid: 1, failed: 1, running: 0, paidRate: 33.3 });
+    r = await webhook(env, subEvent('subscription.activated', { ...tb, status: 'active' }));
+    assert.equal(r.data.trial, 'paid');
+    assert.equal((await me(env, b)).entitlements.plan, 'pro');
+    // c changes its mind (cancel removed during the trial): the trial goes on
+    r = await webhook(env, subEvent('subscription.updated', { ...tc, scheduled_change: null }));
+    assert.equal(r.data.trial, 'resumed');
+    s = (await adminCall(env, 'GET', '/api/admin/stats?days=7', { token })).data.usage.funnel.trial;
+    assert.deepEqual(s, { started: 3, canceled: 0, paid: 2, failed: 0, running: 1, paidRate: 100 });
+  } finally { extraFetch = null; }
 });
 
 test('account delete: removes devices, identities and pending codes too', async () => {
@@ -3656,7 +3880,7 @@ test('audit 6/11 n°12: lyrics use 90 days and with the account, thank-you hashe
   db.prepare('INSERT INTO webhook_events (event_id, event_type, received_at) VALUES (?, ?, ?)').run('thanks:old', 'thanks', now - 3 * 365 * 864e5 - 864e5);
   db.prepare('INSERT INTO rate_limits (key, window_start, count) VALUES (?, ?, 1)').run('visit:ip:abc', now - 2 * 864e5);
   const r = await dailyRetention(env, now);
-  assert.deepEqual(r, { thanks: 1, lyricsUsage: 1, rateLimits: true, optins: 0 });
+  assert.deepEqual(r, { thanks: 1, trialMarks: 0, lyricsUsage: 1, rateLimits: true, optins: 0 });
   assert.deepEqual(db.prepare('SELECT day FROM lyrics_usage').all().map((x) => x.day), [day(10)]);
   assert.equal(db.prepare("SELECT COUNT(*) AS n FROM rate_limits WHERE key = 'visit:ip:abc'").get().n, 0);
   assert.match(readFileSync(join(root, 'functions/_lib/cloud.js'), 'utf8'), /dailyRetention\(env, now\)/);

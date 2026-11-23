@@ -69,7 +69,8 @@ export async function yearlyReminders(env, now = Date.now(), { max = 50 } = {}) 
       continue;
     }
     const plan = planOfSub(env, s, now);
-    const amount = sale[s.price_id] ? (AMOUNTS[sale[s.price_id].plan] || {}).month : null;
+    // 23/11: the monthly Stalak Pro price with a free trial has the same amount as the one on sale
+    const amount = sale[s.price_id] ? (AMOUNTS[sale[s.price_id].plan] || {}).month : s.price_id && s.price_id === env.PADDLE_PRICE_PRO_MONTH_TRIAL ? AMOUNTS.pro.month : null;
     let ok = false;
     try { ok = await send(env, s.email, reminderEmail(env, s.lang === 'fr' ? 'fr' : 'en', plan, amount, s.started_at)); } catch { ok = false; }
     if (!ok) continue;

@@ -100,4 +100,14 @@ export function seedDashboard(env, { now = Date.now() } = {}) {
     }
   }
   db.prepare("UPDATE subscriptions SET status = 'canceled', updated_at = ? WHERE id IN (SELECT id FROM subscriptions WHERE id LIKE 'sub_seed%' LIMIT 3)").run(now - 3 * 864e5);
+  // 23/11: free trials of Stalak Pro (7 days) on the last 30 days, made up and not from rnd() (the other figures stay the same):
+  // finished ones paid, cancelled or failed; the last 7 days still running
+  { const insT = db.prepare(`INSERT OR IGNORE INTO subscriptions (id, user_id, customer_id, status, price_id, current_period_end, cancel_at, last_event_at, updated_at, plan, env, started_at,
+      trial_started_at, trial_ends_at, trial_result) VALUES (?, NULL, ?, ?, ?, ?, ?, ?, ?, 'pro', ?, ?, ?, ?, ?)`);
+    for (let i = 30; i >= 0; i--) for (let k = 0; k < 1 + ((i * 7) % 3); k++) {
+      const t = now - i * 864e5 - k * 3600e3, end = t + 7 * 864e5, open = end > now, j = (i * 5 + k * 3) % 10;
+      const res = open ? null : j < 4 ? 'paid' : j < 8 ? 'canceled' : 'failed';
+      const st = open ? 'trialing' : res === 'paid' ? 'active' : res === 'failed' ? 'past_due' : 'canceled';
+      insT.run('sub_trialseed' + i + '_' + k, 'ctm_ts' + i + k, st, env.PADDLE_PRICE_PRO_MONTH_TRIAL || 'pri_seed_trial', end, res === 'canceled' ? end : null, t, t, PE, t, t, end, res);
+    } }
 }

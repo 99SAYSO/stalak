@@ -21,6 +21,11 @@ PADDLE_PRICE_PRO_MONTH = "pri_01m6gz2fm03av5gmreyh8d4n6v"         # Stalak Pro 7
 PADDLE_PRICE_PRO_YEAR = "pri_01m6gz30pd9aec87fvy833wdgj"          # Stalak Pro 49.99 USD / year
 PADDLE_PRICE_CREATOR_MONTH = "pri_01m6gyzb1ddqj8egyahphxgtd4"     # Stalak Creator Plus 14.99 USD / month
 PADDLE_PRICE_CREATOR_YEAR = "pri_01m6gz1aabr7h5tyyfwkbgvjpk"      # Stalak Creator Plus 99.99 USD / year
+# 23/11: Stalak Pro with a 7-day free trial (card asked at the start), same amounts as above, only for an account that never
+# had a subscription nor a trial (functions/_lib/trial.js). Made by the owner in Paddle (docs/handoff/compte-essai-gratuit.md).
+# Empty = no trial offered.
+PADDLE_PRICE_PRO_MONTH_TRIAL = ""   # Stalak Pro 7.99 USD / month, 7-day trial
+PADDLE_PRICE_PRO_YEAR_TRIAL = ""    # Stalak Pro 49.99 USD / year, 7-day trial
 # Older prices of 30/10 (test subscriptions only), still recognised so their subscribers keep their price:
 # Basic and Pro in euros → pro, Max → creator. Format: id:plan:interval, comma between them.
 PADDLE_PRICES_OLD = ""

@@ -1,5 +1,6 @@
 // What each plan unlocks. The server is the source of truth; the client only reads this (GET /api/me → entitlements).
 import { HttpError } from './http.js';
+import { trialEligible, TRIAL_DAYS } from './trial.js';
 
 // Offer of 30/10/2026 (evening), STALAK_CONTEXTE.md section 2: Gratuit (no account needed, unlimited, watermark that a
 // rewarded ad removes for one video) + Stalak Pro + Stalak Creator Plus.
@@ -64,6 +65,10 @@ const GRACE_MS = 3 * 24 * 3600e3;
 
 export function subscriptionActive(sub, now = Date.now()) {
   if (!sub || !ACTIVE_STATUSES.has(sub.status)) return false;
+  // 23/11: the first payment after a free trial failed: Pro stops (nothing was ever paid); back when Paddle gets it
+  if (sub.status === 'past_due' && sub.trial_result === 'failed') return false;
+  // a trial the account had no right to (trial.js): never any Pro from it, whatever Paddle's messages say meanwhile
+  if (sub.trial_result === 'refused') return false;
   if (sub.current_period_end && sub.current_period_end + GRACE_MS < now) return false;
   return true;
 }
@@ -86,6 +91,9 @@ export function priceTable(env) {
   const t = {};
   const add = (id, plan, interval) => { if (id && !t[id]) t[id] = { plan, interval }; };
   add(env.PADDLE_PRICE_MONTH, 'pro', 'month');
+  // 23/11: the two Stalak Pro prices with a 7-day free trial (trial.js), same amounts as the prices on sale
+  add(env.PADDLE_PRICE_PRO_MONTH_TRIAL, 'pro', 'month');
+  add(env.PADDLE_PRICE_PRO_YEAR_TRIAL, 'pro', 'year');
   add(env.PADDLE_PRICE_YEAR, 'pro', 'year');
   for (const part of String(env.PADDLE_PRICES_OLD || '').split(',')) {
     const [id, plan, iv] = part.trim().split(':');
@@ -135,16 +143,20 @@ export async function planFor(env, user) {
 }
 
 export async function entitlementsFor(env, user) {
-  if (!user) return { entitlements: { ...FREE, features: [...FREE.features], limits: { ...FREE.limits } }, subscription: null };
+  // 23/11, free trial (trial.js): trialEligible = this account may start the 7-day Stalak Pro trial (open the checkout
+  // with config.paddle.prices.proTrial); trialDays = 7
+  if (!user) return { entitlements: { ...FREE, features: [...FREE.features], limits: { ...FREE.limits }, trialEligible: false, trialDays: TRIAL_DAYS }, subscription: null };
   const { plan, sub } = await planFor(env, user);
   return {
-    entitlements: entitlementsOf(plan),
+    entitlements: { ...entitlementsOf(plan), trialEligible: plan === 'free' ? await trialEligible(env, user) : false, trialDays: TRIAL_DAYS },
     subscription: sub ? {
       status: sub.status,
       plan: planOfSub(env, sub),
       interval: intervalOf(env, sub.price_id),
       currentPeriodEnd: sub.current_period_end ? new Date(sub.current_period_end).toISOString() : null,
       cancelAt: sub.cancel_at ? new Date(sub.cancel_at).toISOString() : null,
+      // « en essai jusqu'au … »: the date of the first payment (or of the end, if cancelled: cancelAt)
+      trialEndsAt: sub.status === 'trialing' && sub.trial_ends_at ? new Date(sub.trial_ends_at).toISOString() : null,
     } : null,
   };
 }

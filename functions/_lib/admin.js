@@ -7,6 +7,7 @@
 //     for this application (aud = ACCESS_AUD), not expired, for an e-mail listed in ADMIN_EMAILS.
 // Missing settings = the dashboard is off (404). Changes (POST, DELETE) also need JSON and the dashboard's own Origin.
 // Docs: developers.cloudflare.com/cloudflare-one/access-controls/applications/http-apps/authorization-cookie/validating-json/
+import { trialCounts } from './trial.js';
 import { HttpError, json, readJson } from './http.js';
 import { verifyJwtSignature } from './jwt.js';
 import { jwksFor } from './oauth.js';
@@ -206,6 +207,7 @@ export async function stats(env, days = 30, now = Date.now()) {
         checkoutClose: { start: ev.ev_checkout_close_start || 0, details: ev.ev_checkout_close_details || 0, payment: ev.ev_checkout_close_payment || 0 },
         checkoutDone: ev.ev_checkout_done || 0,
         optins: await optinCounts(env, now),
+        trial: await trialCounts(env, fromMs),   // 23/11: the 7-day free trial of Stalak Pro (trial.js)
       },
       health: { errors30: ev.err_5xx || 0, alerts30: ev.alert || 0, codeMails30: ev.code_mail || 0,
         codeMailsToday: R(counts).filter((r) => r.d === list[list.length - 1] && r.name === 'code_mail').reduce((n, r) => n + r.n, 0) },

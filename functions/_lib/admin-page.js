@@ -483,6 +483,11 @@ __DEMO_BANNER__<header class="top"><div class="in">
       <div class="card hq"><div class="hbest"><span>💳 Paiement fermé sans acheter</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
         <p class="he">Quand la fenêtre de paiement Paddle est fermée sans achat, à quel moment : tout de suite, après avoir donné son e-mail (et son pays), ou en payant (carte remplie ou paiement essayé).</p><ul class="blist" id="bClose"></ul><p class="note" id="closeNote"></p></div>
     </div>
+    <div class="card hq" id="trialCard">
+      <div class="hbest"><span>🎁 Essai gratuit de Pro (7 jours)</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
+      <p class="he">Les essais commencés sur la période (avec carte, Pro seulement), puis ce qu’ils sont devenus : annulés pendant l’essai (rien prélevé), devenus payants au bout de 7 jours, ou 1er prélèvement raté. Le % compte les essais déjà finis. Les comptes supprimés ne comptent plus.</p>
+      <p class="vsum" id="trialSum">…</p><p class="note" id="trialNote"></p>
+    </div>
     <div class="card hq" id="optCard">
       <div class="hbest"><span>📩 E-mails récoltés</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
       <p class="he">À la fin d’une vidéo, les gratuits peuvent laisser leur e-mail pour recevoir des conseils (case à cocher, puis lien de confirmation). Seuls les e-mails confirmés comptent. Aucun envoi en masse pour l’instant.</p>
@@ -1151,6 +1156,9 @@ __DEMO_BANNER__<header class="top"><div class="in">
         blist($('#bClose'), { 'Tout de suite': cc.start || 0, 'Après l’e-mail': cc.details || 0, 'En payant': cc.payment || 0 }, function (x) { return x; },
           { order: ['Tout de suite', 'Après l’e-mail', 'En payant'], keepZero: true });
         set('#closeNote', (fu.checkoutOpen ? 'Fenêtre ouverte ' + nf.format(fu.checkoutOpen) + ' fois, fermée sans acheter ' + nf.format(closed) + ' fois' + (fu.checkoutDone ? ', achats ' + nf.format(fu.checkoutDone) : '') + '.' : 'Pas encore de fenêtre de paiement ouverte sur la période.'));
+        var tr = fu.trial || {};
+        set('#trialSum', nf.format(tr.started || 0) + ' essai' + ((tr.started || 0) > 1 ? 's' : '') + ' commencé' + ((tr.started || 0) > 1 ? 's' : '') + ' · ' + nf.format(tr.paid || 0) + ' devenu' + ((tr.paid || 0) > 1 ? 's' : '') + ' payant' + ((tr.paid || 0) > 1 ? 's' : '') + (tr.paidRate != null ? ' (' + String(tr.paidRate).replace('.', ',') + ' % des essais finis)' : ''));
+        set('#trialNote', nf.format(tr.canceled || 0) + ' annulé' + ((tr.canceled || 0) > 1 ? 's' : '') + ' pendant l’essai · ' + nf.format(tr.failed || 0) + ' prélèvement' + ((tr.failed || 0) > 1 ? 's' : '') + ' raté' + ((tr.failed || 0) > 1 ? 's' : '') + ' · ' + nf.format(tr.running || 0) + ' en cours');
         var op = fu.optins || {};
         set('#optSum', nf.format(op.confirmed || 0) + ' e-mail' + ((op.confirmed || 0) > 1 ? 's' : '') + ' confirmé' + ((op.confirmed || 0) > 1 ? 's' : '') +
           ' (dont ' + nf.format(op.week || 0) + ' cette semaine) · ' + nf.format(op.waiting || 0) + ' en attente de confirmation');

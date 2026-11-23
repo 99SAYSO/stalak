@@ -75,7 +75,20 @@ async function once(env, key) {
 export function isNewPurchase(sub, info) {
   const started = Date.parse(sub.started_at || sub.first_billed_at || '') || 0;
   const fresh = info.isNew || (started && Date.now() - started < 2 * 864e5);
-  return !!(fresh && ['active', 'trialing'].includes(String(sub.status || '')) && !sub.scheduled_change);
+  // 23/11: a free trial is not a purchase yet (its own notices, paddle.js: « essai commencé », then « devenu payant »)
+  return !!(fresh && String(sub.status || '') === 'active' && !sub.scheduled_change);
+}
+
+// 23/11, free trial: « 🎁 Essai Pro commencé » (quiet), then « 💸 Essai Pro devenu payant » or « Essai Pro : prélèvement
+// raté ». Once per subscription and kind.
+export async function trialNotice(env, sub, info, kind) {
+  if (!anyChannel(env) || !sub || !sub.id || !['started', 'paid', 'failed'].includes(kind) || !(await once(env, `ntfy:trial-${kind}:${sub.id}`))) return null;
+  const test = info.test ? '[TEST] ' : '';
+  const item = (sub.items || []).find((i) => i && i.status !== 'inactive') || (sub.items || [])[0];
+  const price = priceText(item, info.interval) || (info.interval === 'year' ? 'annuel' : 'mensuel');
+  if (kind === 'started') return notifyOwner(env, { title: `${test}🎁 Essai Pro commencé`, message: `7 jours, puis ${price}`, tags: ['gift'], quiet: true });
+  if (kind === 'paid') return notifyOwner(env, { title: `${test}💸 Essai Pro devenu payant`, message: price, tags: ['moneybag'] });
+  return notifyOwner(env, { title: `${test}Essai Pro : 1er prélèvement raté`, message: 'Paddle réessaie ; Pro est coupé en attendant.', tags: ['warning'], quiet: true });
 }
 
 // Called by the Paddle webhook after a subscription was written. sub: the Paddle data; info: {plan, interval, isNew,
@@ -103,7 +116,8 @@ export async function subscriptionNotice(env, sub, info) {
   if (canceling && await once(env, 'ntfy:cancel:' + sub.id)) {
     const end = sc && sc.action === 'cancel' && sc.effective_at ? new Date(sc.effective_at) : null;
     const day = end && !Number.isNaN(end.getTime()) ? end.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', timeZone: 'Europe/Paris' }) : '';
-    return notifyOwner(env, { title: `${test}Abonnement ${plan} annulé`, message: day ? `Fin le ${day}.` : '', tags: ['wave'], quiet: true });
+    const trial = status === 'trialing' || info.trial === 'canceled';
+    return notifyOwner(env, { title: `${test}${trial ? 'Essai' : 'Abonnement'} ${plan} annulé`, message: day ? `Fin le ${day}${trial ? ', rien prélevé' : ''}.` : '', tags: ['wave'], quiet: true });
   }
   return null;
 }

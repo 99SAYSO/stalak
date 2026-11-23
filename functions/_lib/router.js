@@ -1,5 +1,5 @@
 // All /api/* routes. Entry point: functions/api/[[path]].js
-import { HttpError, json, errorResponse, checkCsrf, readJson, readText, clearSessionCookie } from './http.js';
+import { HttpError, json, errorResponse, checkCsrf, readJson, readText, clearSessionCookie, clientIp } from './http.js';
 import { currentUser, requireUser, logout, loginPassword, setPassword, recentCodeSession, signup, signupVerify, loginVerify, forgot, reset, failKey } from './auth.js';
 import { oauthStart, oauthCallback, enabledProviders, PROVIDERS } from './oauth.js';
 import { updateProfile, avatar, avatarUrl, AVATAR_TYPES } from './profile.js';
@@ -8,10 +8,11 @@ import { alertOwner } from './alerts.js';
 import { turnstileSiteKey } from './turnstile.js';
 import { yearlyReminders } from './reminders.js';
 import { handleWebhook, portalLinks, cancelSubscriptionNow, changePlan } from './paddle.js';
+import { trialPrices, trialMarkOnDelete, cancelTrial, cancelPage, trialReminders, TRIAL_DAYS } from './trial.js';
 import { social, socialWebhook, isSocialWebhook, socialProviders, deleteSocialAccounts } from './social.js';
 import { tiktok } from './tiktok.js';   // Réseaux sociaux: « Publier sur TikTok », « Mes stats »
 import { projectCover, coverUrl, COVER_TYPES, projectFiles, storageInfo, checkProjectFiles, dropUnusedFiles, readyFiles, deleteProjectMedia, deleteUserMedia, maybeCleanup, cleanupCloud, cloudAvailable } from './cloud.js';
-import { timingSafeEqual } from './crypto.js';
+import { timingSafeEqual, sha256Hex } from './crypto.js';
 import { limit } from './ratelimit.js';
 import { transcribe } from './lyrics.js';
 import { helpChat } from './help.js';
@@ -63,7 +64,11 @@ function config(env) {
         pro: { month: env.PADDLE_PRICE_PRO_MONTH || null, year: env.PADDLE_PRICE_PRO_YEAR || null },
         creator: { month: env.PADDLE_PRICE_CREATOR_MONTH || null, year: env.PADDLE_PRICE_CREATOR_YEAR || null },
         month: env.PADDLE_PRICE_PRO_MONTH || null, year: env.PADDLE_PRICE_PRO_YEAR || null,
+        // 23/11: Stalak Pro with a 7-day free trial (same amounts). Only for an account with entitlements.trialEligible;
+        // a trial taken without the right to it is ended at once by the server (trial.js)
+        proTrial: trialPrices(env),
       },
+      trialDays: TRIAL_DAYS,
     },
     // prices shown (in dollars: Paddle converts them and adds the VAT of the country), and what each plan unlocks
     // (entitlements.js: the same table as the server)
@@ -167,7 +172,7 @@ function cronAuth(request, env) {
 }
 async function cronCleanup(request, env) {
   cronAuth(request, env);
-  return json({ ok: true, ...(await cleanupCloud(env)), ...(await yearlyReminders(env)) });
+  return json({ ok: true, ...(await cleanupCloud(env)), ...(await yearlyReminders(env)), ...(await trialReminders(env)) });
 }
 
 // Signed in: the session cookie (and the trusted-device cookie), then the same answer as GET /api/me.
@@ -206,7 +211,10 @@ async function deleteAccount(request, env) {
   await deleteSocialAccounts(env, user.id);
   // the media files saved online (R2), then their rows with the rest
   await deleteUserMedia(env, user.id);
+  // 23/11, free trial: the account had a subscription or a trial → the mark of its address (HMAC), erased 12 months later
+  const trialMarkW = await trialMarkOnDelete(env, user);
   await env.DB.batch([
+    ...(trialMarkW ? [trialMarkW] : []),
     env.DB.prepare('DELETE FROM file_parts WHERE user_id = ?1').bind(user.id),
     env.DB.prepare('DELETE FROM project_files WHERE user_id = ?1').bind(user.id),
     env.DB.prepare('DELETE FROM projects WHERE user_id = ?1').bind(user.id),
@@ -235,6 +243,7 @@ export const SIGNUP_SOURCE = /^(?:(?:ref|utm|dir):[a-z0-9_-]{1,32}|site:[a-z0-9.
 // <branch or id>.<project>.pages.dev = a preview deployment of Cloudflare Pages (the bare <project>.pages.dev is production)
 export const isPreviewHost = (h) => /^[^.]+\.[^.]+\.pages\.dev$/i.test(String(h || ''));
 const PREVIEW_BLOCKED = (route, parts, method) => route === 'paddle/webhook' || route.startsWith('cron/') || route === 'paddle/change' ||
+  (route === 'trial/cancel' && method === 'POST') ||
   (route === 'account' && method === 'DELETE') || isSocialWebhook(parts);
 
 export async function handle(request, env, ctx) {
@@ -300,6 +309,13 @@ async function dispatch(request, env, ctx) {
       case 'stats/exports':   // public: the total of videos exported (home page counter), cached 5 minutes
         if (method !== 'GET') break;
         return json(await exportTotal(env), 200, { 'Cache-Control': 'public, max-age=300' });
+      case 'trial/cancel':
+        // 23/11: the link of the reminder e-mail (GET: a page with one button) and its button (POST {s, t}), or the account
+        // itself ({s} of its own subscription, signed in)
+        if (method === 'GET') return cancelPage(env, new URL(request.url));
+        if (method !== 'POST') break;
+        await limit(env, 'trialcancel:' + (await sha256Hex('ip:' + clientIp(request))).slice(0, 32), 20, 3600e3, 'Too many requests, try again later.');
+        return json(await cancelTrial(env, await readJson(request, 1024), await currentUser(request, env).catch(() => null)));
       case 'config':
         if (method !== 'GET') break;
         return json(config(env), 200, { 'Cache-Control': 'no-store' });
