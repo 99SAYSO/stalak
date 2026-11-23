@@ -1683,6 +1683,20 @@ body.isdone > .bands{display:none}
 }
 @media (prefers-reduced-motion:reduce){ .hero-m{animation:none} }
 
+/* (owner, 23/11) the first video without the watermark, offered once per account: the line to sign in, the button, the
+   sentence asked before the export */
+.dv-free{margin:-2px 0 0;font:500 14px/1.4 var(--body);color:var(--ink);text-align:center}
+.dv-free .linkbtn{font-weight:700;min-height:44px}
+.dv-free[hidden],.dv-freego[hidden],.dv-freeask[hidden],.dv-freemsg[hidden]{display:none}
+.dv-freego{width:100%;justify-content:center;min-height:56px;font-size:18px;background:var(--ice)}
+.dv-freeask{display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 14px;border:2.5px solid var(--ink);border-radius:16px;background:var(--ice);box-shadow:0 3px 0 var(--ink);text-align:center}
+.dv-freeask p{margin:0;font:700 15px/1.35 var(--body);color:var(--ink)}
+.dv-freeask .dv-freeok{width:100%;justify-content:center;min-height:52px}
+.dv-freeask .linkbtn{min-height:44px}
+.dv-freemsg{margin:0;font:500 13.5px/1.4 var(--body);color:#8a1c1c;text-align:center}
+.cmp-tag.is-free{background:var(--sky-deep)}
+.doneview .dv-free,.doneview .dv-freego,.doneview .dv-freeask,.doneview .dv-freemsg{order:3}
+
 /* ---- pricing: promo, plan cards, trust line, comparison, FAQ ----
    One component for the Stalak Pro page in the app (#pro, appended to the theme by build.py / build_site.py) and the
    static pages /pricing and /fr/tarifs (served as /pricing.css). Tokens: the theme's (--ink, --sky-deep, --ice, --fur…).
@@ -2618,7 +2632,7 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
                  side (the same moment, drawn by the preview: app.js cmpShots); the video made goes in the left box -->
             <div class="dvcmp" id="dvCmp" hidden>
               <figure class="cmp-f"><div class="cmp-box" id="cmpA"></div><figcaption data-i18n="cmp.a">With the logo · Free</figcaption></figure>
-              <figure class="cmp-f cmp-pro"><div class="cmp-box"><canvas id="cmpB" width="360" height="640" role="img" aria-label="Your video without the logo" data-i18n-attr="aria-label:cmp.b.aria"></canvas></div><figcaption><span data-i18n="cmp.b">Without the logo</span> <b class="cmp-tag">PRO</b></figcaption></figure>
+              <figure class="cmp-f cmp-pro"><div class="cmp-box"><canvas id="cmpB" width="360" height="640" role="img" aria-label="Your video without the logo" data-i18n-attr="aria-label:cmp.b.aria"></canvas></div><figcaption><span data-i18n="cmp.b">Without the logo</span> <b class="cmp-tag" id="cmpBTag">PRO</b></figcaption></figure>
               <p class="cmp-note" id="cmpNote" data-i18n="cmp.note">Your edit: on the left as you exported it, on the right without the logo.</p>
             </div>
             <!-- (06/11) « Enregistrer la vidéo » first and big, the only button (22/11: on a phone it opens the share list;
@@ -2630,6 +2644,16 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
             <a class="savedl" id="saveDl" href="#" hidden data-i18n="save.dlLink">Or download the file</a>
             <button class="btn big dv-cmpgo" id="dvCmpGo" type="button" hidden><span data-i18n="cmp.go">Export without the logo</span> <b class="cmp-tag">PRO</b></button>
             <p class="cmp-price" id="dvCmpP" hidden></p>
+            <!-- (owner, 23/11) the first video without the watermark, offered once per account (app.js freeUi): signed out, a line
+                 to sign in; signed in with it still there, a button and, before the export, a sentence to confirm -->
+            <p class="dv-free" id="dvFreeIn" hidden><span data-i18n="free.in">Your 1st video without the watermark is on us:</span> <button class="linkbtn" id="dvFreeLogin" type="button" data-i18n="free.login">sign in</button></p>
+            <button class="btn big dv-freego" id="dvFreeGo" type="button" hidden data-i18n="free.go">Export without watermark (free)</button>
+            <div class="dv-freeask" id="dvFreeAsk" role="group" aria-labelledby="dvFreeAskT" hidden>
+              <p id="dvFreeAskT" data-i18n="free.ask">This is your only free video without the watermark.</p>
+              <button class="btn primary dv-freeok" id="dvFreeOk" type="button" data-i18n="free.ok">Export without watermark</button>
+              <button class="linkbtn" id="dvFreeNo" type="button" data-i18n="free.no">Not now</button>
+            </div>
+            <p class="dv-freemsg" id="dvFreeMsg" role="status" hidden></p>
             <div class="sharebox" id="shareBox" hidden></div>
             <div class="capbox" id="capBox">
               <label class="label" for="capText" data-i18n="cap.t">Caption, ready to copy</label>
@@ -3235,6 +3259,6 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
   <button class="hp-human" id="helpHuman" type="button" data-i18n="help.human" hidden>Talk to a human</button>
   <button class="hp-diag" id="helpDiag" type="button" data-i18n="help.diag">Copy info for the team</button>
 </section>
-<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.c9f4369178.js", "/assets/app.77b4b1270d.js", "/assets/tiktok.8fcf3f7d25.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v||!v.offsetParent)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
+<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.6c490afd01.js", "/assets/app.c261a6055f.js", "/assets/tiktok.8fcf3f7d25.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v||!v.offsetParent)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
 </body>
 </html>

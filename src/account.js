@@ -26,6 +26,11 @@
      changePlan(plan, interval[, preview]) -> Promise<{kind: 'up'|'down', from, to, amount?, currency?, effectiveAt?}>: a subscriber
                              moves to another plan on the same subscription (up: now, prorated; down: at the renewal); preview: the price only
      deleteAccount()
+     freeNoWm()           -> bool: this account still has its one free video without the watermark (owner, 23/11). Read in
+                             entitlements.freeNoWm (true / false), or 'freeNoWm' in entitlements.features
+     freeNoWmClaim()      -> Promise<{granted, reason?}>: POST /api/free-video (Comptes, compte/video-offerte), when the export
+                             starts: {granted: true} once in the life of the account; then {granted: false, reason: 'used'};
+                             Pro / Creator Plus: {granted: false, reason: 'pro'}. Used at the « yes », never given back
      projects.list() / get(id) / save(id, name, state[, fileIds]) / remove(id)   (name null: the name online is kept)
      projects.listAll()   -> Promise<{projects, storage: {available, used, quota, partSize, maxFile}}>
      projects.rename(id, name)
@@ -374,6 +379,9 @@
     me: me,
     config: config,
     has: has,
+    // (23/11) the one free video without the watermark of each account (server: Comptes, functions/_lib/freevideo.js)
+    freeNoWm: function () { var e = state.entitlements || FREE; return !!state.user && e.freeNoWm === true; },
+    freeNoWmClaim: function () { return api('POST', 'free-video', {}); },
     providers: function () { return config().then(function (c) { return (c.auth && c.auth.providers) || []; }); },
     signup: function (email, password, displayName) {
       return turnstileToken('signup').then(function (t) {
