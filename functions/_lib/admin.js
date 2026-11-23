@@ -206,6 +206,7 @@ export async function stats(env, days = 30, now = Date.now()) {
         checkoutClose: { start: ev.ev_checkout_close_start || 0, details: ev.ev_checkout_close_details || 0, payment: ev.ev_checkout_close_payment || 0 },
         checkoutDone: ev.ev_checkout_done || 0,
         optins: await optinCounts(env, now),
+        freeVideo: await freeVideoCounts(env, fromMs, pe),   // 23/11 « 1re vidéo sans filigrane offerte »
       },
       health: { errors30: ev.err_5xx || 0, alerts30: ev.alert || 0, codeMails30: ev.code_mail || 0,
         codeMailsToday: R(counts).filter((r) => r.d === list[list.length - 1] && r.name === 'code_mail').reduce((n, r) => n + r.n, 0) },
@@ -241,6 +242,16 @@ export function visitCountries(ev) {
   const c = {};
   for (const k in ev) { const m = /^vs:.+:([A-Z]{2})$/.exec(k); if (m) c[m[1]] = (c[m[1]] || 0) + ev[k]; }
   return Object.entries(c).map(([country, n]) => ({ country, n })).sort((a, b) => b.n - a.n).slice(0, 10);
+}
+// 23/11 « 1re vidéo sans filigrane offerte » (freevideo.js): the free accounts that took their video (period and since
+// the start), and how many of them then took Pro or Creator Plus (a subscription of the Paddle environment in use, started
+// after the free video). Deleted accounts are no longer counted (their row is gone).
+export async function freeVideoCounts(env, fromMs, pe) {
+  const r = await env.DB.prepare(`SELECT COUNT(*) AS taken, SUM(u.free_nowm_at >= ?1) AS period,
+      SUM(EXISTS (SELECT 1 FROM subscriptions s WHERE s.user_id = u.id AND s.env = ?2 AND COALESCE(s.started_at, s.last_event_at) >= u.free_nowm_at)) AS pro,
+      SUM(u.free_nowm_at >= ?1 AND EXISTS (SELECT 1 FROM subscriptions s WHERE s.user_id = u.id AND s.env = ?2 AND COALESCE(s.started_at, s.last_event_at) >= u.free_nowm_at)) AS periodPro
+    FROM users u WHERE u.free_nowm_at IS NOT NULL`).bind(fromMs, pe).first().catch(() => null);
+  return { taken: (r && r.taken) || 0, period: (r && r.period) || 0, pro: (r && r.pro) || 0, periodPro: (r && r.periodPro) || 0 };
 }
 // n°8 (the owner's numbering): the e-mails given by free users at the end of a video, with their consent (optin.js)
 export async function optinCounts(env, now = Date.now()) {
