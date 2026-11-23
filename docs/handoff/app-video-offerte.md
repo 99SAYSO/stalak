@@ -1,4 +1,4 @@
-Statut : EN COURS (tests en cours)
+Statut : PRÊT
 Branche : app/video-offerte (créée depuis `main` ec52a24 du 23/11, « STATUS : 1re vidéo sans filigrane offerte, décidée »).
 Maquette de la branche : https://app-video-offerte.stalak-site.pages.dev (à faire valider par le propriétaire, règle 9).
 Attention : tant que le serveur de Comptes n'a pas les adresses ci-dessous, la maquette ne propose jamais la vidéo offerte à
@@ -54,8 +54,16 @@ fois par compte.
 - `src/markup.html` : la ligne, le bouton et la question sur l'écran de fin.
 - `src/theme.css`.
 - `src/account.js` (Comptes).
-- Tests : nouveau `tests/ui/video_offerte_ui.py`. Il joue le serveur avec les adresses ci-dessus, sur iPhone et ordinateur, en
+- Tests : nouveau `tests/ui/video_offerte_ui.py` ; `partager_ui.py` adapté (les nouveaux éléments de l'écran de fin sont avant la
+  zone de partage). Il joue le serveur avec les adresses ci-dessus, sur iPhone et ordinateur, en
   FR et en EN.
 
 ## Résultats des tests
-(à venir)
+(23/11, sur la branche)
+- serveur `tests/backend/run.mjs` **115/115**
+- nouveau `video_offerte_ui` **68/68** (iPhone 12 et ordinateur, FR et EN)
+- `fenetre_pro_ui` **84/84**, `fin_export_ui` **98/98**, `partager_ui` **92/92** (après adaptation), `vente_ui` **63/63**
+- `audit_ui` **122/122**, `audit611_ui` **93/93**, `exports_rates_ui` **80/80**, `accueil_a_ui` **77/77**, `tiktok_ui` **220/220**
+- `clip1_ui` 83/87 : les 4 échecs viennent de `.band-frost a:hover` dans `src/bands.css` (Marketing, « Bandes de glace »,
+  e1c72fb, déjà sur `main`) : un survol qui n'est pas réservé à la souris. Sans lien avec cette branche. **Pour Marketing** :
+  le mettre dans `@media (hover:hover)`.

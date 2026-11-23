@@ -90,7 +90,7 @@ def phone(b, base, lang, dev):
           and 'primary' in L['saveCls'] and 'big' in L['saveCls'] and 'saveBtn' in L['buttons'] and L['buttons'][0] == 'saveBtn', L)
     want_dl = dev == 'Android'
     check(tag + ' : ' + ('le petit lien « ' + T['dl'] + ' » dessous' if want_dl else 'pas de lien de téléchargement en plus'), L['dl'] == want_dl and (not want_dl or L['dlTxt'] == T['dl']), L)
-    check(tag + ' : l’explication (Photos, TikTok ou Instagram) et la légende à copier', L['box'] and L['before'] in ('saveRow', 'dvCmpP') and 'postHint' in L['kids'] and 'TikTok' in L['hint']
+    check(tag + ' : l’explication (Photos, TikTok ou Instagram) et la légende à copier', L['box'] and L['before'] in ('saveRow', 'dvCmpP', 'dvFreeMsg') and 'postHint' in L['kids'] and 'TikTok' in L['hint']
           and 'Instagram' in L['hint'] and T['photos'] in L['hint'] and L['cap'], L)
     check(tag + ' : plus de liens vers les sites des réseaux (le partage du téléphone les remplace)', not L['post'], L)
     check(tag + ' : légende courte avec « made with stalak.app »', 'made with stalak.app' in L['capTxt'] and '#madewithstalak' in L['capTxt'] and len(L['capTxt']) < 140, L['capTxt'])
