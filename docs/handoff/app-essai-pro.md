@@ -1,4 +1,4 @@
-Statut : EN COURS (tests en cours)
+Statut : PRÊT
 Branche : app/essai-pro (créée depuis `origin/main` 1f62c8b le 23/11).
 Maquette de la branche : https://app-essai-pro.stalak-site.pages.dev (à faire valider par le propriétaire, règle 9).
 
@@ -62,5 +62,15 @@ seulement. Comptes fait le serveur et Paddle (droit `trialEligible`). Skills : s
 - Nouveau test `tests/ui/essai_pro_ui.py` (serveur imité : avec droit, sans droit, déconnecté, essai en cours 3 jours /
   1 jour / annulé ; iPhone 12, iPhone SE, ordinateur ; FR et EN).
 
-## Résultats des tests (23/11)
-(en cours)
+## Résultats des tests (23/11, sur la branche)
+- nouveau `essai_pro_ui` **187/187** ;
+- serveur `tests/backend/run.mjs` **115/115** ;
+- `fenetre_pro_ui` **84/84**, `fin_export_ui` **98/98**, `vente_ui` **63/63**, `plans_ui` **39/39**, `achat_ui` **23/23** ;
+- `audit_ui` **122/122**, `audit611_ui` **93/93**, `pied_de_page_ui` **842/842** ;
+- `partager_ui` **92/92** (test adapté : sous « Enregistrer la vidéo » vient maintenant la ligne de l'essai `#dvTrial`, cachée
+  quand il n'y a pas d'essai) ;
+- **comme sur `main`** : `animations_ui` 28/44 (animations de Marketing `rv-fill`, `hw-in`, `drop-march`, `fx-rise`,
+  `fx-burst`) et `formules_ui` 136/137 (filigrane dans chaque image).
+- Corrigé en cours de route : les conditions passaient sous les glaçons du bouton noir (fenêtre Pro, fonctions verrouillées)
+  et sous l'ombre du bouton de l'écran des formules ; la fenêtre Pro ne tenait plus sur l'iPhone 12 (ligne du prix annuel
+  cachée pendant l'offre d'essai, voir plus haut).
