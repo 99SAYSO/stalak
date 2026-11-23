@@ -2,15 +2,16 @@
 
     python3 /abs/path/tests/ui/video_offerte_ui.py <built public/ folder> [folder for screenshots]
 
-The server's side (Comptes) is played by a stand-in with the addresses proposed to Comptes: /api/me gives
-entitlements.freeNoWm; POST /api/free-nowm/claim → {claim}; /release {claim}; /confirm {claim}.
+The server's side (Comptes, compte/video-offerte) is played by a stand-in: /api/me gives entitlements.freeNoWm; POST
+/api/free-video → {granted: true} once, then {granted: false, reason: 'used'}; nothing given back.
 1. Signed out, end screen of a free video: under the Pro offer, « Ta 1re vidéo sans filigrane est offerte : connecte-toi ».
    A tap opens the sign-in page with that sentence on top; signing in (here: the account appears) brings back to the same end
    screen, its video still there, with « Exporter sans filigrane (offert) ».
 2. Signed in with it: that button in place of « Exporter sans le logo PRO »; a tap asks first (« C’est ta seule vidéo offerte
-   sans filigrane. »), « Pas maintenant » goes back without using it. Confirmed: the server is asked (claim) only when the
-   export starts, the video is made without the watermark, then confirmed.
-3. The export fails: given back (release), not confirmed, still offered.
+   sans filigrane. »), « Pas maintenant » goes back without using it. Confirmed: the server is asked only when the export
+   starts.
+3. The export fails: the server's « yes » is kept on the device: still offered, and the next try asks nothing again; that one
+   is made without the watermark.
 4. Used: nothing « offert » on the end screen any more; the Pro window says « Ta 1re vidéo était sans filigrane… ».
 5. Nothing else becomes free: Clip, the Pro filters and the karaoke stay locked.
 French and English, phone (iPhone 12) and computer (1280 px), no error in the page."""
@@ -59,14 +60,11 @@ class Srv:
     def api(self, route):
         u = route.request.url; p = u.split('/api/', 1)[1].split('?')[0]
         if p == 'me': return self.me(route)
-        if p.startswith('free-nowm/'):
-            k = p.split('/', 1)[1]; self.calls.append(k)
-            if k == 'claim':
-                if not self.user or not self.free: return route.fulfill(status=409, content_type='application/json', body='{"error":"free_nowm_used"}')
-                self.free = False; self.claimed = 'c%d' % len(self.calls); return route.fulfill(status=200, content_type='application/json', body=json.dumps({'claim': self.claimed}))
-            if k == 'release': self.free = True; self.claimed = None
-            if k == 'confirm': self.claimed = None
-            return route.fulfill(status=200, content_type='application/json', body='{"ok":true}')
+        if p == 'free-video':
+            self.calls.append('free-video')
+            if not self.user: return route.fulfill(status=401, content_type='application/json', body='{"error":"unauthorized"}')
+            if not self.free: return route.fulfill(status=200, content_type='application/json', body='{"granted":false,"reason":"used"}')
+            self.free = False; return route.fulfill(status=200, content_type='application/json', body='{"granted":true}')
         route.fulfill(status=204, body='')
 
 
@@ -114,26 +112,19 @@ def run(b, base, site, lang, dev, PW):
     if SHOTS: pg.locator('#dvFreeAsk').scroll_into_view_if_needed(); pg.screenshot(path=os.path.join(SHOTS, 'offerte-question-%s-%s.png' % (dev.replace(' ', '').lower(), lang)))
     pg.locator('#dvFreeNo').click(); pg.wait_for_timeout(150)
     check(tag + ' : « %s » revient au bouton, rien d’utilisé' % t['no'], vis(pg, '#dvFreeGo') and not vis(pg, '#dvFreeAsk') and srv.calls == [] and srv.free)
-    # 3. the export fails: given back
+    # 3. the export fails: the « yes » kept on the device, still offered, the next try asks nothing
     ev(pg, "window.__realAC = pickAudioConfig, pickAudioConfig = async () => { throw new Error('test : échec voulu'); }")
     check(tag + ' : (le test remplace bien la fonction)', ev(pg, "pickAudioConfig !== window.__realAC"))
     pg.locator('#dvFreeGo').click(); pg.locator('#dvFreeOk').click()
-    pg.wait_for_function('() => __ev("!S.exporting && !S.freeOn")', timeout=90000)
-    for _ in range(50):
-        if 'release' in srv.calls: break
-        pg.wait_for_timeout(100)
-    pg.wait_for_timeout(400)
-    check(tag + ' : l’export rate : la vidéo offerte est rendue (claim puis release), toujours proposée', srv.calls == ['claim', 'release'] and srv.free and ev(pg, '!store.get(FREE_USED)'), (srv.calls, ev(pg, "DIAG.slice(-14).map(String)")))
+    pg.wait_for_function('() => __ev("S.exporting")', timeout=20000)
+    pg.wait_for_function('() => __ev("!S.exporting && !S.freeOn")', timeout=90000); pg.wait_for_timeout(2500)
+    check(tag + ' : l’export rate : demandé une fois au serveur, toujours proposé (le « oui » gardé sur l’appareil)', srv.calls == ['free-video'] and vis(pg, '#dvFreeGo') and ev(pg, '!store.get(FREE_USED) && freeGrant()'),
+          (srv.calls, vis(pg, '#dvFreeGo')))
     ev(pg, "pickAudioConfig = window.__realAC")
-    # the export made: claimed at its start, the video without the watermark, confirmed
-    if not vis(pg, '#dvFreeGo'): export(pg)
-    srv.calls.clear()
-    pg.evaluate("() => { window.__claimAt = null; const f = window.fetch; window.fetch = function(u, o){ if (String(u).includes('free-nowm/claim')) window.__claimAt = __ev('S.exporting'); return f.apply(this, arguments); }; }")
     pg.locator('#dvFreeGo').click(); pg.locator('#dvFreeOk').click()
     pg.wait_for_function('() => __ev("S.exporting")', timeout=20000)
-    pg.wait_for_function('() => __ev("S.done && !S.exporting")', timeout=300000); pg.wait_for_timeout(1500)
-    check(tag + ' : la vidéo offerte n’est demandée qu’au début de l’export, puis confirmée', srv.calls == ['claim', 'confirm'], srv.calls)
-    check(tag + ' : la vidéo est faite sans filigrane', ev(pg, 'S.lastWm') is False and ev(pg, '!S.freeOn'))
+    pg.wait_for_function('() => __ev("S.done && !S.exporting")', timeout=300000); pg.wait_for_timeout(2200)
+    check(tag + ' : nouvel essai : rien redemandé au serveur, vidéo faite sans filigrane', srv.calls == ['free-video'] and ev(pg, 'S.lastWm') is False and ev(pg, '!S.freeOn && !freeGrant()'), srv.calls)
     # 4. used: nothing « offert »
     pg.wait_for_timeout(600)
     shown = [s for s in ('#dvFreeIn', '#dvFreeGo', '#dvFreeAsk') if vis(pg, s)]

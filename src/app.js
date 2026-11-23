@@ -1257,7 +1257,7 @@ const I18N_EN = /*@EN*/{
   "free.ok": "Export without watermark",
   "free.no": "Not now",
   "free.tag": "FREE",
-  "free.used": "Your free video without the watermark has already been used.",
+  "free.used": "Your free video without the watermark has already been used on this account.",
   "free.err": "Couldn’t reach Stalak. Check your connection and try again.",
   "acct.why.freenowm": "Sign in: your 1st video without the watermark is on us.",
   "pp.s": "The same video, ready to post: it ends on you, not on the Stalak logo.",
@@ -1975,7 +1975,7 @@ const I18N_FR = /*@FR*/{
   "pp.t": "Ta vidéo, sans le logo",
   "pp.tFree": "Ta 1re vidéo était sans filigrane. Toutes comme ça avec Pro ?",
   "free.tag": "OFFERT",
-  "free.used": "Ta vidéo offerte sans filigrane a déjà été utilisée.",
+  "free.used": "Ta vidéo offerte sans filigrane a déjà été utilisée sur ce compte.",
   "free.err": "Stalak n’a pas pu être joint. Vérifie ta connexion et réessaie.",
   "acct.why.freenowm": "Connecte-toi : ta 1re vidéo sans filigrane est offerte.",
   "pp.bill": "{y} facturés une fois par an · annulable à tout moment",
@@ -8281,10 +8281,18 @@ $('#dvCmpGo').onclick = () => lockOpen('nowm');
    Signed out, under the Pro offer of the end screen: « Ta 1re vidéo sans filigrane est offerte : connecte-toi ». Signing in
    (e-mail in the page, Google / Apple / Microsoft in a small window: the project stays) brings back to the same end screen.
    Signed in with it: « Exporter sans filigrane (offert) » in place of the Pro button; a tap asks first (« C’est ta seule vidéo
-   offerte sans filigrane. »). The server counts it only when the export starts (claim), gives it back if the export fails or
-   is cancelled (release), and keeps it for good once the video is made (confirm). Used: nothing « offert » any more. ---- */
-const FREE_USED = 'stalak:freeUsed';
-const freeAvail = () => !!ACCT && !!ACCT.freeNoWm && ACCT.freeNoWm() && !can('nowm');
+   offerte sans filigrane. »).
+   The server (Comptes, POST /api/free-video) says « yes » once in the life of the account, when the export starts, and never
+   gives it back (else it could be had again and again). So that a failed or cancelled export does not lose it, the « yes » is
+   kept on this device for this account (FREE_GRANT, 2 days) until a video is made without the watermark: the next try asks
+   nothing. Used: nothing « offert » any more. ---- */
+const FREE_USED = 'stalak:freeUsed', FREE_GRANT = 'stalak:freeGrant', FREE_GRANT_MS = 2 * 24 * 3600e3;
+function freeGrant(){
+  const u = ACCT && ACCT.state.user; if (!u) return false;
+  const o = store.get(FREE_GRANT);
+  return !!o && o.u === u.id && Date.now() - o.t < FREE_GRANT_MS;
+}
+const freeAvail = () => !!ACCT && !!ACCT.freeNoWm && !can('nowm') && !!ACCT.state.user && (ACCT.freeNoWm() || freeGrant());
 const freeSignedOut = () => !!ACCT && !ACCT.state.user && !store.get(FREE_USED);
 function freeUi(on){
   const avail = on && freeAvail(), out = on && !avail && freeSignedOut();
@@ -8301,17 +8309,22 @@ $('#dvFreeGo').onclick = () => { S.freeAsk2 = true; freeUi(true); try { $('#dvFr
 $('#dvFreeNo').onclick = () => { S.freeAsk2 = false; freeUi(true); try { $('#dvFreeGo').focus({ preventScroll: true }); } catch(e){} };
 $('#dvFreeOk').onclick = () => { if (S.exporting || !freeAvail()) return; S.freeAsk2 = false; S.freeWant = true; exportOne(); };
 async function freeClaim(){
-  try { const r = await ACCT.freeNoWmClaim(); S.freeClaim = r && r.claim || null; S.freeOn = true; diag('vidéo offerte sans filigrane : utilisée au début de l’export'); acctEvent('free_nowm', { cat: 'claim' }); return true; }
-  catch(e){
-    diag('vidéo offerte sans filigrane : refusée par le serveur (' + (e && (e.code || e.message)) + ')');
-    $('#dvFreeMsg').hidden = false; setT('#dvFreeMsg', e && e.code === 'free_nowm_used' ? 'free.used' : 'free.err');
-    ACCT.me().catch(() => {}); return false;
+  if (freeGrant()){ S.freeOn = true; diag('vidéo offerte sans filigrane : déjà accordée sur cet appareil, nouvel essai sans redemander'); return true; }
+  try {
+    const r = await ACCT.freeNoWmClaim();
+    if (r && r.granted){ store.set(FREE_GRANT, { u: ACCT.state.user.id, t: Date.now() }); S.freeOn = true; diag('vidéo offerte sans filigrane : accordée au début de l’export'); acctEvent('free_nowm', { cat: 'claim' }); return true; }
+    diag('vidéo offerte sans filigrane : refusée (' + (r && r.reason) + ')');
+    $('#dvFreeMsg').hidden = false; setT('#dvFreeMsg', 'free.used'); ACCT.me().catch(() => {}); return false;
+  } catch(e){
+    diag('vidéo offerte sans filigrane : serveur injoignable (' + (e && (e.code || e.message)) + ')');
+    $('#dvFreeMsg').hidden = false; setT('#dvFreeMsg', 'free.err'); return false;
   }
 }
 function freeEnd(ok){
-  const claim = S.freeClaim; S.freeOn = false; S.freeClaim = null;
-  if (ok){ store.set(FREE_USED, 1); acctEvent('free_nowm', { cat: 'used' }); diag('vidéo offerte sans filigrane : faite'); (claim ? ACCT.freeNoWmConfirm(claim) : Promise.resolve()).catch(() => {}).then(() => ACCT.me()).catch(() => {}); }
-  else { diag('vidéo offerte sans filigrane : rendue (export pas fait)'); if (claim) ACCT.freeNoWmRelease(claim).catch(() => {}).then(() => ACCT.me()).catch(() => {}); }
+  S.freeOn = false;
+  if (ok){ store.set(FREE_USED, 1); store.set(FREE_GRANT, null); acctEvent('free_nowm', { cat: 'used' }); diag('vidéo offerte sans filigrane : faite'); ACCT.me().catch(() => {}); }
+  else diag('vidéo offerte sans filigrane : export pas fait, gardée sur cet appareil pour un nouvel essai');
+  if (S.done) doneUi();
 }
 // signed in after « connecte-toi »: back to the end screen, ready to export
 function freeAfterLogin(){

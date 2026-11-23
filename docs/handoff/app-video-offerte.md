@@ -1,8 +1,9 @@
 Statut : PRÊT
 Branche : app/video-offerte (créée depuis `main` ec52a24 du 23/11, « STATUS : 1re vidéo sans filigrane offerte, décidée »).
 Maquette de la branche : https://app-video-offerte.stalak-site.pages.dev (à faire valider par le propriétaire, règle 9).
-Attention : tant que le serveur de Comptes n'a pas les adresses ci-dessous, la maquette ne propose jamais la vidéo offerte à
-un compte connecté. Elle montre seulement la ligne « connecte-toi » quand on n'est pas connecté.
+Serveur : branche `compte/video-offerte` de Comptes (`POST /api/free-video`, migration 0019). À fusionner **avec** cette branche :
+sans elle, la vidéo offerte n'est jamais proposée à un compte connecté. Seule la ligne « connecte-toi » s'affiche quand on n'est
+pas connecté.
 
 Demande : message du Chef de projet du 23/11 (5 h 25). Décision du propriétaire : « 1re vidéo sans filigrane offerte », une
 fois par compte.
@@ -21,11 +22,15 @@ fois par compte.
    - « Enregistrer la vidéo » (avec le logo) reste le premier bouton.
    - Un toucher n'exporte pas tout de suite. Il affiche d'abord « C'est ta seule vidéo offerte sans filigrane. », avec
      « Exporter sans filigrane » et « Pas maintenant ». « Pas maintenant » revient au bouton sans rien utiliser.
-3. **L'export** : la vidéo offerte n'est demandée au serveur qu'au moment où l'export commence.
-   - **Réussi** : la vidéo est faite sans filigrane, et l'app le confirme au serveur.
-   - **Raté ou annulé** : l'app la rend au serveur, et elle reste proposée. Après un nouvel essai automatique raté, elle est
-     aussi rendue.
-   - Si le serveur dit qu'elle a déjà servi (sur un autre appareil, par exemple), une phrase le dit et l'export ne part pas.
+3. **L'export** : le serveur n'est appelé qu'au moment où l'export commence (`POST /api/free-video`), et il dit « oui » une
+   seule fois dans la vie du compte.
+   - **Réussi** : la vidéo est faite sans filigrane.
+   - **Raté ou annulé** : Comptes a choisi de ne jamais rendre le « oui » (sinon on pourrait en obtenir à l'infini). L'app le
+     garde donc sur l'appareil, pour ce compte, pendant 2 jours, jusqu'à ce qu'une vidéo sans filigrane soit faite. La
+     personne voit toujours « Exporter sans filigrane (offert) », et le nouvel essai ne redemande rien au serveur. C'est la
+     façon de faire proposée par Comptes.
+   - Si le serveur répond « déjà utilisée » (sur un autre appareil, par exemple) : « Ta vidéo offerte sans filigrane a déjà
+     été utilisée sur ce compte. », et l'export ne part pas.
 4. **Une fois utilisée** :
    - plus rien de « offert » à l'écran, et plus de « connecte-toi » sur cet appareil ;
    - les vidéos suivantes ont le filigrane et l'offre Pro habituelle ;
@@ -33,21 +38,16 @@ fois par compte.
 5. **Rien d'autre ne devient gratuit** : seul le filigrane est concerné. Clip, filtres Pro, karaoké et effets gardent leurs
    verrous.
 
-## Pour Comptes : ce que l'app attend du serveur (proposition, à confirmer ou à changer)
-- **`/api/me`** : `entitlements.freeNoWm: true` tant que le compte a sa vidéo offerte, `false` ensuite. Accepté aussi :
-  `'freeNoWm'` dans `entitlements.features`.
-- **`POST /api/free-nowm/claim`**, appelé au début de l'export :
-  - réponse `{ claim: "<id>" }` ; la vidéo est alors réservée et `freeNoWm` passe à `false` ;
-  - erreur `409 { error: "free_nowm_used" }` si elle est déjà utilisée ou réservée.
-- **`POST /api/free-nowm/release { claim }`** : l'export a raté ou a été annulé. La réservation est annulée, `freeNoWm`
-  redevient `true`.
-- **`POST /api/free-nowm/confirm { claim }`** : la vidéo est faite. C'est définitif.
-- **Proposé** : une réservation ni confirmée ni rendue (onglet fermé en plein export, téléphone éteint) est rendue par le serveur
-  au bout d'un délai, par exemple 2 h. Sinon, un export coupé ferait perdre la vidéo offerte.
-- **Compteurs** : l'app envoie `free_nowm` avec `cat` `login`, `claim` ou `used`. Le serveur refuse les noms qu'il ne connaît
-  pas : à ajouter dans `EVENTS` (`metrics.js`) si Comptes veut les voir dans le tableau de bord.
-- `src/account.js` (fichier de Comptes) : ajout de `freeNoWm()`, `freeNoWmClaim()`, `freeNoWmRelease(claim)` et
-  `freeNoWmConfirm(claim)`. Si les adresses changent, ce sont les seules lignes à reprendre.
+## Avec Comptes (`compte/video-offerte`)
+- L'app lit `entitlements.freeNoWm` et appelle `POST /api/free-video` au début de l'export. Elle n'exporte sans filigrane que si
+  la réponse est `granted: true`.
+- **À trancher par le Chef de projet** : la demande disait « si l'export rate, le serveur ne doit pas la compter ». Comptes a
+  choisi de ne pas l'annuler côté serveur. L'app compense en gardant le « oui » sur l'appareil 2 jours. Limite : si la personne
+  change d'appareil, ou attend plus de 2 jours après un export raté, la vidéo offerte est perdue.
+- Compteurs : l'app envoie `free_nowm` (`cat` : `login`, `claim`, `used`). Le serveur ne connaît pas ce nom. Comptes compte
+  déjà `free_video` côté serveur, donc ces trois-là ne sont utiles que si Comptes veut l'entonnoir (« connecte-toi » touché →
+  vidéo faite).
+- `src/account.js` (fichier de Comptes) : ajout de `freeNoWm()` et `freeNoWmClaim()`.
 
 ## Fichiers
 - `src/app.js` : `freeUi`, `freeClaim`, `freeEnd`, `freeAfterLogin`, le début de l'export, la fenêtre Pro, les textes FR/EN.
@@ -55,7 +55,7 @@ fois par compte.
 - `src/theme.css`.
 - `src/account.js` (Comptes).
 - Tests : nouveau `tests/ui/video_offerte_ui.py` ; `partager_ui.py` adapté (les nouveaux éléments de l'écran de fin sont avant la
-  zone de partage). Il joue le serveur avec les adresses ci-dessus, sur iPhone et ordinateur, en
+  zone de partage). Il joue le serveur de Comptes, sur iPhone et ordinateur, en
   FR et en EN.
 
 ## Résultats des tests
