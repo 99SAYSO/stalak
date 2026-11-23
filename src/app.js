@@ -11561,7 +11561,7 @@ function mobHome(){ return !$('#p1').hidden && $('#songBox').hidden && !S.takes.
 function mobGsap(){
   if (window.gsap) return Promise.resolve(window.gsap);
   if (!window.STALAK_GSAP || !MOB.matches || calmMotion()) return Promise.resolve(null);
-  if (!mobGsapP) mobGsapP = new Promise(res => { const e = document.createElement('script'); e.src = window.STALAK_GSAP; e.async = true;
+  if (!mobGsapP) mobGsapP = new Promise(res => { const e = document.createElement('script'); e.src = window.STALAK_GSAP; e.async = false;
     e.onload = () => res(window.gsap || null); e.onerror = () => res(null); document.head.appendChild(e); });
   return mobGsapP;
 }

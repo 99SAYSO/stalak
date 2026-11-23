@@ -302,8 +302,9 @@ body.lite .tl .cut{box-shadow:none!important;text-shadow:none!important}
   --bg:var(--sky); --surface:var(--snow); --sunk:var(--frost); --muted:#3f5170; --line:var(--ink);
   --accent:var(--sky); --accent-ink:#ffffff; --ok:#11804a; --warn:#a65300;
   --display:'Lilita One','Arial Rounded MT Bold','Arial Black',system-ui,sans-serif;
-  --body:'Rubik','Arial Rounded MT Bold','Helvetica Neue',Arial,system-ui,sans-serif;
-  --mono:'Rubik','Helvetica Neue',Arial,sans-serif;
+  /* (23/11, the owner: DM Sans for the text of the app, on a phone and on a computer; Lilita One stays for titles and buttons) */
+  --body:'DM Sans','Helvetica Neue',Arial,system-ui,sans-serif;
+  --mono:'DM Sans','Helvetica Neue',Arial,sans-serif;
 
   --stroke:3px;
   --pop:0 5px 0 var(--ink);                 /* relief de dessin animé */
@@ -1124,6 +1125,7 @@ header .stepper{margin-left:auto}
 @media (prefers-reduced-motion:reduce){ .pricebtn{animation:none} .pricebtn::before{animation:none} .pricebtn::after{display:none} }
 /* « voix seule » link under « Écrire mes paroles » */
 .voxpick{margin-top:6px}
+.voxpick[hidden],.brollbox[hidden]{display:none}
 .voxpick .btn.link{color:var(--ink);font-weight:500;white-space:normal;text-align:left;padding:6px 0;min-height:44px;font-size:14px;text-decoration-thickness:1px;text-underline-offset:3px}
 .voxpick #lyVoxOn{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px}
 .voxpick #lyVoxOn[hidden]{display:none}
@@ -2124,7 +2126,7 @@ body.ttk-on{overflow:hidden}
 
 /* ---- App & montage — refonte de l'interface mobile (demande du Chef de projet du 23/11, démos validées par le propriétaire :
    docs/audit/maquettes/mobile-2026-11-23/). Tout est sous 900 px : l'ordinateur ne change pas.
-   Lot 1 : DM Sans pour le texte, barre du bas, accueil, ouverture « le glaçon » (src/splash.js, stalak.app seulement).
+   Lot 1 : barre du bas (DM Sans pour le texte : src/theme.css, partout), accueil, ouverture « le glaçon » (src/splash.js, stalak.app seulement).
    The state comes from app.js (mobUi): html.medit = the editor, the camera, an export (no bar, the page as before);
    html.mpage = a page of the account opened from the bar (the bar stays); neither = the home screen.
    Motion: the timelines are GSAP ones, as in the HyperFrames demos (app.js mob*, splash.js); nothing moves with « reduce motion ». ---- */
@@ -2132,9 +2134,7 @@ body.ttk-on{overflow:hidden}
 #splash{display:none}
 
 @media (max-width:899px){
-  :root:root:root{   /* (three times: the theme declares its fonts on :root:not([data-theme]) ) */
-    --body:'DM Sans','Helvetica Neue',Arial,system-ui,sans-serif;
-    --mono:'DM Sans','Helvetica Neue',Arial,sans-serif;
+  :root{
     --tabh:66px;                                  /* the bar, without the safe area of the phone */
     --tabs:calc(var(--tabh) + env(safe-area-inset-bottom,0px));
     --blue:#1f6fd6; --tab-ink:#56657f;
@@ -2183,6 +2183,9 @@ body.ttk-on{overflow:hidden}
   html:not(.medit) #p1 > .card:not(.lpoffer)::before,html:not(.medit) #p1 > .card:not(.lpoffer)::after{display:none}
   html:not(.medit) #p1 > .card:not(.lpoffer) > :not(.nearbox){display:none}
   html:not(.medit) #p1 > .nav{display:none}
+  /* a problem with the file just chosen: said right under the top line, in view (not at the bottom, under the bar) */
+  html:not(.medit) .mh-top{order:-2}
+  html:not(.medit) #p1 > .card:not(.lpoffer):has(.nearmsg){order:-1;margin:10px 0 0}
   html:not(.medit) .installtip{margin-top:18px}
 
   /* the top line: the greeting (signed in) and the formula */
@@ -2301,141 +2304,7 @@ html.splash-on #splash{display:block}
 </style>
 </head>
 <body>
-<script>window.STALAK_GSAP="/vendor/gsap-3.15.0.min.js";</script>
-<script>/* App & montage — refonte mobile, lot 1 (23/11) : l'ouverture « le glaçon », validée par le propriétaire
-   (docs/audit/maquettes/mobile-2026-11-23/01-ouverture-glacon.mp4, source HyperFrames : sources/splash/index.html).
-   The same GSAP timeline as the demo, on the real page: the ice cube falls, the mascot sleeps in it, wakes up, it bursts, she
-   jumps and waves, « Stalak » letter by letter, the blue curtain lifts on the home screen and she goes to her place there.
-   - stalak.app only (build_site.py writes this script first in <body>), phones only (under 900 px);
-   - once per session at most, never over a page opened for something else (a #… address, an edit being reopened);
-   - a touch passes it; never with « reduce motion »; if the library does not come within 3 s, the curtain simply fades;
-   - the owner found the shards a bit slow: they fly in 0.62 s instead of 1.1 s, and the curtain lifts at 4 s (4.35 s before). */
-(function () {
-  var d = document, root = d.documentElement, W = window, GSAP = W.STALAK_GSAP;
-  try {
-    if (!GSAP || !W.matchMedia || !matchMedia('(max-width:899px)').matches || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    if (navigator.webdriver && !W.__stalakSplash) return;            // automated checks: only the one that asks for it
-    if (location.hash && location.hash.length > 1) return;
-    if (sessionStorage.getItem('stalak:splash') || sessionStorage.getItem('stalak:openProject')) return;
-    sessionStorage.setItem('stalak:splash', '1');
-  } catch (e) { return; }
-
-  var sp = d.createElement('div'); sp.id = 'splash'; sp.setAttribute('aria-hidden', 'true');
-  sp.innerHTML =
-    '<div class="sp-curtain"><div class="sp-bg"><\/div><div class="sp-rays"><\/div><div class="sp-snow"><\/div>' +
-    '<svg class="sp-edge" viewBox="0 0 1080 120" preserveAspectRatio="none"><path d="M0 0H1080V20H960Q945 80 930 112Q912 76 900 20H640Q622 70 600 96Q578 70 560 20H330Q316 66 300 90Q282 62 270 20H120Q106 76 90 108Q72 70 60 20H0Z" fill="#1657b3"/><\/svg>' +
-    '<svg class="sp-ice" viewBox="0 0 1080 230"><path d="M-20 -20H1100V112H950Q934 172 916 206Q898 168 884 112H700Q684 164 668 190Q650 160 638 112H420Q404 176 386 214Q366 170 352 112H190Q174 160 160 184Q144 156 132 112H-20Z" fill="#fff" stroke="#0a0d14" stroke-width="16" stroke-linejoin="round"/><\/svg>' +
-    '<div class="sp-stage"><div class="sp-word"><span>S<\/span><span>t<\/span><span>a<\/span><span>l<\/span><span>a<\/span><span>k<\/span><\/div><\/div><\/div>' +
-    '<div class="sp-stage"><div class="sp-shake"><div class="sp-shadow"><\/div><div class="sp-puffs"><\/div><div class="sp-flash"><\/div>' +
-    '<div class="sp-cube"><div class="sp-cubeIn"><div class="sp-box"><img class="sp-sleep" src="/emoji/sleep.webp?v=2" alt="" width="256" height="256"><img class="sp-shock" src="/emoji/shock.webp?v=2" alt="" width="256" height="256" style="opacity:0"><div class="sp-frost"><\/div><div class="sp-shine"><\/div><div class="sp-shine2"><\/div><\/div>' +
-    '<svg class="sp-cracks" viewBox="0 0 500 500" fill="none" stroke="#0a0d14" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"><path class="sp-c1" d="M262 8L224 96L286 168L236 250"/><path class="sp-c2" d="M236 250L128 282L20 244M236 250L282 352L246 492"/><path class="sp-c3" d="M286 168L392 196L492 170M282 352L388 384L490 350M128 282L96 380"/><\/svg><\/div><\/div>' +
-    '<div class="sp-shards"><\/div><div class="sp-masc"><div class="sp-mascIn"><\/div><\/div><\/div><\/div>';
-  var vw = W.innerWidth || 390, vh = W.innerHeight || 664, k = vw / 1080;
-  sp.style.setProperty('--sp', String(k)); sp.style.setProperty('--sp-y', Math.round(vh * 0.44 - 890 * k) + 'px');
-  root.classList.add('splash-on'); d.body.insertBefore(sp, d.body.firstChild);
-  var q = function (s) { return sp.querySelector(s); }, done = false, tl = null, t0 = Date.now();
-
-  function end() {
-    if (done) return; done = true;
-    root.classList.remove('splash-on', 'splash-lift'); if (sp.parentNode) sp.parentNode.removeChild(sp);
-    W.__stalakSplashDone = true; W.__stalakSplashMs = Date.now() - t0;
-  }
-  function fade() {   // no library: the curtain leaves gently, the page is there
-    if (done) return; sp.style.transition = 'opacity .3s ease-out'; sp.style.opacity = '0'; setTimeout(end, 320);
-  }
-  var imgs = 0, ready = false, lib = false;
-  function go() { if (tl || done || !lib || !(ready || Date.now() - t0 > 900)) return; try { play(W.gsap); } catch (e) { fade(); } }
-  [].forEach.call(sp.querySelectorAll('img'), function (i) { var f = function () { if (++imgs >= 2) { ready = true; go(); } }; if (i.complete) f(); else { i.onload = f; i.onerror = f; } });
-  setTimeout(function () { ready = true; go(); }, 900);
-  if (W.gsap) { lib = true; go(); }
-  else { var s = d.createElement('script'); s.src = GSAP; s.async = true; s.onload = function () { lib = !!W.gsap; if (lib) go(); else fade(); }; s.onerror = fade; d.head.appendChild(s); }
-  setTimeout(function () { if (!tl) fade(); }, 3000);
-  // a touch passes it: the rest plays 5 times faster, then the home screen comes in as usual
-  sp.addEventListener('pointerdown', function () { if (tl && tl.time() < X) tl.timeScale(5); });
-
-  var X = 4.0, T = 2.5, D = 6;
-  function play(gsap) {
-    var seed = 11, R = function () { return (seed = (seed * 16807) % 2147483647) / 2147483647; };
-    tl = gsap.timeline();
-    var cube = q('.sp-cube'), cubeIn = q('.sp-cubeIn'), shake = q('.sp-shake'), shadow = q('.sp-shadow'), masc = q('.sp-masc'), mascIn = q('.sp-mascIn'), rays = q('.sp-rays');
-    // snow
-    var snow = q('.sp-snow');
-    for (var i = 0; i < 24; i++) { var f = d.createElement('div'); f.className = 'sp-fl'; var z = 3 + R() * 7;
-      f.style.cssText = 'left:' + (R() * 100) + '%;top:' + (-16 + R() * 100) + '%;width:' + z + 'px;height:' + z + 'px;opacity:' + (0.25 + R() * 0.5); snow.appendChild(f);
-      tl.fromTo(f, { y: 0, x: 0 }, { y: 90 + R() * 150, x: (R() - 0.5) * 44, duration: D, ease: 'none' }, 0); }
-    // the bar of ice at the top
-    tl.fromTo('.sp-ice', { yPercent: -110 }, { yPercent: 0, duration: 0.55, ease: 'back.out(1.5)' }, 0.05);
-    gsap.set(rays, { opacity: 0, transformOrigin: '50% 50%' });
-    gsap.set([cube, cubeIn, masc, mascIn], { transformOrigin: '50% 100%' });
-    // the cube falls
-    gsap.set(cube, { opacity: 1 });
-    tl.fromTo(cube, { y: -1700, rotation: -26 }, { y: 0, rotation: 0, duration: 0.5, ease: 'power2.in' }, 0.2);
-    tl.fromTo(shadow, { scale: 0.15, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, ease: 'power2.in' }, 0.2);
-    tl.fromTo(cubeIn, { scaleX: 1, scaleY: 1 }, { scaleX: 1.22, scaleY: 0.78, duration: 0.07, ease: 'power2.out' }, 0.7);
-    tl.to(cubeIn, { scaleX: 1, scaleY: 1, duration: 0.6, ease: 'elastic.out(1,0.38)' }, 0.77);
-    tl.fromTo(shake, { y: 0 }, { y: 30, duration: 0.05, ease: 'power2.out' }, 0.7).to(shake, { y: 0, duration: 0.45, ease: 'elastic.out(1,0.3)' }, 0.75);
-    // a puff of snow where it lands
-    var puffs = q('.sp-puffs');
-    for (i = 0; i < 12; i++) { var p = d.createElement('div'); p.className = 'sp-pf'; puffs.appendChild(p); var dir = i % 2 ? 1 : -1, dx = dir * (150 + R() * 330), up = -(40 + R() * 150), s = 0.6 + R() * 1.1;
-      tl.fromTo(p, { x: dir * 120, y: 0, scale: 0, opacity: 1 }, { x: dx, y: up, scale: s, duration: 0.45, ease: 'power3.out' }, 0.7);
-      tl.to(p, { opacity: 0, scale: s * 0.4, y: up + 40, duration: 0.3, ease: 'power2.in' }, 1.1); }
-    // knocks from the inside, the cracks
-    [['.sp-c1', 1.3, 5], ['.sp-c2', 1.66, -8], ['.sp-c3', 1.98, 10]].forEach(function (c) { var id = q(c[0]), t = c[1], a = c[2];
-      gsap.set(id, { strokeDasharray: 900, strokeDashoffset: 900 });
-      tl.to(id, { strokeDashoffset: 0, duration: 0.14, ease: 'power3.out' }, t);
-      tl.to(cube, { rotation: a, duration: 0.06, ease: 'power2.out' }, t).to(cube, { rotation: -a * 0.6, duration: 0.08, ease: 'power1.inOut' }, t + 0.06).to(cube, { rotation: 0, duration: 0.24, ease: 'elastic.out(1,0.4)' }, t + 0.14);
-      tl.to(cubeIn, { scaleX: 1.05, scaleY: 0.96, duration: 0.06 }, t).to(cubeIn, { scaleX: 1, scaleY: 1, duration: 0.2, ease: 'back.out(3)' }, t + 0.06); });
-    tl.to('.sp-sleep', { opacity: 0, duration: 0.04 }, 1.66).to('.sp-shock', { opacity: 1, duration: 0.04 }, 1.66);
-    // a breath, then it bursts
-    tl.to(cubeIn, { scaleX: 1.14, scaleY: 0.84, duration: 0.22, ease: 'power2.inOut' }, 2.22);
-    tl.to(cubeIn, { scaleX: 1.3, scaleY: 1.3, duration: 0.06, ease: 'power3.in' }, 2.44);
-    tl.to(cube, { opacity: 0, duration: 0.03 }, T);
-    tl.fromTo('.sp-flash', { scale: 0.4, opacity: 0 }, { scale: 0.5, opacity: 1, duration: 0.02, immediateRender: false }, T).to('.sp-flash', { scale: 3.6, opacity: 0, duration: 0.4, ease: 'power3.out' }, T + 0.02);
-    tl.to(shake, { y: -26, duration: 0.05, ease: 'power2.out' }, T).to(shake, { y: 0, duration: 0.5, ease: 'elastic.out(1,0.3)' }, T + 0.05);
-    tl.to(rays, { opacity: 0.2, duration: 0.3, ease: 'power2.out' }, T).fromTo(rays, { rotation: 0 }, { rotation: 32, duration: D - T, ease: 'none' }, T);
-    var sh = q('.sp-shards');
-    for (i = 0; i < 16; i++) { var a = (i / 16) * 6.283 + R() * 0.3, dist = 420 + R() * 420, sc = 0.6 + R() * 1.1, e = d.createElement('div'); e.className = 'sp-sh';
-      e.innerHTML = '<svg viewBox="0 0 120 120"><path d="M12 ' + (24 + R() * 30) + 'L' + (84 + R() * 26) + ' 10L' + (64 + R() * 40) + ' 110Z" fill="' + (i % 3 ? '#d6ecff' : '#fff') + '" stroke="#0a0d14" stroke-width="11" stroke-linejoin="round"/><\/svg>'; sh.appendChild(e);
-      var ox = Math.cos(a) * 150, oy = Math.sin(a) * 150, ex = Math.cos(a) * dist, ey = Math.sin(a) * dist;
-      tl.fromTo(e, { x: ox, opacity: 1, scale: sc }, { x: ex, duration: 0.62, ease: 'power2.out', immediateRender: false }, T);
-      tl.fromTo(e, { y: oy }, { y: ey - 170, duration: 0.22, ease: 'power2.out', immediateRender: false }, T).to(e, { y: ey + 900, duration: 0.42, ease: 'power2.in' }, T + 0.22);
-      tl.fromTo(e, { rotation: 0 }, { rotation: (R() - 0.5) * 900, duration: 0.62, ease: 'none', immediateRender: false }, T);
-      tl.to(e, { opacity: 0, duration: 0.12 }, T + 0.5); }
-    // the mascot jumps out, lands, settles
-    tl.to(masc, { opacity: 1, duration: 0.03 }, T);
-    tl.fromTo(masc, { y: 70, scale: 0.72, rotation: -9 }, { y: -230, scale: 1, rotation: 5, duration: 0.3, ease: 'power2.out', immediateRender: false }, T);
-    tl.fromTo(mascIn, { scaleX: 0.9, scaleY: 1.14 }, { scaleX: 0.96, scaleY: 1.06, duration: 0.3, ease: 'power1.out', immediateRender: false }, T);
-    tl.to(masc, { y: 0, rotation: 0, duration: 0.24, ease: 'power2.in' }, T + 0.3);
-    tl.to(mascIn, { scaleX: 1.16, scaleY: 0.84, duration: 0.07, ease: 'power2.out' }, T + 0.54).to(mascIn, { scaleX: 1, scaleY: 1, duration: 0.6, ease: 'elastic.out(1,0.4)' }, T + 0.61);
-    tl.to(shadow, { scale: 0.6, opacity: 0.5, duration: 0.3, ease: 'power2.out' }, T).to(shadow, { scale: 1.05, opacity: 1, duration: 0.24, ease: 'power2.in' }, T + 0.3);
-    tl.to(shake, { y: 16, duration: 0.05 }, T + 0.54).to(shake, { y: 0, duration: 0.35, ease: 'elastic.out(1,0.35)' }, T + 0.59);
-    // the name, letter by letter
-    [].forEach.call(sp.querySelectorAll('.sp-word span'), function (l, n) { tl.fromTo(l, { y: 120, scale: 0.3, opacity: 0, rotation: (n % 2 ? 1 : -1) * 14 }, { y: 0, scale: 1, opacity: 1, rotation: 0, duration: 0.42, ease: 'back.out(2.4)' }, 3.12 + n * 0.055); });
-    // the curtain lifts; she goes to her place on the home screen, which comes in
-    tl.call(function () { tl.timeScale(1); lift(gsap, masc, shadow); }, null, X);
-  }
-  function lift(gsap, masc, shadow) {
-    var vis = function (n) { return !!n && n.getClientRects().length > 0; }, k2 = parseFloat(sp.style.getPropertyValue('--sp')) || 0.36;
-    // where the mascot of the page stands (the pitch signed out, the card « Nouveau montage » signed in)
-    var spot = [d.querySelector('.hero-m'), d.querySelector('#mhNew i')].filter(vis)[0], out = gsap.timeline({ onComplete: function () { if (spot) spot.style.visibility = ''; end(); } });
-    sp.style.pointerEvents = 'none';
-    out.to('.sp-curtain', { yPercent: -112, duration: 0.62, ease: 'power3.in' }, 0);
-    out.to(shadow, { opacity: 0, scale: 0.5, duration: 0.25 }, 0);
-    if (spot) {
-      var a = masc.getBoundingClientRect(), b = spot.getBoundingClientRect();
-      spot.style.visibility = 'hidden';
-      out.to(masc, { x: ((b.left + b.width / 2) - (a.left + a.width / 2)) / k2, y: (b.bottom - a.bottom) / k2, scale: b.width / a.width, duration: 0.75, ease: 'power3.inOut' }, 0.05);
-    } else out.to(masc, { opacity: 0, scale: 0.6, duration: 0.3, ease: 'power2.in' }, 0.1);
-    var text = [].filter.call(d.querySelectorAll('#mhHi, .hero-h1, .hero-s2, #mhNew .mh-newP'), vis);
-    var rise = [].filter.call(d.querySelectorAll('#heroSong, #mhNew, #mhLastT, #lpOffer, #mhList'), vis);
-    var soft = [].filter.call(d.querySelectorAll('#mhPill, #heroDemo, #mhEx, #heroProof, #helpBtn, .installtip'), vis), bar = d.getElementById('tabBar');
-    if (text.length) out.fromTo(text, { opacity: 0, filter: 'blur(6px)' }, { opacity: 1, filter: 'blur(0px)', duration: 0.3, ease: 'power2.out', stagger: 0.12, clearProps: 'opacity,filter' }, 0.5);
-    if (rise.length) out.fromTo(rise, { opacity: 0, y: 28, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: 'back.out(1.6)', stagger: 0.08, clearProps: 'opacity,transform' }, 0.62);
-    if (soft.length) out.fromTo(soft, { opacity: 0 }, { opacity: 1, duration: 0.3, stagger: 0.06, clearProps: 'opacity' }, 0.85);
-    if (vis(bar)) out.fromTo(bar, { yPercent: 105 }, { yPercent: 0, duration: 0.55, ease: 'power4.out', clearProps: 'transform' }, 0.6);
-  }
-})();
-</script>
+<script>(function(){var d=document,W=window,G=W.STALAK_GSAP="/vendor/gsap-3.15.0.min.js";try{if(!W.matchMedia||!matchMedia('(max-width:899px)').matches||matchMedia('(prefers-reduced-motion: reduce)').matches)return;if(navigator.webdriver&&!W.__stalakSplash)return;if(location.hash&&location.hash.length>1)return;if(sessionStorage.getItem('stalak:splash')||sessionStorage.getItem('stalak:openProject'))return;sessionStorage.setItem('stalak:splash','1');}catch(e){return;}var sp=d.createElement('div'),r=d.documentElement;sp.id='splash';sp.setAttribute('aria-hidden','true');sp.innerHTML='<div class="sp-curtain"><div class="sp-bg"></div></div>';r.classList.add('splash-on');d.body.insertBefore(sp,d.body.firstChild);W.__stalakSplashT=Date.now();function bye(){if(W.__stalakSplashGo||!sp.parentNode)return;sp.style.transition='opacity .3s ease-out';sp.style.opacity='0';setTimeout(function(){r.classList.remove('splash-on');if(sp.parentNode)sp.parentNode.removeChild(sp);W.__stalakSplashDone=true;},320);}[G,"/assets/splash.5480163793.js"].forEach(function(u){var s=d.createElement('script');s.src=u;s.async=false;s.onerror=bye;d.head.appendChild(s);});setTimeout(bye,3000);})();</script>
 <div class="frhint" id="frHint" lang="fr" hidden><a href="/fr/" id="frHintGo">Version française <span aria-hidden="true">→</span></a><button type="button" id="frHintX" aria-label="Fermer">×</button></div>
 <script>/* Marketing & croissance: « Version française → » on the English home, for a phone set to French */
 (function(){var b=document.getElementById('frHint');if(!b)return;
@@ -2689,7 +2558,9 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
         </ol>
         <p class="ws-p" data-i18n="ws.p">You can already listen and change the settings: the edit updates by itself.</p>
       </div>
-      <div class="brollbox">
+      <!-- (23/11, the owner: « plans d'ambiance, enlève ») no longer offered; an older edit that has some still plays them, and its
+           « Ambiance » setting (step 4) stays for it -->
+      <div class="brollbox" hidden>
         <div class="brollhead">
           <label class="btn tip" for="brollFiles" data-tip="Videos where you’re not singing: the street, the studio, the car, your friends… No need to sync them, their sound is never used." data-i18n="broll.add" data-i18n-attr="data-tip:broll.add.tip">+ B-roll</label>
           <span class="hint" data-i18n="broll.hint">Optional: videos without singing, slipped between your takes.</span>
@@ -2755,7 +2626,8 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
               <div class="row" style="margin-top:10px">
                 <button class="btn primary" id="lyTrGo" type="button">Écrire mes paroles</button>
               </div>
-              <div class="voxpick" id="lyVox">
+              <!-- (23/11, the owner: « l'option voix seule, enlève-la ») no longer offered -->
+              <div class="voxpick" id="lyVox" hidden>
                 <label class="btn link" for="lyVoxFile" id="lyVoxPick" data-i18n="lyr.vox.pick">Got the vocals alone (a cappella)? Import them for an even more accurate transcription</label>
                 <input type="file" id="lyVoxFile" accept="audio/*,video/*,.mp3,.wav,.m4a,.aac,.flac,.ogg,.mp4,.mov,.m4v">
                 <p class="hint" id="lyVoxOn" hidden><span id="lyVoxName"></span> <button class="btn link" type="button" id="lyVoxDel" data-i18n="lyr.vox.del">Remove</button></p>
@@ -3586,6 +3458,6 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
   <button class="hp-human" id="helpHuman" type="button" data-i18n="help.human" hidden>Talk to a human</button>
   <button class="hp-diag" id="helpDiag" type="button" data-i18n="help.diag">Copy info for the team</button>
 </section>
-<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.c9f4369178.js", "/assets/app.af65cdd8be.js", "/assets/tiktok.8fcf3f7d25.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v||!v.offsetParent)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
+<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.c9f4369178.js", "/assets/app.01032a00c4.js", "/assets/tiktok.8fcf3f7d25.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v||!v.offsetParent)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
 </body>
 </html>

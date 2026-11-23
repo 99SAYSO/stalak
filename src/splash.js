@@ -5,18 +5,13 @@
    - stalak.app only (build_site.py writes this script first in <body>), phones only (under 900 px);
    - once per session at most, never over a page opened for something else (a #… address, an edit being reopened);
    - a touch passes it; never with « reduce motion »; if the library does not come within 3 s, the curtain simply fades;
+   - the page itself decides and shows the blue curtain before its first picture (a few lines written in it by build_site.py,
+     SPLASH_BOOT), then loads GSAP and this file (/assets/splash.<version>.js): nothing of it weighs on the page otherwise;
    - the owner found the shards a bit slow: they fly in 0.62 s instead of 1.1 s, and the curtain lifts at 4 s (4.35 s before). */
 (function () {
-  var d = document, root = d.documentElement, W = window, GSAP = W.STALAK_GSAP;
-  try {
-    if (!GSAP || !W.matchMedia || !matchMedia('(max-width:899px)').matches || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    if (navigator.webdriver && !W.__stalakSplash) return;            // automated checks: only the one that asks for it
-    if (location.hash && location.hash.length > 1) return;
-    if (sessionStorage.getItem('stalak:splash') || sessionStorage.getItem('stalak:openProject')) return;
-    sessionStorage.setItem('stalak:splash', '1');
-  } catch (e) { return; }
-
-  var sp = d.createElement('div'); sp.id = 'splash'; sp.setAttribute('aria-hidden', 'true');
+  var d = document, root = d.documentElement, W = window, sp = d.getElementById('splash');
+  if (!sp || !W.gsap || W.__stalakSplashGo || !root.classList.contains('splash-on')) return;   // the page decides (build_site.py SPLASH_BOOT)
+  W.__stalakSplashGo = 1;
   sp.innerHTML =
     '<div class="sp-curtain"><div class="sp-bg"></div><div class="sp-rays"></div><div class="sp-snow"></div>' +
     '<svg class="sp-edge" viewBox="0 0 1080 120" preserveAspectRatio="none"><path d="M0 0H1080V20H960Q945 80 930 112Q912 76 900 20H640Q622 70 600 96Q578 70 560 20H330Q316 66 300 90Q282 62 270 20H120Q106 76 90 108Q72 70 60 20H0Z" fill="#1657b3"/></svg>' +
@@ -28,24 +23,19 @@
     '<div class="sp-shards"></div><div class="sp-masc"><div class="sp-mascIn"></div></div></div></div>';
   var vw = W.innerWidth || 390, vh = W.innerHeight || 664, k = vw / 1080;
   sp.style.setProperty('--sp', String(k)); sp.style.setProperty('--sp-y', Math.round(vh * 0.44 - 890 * k) + 'px');
-  root.classList.add('splash-on'); d.body.insertBefore(sp, d.body.firstChild);
-  var q = function (s) { return sp.querySelector(s); }, done = false, tl = null, t0 = Date.now();
+  var q = function (s) { return sp.querySelector(s); }, done = false, tl = null, t0 = W.__stalakSplashT || Date.now();
 
   function end() {
     if (done) return; done = true;
     root.classList.remove('splash-on', 'splash-lift'); if (sp.parentNode) sp.parentNode.removeChild(sp);
     W.__stalakSplashDone = true; W.__stalakSplashMs = Date.now() - t0;
   }
-  function fade() {   // no library: the curtain leaves gently, the page is there
-    if (done) return; sp.style.transition = 'opacity .3s ease-out'; sp.style.opacity = '0'; setTimeout(end, 320);
-  }
-  var imgs = 0, ready = false, lib = false;
-  function go() { if (tl || done || !lib || !(ready || Date.now() - t0 > 900)) return; try { play(W.gsap); } catch (e) { fade(); } }
-  [].forEach.call(sp.querySelectorAll('img'), function (i) { var f = function () { if (++imgs >= 2) { ready = true; go(); } }; if (i.complete) f(); else { i.onload = f; i.onerror = f; } });
-  setTimeout(function () { ready = true; go(); }, 900);
-  if (W.gsap) { lib = true; go(); }
-  else { var s = d.createElement('script'); s.src = GSAP; s.async = true; s.onload = function () { lib = !!W.gsap; if (lib) go(); else fade(); }; s.onerror = fade; d.head.appendChild(s); }
-  setTimeout(function () { if (!tl) fade(); }, 3000);
+  function fade() { if (done) return; sp.style.transition = 'opacity .3s ease-out'; sp.style.opacity = '0'; setTimeout(end, 320); }
+  // the two pictures of the cube first (0.9 s at most), then it plays
+  var imgs = 0, started = false;
+  function go() { if (started || done) return; started = true; try { play(W.gsap); } catch (e) { fade(); } }
+  [].forEach.call(sp.querySelectorAll('img'), function (i) { var f = function () { if (++imgs >= 2) go(); }; if (i.complete) f(); else { i.onload = f; i.onerror = f; } });
+  setTimeout(go, 900);
   // a touch passes it: the rest plays 5 times faster, then the home screen comes in as usual
   sp.addEventListener('pointerdown', function () { if (tl && tl.time() < X) tl.timeScale(5); });
 

@@ -12,7 +12,8 @@ Checked, in French and English:
   and as soon as a song is there (the editor: header, steps and every setting of step 1 back as before);
 - the opening « le glaçon »: once per session, the home screen underneath at the end, a touch passes it, never with « reduce
   motion », never on a computer; GSAP comes from the site (no outside address);
-- on a computer (1280 px): no bar, no opening, Rubik, the header as before;
+- on a computer (1280 px): no bar, no opening, the header as before; the text in DM Sans there too (the owner, 23/11);
+- « + Plans d'ambiance » (step 2) and « voix seule » (step 3) are no longer offered (the owner, 23/11);
 - nothing wider than the screen, no error in the page."""
 import functools, http.server, json, os, shutil, subprocess, sys, tempfile, threading
 os.environ.setdefault('PLAYWRIGHT_BROWSERS_PATH', '/opt/pw-browsers')
@@ -152,6 +153,10 @@ def phone(b, PW, base, site, lang, dev):
     check(tag + ' : étape Son : aucun réglage ne manque (TikTok / Clip, onde, durée, rythme, changer de son, exemple, Continuer)', all(ed[k] for k in ('kind', 'wave', 'bars', 'beat', 'drop', 'demo', 'next')), ed)
     check(tag + ' : l’éditeur garde son fond bleu', ed['bg'] == 'rgb(31, 111, 214)', ed['bg'])
     shot(pg, 'rm1-etape-son-' + key)
+    # (the owner, 23/11) « plans d'ambiance » and « voix seule » are no longer offered
+    ev(pg, 'go(2)'); pg.wait_for_timeout(500)
+    gone = pg.evaluate('''() => ['.brollbox', 'label[for="brollFiles"]', '#lyVox', '#lyVoxPick'].filter(s => { const e = document.querySelector(s); return e && e.getClientRects().length; })''')
+    check(tag + ' : étape Prises : « + Plans d’ambiance » n’est plus proposé ; « voix seule » non plus', not gone and bool(pg.evaluate('''() => !!document.querySelector('label[for="takeFiles"]').offsetParent''')), gone)
     check(tag + ' : aucune erreur dans la page', not errs, errs[:3])
     check(tag + ' : aucune adresse extérieure appelée (GSAP et polices viennent du site)', not out, out[:3])
     ctx.close()
@@ -246,7 +251,7 @@ def computer(b, PW, base, lang):
         return { bar: v('#tabBar'), top: v('#mhTop'), new: v('#mhNew'), last: v('#mhLastT'), splash: !!document.querySelector('#splash'), gsap: !!window.gsap, header: v('.wrap > header'), steps: v('#stepper'),
           font: getComputedStyle(document.body).fontFamily, drop: !!document.querySelector('#songDrop').offsetParent, bg: getComputedStyle(document.documentElement).backgroundColor }; }''')
     check(tag + ' : ni barre, ni accueil de téléphone, ni ouverture, GSAP pas chargé', not st['bar'] and not st['top'] and not st['new'] and not st['last'] and not st['splash'] and not st['gsap'], st)
-    check(tag + ' : comme avant : en-tête, étapes, carte du son, Rubik, fond bleu', st['header'] and st['steps'] and st['drop'] and st['font'].startswith('Rubik') and st['bg'] == 'rgb(31, 111, 214)', st)
+    check(tag + ' : comme avant : en-tête, étapes, carte du son, fond bleu ; le texte en DM Sans', st['header'] and st['steps'] and st['drop'] and st['font'].startswith('"DM Sans"') and st['bg'] == 'rgb(31, 111, 214)', st)
     w = wide(pg); check(tag + ' : rien de plus large que l’écran', w[0] <= w[1], w)
     check(tag + ' : aucune erreur dans la page', not errs, errs[:3])
     ctx.close()

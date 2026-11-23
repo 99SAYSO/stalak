@@ -240,7 +240,9 @@
         </ol>
         <p class="ws-p" data-i18n="ws.p">Tu peux déjà écouter et changer les réglages : le montage se met à jour tout seul.</p>
       </div>
-      <div class="brollbox">
+      <!-- (23/11, the owner: « plans d'ambiance, enlève ») no longer offered; an older edit that has some still plays them, and its
+           « Ambiance » setting (step 4) stays for it -->
+      <div class="brollbox" hidden>
         <div class="brollhead">
           <label class="btn tip" for="brollFiles" data-tip="Des vidéos où tu ne chantes pas : la rue, le studio, la voiture, tes potes… Pas besoin de les caler, leur son n'est jamais utilisé." data-i18n="broll.add" data-i18n-attr="data-tip:broll.add.tip">+ Plans d'ambiance</label>
           <span class="hint" data-i18n="broll.hint">Optionnel : des vidéos sans chant, glissées entre tes prises.</span>
@@ -306,7 +308,8 @@
               <div class="row" style="margin-top:10px">
                 <button class="btn primary" id="lyTrGo" type="button">Écrire mes paroles</button>
               </div>
-              <div class="voxpick" id="lyVox">
+              <!-- (23/11, the owner: « l'option voix seule, enlève-la ») no longer offered -->
+              <div class="voxpick" id="lyVox" hidden>
                 <label class="btn link" for="lyVoxFile" id="lyVoxPick" data-i18n="lyr.vox.pick">Tu as la voix seule (a cappella) ? Importe-la pour une transcription encore plus précise</label>
                 <input type="file" id="lyVoxFile" accept="audio/*,video/*,.mp3,.wav,.m4a,.aac,.flac,.ogg,.mp4,.mov,.m4v">
                 <p class="hint" id="lyVoxOn" hidden><span id="lyVoxName"></span> <button class="btn link" type="button" id="lyVoxDel" data-i18n="lyr.vox.del">Retirer</button></p>

@@ -153,44 +153,8 @@ async def pro_flow(browser, width, lang):
 
 
 async def vox_flow(page, tag, lang, go):
-    """« voix seule »: the vocals alone of the song, used for the transcription only"""
-    pick = page.locator('#lyVoxPick')
-    want = 'Tu as la voix seule (a cappella) ?' if lang == 'fr' else 'Got the vocals alone (a cappella)?'
-    check(f'{tag}: « voix seule » link shown under the button', await pick.is_visible() and want in await pick.inner_text(), await pick.inner_text())
-    # a « vocals » file made from the song itself: it starts 4 s in and stops 3 s before the end (length differs by 7 s)
-    mk = '''(o) => { const b = S.song.buffer, sr = b.sampleRate, d = b.getChannelData(0), i0 = Math.round(o.from * sr), i1 = b.length - Math.round(o.cut * sr), n = i1 - i0;
-        const buf = new ArrayBuffer(44 + n * 2), v = new DataView(buf), w = (p, s) => { for (let i = 0; i < s.length; i++) v.setUint8(p + i, s.charCodeAt(i)); };
-        w(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); w(8, 'WAVEfmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
-        v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36, 'data'); v.setUint32(40, n * 2, true);
-        for (let i = 0; i < n; i++) v.setInt16(44 + i * 2, Math.max(-1, Math.min(1, d[i0 + i])) * 32767, true);
-        const u = new Uint8Array(buf); let s = ''; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s); }'''
-    async def wav(frm, cut):
-        return base64.b64decode(await page.evaluate('o => __ev("(" + o.src + ")")(o)', {'src': mk, 'from': frm, 'cut': cut}))
-    await page.set_input_files('#lyVoxFile', files=[{'name': 'voix-seule.wav', 'mimeType': 'audio/wav', 'buffer': await wav(4, 3)}])
-    await wait(page, '() => S.song.vox && /voix-seule/.test(S.song.vox.name)', timeout=20000)
-    vox = await ev(page, '() => ({ off: S.song.vox.offset, sure: S.song.vox.sure })')
-    msg = await page.locator('#status').inner_text()
-    check(f'{tag}: vocals 4 s in: offset found, user told', abs(vox['off'] - 4) < 0.06 and vox['sure'] and ('décalée de +4,0 s' in msg if lang == 'fr' else '+4.0 s off' in msg), [vox, msg, [l for l in (await ev(page, '() => DIAG.join("\\n")')).split('\n') if 'voix seule' in l][-1:]])
-    check(f'{tag}: vocals shown with « Retirer », link hidden', await page.locator('#lyVoxOn').is_visible() and 'voix-seule.wav' in await page.locator('#lyVoxOn').inner_text()
-          and not await pick.is_visible())
-    n0 = len(ai_calls())
-    await go.click()
-    await wait(page, '() => !trBusy', timeout=30000)
-    log = await ev(page, '() => DIAG.join("\\n")')
-    check(f'{tag}: transcription made from the vocals', 'voix seule importée, décalage ' in log and len(ai_calls()) > n0 and await ev(page, '() => S.lyrics.lines.length > 0 && S.lyrics.lines.every(l => l.t != null)'),
-          [l for l in log.split('\n') if 'voix' in l][-2:])
-    await page.locator('#lyVoxDel').click()
-    check(f'{tag}: vocals removed', await ev(page, '() => !S.song.vox') and await pick.is_visible() and ('retirée' in await page.locator('#status').inner_text() or 'removed' in await page.locator('#status').inner_text()))
-    # same length: taken as starting with the song, no search
-    await page.set_input_files('#lyVoxFile', files=[{'name': 'acapella.wav', 'mimeType': 'audio/wav', 'buffer': await wav(0, 0.5)}])
-    await wait(page, '() => S.song.vox && S.song.vox.name === "acapella.wav"', timeout=20000)
-    msg = await page.locator('#status').inner_text()
-    check(f'{tag}: vocals of the same length: offset 0, ready', await ev(page, '() => S.song.vox.offset === 0 && S.song.vox.sure') and ('prête' in msg or 'ready' in msg), msg)
-    # not audio: friendly message, nothing kept from it
-    await page.locator('#lyVoxDel').click()
-    await page.set_input_files('#lyVoxFile', files=[{'name': 'pas-du-son.mp3', 'mimeType': 'audio/mpeg', 'buffer': b'not audio at all' * 50}])
-    await page.wait_for_function('() => /lire ce fichier|can.t read this file/.test(document.querySelector("#status").textContent)', timeout=20000)
-    check(f'{tag}: unreadable vocals file → friendly message', await ev(page, '() => !S.song.vox'))
+    """« voix seule » (a cappella): removed on 23/11 (the owner: « l'option voix seule, enlève-la »); the link is no longer offered"""
+    check(f'{tag}: no « voix seule » link any more (removed on 23/11)', not await page.locator('#lyVoxPick').is_visible() and not await page.locator('#lyVox').is_visible())
 
 
 async def free_flow(browser, width, lang, signed_in=True):

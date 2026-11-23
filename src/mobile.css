@@ -1,6 +1,6 @@
 /* ---- App & montage — refonte de l'interface mobile (demande du Chef de projet du 23/11, démos validées par le propriétaire :
    docs/audit/maquettes/mobile-2026-11-23/). Tout est sous 900 px : l'ordinateur ne change pas.
-   Lot 1 : DM Sans pour le texte, barre du bas, accueil, ouverture « le glaçon » (src/splash.js, stalak.app seulement).
+   Lot 1 : barre du bas (DM Sans pour le texte : src/theme.css, partout), accueil, ouverture « le glaçon » (src/splash.js, stalak.app seulement).
    The state comes from app.js (mobUi): html.medit = the editor, the camera, an export (no bar, the page as before);
    html.mpage = a page of the account opened from the bar (the bar stays); neither = the home screen.
    Motion: the timelines are GSAP ones, as in the HyperFrames demos (app.js mob*, splash.js); nothing moves with « reduce motion ». ---- */
@@ -8,9 +8,7 @@
 #splash{display:none}
 
 @media (max-width:899px){
-  :root:root:root{   /* (three times: the theme declares its fonts on :root:not([data-theme]) ) */
-    --body:'DM Sans','Helvetica Neue',Arial,system-ui,sans-serif;
-    --mono:'DM Sans','Helvetica Neue',Arial,sans-serif;
+  :root{
     --tabh:66px;                                  /* the bar, without the safe area of the phone */
     --tabs:calc(var(--tabh) + env(safe-area-inset-bottom,0px));
     --blue:#1f6fd6; --tab-ink:#56657f;
@@ -59,6 +57,9 @@
   html:not(.medit) #p1 > .card:not(.lpoffer)::before,html:not(.medit) #p1 > .card:not(.lpoffer)::after{display:none}
   html:not(.medit) #p1 > .card:not(.lpoffer) > :not(.nearbox){display:none}
   html:not(.medit) #p1 > .nav{display:none}
+  /* a problem with the file just chosen: said right under the top line, in view (not at the bottom, under the bar) */
+  html:not(.medit) .mh-top{order:-2}
+  html:not(.medit) #p1 > .card:not(.lpoffer):has(.nearmsg){order:-1;margin:10px 0 0}
   html:not(.medit) .installtip{margin-top:18px}
 
   /* the top line: the greeting (signed in) and the formula */

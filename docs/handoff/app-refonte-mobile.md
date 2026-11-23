@@ -5,14 +5,27 @@ Maquette de la branche : https://app-refonte-mobile.stalak-site.pages.dev (à fa
 Demande : `docs/handoff/chef-refonte-mobile-app.md` (23/11), démos validées dans `docs/audit/maquettes/mobile-2026-11-23/`.
 4 lots, une maquette par lot. Skills : stalak-da (goûts `app-*` relus avant et après), motion-design, taste, webapp-testing.
 
+## Décisions du propriétaire sur le lot 1 (23/11, 22 h 55)
+1. **DM Sans aussi sur ordinateur** : oui. Fait (le texte de l'app est en DM Sans partout ; Lilita One pour les titres).
+2. **Liens légaux et langue dans le profil** (lot 2), et plus de pied de page sur l'accueil du téléphone : oui. À faire au lot 2.
+3. **Le glaçon d'aide reste au-dessus de la barre** sur l'accueil : oui.
+4. **« Voix seule (a cappella) » : retirée.** Fait : le lien sous « Écrire mes paroles » n'est plus proposé.
+5. **« Plans d'ambiance » : retirés.** Fait : « + Plans d'ambiance » n'est plus proposé à l'étape Prises. Un ancien projet
+   qui en contient les joue toujours, et son réglage « Ambiance » (étape Montage) reste affiché pour lui seulement.
+6. **Un flash dans la caméra : oui, à ajouter.** Prévu au lot 3, avec le nouvel écran de la caméra. Ce qui est possible
+   dans un navigateur : la **torche du téléphone** pour la caméra arrière quand le téléphone le permet, et pour la caméra
+   avant (ou sans torche) un **cadre blanc lumineux autour de l'image** qui éclaire le visage.
+
 # Lot 1 : police, barre du bas, accueil, ouverture
 
-Tout est sous 900 px. L'ordinateur ne change pas (vérifié par le test : ni barre, ni ouverture, Rubik, en-tête comme avant).
+La barre, l'accueil et l'ouverture sont sous 900 px : sur ordinateur, seule la police change (vérifié par le test : ni barre,
+ni ouverture, en-tête comme avant).
 
 ## 1. Police
-- Sur téléphone, le texte passe en **DM Sans** (à la place de Rubik) ; les titres et les boutons restent en Lilita One.
-- Une seule ligne à changer pour l'ordinateur plus tard : la variable `--body` (aujourd'hui Rubik au-dessus de 900 px,
-  puisque « l'ordinateur ne change pas dans ce chantier »). **À décider** : DM Sans aussi sur ordinateur ?
+- Le texte de l'app passe en **DM Sans** (à la place de Rubik), sur téléphone et sur ordinateur (décision du 23/11) ; les
+  titres et les boutons restent en Lilita One.
+- Les pages à part (Tarifs, pages légales, guides) gardent Rubik : elles sont à Marketing (`site.css`). **Pour Marketing** :
+  à passer en DM Sans si le propriétaire veut la même police partout.
 - Les polices des vidéos exportées (paroles à l'écran) ne changent pas.
 
 ## 2. Barre du bas (démo n° 9)
@@ -50,7 +63,8 @@ Tout est sous 900 px. L'ordinateur ne change pas (vérifié par le test : ni bar
   légaux, langue), en attendant leur place dans le profil au lot 2.
 
 ## 4. Ouverture « le glaçon » (démo n° 1)
-- La même timeline GSAP que la démo HyperFrames, rejouée sur la vraie page (`src/splash.js`) : le glaçon tombe, la
+- La même timeline GSAP que la démo HyperFrames, rejouée sur la vraie page (`src/splash.js`, servi à part :
+  `/assets/splash.<version>.js` ; la page ne porte que quelques lignes qui décident et affichent le rideau) : le glaçon tombe, la
   mascotte dort dedans, se réveille, il éclate, elle saute et fait coucou, « Stalak » lettre par lettre, le rideau bleu se
   lève sur l'accueil, la mascotte rejoint sa place (celle du titre, ou celle de la carte « Nouveau montage »), puis le titre,
   le bouton et la barre du bas entrent.
@@ -70,10 +84,9 @@ Tout est sous 900 px. L'ordinateur ne change pas (vérifié par le test : ni bar
 ## Ce qui ne rentre pas / à décider
 1. **Image de la mascotte** : toujours en 266 px. Dans l'ouverture elle fait environ 210 px de large à l'écran, donc un peu
    floue sur un iPhone (écran ×3). Les images « dort » et « surprise » du glaçon font 256 px : même limite.
-2. **Pied de page sur l'accueil connecté** : gardé pour les liens légaux et le choix de la langue. Au lot 2, je propose de
-   les mettre dans la liste du profil et de retirer le pied de page de l'accueil sur téléphone.
-3. **Glaçon d'aide** : gardé au-dessus de la barre sur l'accueil (c'est le seul accès à l'aide). La démo de l'accueil ne
-   le montre pas ; à trancher au lot 4 (dans la barre du haut de l'éditeur, et dans le profil ?).
+2. **Pied de page sur l'accueil connecté** : gardé pour l'instant ; au lot 2, liens légaux et langue passent dans le profil
+   (décidé).
+3. **Glaçon d'aide** : il reste au-dessus de la barre sur l'accueil (décidé).
 4. **« Stats » déconnecté ou sans TikTok** : ouvre le compte. À voir avec Réseaux sociaux si l'onglet doit proposer
    directement « Relier TikTok ».
 5. **Temps avant le premier affichage** : pendant l'ouverture, le rideau bleu est la première chose affichée ; le titre
@@ -84,21 +97,20 @@ Rien n'est retiré au lot 1. Voici ce que la démo de l'éditeur ne montre pas e
 - **Son** (démo : TikTok / Clip, onde avec 2 poignées, lecture, « Changer de son ») : manquent **la durée** (liste), les
   flèches **« une mesure plus tôt / plus tard »** (début, et fin pour un clip), et **« Corriger le rythme »** (TAP, bips de
   vérification, ÷2, ×2, décaler). Proposition : un lien « Régler le rythme » sous la carte, qui ouvre une feuille.
-- **Prises** (démo : vignettes, « + », « Filmer une prise ») : manquent **« + Plans d'ambiance »** (import) et, sur chaque
-  prise, retirer / l'état de la synchro. Les étoiles de la démo existent déjà (qualité de l'image de chaque prise).
+- **Prises** (démo : vignettes, « + », « Filmer une prise ») : manquent, sur chaque
+  prise, retirer / l'état de la synchro (« + Plans d'ambiance » est retiré, décision du 23/11). Les étoiles de la démo existent déjà (qualité de l'image de chaque prise).
 - **Caméra** (démo n° 11) : le minuteur existe (Sans / 3 s / 5 s), la caméra avant / arrière aussi. La démo montre un
-  **éclair (flash)** : ça n'existe pas aujourd'hui, et un navigateur ne commande pas le flash de façon fiable sur iPhone.
-  À retirer de l'écran, sauf avis contraire.
+  **éclair (flash)** : à ajouter (décision du 23/11), voir le point 6 des décisions.
 - **Paroles** (démo : Automatiques, Je colle mon texte, Sans paroles) : manquent **la langue chantée**, **« Importer un
-  .txt »**, **la voix seule (a cappella)**, l'écran de **calage** (automatique ou au tap, recaler) et le **style du texte**
+  .txt »**, l'écran de **calage** (automatique ou au tap, recaler) et le **style du texte**
   (position, police, couleur, contour, taille, apparition, surlignage). Proposition : un 2e écran après le choix, et le
   style dans l'outil « Paroles » de l'étape Montage.
 - **Montage** (démo : aperçu, bande des plans, 5 outils Coupes / Effets / Filtres / Paroles / Remixer, « Exporter ma
   vidéo ») : **ne rentrent pas dans 5 outils** : **Format** (16:9, 9:16, 4:5, 1:1) et **Cadrage** (Entière + flou, Remplir,
-  Zoom), **Rythme** (Posé, Normal, Nerveux), **Ambiance** (Aucun, Un peu, Beaucoup), **« Meilleures prises »**, le **zoom de
+  Zoom), **Rythme** (Posé, Normal, Nerveux), **« Meilleures prises »**, le **zoom de
   la bande**, les actions sur un plan (**Changer de prise, Ajouter un plan, Garder ce plan, + Effet, Exclure ce passage**),
   et à l'export le **générateur de packs** (Creator Plus) et « Sans filigrane → Pro ».
-  Proposition : un 6e outil **« Format »** (format + cadrage) ; Rythme, Ambiance et « Meilleures prises » dans « Coupes » ;
+  Proposition : un 6e outil **« Format »** (format + cadrage) ; Rythme et « Meilleures prises » dans « Coupes » ;
   les actions sur un plan dans une feuille qui monte quand on touche un plan ; le pack dans la feuille « Exporter ».
   **6 outils tiennent sur une ligne à 390 px (52 px chacun) mais pas à 320 px (iPhone SE) : la rangée défilera.**
 
@@ -108,10 +120,12 @@ Rien n'est retiré au lot 1. Voici ce que la démo de l'éditeur ne montre pas e
 - `src/app.js` : bloc « refonte mobile, lot 1 » à la fin (`mobUi`, `mobList`, `mobTab`, `mobInit`), une ligne dans
   `updateNav`, les clés `tab.*` et `mh.*`.
 - `build.py`, `build_site.py` : `mobile.css` ; pour le site, `splash.js` en tête de `<body>` et l'adresse de GSAP.
-- **Pour Marketing** : `build_site.py` modifié ; sur téléphone, le haut de l'accueil (`.hero`) change de couleurs (texte
+- **Pour Marketing** : les guides qui parlent du bouton « + Plans d'ambiance » ou de la voix seule sont à mettre à jour
+  (`site_src/` : idées de clip, images `aide/*-broll.jpg`). `build_site.py` modifié ; sur téléphone, le haut de l'accueil (`.hero`) change de couleurs (texte
   noir sur glace, bouton bleu), ses textes non ; le compteur et « Sans / Avec Stalak » passent en texte noir sur l'accueil
   téléphone ; la première bande (avis) accroche ses glaçons couleur glace.
-- **Pour Comptes** : la barre reste au-dessus de la Galerie et du compte (marge en bas de `.acctpage`) ; la pastille ouvre
+- **Pour Comptes** : la transcription depuis une voix seule n'est plus appelée par l'app (rien à changer côté serveur) ;
+  la barre reste au-dessus de la Galerie et du compte (marge en bas de `.acctpage`) ; la pastille ouvre
   `apGo('pro', {from: 'menu'})` ; l'accueil appelle `clLoadList()` une fois pour Creator Plus. Aucun fichier de
   `functions/` ni `account.js` touché.
 - **Pour Réseaux sociaux** : l'onglet « Stats » clique l'entrée `[data-am="tiktok"]` du menu du compte.
