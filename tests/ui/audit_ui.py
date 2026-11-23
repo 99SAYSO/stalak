@@ -115,52 +115,14 @@ def run(b, base, lang, iphone):
       addEventListener(n, f){ this.listeners.push(f); }, release(){ this.released = true; window.__wake.push('release'); this.listeners.forEach(f => f()); return Promise.resolve(); } }; window.__wake.push('request:' + t); return s; } } });
       navigator.canShare = () => true; navigator.share = async () => { window.__shared = true; }; }""")
     # (audit 6/11, n° 5) the window never comes for the example, and on a phone only after « Enregistrer » (audit611_ui.py): here one's own video, saved
-    ev(pg, "S.song.demo = false, S.ppSaved = true")
+    ev(pg, "S.song.demo = false")
     pg.evaluate('() => { window.__p = __ev("exportOne()"); }'); pg.wait_for_selector('#filtAsk:not([hidden])', timeout=5000)
     pg.locator('#faWithout').click()
     pg.wait_for_function('() => __ev("!S.exporting && !!lastBlob")', timeout=20000)
     check(tag + ' : « Exporter sans ce filtre » → la vidéo sort, sans filtre', ev(pg, "S.filter === 'none'") and pg.locator('#result').is_visible())
-    # ---- the Pro offer (owner, 31/10): a window in the middle, about 1 s after the first video is ready ----
-    pp = pg.locator('#proPop')
-    early = pp.is_visible()
-    pg.wait_for_selector('#proPop:not([hidden])', timeout=15000)
-    check(tag + ' : fenêtre Pro pas tout de suite, puis environ 1 s après la vidéo', not early)
-    look = pg.evaluate('''() => { const b = document.querySelector('#proPop'), c = document.querySelector('#proPopCard').getBoundingClientRect(), cs = getComputedStyle(b);
-      return { bg: cs.backgroundColor, cx: Math.round(c.left + c.width / 2 - innerWidth / 2), cy: Math.round(c.top + c.height / 2 - innerHeight / 2), inside: c.left >= 0 && c.right <= innerWidth && c.top >= -60 && c.bottom <= innerHeight,
-        anim: getComputedStyle(document.querySelector('#proPopCard')).animationName, frost: getComputedStyle(document.querySelector('#proPop .pp-shine'), '::before').animationName,
-        mascot: getComputedStyle(document.querySelector('.pp-mascot')).backgroundImage.slice(0, 20), items: [...document.querySelectorAll('#proPop .pp-list li')].map(l => l.textContent.trim()),
-        price: document.querySelector('#proPop .pp-price').textContent, focus: document.activeElement && document.activeElement.id }; }''')
-    want_items = ['No watermark', 'Music video mode (16:9, the whole song)', 'Every filter'] if lang == 'en' else ['Sans filigrane', 'Le mode Clip 16:9, sur tout le son', 'Tous les filtres']
-    check(tag + ' : au milieu de l’écran, fond assombri', abs(look['cx']) <= 2 and abs(look['cy']) <= 40 and look['inside'] and look['bg'].startswith('rgba(8, 14, 30'), look)
-    check(tag + ' : apparition animée et reflet givré', look['anim'] == 'pp-rise' and look['frost'] == 'pp-frost', look)
-    check(tag + ' : mascotte, titre, 3 avantages, prix au mois', look['mascot'].startswith('url(') and look['items'] == want_items and ('$4.17/mo' in look['price'] if lang == 'en' else '4,17 $/mois' in look['price'])
-          and pg.locator('#proPopT').inner_text().strip() != '', look)
-    check(tag + ' : gros bouton « Passer à Pro » (focus dessus) et lien « Plus tard »', look['focus'] == 'proPopGo' and pg.locator('#proPopGo').inner_text() == ('Go Pro' if lang == 'en' else 'Passer à Pro')
-          and pg.locator('#proPopLater').inner_text() == ('Maybe later' if lang == 'en' else 'Plus tard'))
-    if SHOTS:
-        pg.wait_for_timeout(1300); pg.screenshot(path=os.path.join(SHOTS, 'offre-pro-' + ('iphone' if iphone else 'ordi') + '-' + lang + '.png'))
-    pg.keyboard.press('Escape'); pg.wait_for_timeout(150)
-    closed = [not pp.is_visible()]
-    for how in ('later', 'x', 'beside'):
-        ev(pg, 'ppOpen()'); pg.wait_for_timeout(150)
-        if how == 'later': pg.locator('#proPopLater').click()
-        elif how == 'x': pg.locator('#proPopX').click()
-        else:
-            vw = pg.viewport_size
-            if iphone: pg.touchscreen.tap(8, vw['height'] - 8)
-            else: pg.mouse.click(8, vw['height'] - 8)
-        pg.wait_for_timeout(150); closed.append(not pp.is_visible())
-    check(tag + ' : se ferme d’un toucher (Échap, « Plus tard », ×, à côté)', closed == [True] * 4, closed)
-    # never in the way: while it is open, the video's buttons are not blocked (one touch beside it closes it, then they work)
-    ev(pg, 'ppOpen()'); pg.wait_for_timeout(150)
-    inert = pg.evaluate("() => !!document.querySelector('.wrap').closest('[inert]') || document.querySelector('#saveBtn').disabled")
-    sbb = pg.locator('#saveBtn').bounding_box()
-    pg.mouse.click(4, 4) if not iphone else pg.touchscreen.tap(4, pg.viewport_size['height'] - 4)
-    pg.wait_for_timeout(150)
-    check(tag + ' : ne bloque pas l’enregistrement ni le partage', not inert and not pp.is_visible() and pg.locator('#saveBtn').is_enabled() and not ev(pg, 'S.exporting'), (inert, sbb))
-    ev(pg, 'ppOpen()'); pg.wait_for_timeout(150)
-    pg.locator('#proPopGo').click(); pg.wait_for_timeout(200)
-    check(tag + ' : « Passer à Pro » → formules sur Pro, fenêtre fermée', pg.evaluate('window.__open') == ['nowm', 'pro'] and not pp.is_visible())
+    # ---- the Pro offer (redone 23/11): never before the video is saved, never for the first video; the rest in fenetre_pro_ui.py ----
+    pp = pg.locator('#proPop'); pg.wait_for_timeout(2600)
+    check(tag + ' : pas de fenêtre Pro avant l’enregistrement de la vidéo', not pp.is_visible())
     pg.wait_for_timeout(300)
     check(tag + ' : écran gardé allumé pendant l’export, puis libéré', pg.evaluate('window.__wake') == ['request:screen', 'release'], pg.evaluate('window.__wake'))
     cap = pg.locator('#capText').input_value()
@@ -177,17 +139,8 @@ def run(b, base, lang, iphone):
     if SHOTS:
         shot(lambda: pg.locator('#result').scroll_into_view_if_needed(timeout=5000)); pg.wait_for_timeout(300)
         shot(lambda: pg.locator('#result').screenshot(path=os.path.join(SHOTS, 'resultat-' + ('iphone' if iphone else 'ordi') + '-' + lang + '.png')))
-    pg.evaluate('() => __ev("exportOne()")'); pg.wait_for_function('() => __ev("!S.exporting")', timeout=20000); pg.wait_for_timeout(1600)
-    check(tag + ' : une seule fois : pas de fenêtre Pro après la 2e vidéo', not pp.is_visible())
-    pg.reload(wait_until='load'); pg.wait_for_function('typeof window.__ev === "function"', timeout=20000)
-    seen = ev(pg, '!!store.get(PP_KEY)')
-    pg.locator('#demoBtn').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000)
-    ev(pg, "ACCT.state.user = null, acctOpen = () => {}, setFilter('none', true), " + FAST_EXPORT.replace('\n', ' '))
-    pg.evaluate('() => __ev("exportOne()")'); pg.wait_for_function('() => __ev("!S.exporting && !!lastBlob")', timeout=20000); pg.wait_for_timeout(1600)
-    check(tag + ' : une seule fois, même après rechargement', seen and not pp.is_visible())
-    # a subscriber never sees it
-    ev(pg, "store.set(PP_KEY, null), acctHas = f => true, S.okCount = 1, S.okFirst = lastBlob, proOfferUi()"); pg.wait_for_timeout(1600)
-    check(tag + ' : jamais pour un abonné', not pp.is_visible())
+    pg.wait_for_timeout(2000)
+    check(tag + ' : 1re vidéo enregistrée : toujours pas de fenêtre Pro', not pp.is_visible())
     ev(pg, "acctHas = window.__realHas || acctHas")
 
     # ---- n° 3: leaving Stalak during an export made in real time ----
@@ -236,7 +189,7 @@ def run(b, base, lang, iphone):
     # by Comptes' plans page, played by the test here, so it is checked in Comptes' own tests)
     names = [e['body'].get('name') for e in events]
     keys = set(k for e in events for k in e['body'])
-    check(tag + ' : compteurs envoyés (export commencé, réussi, raté, offre Pro une fois)', all(n in names for n in ('export_start', 'export_ok', 'export_fail')) and names.count('pro_offer') >= 1, names)
+    check(tag + ' : compteurs envoyés (export commencé, réussi, raté)', all(n in names for n in ('export_start', 'export_ok', 'export_fail')), names)
     # (7/11, app/exports-rates) an export stopped because Stalak was left is made again by itself once back: counted
     # « export_retry » (hidden); a pack too big for the device is never started: « export_refused » (memory), not a failure
     fail = [e['body'] for e in events if e['body'].get('name') in ('export_fail', 'export_retry', 'export_refused')]

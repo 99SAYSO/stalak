@@ -1248,11 +1248,14 @@ const I18N_EN = /*@EN*/{
   "filt.th.free": "Free",
   "filt.more": "more filters",
   "filt.less": "fewer filters",
-  "pp.t": "Nice video! Next one without the watermark?",
-  "pp.l1": "No watermark",
-  "pp.l2": "Music video mode (16:9, the whole song)",
-  "pp.l3": "Every filter",
-  "pp.price": "<strong>$4.17</strong>/mo, billed yearly",
+  "pp.t": "Your video, without the logo",
+  "pp.s": "The same video, ready to post: it ends on you, not on the Stalak logo.",
+  "pp.a": "With the logo",
+  "pp.a.alt": "Your video with the Stalak logo",
+  "pp.b": "Without the logo",
+  "pp.b.alt": "The same frame of your video, without the logo",
+  "pp.bill": "{y} billed once a year · cancel anytime",
+  "pp.also": "Also with Pro: Music video mode (16:9) and every filter.",
   "pp.go": "Go Pro",
   "pp.later": "Maybe later"
 }/*EN@*/;
@@ -1958,11 +1961,8 @@ const I18N_FR = /*@FR*/{
   "filt.th.free": "Gratuits",
   "filt.more": "filtres en plus",
   "filt.less": "moins de filtres",
-  "pp.t": "Belle vidéo ! La prochaine, sans filigrane ?",
-  "pp.l1": "Sans filigrane",
-  "pp.l2": "Le mode Clip 16:9, sur tout le son",
-  "pp.l3": "Tous les filtres",
-  "pp.price": "<strong>4,17 $</strong>/mois, facturé à l’année",
+  "pp.t": "Ta vidéo, sans le logo",
+  "pp.bill": "{y} facturés une fois par an · annulable à tout moment",
   "pp.go": "Passer à Pro",
   "pp.later": "Plus tard"
 }/*FR@*/;
@@ -8257,7 +8257,7 @@ $('#dvPro').onclick = () => lockOpen('nowm');
 $('#dvCmpGo').onclick = () => lockOpen('nowm');
 /* the two pictures: the same moment of the edit drawn by the preview, once with the logo (as in the video made) and once
    without; the one with the logo is the poster of the video made, in the left box */
-let cmpFor = null;
+let cmpFor = null, cmpReady = null;   // cmpReady: the video whose two pictures are drawn
 function cmpUi(on){
   const box = $('#dvCmp'), v = $('#resultVideo');
   box.hidden = !on; $('#dvCmpGo').hidden = !on; $('#dvCmpP').hidden = !on;
@@ -8280,7 +8280,9 @@ async function cmpShots(){
   showFrame(back);
   const url = await new Promise(r => cA.toBlob(b => r(b ? URL.createObjectURL(b) : null), 'image/jpeg', 0.85));
   if (url){ const v = $('#resultVideo'); if (v.dataset.poster) URL.revokeObjectURL(v.dataset.poster); v.dataset.poster = url; v.poster = url; }
+  cmpReady = lastBlob;
   diag('fin d’export : images avec / sans logo prêtes (' + fmt(t) + ')');
+  proOfferUi();
 }
 /* the logo: a new project, everything cleared (asked first when there is something to lose) */
 function homeGo(){ S.cancel = true; try { stop(true); } catch(e){} location.reload(); }
@@ -8348,20 +8350,30 @@ $('#capCopy').onclick = async () => {
   if (!ok){ try { t.focus(); t.select(); ok = document.execCommand('copy'); } catch(e){} }
   setT('#capNote', ok ? 'cap.ok' : 'cap.sel');
 };
-/* the Pro offer after the first video made (owner, 31/10): a window in the middle of the screen, the page darkened behind,
-   opened about 1 s after the video is ready, with a frosted entrance. Free plan on stalak.app only, once per device (never
-   again, never for a subscriber), never during an export. It closes with one touch (×, « Plus tard », a touch beside it,
-   Escape) and never stands in the way of saving or sharing the video: the page under it is left as it is (no inert). */
-const PP_KEY = 'stalak:proPopSeen';
+/* the Pro offer (owner, 31/10; redone 23/11): a window in the middle of the screen, the page darkened behind. It shows the
+   person's own video with and without the logo (the two pictures of the end screen). Free plan on stalak.app only, never
+   during an export, never for the example or a pack.
+   WHEN (owner, 23/11): never before « Enregistrer la vidéo » has been used for this video (phone and computer); from the 2nd
+   video saved on this device (the end screen shows the comparison for the first); once a day at most; never again after 3
+   « Plus tard » (any closing without « Passer à Pro »).
+   It closes with one touch (×, « Plus tard », a touch beside it, Escape) and never stands in the way of the video: the page
+   under it is left as it is (no inert). */
+const PP_KEY = 'stalak:proPopSeen', PP_SAVES = 'stalak:ppSaves', PP_LATER = 'stalak:ppLater', PP_DAY = 24 * 3600e3, PP_MAX_LATER = 3;   // PP_KEY: when it was last shown
 /* the example (bips and drawn faces), nothing of the person's own */
 function demoOnly(){ return !!S.song && !!S.song.demo && S.takes.length > 0 && S.takes.every(t => t.kind === 'demo' || t.demoReal); }
 let ppTimer = 0, ppBack = null;
 function ppEligible(){
-  // (audit 6/11, n° 5) never for the example; on a phone, only once « Enregistrer la vidéo » has been tapped (it is not hidden)
-  if (S.lastDemo || (PHONE_DEV && !S.ppSaved)) return false;
-  return !!ACCT && !can('nowm') && !!lastBlob && !/\.zip$/i.test(lastName) && (S.okCount || 0) === 1 && S.okFirst === lastBlob && !S.exporting && !store.get(PP_KEY);
+  if (!ACCT || can('nowm') || !lastBlob || /\.zip$/i.test(lastName) || S.lastDemo || !S.lastWm || S.exporting) return false;
+  if (S.ppSavedBlob !== lastBlob || cmpReady !== lastBlob) return false;   // this video saved, its two pictures ready
+  if ((+store.get(PP_SAVES) || 0) < 2 || (+store.get(PP_LATER) || 0) >= PP_MAX_LATER) return false;
+  return Date.now() - (+store.get(PP_KEY) || 0) >= PP_DAY;
 }
-// asked when the first video is ready: the window comes 1 s later, if all is still as it was
+// « Enregistrer la vidéo » used for this video (counted once per video)
+function ppSaved(){
+  if (!lastBlob || /\.zip$/i.test(lastName) || S.lastDemo || S.ppSavedBlob === lastBlob) return;
+  S.ppSavedBlob = lastBlob; store.set(PP_SAVES, (+store.get(PP_SAVES) || 0) + 1);
+}
+// asked once the video is saved: the window comes 1 s later, if all is still as it was
 function proOfferUi(){
   if (ppTimer || !ppEligible()) return;
   // (the export screen waves goodbye first: the window waits for it to be gone, then 1 s more)
@@ -8371,24 +8383,35 @@ function proOfferUi(){
   go();
 }
 function ppOpen(){
+  // the two pictures of the end screen: with the logo (the poster of the video made), without (its canvas)
+  const cB = $('#cmpB'), pB = $('#ppB'); pB.width = cB.width; pB.height = cB.height; pB.getContext('2d').drawImage(cB, 0, 0);
+  $('#ppA').src = $('#resultVideo').dataset.poster || '';
+  $('#proPop').classList.toggle('pp-wide', cB.width > cB.height);
+  // the price, as on the plans page: the monthly price struck, the yearly one per month, the months given, the yearly amount
+  const a = plAmounts('pro'), months = plMonths(a);
+  $('#ppAmt').textContent = plMoney(Math.round(a.y / 12 * 100) / 100, a.cur);
+  $('#ppWas').textContent = plMoney(a.m, a.cur); $('#ppWas').hidden = !(months > 0);
+  $('#ppMonths').hidden = !(months > 0); if (months > 0) setT('#ppMonths', 'pl.months', { n: months });
+  setT('#ppBill', 'pp.bill', { y: plMoney(a.y, a.cur) });
   store.set(PP_KEY, Date.now());
   ppBack = document.activeElement;
   const box = $('#proPop'); box.hidden = false; box.classList.remove('pp-in'); void box.offsetWidth; box.classList.add('pp-in');
   try { $('#proPopGo').focus({ preventScroll: true }); } catch(e){}
   acctEvent('pro_offer'); evt('pro_offer');
-  diag('offre Pro affichée après la 1re vidéo');
+  diag('offre Pro affichée après l’enregistrement (vidéo enregistrée n° ' + (+store.get(PP_SAVES) || 0) + ')');
 }
-function ppClose(){
+function ppClose(later){
   const box = $('#proPop'); if (box.hidden) return;
   box.hidden = true; box.classList.remove('pp-in');
+  if (later === true) store.set(PP_LATER, (+store.get(PP_LATER) || 0) + 1);
   try { if (ppBack && ppBack.isConnected) ppBack.focus({ preventScroll: true }); } catch(e){}
   ppBack = null;
 }
-$('#proPopX').onclick = ppClose;
-$('#proPopLater').onclick = ppClose;
-$('#proPop').addEventListener('click', e => { if (e.target === e.currentTarget) ppClose(); });
+$('#proPopX').onclick = () => ppClose(true);
+$('#proPopLater').onclick = () => ppClose(true);
+$('#proPop').addEventListener('click', e => { if (e.target === e.currentTarget) ppClose(true); });
 $('#proPop').addEventListener('keydown', e => {
-  if (e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); ppClose(); return; }
+  if (e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); ppClose(true); return; }
   // the focus stays in the window while it is open
   if (e.key === 'Tab'){ const f = [...$('#proPop').querySelectorAll('button')].filter(b => !b.hidden); const i = f.indexOf(document.activeElement);
     if (e.shiftKey && i <= 0){ e.preventDefault(); f[f.length - 1].focus(); } else if (!e.shiftKey && i === f.length - 1){ e.preventDefault(); f[0].focus(); } }
@@ -8409,8 +8432,12 @@ function saveDownload(){
 $('#saveDl').onclick = e => { e.preventDefault(); if (lastBlob) saveDownload(); };
 $('#saveBtn').onclick = async () => {
   if (!lastBlob) return;
-  // (audit 6/11, n° 5) on a phone the Pro offer waits for this tap, so it never hides « Enregistrer »
-  if (!S.ppSaved){ S.ppSaved = true; setTimeout(proOfferUi, 600); }
+  // (owner, 23/11) the Pro offer never comes before the video is saved: asked once the saving is over (the share list closed,
+  // the download started)
+  ppSaved();
+  try { await saveRun(); } finally { setTimeout(proOfferUi, 600); }
+};
+async function saveRun(){
   // (owner, 22/11) a phone or tablet that can share the file: the share list, opened at once (it needs the tap itself)
   if (S.saveShares){
     try { await navigator.share({ files: [new File([lastBlob], lastName, { type: lastBlob.type || 'video/mp4' })], title: 'Stalak' }); setT('#saveNote', 'post.sent'); return; }
@@ -8427,7 +8454,7 @@ $('#saveBtn').onclick = async () => {
   if (!downloads){ diag('enregistrement : non proposé par cette vue (' + location.host + ')'); setT('#saveNote', 'save.na'); return; }
   try { await downloads.save({ filename: lastName, data: lastBlob }); setT('#saveNote', 'save.ok'); }
   catch(e){ if (e && e.code === 'declined') setT('#saveNote', 'save.cancel'); else setT('#saveNote', 'save.fail', { code: e && e.code || 'erreur' }); }
-};
+}
 
 /* ---------- waveform, timeline, cut actions ---------- */
 function renderWave(){

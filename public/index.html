@@ -1322,33 +1322,69 @@ body.fabon:has(> .help-cube) > .ft{padding-bottom:calc(env(safe-area-inset-botto
 /* the reason of a lock (« Le mode Clip, c’est avec Pro »), repeated at the top of the card the page scrolls to (audit of 30/10) */
 #apBuy .pl-why{margin:0 0 10px;padding:8px 12px;border-radius:12px;background:#fff6d6;border:2px solid var(--ink);font:600 14.5px/1.35 var(--body);color:var(--ink);text-align:center}
 #apBuy .pl-why[hidden]{display:none}
-/* the Pro offer after the first video (owner, 31/10): a frosted window in the middle, the page darkened behind */
-.propop{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:20px 16px;background:rgba(8,14,30,.62)}
+/* the Pro offer (owner, 31/10; redone 23/11): a window in the middle, the page darkened behind. The person's own video
+   without the logo is the main thing (big, a little tilted, hard blue shadow), the one with the logo small beside it, the
+   mascot tucked behind as if holding it. Ice card, ink outline, hard shadow. */
+.propop{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:12px 14px;background:rgba(8,14,30,.62)}
 .propop[hidden]{display:none}
-.propop .pp-card{position:relative;width:min(380px,100%);max-height:calc(100vh - 40px);overflow:auto;margin:0;padding:64px 22px 18px;text-align:center;box-shadow:0 6px 0 var(--ink),0 24px 60px rgba(0,0,0,.45)}
-.propop .pp-mascot{position:absolute;left:50%;top:-58px;width:96px;height:116px;margin-left:-48px;background:var(--mascot) center bottom/contain no-repeat;pointer-events:none}
-.propop .pp-card{overflow:visible}
-.propop h2{margin:0 0 12px;font:400 25px/1.15 var(--display)}
-.propop .pp-list{list-style:none;margin:0 auto 14px;padding:0;display:inline-flex;flex-direction:column;gap:8px;text-align:left;font:600 16px/1.3 var(--body)}
-.propop .pp-list li{display:flex;gap:10px;align-items:center}
-.propop .pp-list li::before{content:"";flex:0 0 22px;height:22px;border-radius:50%;border:2px solid var(--ink);background:#8fd0ff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 10.5l3.2 3.2L15 7' fill='none' stroke='%230a0d14' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/16px no-repeat}
-.propop .pp-price{margin:0 0 14px;font:500 15px/1.4 var(--body)}
-.propop .pp-price strong{font:400 30px/1 var(--display);margin-right:2px}
-.propop .pp-go{width:100%;justify-content:center}
-.propop .pp-later{display:block;margin:10px auto 0;min-height:44px;padding:0 10px;background:none;border:0;font:600 15px var(--body);color:var(--muted);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
-.propop .pp-x{position:absolute;top:8px;right:8px;width:44px;height:44px;border:0;background:none;font:600 26px/1 var(--body);color:var(--ink);cursor:pointer;z-index:2}
+.propop .pp-card{position:relative;box-sizing:border-box;width:min(380px,100%);max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px);overflow:auto;margin:0;padding:14px 16px 12px;display:flex;flex-direction:column;gap:9px;background:var(--ice);border:3px solid var(--ink);border-radius:26px;box-shadow:0 7px 0 var(--ink),0 24px 60px rgba(0,0,0,.45);text-align:left}
+.propop .pp-card::before,.propop .pp-card::after{display:none}
+/* the pictures take the height left by the words and the buttons, so that everything is seen without scrolling */
+.propop{--ppw:clamp(84px,calc((100vh - 470px) * .5625),150px)}
+@supports (height:100dvh){ .propop{--ppw:clamp(84px,calc((100dvh - 470px) * .5625),150px)} }
+.pp-show{position:relative;display:grid;grid-template-columns:calc(var(--ppw) * .64) var(--ppw);gap:12px;justify-content:center;align-items:end;padding:0 0 4px}
+.pp-f{margin:0;display:flex;flex-direction:column;gap:5px;min-width:0}
+.pp-pic{border:3px solid var(--ink);border-radius:14px;overflow:hidden;background:var(--ink);line-height:0}
+.pp-pic img,.pp-pic canvas{display:block;width:100%;height:auto}
+.pp-fa .pp-pic img{filter:saturate(.8)}
+.pp-fb .pp-pic{border-radius:18px;box-shadow:0 5px 0 var(--sky-deep);transform:rotate(1.5deg)}
+.pp-f figcaption{font:700 12px/1.3 var(--body);color:#3b4a66;text-align:center;white-space:nowrap;display:flex;justify-content:center;align-items:center;gap:5px}
+.pp-fb figcaption{font-size:13.5px;color:var(--ink);margin-top:4px}
+.pp-masc{position:absolute;left:50%;bottom:26px;margin-left:calc(var(--ppw) * -.47);width:calc(var(--ppw) * .5);height:calc(var(--ppw) * .5);transform:rotate(-8deg);pointer-events:none}
+.pp-txt{display:flex;flex-direction:column;gap:9px;min-width:0}
+.propop h2{margin:0;padding-right:0;text-wrap:balance;font:400 27px/1.1 var(--display);color:var(--ink)}
+.propop .pp-s{margin:0;font:500 15px/1.3 var(--body);color:var(--ink)}
+.pp-pricebox{border:3px solid var(--ink);border-radius:16px;background:#fff;padding:7px 12px;display:flex;flex-direction:column;gap:2px}
+.propop .pp-price{margin:0;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;font:400 15px/1.2 var(--body);color:var(--ink)}
+.propop .pp-price strong{font:400 30px/1 var(--display)}
+.pp-was{font:600 16px/1 var(--body);color:var(--muted);text-decoration-thickness:2px}
+.pp-was[hidden],.pp-months[hidden]{display:none}
+.pp-months{margin-left:auto;font:700 13px/1.2 var(--body);padding:2px 8px;border-radius:10px;border:2px solid var(--ink);background:#d9f5e4;color:#0b5a33}
+.pp-bill{margin:0;font:400 13.5px/1.35 var(--body);color:var(--ink)}
+.propop .pp-go{width:100%;justify-content:center;min-height:54px}
+.propop .pp-later{width:100%;justify-content:center;min-height:46px;font:700 16.5px var(--body)}
+.pp-also{margin:0;font:400 12.5px/1.35 var(--body);color:#3b4a66;text-align:center}
+.propop .pp-x{position:absolute;top:8px;right:8px;width:44px;height:44px;padding:0;border:3px solid var(--ink);border-radius:50%;background:#fff;display:grid;place-items:center;cursor:pointer;z-index:2}
+.propop .pp-x svg{width:16px;height:16px;fill:none;stroke:var(--ink);stroke-width:4;stroke-linecap:round}
+.propop .pp-x:focus-visible,.propop .pp-later:focus-visible{outline:3px solid var(--sky-deep);outline-offset:2px}
+/* a video wider than tall (4:5 is not; 1:1, 16:9): the two pictures one above the other would be too tall, so smaller columns */
+.propop.pp-wide{--ppw:190px}
+.propop.pp-wide .pp-masc{bottom:24px}
+/* small phones: the pictures a little smaller so that everything is seen without scrolling */
+@media (max-height:620px){ .propop{--ppw:clamp(84px,calc((100vh - 420px) * .5625),150px)} .propop .pp-s,.pp-also{display:none} .propop h2{font-size:23px;padding-right:46px} }
+/* a computer: the pictures on the left, the words on the right */
+@media (min-width:820px) and (min-height:560px){
+  .propop .pp-card{width:760px;padding:30px;display:grid;grid-template-columns:330px minmax(0,1fr);gap:34px;align-items:center;border-radius:30px}
+  .propop{--ppw:190px}
+  .pp-show{gap:14px}
+  .pp-masc{bottom:30px}
+  .pp-txt{gap:14px}
+  .propop h2{font-size:36px;line-height:1.08;padding-right:40px}
+  .propop .pp-s{font-size:17px;line-height:1.4}
+  .pp-pricebox{padding:12px 16px}
+  .propop .pp-go{min-height:58px}
+  .propop .pp-later{min-height:48px}
+  .propop.pp-wide .pp-card{grid-template-columns:minmax(0,1fr);width:560px}
+}
 /* entrance (skill motion-design: modal enter = ease-out-quart, 240 ms, from scale .95, no bounce; transform and opacity
-   only): the dark fades in (180 ms), the window rises; once per device, so a frost sheen may cross it once (delight,
-   700 ms, a strip moved with transform inside a clipped layer). Closing is instant (a tap wants it gone at once). */
+   only): the dark fades in (180 ms), the window rises, then the mascot slides into place (180 ms). Closing is instant. */
 .propop.pp-in{animation:pp-fade var(--dur-2) var(--ease-out) both}
 .propop.pp-in .pp-card{animation:pp-rise var(--dur-3) var(--ease-out) both}
-.propop .pp-shine{position:absolute;inset:0;border-radius:inherit;overflow:hidden;pointer-events:none}
-.propop .pp-shine::before{content:"";position:absolute;top:0;bottom:0;left:0;width:60%;background:linear-gradient(105deg,transparent,rgba(255,255,255,.8) 45%,rgba(200,235,255,.55) 55%,transparent);transform:translateX(-120%)}
-.propop.pp-in .pp-shine::before{animation:pp-frost 700ms 200ms var(--ease-out) both}
+.propop.pp-in .pp-masc{animation:pp-masc var(--dur-2) 200ms var(--ease-out) both}
 @keyframes pp-fade{from{opacity:0}to{opacity:1}}
 @keyframes pp-rise{from{opacity:0;transform:translateY(12px) scale(.95)}to{opacity:1;transform:none}}
-@keyframes pp-frost{from{transform:translateX(-120%)}to{transform:translateX(260%)}}
-@media (prefers-reduced-motion:reduce){.propop.pp-in,.propop.pp-in .pp-card,.propop.pp-in .pp-shine::before{animation:none}}
+@keyframes pp-masc{from{opacity:0;transform:translateY(14px) rotate(-8deg)}to{opacity:1;transform:rotate(-8deg)}}
+@media (prefers-reduced-motion:reduce){.propop.pp-in,.propop.pp-in .pp-card,.propop.pp-in .pp-masc{animation:none}}
 
 /* App & montage (06/11): « Tu veux ajouter les paroles à la vidéo ? » — Oui / Non side by side, same size */
 .lq-two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px}
@@ -2674,19 +2710,26 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
 <!-- start over: asked before everything is cleared -->
 <!-- the Pro offer after the first video made (free plan, once per device): a frosted window in the middle of the screen -->
 <div class="propop" id="proPop" role="dialog" aria-modal="true" aria-labelledby="proPopT" hidden>
+  <!-- (owner, 23/11) redone: the person's own video with and without the logo is the main thing (the same two pictures as the
+       end screen), one message, the price as on the plans page, « Plus tard » a real button -->
   <div class="card pp-card" id="proPopCard" tabindex="-1">
-    <span class="pp-shine" aria-hidden="true"></span>
-    <button class="pp-x" id="proPopX" type="button" aria-label="Close" data-i18n-attr="aria-label:close">×</button>
-    <div class="pp-mascot" aria-hidden="true"></div>
-    <h2 id="proPopT" data-i18n="pp.t">Nice video! Next one without the watermark?</h2>
-    <ul class="pp-list">
-      <li data-i18n="pp.l1">No watermark</li>
-      <li data-i18n="pp.l2">Music video mode (16:9, the whole song)</li>
-      <li data-i18n="pp.l3">Every filter</li>
-    </ul>
-    <p class="pp-price" data-i18n="pp.price"><strong>$4.17</strong>/mo, billed yearly</p>
-    <button class="btn primary big pp-go" id="proPopGo" type="button" data-i18n="pp.go">Go Pro</button>
-    <button class="pp-later" id="proPopLater" type="button" data-i18n="pp.later">Maybe later</button>
+    <button class="pp-x" id="proPopX" type="button" aria-label="Close" data-i18n-attr="aria-label:close"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 5l14 14M19 5L5 19"/></svg></button>
+    <div class="pp-show">
+      <figure class="pp-f pp-fa"><div class="pp-pic"><img id="ppA" alt="Your video with the Stalak logo" data-i18n-attr="alt:pp.a.alt"></div><figcaption data-i18n="pp.a">With the logo</figcaption></figure>
+      <figure class="pp-f pp-fb"><div class="pp-pic"><canvas id="ppB" width="360" height="640" role="img" aria-label="The same frame of your video, without the logo" data-i18n-attr="aria-label:pp.b.alt"></canvas></div><figcaption><span data-i18n="pp.b">Without the logo</span> <b class="cmp-tag">PRO</b></figcaption></figure>
+      <img class="pp-masc" data-emo="hype" alt="" width="92" height="92">
+    </div>
+    <div class="pp-txt">
+      <h2 id="proPopT" data-i18n="pp.t">Your video, without the logo</h2>
+      <p class="pp-s" data-i18n="pp.s">The same video, ready to post: it ends on you, not on the Stalak logo.</p>
+      <div class="pp-pricebox">
+        <p class="pp-price"><s class="pp-was" id="ppWas"></s><strong id="ppAmt">4,17 $</strong><span data-i18n="pr.per">/mo</span><b class="pp-months" id="ppMonths"></b></p>
+        <p class="pp-bill" id="ppBill"></p>
+      </div>
+      <button class="btn primary big pp-go" id="proPopGo" type="button" data-i18n="pp.go">Go Pro</button>
+      <button class="btn pp-later" id="proPopLater" type="button" data-i18n="pp.later">Maybe later</button>
+      <p class="pp-also" data-i18n="pp.also">Also with Pro: Music video mode (16:9) and every filter.</p>
+    </div>
   </div>
 </div>
 
@@ -3144,6 +3187,6 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
   <button class="hp-human" id="helpHuman" type="button" data-i18n="help.human" hidden>Talk to a human</button>
   <button class="hp-diag" id="helpDiag" type="button" data-i18n="help.diag">Copy info for the team</button>
 </section>
-<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.c9f4369178.js", "/assets/app.0a9a921f3a.js", "/assets/tiktok.8fcf3f7d25.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v||!v.offsetParent)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
+<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.c9f4369178.js", "/assets/app.01047df786.js", "/assets/tiktok.8fcf3f7d25.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v||!v.offsetParent)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
 </body>
 </html>
