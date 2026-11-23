@@ -2,7 +2,9 @@
 # no « stalak.app » before Stalak is presented, a « blue cow » hook really screamed, 3 hooks per script. Facts: those verified on 20/11.
 import json, os, re, datetime
 HERE = os.path.dirname(os.path.abspath(__file__))
-OLD = os.path.join(HERE, 'cards', 'videos'); OUT = os.path.join(HERE, 'out'); os.makedirs(OUT, exist_ok=True)
+import sys
+# usage: python3 tools/serie/bonne_idee_scripts_v3.py <folder of the current cards, saved by ArtifactData> <output folder>
+OLD = sys.argv[1]; OUT = sys.argv[2]; os.makedirs(OUT, exist_ok=True)
 NOW = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
 
 RULES = ("Règles de toute la vidéo (mode d'emploi FORMAT_BONNE_IDEE_VS_MAUVAISE_IDEE.md, version du 23/11) : "
