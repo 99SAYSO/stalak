@@ -605,11 +605,6 @@
 Ces montants sont avant TVA et frais. Réaliste : 10 000 € par mois en avril 2027.
 
 ### Juridique & business
-- **Fait (branche `legal/video-offerte`, 23/11)** : « 1re vidéo sans filigrane offerte, par compte » écrite dans les conditions et la confidentialité FR/EN.
-  - Conditions : section 4 `#free-video` / `#video-offerte` (une vidéo, une fois, sans paiement ni carte, connecté, utilisée au premier export sans filigrane, une par personne, offre modifiable pour les nouveaux comptes) ; formule Gratuit et section 2 (compte nécessaire aussi pour la vidéo offerte) ; suspension : contournement par plusieurs comptes.
-  - Confidentialité `#free-video` / `#video-offerte` : le serveur retient seulement si la vidéo a été utilisée ; empreinte brouillée de l'e-mail gardée même après suppression du compte, **effacée 12 mois après la suppression** ; base : intérêt légitime (éviter l'abus).
-  - **À faire par Comptes** : (1) empreinte avec clé secrète (HMAC), pas un simple SHA-256 (les e-mails se devinent) ; (2) e-mail normalisé avant l'empreinte (majuscules, points Gmail, « +alias ») ; (3) effacer l'empreinte 12 mois après la suppression du compte (ou changer le chiffre dans les pages) ; (4) ne rien garder de plus que « utilisée oui/non ». **À faire par App** : l'offre est consommée seulement quand l'export est terminé ; la personne doit être connectée.
-  - Point de droit : voir `docs/handoff/legal-video-offerte.md`.
 - **Fait (branche `legal/tiktok`, 21/11)** : TikTok dans la confidentialité FR/EN et les conditions FR/EN, pour la validation de l'appli par TikTok. Détail et tableau des promesses dans `docs/juridique/TIKTOK.md`.
   - Confidentialité `#tiktok` : ce qu'on reçoit (profil, stats du compte, vidéos publiques avec vues et likes, jetons chiffrés), à quoi ça sert (publier les clips choisis, stats visibles par la personne seule), durées, comment délier et tout effacer, rien vendu ni partagé.
     - Durées annoncées : nom et photo tant que relié ; stats et liste 24 h ; vidéo pas gardée ; état de publication 30 jours ; effacement immédiat à la déliaison ; 30 jours si l'accès est retiré depuis TikTok.
