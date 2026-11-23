@@ -1184,11 +1184,6 @@ body.isdone > .help-cube{display:none}
 .hero-txt{min-width:0}
 .hero-h1{margin:0 0 5px;font:400 clamp(21px,5.4vw,25px)/1.08 var(--display);letter-spacing:.01em;color:var(--snow);text-shadow:0 2px 0 var(--ink);text-wrap:balance}
 .hero-s{margin:0;max-width:34em;font:600 14.5px/1.4 var(--body);color:var(--snow);text-shadow:0 1px 0 rgba(10,13,20,.4);text-wrap:pretty}
-/* Réseaux sociaux (23/11) : « 1re vidéo sans filigrane offerte avec un compte », une ligne près du bouton principal */
-.hero-gift{margin:10px auto 0;max-width:30em;color:var(--snow);font:600 13.5px/1.3 var(--body);text-shadow:0 1px 0 rgba(10,13,20,.4);text-align:center;text-wrap:balance}
-.hero-gift svg{display:inline-block;width:18px;height:18px;margin-right:6px;vertical-align:-4px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.hero-gift b{font-weight:800}
-@media (min-width:900px){ .hero-gift{font-size:15px;margin-top:12px} }
 /* phone and tablet: the hero first, then the room where the mascot stands on the card (it was the top padding) */
 @media (max-width:899px){
   #p1:has(#songBox[hidden]):not(:has(> .lpoffer:not([hidden]))):has(> .hero){padding-top:4px}
