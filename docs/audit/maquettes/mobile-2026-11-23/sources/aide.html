@@ -1,0 +1,39 @@
+<!doctype html><meta charset=utf8>
+<style>
+@font-face{font-family:Lilita;src:url(lilitaone.ttf)}@font-face{font-family:Rubik;src:url(rubik.ttf)}
+*{box-sizing:border-box;margin:0}
+body{background:#12141a;width:520px;height:1010px;display:flex;justify-content:center;align-items:center;font-family:Rubik;color:#0a0d14}
+.col{display:flex;flex-direction:column;align-items:center;gap:18px}.lab{font:400 28px Lilita;color:#fff}
+.ph{width:390px;height:844px;border-radius:54px;overflow:hidden;position:relative;background:#d6ecff;box-shadow:0 0 0 10px #000,0 0 0 12px #333}
+.sb{position:absolute;top:16px;left:34px;right:30px;display:flex;justify-content:space-between;font:600 16px Rubik;z-index:6;color:#fff}
+.hd{position:absolute;inset:0 0 auto 0;height:150px;background:radial-gradient(300px 200px at 195px 110px,#5aa0f5 0,#1f6fd6 70%,#1657b3 100%);border-bottom:3.5px solid #0a0d14}
+.hd svg.st{position:absolute;left:0;bottom:-33px;width:100%}
+.rb{position:absolute;top:66px;left:18px;width:42px;height:42px;border-radius:50%;background:#fff;border:3px solid #0a0d14;box-shadow:0 3px 0 #0a0d14;display:grid;place-items:center}
+.rb svg{width:20px;height:20px;fill:none;stroke:#0a0d14;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.who{position:absolute;left:74px;top:60px;display:flex;gap:12px;align-items:center;color:#fff}
+.cube{width:54px;height:54px;border-radius:15px;border:3px solid #0a0d14;background:linear-gradient(135deg,#fff 0 22%,#d6ecff 22% 60%,#a9d3ff 60%);box-shadow:0 4px 0 #0a0d14;position:relative;flex:none}
+.cube::before{content:"";position:absolute;left:13px;top:21px;width:7px;height:9px;border-radius:50%;background:#0a0d14;box-shadow:19px 0 0 #0a0d14}
+.cube::after{content:"";position:absolute;left:19px;top:33px;width:14px;height:7px;border:3px solid #0a0d14;border-top:0;border-radius:0 0 10px 10px}
+.who b{font:400 22px Lilita;display:block;text-shadow:0 2px 0 #0a0d14}.who span{font:500 13.5px Rubik;opacity:.95}.who span::before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:#7CFFB2;border:1.500px solid #0a0d14;margin-right:6px}
+.ch{position:absolute;left:16px;right:16px;top:196px;display:flex;flex-direction:column;gap:12px}
+.day{align-self:center;font:500 12.5px Rubik;color:#7a8aa6}
+.a{display:flex;gap:8px;align-items:flex-end;max-width:94%}.a .cube{width:34px;height:34px;border-radius:10px;border-width:2.5px;box-shadow:0 3px 0 #0a0d14}.a .cube::before{left:7px;top:12px;width:5px;height:6px;box-shadow:12px 0 0 #0a0d14}.a .cube::after{left:10px;top:20px;width:9px;height:4px;border-width:2.5px}
+.bb{background:#fff;border:3px solid #0a0d14;border-radius:20px 20px 20px 6px;padding:12px 14px;font:500 15.5px/1.4 Rubik;box-shadow:0 4px 0 #0a0d14}
+.bb b{font-weight:700}.bb ol{margin:6px 0 0 0;padding-left:20px}
+.u{align-self:flex-end;max-width:78%;background:#1f6fd6;color:#fff;border:3px solid #0a0d14;border-radius:20px 20px 6px 20px;padding:12px 14px;font:500 15.5px/1.4 Rubik;box-shadow:0 4px 0 #0a0d14}
+.qs{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;margin-top:4px}
+.q{border:3px solid #0a0d14;background:#fff;border-radius:99px;padding:9px 14px;font:600 14.5px Rubik;color:#1f6fd6;box-shadow:0 3px 0 #0a0d14}
+.inp{position:absolute;left:14px;right:14px;bottom:30px;height:60px;border-radius:99px;border:3px solid #0a0d14;background:#fff;box-shadow:0 5px 0 #0a0d14;display:flex;align-items:center;padding:0 8px 0 20px;font:500 16px Rubik;color:#7a8aa6}
+.inp i{margin-left:auto;width:44px;height:44px;border-radius:50%;background:#1f6fd6;border:3px solid #0a0d14;display:grid;place-items:center;color:#fff;font:700 20px Rubik;font-style:normal}
+.bar{position:absolute;bottom:8px;left:128px;width:134px;height:5px;border-radius:3px;background:#0a0d14;z-index:9}
+</style>
+<div class=col><div class=lab>Le glaçon d'aide</div><div class=ph><div class=sb><span>9:41</span><span>●●● ᯤ ▮</span></div>
+<div class=hd><svg class=st viewBox="0 0 390 34"><path d="M0 0H390V2H330Q324 18 318 30Q311 16 306 2H215Q207 20 195 32Q183 20 175 2H84Q78 16 72 26Q65 14 60 2H0Z" fill="#1657b3" stroke="#0a0d14" stroke-width="3.5" stroke-linejoin="round"/></svg>
+<div class=rb><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></div>
+<div class=who><div class=cube></div><div><b>Le glaçon d'aide</b><span>Répond tout de suite</span></div></div></div>
+<div class=ch><div class=day>Aujourd'hui · 21:18</div>
+<div class=a><div class=cube></div><div class=bb>Salut ! Je suis le glaçon d'aide de Stalak. Dis-moi ce qui te bloque.</div></div>
+<div class=u>Comment j'enlève le filigrane ?</div>
+<div class=a><div class=cube></div><div class=bb>Il part avec <b>Stalak&nbsp;Pro</b>&nbsp;:<ol><li>Touche «&nbsp;Exporter&nbsp;»</li><li>Choisis «&nbsp;Sans&nbsp;filigrane&nbsp;»</li><li>Lance ton essai de 7&nbsp;jours</li></ol></div></div>
+<div class=qs><div class=q>Montre-moi</div><div class=q>Merci, c'est bon</div><div class=q>Parler à un humain</div></div></div>
+<div class=inp>Écris ta question…<i>↑</i></div><div class=bar></div></div></div>

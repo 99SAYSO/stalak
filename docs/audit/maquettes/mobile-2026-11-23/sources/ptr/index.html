@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1080, height=1920" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<style>
+@font-face{font-family:"Lilita One";src:url('assets/fonts/lilitaone.ttf')}
+@font-face{font-family:"Rubik";src:url('assets/fonts/rubik.ttf');font-weight:300 900}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#1f6fd6}
+#root{position:relative;width:1080px;height:1920px;overflow:hidden;font-family:"Rubik";color:#0a0d14}
+#scene{position:absolute;inset:0}
+#blue{position:absolute;inset:0;background:radial-gradient(800px 700px at 540px 330px,#5aa0f5 0,#1f6fd6 55%,#1657b3 100%)}
+.fl{position:absolute;color:#fff;font:400 40px/1 "Rubik"}
+#hint{position:absolute;left:0;right:0;top:56px;text-align:center;font:400 54px "Lilita One";color:#fff;text-shadow:0 5px 0 #0a0d14}
+#hint2{position:absolute;left:0;right:0;top:56px;text-align:center;font:400 54px "Lilita One";color:#fff;text-shadow:0 5px 0 #0a0d14}
+#head{position:absolute;left:350px;top:0;width:380px}
+#head img{width:100%;display:block}
+#content{position:absolute;left:0;right:0;top:0;height:2100px;background:#d6ecff;border-top:10px solid #0a0d14;border-radius:70px 70px 0 0;padding:150px 56px 0}
+#content h1{font:400 84px "Lilita One"}
+#content p{font:500 42px "Rubik";color:#3f5170;margin-top:6px}
+#grid{position:relative;margin-top:50px;height:1300px}
+.c{position:absolute;width:466px;height:560px;border-radius:54px;border:9px solid #0a0d14;box-shadow:0 14px 0 #0a0d14;overflow:hidden}
+.c b{position:absolute;left:26px;right:26px;bottom:24px;font:600 38px "Rubik";color:#fff}
+.c i{position:absolute;top:22px;right:22px;background:#fff;border-radius:20px;font:600 30px "Rubik";padding:4px 14px;font-style:normal}
+.c u{position:absolute;top:22px;left:22px;background:#ffd23f;border:5px solid #0a0d14;border-radius:20px;font:400 30px "Lilita One";padding:2px 14px;text-decoration:none}
+#tab{position:absolute;left:0;right:0;bottom:0;height:272px;background:#fff;border-top:10px solid #0a0d14;display:flex;justify-content:space-around;padding:36px 30px 0}
+.t{width:180px;display:flex;flex-direction:column;align-items:center;gap:10px;font:600 32px "Rubik";color:#7a8aa6}
+.t.on{color:#1f6fd6}.t svg{width:76px;height:76px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.t .av{width:80px;height:80px;border-radius:50%;border:7px solid #7a8aa6;background:#d6ecff url('assets/img/head.png') center/120% no-repeat}
+#plus{width:206px;height:206px;border-radius:50%;background:#1f6fd6;border:10px solid #0a0d14;box-shadow:0 14px 0 #0a0d14;margin-top:-104px;color:#fff;font:400 140px/170px "Lilita One";text-align:center}
+#finger{position:absolute;left:470px;top:640px;width:140px;height:140px;border-radius:50%;background:rgba(10,13,20,.28);border:8px solid rgba(255,255,255,.85)}
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="6" data-width="1080" data-height="1920">
+ <div id="scene" class="clip" data-start="0" data-duration="6" data-track-index="0" data-layout-allow-overflow>
+  <div id="blue"><div id="snow"></div><div id="hint">Tire encore un peu…</div><div id="hint2">Quoi de neuf ?</div>
+    <div id="head"><img src="assets/img/head.png" alt=""></div></div>
+  <div id="content"><h1>Tes montages</h1><p>12 vidéos · rangées par date</p>
+    <div id="grid">
+      <div class="c" id="new" style="left:0;top:0;background:linear-gradient(160deg,#d94f8a,#0a0d14)"><u>Nouveau</u><i>0:27</i><b>Snippet du soir</b></div>
+      <div class="c mv" style="left:0;top:0;background:linear-gradient(160deg,#0e3f8f,#0a0d14)"><i>0:24</i><b>Freestyle #3</b></div>
+      <div class="c mv" style="left:502px;top:0;background:linear-gradient(160deg,#5b3a8f,#0a0d14)"><i>0:31</i><b>Snippet love</b></div>
+      <div class="c mv" style="left:0;top:610px;background:linear-gradient(160deg,#2b7a5e,#0a0d14)"><i>0:18</i><b>Drill test</b></div>
+      <div class="c mv" style="left:502px;top:610px;background:linear-gradient(160deg,#a3541c,#0a0d14)"><i>0:22</i><b>Teaser EP</b></div>
+    </div></div>
+  <div id="tab">
+    <div class="t"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Accueil</div>
+    <div class="t on"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9.500v5l4.500-2.500z"/></svg>Montages</div>
+    <div id="plus">+</div>
+    <div class="t"><svg viewBox="0 0 24 24"><path d="M4 20V11M10 20V4M16 20v-7M22 20H2"/></svg>Stats</div>
+    <div class="t"><div class="av"></div>Compte</div></div>
+  <div id="finger"></div>
+ </div>
+</div>
+<script>
+const tl = gsap.timeline({ paused: true });
+let seed = 31; const R = () => (seed = (seed * 16807) % 2147483647) / 2147483647; const D = 6;
+const snow = document.getElementById("snow");
+for (let i = 0; i < 26; i++) { const f = document.createElement("div"); f.className = "fl"; f.textContent = "❄"; const z = 26 + R() * 44; f.style.cssText = `left:${R() * 1040}px;top:${-200 + R() * 620}px;font-size:${z}px;opacity:${0.45 + R() * 0.5}`; snow.append(f);
+  tl.fromTo(f, { y: 0, rotation: 0 }, { y: 200 + R() * 260, rotation: (R() - 0.5) * 300, duration: D, ease: "none" }, 0); }
+gsap.set("#head", { transformOrigin: "50% 100%" });
+gsap.set("#hint2", { opacity: 0 }); gsap.set("#new", { opacity: 0 });
+// le doigt se pose et tire
+tl.fromTo("#finger", { opacity: 0, scale: 1.5 }, { opacity: 1, scale: 1, duration: 0.25, ease: "power2.out" }, 0.6);
+tl.fromTo("#finger", { y: 0 }, { y: 520, duration: 1.15, ease: "power2.inOut" }, 0.85);
+tl.fromTo("#content", { y: 0 }, { y: 470, duration: 1.15, ease: "power2.inOut" }, 0.85);
+tl.fromTo("#hint", { opacity: 0, y: -30 }, { opacity: 1, y: 0, duration: 0.3 }, 1.0);
+// la mascotte dépasse derrière la page, puis surgit au seuil
+tl.fromTo("#head", { y: 150 }, { y: 330, duration: 1.15, ease: "power2.inOut" }, 0.85);
+tl.to("#head", { y: 236, duration: 0.45, ease: "back.out(3)" }, 1.85);
+tl.fromTo("#head", { scaleX: 1, scaleY: 1 }, { scaleX: 0.92, scaleY: 1.1, duration: 0.14, ease: "power2.out" }, 1.85).to("#head", { scaleX: 1, scaleY: 1, duration: 0.4, ease: "elastic.out(1,0.4)" }, 1.99);
+tl.to("#hint", { opacity: 0, duration: 0.12 }, 1.85).to("#hint2", { opacity: 1, duration: 0.15 }, 1.95);
+// relâché : la page remonte un peu et attend, la mascotte regarde à gauche et à droite
+tl.to("#finger", { opacity: 0, scale: 1.4, duration: 0.2 }, 2.15);
+tl.to("#content", { y: 400, duration: 0.5, ease: "elastic.out(1,0.5)" }, 2.15);
+tl.to("#head", { y: 168, duration: 0.5, ease: "elastic.out(1,0.5)" }, 2.15);
+tl.to("#head", { rotation: -9, duration: 0.28, ease: "power2.inOut" }, 2.5).to("#head", { rotation: 8, duration: 0.4, ease: "power2.inOut" }, 2.86).to("#head", { rotation: 0, duration: 0.25, ease: "power2.out" }, 3.34);
+// fini : elle replonge, la page remonte, le nouveau montage arrive
+tl.to("#head", { scaleX: 1.1, scaleY: 0.86, duration: 0.1 }, 3.62).to("#head", { y: 420, scaleX: 1, scaleY: 1, duration: 0.3, ease: "power2.in" }, 3.72);
+tl.to("#hint2", { opacity: 0, duration: 0.15 }, 3.7);
+tl.to("#content", { y: 0, duration: 0.6, ease: "back.out(1.3)" }, 3.85);
+document.querySelectorAll(".mv").forEach((c, i) => { const col = i % 2, row = Math.floor(i / 2); const nc = (i + 1) % 2, nr = Math.floor((i + 1) / 2);
+  tl.to(c, { x: (nc - col) * 502, y: (nr - row) * 610, duration: 0.55, ease: "power3.inOut" }, 4.35 + i * 0.04); });
+tl.fromTo("#new", { opacity: 0, scale: 0.4, rotation: -8 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.55, ease: "back.out(2)" }, 4.6);
+tl.to({}, { duration: 0.01 }, D - 0.01);
+window.__timelines["main"] = tl; tl.seek(0);
+</script>
+</body>
+</html>

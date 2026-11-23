@@ -1,0 +1,37 @@
+<!doctype html><meta charset=utf8>
+<style>
+@font-face{font-family:Lilita;src:url(lilitaone.ttf)}@font-face{font-family:Rubik;src:url(rubik.ttf)}
+*{box-sizing:border-box;margin:0}
+body{background:#12141a;width:520px;height:1010px;display:flex;justify-content:center;align-items:center;font-family:Rubik;color:#0a0d14}
+.col{display:flex;flex-direction:column;align-items:center;gap:18px}.lab{font:400 28px Lilita;color:#fff}
+.ph{width:390px;height:844px;border-radius:54px;overflow:hidden;position:relative;background:radial-gradient(420px 420px at 195px 250px,#5aa0f5 0,#1f6fd6 55%,#1657b3 100%);box-shadow:0 0 0 10px #000,0 0 0 12px #333}
+.sb{position:absolute;top:16px;left:34px;right:30px;display:flex;justify-content:space-between;font:600 16px Rubik;color:#0a0d14;z-index:6}
+.rays{position:absolute;left:-205px;top:-150px;width:800px;height:800px;border-radius:50%;background:repeating-conic-gradient(from 4deg,rgba(255,255,255,.5) 0 9deg,transparent 9deg 22deg);-webkit-mask:radial-gradient(circle,#000 14%,transparent 60%);opacity:.22}
+.ice{position:absolute;top:0;left:0;width:100%;z-index:3}
+.fl{position:absolute;border-radius:50%;background:#fff}
+.x{position:absolute;top:92px;left:20px;width:42px;height:42px;border-radius:50%;background:#fff;border:3px solid #0a0d14;box-shadow:0 3px 0 #0a0d14;display:grid;place-items:center;font:700 17px Rubik;z-index:5}
+.bub{position:absolute;top:104px;right:22px;background:#fff;border:3px solid #0a0d14;border-radius:18px;padding:9px 13px;font:400 17px Lilita;box-shadow:0 4px 0 #0a0d14;transform:rotate(5deg);z-index:4}
+.bub::after{content:"";position:absolute;left:18px;bottom:-12px;width:16px;height:16px;background:#fff;border-right:3px solid #0a0d14;border-bottom:3px solid #0a0d14;transform:rotate(45deg) skew(10deg,10deg)}
+.m{position:absolute;left:112px;top:128px;width:166px;z-index:3;filter:drop-shadow(0 6px 0 rgba(10,13,20,.25))}
+.mound{position:absolute;left:-40px;right:-40px;top:292px;height:160px;border-radius:50%;background:#fff;border:3.5px solid #0a0d14;z-index:2}
+.sheet{position:absolute;left:0;right:0;bottom:0;top:346px;background:#fff;z-index:3;padding:14px 24px 0;display:flex;flex-direction:column;align-items:center}
+h1{font:400 33px/1.08 Lilita;text-align:center}h1 b{color:#1f6fd6;font-weight:400}
+p{font:500 16px/1.4 Rubik;color:#3f5170;text-align:center;margin-top:8px}
+.in{margin-top:18px;width:100%;height:60px;border-radius:18px;border:3px solid #0a0d14;background:#eef6ff;display:flex;align-items:center;gap:10px;padding:0 16px;font:500 17px Rubik;color:#7a8aa6;box-shadow:inset 0 3px 0 #d6ecff}
+.b1{margin-top:14px;width:100%;height:62px;border-radius:18px;background:#1f6fd6;border:3px solid #0a0d14;color:#fff;font:400 23px Lilita;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 6px 0 #0a0d14;text-shadow:0 2px 0 #0a0d14}
+.or{margin:20px 0 12px;font:500 14px Rubik;color:#7a8aa6;display:flex;align-items:center;gap:12px;width:100%}.or::before,.or::after{content:"";flex:1;height:2px;background:#d6ecff}
+.b2{width:100%;height:58px;border-radius:18px;border:3px solid #0a0d14;background:#fff;font:600 17px Rubik;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 5px 0 #d6ecff}
+.leg{position:absolute;bottom:30px;left:30px;right:30px;font:400 12.5px/1.4 Rubik;color:#7a8aa6;text-align:center}.leg u{color:#3f5170}
+.bar{position:absolute;bottom:8px;left:128px;width:134px;height:5px;border-radius:3px;background:#0a0d14;z-index:9}
+</style>
+<div class=col><div class=lab>Connexion · version 2</div><div class=ph><div class=sb><span>9:41</span><span>●●● ᯤ ▮</span></div>
+<div class=rays></div><div id=sn></div>
+<svg class=ice viewBox="0 0 390 96"><path d="M-5 -5H395V50H340Q334 70 328 82Q321 68 316 50H250Q244 74 238 88Q231 72 226 50H150Q144 68 138 78Q131 66 126 50H70Q64 74 58 90Q51 72 46 50H-5Z" fill="#fff" stroke="#0a0d14" stroke-width="5" stroke-linejoin="round"/></svg>
+<div class=x>✕</div><div class=bub>Content de te voir !</div>
+<div class=mound></div><img class=m src=mascot3.png>
+<div class=sheet><h1>Connecte-toi pour<br><b>garder tes montages</b></h1><p>Retrouve-les sur tous tes appareils.</p>
+<div class=in><svg width=22 height=22 viewBox="0 0 24 24" fill=none stroke="#7a8aa6" stroke-width=2.4 stroke-linecap=round stroke-linejoin=round><rect x=3 y=5 width=18 height=14 rx=3 /><path d="M4 7l8 6 8-6"/></svg>Ton e-mail</div>
+<div class=b1>Continuer →</div><div class=or>ou</div>
+<div class=b2><svg width=22 height=22 viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.900 6.200C12.400 13.700 17.700 9.500 24 9.500z"/><path fill="#4285F4" d="M46.500 24.500c0-1.600-.100-3.100-.400-4.500H24v9h12.700c-.600 3-2.300 5.500-4.800 7.200l7.600 5.900c4.500-4.100 7-10.200 7-17.600z"/><path fill="#FBBC05" d="M10.500 28.600c-.5-1.500-.8-3-.8-4.600s.3-3.100.8-4.600l-7.900-6.200C1 16.500 0 20.100 0 24s1 7.500 2.600 10.800l7.900-6.200z"/><path fill="#34A853" d="M24 48c6.500 0 11.900-2.100 15.900-5.800l-7.600-5.900c-2.100 1.400-4.900 2.300-8.300 2.300-6.300 0-11.600-4.200-13.500-9.900l-7.900 6.200C6.500 42.600 14.600 48 24 48z"/></svg>Continuer avec Google</div>
+<div class=leg>En continuant, tu acceptes les <u>Conditions</u> et la <u>Confidentialité</u>.</div></div><div class=bar></div></div></div>
+<script>let s=9;const R=()=>(s=s*16807%2147483647)/2147483647;const e=document.getElementById('sn');for(let i=0;i<26;i++){const d=document.createElement('div');d.className='fl';const z=3+R()*7;d.style.cssText=`left:${R()*390}px;top:${60+R()*300}px;width:${z}px;height:${z}px;opacity:${.3+R()*.5}`;e.append(d)}</script>

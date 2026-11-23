@@ -1,0 +1,59 @@
+<!doctype html><meta charset=utf8>
+<style>
+@font-face{font-family:Lilita;src:url(lilitaone.ttf)}@font-face{font-family:Rubik;src:url(rubik.ttf)}
+*{box-sizing:border-box;margin:0}
+body{background:#12141a;width:1000px;height:1010px;display:flex;gap:70px;justify-content:center;align-items:center;font-family:Rubik;color:#0a0d14}
+.col{display:flex;flex-direction:column;align-items:center;gap:18px}
+.lab{font:400 28px Lilita;color:#fff}
+.ph{width:390px;height:844px;border-radius:54px;overflow:hidden;position:relative;background:#fff;box-shadow:0 0 0 10px #000,0 0 0 12px #333}
+.sb{position:absolute;top:16px;left:34px;right:30px;display:flex;justify-content:space-between;font:600 16px Rubik;z-index:5}
+.bar{position:absolute;bottom:8px;left:128px;width:134px;height:5px;border-radius:3px;background:#0a0d14;z-index:9}
+/* login */
+.lg{position:absolute;inset:0;background:#fff;padding:0 26px;display:flex;flex-direction:column;align-items:center}
+.lg .top{position:absolute;top:0;left:0;right:0;height:250px;background:#1f6fd6}
+.lg .top svg{position:absolute;bottom:-44px;left:0;width:100%}
+.lg .x{position:absolute;top:58px;left:22px;width:40px;height:40px;border-radius:50%;background:#fff;border:3px solid #0a0d14;display:grid;place-items:center;font:700 18px Rubik;z-index:3}
+.lg img.m{position:relative;margin-top:92px;width:150px;z-index:2}
+.lg h1{font:400 32px/1.1 Lilita;margin-top:54px;text-align:center}
+.lg p{font:500 16px/1.4 Rubik;color:#3f5170;text-align:center;margin-top:8px}
+.in{margin-top:26px;width:100%;height:58px;border-radius:18px;border:3px solid #0a0d14;background:#eef6ff;display:flex;align-items:center;padding:0 18px;font:500 17px Rubik;color:#7a8aa6}
+.b1{margin-top:12px;width:100%;height:60px;border-radius:18px;background:#0a0d14;color:#fff;font:400 22px Lilita;display:grid;place-items:center;box-shadow:0 5px 0 #1f6fd6}
+.or{margin:20px 0 14px;font:500 14px Rubik;color:#7a8aa6;display:flex;align-items:center;gap:12px;width:100%}.or::before,.or::after{content:"";flex:1;height:2px;background:#d6ecff}
+.b2{width:100%;height:58px;border-radius:18px;border:3px solid #0a0d14;background:#fff;font:600 17px Rubik;display:flex;align-items:center;justify-content:center;gap:10px}
+.leg{position:absolute;bottom:34px;left:30px;right:30px;font:400 12.5px/1.4 Rubik;color:#7a8aa6;text-align:center}
+/* home */
+.hm{position:absolute;inset:0;background:#d6ecff;padding:64px 22px 0}
+.hm .hi{display:flex;justify-content:space-between;align-items:center}
+.hm .hi h2{font:400 30px Lilita}.hm .hi span{font:500 15px Rubik;color:#3f5170;display:block;margin-top:2px}
+.pill{background:#fff;border:3px solid #0a0d14;border-radius:99px;padding:7px 13px;font:400 15px Lilita;color:#1f6fd6}
+.hero{margin-top:22px;background:#1f6fd6;border:3.5px solid #0a0d14;border-radius:28px;box-shadow:0 6px 0 #0a0d14;padding:22px;color:#fff;position:relative;height:190px;overflow:hidden}
+.hero h3{font:400 27px/1.1 Lilita;text-shadow:0 3px 0 #0a0d14;width:190px}
+.hero p{font:500 15px/1.35 Rubik;margin-top:8px;width:180px;opacity:.95}
+.hero img{position:absolute;right:14px;bottom:12px;width:128px}
+.hm h4{font:400 21px Lilita;margin:28px 0 12px}
+.pr{display:flex;gap:12px}
+.pr div{flex:1;height:176px;border-radius:20px;border:3px solid #0a0d14;background:linear-gradient(160deg,#0e3f8f,#0a0d14);position:relative;overflow:hidden}
+.pr div:nth-child(2){background:linear-gradient(160deg,#5b3a8f,#0a0d14)}.pr div:nth-child(3){background:linear-gradient(160deg,#2b7a5e,#0a0d14)}
+.pr b{position:absolute;left:8px;right:8px;bottom:8px;font:600 12.5px Rubik;color:#fff}.pr i{position:absolute;top:8px;right:8px;background:#fff;border-radius:8px;font:600 11px Rubik;padding:2px 6px;font-style:normal}
+.tab{position:absolute;left:0;right:0;bottom:0;height:98px;background:#fff;border-top:3.5px solid #0a0d14;display:flex;justify-content:space-around;padding:12px 10px 0}
+.tab .t{width:64px;display:flex;flex-direction:column;align-items:center;gap:4px;font:600 11.5px Rubik;color:#7a8aa6}
+.tab .t.on{color:#1f6fd6}.tab svg{width:27px;height:27px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.plus{width:74px;height:74px;border-radius:50%;background:#1f6fd6;border:3.5px solid #0a0d14;box-shadow:0 5px 0 #0a0d14;margin-top:-36px;display:grid;place-items:center;color:#fff;font:400 50px/1 Lilita;padding-bottom:6px}
+.tab .av{width:30px;height:30px;border-radius:50%;border:2.4px solid currentColor;background:#d6ecff url(mascot-head.png) center/120% no-repeat;margin-bottom:-3px}
+</style>
+<div class=col><div class=lab>Connexion · plein écran</div><div class=ph><div class=sb><span>9:41</span><span>●●● ᯤ ▮</span></div>
+<div class=lg><div class=top><svg viewBox="0 0 390 48"><path d="M0 0H390V8H330Q324 30 318 44Q311 28 306 8H215Q207 34 195 46Q183 34 175 8H84Q78 28 72 40Q65 26 60 8H0Z" fill="#1f6fd6"/></svg></div><div class=x>✕</div>
+<img class=m src=mascot.png><h1>Connexion<br>ou inscription</h1><p>Retrouve tes montages sur tous tes appareils.</p>
+<div class=in>Ton e-mail</div><div class=b1>Continuer</div><div class=or>ou</div>
+<div class=b2><svg width=22 height=22 viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.2C12.4 13.7 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.500-4.800 7.200l7.600 5.900c4.500-4.100 7-10.200 7-17.600z"/><path fill="#FBBC05" d="M10.500 28.600c-.5-1.500-.8-3-.8-4.600s.3-3.100.8-4.600l-7.900-6.200C1 16.500 0 20.100 0 24s1 7.500 2.600 10.800l7.900-6.200z"/><path fill="#34A853" d="M24 48c6.500 0 11.900-2.100 15.900-5.800l-7.600-5.900c-2.100 1.400-4.900 2.300-8.300 2.300-6.300 0-11.600-4.200-13.500-9.900l-7.900 6.200C6.500 42.600 14.600 48 24 48z"/></svg>Continuer avec Google</div>
+<div class=leg>En continuant, tu acceptes les Conditions et la Confidentialité.</div></div><div class=bar></div></div></div>
+<div class=col><div class=lab>Accueil · barre du bas avec « + »</div><div class=ph><div class=sb><span>9:41</span><span>●●● ᯤ ▮</span></div>
+<div class=hm><div class=hi><div><h2>Salut Clément</h2><span>Prêt pour ton prochain snippet ?</span></div><div class=pill>PRO</div></div>
+<div class=hero><h3>Nouveau montage</h3><p>Choisis ton son, on coupe sur le rythme.</p><img src=mascot.png></div>
+<h4>Tes derniers montages</h4><div class=pr><div><i>0:24</i><b>Freestyle #3</b></div><div><i>0:31</i><b>Snippet love</b></div><div><i>0:18</i><b>Drill test</b></div></div>
+<div class=tab>
+<div class="t on"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Accueil</div>
+<div class=t><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9.500v5l4.500-2.500z"/></svg>Montages</div>
+<div class=plus>+</div>
+<div class=t><svg viewBox="0 0 24 24"><path d="M4 20V11M10 20V4M16 20v-7M22 20H2"/></svg>Stats</div>
+<div class=t><div class=av></div>Compte</div></div></div><div class=bar></div></div></div>

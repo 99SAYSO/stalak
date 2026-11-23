@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1080, height=1920" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<style>
+@font-face{font-family:"Lilita One";src:url('assets/fonts/lilitaone.ttf')}
+@font-face{font-family:"Rubik";src:url('assets/fonts/rubik.ttf');font-weight:300 900}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#d6ecff}
+#root{position:relative;width:1080px;height:1920px;overflow:hidden;font-family:"Rubik"}
+#scene,#stage{position:absolute;inset:0}
+/* accueil */
+#home{position:absolute;inset:0;background:#d6ecff}
+#h-title{position:absolute;left:0;right:0;top:730px;text-align:center;font:400 108px/1.08 "Lilita One";color:#0a0d14}
+#h-sub{position:absolute;left:0;right:0;top:990px;text-align:center;font:500 48px "Rubik";color:#3f5170}
+#h-btn{position:absolute;left:80px;right:80px;top:1120px;height:176px;border-radius:56px;background:#0a0d14;color:#fff;font:400 64px/176px "Lilita One";text-align:center;box-shadow:0 16px 0 #1f6fd6}
+#h-link{position:absolute;left:0;right:0;top:1350px;text-align:center;font:600 42px "Rubik";color:#1f6fd6}
+#h-tab{position:absolute;left:0;right:0;bottom:0;height:272px;background:#fff;border-top:10px solid #0a0d14;display:flex;justify-content:space-around;padding:36px 30px 0}
+.t{width:180px;display:flex;flex-direction:column;align-items:center;gap:10px;font:600 32px "Rubik";color:#7a8aa6}
+.t.on{color:#1f6fd6}.t svg{width:76px;height:76px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.t .av{width:80px;height:80px;border-radius:50%;border:7px solid #7a8aa6;background:#d6ecff url('assets/img/head.png') center/120% no-repeat}
+#h-plus{width:206px;height:206px;border-radius:50%;background:#1f6fd6;border:10px solid #0a0d14;box-shadow:0 14px 0 #0a0d14;margin-top:-104px;color:#fff;font:400 140px/170px "Lilita One";text-align:center}
+/* rideau bleu */
+#curtain{position:absolute;inset:0}
+#bg{position:absolute;inset:-80px 0;background:radial-gradient(900px 900px at 540px 980px,#4b93f0 0,#1f6fd6 55%,#1657b3 100%)}
+#rays{position:absolute;left:-460px;top:-100px;width:2000px;height:2000px;border-radius:50%;background:repeating-conic-gradient(from 0deg,rgba(255,255,255,.55) 0 9deg,rgba(255,255,255,0) 9deg 22deg);-webkit-mask:radial-gradient(circle,#000 18%,transparent 62%);mask:radial-gradient(circle,#000 18%,transparent 62%)}
+#edge{position:absolute;left:0;bottom:-118px;width:1080px;height:120px}
+#icebar{position:absolute;left:0;top:0;width:1080px}
+.fl{position:absolute;border-radius:50%;background:#fff}
+#word{position:absolute;left:0;right:0;top:1262px;text-align:center;font:400 196px/1 "Lilita One";color:#fff;letter-spacing:4px}
+#word span{display:inline-block;text-shadow:0 14px 0 #0a0d14,9px 0 0 #0a0d14,-9px 0 0 #0a0d14,0 -9px 0 #0a0d14,8px 8px 0 #0a0d14,-8px 8px 0 #0a0d14,8px -8px 0 #0a0d14,-8px -8px 0 #0a0d14,0 26px 0 rgba(10,13,20,.25)}
+#shadow{position:absolute;left:310px;top:1124px;width:460px;height:70px;border-radius:50%;background:rgba(10,13,20,.28)}
+#flash{position:absolute;left:340px;top:690px;width:400px;height:400px;border-radius:50%;border:40px solid #fff}
+#cube{position:absolute;left:290px;top:640px;width:500px;height:500px}
+#cubeIn{position:absolute;inset:0}
+#box{position:absolute;inset:0;border-radius:74px;border:16px solid #0a0d14;background:linear-gradient(135deg,#fff 0 14%,#e8f4ff 14% 42%,#bfe0ff 42% 78%,#8fc4ff 78%);overflow:hidden;box-shadow:inset -22px -26px 0 rgba(31,111,214,.28)}
+#box img{position:absolute;left:40px;top:62px;width:400px;filter:saturate(.55) brightness(1.12)}
+#frost{position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.75) 0 12%,rgba(214,236,255,.38) 12% 60%,rgba(143,196,255,.5) 60%)}
+#shine{position:absolute;left:44px;top:36px;width:130px;height:34px;border-radius:20px;background:#fff}
+#shine2{position:absolute;left:190px;top:40px;width:40px;height:28px;border-radius:20px;background:#fff}
+#cracks{position:absolute;inset:0}
+.sh{position:absolute;left:480px;top:830px;width:120px;height:120px}
+.pf{position:absolute;left:520px;top:1110px;width:44px;height:44px;border-radius:50%;background:#fff;border:6px solid #0a0d14}
+#masc{position:absolute;left:250px;top:482px;width:580px;height:698px}
+#mascIn{position:absolute;inset:0}
+#mascIn img{width:100%;display:block}
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="7" data-width="1080" data-height="1920" data-motion-blur="on">
+ <div id="scene" class="clip" data-start="0" data-duration="7" data-track-index="0" data-layout-allow-overflow>
+  <div id="stage">
+   <div id="home">
+     <div id="h-title">Fais ton clip<br>en 1 minute</div>
+     <div id="h-sub">Monté tout seul, sur le rythme.</div>
+     <div id="h-btn">Choisir mon son</div>
+     <div id="h-link">Voir un exemple</div>
+     <div id="h-tab">
+       <div class="t on"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Accueil</div>
+       <div class="t"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9.500v5l4.500-2.500z"/></svg>Montages</div>
+       <div id="h-plus">+</div>
+       <div class="t"><svg viewBox="0 0 24 24"><path d="M4 20V11M10 20V4M16 20v-7M22 20H2"/></svg>Stats</div>
+       <div class="t"><div class="av"></div>Compte</div>
+     </div>
+   </div>
+   <div id="curtain">
+     <div id="bg"></div>
+     <div id="rays"></div>
+     <div id="snow"></div>
+     <svg id="edge" viewBox="0 0 1080 120"><path d="M0 0H1080V20H960Q945 80 930 112Q912 76 900 20H640Q622 70 600 96Q578 70 560 20H330Q316 66 300 90Q282 62 270 20H120Q106 76 90 108Q72 70 60 20H0Z" fill="#1657b3"/></svg>
+     <svg id="icebar" viewBox="0 0 1080 300"><path d="M-20 -20H1100V112H950Q934 172 916 206Q898 168 884 112H700Q684 164 668 190Q650 160 638 112H420Q404 176 386 214Q366 170 352 112H190Q174 160 160 184Q144 156 132 112H-20Z" fill="#fff" stroke="#0a0d14" stroke-width="16" stroke-linejoin="round"/></svg>
+     <div id="word"><span>S</span><span>t</span><span>a</span><span>l</span><span>a</span><span>k</span></div>
+   </div>
+   <div id="shadow"></div>
+   <div id="puffs"></div>
+   <div id="flash"></div>
+   <div id="cube"><div id="cubeIn"><div id="box"><img id="sleep" src="assets/img/sleep.png" alt=""><img id="shock" src="assets/img/shock.png" alt=""><div id="frost"></div><div id="shine"></div><div id="shine2"></div></div>
+     <svg id="cracks" viewBox="0 0 500 500" fill="none" stroke="#0a0d14" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+       <path id="c1" d="M262 8L224 96L286 168L236 250"/><path id="c2" d="M236 250L128 282L20 244M236 250L282 352L246 492"/><path id="c3" d="M286 168L392 196L492 170M282 352L388 384L490 350M128 282L96 380"/></svg></div></div>
+   <div id="shards"></div>
+   <div id="masc"><div id="mascIn"><img src="assets/img/mascot.png" alt=""></div></div>
+  </div>
+ </div>
+</div>
+<script>
+const tl = gsap.timeline({ paused: true });
+let seed = 11; const R = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const D = 7;
+// neige
+const snow = document.getElementById("snow");
+for (let i = 0; i < 34; i++) { const f = document.createElement("div"); f.className = "fl"; const z = 8 + R() * 20; f.style.cssText = `left:${R() * 1080}px;top:${-300 + R() * 1900}px;width:${z}px;height:${z}px;opacity:${0.25 + R() * 0.5}`; snow.append(f); tl.fromTo(f, { y: 0, x: 0 }, { y: 260 + R() * 420, x: (R() - 0.5) * 120, duration: D, ease: "none" }, 0); }
+// barre de glace
+tl.fromTo("#icebar", { yPercent: -110 }, { yPercent: 0, duration: 0.55, ease: "back.out(1.5)" }, 0.05);
+gsap.set("#rays", { opacity: 0, transformOrigin: "50% 50%" });
+gsap.set(["#cube", "#cubeIn"], { transformOrigin: "50% 100%" });
+gsap.set("#mascIn", { transformOrigin: "50% 100%" }); gsap.set("#masc", { transformOrigin: "50% 100%" });
+// chute du glaçon
+tl.fromTo("#cube", { y: -1700, rotation: -26 }, { y: 0, rotation: 0, duration: 0.5, ease: "power2.in" }, 0.2);
+tl.fromTo("#shadow", { scale: 0.15, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, ease: "power2.in" }, 0.2);
+tl.fromTo("#cubeIn", { scaleX: 1, scaleY: 1 }, { scaleX: 1.22, scaleY: 0.78, duration: 0.07, ease: "power2.out" }, 0.7);
+tl.to("#cubeIn", { scaleX: 1, scaleY: 1, duration: 0.6, ease: "elastic.out(1,0.38)" }, 0.77);
+tl.fromTo("#stage", { y: 0 }, { y: 30, duration: 0.05, ease: "power2.out" }, 0.7).to("#stage", { y: 0, duration: 0.45, ease: "elastic.out(1,0.3)" }, 0.75);
+// nuage de neige à l'impact
+const puffs = document.getElementById("puffs");
+for (let i = 0; i < 12; i++) { const p = document.createElement("div"); p.className = "pf"; puffs.append(p); const dir = i % 2 ? 1 : -1; const dx = dir * (150 + R() * 330), up = -(40 + R() * 150), s = 0.6 + R() * 1.1;
+  tl.fromTo(p, { x: dir * 120, y: 0, scale: 0, opacity: 1 }, { x: dx, y: up, scale: s, duration: 0.45, ease: "power3.out" }, 0.7);
+  tl.to(p, { opacity: 0, scale: s * 0.4, y: up + 40, duration: 0.3, ease: "power2.in" }, 1.1); }
+// coups de l'intérieur + fissures
+gsap.set("#shock", { opacity: 0 });
+[["#c1", 1.3, 5], ["#c2", 1.66, -8], ["#c3", 1.98, 10]].forEach(([id, t, a]) => { const el = document.querySelector(id); el.querySelectorAll ? 0 : 0; const L = 900;
+  gsap.set(id, { strokeDasharray: L, strokeDashoffset: L });
+  tl.to(id, { strokeDashoffset: 0, duration: 0.14, ease: "power3.out" }, t);
+  tl.to("#cube", { rotation: a, duration: 0.06, ease: "power2.out" }, t).to("#cube", { rotation: -a * 0.6, duration: 0.08, ease: "power1.inOut" }, t + 0.06).to("#cube", { rotation: 0, duration: 0.24, ease: "elastic.out(1,0.4)" }, t + 0.14);
+  tl.to("#cubeIn", { scaleX: 1.05, scaleY: 0.96, duration: 0.06 }, t).to("#cubeIn", { scaleX: 1, scaleY: 1, duration: 0.2, ease: "back.out(3)" }, t + 0.06); });
+tl.to("#sleep", { opacity: 0, duration: 0.04 }, 1.66).to("#shock", { opacity: 1, duration: 0.04 }, 1.66);
+// élan puis explosion
+tl.to("#cubeIn", { scaleX: 1.14, scaleY: 0.84, duration: 0.22, ease: "power2.inOut" }, 2.22);
+tl.to("#cubeIn", { scaleX: 1.3, scaleY: 1.3, duration: 0.06, ease: "power3.in" }, 2.44);
+tl.fromTo("#cube", { opacity: 1 }, { opacity: 0, duration: 0.03, immediateRender: false }, 2.5);
+const T = 2.5;
+tl.fromTo("#flash", { scale: 0.4, opacity: 0 }, { scale: 0.5, opacity: 1, duration: 0.02 }, T).to("#flash", { scale: 3.6, opacity: 0, duration: 0.45, ease: "power3.out" }, T + 0.02);
+tl.to("#stage", { y: -26, duration: 0.05, ease: "power2.out" }, T).to("#stage", { y: 0, duration: 0.5, ease: "elastic.out(1,0.3)" }, T + 0.05);
+tl.to("#rays", { opacity: 0.2, duration: 0.3, ease: "power2.out" }, T).fromTo("#rays", { rotation: 0 }, { rotation: 38, duration: D - T, ease: "none" }, T);
+const sh = document.getElementById("shards");
+for (let i = 0; i < 16; i++) { const a = (i / 16) * 6.283 + R() * 0.3, d = 420 + R() * 420, s = 0.6 + R() * 1.1; const e = document.createElement("div"); e.className = "sh";
+  e.innerHTML = `<svg viewBox="0 0 120 120"><path d="M12 ${24 + R() * 30}L${84 + R() * 26} 10L${64 + R() * 40} 110Z" fill="${i % 3 ? "#d6ecff" : "#fff"}" stroke="#0a0d14" stroke-width="11" stroke-linejoin="round"/></svg>`; sh.append(e);
+  const ox = Math.cos(a) * 150, oy = Math.sin(a) * 150, dx = Math.cos(a) * d, dy = Math.sin(a) * d;
+  gsap.set(e, { opacity: 0 });
+  tl.fromTo(e, { x: ox, opacity: 1, scale: s }, { x: dx, duration: 1.1, ease: "power2.out", immediateRender: false }, T);
+  tl.fromTo(e, { y: oy }, { y: dy - 200, duration: 0.38, ease: "power2.out", immediateRender: false }, T).to(e, { y: dy + 900, duration: 0.7, ease: "power2.in" }, T + 0.38);
+  tl.fromTo(e, { rotation: 0 }, { rotation: (R() - 0.5) * 900, duration: 0.9, ease: "none", immediateRender: false }, T);
+  tl.to(e, { opacity: 0, duration: 0.15 }, T + 0.95); }
+// la mascotte saute, retombe, s'installe
+gsap.set("#masc", { opacity: 0 });
+tl.to("#masc", { opacity: 1, duration: 0.03 }, T);
+tl.fromTo("#masc", { y: 70, scale: 0.72, rotation: -9 }, { y: -230, scale: 1, rotation: 5, duration: 0.3, ease: "power2.out", immediateRender: false }, T);
+tl.fromTo("#mascIn", { scaleX: 0.9, scaleY: 1.14 }, { scaleX: 0.96, scaleY: 1.06, duration: 0.3, ease: "power1.out", immediateRender: false }, T);
+tl.to("#masc", { y: 0, rotation: 0, duration: 0.24, ease: "power2.in" }, T + 0.3);
+tl.to("#mascIn", { scaleX: 1.16, scaleY: 0.84, duration: 0.07, ease: "power2.out" }, T + 0.54).to("#mascIn", { scaleX: 1, scaleY: 1, duration: 0.6, ease: "elastic.out(1,0.4)" }, T + 0.61);
+tl.to("#shadow", { scale: 0.6, opacity: 0.5, duration: 0.3, ease: "power2.out" }, T).to("#shadow", { scale: 1.05, opacity: 1, duration: 0.24, ease: "power2.in" }, T + 0.3);
+tl.to("#stage", { y: 16, duration: 0.05 }, T + 0.54).to("#stage", { y: 0, duration: 0.35, ease: "elastic.out(1,0.35)" }, T + 0.59);
+// le nom, lettre par lettre
+document.querySelectorAll("#word span").forEach((s, i) => { tl.fromTo(s, { y: 120, scale: 0.3, opacity: 0, rotation: (i % 2 ? 1 : -1) * 14 }, { y: 0, scale: 1, opacity: 1, rotation: 0, duration: 0.42, ease: "back.out(2.4)" }, 3.12 + i * 0.055); });
+// le rideau se lève, la mascotte rejoint sa place sur l'accueil
+const X = 4.35;
+tl.to("#curtain", { yPercent: -112, duration: 0.62, ease: "power3.in" }, X);
+tl.to("#shadow", { opacity: 0, scale: 0.5, duration: 0.25 }, X);
+tl.to("#masc", { y: -520, scale: 0.56, duration: 0.75, ease: "power3.inOut" }, X + 0.05);
+tl.fromTo("#home", { scale: 1.07 }, { scale: 1, duration: 0.8, ease: "power3.out" }, X + 0.3);
+tl.fromTo("#h-title", { opacity: 0, filter: "blur(14px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.3, ease: "power2.out" }, X + 0.55);
+tl.fromTo("#h-sub", { opacity: 0, filter: "blur(10px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.3, ease: "power2.out" }, X + 0.68);
+tl.fromTo("#h-btn", { opacity: 0, y: 70, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "back.out(1.6)" }, X + 0.78);
+tl.fromTo("#h-link", { opacity: 0 }, { opacity: 1, duration: 0.3 }, X + 0.95);
+tl.fromTo("#h-tab", { yPercent: 105 }, { yPercent: 0, duration: 0.55, ease: "power4.out" }, X + 0.7);
+tl.to({}, { duration: 0.01 }, D - 0.01);
+window.__timelines["main"] = tl;
+tl.seek(0);
+</script>
+</body>
+</html>

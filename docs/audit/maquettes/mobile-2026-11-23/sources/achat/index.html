@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1080, height=1920" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<style>
+@font-face{font-family:"Lilita One";src:url('assets/fonts/lilitaone.ttf')}
+@font-face{font-family:"Rubik";src:url('assets/fonts/rubik.ttf');font-weight:300 900}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#fff}
+#root{position:relative;width:1080px;height:1920px;overflow:hidden;font-family:"Rubik";color:#0a0d14}
+#scene{position:absolute;inset:0}
+#back{position:absolute;inset:0;background:#fff;padding:0 60px}
+#back h1{font:400 84px/1.1 "Lilita One";text-align:center;margin-top:420px}
+.pm{margin-top:40px;height:206px;border:9px solid #0a0d14;border-radius:60px;background:#fff;box-shadow:0 14px 0 #d6ecff;display:flex;align-items:center;gap:40px;padding:0 46px;font:600 50px "Rubik"}
+.pm i{width:140px;height:106px;border-radius:28px;background:#eef6ff;border:7px solid #0a0d14}
+#dim{position:absolute;inset:0;background:#0a0d14}
+#rays{position:absolute;left:-460px;top:40px;width:2000px;height:2000px;border-radius:50%;background:repeating-conic-gradient(from 0deg,rgba(255,255,255,.6) 0 9deg,rgba(255,255,255,0) 9deg 22deg);-webkit-mask:radial-gradient(circle,#000 16%,transparent 58%);mask:radial-gradient(circle,#000 16%,transparent 58%)}
+#sheet{position:absolute;left:0;right:0;bottom:0;height:1120px;background:#fff;border-top:10px solid #0a0d14;border-radius:90px 90px 0 0;padding:0 70px}
+#grip{position:absolute;left:470px;top:30px;width:140px;height:14px;border-radius:8px;background:#c9d6ea}
+#badge{position:absolute;left:330px;top:-230px;width:420px;height:420px}
+#disc{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 40% 30%,#5aa0f5,#1f6fd6 70%);border:12px solid #0a0d14;box-shadow:0 18px 0 #0a0d14}
+#hype{position:absolute;left:-10px;top:-40px;width:440px}
+#ttl{position:absolute;left:40px;right:40px;top:270px;text-align:center;font:400 96px/1.08 "Lilita One"}
+#ttl b{font-weight:400;color:#1f6fd6}
+#ttl span{display:inline-block}
+#sub{position:absolute;left:80px;right:80px;top:510px;text-align:center;font:500 46px/1.35 "Rubik";color:#3f5170}
+#btn{position:absolute;left:70px;right:70px;top:720px;height:180px;border-radius:56px;background:#1f6fd6;border:9px solid #0a0d14;box-shadow:0 18px 0 #0a0d14;color:#fff;font:400 66px/162px "Lilita One";text-align:center;text-shadow:0 5px 0 #0a0d14}
+#lnk{position:absolute;left:0;right:0;top:950px;text-align:center;font:600 42px "Rubik";color:#1f6fd6}
+.cf{position:absolute;left:520px;top:780px}
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="6" data-width="1080" data-height="1920">
+ <div id="scene" class="clip" data-start="0" data-duration="6" data-track-index="0" data-layout-allow-overflow>
+  <div id="back"><h1>Comment veux-tu payer ?</h1><div class="pm"><i></i>Carte bancaire</div><div class="pm"><i></i>PayPal</div><div class="pm"><i></i>Apple Pay</div></div>
+  <div id="dim"></div>
+  <div id="rays"></div>
+  <div id="sheet"><div id="grip"></div>
+    <div id="badge"><div id="disc"></div><img id="hype" src="assets/img/hype.png" alt=""></div>
+    <div id="ttl"><span>Bienvenue</span> <span>dans</span><br><span><b>Stalak</b></span> <span><b>Pro !</b></span></div>
+    <div id="sub">Plus de filigrane. Tous les effets et les paroles automatiques sont débloqués.</div>
+    <div id="btn">Faire un montage</div>
+    <div id="lnk">Voir ma formule</div>
+  </div>
+  <div id="conf"></div>
+ </div>
+</div>
+<script>
+const tl = gsap.timeline({ paused: true });
+let seed = 23; const R = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const D = 6;
+gsap.set("#rays", { opacity: 0, transformOrigin: "50% 50%" });
+gsap.set("#badge", { transformOrigin: "50% 60%" });
+tl.fromTo("#dim", { opacity: 0 }, { opacity: 0.55, duration: 0.35, ease: "power2.out" }, 0.3);
+tl.fromTo("#sheet", { yPercent: 115 }, { yPercent: 0, duration: 0.7, ease: "back.out(1.15)" }, 0.35);
+tl.fromTo("#badge", { scale: 0, rotation: -30 }, { scale: 1, rotation: 0, duration: 0.7, ease: "elastic.out(1,0.5)" }, 0.75);
+tl.fromTo("#hype", { y: 60, scale: 0.8 }, { y: 0, scale: 1, duration: 0.5, ease: "back.out(2.5)" }, 0.9);
+tl.to("#rays", { opacity: 0.28, duration: 0.4 }, 0.8).fromTo("#rays", { rotation: 0 }, { rotation: 50, duration: D - 0.8, ease: "none" }, 0.8);
+document.querySelectorAll("#ttl span").forEach((s, i) => tl.fromTo(s, { opacity: 0, y: 50, scale: 0.7 }, { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(2)" }, 1.15 + i * 0.09));
+tl.fromTo("#sub", { opacity: 0, filter: "blur(10px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.3, ease: "power2.out" }, 1.65);
+tl.fromTo("#btn", { opacity: 0, y: 80, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "back.out(1.7)" }, 1.85);
+tl.fromTo("#lnk", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 2.15);
+// confettis : deux salves depuis le badge, puis une pluie lente
+const C = ["#1f6fd6", "#ffffff", "#d6ecff", "#0e3f8f", "#ffd23f", "#ff6fa5"];
+const box = document.getElementById("conf");
+function piece(t0, x0, y0, vx, vy, life) {
+  const e = document.createElement("div"); e.className = "cf"; const k = R(); const w = 22 + R() * 26, h = k < 0.3 ? w : 12 + R() * 14;
+  e.style.cssText = `width:${w}px;height:${h}px;background:${C[Math.floor(R() * C.length)]};border:5px solid #0a0d14;border-radius:${k < 0.3 ? "50%" : "6px"}`; box.append(e);
+  gsap.set(e, { opacity: 0 });
+  tl.fromTo(e, { x: x0, opacity: 1 }, { x: x0 + vx, duration: life, ease: "power2.out", immediateRender: false }, t0);
+  tl.fromTo(e, { y: y0 }, { y: y0 + vy, duration: life * 0.32, ease: "power2.out", immediateRender: false }, t0).to(e, { y: y0 + vy + 1500, duration: life * 0.68, ease: "power1.in" }, t0 + life * 0.32);
+  tl.fromTo(e, { rotation: 0, scaleX: 1 }, { rotation: (R() - 0.5) * 1400, scaleX: R() < 0.5 ? -1 : 1, duration: life, ease: "none", immediateRender: false }, t0);
+  tl.to(e, { opacity: 0, duration: 0.2 }, t0 + life - 0.2);
+}
+for (let i = 0; i < 46; i++) { const a = -Math.PI / 2 + (R() - 0.5) * 2.4, v = 500 + R() * 800; piece(0.82 + R() * 0.08, 0, 0, Math.cos(a) * v, Math.sin(a) * v, 1.9 + R() * 1.1); }
+for (let i = 0; i < 30; i++) { const side = i % 2 ? 1 : -1; piece(1.5 + R() * 0.15, side * 620, 500, -side * (200 + R() * 700), -(700 + R() * 700), 2 + R() * 1); }
+tl.to({}, { duration: 0.01 }, D - 0.01);
+window.__timelines["main"] = tl; tl.seek(0);
+</script>
+</body>
+</html>

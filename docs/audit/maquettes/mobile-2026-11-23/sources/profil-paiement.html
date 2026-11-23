@@ -1,0 +1,65 @@
+<!doctype html><meta charset=utf8>
+<style>
+@font-face{font-family:Lilita;src:url(lilitaone.ttf)}@font-face{font-family:Rubik;src:url(rubik.ttf)}
+*{box-sizing:border-box;margin:0}
+body{background:#12141a;width:1000px;height:1010px;display:flex;gap:70px;justify-content:center;align-items:center;font-family:Rubik;color:#0a0d14}
+.col{display:flex;flex-direction:column;align-items:center;gap:18px}.lab{font:400 28px Lilita;color:#fff}
+.ph{width:390px;height:844px;border-radius:54px;overflow:hidden;position:relative;background:#d6ecff;box-shadow:0 0 0 10px #000,0 0 0 12px #333}
+.sb{position:absolute;top:16px;left:34px;right:30px;display:flex;justify-content:space-between;font:600 16px Rubik;z-index:6}
+.bar{position:absolute;bottom:8px;left:128px;width:134px;height:5px;border-radius:3px;background:#0a0d14;z-index:9}
+.ice{position:absolute;top:0;left:0;width:100%;z-index:3}
+.top{position:absolute;inset:0 0 auto 0;height:300px;background:radial-gradient(380px 380px at 195px 190px,#5aa0f5 0,#1f6fd6 55%,#1657b3 100%)}
+.top::after{content:"";position:absolute;left:-40px;right:-40px;bottom:-70px;height:130px;border-radius:50%;background:#d6ecff;border-top:3.5px solid #0a0d14}
+.fl{position:absolute;border-radius:50%;background:#fff}
+.rb{position:absolute;top:92px;width:42px;height:42px;border-radius:50%;background:#fff;border:3px solid #0a0d14;box-shadow:0 3px 0 #0a0d14;display:grid;place-items:center;z-index:5}
+.rb svg{width:20px;height:20px;fill:none;stroke:#0a0d14;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.av{position:absolute;left:135px;top:104px;width:120px;height:120px;border-radius:50%;border:4px solid #0a0d14;background:#d6ecff url(head3.png) center 30%/118% no-repeat;box-shadow:0 6px 0 #0a0d14;z-index:4}
+.nm{position:absolute;left:0;right:0;top:246px;text-align:center;z-index:4}
+.nm h1{font:400 30px Lilita}.nm span{font:500 15px Rubik;color:#3f5170}
+.nm .pro{display:inline-block;background:#0a0d14;color:#fff;font:400 14px Lilita;border-radius:99px;padding:3px 10px;margin-left:6px;vertical-align:4px}
+.two{position:absolute;left:20px;right:20px;top:322px;display:flex;gap:12px}
+.cd{flex:1;background:#fff;border:3px solid #0a0d14;border-radius:22px;box-shadow:0 5px 0 #0a0d14;padding:14px}
+.cd small{font:500 13px Rubik;color:#7a8aa6;display:block}.cd b{font:400 20px Lilita;display:block;margin-top:2px}.cd i{font:500 12.5px Rubik;color:#1f6fd6;font-style:normal}
+.ls{position:absolute;left:20px;right:20px;top:432px;background:#fff;border:3px solid #0a0d14;border-radius:24px;box-shadow:0 5px 0 #0a0d14;padding:4px 16px}
+.rw{display:flex;align-items:center;gap:14px;height:60px;font:600 17px Rubik;border-bottom:2px solid #e3f1ff}.rw:last-child{border:0}
+.rw .ic{width:38px;height:38px;border-radius:12px;background:#d6ecff;border:2.5px solid #0a0d14;display:grid;place-items:center;font-size:19px}
+.rw em{margin-left:auto;font:500 14px Rubik;color:#7a8aa6;font-style:normal}.rw em::after{content:"›";font:600 22px Rubik;color:#0a0d14;margin-left:8px;vertical-align:-2px}
+.out{position:absolute;left:0;right:0;top:776px;text-align:center;font:600 15px Rubik;color:#c0392b}
+/* paiement */
+.pw{position:absolute;inset:0;background:#fff;padding:0 22px}
+.pw h1{font:400 30px/1.1 Lilita;text-align:center;margin-top:150px}
+.rc{margin-top:20px;background:#1f6fd6;border:3px solid #0a0d14;border-radius:22px;box-shadow:0 5px 0 #0a0d14;color:#fff;padding:14px 16px;display:flex;align-items:center;gap:12px}
+.rc img{width:54px}.rc b{font:400 20px Lilita;display:block;text-shadow:0 2px 0 #0a0d14}.rc span{font:500 13.5px/1.3 Rubik;display:block;opacity:.95}
+.pm{margin-top:14px;height:74px;border:3px solid #0a0d14;border-radius:22px;background:#fff;box-shadow:0 5px 0 #d6ecff;display:flex;align-items:center;gap:14px;padding:0 16px;font:600 18px Rubik}
+.pm:first-of-type{margin-top:22px}
+.pm .lg{width:50px;height:38px;border-radius:10px;background:#eef6ff;border:2.5px solid #0a0d14;display:grid;place-items:center;font:700 14px Rubik}
+.pm s{margin-left:auto;text-decoration:none;font:600 26px Rubik}
+.as{margin-top:26px;display:flex;flex-direction:column;gap:9px}
+.as div{display:flex;gap:10px;align-items:center;font:500 14.5px Rubik;color:#3f5170}.as div::before{content:"✓";width:22px;height:22px;border-radius:50%;background:#1f6fd6;color:#fff;font:700 13px Rubik;display:grid;place-items:center;border:2px solid #0a0d14;flex:none}
+.tm{position:absolute;left:26px;right:26px;bottom:34px;font:400 12px/1.45 Rubik;color:#7a8aa6;text-align:center}
+</style>
+<div class=col><div class=lab>Profil · son écran à lui</div><div class=ph><div class=sb><span>9:41</span><span>●●● ᯤ ▮</span></div>
+<div class=top><div id=s1></div></div>
+<svg class=ice viewBox="0 0 390 96"><path d="M-5 -5H395V50H340Q334 70 328 82Q321 68 316 50H250Q244 74 238 88Q231 72 226 50H150Q144 68 138 78Q131 66 126 50H70Q64 74 58 90Q51 72 46 50H-5Z" fill="#fff" stroke="#0a0d14" stroke-width="5" stroke-linejoin="round"/></svg>
+<div class=rb style="left:20px"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></div>
+<div class=rb style="right:20px"><svg viewBox="0 0 24 24"><circle cx=12 cy=12 r=3.2 /><path d="M12 2.500v3M12 18.500v3M2.500 12h3M18.500 12h3M5.300 5.300l2.100 2.100M16.600 16.600l2.100 2.100M5.300 18.700l2.100-2.100M16.600 7.400l2.100-2.100"/></svg></div>
+<div class=av></div><div class=nm><h1>Clément <span class=pro>PRO</span></h1><span>clement@exemple.com</span></div>
+<div class=two><div class=cd><small>Ma formule</small><b>Stalak Pro</b><i>Gérer →</i></div><div class=cd><small>TikTok</small><b>@moncompte</b><i>Mes stats →</i></div></div>
+<div class=ls>
+<div class=rw><div class=ic>🎬</div>Mes montages<em>12</em></div>
+<div class=rw><div class=ic>🌍</div>Langue<em>Français</em></div>
+<div class=rw><div class=ic>🧊</div>Aide<em></em></div>
+<div class=rw><div class=ic>🎓</div>Revoir le tutoriel<em></em></div>
+<div class=rw><div class=ic>🔒</div>Confidentialité<em></em></div></div>
+<div class=out>Se déconnecter</div><div class=bar></div></div></div>
+<div class=col><div class=lab>Paiement · choisir comment payer</div><div class=ph style="background:#fff"><div class=sb><span>9:41</span><span>●●● ᯤ ▮</span></div>
+<svg class=ice viewBox="0 0 390 96"><path d="M-5 -5H395V50H340Q334 70 328 82Q321 68 316 50H250Q244 74 238 88Q231 72 226 50H150Q144 68 138 78Q131 66 126 50H70Q64 74 58 90Q51 72 46 50H-5Z" fill="#1f6fd6" stroke="#0a0d14" stroke-width="5" stroke-linejoin="round"/></svg>
+<div class=rb style="left:20px"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></div>
+<div class=pw><h1>Comment veux-tu payer ?</h1>
+<div class=rc><img src=mascot-head.png><div><b>Stalak Pro · 7 jours gratuits</b><span>Puis 7,99 $ par mois. Tu annules quand tu veux.</span></div></div>
+<div class=pm><div class=lg>💳</div>Carte bancaire<s>›</s></div>
+<div class=pm><div class=lg style="color:#003087;font-style:italic">PP</div>PayPal<s>›</s></div>
+<div class=pm><div class=lg style="background:#0a0d14;color:#fff"> Pay</div>Apple Pay<s>›</s></div>
+<div class=as><div>Rien n'est prélevé aujourd'hui</div><div>Remboursé sous 14 jours, sans justification</div><div>Paiement sécurisé par Paddle</div></div>
+<div class=tm>L'abonnement démarre après l'essai et se renouvelle chaque mois jusqu'à ce que tu l'annules, depuis ton compte.</div></div><div class=bar></div></div></div>
+<script>let s=4;const R=()=>(s=s*16807%2147483647)/2147483647;const e=document.getElementById('s1');for(let i=0;i<22;i++){const d=document.createElement('div');d.className='fl';const z=3+R()*7;d.style.cssText=`left:${R()*390}px;top:${70+R()*200}px;width:${z}px;height:${z}px;opacity:${.3+R()*.5}`;e.append(d)}</script>

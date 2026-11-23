@@ -1,0 +1,84 @@
+<!doctype html><meta charset=utf8>
+<style>
+@font-face{font-family:Lilita;src:url(lilitaone.ttf)}@font-face{font-family:Rubik;src:url(rubik.ttf)}
+*{box-sizing:border-box;margin:0}
+body{background:#12141a;width:2330px;height:1010px;display:flex;gap:50px;justify-content:center;align-items:center;font-family:Rubik;color:#0a0d14}
+.col{display:flex;flex-direction:column;align-items:center;gap:18px}.lab{font:400 26px Lilita;color:#fff}
+.ph{width:390px;height:844px;border-radius:54px;overflow:hidden;position:relative;background:#d6ecff;box-shadow:0 0 0 10px #000,0 0 0 12px #333}
+.sb{position:absolute;top:16px;left:34px;right:30px;display:flex;justify-content:space-between;font:600 16px Rubik;z-index:6}
+.bar{position:absolute;bottom:8px;left:128px;width:134px;height:5px;border-radius:3px;background:#0a0d14;z-index:9}
+.nav{position:absolute;top:58px;left:18px;right:18px;display:flex;align-items:center;gap:12px}
+.rb{width:42px;height:42px;border-radius:50%;background:#fff;border:3px solid #0a0d14;box-shadow:0 3px 0 #0a0d14;display:grid;place-items:center;flex:none;font:700 17px Rubik}
+.pg{flex:1;display:flex;gap:6px}.pg i{flex:1;height:10px;border-radius:6px;border:2.5px solid #0a0d14;background:#fff}.pg i.on{background:#1f6fd6}
+.cube{width:42px;height:42px;border-radius:13px;border:3px solid #0a0d14;background:linear-gradient(135deg,#fff 0 22%,#d6ecff 22% 60%,#a9d3ff 60%);box-shadow:0 3px 0 #0a0d14;position:relative;flex:none}
+.cube::before{content:"";position:absolute;left:9px;top:15px;width:6px;height:7px;border-radius:50%;background:#0a0d14;box-shadow:15px 0 0 #0a0d14}
+.st{position:absolute;top:122px;left:22px;right:22px}.st small{font:600 13px Rubik;color:#1f6fd6;letter-spacing:.5px;text-transform:uppercase}.st h1{font:400 31px/1.1 Lilita;margin-top:2px}.st p{font:500 15px/1.4 Rubik;color:#3f5170;margin-top:6px}
+.cta{position:absolute;left:20px;right:20px;bottom:34px;height:62px;border-radius:20px;background:#1f6fd6;border:3px solid #0a0d14;box-shadow:0 6px 0 #0a0d14;color:#fff;font:400 23px/56px Lilita;text-align:center;text-shadow:0 2px 0 #0a0d14}
+.sec{position:absolute;left:0;right:0;bottom:112px;text-align:center;font:600 15.5px Rubik;color:#1f6fd6}
+.card{background:#fff;border:3px solid #0a0d14;border-radius:24px;box-shadow:0 5px 0 #0a0d14}
+.body{position:absolute;left:20px;right:20px;top:236px}
+.seg{display:flex;border:3px solid #0a0d14;border-radius:99px;overflow:hidden;background:#fff;font:600 15px Rubik}.seg div{flex:1;text-align:center;padding:10px 0}.seg .on{background:#1f6fd6;color:#fff}.seg em{font:400 11px Lilita;background:#0a0d14;color:#fff;border-radius:6px;padding:1px 5px;font-style:normal;margin-left:4px}
+.wv{margin-top:16px;padding:16px;height:232px;position:relative}
+.wv b{font:400 19px Lilita}.wv span{font:500 13.5px Rubik;color:#7a8aa6;float:right;margin-top:3px}
+.bars{position:absolute;left:16px;right:16px;top:58px;height:96px;display:flex;align-items:center;gap:3px}.bars i{flex:1;border-radius:3px;background:#a9d3ff}.bars i.s{background:#1f6fd6}
+.sel{position:absolute;left:88px;width:170px;top:50px;height:112px;border:3.5px solid #0a0d14;border-radius:14px;background:rgba(31,111,214,.1)}.sel::before,.sel::after{content:"";position:absolute;top:34px;width:14px;height:38px;border-radius:7px;background:#0a0d14}.sel::before{left:-9px}.sel::after{right:-9px}
+.pl{position:absolute;left:16px;bottom:14px;display:flex;align-items:center;gap:10px;font:600 15px Rubik}.pl u{width:46px;height:46px;border-radius:50%;background:#0a0d14;color:#fff;display:grid;place-items:center;text-decoration:none;font-size:16px}
+.tip{position:absolute;display:flex;gap:8px;align-items:flex-end}.tip img{width:54px}.tip div{background:#ffd23f;border:3px solid #0a0d14;border-radius:16px 16px 16px 4px;padding:8px 12px;font:600 13.5px/1.3 Rubik;box-shadow:0 4px 0 #0a0d14;max-width:210px}
+.tk{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}.tk div{height:178px;border-radius:18px;border:3px solid #0a0d14;position:relative;overflow:hidden;box-shadow:0 4px 0 #0a0d14}
+.tk b{position:absolute;left:7px;bottom:7px;font:600 12px Rubik;color:#fff}.tk i{position:absolute;top:6px;left:6px;background:#fff;border:2px solid #0a0d14;border-radius:8px;font:700 10.5px Rubik;padding:1px 5px;font-style:normal;color:#1a8a4a}
+.tk .add{background:#fff;border-style:dashed;display:grid;place-items:center;font:400 44px Lilita;color:#1f6fd6;box-shadow:none}
+.op{display:flex;align-items:center;gap:14px;padding:16px;margin-bottom:14px}.op .ic{width:52px;height:52px;border-radius:16px;background:#d6ecff;border:3px solid #0a0d14;display:grid;place-items:center;font-size:24px;flex:none}.op b{font:400 20px Lilita;display:block}.op span{font:500 13.5px/1.3 Rubik;color:#3f5170}.op.on{background:#eaf4ff;outline:4px solid #1f6fd6;outline-offset:-1px}.op em{margin-left:auto;font:400 12px Lilita;background:#0a0d14;color:#fff;border-radius:7px;padding:2px 7px;font-style:normal}
+.pv{position:absolute;left:78px;top:112px;width:234px;height:416px;border-radius:26px;border:3.5px solid #0a0d14;box-shadow:0 6px 0 #0a0d14;background:linear-gradient(170deg,#5b3a8f,#0a0d14 80%);overflow:hidden}
+.pv .ly{position:absolute;left:0;right:0;bottom:92px;text-align:center;font:400 25px/1.1 Lilita;color:#fff;text-shadow:0 3px 0 #0a0d14,2px 0 0 #0a0d14,-2px 0 0 #0a0d14,0 -2px 0 #0a0d14}.pv .ly b{color:#ffd23f;font-weight:400}
+.pv .pp{position:absolute;left:92px;top:176px;width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.92);border:3px solid #0a0d14;display:grid;place-items:center;font-size:18px}
+.tl{position:absolute;left:20px;right:20px;top:548px;height:46px;border-radius:14px;border:3px solid #0a0d14;display:flex;overflow:hidden;background:#fff}.tl i{height:100%;border-right:2.5px solid #0a0d14}.tl::after{content:"";position:absolute;left:38%;top:-7px;bottom:-7px;width:4px;background:#0a0d14;border-radius:2px}
+.tools{position:absolute;left:10px;right:10px;top:612px;display:flex;justify-content:space-around}.tools div{width:62px;text-align:center;font:600 12px Rubik;color:#3f5170}.tools u{display:grid;place-items:center;width:54px;height:54px;margin:0 auto 5px;border-radius:18px;background:#fff;border:3px solid #0a0d14;box-shadow:0 4px 0 #0a0d14;text-decoration:none;font-size:23px}.tools .on u{background:#1f6fd6}
+/* camera */
+.cam{background:linear-gradient(175deg,#3a4a66 0,#1b2233 45%,#0a0d14 100%)}
+.cam .sb{color:#fff}.cam .bar{background:#fff}
+.sil{position:absolute;left:70px;top:210px;width:250px;opacity:.9;filter:brightness(.9)}
+.sp{position:absolute;top:50px;left:18px;right:18px;height:8px;border-radius:5px;background:rgba(255,255,255,.3)}.sp i{display:block;width:42%;height:100%;border-radius:5px;background:#1f6fd6;border:1.500px solid #fff}
+.ct{position:absolute;top:72px;left:18px;right:18px;display:flex;justify-content:space-between;align-items:center}
+.gb{width:46px;height:46px;border-radius:50%;background:rgba(10,13,20,.55);border:2.5px solid #fff;color:#fff;display:grid;place-items:center;font:700 17px Rubik}
+.pill{background:rgba(10,13,20,.55);border:2.5px solid #fff;border-radius:99px;color:#fff;font:400 16px Lilita;padding:8px 16px}.pill::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;background:#ff4d4d;margin-right:8px}
+.rail{position:absolute;right:18px;top:150px;display:flex;flex-direction:column;gap:12px}.rail .gb{font-size:13px}
+.tele{position:absolute;left:20px;right:20px;top:548px;text-align:center;font:400 27px/1.15 Lilita;color:#fff;text-shadow:0 3px 0 #0a0d14,2px 0 0 #0a0d14,-2px 0 0 #0a0d14,0 -2px 0 #0a0d14}.tele small{display:block;font:500 15px Rubik;opacity:.7;text-shadow:none;margin-top:6px}
+.cb{position:absolute;left:0;right:0;bottom:44px;height:120px;display:flex;align-items:center;justify-content:space-around;padding:0 22px}
+.stack{width:58px;height:74px;border-radius:14px;border:2.5px solid #fff;background:linear-gradient(160deg,#0e3f8f,#0a0d14);position:relative;box-shadow:6px -5px 0 -1px #2b7a5e,6px -5px 0 1.500px #fff}.stack b{position:absolute;right:-9px;top:-11px;background:#1f6fd6;color:#fff;border:2px solid #fff;border-radius:50%;width:24px;height:24px;font:700 12px/20px Rubik;text-align:center}
+.rec{width:92px;height:92px;border-radius:50%;border:5px solid #fff;display:grid;place-items:center}.rec i{width:70px;height:70px;border-radius:50%;background:#ff3b3b;border:3px solid #0a0d14}
+.fin{background:#fff;border:3px solid #0a0d14;border-radius:99px;font:400 16px Lilita;padding:10px 16px;box-shadow:0 4px 0 #0a0d14}
+</style>
+<div class=col><div class=lab>1 · Son</div><div class=ph><div class=sb><span>9:41</span><span>●●● ᯤ ▮</span></div>
+<div class=nav><div class=rb>‹</div><div class=pg><i class=on></i><i></i><i></i><i></i></div><div class=cube></div></div>
+<div class=st><small>Étape 1 sur 4</small><h1>Choisis ton passage</h1></div>
+<div class=body style="top:200px"><div class=seg><div class=on>TikTok / Reels</div><div>Clip<em>PRO</em></div></div>
+<div class="card wv"><b>Mon snippet</b><span>144 BPM</span><div class=bars id=b1></div><div class=sel></div><div class=pl><u>▶</u>0:12 → 0:36 · 24 s</div></div></div>
+<div class=tip style="left:20px;top:540px"><img src=mascot-head.png><div>Glisse les deux poignées pour garder ton meilleur passage.</div></div>
+<div class=sec>Changer de son</div><div class=cta>Continuer</div><div class=bar></div></div></div>
+<div class=col><div class=lab>2 · Prises</div><div class=ph><div class=sb><span>9:41</span><span>●●● ᯤ ▮</span></div>
+<div class=nav><div class=rb>‹</div><div class=pg><i class=on></i><i class=on></i><i></i><i></i></div><div class=cube></div></div>
+<div class=st><small>Étape 2 sur 4</small><h1>Tes prises</h1><p>Plus tu en as, plus le montage est varié.</p></div>
+<div class=body style="top:232px"><div class=tk><div style="background:linear-gradient(160deg,#0e3f8f,#0a0d14)"><i>★★★</i><b>Prise 1</b></div><div style="background:linear-gradient(160deg,#5b3a8f,#0a0d14)"><i>★★★</i><b>Prise 2</b></div><div style="background:linear-gradient(160deg,#2b7a5e,#0a0d14)"><i>★★</i><b>Prise 3</b></div><div class=add>+</div></div></div>
+<div class=tip style="left:134px;top:452px"><img src=mascot-head.png><div style="max-width:170px">Filme le même passage sous plusieurs angles.</div></div>
+<div class=sec style="bottom:184px;display:none"></div>
+<div class=cta style="bottom:112px;background:#fff;color:#0a0d14;text-shadow:none;box-shadow:0 5px 0 #0a0d14">● Filmer une prise</div><div class=cta>Continuer</div><div class=bar></div></div></div>
+<div class=col><div class=lab>3 · Paroles</div><div class=ph><div class=sb><span>9:41</span><span>●●● ᯤ ▮</span></div>
+<div class=nav><div class=rb>‹</div><div class=pg><i class=on></i><i class=on></i><i class=on></i><i></i></div><div class=cube></div></div>
+<div class=st><small>Étape 3 sur 4</small><h1>Des paroles à l'écran ?</h1></div>
+<div class=body style="top:214px"><div class="card op on"><div class=ic>✨</div><div><b>Automatiques</b><span>Stalak écoute ton son et écrit tout.</span></div><em>PRO</em></div>
+<div class="card op"><div class=ic>📝</div><div><b>Je colle mon texte</b><span>Puis tu tapes le rythme avec ton pouce.</span></div></div>
+<div class="card op"><div class=ic>🚫</div><div><b>Sans paroles</b><span>Tu pourras en ajouter plus tard.</span></div></div></div>
+<div class=cta>Continuer</div><div class=bar></div></div></div>
+<div class=col><div class=lab>4 · Montage</div><div class=ph><div class=sb><span>9:41</span><span>●●● ᯤ ▮</span></div>
+<div class=nav style="top:54px"><div class=rb>‹</div><div class=pg><i class=on></i><i class=on></i><i class=on></i><i class=on></i></div><div class=cube></div></div>
+<div class=pv><div class=pp>▶</div><div class=ly>J'suis dans <b>le froid</b><br>depuis minot</div></div>
+<div class=tl><i style="width:14%;background:#0e3f8f"></i><i style="width:9%;background:#5b3a8f"></i><i style="width:15%;background:#2b7a5e"></i><i style="width:8%;background:#0e3f8f"></i><i style="width:16%;background:#5b3a8f"></i><i style="width:11%;background:#2b7a5e"></i><i style="width:27%;background:#0e3f8f;border:0"></i></div>
+<div class=tools><div class=on><u>✂️</u>Coupes</div><div><u>⚡</u>Effets</div><div><u>🎨</u>Filtres</div><div><u>💬</u>Paroles</div><div><u>🔀</u>Remixer</div></div>
+<div class=cta>Exporter ma vidéo</div><div class=bar></div></div></div>
+<div class=col><div class=lab>La caméra · son écran à elle</div><div class="ph cam"><div class=sb><span>9:41</span><span>●●● ᯤ ▮</span></div>
+<img class=sil src=mascot3.png>
+<div class=sp><i></i></div>
+<div class=ct><div class=gb>✕</div><div class=pill>Prise 3 · 0:10</div><div class=gb>⟲</div></div>
+<div class=rail><div class=gb>3 s</div><div class=gb>⚡</div><div class=gb>▦</div></div>
+<div class=cb><div class=stack><b>2</b></div><div class=rec><i></i></div><div class=fin>Terminer</div></div><div class=bar></div></div></div>
+<script>let s=5;const R=()=>(s=s*16807%2147483647)/2147483647;const e=document.getElementById('b1');for(let i=0;i<48;i++){const d=document.createElement('i');d.style.height=(18+R()*78)+'%';if(i>11&&i<36)d.className='s';e.append(d)}</script>
