@@ -1062,7 +1062,10 @@ const I18N_EN = /*@EN*/{
   "help.h.fail": "Your message didn’t go through. Try again in a moment.",
   "help.h.failMail": "Your message didn’t go through. Try again in a moment, or write to {mail}.",
   "_bloc.marketing.accueil": "Marketing & croissance : titre, phrase et vidéo du premier écran (audit du 6/11, point 6), compte facultatif",
-  "hero.h1": "Your song is done. Where’s the snippet?",
+  "hero.h1": "Your song is done. <br class=\"hero-br\">Where’s the snippet?",
+  "hero.s2": "Film a few takes. Stalak cuts them on the beat, lips in sync.",
+  "hero.note": "{n}/5",
+  "hero.vids": "{n} videos made",
   "hero.s": "Film a few takes of your song. Stalak cuts them on the beat, lips in sync: your snippet is ready to post tonight.",
   "hero.v": "Example: a video Stalak edited from three takes",
   "hero.clip": "Try <b>Music video mode</b>: your whole song in 16:9",
@@ -1926,6 +1929,8 @@ const I18N_FR = /*@FR*/{
   "exp.mem0": "Cette vidéo est trop longue pour la mémoire de cet appareil : la page risquerait de se fermer en route. Exporte-la sur un ordinateur.",
   "exp.fab": "Exporter",
   "ws.n": " · {a} sur {b}",
+  "hero.note": "{n}/5",
+  "hero.vids": "{n} vidéos montées",
   "fab.takes": "{n} prise",
   "fab.takes_p": "{n} prises",
   "save.btn": "Enregistrer sur l'appareil",
@@ -9116,6 +9121,21 @@ async function songFromFile(f){
 /* (22/11, audit mobile n° 1) the first screen's two buttons: the song's file choice, and the example */
 $('#heroSong').onclick = () => $('#songFile').click();
 $('#heroDemo').onclick = () => $('#demoBtn').click();
+/* (23/11, maquette A) the pill under them: the average note of the customer reviews (written in the page by build_site.py from
+   site_src/avis.json) and the real number of videos made (/api/stats/exports, asked once). The number missing: the note
+   alone; neither: no pill. Written again when the language changes. */
+let heroTotal = null;
+function heroProof(){
+  const p = $('#heroProof'); if (!p) return;
+  const mean = parseFloat(p.dataset.mean), loc = LANG === 'en' ? 'en-US' : 'fr-FR', parts = [];
+  const hasNote = mean >= 1 && mean <= 5;
+  if (hasNote){ const n = Math.floor(mean + .5); $('#hpStars').textContent = '★'.repeat(n) + '☆'.repeat(5 - n); parts.push(_t('hero.note', { n: mean.toLocaleString(loc, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) })); }
+  else $('#hpStars').textContent = '';
+  if (heroTotal > 0) parts.push(_t('hero.vids', { n: Math.round(heroTotal).toLocaleString(loc) }));
+  const txt = parts.join(' · '); if ($('#hpTxt').textContent !== txt) $('#hpTxt').textContent = txt;
+  p.hidden = !parts.length;
+}
+if ($('#heroProof') && window.fetch && !window.claude) fetch('/api/stats/exports').then(r => r.ok ? r.json() : null).then(j => { const n = j && Number(j.total); if (n > 0){ heroTotal = n; heroProof(); } }).catch(() => {});
 $('#songFile').onchange = async e => {
   const f = e.target.files[0]; if (!f) return;
   try { await loadSongFile(f); } finally { e.target.value = ''; }
@@ -11374,7 +11394,7 @@ function applyLang(){
   if (hasT('doc.title')) document.title = _t('doc.title');
   $$('.langsw button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === LANG)));
   // what is written from here: drawn again as it is now
-  kindUI(); renderTakes(); renderLines(); tapShow(); if (tapping) tapUi(); filtUI();
+  kindUI(); renderTakes(); renderLines(); tapShow(); if (tapping) tapUi(); filtUI(); heroProof();
   $('#playBtn').textContent = S.playing ? '■ Stop' : _t('play.play');
   $('#songPlay').textContent = S.playing && !listenSeg ? (listenOn ? '❚❚ Pause' : '■ Stop') : _t('listen.play');
   $('#segPlay').textContent = _t(S.playing && listenSeg ? 'listen.segStop' : 'listen.seg');

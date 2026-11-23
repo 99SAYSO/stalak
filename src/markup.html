@@ -51,8 +51,12 @@
         if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches){ v.removeAttribute('autoplay'); v.pause(); v.controls = true; return; }
         if ('IntersectionObserver' in window) new IntersectionObserver(function (e) { if (e[0].isIntersecting){ var p = v.play(); if (p && p.catch) p.catch(function () {}); } else v.pause(); }).observe(v);
       })(document.currentScript.previousElementSibling);</script><!--/HEROVIDEO-->
+      <!-- App & montage (23/11, the owner's pick: « maquette A », docs/audit/maquettes/2026-11-23-accueil-telephone-A.png): under
+           900 px everything is centred: the mascot waving, the title on 2 lines, a short sentence, one big button, « Voir un
+           exemple » as a link, the note and the number of videos. No small video, no « mode Clip » pill there. -->
+      <div class="hero-m" aria-hidden="true"></div>
       <div class="hero-txt">
-        <h1 class="hero-h1" data-i18n="hero.h1">Ton son est prêt. Ton snippet, pas encore ?</h1>
+        <h1 class="hero-h1" data-i18n="hero.h1">Ton son est prêt. <br class="hero-br">Ton snippet, pas encore ?</h1>
         <!-- Marketing & croissance (23/11, the owner's pick, idea 1): on a computer the title comes in one word per beat, once, when
              the page opens; then the plain text is put back (the FR / EN switch writes it as before). Not with « reduce motion » -->
         <script>(function (h) { if (!h || !window.matchMedia || !matchMedia('(min-width:900px)').matches || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -62,11 +66,15 @@
           h.lastChild.addEventListener('animationend', done); setTimeout(done, w.length * 190 + 900);
         })(document.currentScript.previousElementSibling);</script>
         <p class="hero-s" data-i18n="hero.s">Filme quelques prises sur ton son. Stalak les coupe sur le rythme, lèvres synchro&nbsp;: ton snippet est prêt à poster ce soir.</p>
+        <p class="hero-s hero-s2" data-i18n="hero.s2">Filme quelques prises. Stalak les coupe sur le rythme, lèvres synchro.</p>
         <!-- App & montage (22/11, audit mobile n° 1): what starts it, in the first screen of a phone: the song (opens the file
              choice of #songFile) and the example (#demoBtn) -->
         <div class="hero-go">
           <button class="btn primary big hero-song" id="heroSong" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg><span data-i18n="hero.song">Choisir mon son</span></button>
-          <button class="btn hero-demo" id="heroDemo" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 4l13 8-13 8z"/></svg><span data-i18n="hero.demo">Voir un exemple</span></button>
+          <button class="hero-demo" id="heroDemo" type="button"><i aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M8 5l12 7-12 7z"/></svg></i><span data-i18n="hero.demo">Voir un exemple</span></button>
+          <!-- the note: the average of site_src/avis.json, written by build_site.py (data-mean); the number: /api/stats/exports
+               (app.js heroProof). No note and no number: nothing shown. -->
+          <p class="hero-proof" id="heroProof" data-mean="" hidden><span class="hp-stars" id="hpStars" aria-hidden="true"></span><span id="hpTxt"></span></p>
         </div>
         <!-- Marketing & croissance (07/11, rapport chiffres : le mode Clip, 1re raison d'ouvrir Pro) : choisit « Clip » à l'étape 1
              (#kindSeg, le choix qui existe déjà) et l'amène sous les yeux ; rien d'autre ne change -->

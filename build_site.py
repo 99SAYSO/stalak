@@ -121,6 +121,9 @@ def rv_item(r, lang, tag='li', cls=''):
     return ('<' + tag + (' class="' + cls + '"' if cls else '') + '><span class="rv-note"><span class="rv-stars" aria-hidden="true">' + '★' * n + '☆' * (5 - n) + '</span> <b>' + s + '/5</b></span>'
             '<blockquote lang="fr">' + H.escape(str(r['texte'])) + '</blockquote><p class="rv-who">' + H.escape(str(r['pseudo'])) + ' · ' + PLAN_NAME[r['formule']][lang] + '</p></' + tag + '>')
 RV_MEAN = sum(float(r['note']) for r in AVIS) / len(AVIS) if AVIS else 0
+# App & montage (23/11, maquette A): the same average for the pill of the phone's first screen (app.js heroProof)
+assert 'id="heroProof" data-mean=""' in markup
+if AVIS: markup = markup.replace('id="heroProof" data-mean=""', 'id="heroProof" data-mean="%.2f"' % RV_MEAN)
 def rv_avg(lang):   # what follows the note (the note itself is #rvNum: it climbs when it comes on screen, src: RV_NUM_JS)
     n = len(AVIS)
     if lang == 'fr': return 'sur 5 · ' + str(n) + (' avis clients' if n > 1 else ' avis client')
@@ -354,7 +357,7 @@ def app_loader():
     return ('<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=' + json.dumps(files) + ';'
             'function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}'
             'requestAnimationFrame(function(){setTimeout(go,0);});'
-            'function vid(){var v=document.querySelector("video.hero-v");if(!v)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}'
+            'function vid(){var v=document.querySelector("video.hero-v");if(!v||!v.offsetParent)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}'
             'if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}'
             'if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});'
             '})();</script>\n')

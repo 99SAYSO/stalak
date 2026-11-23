@@ -1333,3 +1333,40 @@ body.isdone > .help-cube{display:none}
 .pl-all[open] > summary::before{transform:rotate(90deg)}
 .pl-all > summary:focus-visible{outline:3px solid var(--ink);outline-offset:2px;border-radius:8px}
 #plIntSave[hidden]{display:none}
+
+/* ---- App & montage (23/11): the first screen under 900 px, « maquette A » picked by the owner. Everything centred: the mascot
+   waving (90 px), the title on 2 lines, a short sentence, one big black button, « Voir un exemple » as an underlined link with
+   a small round ▶, the white pill (stars, note, number of videos). No small video, no « mode Clip » pill, and the mascot of the
+   song card is hidden while this top is shown (one mascot on screen). A computer keeps Marketing's layout. ---- */
+.hero-m,.hero-s2,.hero-proof{display:none}
+.hero-br{display:none}
+@media (max-width:899px){
+  #p1 > .hero{flex-direction:column;align-items:center;text-align:center;gap:0;margin:-18px 0 26px}
+  #p1 > .hero .hero-v,#p1 > .hero .hero-clip{display:none}
+  .hero-m{display:block;width:90px;aspect-ratio:118/142;margin:0 auto -4px;background:var(--mascot) center bottom/contain no-repeat;transform-origin:50% 100%;animation:al-hello 1.2s var(--ease-out) .3s 1 both;pointer-events:none}
+  .hero-txt{width:100%}
+  .hero-br{display:inline}
+  .hero-h1{font-size:clamp(25px,7.4vw,34px);line-height:1.1;margin:0 0 8px;text-wrap:initial}
+  .hero-s{display:none}
+  .hero-s.hero-s2{display:block;max-width:19.5em;margin:0 auto;font-size:15.5px;text-wrap:balance}
+  .hero-go{gap:6px;margin:16px 0 0;align-items:center}
+  .hero-go .hero-song{min-height:62px;font-size:23px}
+  .hero-demo{display:inline-flex;align-items:center;gap:9px;min-height:44px;padding:0 8px;border:0;background:none;color:var(--snow);font:700 16.5px/1.2 var(--body);cursor:pointer;text-shadow:0 1px 0 rgba(10,13,20,.4)}
+  .hero-demo span{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
+  .hero-demo i{flex:none;width:26px;height:26px;box-sizing:border-box;border:2.5px solid var(--ink);border-radius:50%;background:var(--snow);display:grid;place-items:center;box-shadow:0 2px 0 var(--ink)}
+  .hero-go .hero-demo svg{width:12px;height:12px;fill:var(--ink);stroke:none;margin-left:1px}
+  .hero-demo:focus-visible{outline:3px solid var(--snow);outline-offset:2px;border-radius:10px}
+  .hero-proof{display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap;width:100%;box-sizing:border-box;margin:4px 0 0;min-height:40px;padding:6px 14px;border:2.5px solid var(--ink);border-radius:999px;background:var(--snow);color:var(--ink);box-shadow:0 3px 0 var(--ink);font:700 14.5px/1.2 var(--body)}
+  .hero-proof[hidden]{display:none}
+  .hp-stars{color:#e8a11a;letter-spacing:2px;font-size:15px}
+  /* one mascot on screen: the one standing on the song card is hidden while the top is shown */
+  #p1:has(#songBox[hidden]):not(:has(> .lpoffer:not([hidden]))):has(> .hero) > .card::after{display:none}
+}
+@media (max-width:899px) and (max-height:600px){
+  .hero-m{width:64px}
+  .hero-h1{font-size:clamp(23px,6.8vw,30px);margin-bottom:6px}
+  .hero-s.hero-s2{font-size:14.5px}
+  .hero-go{margin-top:12px}
+  .hero-go .hero-song{min-height:56px}
+}
+@media (prefers-reduced-motion:reduce){ .hero-m{animation:none} }

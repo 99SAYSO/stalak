@@ -1605,6 +1605,43 @@ body.isdone > .help-cube{display:none}
 .pl-all > summary:focus-visible{outline:3px solid var(--ink);outline-offset:2px;border-radius:8px}
 #plIntSave[hidden]{display:none}
 
+/* ---- App & montage (23/11): the first screen under 900 px, « maquette A » picked by the owner. Everything centred: the mascot
+   waving (90 px), the title on 2 lines, a short sentence, one big black button, « Voir un exemple » as an underlined link with
+   a small round ▶, the white pill (stars, note, number of videos). No small video, no « mode Clip » pill, and the mascot of the
+   song card is hidden while this top is shown (one mascot on screen). A computer keeps Marketing's layout. ---- */
+.hero-m,.hero-s2,.hero-proof{display:none}
+.hero-br{display:none}
+@media (max-width:899px){
+  #p1 > .hero{flex-direction:column;align-items:center;text-align:center;gap:0;margin:-18px 0 26px}
+  #p1 > .hero .hero-v,#p1 > .hero .hero-clip{display:none}
+  .hero-m{display:block;width:90px;aspect-ratio:118/142;margin:0 auto -4px;background:var(--mascot) center bottom/contain no-repeat;transform-origin:50% 100%;animation:al-hello 1.2s var(--ease-out) .3s 1 both;pointer-events:none}
+  .hero-txt{width:100%}
+  .hero-br{display:inline}
+  .hero-h1{font-size:clamp(25px,7.4vw,34px);line-height:1.1;margin:0 0 8px;text-wrap:initial}
+  .hero-s{display:none}
+  .hero-s.hero-s2{display:block;max-width:19.5em;margin:0 auto;font-size:15.5px;text-wrap:balance}
+  .hero-go{gap:6px;margin:16px 0 0;align-items:center}
+  .hero-go .hero-song{min-height:62px;font-size:23px}
+  .hero-demo{display:inline-flex;align-items:center;gap:9px;min-height:44px;padding:0 8px;border:0;background:none;color:var(--snow);font:700 16.5px/1.2 var(--body);cursor:pointer;text-shadow:0 1px 0 rgba(10,13,20,.4)}
+  .hero-demo span{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
+  .hero-demo i{flex:none;width:26px;height:26px;box-sizing:border-box;border:2.5px solid var(--ink);border-radius:50%;background:var(--snow);display:grid;place-items:center;box-shadow:0 2px 0 var(--ink)}
+  .hero-go .hero-demo svg{width:12px;height:12px;fill:var(--ink);stroke:none;margin-left:1px}
+  .hero-demo:focus-visible{outline:3px solid var(--snow);outline-offset:2px;border-radius:10px}
+  .hero-proof{display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap;width:100%;box-sizing:border-box;margin:4px 0 0;min-height:40px;padding:6px 14px;border:2.5px solid var(--ink);border-radius:999px;background:var(--snow);color:var(--ink);box-shadow:0 3px 0 var(--ink);font:700 14.5px/1.2 var(--body)}
+  .hero-proof[hidden]{display:none}
+  .hp-stars{color:#e8a11a;letter-spacing:2px;font-size:15px}
+  /* one mascot on screen: the one standing on the song card is hidden while the top is shown */
+  #p1:has(#songBox[hidden]):not(:has(> .lpoffer:not([hidden]))):has(> .hero) > .card::after{display:none}
+}
+@media (max-width:899px) and (max-height:600px){
+  .hero-m{width:64px}
+  .hero-h1{font-size:clamp(23px,6.8vw,30px);margin-bottom:6px}
+  .hero-s.hero-s2{font-size:14.5px}
+  .hero-go{margin-top:12px}
+  .hero-go .hero-song{min-height:56px}
+}
+@media (prefers-reduced-motion:reduce){ .hero-m{animation:none} }
+
 /* ---- pricing: promo, plan cards, trust line, comparison, FAQ ----
    One component for the Stalak Pro page in the app (#pro, appended to the theme by build.py / build_site.py) and the
    static pages /pricing and /fr/tarifs (served as /pricing.css). Tokens: the theme's (--ink, --sky-deep, --ice, --fur…).
@@ -2054,8 +2091,12 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
         if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches){ v.removeAttribute('autoplay'); v.pause(); v.controls = true; return; }
         if ('IntersectionObserver' in window) new IntersectionObserver(function (e) { if (e[0].isIntersecting){ var p = v.play(); if (p && p.catch) p.catch(function () {}); } else v.pause(); }).observe(v);
       })(document.currentScript.previousElementSibling);</script>
+      <!-- App & montage (23/11, the owner's pick: « maquette A », docs/audit/maquettes/2026-11-23-accueil-telephone-A.png): under
+           900 px everything is centred: the mascot waving, the title on 2 lines, a short sentence, one big button, « Voir un
+           exemple » as a link, the note and the number of videos. No small video, no « mode Clip » pill there. -->
+      <div class="hero-m" aria-hidden="true"></div>
       <div class="hero-txt">
-        <h1 class="hero-h1" data-i18n="hero.h1">Your song is done. Where’s the snippet?</h1>
+        <h1 class="hero-h1" data-i18n="hero.h1">Your song is done. <br class="hero-br">Where’s the snippet?</h1>
         <!-- Marketing & croissance (23/11, the owner's pick, idea 1): on a computer the title comes in one word per beat, once, when
              the page opens; then the plain text is put back (the FR / EN switch writes it as before). Not with « reduce motion » -->
         <script>(function (h) { if (!h || !window.matchMedia || !matchMedia('(min-width:900px)').matches || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -2065,11 +2106,15 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
           h.lastChild.addEventListener('animationend', done); setTimeout(done, w.length * 190 + 900);
         })(document.currentScript.previousElementSibling);</script>
         <p class="hero-s" data-i18n="hero.s">Film a few takes of your song. Stalak cuts them on the beat, lips in sync: your snippet is ready to post tonight.</p>
+        <p class="hero-s hero-s2" data-i18n="hero.s2">Film a few takes. Stalak cuts them on the beat, lips in sync.</p>
         <!-- App & montage (22/11, audit mobile n° 1): what starts it, in the first screen of a phone: the song (opens the file
              choice of #songFile) and the example (#demoBtn) -->
         <div class="hero-go">
           <button class="btn primary big hero-song" id="heroSong" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg><span data-i18n="hero.song">Choose my song</span></button>
-          <button class="btn hero-demo" id="heroDemo" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 4l13 8-13 8z"/></svg><span data-i18n="hero.demo">See an example</span></button>
+          <button class="hero-demo" id="heroDemo" type="button"><i aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M8 5l12 7-12 7z"/></svg></i><span data-i18n="hero.demo">See an example</span></button>
+          <!-- the note: the average of site_src/avis.json, written by build_site.py (data-mean); the number: /api/stats/exports
+               (app.js heroProof). No note and no number: nothing shown. -->
+          <p class="hero-proof" id="heroProof" data-mean="4.74" hidden><span class="hp-stars" id="hpStars" aria-hidden="true"></span><span id="hpTxt"></span></p>
         </div>
         <!-- Marketing & croissance (07/11, rapport chiffres : le mode Clip, 1re raison d'ouvrir Pro) : choisit « Clip » à l'étape 1
              (#kindSeg, le choix qui existe déjà) et l'amène sous les yeux ; rien d'autre ne change -->
@@ -3099,6 +3144,6 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
   <button class="hp-human" id="helpHuman" type="button" data-i18n="help.human" hidden>Talk to a human</button>
   <button class="hp-diag" id="helpDiag" type="button" data-i18n="help.diag">Copy info for the team</button>
 </section>
-<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.c9f4369178.js", "/assets/app.905f37e397.js", "/assets/tiktok.8fcf3f7d25.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
+<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.c9f4369178.js", "/assets/app.0a9a921f3a.js", "/assets/tiktok.8fcf3f7d25.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v||!v.offsetParent)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
 </body>
 </html>
