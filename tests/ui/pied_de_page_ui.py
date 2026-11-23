@@ -127,7 +127,7 @@ def app(b, base, site, lang, iphone):
     if iphone: check(tag + ' : téléphone : colonnes empilées', len(cols) == 5 and len({c[0] for c in cols}) == 1 and all(cols[i][1] < cols[i + 1][1] for i in range(4)), cols)
     else: check(tag + ' : ordinateur : 5 colonnes côte à côte', len(cols) == 5 and len({c[1] for c in cols}) == 1, cols)
     # the help ice cube and the Export button, at the very bottom of the page (video ready, Export button off the screen)
-    pg.locator('#demoBtn').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000)
+    pg.locator('#demoBtn:visible, #heroDemo:visible, #mhEx:visible').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000)
     pg.wait_for_timeout(1500)
     pg.evaluate('window.scrollTo(0, document.documentElement.scrollHeight)'); pg.wait_for_timeout(900)
     fab = pg.locator('#expFab'); cube = pg.locator('#helpBtn').bounding_box()

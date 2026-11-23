@@ -60,7 +60,7 @@ def make_video(pg, pro=False, share='ok'):
         if (mode === 'abort') throw new DOMException('closed', 'AbortError');
         if (mode === 'refuse') throw new DOMException('not allowed', 'NotAllowedError'); }; }""", share)
     if not ev(pg, 'S.step === 4 && S.cuts.length > 0'):
-        pg.locator('#demoBtn').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000)
+        pg.locator('#demoBtn:visible, #heroDemo:visible, #mhEx:visible').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000)
     ev(pg, "store.set(PP_KEY, Date.now()), setFilter('none', true), S.noShare = false, " + FAST_EXPORT.replace('\n', ' ')
        + (", acctHas = f => true" if pro else ""))
     ev(pg, "S.song && (S.song.demo = false)")   # (audit 6/11: the example's own end screen is « Essaie avec ton son », audit611_ui.py)

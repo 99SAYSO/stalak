@@ -64,7 +64,7 @@ def shot(pg, path):
 
 
 def demo(pg):
-    pg.locator('#demoBtn').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=180000); pg.wait_for_timeout(300)
+    pg.locator('#demoBtn:visible, #heroDemo:visible, #mhEx:visible').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=180000); pg.wait_for_timeout(300)
 
 
 def flow(b, base, site, lang, iphone, PW):
@@ -73,7 +73,8 @@ def flow(b, base, site, lang, iphone, PW):
     ctx, pg, errs = new_page(b, base, lang, iphone, PW)
     # 6. the real title
     h1 = pg.evaluate("() => [...document.querySelectorAll('h1')].filter(e => e.getClientRects().length).map(e => e.textContent.replace(/\\s+/g, ' ').trim())")
-    check(tag + ' : un seul H1, « %s », au-dessus du formulaire' % t['h1'], h1 == [t['h1']] and pg.locator('#heroPitch').bounding_box()['y'] < pg.locator('#songDrop').bounding_box()['y']
+    check(tag + ' : un seul H1, « %s », au-dessus du formulaire' % t['h1'], h1 == [t['h1']] and pg.locator('#heroPitch').bounding_box()['y'] < (pg.locator('#songDrop').bounding_box() or pg.locator('#tabBar').bounding_box())['y']   # (refonte mobile) no import square on the home screen of a phone
+         
           and not pg.evaluate("() => !!document.querySelector('#homeBtn').closest('h1')"), h1)
     # (23/11) under 900 px the short sentence (.hero-s2) is the one shown, the long one on a computer
     HS = '.hero-s2' if iphone else '.hero-s:not(.hero-s2)'

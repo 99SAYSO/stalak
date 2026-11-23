@@ -136,7 +136,7 @@ def new_page(b, base, lang, iphone, PW, st):
 
 
 def to_end(pg):
-    pg.locator('#demoBtn').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=90000)
+    pg.locator('#demoBtn:visible, #heroDemo:visible, #mhEx:visible').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=90000)
     ev(pg, "S.song.demo = false, store.set(PP_KEY, 1), " + FAST_EXPORT)
     pg.evaluate('() => { __ev("exportOne()"); }')
     pg.wait_for_function('() => __ev("S.done === true")', timeout=30000); pg.wait_for_timeout(500)

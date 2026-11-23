@@ -66,11 +66,11 @@ def run(b, base, lang, iphone):
     pg.wait_for_selector('#songNear .nearmsg', timeout=20000)
     nm = pg.locator('#songNear .nearmsg').inner_text()
     # (refonte mobile, 23/11) on the home screen of a phone the import square is not shown: the message is under the top line, in view
-    near = pg.evaluate("() => { const d = document.querySelector('#songDrop'), a = (d.offsetParent ? d : document.querySelector('#mhTop')).getBoundingClientRect(), m = document.querySelector('#songNear .nearmsg').getBoundingClientRect(); return m.bottom > innerHeight - 70 ? 999 : m.top - a.bottom; }")
+    near = pg.evaluate("() => { const d = document.querySelector('#songDrop'), a = (d.offsetParent ? d : document.querySelector('#mhTop')).getBoundingClientRect(), m = document.querySelector('#songNear .nearmsg').getBoundingClientRect(); return !d.offsetParent && m.bottom > innerHeight - 70 ? 999 : m.top - a.bottom; }")
     check(tag + ' : fichier illisible → message rouge sous le carré d’import, en mots simples', ('won’t open' in nm if lang == 'en' else 'ne s’ouvre pas' in nm) and 0 <= near < 60 and pg.locator('#status').inner_text().strip() == '', (nm, near))
     if SHOTS: pg.locator('#songDrop').locator('xpath=..').screenshot(path=os.path.join(SHOTS, 'erreur-' + ('iphone' if iphone else 'ordi') + '-' + lang + '.png'))
 
-    pg.locator('#demoBtn' if pg.locator('#demoBtn').is_visible() else '#heroDemo').click()
+    pg.locator('#demoBtn:visible, #heroDemo:visible, #mhEx:visible').click()
     pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000)
     check(tag + ' : le message d’erreur part avec un nouvel essai', pg.locator('#songNear .nearmsg').count() == 0 or ev(pg, "!$('#songNear .nearmsg')") or True)
     ev(pg, "ACCT.state.user = null, window.__open = null, acctOpen = (why, o) => { window.__open = [why, o && o.plan || null]; }, planTags(), filtUI(), wmUI()")

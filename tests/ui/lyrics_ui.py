@@ -55,7 +55,7 @@ async def new_page(browser, width, lang, user=None):
 
 
 async def demo_to_lyrics(page):
-    await page.click('#demoBtn')
+    await page.click('#demoBtn:visible, #heroDemo:visible, #mhEx:visible')
     await wait(page, '() => S.song && S.song.demo && S.step === 4', timeout=30000)
     await page.click('#stepper button[data-go="3"]')
     await wait(page, '() => S.step === 3')

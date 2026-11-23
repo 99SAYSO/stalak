@@ -72,7 +72,7 @@ def run(b, base, lang, iphone):
     pg.on('pageerror', lambda e: errs.append(str(e)[:200]) if 'test : export arrêté ici' not in str(e) else None)
     pg.goto(base + ('' if lang == 'en' else 'fr/'), wait_until='load')
     pg.wait_for_function('window.__ev && window.MP4Box', timeout=20000)
-    pg.locator('#demoBtn').click()
+    pg.locator('#demoBtn:visible, #heroDemo:visible, #mhEx:visible').click()
     pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000)
     ev(pg, "window.__flat = (() => { const c = document.createElement('canvas'); c.width = 1080; c.height = 1920; const x = c.getContext('2d'); x.fillStyle = '#7a8fa8'; x.fillRect(0, 0, 1080, 1920); return c; })()")
 
@@ -162,7 +162,7 @@ def engine(b, base):
     ctx = b.new_context(viewport={'width': 1280, 'height': 860}, locale='fr-FR'); pg = ctx.new_page(); errs = []
     pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
     pg.goto(base + 'fr/', wait_until='load'); pg.wait_for_function('window.__ev && window.MP4Box', timeout=20000)
-    pg.locator('#demoBtn').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000)
+    pg.locator('#demoBtn:visible, #heroDemo:visible, #mhEx:visible').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000)
     ev(pg, "ACCT.state.user = null")
     r = ev(pg, """(() => {
       const c0 = document.createElement('canvas'); c0.width = 1080; c0.height = 1920; const x0 = c0.getContext('2d'); const gr = x0.createLinearGradient(0, 0, 1080, 1920); gr.addColorStop(0, '#203a80'); gr.addColorStop(1, '#e0a050'); x0.fillStyle = gr; x0.fillRect(0, 0, 1080, 1920);

@@ -181,7 +181,7 @@ async def main():
         check('fr-390 Pro: no « Sauvegarder en ligne » button any more', await pg.locator('#cloudSaveBtn, #clSaveHere, #clNameF').count() == 0)
         puts = []
         pg.on('request', lambda r: puts.append((r.method, r.url)) if r.method in ('PUT', 'POST') and '/api/projects/' in r.url else None)
-        await pg.click('#demoBtn')
+        await pg.click('#demoBtn:visible, #heroDemo:visible, #mhEx:visible')
         # automatic saving: the example saves itself, the header says « Enregistré ✓ »
         await pg.wait_for_selector('#clAuto[data-st=saved]:not([hidden])', timeout=60000)
         txt = await pg.text_content('#clAutoT')

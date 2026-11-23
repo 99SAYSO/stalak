@@ -93,7 +93,7 @@ def run(b, base, lang, iphone, calm):
         check(tag + ' : app : aucune courbe qui rebondit', not r['bounce'], r['bounce'][:6])
         tok = pg.evaluate("() => ['--dur-1', '--dur-2', '--dur-3', '--dur-4', '--dur-5', '--ease-out', '--ease-move', '--ease-press'].map(n => getComputedStyle(document.documentElement).getPropertyValue(n).trim())")
         check(tag + ' : réglages communs (durées et courbes) présents', tok[:5] == ['120ms', '180ms', '240ms', '300ms', '500ms'] and tok[5].startswith('cubic-bezier(.165'), tok)
-    pg.locator('#demoBtn').click()
+    pg.locator('#demoBtn:visible, #heroDemo:visible, #mhEx:visible').click()
     pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000)
     pg.wait_for_timeout(800)
     if calm:
