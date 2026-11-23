@@ -118,18 +118,24 @@ def app(b, base, site, lang, iphone):
     pg.goto(base + url, wait_until='load'); pg.wait_for_function('typeof window.__ev === "function"', timeout=20000)
     d = pg.evaluate(FOOT_JS)
     ref = links_of(d)
-    check(tag + ' : un seul pied de page, bande pleine largeur fond encre, pas fixe, tout en bas', d['n'] == 1 and abs(d['left']) < 1 and abs(d['width'] - d['vw']) < 1
+    # (refonte mobile, the owner 23/11) on a phone the home screen is an app: no site footer under it (it comes back in the editor)
+    if iphone: check(tag + ' : téléphone : pas de pied de page de site sur l’accueil (un seul écran, il revient dans l’éditeur)', d['n'] == 1 and d['width'] == 0 and pg.evaluate('document.documentElement.scrollHeight <= innerHeight + 1'), d)
+    else: check(tag + ' : un seul pied de page, bande pleine largeur fond encre, pas fixe, tout en bas', d['n'] == 1 and abs(d['left']) < 1 and abs(d['width'] - d['vw']) < 1
           and d['bg'] == 'rgb(10, 13, 20)' and d['pos'] in ('relative', 'static') and abs(d['bottom'] - d['doc']) < 2, d)
     check(tag + ' : textes et liens', d['heads'] == HEADS[lang] and d['bottomTxt'] == BOTTOM and all(m in ref for m in MUST[lang] + list(OURS)) and guides_ok(lang, ref) and d['ck'] and d['pc'] == 'Your Privacy Choices', (d['heads'], ref))
     bad = [h for h in d['links'] + [x for x in d['langs'] if x.startswith('/')] if not (h in OURS or (h.startswith('/') and page_exists(site, h)))]
     check(tag + ' : seulement nos sites, chaque lien mène à une page qui existe', not bad, bad)
     cols = d['cols']
-    if iphone: check(tag + ' : téléphone : colonnes empilées', len(cols) == 5 and len({c[0] for c in cols}) == 1 and all(cols[i][1] < cols[i + 1][1] for i in range(4)), cols)
+    if iphone: pass   # measured in the editor, below
     else: check(tag + ' : ordinateur : 5 colonnes côte à côte', len(cols) == 5 and len({c[1] for c in cols}) == 1, cols)
     # the help ice cube and the Export button, at the very bottom of the page (video ready, Export button off the screen)
     pg.locator('#demoBtn:visible, #heroDemo:visible, #mhEx:visible').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000)
     pg.wait_for_timeout(1500)
     pg.evaluate('window.scrollTo(0, document.documentElement.scrollHeight)'); pg.wait_for_timeout(900)
+    if iphone:
+        d = pg.evaluate(FOOT_JS); cols = d['cols']
+        check(tag + ' : téléphone, dans l’éditeur : le pied de page est là, pleine largeur, tout en bas, colonnes empilées', abs(d['width'] - d['vw']) < 1 and abs(d['bottom'] - d['doc']) < 2
+              and len(cols) == 5 and len({c[0] for c in cols}) == 1 and all(cols[i][1] < cols[i + 1][1] for i in range(4)), (d['width'], d['bottom'], d['doc'], cols))
     fab = pg.locator('#expFab'); cube = pg.locator('#helpBtn').bounding_box()
     fb = fab.bounding_box() if fab.count() and fab.is_visible() else None
     # (23/11, Marketing) the links of the folded tutorials are not on the screen: only what is displayed counts

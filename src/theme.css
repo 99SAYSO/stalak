@@ -1174,6 +1174,7 @@ body.isdone > .help-cube{display:none}
 .dv-card .dv-try,.dv-card .dv-nowm{width:100%;justify-content:center;min-height:62px;font-size:21px;margin:0 0 14px}
 .dv-card .dv-try[hidden],.dv-card .dv-nowm[hidden]{display:none}
 .drop.try{outline:4px solid var(--sky-deep);outline-offset:4px}
+.mh-new.try,.hero-song.try{outline:4px solid var(--sky-deep);outline-offset:4px}
 
 /* ---------- Marketing & croissance (06/11, audit point 6) : le premier écran dit ce qu'est Stalak ----------
    « Version compacte » choisie par le propriétaire : le titre de la page (h1), une phrase et une petite vidéo (un vrai

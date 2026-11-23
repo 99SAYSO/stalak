@@ -1440,6 +1440,7 @@ body.isdone > .help-cube{display:none}
 .dv-card .dv-try,.dv-card .dv-nowm{width:100%;justify-content:center;min-height:62px;font-size:21px;margin:0 0 14px}
 .dv-card .dv-try[hidden],.dv-card .dv-nowm[hidden]{display:none}
 .drop.try{outline:4px solid var(--sky-deep);outline-offset:4px}
+.mh-new.try,.hero-song.try{outline:4px solid var(--sky-deep);outline-offset:4px}
 
 /* ---------- Marketing & croissance (06/11, audit point 6) : le premier écran dit ce qu'est Stalak ----------
    « Version compacte » choisie par le propriétaire : le titre de la page (h1), une phrase et une petite vidéo (un vrai
@@ -2172,8 +2173,13 @@ body.ttk-on{overflow:hidden}
   html:not(.medit) body{height:100svh;margin-block:0;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;padding-top:max(14px,env(safe-area-inset-top,0px));padding-bottom:0}
   html:not(.medit) .wrap{flex:1 1 auto;min-height:0;width:100%;overflow-x:clip;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   html:not(.medit) .wrap::-webkit-scrollbar{display:none}
-  html:not(.medit) .proof,html:not(.medit) body > .bands,html:not(.medit) body > .ft,html:not(.medit) .installtip,html:not(.medit) .byalaska{display:none !important}
+  html:not(.medit) .proof,html:not(.medit) body > .bands,html:not(.medit):not(.mnoacct) body > .ft,html:not(.medit) .installtip,html:not(.medit) .byalaska{display:none !important}
   html:not(.medit) .wrap > header{display:none}
+  /* the claude.ai version (no accounts, so no profile to come): its light footer (language, cookies) stays under the screen */
+  html.mnoacct:root:not(.medit){height:auto;overflow:visible}
+  html.mnoacct:not(.medit) body{height:auto;min-height:100svh;overflow:visible;display:block}
+  html.mnoacct:not(.medit) .wrap{overflow:visible;min-height:calc(100svh - 14px)}
+  html.mnoacct:not(.medit) body > .ft{padding-bottom:calc(var(--tabs) + 12px)}
   html:not(.medit) .wrap{padding-bottom:0}
   /* the first screen is the app: what follows (reviews, footer) starts under it */
   html:not(.medit) #p1{flex:none;min-height:100%;padding-bottom:calc(var(--tabs) + 18px);box-sizing:border-box;gap:0}
@@ -3440,6 +3446,6 @@ html.splash-on #splash{display:block}
   <button class="hp-human" id="helpHuman" type="button" data-i18n="help.human" hidden>Parler à un humain</button>
   <button class="hp-diag" id="helpDiag" type="button" data-i18n="help.diag">Copier les infos pour l’équipe</button>
 </section>
-<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.c9f4369178.js", "/assets/app.01032a00c4.js", "/assets/tiktok.8fcf3f7d25.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v||!v.offsetParent)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
+<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.c9f4369178.js", "/assets/app.7e13e1323d.js", "/assets/tiktok.8fcf3f7d25.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v||!v.offsetParent)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
 </body>
 </html>

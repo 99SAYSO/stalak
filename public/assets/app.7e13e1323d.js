@@ -7441,7 +7441,7 @@ setRes(PREV); renderTakes(); drawEmpty(); updateNav(); go(1);
   if (run && typeof run === 'object'){ const { left, ...x } = run; setTimeout(() => acctEvent('export_fail', { cat: 'crash', x }), 0); S.lightNext = 'crash'; try { localStorage.setItem('stalak:expLight', '1'); } catch(e){}
     diag('export précédent jamais fini (onglet fermé par le navigateur' + (left ? ', après avoir quitté Stalak' : '') + ') : le prochain sera plus léger'); setTimeout(() => say('exp.crashed'), 800); } }
 { let t = null; try { t = sessionStorage.getItem('stalak:trySong'); sessionStorage.removeItem('stalak:trySong'); } catch(e){}
-  if (t){ const d = $('#songDrop'); d.classList.add('try'); try { d.scrollIntoView({ block: 'center' }); $('#songFile').focus({ preventScroll: true }); } catch(e){} say('dv.tryNow'); setTimeout(() => d.classList.remove('try'), 6000); } }
+  if (t){ const d = [$('#songDrop'), $('#mhNew'), $('#heroSong')].find(e => e && e.getClientRects().length) || $('#songDrop'); /* (refonte mobile) on a phone the import square is not on the home screen: its main button is put forward */ d.classList.add('try'); try { d.scrollIntoView({ block: 'center' }); (d.id === 'songDrop' ? $('#songFile') : d).focus({ preventScroll: true }); } catch(e){} say('dv.tryNow'); setTimeout(() => d.classList.remove('try'), 6000); } }
 if (store.get('stalak:kind') === 'clip' && !window.StalakAccount) setKind('clip', true); else kindUI();
 diag('navigateur : ' + navigator.userAgent);
 diag('WebCodecs : décodeur vidéo ' + (window.VideoDecoder ? 'oui' : 'non') + ', encodeur vidéo ' + (window.VideoEncoder ? 'oui' : 'non') + ', décodeur audio ' + (window.AudioDecoder ? 'oui' : 'non') + ', encodeur audio ' + (window.AudioEncoder ? 'oui' : 'non'));

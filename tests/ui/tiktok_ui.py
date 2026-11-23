@@ -188,10 +188,16 @@ def flow(b, base, lang, iphone, PW, pro):
     pg.keyboard.press('Escape'); pg.wait_for_timeout(300)
     pg.wait_for_timeout(300)
     ev(pg, "apHide()"); pg.wait_for_timeout(400)
-    ev(pg, "acctMenu(true)"); pg.wait_for_timeout(200)
-    check(tag + ' : menu du compte : « TikTok · %s » avec le logo TikTok' % t['stats'], visible(pg, '[data-am="tiktok"]') and t['stats'] in pg.locator('[data-am="tiktok"]').inner_text()
-          and visible(pg, '[data-am="tiktok"] svg.ttk-logo'))
-    ev(pg, "acctMenu(false)")
+    if iphone:
+        # (refonte mobile) on a phone the account menu is replaced by the bar at the bottom: its « Stats » tab opens « Mes stats »
+        pg.locator('#tabBar [data-tab="stats"]').click(); pg.wait_for_timeout(900)
+        check(tag + ' : barre du bas : l’onglet « Stats » ouvre « %s »' % t['stats'], pg.locator('.ttk-layer').count() == 1 and visible(pg, '.ttk-ms'))
+        pg.keyboard.press('Escape'); pg.wait_for_timeout(300)
+    else:
+        ev(pg, "acctMenu(true)"); pg.wait_for_timeout(200)
+        check(tag + ' : menu du compte : « TikTok · %s » avec le logo TikTok' % t['stats'], visible(pg, '[data-am="tiktok"]') and t['stats'] in pg.locator('[data-am="tiktok"]').inner_text()
+              and visible(pg, '[data-am="tiktok"] svg.ttk-logo'))
+        ev(pg, "acctMenu(false)")
     # 2. the end of an export
     to_end(pg)
     check(tag + ' : fin d’export : « %s » visible' % t['pub'], visible(pg, '#ttkPub') and pg.locator('#ttkPub').inner_text().strip() == t['pub'])
