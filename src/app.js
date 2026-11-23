@@ -1064,6 +1064,8 @@ const I18N_EN = /*@EN*/{
   "_bloc.marketing.accueil": "Marketing & croissance : titre, phrase et vidéo du premier écran (audit du 6/11, point 6), compte facultatif",
   "hero.h1": "Your song is done. <br class=\"hero-br\">Where’s the snippet?",
   "hero.s2": "Film a few takes. Stalak cuts them on the beat, lips in sync.",
+  "_bloc.social.gift": "Réseaux sociaux (23/11): the 1st video without watermark, on us once per account (home line; the French is in markup.html)",
+  "hero.gift": "<b>1st video watermark-free</b> with a free account",
   "hero.note": "{n}/5",
   "hero.vids": "{n} videos made",
   "hero.s": "Film a few takes of your song. Stalak cuts them on the beat, lips in sync: your snippet is ready to post tonight.",

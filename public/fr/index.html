@@ -1450,6 +1450,11 @@ body.isdone > .help-cube{display:none}
 .hero-txt{min-width:0}
 .hero-h1{margin:0 0 5px;font:400 clamp(21px,5.4vw,25px)/1.08 var(--display);letter-spacing:.01em;color:var(--snow);text-shadow:0 2px 0 var(--ink);text-wrap:balance}
 .hero-s{margin:0;max-width:34em;font:600 14.5px/1.4 var(--body);color:var(--snow);text-shadow:0 1px 0 rgba(10,13,20,.4);text-wrap:pretty}
+/* Réseaux sociaux (23/11) : « 1re vidéo sans filigrane offerte avec un compte », une ligne près du bouton principal */
+.hero-gift{margin:10px auto 0;max-width:30em;color:var(--snow);font:600 13.5px/1.3 var(--body);text-shadow:0 1px 0 rgba(10,13,20,.4);text-align:center;text-wrap:balance}
+.hero-gift svg{display:inline-block;width:18px;height:18px;margin-right:6px;vertical-align:-4px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hero-gift b{font-weight:800}
+@media (min-width:900px){ .hero-gift{font-size:15px;margin-top:12px} }
 /* phone and tablet: the hero first, then the room where the mascot stands on the card (it was the top padding) */
 @media (max-width:899px){
   #p1:has(#songBox[hidden]):not(:has(> .lpoffer:not([hidden]))):has(> .hero){padding-top:4px}
@@ -2189,6 +2194,9 @@ body.ttk-on{overflow:hidden}
         })(document.currentScript.previousElementSibling);</script>
         <p class="hero-s" data-i18n="hero.s">Filme quelques prises sur ton son. Stalak les coupe sur le rythme, lèvres synchro&nbsp;: ton snippet est prêt à poster ce soir.</p>
         <p class="hero-s hero-s2" data-i18n="hero.s2">Filme quelques prises. Stalak les coupe sur le rythme, lèvres synchro.</p>
+        <!-- Réseaux sociaux (23/11, décision du propriétaire) : la 1re vidéo sans filigrane offerte, une fois par compte.
+             Toujours « la 1re » : jamais « sans filigrane » seul pour le gratuit -->
+        <p class="hero-gift"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3.5" y="8.5" width="17" height="4" rx="1"/><path d="M5 12.5v8h14v-8M12 8.5v12M12 8.5c-1.5-3.5-5.5-4-5.5-1.5 0 1.5 2.5 1.5 5.5 1.5zM12 8.5c1.5-3.5 5.5-4 5.5-1.5 0 1.5-2.5 1.5-5.5 1.5z"/></svg><span data-i18n="hero.gift"><b>1re vidéo sans filigrane</b> offerte avec un compte</span></p>
         <!-- App & montage (22/11, audit mobile n° 1): what starts it, in the first screen of a phone: the song (opens the file
              choice of #songFile) and the example (#demoBtn) -->
         <div class="hero-go">
@@ -3243,6 +3251,6 @@ body.ttk-on{overflow:hidden}
   <button class="hp-human" id="helpHuman" type="button" data-i18n="help.human" hidden>Parler à un humain</button>
   <button class="hp-diag" id="helpDiag" type="button" data-i18n="help.diag">Copier les infos pour l’équipe</button>
 </section>
-<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.6c490afd01.js", "/assets/app.c261a6055f.js", "/assets/tiktok.8fcf3f7d25.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v||!v.offsetParent)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
+<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.6c490afd01.js", "/assets/app.66d134b7bd.js", "/assets/tiktok.8fcf3f7d25.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v||!v.offsetParent)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
 </body>
 </html>
