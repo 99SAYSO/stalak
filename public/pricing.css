@@ -223,3 +223,9 @@
 .p4-fold[open] > summary::after{transform:translateY(2px) rotate(-135deg)}
 .p4-fold > summary:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 .p4-fold[open] > summary{margin-bottom:16px}
+/* (23/11, « Bandes de glace ») the comparison and the questions sit on their own bands under the plans (src/bands.css): the
+   white cards stay, without their own icicles (the band's row already says « a new part starts here »), and the band's title */
+.band .pr-compare,.band .pr-faq{max-width:760px;margin:0 auto}
+.band .pr-compare::before,.band .pr-faq::before{content:none}
+.band .pr-compare{padding-top:22px}
+.band .pr-faq{padding-top:22px}

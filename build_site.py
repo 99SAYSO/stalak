@@ -192,21 +192,31 @@ COUNT = ('<p class="proof-n" id="proofN" hidden><span class="pn-a" data-i18n="pr
          ' show(0); var io = new IntersectionObserver(function (e) { if (!e[0].isIntersecting) return; io.disconnect(); var t0 = 0;'
          '   requestAnimationFrame(function step(t){ if (!t0) t0 = t; var k = Math.min(1, (t - t0) / 900); show(n * (1 - Math.pow(1 - k, 4))); if (k < 1) requestAnimationFrame(step); }); }, { threshold: .6 }); io.observe(p);'
          ' }).catch(function () {}); })(document.currentScript.previousElementSibling);</script>')
-PROOF = ('<section class="proof"' + (' aria-labelledby="rvT"' if AVIS else '') + '>'
+PROOF = ('<section class="proof">'
          + COUNT +
          '<div class="ba"><div class="ba-c ba-no"><h3 data-i18n="ba.no.t">Sans Stalak</h3><p data-i18n="ba.no">Tes prises dorment dans ta galerie. Caler chaque coupe à la main prend des heures, et la bouche décale.</p></div>'
          '<div class="ba-c ba-yes"><div class="ba-yt"><h3 data-i18n="ba.yes.t">Avec Stalak</h3><p data-i18n="ba.yes">Ton son et tes prises, c’est tout. Stalak coupe sur le rythme, garde tes lèvres synchro, et c’est prêt pour TikTok, Reels et Shorts.</p></div>' + BA_VIDEO + '</div></div>'
-         + ('<div class="rv-band"><h2 id="rvT" data-i18n="rv.t">Avis clients</h2><p class="rv-avg" id="rvAvg" data-v="' + ('%.2f' % RV_MEAN) + '"><span class="rv-fill" aria-hidden="true" style="--w:' + ('%.1f' % (RV_MEAN * 20)) + '%">★★★★★<em>★★★★★</em></span> <b id="rvNum">' + ('%.1f' % RV_MEAN).replace('.', ',') + '</b> <span data-i18n="rv.avg">' + rv_avg('fr') + '</span></p>' + RV_NUM_JS +
-            '<div class="rv-view"><ul class="rv-list">' + ''.join(rv_item(r, 'fr') for r in AVIS) + '</ul></div>' + RV_JS + '</div>' if AVIS else '')
          + '</section>\n  ')
-markup = markup.replace(a, PROOF + '<section class="about" aria-labelledby="aboutT" data-i18n="site.about">' + PAGE['fr']['about'] + '</section>\n  ' + FX_TAG + '\n  ' + a)
+RV_BAND = (('<section class="band band-night rv-band" aria-labelledby="rvT"><div class="band-in"><h2 id="rvT" data-i18n="rv.t">Avis clients</h2><p class="rv-avg" id="rvAvg" data-v="' + ('%.2f' % RV_MEAN) + '"><span class="rv-fill" aria-hidden="true" style="--w:' + ('%.1f' % (RV_MEAN * 20)) + '%">★★★★★<em>★★★★★</em></span> <b id="rvNum">' + ('%.1f' % RV_MEAN).replace('.', ',') + '</b> <span data-i18n="rv.avg">' + rv_avg('fr') + '</span></p>' + RV_NUM_JS + '</div>' +
+            '<div class="rv-edge"><div class="rv-view"><ul class="rv-list">' + ''.join(rv_item(r, 'fr') for r in AVIS) + '</ul></div>' + RV_JS + '</div></section>') if AVIS else '')
+# (23/11, the owner's choice « Bandes de glace »; stalak-da: each part of a page has its own full-width band, each band starts
+# with a row of icicles in the colour of the band above). Under the editor: the counter and « Sans / Avec Stalak » stay on the
+# blue with the snow (in .wrap); then, as children of <body> like the footer (outside the column, so nothing clips them): the
+# reviews on a night-blue band, « Stalak, c'est quoi ? » and the « by Alaska » badge on a frost band, then the footer (ink)
+BANDS = ('<div class="bands" id="bands">' + RV_BAND
+         + '<div class="band band-frost"><div class="band-in"><section class="about" aria-labelledby="aboutT" data-i18n="site.about">' + PAGE['fr']['about'] + '</section>'
+         + a + '</div></div></div>\n')
+markup = markup.replace(a, PROOF + FX_TAG + '\n  ')
+assert markup.count('<!--FOOTER-->') == 1
+markup = markup.replace('<!--FOOTER-->', BANDS + '<!--FOOTER-->')
 # the footer: src/footer.py (the same on every page, owner 01/11); in the other language, the app takes it from the dictionary (site.footer)
 assert '<!--FOOTER-->' in markup
 markup = markup.replace('<!--FOOTER-->', FOOT.render('fr', i18n='site.footer'))
 css += '\n' + (src / 'footer.css').read_text(encoding='utf-8')
 css += '\n' + (src / 'fx.css').read_text(encoding='utf-8')   # Marketing (23/11): the animation ideas the owner picked
+css += '\n' + (src / 'bands.css').read_text(encoding='utf-8')   # Marketing (23/11): « Bandes de glace »
 css += '\n' + (src / 'tiktok.css').read_text(encoding='utf-8')   # Réseaux sociaux (21/11)
-css += '\n.about{color:#fff;font-size:14.5px;line-height:1.55;margin-top:18px}.about h2{font:400 22px/1.2 var(--display);margin:0 0 6px;color:#fff;text-shadow:0 2px 0 var(--ink)}.about p{margin:0 0 8px}.about ul{margin:0 0 8px;padding-left:20px}.about strong{font-weight:700}.about a{color:#fff;font-weight:700;text-decoration:underline;text-underline-offset:3px}\n'
+css += '\n.about{font-size:15px;line-height:1.6}.about h2{font:400 24px/1.2 var(--display);margin:0 0 8px}.about p{margin:0 0 8px}.about ul{margin:0 0 8px;padding-left:20px}.about strong{font-weight:700}.about a{font-weight:700;text-decoration:underline;text-underline-offset:3px}\n'
 
 # 3. languages: the dictionaries are in app.js (between /*@EN*/ … /*EN@*/ and /*@FR*/ … /*FR@*/); the French of the page's
 #    fixed texts is read from the markup (data-i18n, data-i18n-attr) and given to the app, so that the English page can
@@ -368,7 +378,7 @@ shutil.copytree(extra, out)
 # the stylesheets of the static pages get a version in their address: a browser never keeps an old one
 import hashlib
 # the footer of the static pages (src/footer.py): its style goes into /site.css, which all of them load
-(out / 'site.css').write_text((out / 'site.css').read_text(encoding='utf-8') + '\n' + (src / 'footer.css').read_text(encoding='utf-8') + '\n' + (src / 'fx.css').read_text(encoding='utf-8'), encoding='utf-8')
+(out / 'site.css').write_text((out / 'site.css').read_text(encoding='utf-8') + '\n' + (src / 'footer.css').read_text(encoding='utf-8') + '\n' + (src / 'fx.css').read_text(encoding='utf-8') + '\n' + (src / 'bands.css').read_text(encoding='utf-8'), encoding='utf-8')
 _v = {n: hashlib.sha1((out / n).read_bytes()).hexdigest()[:8] for n in ('pricing.css', 'site.css', 'fonts/fonts.css') if (out / n).exists()}
 for f in list(out.glob('*.html')) + list((out / 'fr').glob('*.html')):
     t = f.read_text(encoding='utf-8'); t2 = t
