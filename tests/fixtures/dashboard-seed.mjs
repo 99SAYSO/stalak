@@ -54,6 +54,8 @@ export function seedDashboard(env, { now = Date.now() } = {}) {
       insU.run('u_seed' + i + '_' + k, `fan${i}_${k}@example.com`, c === 'FR' ? 'fr' : 'en', Math.round(atHour(t, ((i * 37 + k * 101) % 97) / 97)), t, t, c, pick(DEV), rnd() < 0.62 ? 'email' : 'google',
         pick([['tiktok', 30], ['ig', 14], ['yt', 8], ['google', 12], ['direct', 16], ['ref:tiktok', 6], ['ref:ytshort', 4], ['dir:alternativeto', 3], ['dir:saashub', 2], ['site:reddit.com', 2], [null, 3]]));
       if ((i * 7 + k) % 5) setName.run(NAMES[(i * 3 + k) % NAMES.length], 'u_seed' + i + '_' + k);
+      // 23/11: about 6 accounts in 10 take their free video without the watermark (not from rnd(): the other figures stay the same)
+      if ((i * 5 + k * 3) % 10 < 6) db.prepare('UPDATE users SET free_nowm_at = ? WHERE id = ?').run(Math.min(now, t + 1800e3), 'u_seed' + i + '_' + k);
       // some come back a few days later (a new session)
       if (i > 3 && rnd() < 0.3) db.prepare("INSERT OR IGNORE INTO sessions (token_hash, user_id, created_at, expires_at, method) VALUES (?, ?, ?, ?, 'password')").run('seedsess' + i + '_' + k, 'u_seed' + i + '_' + k, t + 3 * 864e5, t + 60 * 864e5);
     }
