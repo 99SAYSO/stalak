@@ -58,3 +58,16 @@ Audit : `docs/audit/2026-11-23-audit-marketing.md`. Décisions du propriétaire 
 - **3** et **4** `site_src/fr/tarifs.html`, `site_src/pricing.html`, `src/pricing.css` (`.p4-fold`).
 - Fusion de `main` : `src/markup.html` (mon titre + les boutons `.hero-go` d'App & montage), `src/theme.css` (les deux blocs gardés), `public/` reconstruit.
 - Propositions « un site beau dès l'arrivée » : page claude.ai « Stalak, idées d'animations » (6 maquettes animées, à choisir par le propriétaire). Rien de codé.
+
+## Les 6 animations (23/11, 1 h 30, choix du propriétaire sur la page « Stalak, idées d'animations »)
+| # | Quoi | Où dans le code | Limites |
+|---|---|---|---|
+| 1 | Titre de l'accueil, un mot par temps (190 ms), une fois ; le texte simple est remis ensuite | script après le `h1` dans `src/markup.html`, `.hw` dans `theme.css` | Ordinateur (≥ 900 px) |
+| 2 | Le vrai montage `demo/edit.mp4` + `demo/takes.jpg` (une image par prise, allumée quand elle est à l'écran : ordre 1, 2, 3, 2) + 4 mesures et tête de lecture calée sur `currentTime` | `BA_VIDEO` dans `build_site.py`, `.mx-*` | Ordinateur et téléphone (sous l'éditeur) ; la vidéo ne se charge que visible |
+| 3 | « Importer mon son » : tirets qui avancent, égaliseur, plus vifs au survol | script après `#songDrop` dans `src/markup.html`, `.drop-live` | Ordinateur avec souris |
+| 4 | Note des avis : étoiles qui se remplissent, chiffre qui monte ; suit la langue de la page | `RV_NUM_JS` dans `build_site.py`, `.rv-fill` | Une fois, à l'arrivée à l'écran |
+| 5 | Blocs qui montent en douceur (0,5 s, décalés de 90 ms) | `src/fx.js`, `src/fx.css` | Seulement ceux sous le premier écran ; jamais cachés sans script |
+| 6 | Neige à l'appui sur `a.cta` et `.pr-cta` (12 flocons, 0,65 s) | `src/fx.js` | Pages du site (Tarifs, aide) ; pas les boutons de l'éditeur |
+
+Tout s'arrête avec « moins d'animations ». Vérifié au navigateur (1440 et 390 px) : pas d'erreur, pas de débordement, le titre redevient du texte simple,
+la prise allumée suit la vidéo, 12 flocons puis 0. Petite vidéo de démonstration envoyée au propriétaire.

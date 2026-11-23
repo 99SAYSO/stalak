@@ -1,0 +1,8 @@
+/* Marketing & croissance (23/11, the owner's pick of the animation ideas; src/fx.js). Enter: ease-out-quart; one time each. */
+.fx-rise{opacity:0;transform:translateY(22px)}
+.fx-rise.fx-in{opacity:1;transform:none;transition:opacity .5s cubic-bezier(.165,.84,.44,1),transform .5s cubic-bezier(.165,.84,.44,1)}
+.fx-flake{position:fixed;z-index:90;width:9px;height:9px;margin:-5px 0 0 -5px;border-radius:50%;background:#fff;border:2px solid #0a0d14;pointer-events:none;animation:fx-burst .65s cubic-bezier(.165,.84,.44,1) forwards}
+@keyframes fx-burst{from{transform:scale(.4);opacity:1}to{transform:translate(var(--x),var(--y)) scale(1);opacity:0}}
+a.cta{transition:transform .12s cubic-bezier(.25,.46,.45,.94)}
+a.cta:active{transform:translateY(3px)}
+@media (prefers-reduced-motion:reduce){ .fx-rise{opacity:1;transform:none} .fx-flake{display:none} a.cta{transition:none} a.cta:active{transform:none} }

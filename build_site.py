@@ -120,20 +120,42 @@ def rv_item(r, lang, tag='li', cls=''):
     v = float(r['note']); n = int(v + .5); s = ('%g' % v).replace('.', ',' if lang == 'fr' else '.')   # 4,8/5 as given; the stars rounded
     return ('<' + tag + (' class="' + cls + '"' if cls else '') + '><span class="rv-note"><span class="rv-stars" aria-hidden="true">' + '★' * n + '☆' * (5 - n) + '</span> <b>' + s + '/5</b></span>'
             '<blockquote lang="fr">' + H.escape(str(r['texte'])) + '</blockquote><p class="rv-who">' + H.escape(str(r['pseudo'])) + ' · ' + PLAN_NAME[r['formule']][lang] + '</p></' + tag + '>')
-def rv_avg(lang):
-    m = sum(float(r['note']) for r in AVIS) / len(AVIS); n = len(AVIS)
-    if lang == 'fr': return ('%.1f' % m).replace('.', ',') + ' sur 5 · ' + str(n) + (' avis clients' if n > 1 else ' avis client')
-    return ('%.1f' % m) + ' out of 5 · ' + str(n) + (' customer reviews' if n > 1 else ' customer review')
+RV_MEAN = sum(float(r['note']) for r in AVIS) / len(AVIS) if AVIS else 0
+def rv_avg(lang):   # what follows the note (the note itself is #rvNum: it climbs when it comes on screen, src: RV_NUM_JS)
+    n = len(AVIS)
+    if lang == 'fr': return 'sur 5 · ' + str(n) + (' avis clients' if n > 1 else ' avis client')
+    return 'out of 5 · ' + str(n) + (' customer reviews' if n > 1 else ' customer review')
+# (23/11, idea 4) the note written in the page's language (4,7 / 4.7, also after the footer's FR / EN switch); when it comes on
+# screen, once: the five stars fill up to the note and the number climbs to it (not with « reduce motion »)
+RV_NUM_JS = ('<script>(function (p) { var b = p && p.querySelector("#rvNum"); if (!b) return; var n = parseFloat(p.getAttribute("data-v")), root = document.documentElement;'
+             ' function show(v){ b.textContent = v.toFixed(1).replace(".", root.lang === "en" ? "." : ","); } show(n);'
+             ' if (window.MutationObserver) new MutationObserver(function () { show(n); }).observe(root, { attributes: true, attributeFilter: ["lang"] });'
+             ' if (!("IntersectionObserver" in window) || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) return;'
+             ' var io = new IntersectionObserver(function (e) { if (!e[0].isIntersecting) return; io.disconnect(); p.classList.add("is-in"); var t0 = 0;'
+             '   requestAnimationFrame(function step(t){ if (!t0) t0 = t; var k = Math.min(1, (t - t0) / 900); show(n * (1 - Math.pow(1 - k, 4))); if (k < 1) requestAnimationFrame(step); }); }, { threshold: .8 }); io.observe(p);'
+             ' })(document.currentScript.previousElementSibling);</script>')
 # (23/11, owner) on a computer the example video stands next to « Avec Stalak » (the hero keeps it on a phone); the reviews fill
 # the width of the screen and glide to the left by themselves: the list doubled, moved by transform only, stopped under the
 # mouse or a finger, still dragged by hand; « reduce motion » or no script: a plain list to slide by hand
-BA_VIDEO = ('<figure class="ba-v"><video src="/demo/edit.mp4" poster="/demo/edit.jpg" width="432" height="768" muted loop playsinline preload="none" '
-            'aria-label="Exemple : une vidéo montée par Stalak à partir de trois prises" data-i18n-attr="aria-label:hero.v"></video>'
-            '<script>(function (v) { if (!v) return;'
+FX_TAG = '<script>' + (src / 'fx.js').read_text(encoding='utf-8') + '</script>'
+# (23/11, idea 2) « 3 prises deviennent 1 montage »: the real edit (demo/edit.mp4: take 1, 2, 3, 2, one per bar: cuts measured at
+# 1.53, 3.07 and 4.60 s) with a picture of each raw take (demo/takes.jpg) lit when it is the one on screen, and the four bars
+# under it with a playhead that follows the video's own time
+BA_VIDEO = ('<figure class="ba-v" id="baMix"><div class="mx-row"><div class="mx-takes" aria-hidden="true"><i class="mx-t mx-t1"></i><i class="mx-t mx-t2"></i><i class="mx-t mx-t3"></i></div>'
+            '<video src="/demo/edit.mp4" poster="/demo/edit.jpg" width="432" height="768" muted loop playsinline preload="none" '
+            'aria-label="Exemple : une vidéo montée par Stalak à partir de trois prises" data-i18n-attr="aria-label:hero.v"></video></div>'
+            '<div class="mx-bar" aria-hidden="true"><b></b><b></b><b></b><b></b><u></u></div>'
+            '<figcaption data-i18n="ba.v">3 prises, 1 montage. Stalak change de prise à chaque mesure.</figcaption>'
+            '<script>(function (f) { var v = f && f.querySelector("video"); if (!v) return; var ts = f.querySelectorAll(".mx-t"), head = f.querySelector(".mx-bar u"), bar = f.querySelector(".mx-bar"), ORDER = [0, 1, 2, 1], cur = -1, raf = 0;'
+            ' function show(){ var d = v.duration || 6.12, p = Math.min(.9999, (v.currentTime || 0) / d), k = ORDER[Math.floor(p * 4)];'
+            '   if (k !== cur){ cur = k; for (var i = 0; i < ts.length; i++) ts[i].classList.toggle("on", i === k); }'
+            '   head.style.transform = "translate3d(" + (p * (bar.clientWidth - 6)).toFixed(1) + "px,0,0)"; }'
+            ' function loop(){ show(); raf = requestAnimationFrame(loop); }'
+            ' v.addEventListener("playing", function () { if (!raf) raf = requestAnimationFrame(loop); });'
+            ' v.addEventListener("pause", function () { cancelAnimationFrame(raf); raf = 0; show(); }); v.addEventListener("seeked", show); show();'
             ' if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches){ v.controls = true; return; }'
-            ' if ("IntersectionObserver" in window) new IntersectionObserver(function (e) { if (e[0].isIntersecting){ var p = v.play(); if (p && p.catch) p.catch(function () {}); } else v.pause(); }).observe(v);'
-            ' })(document.currentScript.previousElementSibling);</script>'
-            '<figcaption data-i18n="ba.v">Exemple : 3 prises montées par Stalak</figcaption></figure>') if (extra / 'demo' / 'edit.mp4').exists() else ''
+            ' if ("IntersectionObserver" in window) new IntersectionObserver(function (e) { if (e[0].isIntersecting){ var p = v.play(); if (p && p.catch) p.catch(function () {}); } else v.pause(); }, { threshold: .25 }).observe(v);'
+            ' })(document.currentScript.parentNode);</script></figure>') if (extra / 'demo' / 'edit.mp4').exists() else ''
 RV_JS = ('<script>(function (v) { var l = v && v.firstElementChild; if (!l || !window.requestAnimationFrame) return;'
          ' if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;'
          ' var n = l.children.length, i, c; for (i = 0; i < n; i++){ c = l.children[i].cloneNode(true); c.setAttribute("aria-hidden", "true"); l.appendChild(c); }'
@@ -171,14 +193,15 @@ PROOF = ('<section class="proof"' + (' aria-labelledby="rvT"' if AVIS else '') +
          + COUNT +
          '<div class="ba"><div class="ba-c ba-no"><h3 data-i18n="ba.no.t">Sans Stalak</h3><p data-i18n="ba.no">Tes prises dorment dans ta galerie. Caler chaque coupe à la main prend des heures, et la bouche décale.</p></div>'
          '<div class="ba-c ba-yes"><div class="ba-yt"><h3 data-i18n="ba.yes.t">Avec Stalak</h3><p data-i18n="ba.yes">Ton son et tes prises, c’est tout. Stalak coupe sur le rythme, garde tes lèvres synchro, et c’est prêt pour TikTok, Reels et Shorts.</p></div>' + BA_VIDEO + '</div></div>'
-         + ('<div class="rv-band"><h2 id="rvT" data-i18n="rv.t">Avis clients</h2><p class="rv-avg"><span class="rv-stars" aria-hidden="true">★</span> <span data-i18n="rv.avg">' + rv_avg('fr') + '</span></p>'
+         + ('<div class="rv-band"><h2 id="rvT" data-i18n="rv.t">Avis clients</h2><p class="rv-avg" id="rvAvg" data-v="' + ('%.2f' % RV_MEAN) + '"><span class="rv-fill" aria-hidden="true" style="--w:' + ('%.1f' % (RV_MEAN * 20)) + '%">★★★★★<em>★★★★★</em></span> <b id="rvNum">' + ('%.1f' % RV_MEAN).replace('.', ',') + '</b> <span data-i18n="rv.avg">' + rv_avg('fr') + '</span></p>' + RV_NUM_JS +
             '<div class="rv-view"><ul class="rv-list">' + ''.join(rv_item(r, 'fr') for r in AVIS) + '</ul></div>' + RV_JS + '</div>' if AVIS else '')
          + '</section>\n  ')
-markup = markup.replace(a, PROOF + '<section class="about" aria-labelledby="aboutT" data-i18n="site.about">' + PAGE['fr']['about'] + '</section>\n  ' + a)
+markup = markup.replace(a, PROOF + '<section class="about" aria-labelledby="aboutT" data-i18n="site.about">' + PAGE['fr']['about'] + '</section>\n  ' + FX_TAG + '\n  ' + a)
 # the footer: src/footer.py (the same on every page, owner 01/11); in the other language, the app takes it from the dictionary (site.footer)
 assert '<!--FOOTER-->' in markup
 markup = markup.replace('<!--FOOTER-->', FOOT.render('fr', i18n='site.footer'))
 css += '\n' + (src / 'footer.css').read_text(encoding='utf-8')
+css += '\n' + (src / 'fx.css').read_text(encoding='utf-8')   # Marketing (23/11): the animation ideas the owner picked
 css += '\n' + (src / 'tiktok.css').read_text(encoding='utf-8')   # Réseaux sociaux (21/11)
 css += '\n.about{color:#fff;font-size:14.5px;line-height:1.55;margin-top:18px}.about h2{font:400 22px/1.2 var(--display);margin:0 0 6px;color:#fff;text-shadow:0 2px 0 var(--ink)}.about p{margin:0 0 8px}.about ul{margin:0 0 8px;padding-left:20px}.about strong{font-weight:700}.about a{color:#fff;font-weight:700;text-decoration:underline;text-underline-offset:3px}\n'
 
@@ -193,7 +216,7 @@ EN = json.loads(block('EN').group(1)); FR = json.loads(block('FR').group(1))
 EN.update({'doc.title': PAGE['en']['title'], 'site.about': PAGE['en']['about'], 'site.footer': FOOT.inner('en')})
 EN.update({'ba.no.t': 'Without Stalak', 'ba.no': 'Your takes sit in your camera roll. Lining up every cut by hand takes hours, and the lips drift.',
            'ba.yes.t': 'With Stalak', 'ba.yes': 'Your song and your takes, that’s it. Stalak cuts on the beat, keeps your lips in sync, and it’s ready for TikTok, Reels and Shorts.',
-           'rv.t': 'Customer reviews', 'ba.v': 'Example: 3 takes, edited by Stalak', 'proof.a': 'Already', 'proof.b': 'videos made with Stalak'})
+           'rv.t': 'Customer reviews', 'ba.v': '3 takes, 1 edit. Stalak switches takes on every bar.', 'proof.a': 'Already', 'proof.b': 'videos made with Stalak'})
 if AVIS: EN['rv.avg'] = rv_avg('en')
 FR.update({'doc.title': PAGE['fr']['title']})
 
@@ -342,7 +365,7 @@ shutil.copytree(extra, out)
 # the stylesheets of the static pages get a version in their address: a browser never keeps an old one
 import hashlib
 # the footer of the static pages (src/footer.py): its style goes into /site.css, which all of them load
-(out / 'site.css').write_text((out / 'site.css').read_text(encoding='utf-8') + '\n' + (src / 'footer.css').read_text(encoding='utf-8'), encoding='utf-8')
+(out / 'site.css').write_text((out / 'site.css').read_text(encoding='utf-8') + '\n' + (src / 'footer.css').read_text(encoding='utf-8') + '\n' + (src / 'fx.css').read_text(encoding='utf-8'), encoding='utf-8')
 _v = {n: hashlib.sha1((out / n).read_bytes()).hexdigest()[:8] for n in ('pricing.css', 'site.css', 'fonts/fonts.css') if (out / n).exists()}
 for f in list(out.glob('*.html')) + list((out / 'fr').glob('*.html')):
     t = f.read_text(encoding='utf-8'); t2 = t
@@ -384,6 +407,7 @@ for p in [f for f in list(out.glob('*.html')) + list((out / 'fr').glob('*.html')
     # the footer: the same on every page (src/footer.py), in the page's language, with « Français / English » to the same page
     assert t.count('<footer>') == 1 and t.count('</footer>') == 1, 'one <footer> expected in ' + str(p)
     t = re.sub(r'<footer>.*?</footer>', lambda m: FOOT.render('fr' if fr else 'en', page=('/fr/' if fr else '/') + p.stem), t, flags=re.S)
+    if '</body>' in t: t = t.replace('</body>', FX_TAG + '</body>', 1)   # (23/11) blocks that come up softly, snow on the main buttons
     p.write_text(t, encoding='utf-8')
 (out / 'robots.txt').write_text(f'User-agent: *\nAllow: /\nSitemap: {URL}/sitemap.xml\n', encoding='utf-8')
 today = datetime.date.today().isoformat()

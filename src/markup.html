@@ -53,6 +53,14 @@
       })(document.currentScript.previousElementSibling);</script><!--/HEROVIDEO-->
       <div class="hero-txt">
         <h1 class="hero-h1" data-i18n="hero.h1">Ton son est prêt. Ton snippet, pas encore ?</h1>
+        <!-- Marketing & croissance (23/11, the owner's pick, idea 1): on a computer the title comes in one word per beat, once, when
+             the page opens; then the plain text is put back (the FR / EN switch writes it as before). Not with « reduce motion » -->
+        <script>(function (h) { if (!h || !window.matchMedia || !matchMedia('(min-width:900px)').matches || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+          var txt = h.textContent, w = txt.split(' '), i, s; h.textContent = ''; h.setAttribute('aria-label', txt);
+          for (i = 0; i < w.length; i++){ s = document.createElement('span'); s.className = 'hw'; s.setAttribute('aria-hidden', 'true'); s.style.animationDelay = (i * 190) + 'ms'; s.textContent = w[i]; h.appendChild(s); if (i < w.length - 1) h.appendChild(document.createTextNode(' ')); }
+          var done = function () { if (h.querySelector('.hw')) h.textContent = txt; h.removeAttribute('aria-label'); };
+          h.lastChild.addEventListener('animationend', done); setTimeout(done, w.length * 190 + 900);
+        })(document.currentScript.previousElementSibling);</script>
         <p class="hero-s" data-i18n="hero.s">Filme quelques prises sur ton son. Stalak les coupe sur le rythme, lèvres synchro&nbsp;: ton snippet est prêt à poster ce soir.</p>
         <!-- App & montage (22/11, audit mobile n° 1): what starts it, in the first screen of a phone: the song (opens the file
              choice of #songFile) and the example (#demoBtn) -->
@@ -96,6 +104,14 @@
         <strong data-i18n="p1.import">Importer mon son</strong>
         <span data-i18n="p1.import.sub">MP3, WAV, M4A, ou une vidéo : on prend son son</span>
       </label>
+      <!-- Marketing & croissance (23/11, idea 3): on a computer with a mouse, the « Importer mon son » zone is alive: its dashes
+           walk slowly and a small equalizer plays behind the words, faster under the mouse. Not with « reduce motion » -->
+      <script>(function () { var d = document.getElementById('songDrop'); if (!d || !window.matchMedia || !matchMedia('(min-width:900px) and (hover:hover)').matches || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        var NS = 'http://www.w3.org/2000/svg', s = document.createElementNS(NS, 'svg'), r = document.createElementNS(NS, 'rect'), q = document.createElement('i'), k, b;
+        s.setAttribute('class', 'drop-dash'); s.setAttribute('aria-hidden', 'true'); r.setAttribute('x', '1.5'); r.setAttribute('y', '1.5'); r.setAttribute('rx', '18'); s.appendChild(r);
+        q.className = 'drop-eq'; q.setAttribute('aria-hidden', 'true'); for (k = 0; k < 28; k++){ b = document.createElement('b'); b.style.animationDelay = (-(k * 7 % 11) * .13) + 's'; q.appendChild(b); }
+        d.insertBefore(q, d.firstChild); d.insertBefore(s, d.firstChild); d.classList.add('drop-live');
+      })();</script>
       <input type="file" id="songFile" accept="audio/*,video/*,.mp3,.wav,.m4a,.aac,.flac,.ogg,.mp4,.mov,.m4v">
       <div class="nearbox" id="songNear"></div>
       <div id="songBox" hidden>

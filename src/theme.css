@@ -1193,7 +1193,39 @@ body.isdone > .help-cube{display:none}
 .ba-c{display:flex;flex-direction:column;justify-content:center}
 .ba-no h3{color:#b3261e}.ba-yes h3{color:var(--sky-deep)}
 .ba-c p{margin:0;font-size:14.5px;line-height:1.45}
-.ba-v{display:none;margin:0}
+/* (23/11, idea 2) next to « Avec Stalak »: a picture of each of the 3 raw takes, the real edit, and its four bars */
+.ba-v{margin:14px auto 0;width:max-content;max-width:100%;text-align:center}
+.mx-row{display:flex;align-items:center;justify-content:center;gap:10px}
+.mx-takes{display:flex;flex-direction:column;gap:6px}
+.mx-t{display:block;width:34px;aspect-ratio:290/512;border:2px solid var(--ink);border-radius:7px;background:url(/demo/takes.jpg) 0 0/305% auto no-repeat;opacity:.45;transition:opacity .12s ease,transform .18s cubic-bezier(.165,.84,.44,1)}
+.mx-t2{background-position:50% 0}.mx-t3{background-position:100% 0}
+.mx-t.on{opacity:1;transform:translateX(5px) scale(1.06);box-shadow:0 0 0 2.5px var(--sky-deep)}
+.ba-v video{display:block;width:104px;height:auto;aspect-ratio:9/16;object-fit:cover;border:2.5px solid var(--ink);border-radius:14px;box-shadow:0 4px 0 var(--ink);background:var(--ink)}
+.mx-bar{position:relative;display:flex;justify-content:space-around;align-items:center;height:14px;margin:12px 2px 0;border:2px solid var(--ink);border-radius:999px;background:var(--frost)}
+.mx-bar b{width:2.5px;height:6px;border-radius:2px;background:var(--sky-deep);opacity:.55}
+.mx-bar b:first-child{visibility:hidden}
+.mx-bar u{position:absolute;left:0;top:-4px;bottom:-4px;width:6px;border-radius:3px;background:var(--sky-deep);border:1.5px solid var(--ink);will-change:transform}
+.ba-v figcaption{margin:9px auto 0;max-width:190px;font:700 12px/1.25 var(--body);color:#3b4150;text-wrap:balance}
+/* (23/11, idea 4) the five stars of the note: empty ones, the gold ones over them up to the note; they fill when .is-in comes */
+.rv-fill{position:relative;display:inline-block;color:rgba(10,13,20,.32);letter-spacing:2px;font-size:17px;line-height:1;vertical-align:-1px}
+.rv-fill em{position:absolute;left:0;top:0;height:100%;width:var(--w);overflow:hidden;white-space:nowrap;color:var(--gold,#ffc21a);font-style:normal}
+.rv-avg.is-in .rv-fill em{animation:rv-fill 1s cubic-bezier(.165,.84,.44,1) both}
+@keyframes rv-fill{from{width:0}to{width:var(--w)}}
+.rv-avg b{font-variant-numeric:tabular-nums}
+/* (23/11, idea 1) the title, one word per beat (computer; the script next to the h1) */
+.hero-h1 .hw{display:inline-block;animation:hw-in .42s cubic-bezier(.165,.84,.44,1) both}
+@keyframes hw-in{from{opacity:0;transform:translateY(18px) scale(.96)}to{opacity:1;transform:none}}
+/* (23/11, idea 3) the « Importer mon son » zone, alive (computer with a mouse; the script after the label) */
+.drop.drop-live{border-color:transparent}
+#songDrop.drop-live > .drop-dash{position:absolute;inset:0;z-index:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.drop-dash rect{width:calc(100% - 3px);height:calc(100% - 3px);fill:none;stroke:var(--sky);stroke-width:3;stroke-dasharray:9 7;animation:drop-march 1.6s linear infinite}
+@keyframes drop-march{to{stroke-dashoffset:-32}}
+#songDrop.drop-live > .drop-eq{position:absolute;z-index:0;left:0;right:0;bottom:9px;display:flex;justify-content:center;align-items:flex-end;gap:5px;height:26px;opacity:.38;pointer-events:none;transition:opacity .15s ease}
+.drop-eq b{width:5px;height:100%;border-radius:3px;background:var(--sky);transform-origin:bottom;animation:drop-eq 1s ease-in-out infinite alternate}
+@keyframes drop-eq{from{transform:scaleY(.18)}to{transform:scaleY(.8)}}
+.drop.drop-live > strong,.drop.drop-live > span{position:relative}
+@media (hover:hover){ .drop.drop-live:hover{border-color:transparent} .drop.drop-live:hover .drop-dash rect{stroke:var(--ink);animation-duration:.8s} .drop.drop-live:hover .drop-eq{opacity:.8} .drop.drop-live:hover .drop-eq b{animation-duration:.42s} }
+@media (prefers-reduced-motion:reduce){ .mx-t{transition:none} }
 .rv-band{margin-top:34px}
 .rv-avg{margin:0 0 12px;font:700 15.5px/1.3 var(--body);text-align:center}
 /* the band: the whole width of the screen (the page clips what goes past it), its two edges fading out. Without the script
@@ -1238,11 +1270,9 @@ body.isdone > .help-cube{display:none}
   .hero-s{font-size:17.5px;max-width:46em;margin-left:auto;margin-right:auto}
   .ba{grid-template-columns:minmax(0,5fr) minmax(0,8fr);gap:16px}
   .ba-c{padding:18px 20px}
-  .ba-yes{flex-direction:row;align-items:center;justify-content:flex-start;gap:18px}
+  .ba-yes{flex-direction:row;align-items:center;justify-content:flex-start;gap:16px}
+  .ba-v{margin:0;flex:none}
   .ba-yt{flex:1;min-width:0}
-  .ba-v{display:block;flex:none;width:102px;text-align:center}
-  .ba-v video{display:block;width:100%;height:auto;aspect-ratio:9/16;object-fit:cover;border:2.5px solid var(--ink);border-radius:14px;box-shadow:0 4px 0 var(--ink);background:var(--ink)}
-  .ba-v figcaption{margin-top:9px;font:700 12px/1.25 var(--body);color:#3b4150}
 }
 /* (22/11, audit vente n° 4) « Stalak monte ta vidéo »: the real steps, ticked as they are done */
 .wsteps{margin:14px 0 4px;padding:14px 16px 12px;border:2.5px solid var(--ink);border-radius:18px;background:var(--snow);box-shadow:0 4px 0 var(--ink);color:var(--ink)}
