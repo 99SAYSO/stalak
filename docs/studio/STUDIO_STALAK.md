@@ -25,6 +25,8 @@ Une fiche par élément : `{categorie: "personnage" | "decor" | "habillage" | "m
 | `slot` | 1, 2 ou 3 (ordre dans la journée) ; `heure` : texte libre (« 12 h 30 ») |
 | `titre`, `serie` | titre court ; série et numéro d'épisode |
 | `accroche` | la phrase de la première seconde |
+| `hooks` | (depuis le 23/11) les 3 hooks proposés : `[{qui, texte, motChoc, garde, pourquoi}]`, `garde: true` sur celui que Marketing conseille. La page les montre au-dessus de « Valider le script », à cocher |
+| `hookChoisi`, `hookTexte` | écrits par le propriétaire en cochant (numéro dans `hooks`, puis le texte) ; « Valider le script » les écrit aussi. **On fabrique avec `hookTexte`**, pas avec le conseil de Marketing |
 | `script` | le script complet, en texte (plans, voix, textes à l'écran) |
 | `legende`, `motsCles` (liste), `son`, `duree`, `reseaux` | pour la publication |
 | `statut` | voir ci-dessous |
