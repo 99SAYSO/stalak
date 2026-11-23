@@ -10,6 +10,8 @@ Checked, in French and English:
   bottom (Accueil, Montages, « + », Stats, Compte): each button does its job, 44 px at least, the current one is marked, nothing
   of the page hides under it at the end of the page; it stays on « Montages » and « Compte », leaves for the sign-in, the plans
   and as soon as a song is there (the editor: header, steps and every setting of step 1 back as before);
+- the home screen is one screen, like an app (the owner, 23/11): it never scrolls down to the reviews and the footer of the site,
+  and the snow falls on it;
 - the opening « le glaçon »: once per session, the home screen underneath at the end, a touch passes it, never with « reduce
   motion », never on a computer; GSAP comes from the site (no outside address);
 - on a computer (1280 px): no bar, no opening, the header as before; the text in DM Sans there too (the owner, 23/11);
@@ -122,13 +124,12 @@ def phone(b, PW, base, site, lang, dev):
     check(tag + ' : la formule en haut à droite (« ' + t['pill'] + ' », 44 px), elle ouvre les formules', pill['shown'] and pill['text'] == t['pill'] and pill['h'] >= 44, pill)
     w = wide(pg); check(tag + ' : rien de plus large que l’écran', w[0] <= w[1], w)
     shot(pg, 'rm1-accueil-deconnecte-' + key)
-    # the end of the page: nothing under the bar
-    pg.evaluate('window.scrollTo(0, document.documentElement.scrollHeight)'); pg.wait_for_timeout(500)
-    last = pg.evaluate('''() => { const bar = document.querySelector('#tabBar').getBoundingClientRect(); let low = 0, who = '';
-        for (const e of document.querySelectorAll('.ft a, .ft button, .ft p')){ const r = e.getBoundingClientRect(); if (r.height && r.bottom > low){ low = r.bottom; who = (e.innerText || '').trim().slice(0, 30); } }
-        return [low, bar.top, who]; }''')
-    check(tag + ' : en bas de page, rien du pied de page sous la barre', last[0] <= last[1] + 1, last)
-    pg.evaluate('window.scrollTo(0, 0)'); pg.wait_for_timeout(200)
+    # (the owner, 23/11) one screen, like an app: the page does not scroll down to the site (reviews, pitch, footer); the snow falls
+    app = pg.evaluate('''() => { scrollTo(0, 5000); const y = scrollY, v = s => [...document.querySelectorAll(s)].some(e => e.getClientRects().length), a = getComputedStyle(document.body, '::after');
+        return { y, sh: document.documentElement.scrollHeight, ih: innerHeight, site: ['.bands', '.ft', '.proof', '.installtip', '.byalaska'].filter(v), snow: a.display !== 'none' && /^url\\(/.test(a.backgroundImage) && a.animationName !== 'none',
+          ring: /79b4f3/.test(decodeURIComponent(a.backgroundImage)) }; }''')
+    check(tag + ' : un seul écran, comme une appli : la page ne défile pas vers le site (avis, pied de page)', app['y'] == 0 and app['sh'] <= app['ih'] and not app['site'], app)
+    check(tag + ' : des flocons tombent sur le fond glace (bleus, pour qu’on les voie)', app['snow'] and app['ring'], app)
     # the formula → the plans (the bar leaves), back
     pg.locator('#mhPill').click(); pg.wait_for_timeout(700)
     st = pg.evaluate('''() => [document.documentElement.className, getComputedStyle(document.querySelector('#tabBar')).display, !document.querySelector('#apPro').hidden]''')
@@ -168,7 +169,8 @@ def phone(b, PW, base, site, lang, dev):
     hi, new, bar = box(pg, '#mhHiT'), box(pg, '#mhNew'), box(pg, '#tabBar')
     check(tag + ' : « ' + t['hi'] + ' » en haut, la formule à droite', hi['shown'] and hi['text'] == t['hi'] and box(pg, '#mhPill')['shown'], hi)
     check(tag + ' : la carte « ' + t['new'] + ' » : bleue, contour noir, ombre dure, en entier au-dessus de la barre', new['shown'] and t['new'] in new['text'] and new['bg'] == 'rgb(31, 111, 214)' and 'rgb(10, 13, 20) 0px 6px 0px 0px' in new['shadow'] and new['bottom'] <= bar['top'], new)
-    check(tag + ' : le pitch des visiteurs, les avis et « c’est quoi » ne sont plus là', not box(pg, '#heroPitch')['shown'] and not pg.evaluate('''() => [...document.querySelectorAll('.bands, .proof')].some(e => e.offsetParent)'''))
+    app = pg.evaluate('''() => { scrollTo(0, 5000); return [scrollY, document.documentElement.scrollHeight <= innerHeight, [...document.querySelectorAll('.bands, .proof, .ft')].some(e => e.getClientRects().length)]; }''')
+    check(tag + ' : le pitch des visiteurs n’est plus là ; un seul écran, la page ne défile pas vers le site', not box(pg, '#heroPitch')['shown'] and app == [0, True, False], app)
     prim = pg.evaluate('''() => [...document.querySelectorAll('.wrap .btn.primary, .wrap .mh-new')].filter(e => { const r = e.getBoundingClientRect(); return e.offsetParent && r.bottom > 0 && r.top < innerHeight; }).map(e => e.id)''')
     check(tag + ' : un seul bouton principal', prim == ['mhNew'], prim)
     w = wide(pg); check(tag + ' : rien de plus large que l’écran', w[0] <= w[1], w)
@@ -235,7 +237,7 @@ def opening(b, PW, base, lang, dev):
     ctx, pg, errs, out = page(b, PW, base, lang, dev, 'out', splash=True)
     pg.wait_for_function('window.__stalakSplashDone === true', timeout=12000)
     dur = pg.evaluate('window.__stalakSplashMs')
-    check(tag + ' : elle dure entre 4,5 et 6,5 s, chargement compris', 4500 <= dur <= 6500, dur)
+    check(tag + ' : elle dure entre 4,5 et 7,5 s, chargement compris (5,4 s sur une machine au repos)', 4500 <= dur <= 7500, dur)
     ctx.close()
     # never with « reduce motion »
     ctx, pg, errs, out = page(b, PW, base, lang, dev, 'out', splash=True, calm=True)

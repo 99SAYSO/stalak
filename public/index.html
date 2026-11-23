@@ -2164,18 +2164,24 @@ body.ttk-on{overflow:hidden}
   /* what floats above the bar, and the room it takes at the bottom of the page */
   html:not(.medit) .help-cube{bottom:calc(var(--tabs) + 10px)}
   html:not(.medit) .help-panel{bottom:calc(var(--tabs) + 66px)}
-  html:not(.medit) body > .ft{padding-bottom:calc(var(--tabs) + 70px)}
   html.mpage .acctpage{padding-bottom:calc(var(--tabs) + 12px)}
   html.mpage > body > .help-cube{display:none}
 
   /* ===== the home screen (nothing imported yet) ===== */
-  html:not(.medit){background:var(--ice)}
-  html:not(.medit) body{background:radial-gradient(120vw 70vh at 50% 0,#eef7ff 0,var(--ice) 62%) no-repeat var(--ice);padding-top:max(14px,env(safe-area-inset-top,0px))}
-  html:not(.medit) body::before,html:not(.medit) body::after{display:none}
+  /* (the owner, 23/11: « fade, juste le bleu clair » and « ça reste le site, on peut slider vers le bas ») the snow falls
+     on the ice colour too (blue flakes: white ones would not show), and the home screen is ONE screen, like an app: it does not scroll
+     down to the reviews, the pitch and the footer of the site (hidden on a phone; the legal links are on the plans screen and
+     at sign-up, and go to the profile in lot 2). If its content is taller than a small phone, it scrolls inside itself. */
+  html:root:not(.medit){background:radial-gradient(120vw 70vh at 50% 0,#eef7ff 0,var(--ice) 62%) no-repeat var(--ice);height:100%;overflow:hidden;overscroll-behavior:none;
+    --flakes:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cg fill='%2379b4f3'%3E%3Ccircle cx='18' cy='22' r='3' opacity='.9'/%3E%3Ccircle cx='96' cy='12' r='2' opacity='.6'/%3E%3Ccircle cx='170' cy='40' r='3.5' opacity='.85'/%3E%3Ccircle cx='222' cy='96' r='2' opacity='.6'/%3E%3Ccircle cx='60' cy='88' r='2.5' opacity='.7'/%3E%3Ccircle cx='132' cy='120' r='3' opacity='.85'/%3E%3Ccircle cx='28' cy='160' r='2' opacity='.6'/%3E%3Ccircle cx='196' cy='176' r='3' opacity='.8'/%3E%3Ccircle cx='100' cy='204' r='2.5' opacity='.7'/%3E%3Ccircle cx='150' cy='226' r='1.6' opacity='.5'/%3E%3C/g%3E%3C/svg%3E")}
+  html:not(.medit) body{height:100svh;margin-block:0;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;padding-top:max(14px,env(safe-area-inset-top,0px));padding-bottom:0}
+  html:not(.medit) .wrap{flex:1 1 auto;min-height:0;width:100%;overflow-x:clip;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  html:not(.medit) .wrap::-webkit-scrollbar{display:none}
+  html:not(.medit) .proof,html:not(.medit) body > .bands,html:not(.medit) body > .ft,html:not(.medit) .installtip,html:not(.medit) .byalaska{display:none !important}
   html:not(.medit) .wrap > header{display:none}
   html:not(.medit) .wrap{padding-bottom:0}
   /* the first screen is the app: what follows (reviews, footer) starts under it */
-  html:not(.medit) #p1{min-height:calc(100svh - 36px);padding-bottom:calc(var(--tabs) + 18px);box-sizing:border-box;gap:0}
+  html:not(.medit) #p1{flex:none;min-height:100%;padding-bottom:calc(var(--tabs) + 18px);box-sizing:border-box;gap:0}
   html:not(.medit) .status{color:var(--ink);text-shadow:none;text-align:center;margin:0}
   html:not(.medit) .status:empty{display:none}
   /* the card « Choisis ton son » and its buttons come back once a song is there (the editor); its messages stay readable */
@@ -2186,7 +2192,6 @@ body.ttk-on{overflow:hidden}
   /* a problem with the file just chosen: said right under the top line, in view (not at the bottom, under the bar) */
   html:not(.medit) .mh-top{order:-2}
   html:not(.medit) #p1 > .card:not(.lpoffer):has(.nearmsg){order:-1;margin:10px 0 0}
-  html:not(.medit) .installtip{margin-top:18px}
 
   /* the top line: the greeting (signed in) and the formula */
   html:not(.medit) .mh-top{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;margin:0 2px}
@@ -2217,14 +2222,14 @@ body.ttk-on{overflow:hidden}
 
   /* signed in: « Nouveau montage », the whole card is the button */
   html:not(.medit).msigned .mh-new{display:flex}
-  .mh-new{position:relative;flex-direction:column;align-items:flex-start;width:100%;min-height:178px;margin:20px 0 0;padding:22px 150px 22px 22px;box-sizing:border-box;overflow:hidden;text-align:left;
+  .mh-new{position:relative;flex-direction:column;align-items:flex-start;width:100%;min-height:178px;margin:20px 0 0;padding:20px 142px 18px 20px;box-sizing:border-box;overflow:hidden;text-align:left;
     border:3.5px solid var(--ink);border-radius:28px;background:var(--blue);color:#fff;box-shadow:0 6px 0 var(--ink);cursor:pointer;-webkit-tap-highlight-color:transparent;
     transition:transform var(--dur-1) var(--ease-press)}
   .mh-new:active{transform:translateY(4px);box-shadow:0 2px 0 var(--ink)}
   .mh-new b{display:block;font:400 27px/1.1 var(--display);text-shadow:0 3px 0 var(--ink)}
-  .mh-new .mh-newP{display:block;margin-top:8px;font:500 15px/1.35 var(--body)}
+  .mh-new .mh-newP{display:block;margin:8px 0 14px;font:500 15px/1.35 var(--body)}
   .mh-new i{position:absolute;right:12px;bottom:10px;width:126px;aspect-ratio:118/142;background:var(--mascot) center bottom/contain no-repeat;pointer-events:none}
-  .mh-new .mh-go{position:absolute;left:22px;bottom:18px;display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 13px;border:2.5px solid var(--ink);border-radius:999px;
+  .mh-new .mh-go{margin-top:auto;display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 13px;border:2.5px solid var(--ink);border-radius:999px;
     background:#fff;color:var(--ink);font:700 14px/1 var(--body);box-shadow:0 2px 0 var(--ink)}
   .mh-new .mh-go svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
   html:not(.medit).msigned .mh-ex{display:inline-flex}
@@ -2251,13 +2256,6 @@ body.ttk-on{overflow:hidden}
   html:not(.medit) #p1 > .lpoffer .btn.primary::before,html:not(.medit) #p1 > .lpoffer .btn.primary::after{display:none}
   /* the offer of the last edit used to hide the top of the page: here both are shown, the offer under its title */
   html:not(.medit):not(.msigned) #p1:has(> .lpoffer:not([hidden])) > .hero{flex:0 0 auto;padding-bottom:6px}
-
-  /* under the first screen (signed out): the counter and « Sans / Avec Stalak » were written in white on the blue; the first
-     band hangs its icicles from the ice colour of this screen. Signed in, the home screen is the app only. */
-  html:not(.medit) .proof,html:not(.medit) .proof h2,html:not(.medit) .proof-n{color:var(--ink);text-shadow:none}
-  html:not(.medit) .proof-n b{color:var(--blue);-webkit-text-stroke:0;text-shadow:0 4px 0 var(--ink)}
-  html:not(.medit) .bands > .band-night:first-child{--ice:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='30' viewBox='0 0 64 30'%3E%3Crect x='-1' y='-1' width='66' height='6.2' fill='%23d6ecff'/%3E%3Cpath d='M-1 5H65' stroke='%230a0d14' stroke-width='2.6'/%3E%3Cg fill='%23d6ecff' stroke='%230a0d14' stroke-width='2.4' stroke-linejoin='round'%3E%3Cpath d='M3 4.6Q6 13.5 8.5 21Q11 13.5 14 4.6Z'/%3E%3Cpath d='M18 4.6Q20.5 9.5 22 14Q23.5 9.5 26 4.6Z'/%3E%3Cpath d='M31 4.6Q34.5 16.5 37 28Q39.5 16.5 43 4.6Z'/%3E%3Cpath d='M48 4.6Q50.5 10.5 52.5 16.5Q54.5 10.5 57 4.6Z'/%3E%3C/g%3E%3Crect x='-1' y='0' width='66' height='4.6' fill='%23d6ecff'/%3E%3Cg stroke='%23ffffff' stroke-opacity='.55' stroke-width='1.6' stroke-linecap='round' fill='none'%3E%3Cpath d='M6.5 7.5L8 13'/%3E%3Cpath d='M35 7.5L36.5 16'/%3E%3C/g%3E%3C/svg%3E")}
-  html:not(.medit).msigned .proof,html:not(.medit).msigned > body > .bands{display:none !important}
 
   @media (max-height:600px){
     html:not(.medit) .hero-m{width:78px}

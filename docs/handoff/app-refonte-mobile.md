@@ -16,6 +16,24 @@ Demande : `docs/handoff/chef-refonte-mobile-app.md` (23/11), démos validées da
    dans un navigateur : la **torche du téléphone** pour la caméra arrière quand le téléphone le permet, et pour la caméra
    avant (ou sans torche) un **cadre blanc lumineux autour de l'image** qui éclaire le visage.
 
+## Retours du propriétaire sur la maquette (23/11, 23 h 13) — faits
+- **« C'est fade, juste le bleu clair »** : des flocons tombent maintenant sur l'accueil (bleus, pour qu'on les voie sur le
+  fond glace), comme la neige du reste du site.
+- **« Ça reste le site, on peut slider vers le bas »** : sur téléphone, l'accueil est **un seul écran, comme une appli**. On ne
+  descend plus vers le compteur, « Sans / Avec Stalak », les avis, « Stalak, c'est quoi ? », « by Alaska », « Installe Stalak
+  comme une app » ni le pied de page : ils sont cachés sur téléphone (toujours là sur ordinateur, et toujours dans la page
+  pour Google). Si le contenu dépasse sur un petit téléphone (derniers montages), il défile à l'intérieur de l'écran.
+- Notés dans « Mes goûts » (`app-fond-flocons-pas-uni`, `app-pas-un-site-qui-defile`).
+- **Conséquences à connaître (pour le Chef de projet, Marketing et Juridique)** :
+  - sur téléphone, un visiteur ne voit plus **les avis ni le compteur** en descendant ; il reste la pastille « 4,7/5 · N
+    vidéos montées » du premier écran. La plupart des visiteurs viennent de TikTok, donc sur téléphone : à suivre dans le
+    relevé du lundi. Proposition : remettre 2 ou 3 avis dans l'écran des formules ou dans le tutoriel (lot 4) ;
+  - les **liens légaux** (conditions, remboursement, confidentialité, mentions) restent accessibles sur téléphone par l'écran
+    des formules (pastille « Stalak Pro ») et à l'inscription ; **« Gérer les cookies », le choix de la langue et les
+    guides** ne le sont plus depuis l'accueil du téléphone tant que le profil du lot 2 n'est pas fait ;
+  - les textes cachés restent dans la page : rien ne change pour le référencement en théorie, à surveiller dans la Search
+    Console (Google lit la version téléphone).
+
 # Lot 1 : police, barre du bas, accueil, ouverture
 
 La barre, l'accueil et l'ouverture sont sous 900 px : sur ordinateur, seule la police change (vérifié par le test : ni barre,
@@ -58,9 +76,7 @@ ni ouverture, en-tête comme avant).
     couverture ; un toucher ouvre le projet (la même question qu'avant de quitter un montage en cours).
 - La carte « Choisis ton son » (TikTok / Clip, cadre d'import, « Essayer avec un exemple », « Continuer ») n'est plus sur
   l'accueil : elle revient **entière** dès qu'un son est choisi (étape Son). Ses messages d'erreur restent visibles.
-- Sous le premier écran, pour un visiteur déconnecté : le compteur, « Sans / Avec Stalak », les avis, « Stalak, c'est
-  quoi ? » et le pied de page, comme avant. **Connecté**, ces parties de vente sont cachées ; le pied de page reste (liens
-  légaux, langue), en attendant leur place dans le profil au lot 2.
+- Rien sous ce premier écran sur téléphone (voir les retours du 23/11 ci-dessus).
 
 ## 4. Ouverture « le glaçon » (démo n° 1)
 - La même timeline GSAP que la démo HyperFrames, rejouée sur la vraie page (`src/splash.js`, servi à part :
@@ -84,8 +100,8 @@ ni ouverture, en-tête comme avant).
 ## Ce qui ne rentre pas / à décider
 1. **Image de la mascotte** : toujours en 266 px. Dans l'ouverture elle fait environ 210 px de large à l'écran, donc un peu
    floue sur un iPhone (écran ×3). Les images « dort » et « surprise » du glaçon font 256 px : même limite.
-2. **Pied de page sur l'accueil connecté** : gardé pour l'instant ; au lot 2, liens légaux et langue passent dans le profil
-   (décidé).
+2. **Liens légaux, cookies, langue** : plus de pied de page sur l'accueil du téléphone ; ils passent dans le profil au
+   lot 2 (décidé). D'ici là, voir « Conséquences à connaître ».
 3. **Glaçon d'aide** : il reste au-dessus de la barre sur l'accueil (décidé).
 4. **« Stats » déconnecté ou sans TikTok** : ouvre le compte. À voir avec Réseaux sociaux si l'onglet doit proposer
    directement « Relier TikTok ».
