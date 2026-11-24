@@ -153,9 +153,6 @@ Lot 1 déjà fait (ci-dessous). Répartition proposée au propriétaire pour la 
 - **Lot 3** : éditeur en 4 étapes et caméra (avec le flash).
 - **Lot 4** : tutoriel, glaçon d'aide, écran après achat, choix du paiement, **paywall (n° 14)** et **offre à 1 € sur
   l'écran de fin (n° 15)** (avec Comptes ; la demande du Chef dit ces deux écrans « en attente du ok final du propriétaire »).
-- **Règle pour l'onboarding** (propriétaire) : chaque message dit quelque chose de vrai. L'écran de chargement ne reprend
-  que ses réponses ; jamais « on analyse ton Spotify » ni une lecture qu'on ne fait pas ; pas de faux temps de calcul présenté
-  comme un travail réel.
 
 ## Ajouts du 24/11 (après la série complète des tests)
 - **« Essaie avec ton son »** (fin de l'exemple) : sur téléphone, le carré d'import n'est plus sur l'accueil ; c'est le gros
