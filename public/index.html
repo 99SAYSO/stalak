@@ -2184,7 +2184,9 @@ body.ttk-on{overflow:hidden}
   html.mnoacct:root:not(.medit){height:auto;overflow:visible}
   html.mnoacct:not(.medit) body{height:auto;min-height:100svh;overflow:visible;display:block}
   html.mnoacct:not(.medit) .wrap{overflow:visible;min-height:calc(100svh - 14px)}
-  html.mnoacct:not(.medit) body > .ft{padding-bottom:calc(var(--tabs) + 12px)}
+  html.mnoacct:not(.medit) body > .ft{padding-bottom:calc(var(--tabs) + 44px)}
+  /* … and no dead tab: without accounts there is no gallery, no stats, no profile */
+  html.mnoacct .tabbar [data-tab="gallery"],html.mnoacct .tabbar [data-tab="stats"],html.mnoacct .tabbar [data-tab="account"]{display:none}
   html:not(.medit) .wrap{padding-bottom:0}
   /* the first screen is the app: what follows (reviews, footer) starts under it */
   html:not(.medit) #p1{flex:none;min-height:100%;padding-bottom:calc(var(--tabs) + 18px);box-sizing:border-box;gap:0}
