@@ -146,6 +146,17 @@ Rien n'est retiré au lot 1. Voici ce que la démo de l'éditeur ne montre pas e
   `functions/` ni `account.js` touché.
 - **Pour Réseaux sociaux** : l'onglet « Stats » clique l'entrée `[data-am="tiktok"]` du menu du compte.
 
+## Demande renvoyée le 24/11 (1 h 13) : écrans 13 à 15 ajoutés aux lots
+Lot 1 déjà fait (ci-dessous). Répartition proposée au propriétaire pour la suite, sur la même branche :
+- **Lot 2** : connexion, profil (langue, cookies, liens légaux), tirer pour rafraîchir, **onboarding (n° 13)** au premier
+  lancement après l'ouverture (avec Comptes : réponses gardées sur le compte).
+- **Lot 3** : éditeur en 4 étapes et caméra (avec le flash).
+- **Lot 4** : tutoriel, glaçon d'aide, écran après achat, choix du paiement, **paywall (n° 14)** et **offre à 1 € sur
+  l'écran de fin (n° 15)** (avec Comptes ; la demande du Chef dit ces deux écrans « en attente du ok final du propriétaire »).
+- **Règle pour l'onboarding** (propriétaire) : chaque message dit quelque chose de vrai. L'écran de chargement ne reprend
+  que ses réponses ; jamais « on analyse ton Spotify » ni une lecture qu'on ne fait pas ; pas de faux temps de calcul présenté
+  comme un travail réel.
+
 ## Ajouts du 24/11 (après la série complète des tests)
 - **« Essaie avec ton son »** (fin de l'exemple) : sur téléphone, le carré d'import n'est plus sur l'accueil ; c'est le gros
   bouton de l'accueil (« Choisir mon son » ou la carte « Nouveau montage ») qui est mis en avant, avec le clavier dessus.
