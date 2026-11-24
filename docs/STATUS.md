@@ -4,6 +4,7 @@
 > Dernière mise à jour : 30/10/2026 à 21 h (offre hybride fusionnée et en ligne : App, Comptes, Juridique, Marketing ; migration 0008 appliquée).
 
 ## Décisions récentes du propriétaire
+- 24/11 18:30 — Propriétaire : paywall « Scène » validé (« ou » entre « Pro · au mois » et « Essayer gratuitement ») ; les avis de avis.json sont de vrais clients. Demande : docs/handoff/chef-paywall-scene.md (App).
 - 24/11 18:15 — Propriétaire : paywall « B, Scène » choisi ; « ou » entre les deux formules ; nouveau sticker de la mascotte (ChatGPT, fond transparent) ; références du chara design rangées dans docs/marque/mascotte/.
 - 24/11 17:45 — Chef : test Apify sur 99Sayso réussi (auditeurs 190, abonnés 58, écoutes de « cash only » 2 249 : exacts ; les sons sous 1 000 écoutes reviennent à 0 = « < 1 000 »). Détail : docs/audit/test-apify-spotify-2026-11-24.md.
 - 24/11 17:35 — Propriétaire : secret APIFY_TOKEN ajouté (Production) ; compte Apify stalak_app créé (Google stalak.alaska). Nouvelle mise en ligne pour le prendre en compte.
