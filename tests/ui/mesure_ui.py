@@ -153,45 +153,79 @@ def consent_run(b, PW, base, lang, dev):
     ctx.close()
 
 
-def offer_run(b, PW, base, site, lang, dev):
+EURO25 = ['AT', 'BE', 'CY', 'DE', 'EE', 'ES', 'FI', 'FR', 'GR', 'HR', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PT', 'SI', 'SK', 'AD', 'MC', 'SM', 'ME', 'XK']
+
+
+def fake_paddle(country):
+    """Paddle.js imitated, with the offer price as the Chef de projet made it on 24/11 (7,99 € in 25 countries, 7,99 $ elsewhere,
+    trial 1 € / 1 $, taxes automatic by country). country None: Paddle does not answer."""
+    if country is None:
+        prev = "PricePreview: function () { return Promise.reject(new Error('no answer')); }"
+    else:
+        cur = 'EUR' if country in EURO25 else 'USD'
+        data = {'currencyCode': cur, 'address': {'countryCode': country}, 'details': {'lineItems': [{
+            'totals': {'subtotal': '83' if cur == 'EUR' else '100', 'tax': '17' if cur == 'EUR' else '0', 'total': '100'},
+            'formattedTotals': {'total': '€1.00' if cur == 'EUR' else 'US$1.00'},
+            'price': {'id': 'pri_of1', 'unitPrice': {'amount': '799', 'currencyCode': 'USD'},
+                      'unitPriceOverrides': [{'countryCodes': EURO25, 'unitPrice': {'amount': '799', 'currencyCode': 'EUR'}}],
+                      'trialPeriod': {'interval': 'day', 'frequency': 7}}}]}}
+        prev = "PricePreview: function (req) { window.__pp = req; return Promise.resolve({ data: " + json.dumps(data) + " }); }"
+    return "window.Paddle = { Environment: { set: function () {} }, Initialize: function () {}, Checkout: { open: function () {} }, " + prev + " };"
+
+
+# 24/11: the end screen with the real amounts of the offer price, per country (Paddle.PricePreview imitated): what the owner asked
+WANT = {
+    ('fr', 'FR'): ('Retire le filigrane pour 1 €', '1 € aujourd’hui, puis 7,99 €/mois dans 7 jours. Annulable à tout moment.'),
+    ('fr', 'US'): ('Retire le filigrane pour 1 $', '1 $ aujourd’hui, puis 7,99 $/mois dans 7 jours. Annulable à tout moment.'),
+    ('en', 'US'): ('Remove the watermark for $1', '$1 today, then $7.99/month in 7 days. Cancel anytime.'),
+    ('en', 'DE'): ('Remove the watermark for €1', '€1 today, then €7.99/month in 7 days. Cancel anytime.'),
+}
+
+READ = """() => { const q = s => document.querySelector(s), go = q('#dvCmpGo'), of = q('#dvOffer1'), tr = q('#dvTrial');
+    const sp = s => (s || '').replace(/\\u00a0|\\u202f/g, ' ').replace(/\\s+/g, ' ').trim();
+    return { go: sp(go.innerText), goShown: !go.hidden && !!go.offsetParent, of: sp(of.textContent), ofShown: !of.hidden && !!of.offsetParent, trShown: !tr.hidden && !!tr.offsetParent,
+      gap: of.getBoundingClientRect().top - go.getBoundingClientRect().bottom, fs: parseFloat(getComputedStyle(of).fontSize),
+      vw: innerWidth, sw: document.documentElement.scrollWidth }; }"""
+
+
+def offer_run(b, PW, base, site, lang, dev, country, me='yes'):
     t = T[lang]
-    for me, label in (('yes', 'droit à l’offre'), ('no', 'déjà eu un essai')):
-        tag = dev + ' ' + lang + ' (' + label + ')'
-        ctx, seen = context(b, PW, lang, dev, None, me=me)
-        pg = ctx.new_page(); errs = []; pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
-        pg.goto(base + ('' if lang == 'en' else 'fr/'), wait_until='load'); pg.wait_for_function('window.__ev && window.MP4Box', timeout=60000)
-        pg.wait_for_function('() => __ev("!!plCfg && ACCT.state.user !== null")', timeout=20000); pg.wait_for_timeout(500)
-        pg.evaluate('s => __ev(s)', "ACCT.checkout = (p, i, o) => { window.__co = [p, i, o || null]; return new Promise(() => {}); }")
-        if me == 'yes': pg.evaluate('s => __ev(s)', "ACCT.offerPrices = () => Promise.resolve({ today: " + json.dumps('1,00 €' if lang == 'fr' else '€1.00') + ", then: " + json.dumps('7,99 $US' if lang == 'fr' else '$7.99') + " })")
-        pg.set_input_files('#songFile', os.path.join(site, 'beat.wav')); pg.wait_for_function('() => __ev("!!S.song")', timeout=60000)
-        pg.set_input_files('#takeFiles', [os.path.join(site, 'take1.mp4')])
-        pg.wait_for_function('''() => __ev("S.takes.length === 1 && S.takes.every(t => t.status !== 'pending')")''', timeout=180000)
-        pg.evaluate('s => __ev(s)', 'go(4)'); pg.wait_for_function('() => __ev("S.cuts.length > 0")', timeout=60000); pg.wait_for_timeout(1200)
-        pg.evaluate('() => { __ev("exportOne()"); }')
-        pg.wait_for_function('() => __ev("S.exporting")', timeout=20000)
-        pg.wait_for_function('() => __ev("S.done && !S.exporting && cmpReady === lastBlob")', timeout=300000); pg.wait_for_timeout(2600)
-        r = pg.evaluate('''() => { const q = s => document.querySelector(s), go = q('#dvCmpGo'), of = q('#dvOffer1'), tr = q('#dvTrial');
-            const sp = s => (s || '').replace(/\\u00a0|\\u202f/g, ' ').trim();
-            return { go: sp(go.innerText), goShown: !go.hidden && !!go.offsetParent, of: sp(of.textContent), ofShown: !of.hidden && !!of.offsetParent, trShown: !tr.hidden && !!tr.offsetParent,
-              gap: of.getBoundingClientRect().top - go.getBoundingClientRect().bottom, fs: parseFloat(getComputedStyle(of).fontSize), color: getComputedStyle(of).color,
-              vw: innerWidth, sw: document.documentElement.scrollWidth }; }''')
-        if me == 'yes':
-            # 24/11 (owner): « Retire le filigrane pour 1 € » pile (price taxes included in Paddle; « 1,00 € » written « 1 € »)
-            check(tag + ' : écran de fin avec filigrane : « %s 1 € » pile (montant donné par Paddle, taxes comprises)' % t['go'],
-                  r['goShown'] and r['go'] == (t['go'] + (' 1 €' if lang == 'fr' else ' €1')), r['go'])
-            check(tag + ' : juste dessous, lisible : le prix aujourd’hui, puis par mois dans 7 jours, annulable', r['ofShown'] and r['of'].startswith('1 € ' if lang == 'fr' else '€1 ') and all(x in r['of'] for x in t['terms']) and ('7,99' in r['of'] or '7.99' in r['of']) and 0 <= r['gap'] <= 24 and r['fs'] >= 13.5, r)
-            check(tag + ' : pas de texte d’essai gratuit sur cet écran', not r['trShown'] and t['trial'] not in r['go'], r)
-            if SHOTS:
-                pg.locator('#dvCmpGo').scroll_into_view_if_needed(); pg.wait_for_timeout(300)
-                pg.screenshot(path=os.path.join(SHOTS, 'offre-1-euro-%s-%s.png' % (dev.replace(' ', '').lower(), lang)))
-            pg.locator('#dvCmpGo').click(); pg.wait_for_timeout(700)
-            co = pg.evaluate('s => __ev(s)', 'window.__co')
-            check(tag + ' : le paiement s’ouvre avec l’offre (Pro, mensuel)', co == ['pro', 'month', {'kind': 'offer1'}], co)
-        else:
-            check(tag + ' : sans droit : pas d’offre à 1 €', not r['ofShown'] and t['go'] not in r['go'], r)
-        check(tag + ' : rien de plus large que l’écran', r['sw'] <= r['vw'], (r['sw'], r['vw']))
-        check(tag + ' : aucune erreur dans la page', not errs, errs[:3])
-        ctx.close()
+    tag = '%s %s, pays %s (%s)' % (dev, lang, country or 'Paddle muet', 'droit à l’offre' if me == 'yes' else 'déjà eu un essai')
+    ctx, seen = context(b, PW, lang, dev, None, me=me)
+    ctx.unroute('https://cdn.paddle.com/**')
+    ctx.route('https://cdn.paddle.com/**', lambda r: r.fulfill(status=200, content_type='application/javascript', body=fake_paddle(country)))
+    pg = ctx.new_page(); errs = []; pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
+    pg.goto(base + ('' if lang == 'en' else 'fr/'), wait_until='load'); pg.wait_for_function('window.__ev && window.MP4Box', timeout=60000)
+    pg.wait_for_function('() => __ev("!!plCfg && ACCT.state.user !== null")', timeout=20000); pg.wait_for_timeout(500)
+    pg.evaluate('s => __ev(s)', "ACCT.checkout = (p, i, o) => { window.__co = [p, i, o || null]; return new Promise(() => {}); }")
+    pg.set_input_files('#songFile', os.path.join(site, 'beat.wav')); pg.wait_for_function('() => __ev("!!S.song")', timeout=60000)
+    pg.set_input_files('#takeFiles', [os.path.join(site, 'take1.mp4')])
+    pg.wait_for_function('() => __ev("S.takes.length === 1 && S.takes.every(t => t.status !== \'pending\')")', timeout=180000)
+    pg.evaluate('s => __ev(s)', 'go(4)'); pg.wait_for_function('() => __ev("S.cuts.length > 0")', timeout=60000); pg.wait_for_timeout(1200)
+    pg.evaluate('() => { __ev("exportOne()"); }')
+    pg.wait_for_function('() => __ev("S.exporting")', timeout=20000)
+    pg.wait_for_function('() => __ev("S.done && !S.exporting && cmpReady === lastBlob")', timeout=300000); pg.wait_for_timeout(2600)
+    r = pg.evaluate(READ)
+    want = WANT.get((lang, country)) if me == 'yes' else None
+    if want:
+        check(tag + ' : le bouton dit « %s »' % want[0], r['goShown'] and r['go'] == want[0], r['go'])
+        check(tag + ' : juste dessous, lisible : « %s »' % want[1], r['ofShown'] and r['of'] == want[1] and 0 <= r['gap'] <= 24 and r['fs'] >= 13.5, r)
+        check(tag + ' : pas de texte d’essai gratuit sur cet écran', not r['trShown'] and t['trial'] not in r['go'], r)
+        pp = pg.evaluate('() => window.__pp || null')
+        check(tag + ' : les montants viennent du prix de l’offre', bool(pp) and pp['items'][0]['priceId'] == 'pri_of1', pp)
+        if SHOTS:
+            pg.locator('#dvCmpGo').scroll_into_view_if_needed(); pg.wait_for_timeout(300)
+            pg.screenshot(path=os.path.join(SHOTS, 'offre-1-euro-%s-%s-%s.png' % (dev.replace(' ', '').lower(), lang, country)))
+        pg.locator('#dvCmpGo').click(); pg.wait_for_timeout(700)
+        co = pg.evaluate('s => __ev(s)', 'window.__co')
+        check(tag + ' : le paiement s’ouvre avec l’offre (Pro, mensuel)', co == ['pro', 'month', {'kind': 'offer1'}], co)
+    elif me != 'yes':
+        check(tag + ' : sans droit : pas d’offre à 1 €', not r['ofShown'] and t['go'] not in r['go'], r)
+    else:
+        check(tag + ' : Paddle ne répond pas : pas d’offre (jamais un montant deviné), le bouton habituel reste', not r['ofShown'] and t['go'] not in r['go'] and r['goShown'], r)
+    check(tag + ' : rien de plus large que l’écran', r['sw'] <= r['vw'], (r['sw'], r['vw']))
+    check(tag + ' : aucune erreur dans la page', not errs, errs[:3])
+    ctx.close()
 
 
 def main():
@@ -211,9 +245,10 @@ def main():
         for lang, dev in (('fr', 'iPhone 12'), ('en', 'ordinateur'), ('en', 'iPhone 12'), ('fr', 'ordinateur')):
             try: consent_run(b, p, base, lang, dev)
             except Exception as e: check(dev + ' ' + lang + ' : bandeau, déroulé complet', False, str(e)[:400])
-        for lang, dev in (('fr', 'iPhone 12'), ('en', 'ordinateur')):
-            try: offer_run(b, p, base, site, lang, dev)
-            except Exception as e: check(dev + ' ' + lang + ' : offre 1 €, déroulé complet', False, str(e)[:400])
+        for lang, dev, country, me in (('fr', 'iPhone 12', 'FR', 'yes'), ('en', 'ordinateur', 'US', 'yes'), ('fr', 'ordinateur', 'US', 'yes'),
+                                       ('en', 'iPhone 12', 'DE', 'yes'), ('fr', 'iPhone 12', None, 'yes'), ('fr', 'iPhone 12', 'FR', 'no')):
+            try: offer_run(b, p, base, site, lang, dev, country, me)
+            except Exception as e: check('%s %s %s : offre 1 €, déroulé complet' % (dev, lang, country), False, str(e)[:400])
         b.close()
     srv.shutdown(); shutil.rmtree(tmp, ignore_errors=True)
     print('%d/%d réussis' % (sum(results), len(results)))

@@ -8286,7 +8286,7 @@ function doneHide(){
 }
 $('#dvEdit').onclick = doneHide;
 $('#dvPro').onclick = () => lockOpen('nowm');
-$('#dvCmpGo').onclick = () => offer1On() ? offer1Go() : lockOpen('nowm');
+$('#dvCmpGo').onclick = () => offer1On() && of1Prices ? offer1Go() : lockOpen('nowm');
 /* the two pictures: the same moment of the edit drawn by the preview, once with the logo (as in the video made) and once
    without; the one with the logo is the poster of the video made, in the left box */
 let cmpFor = null, cmpReady = null;   // cmpReady: the video whose two pictures are drawn
@@ -10193,17 +10193,18 @@ function trialLeft(){
    charge, in the person's currency and taxes included (ACCT.offerPrices, Paddle.PricePreview); until Paddle answers (or if it
    does not), 1 € and the Pro monthly price of the config. Once per person (entitlements.offer1Eligible, checked again by the
    server). After paying, the account is Pro and the end screen offers the same video again without the watermark. */
-let of1Prices = null, of1Asked = false;
+let of1Prices = null, of1Asked = false, of1Tries = 0;
 function offer1On(){
   if (!ACCT || acctPaid() || !plCfg || !plCfg.paddle || !plCfg.paddle.prices || !plCfg.paddle.prices.proOffer1) return false;
   // signed out: shown (the right is checked once signed in, as for the free trial)
   const st = ACCT.state; return st.user ? !!(st.entitlements && st.entitlements.offer1Eligible === true) : true;
 }
-// « 1,00 € » / « €1.00 » → « 1 € » / « €1 » (owner, 24/11: the button says « 1 € » pile); other amounts stay as Paddle wrote them
-const of1Round = (s) => String(s || '').replace(/([.,])00(?=\D*$)/, '');
+// 24/11: the two amounts come from Paddle, already short (« 1 € », « 7,99 € » ; « 1 $ », « 7,99 $ » in the United States),
+// ACCT.offerPrices. Until then (or if Paddle does not answer) the offer is not shown: never a guessed amount next to a payment
+// button (the end screen keeps its usual button meanwhile).
 function offer1Text(){
-  const a = plAmounts('pro'), p = of1Prices ? of1Round(of1Prices.today) : plMoney(1, 'EUR'), m = of1Prices ? of1Prices.then : plMoney(a.m, a.cur);
-  return { go: _t('of1.go', { p }), terms: _t('of1.terms', { p, m }) };
+  if (!of1Prices) return null;
+  return { go: _t('of1.go', { p: of1Prices.today }), terms: _t('of1.terms', { p: of1Prices.today, m: of1Prices.then }) };
 }
 function offer1Go(){
   acctEvent('plans_open', { why: 'wm' });
@@ -10211,10 +10212,12 @@ function offer1Go(){
   apRun(async () => { apSay('acct.paying'); diag('compte : offre 1 € (7 jours de Pro, puis Pro mensuel)'); await ACCT.checkout('pro', 'month', { kind: 'offer1' }); apSay(null); });
 }
 function offer1Ui(cmpGo){
-  const on = offer1On() && cmpGo && !cmpGo.hidden, box = $('#dvOffer1');
+  const want = offer1On() && cmpGo && !cmpGo.hidden, box = $('#dvOffer1');
+  // asked once, again at most twice if Paddle did not answer (never in a loop)
+  if (want && !of1Asked && of1Tries < 3 && ACCT.offerPrices){ of1Asked = true; of1Tries++; ACCT.offerPrices().then(p => { if (p){ of1Prices = p; trialUi(); } else setTimeout(() => { of1Asked = false; }, 15000); }); }
+  const on = want && !!of1Prices;
   if (box) box.hidden = !on;
   if (!on) return false;
-  if (!of1Asked && ACCT.offerPrices){ of1Asked = true; ACCT.offerPrices().then(p => { if (p){ of1Prices = p; trialUi(); } }); }
   const t = offer1Text(), cg = $('#dvCmpGo span[data-i18n="cmp.go"]'), tag = $('#dvCmpGo .cmp-tag');
   if (cg && cg.textContent !== t.go) cg.textContent = t.go;
   if (tag) tag.hidden = true;

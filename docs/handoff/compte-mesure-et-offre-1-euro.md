@@ -7,6 +7,18 @@
 - Le prix de l'offre (`PADDLE_PRICE_PRO_OFFER1`) et le pixel TikTok restent à remplir.
 Demande : `docs/handoff/chef-mesure-offre-1-euro.md`, partie « Pour Comptes » (décisions du propriétaire du 23/11).
 
+## Mise à jour du 24/11, 2 h 30 (prix de l'offre créé à la main)
+- Le prix de l'offre est **`pri_01m85jpx3p0vmnxevfyysgtj1h`**, créé à la main par le Chef de projet. Le bouton du tableau de bord avait échoué, car Paddle refuse un essai en euros quand le prix mensuel n'existe qu'en dollars.
+  - Ses réglages : 7,99 € par mois dans 25 pays, 7,99 $ ailleurs ; essai de 7 jours à 1 € (ou 1 $) ; taxes automatiques selon le pays ; données `stalak=stalak_offer1`.
+- **Le bouton « Créer le prix … dans Paddle » est retiré** du tableau de bord, avec son adresse serveur (`paddle-offer.js` supprimé). En retrouvant ce prix, il l'aurait passé en « taxes comprises » partout, et les revenus aux États-Unis auraient baissé. La section 5 ci-dessous (bouton, taxes comprises) n'est plus d'actualité.
+- **L'écran de fin écrit les montants exacts de ce prix**, lus chez Paddle (`PricePreview`) pour le pays de la personne :
+  - France : « Retire le filigrane pour 1 € » / « 1 € aujourd'hui, puis 7,99 €/mois dans 7 jours. Annulable à tout moment. »
+  - États-Unis : « Retire le filigrane pour 1 $ » / « 1 $ aujourd'hui, puis 7,99 $/mois … » (« $1 today, then $7.99/month … » en anglais).
+  - Allemagne en anglais : « €1 … €7.99/month ».
+  - Le montant mensuel est celui de ce prix, pour le pays de la personne, et pas celui du Pro en vente. Pas de « ,00 » ni de « US ».
+- **Si Paddle ne répond pas**, l'offre n'est pas montrée et l'écran garde son bouton habituel : jamais un montant deviné à côté d'un bouton de paiement. Le prix est redemandé au plus 3 fois.
+- Aux États-Unis, la taxe locale éventuelle s'ajoute au paiement (taxes « automatiques ») ; la fenêtre Paddle l'affiche avant de payer.
+
 ## 1. Bandeau cookies (`src/consent.js`, toutes les pages de stalak.app)
 - « Refuser » et « Accepter » : même taille, même aspect.
 - **Rien n'est chargé ni déposé avant le choix.**

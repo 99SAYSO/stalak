@@ -292,11 +292,22 @@
     });
   }
 
-  /* 23/11, the 1 € offer: the two amounts written next to the button, in the person's currency and taxes included, as Paddle
-     will charge them (Paddle.PricePreview of the offer price): today (the 7 paid days) and then each month. 24/11: the offer
-     price is TAXES INCLUDED (owner: « 1 € » pile), so its monthly amount is its own (7,99 $ all in), not the Pro price on
-     sale (7,99 $ + the tax of the country): « then » is read from the offer price itself, in the currency of the preview.
-     null when Paddle does not answer (the page then writes its fixed text). */
+  /* 23/11, the 1 € offer: the two amounts written next to the button, in the person's currency, as Paddle will charge them
+     (Paddle.PricePreview of the offer price, pri_01m85jpx3p0vmnxevfyysgtj1h): today (the 7 paid days) and then each month.
+     24/11: the price (made by hand in Paddle by the Chef de projet) is 7,99 € a month in the euro countries and 7,99 $
+     elsewhere, its trial 1 € / 1 $, taxes « automatic by country » (included in Europe, added in the United States).
+     « then » is the monthly amount of the offer price itself, for the person's country (its override, else its base amount).
+     Written by the page, short: « 1 € », « 7,99 € », « 1 $ », « 7,99 $ » (fr), « €1 », « $7.99 » (en): no « ,00 », no « US ».
+     null when Paddle does not answer or gives a currency the price does not have: then the page does not show the offer
+     (an amount that might be wrong is never written next to a payment button). */
+  function offerMoney(minor, cur) {
+    try {
+      var f = new Intl.NumberFormat(lang() === 'fr' ? 'fr-FR' : 'en-US', { style: 'currency', currency: cur, currencyDisplay: 'narrowSymbol' });
+      var digits = f.resolvedOptions().maximumFractionDigits, v = Number(minor) / Math.pow(10, digits);
+      if (v % 1 === 0) f = new Intl.NumberFormat(lang() === 'fr' ? 'fr-FR' : 'en-US', { style: 'currency', currency: cur, currencyDisplay: 'narrowSymbol', minimumFractionDigits: 0, maximumFractionDigits: 0 });
+      return f.format(v).replace(/\u202f/g, '\u00a0');
+    } catch (e) { return null; }
+  }
   function offerPrices() {
     return config().then(function (cfg) {
       var offer = cfg.paddle && cfg.paddle.prices && cfg.paddle.prices.proOffer1;
@@ -304,21 +315,16 @@
       return loadPaddle(cfg).then(function (P) {
         return P.PricePreview({ items: [{ priceId: offer, quantity: 1 }] }).then(function (r) {
           var d = r && r.data, li = d && d.details && d.details.lineItems && d.details.lineItems[0];
-          if (!li || !li.formattedTotals) return null;
+          if (!li || !li.totals || !/^\d+$/.test(String(li.totals.total))) return null;
           var cur = String(d.currencyCode || '').toUpperCase(), country = String((d.address && d.address.countryCode) || '').toUpperCase(), pr = li.price || {};
-          // the monthly amount of the offer price in that currency: the override of the person's country, else the base amount
           var up = null;
           (pr.unitPriceOverrides || []).forEach(function (o) {
             if (!up && o && o.unitPrice && String(o.unitPrice.currencyCode).toUpperCase() === cur && (o.countryCodes || []).indexOf(country) >= 0) up = o.unitPrice;
           });
           if (!up && pr.unitPrice && String(pr.unitPrice.currencyCode).toUpperCase() === cur) up = pr.unitPrice;
-          if (!up || !/^\d+$/.test(String(up.amount))) return null;   // a currency Paddle converted itself: the page writes its fixed text
-          var then;
-          try {
-            var f = new Intl.NumberFormat(lang() === 'fr' ? 'fr-FR' : 'en-US', { style: 'currency', currency: cur });
-            then = f.format(Number(up.amount) / Math.pow(10, f.resolvedOptions().maximumFractionDigits));
-          } catch (e) { return null; }
-          return { today: li.formattedTotals.total, then: then };
+          if (!up || !/^\d+$/.test(String(up.amount))) return null;
+          var today = offerMoney(li.totals.total, cur), then = offerMoney(up.amount, cur);
+          return today && then ? { today: today, then: then, currency: cur } : null;
         });
       });
     }).catch(function () { return null; });
@@ -466,7 +472,7 @@
     uploadAvatar: function (blob) { return api('PUT', 'me/avatar', blob, blob.type || 'image/jpeg').then(me); },
     removeAvatar: function () { return api('DELETE', 'me/avatar').then(me); },
     logout: function () { return api('POST', 'auth/logout').then(function () { return setState({}); }); },
-    checkout: checkout, offerPrices: offerPrices,
+    checkout: checkout, offerPrices: offerPrices, offerMoney: offerMoney,
     // 23/11: the onboarding answers (mobile redesign, point 13) and the monthly listeners given each week in « Stats ».
     // artist() → { profile, listeners: [{week, platform, listeners}], week, listenersDue }; saveArtist({artistName, genres,
     // onPlatforms, links: {spotify, appleMusic, soundcloud, instagram}, listenersNow, postsOn, blockers, listenersGoal, goals})

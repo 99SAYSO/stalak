@@ -867,43 +867,6 @@ test('23/11 the 1 € offer: own price (Pro monthly, 7 paid days), one trial of 
   } finally { extraFetch = null; }
 });
 
-test('23/11 the 1 € offer price: made from the dashboard with the server’s Paddle key, from Pro monthly, 7 days at 1 USD / 1 EUR in the euro countries; the same price again', async () => {
-  const env = makeEnv(ADMIN_ENV), token = await accessToken();
-  const made = [], patched = []; let list = [];
-  extraFetch = async (url, init) => {
-    if (/paddle\.com\/prices\/pri_pro_m$/.test(url)) return Response.json({ data: { id: 'pri_pro_m', product_id: 'pro_pro', unit_price: { amount: '799', currency_code: 'USD' },
-      unit_price_overrides: [{ country_codes: ['FR'], unit_price: { amount: '799', currency_code: 'EUR' } }], tax_mode: 'account_setting', quantity: { minimum: 1, maximum: 1 } } });
-    if (/paddle\.com\/prices\?product_id=pro_pro/.test(url)) return Response.json({ data: list });
-    if (/paddle\.com\/prices\/pri_offer_old$/.test(url) && init.method === 'PATCH') { patched.push(['pri_offer_old', JSON.parse(init.body)]); return Response.json({ data: { id: 'pri_offer_old' } }); }
-    if (/paddle\.com\/prices$/.test(url) && init.method === 'POST') { const b = JSON.parse(init.body); made.push(b); list = [{ id: 'pri_offer_new', custom_data: b.custom_data, tax_mode: b.tax_mode }]; return Response.json({ data: { id: 'pri_offer_new' } }, { status: 201 }); }
-    return null;
-  };
-  try {
-    let r = await adminCall(env, 'POST', '/api/admin/paddle-offer1', { token, body: {} });
-    assert.equal(r.status, 200, JSON.stringify(r.data));
-    assert.deepEqual(r.data, { priceId: 'pri_offer_new', existed: false, environment: 'sandbox', taxIncluded: true });
-    assert.equal(made[0].tax_mode, 'internal');   // taxes included: « 1 € » pile (owner, 24/11)
-    const b = made[0];
-    assert.equal(b.product_id, 'pro_pro'); assert.deepEqual(b.billing_cycle, { interval: 'month', frequency: 1 });
-    assert.deepEqual(b.unit_price, { amount: '799', currency_code: 'USD' });
-    assert.equal(b.trial_period.frequency, 7); assert.equal(b.trial_period.interval, 'day'); assert.equal(b.trial_period.requires_payment_method, true);
-    assert.deepEqual(b.trial_period.unit_price, { amount: '100', currency_code: 'USD' });
-    assert.ok(b.trial_period.unit_price_overrides[0].country_codes.includes('FR'));
-    assert.deepEqual(b.trial_period.unit_price_overrides[0].unit_price, { amount: '100', currency_code: 'EUR' });
-    r = await adminCall(env, 'POST', '/api/admin/paddle-offer1', { token, body: {} });
-    assert.deepEqual(r.data, { priceId: 'pri_offer_new', existed: true, environment: 'sandbox', taxIncluded: true });
-    assert.equal(made.length, 1);
-    // a price made earlier with the taxes on top: switched to taxes included
-    list = [{ id: 'pri_offer_old', custom_data: { stalak: 'stalak_offer1' }, tax_mode: 'account_setting' }];
-    r = await adminCall(env, 'POST', '/api/admin/paddle-offer1', { token, body: {} });
-    assert.equal(r.data.priceId, 'pri_offer_old');
-    assert.deepEqual(patched, [['pri_offer_old', { tax_mode: 'internal' }]]);
-    // not the owner: refused
-    r = await adminCall(env, 'POST', '/api/admin/paddle-offer1', { body: {} });
-    assert.notEqual(r.status, 200);
-  } finally { extraFetch = null; }
-});
-
 test('23/11 onboarding answers on the account: closed lists, links of their own site only, some or all fields, gone with the account; totals only on the dashboard', async () => {
   const env = makeEnv(ADMIN_ENV), token = await accessToken();
   let r = await call(env, 'GET', '/api/artist');

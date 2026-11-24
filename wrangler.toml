@@ -27,7 +27,7 @@ PADDLE_PRICE_CREATOR_YEAR = "pri_01m6gz1aabr7h5tyyfwkbgvjpk"      # Stalak Creat
 PADDLE_PRICE_PRO_MONTH_TRIAL = "pri_01m83ym8a56t4y0bw8f1yctfdn"   # Stalak Pro 7.99 USD / month, 7-day trial
 PADDLE_PRICE_PRO_YEAR_TRIAL = "pri_01m83yp2zyyfz76tnnz1f23ykn"    # Stalak Pro 49.99 USD / year, 7-day trial
 # 23/11 (evening): « Retire le filigrane pour 1 € » (end screen with the watermark): Stalak Pro monthly with 7 days at 1 € (a paid
-# trial). Made from the dashboard (Santé → « Créer le prix … dans Paddle »), its id goes here. Empty = no offer.
+# trial). Made by hand in Paddle on 24/11 (7,99 € in 25 countries, 7,99 $ elsewhere, trial 1 € / 1 $). Empty = no offer.
 PADDLE_PRICE_PRO_OFFER1 = "pri_01m85jpx3p0vmnxevfyysgtj1h"
 # 23/11 (owner): the measuring tools, loaded by src/consent.js only after « Accepter » on the cookie banner. Not secrets.
 # Empty = no banner, nothing loaded. The TikTok conversion API also needs the SECRET TIKTOK_EVENTS_TOKEN (typed by the owner

@@ -537,7 +537,6 @@ __DEMO_BANNER__<header class="top"><div class="in">
       <div class="head"><h2>E-mail de remerciement aux nouveaux abonnés</h2>
         <p>Environ 3 heures après un nouvel abonnement (Pro ou Creator Plus), le client reçoit un e-mail simple de « 99sayso de Stalak », dans sa langue. Une seule fois par personne, jamais pour un renouvellement ni pour un paiement de test. Ses réponses arrivent sur contact@stalak.app.</p></div>
       <div class="row"><button class="btn" type="button" id="thanksBtn">M’envoyer l’e-mail de remerciement</button><span class="note" id="thanksOut" role="status"></span></div>
-      <div class="row"><button class="btn" type="button" id="offer1Btn">Créer le prix « Pro, 7 jours à 1 € » dans Paddle</button><span class="note" id="offer1Out" role="status"></span></div>
     </div>
     <div class="grid2" id="limits"></div>
     <div class="charts" id="healthCharts" data-mt></div>
@@ -1239,13 +1238,6 @@ __DEMO_BANNER__<header class="top"><div class="in">
         : 'Pas envoyés : Resend n’a pas répondu (ou la clé RESEND_API_KEY manque).';
     }).catch(function (e) { out.textContent = 'Pas envoyés : ' + e.message; }).then(function () { b.disabled = false; });
   });
-  // Comptes (23/11): the Paddle price of the 1 € offer, made by the server with its own Paddle key (no key to type)
-  $('#offer1Btn').addEventListener('click', function () {
-    var b = this, out = $('#offer1Out'); b.disabled = true; out.textContent = 'Création…';
-    api('POST', 'paddle-offer1', {}).then(function (r) {
-      out.textContent = (r.existed ? 'Il existait déjà : ' : 'Créé : ') + r.priceId + ' (' + r.environment + '). Donne cet identifiant au Chef de projet (PADDLE_PRICE_PRO_OFFER1).';
-    }).catch(function (e) { out.textContent = 'Pas créé : ' + e.message; }).then(function () { b.disabled = false; });
-  });
   var TG_ERR = { telegram_no_start: 'Je ne trouve pas ton /start : ouvre ton bot dans Telegram, envoie /start, puis réessaie (dans les 15 minutes).',
     telegram_several: 'Plusieurs personnes ont écrit /start à ton bot : renvoie /start toi-même, attends 15 minutes que les autres expirent, puis réessaie.',
     telegram_bad_token: 'Telegram refuse la clé du bot : vérifie TELEGRAM_BOT_TOKEN dans Cloudflare.',
@@ -1404,7 +1396,6 @@ const DEMO_JS = String.raw`var DD = __DEMO_DATA__, DS = { avail: false, tickets:
     else if (p === 'available') { DS.avail = !!body.available; r = { availableSwitch: DS.avail }; }
     else if (p === 'notify-test' || p === 'ntfy-test') r = { configured: true, sent: true, telegram: 'sent', ntfy: false };
     else if (p === 'thanks-test') r = { to: 'toi@demo.stalak', fr: true, en: true };
-    else if (p === 'paddle-offer1') r = { priceId: 'pri_demo_offre1', existed: false, environment: 'sandbox' };
     else if (p === 'telegram-link') r = { linked: true, name: 'Démo' };
     else if (p === 'telegram-unlink') r = { linked: false };
     else return Promise.reject(Object.assign(new Error('Pas dans la démo'), { code: 'demo' }));
