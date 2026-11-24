@@ -1,4 +1,4 @@
-Statut : EN COURS (lot 1 fait, tests en cours ; lots 2 à 4 à venir)
+Statut : PRÊT (lot 1 : police, barre du bas, accueil, ouverture ; lots 2 à 4 à venir sur la même branche)
 Branche : app/refonte-mobile (créée depuis `origin/main` efbb0c0 le 23/11).
 Maquette de la branche : https://app-refonte-mobile.stalak-site.pages.dev (à faire valider par le propriétaire, règle 9).
 
@@ -146,5 +146,34 @@ Rien n'est retiré au lot 1. Voici ce que la démo de l'éditeur ne montre pas e
   `functions/` ni `account.js` touché.
 - **Pour Réseaux sociaux** : l'onglet « Stats » clique l'entrée `[data-am="tiktok"]` du menu du compte.
 
-## Résultats des tests
-(en cours)
+## Ajouts du 24/11 (après la série complète des tests)
+- **« Essaie avec ton son »** (fin de l'exemple) : sur téléphone, le carré d'import n'est plus sur l'accueil ; c'est le gros
+  bouton de l'accueil (« Choisir mon son » ou la carte « Nouveau montage ») qui est mis en avant, avec le clavier dessus.
+- **Version claude.ai sur téléphone** (pas de compte, donc pas de profil à venir) : elle garde son pied de page léger sous
+  l'écran (choix de la langue), et sa barre n'a que « Accueil » et « + » (pas d'onglet qui ne fait rien).
+- **Sur téléphone, le menu du compte n'est plus affiché sur l'accueil** : Galerie, Stats et Profil sont dans la barre ;
+  « Se déconnecter » et « Gérer mon abonnement » sont dans le profil ; l'aide reste sur le glaçon. Dans l'éditeur, l'en-tête
+  et le pied de page du site sont encore là (jusqu'au lot 3).
+- **Pour les lots suivants** : l'ajout du Chef du 23/11 à 23 h (onboarding n° 13, paywall n° 14, offre à 1 € n° 15) est lu ;
+  rien n'en est fait dans le lot 1.
+
+## Résultats des tests (24/11, sur la branche, site reconstruit)
+- nouveau `refonte_mobile_ui` **102/102** (seul ; lancé en même temps que d'autres séries, la durée de l'ouverture peut
+  dépasser la borne de 7,5 s : 7,75 s mesuré une fois sous charge, 5,4 s machine au repos) ;
+- serveur `tests/backend/run.mjs` **121/121** ;
+- `accueil_a_ui` **77/77**, `vente_ui` **63/63**, `audit_ui` **122/122**, `audit611_ui` **93/93**, `projet_local_ui` **52/52**,
+  `essai_pro_ui` **187/187**, `fenetre_pro_ui` **84/84**, `fin_export_ui` **98/98**, `partager_ui` **92/92**,
+  `tiktok_ui` **220/220**, `exports_rates_ui` **80/80**, `apercu_depart_ui` **10/10**, `fluidite_ui` **30/30**,
+  `filtres_ui` **106/106**, `export_pub_ui` **22/22**, `liens_cmp_ui` **58/58**, `pied_de_page_ui` **842/842**,
+  `plans_ui` **39/39**, `achat_ui` **23/23**, `gallery_ui` **48/48**, `help_ui` **42/42**, `support_ui` **64/64** ;
+- **tests adaptés au nouvel accueil du téléphone** (ils cherchaient le menu du compte, le carré d'import ou le pied de page
+  sur l'accueil du téléphone) : `audit611_ui`, `tiktok_ui` (l'onglet « Stats » ouvre « Mes stats »), `gallery_ui` (barre du
+  bas, déconnexion par le profil), `pied_de_page_ui` (pas de pied de page sur l'accueil du téléphone, il est mesuré dans
+  l'éditeur), et le contrôle « l'accroche ne passe pas sous la mascotte » (ordinateur) qui regarde maintenant ligne par
+  ligne (avec DM Sans la phrase tient sur 2 lignes, la 2e est centrée et loin de la mascotte) ;
+- **comme sur `main`** (vérifié en lançant le même test sur `main`) :
+  - `animations_ui` 28/44 (animations de Marketing) et `formules_ui` 136/137 (filigrane dans chaque image) ;
+  - `clip1_ui` 83/87 : `.band-frost a:hover` de `src/bands.css` (Marketing) n'est pas dans `@media (hover:hover)` ;
+  - `lyrics_ui` 62/73 : l'exemple ne dure plus que 12 s (le test attend un passage de plus de 30 s coupé en morceaux) et
+    la page des formules n'affiche plus la phrase « Les paroles automatiques font partie de Stalak Pro ».
+- À lancer avec `http://localhost:…` pour `lyrics_ui` et `support_ui` (leur cookie de test est posé sur `localhost`).
