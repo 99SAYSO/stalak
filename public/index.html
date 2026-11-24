@@ -2416,7 +2416,7 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
         </div>
         <!-- Marketing & croissance (07/11, rapport chiffres : le mode Clip, 1re raison d'ouvrir Pro) : choisit « Clip » à l'étape 1
              (#kindSeg, le choix qui existe déjà) et l'amène sous les yeux ; rien d'autre ne change -->
-        <button type="button" class="hero-clip" id="heroClip" data-i18n="hero.clip">Try <b>Music video mode</b>: your whole song in 16:9</button>
+        <button type="button" class="hero-clip" id="heroClip" data-i18n="hero.clip"><b>Music video mode</b>: your whole song in 16:9, for subscribers</button>
         <script>(function (b) { if (!b) return;
           b.addEventListener('click', function () {
             var k = document.querySelector('#kindSeg button[data-v="clip"]'); if (!k) return;
@@ -3023,7 +3023,7 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
 <div class="askbox" id="clipAsk" role="alertdialog" aria-modal="true" aria-labelledby="clipAskT" aria-describedby="clipAskP" hidden>
   <div class="card">
     <h2 id="clipAskT" data-i18n="ca.t">Clip mode is a Pro feature</h2>
-    <p id="clipAskP" data-i18n="ca.p">You can try it in the preview. To export your 16:9 clip, go Pro, or export your video as TikTok / Reels.</p>
+    <p id="clipAskP" data-i18n="ca.p">Music video mode (16:9) is for subscribers. Go Pro to export your clip, or export your video as TikTok / Reels.</p>
     <div class="row fa-row">
       <button class="btn primary" id="caPro" type="button" data-i18n="fa.pro">Go Pro, from $4.17/mo</button>
       <p class="tr-terms" data-trial-int="year" hidden></p>
@@ -3472,6 +3472,6 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
   <button class="hp-human" id="helpHuman" type="button" data-i18n="help.human" hidden>Talk to a human</button>
   <button class="hp-diag" id="helpDiag" type="button" data-i18n="help.diag">Copy info for the team</button>
 </section>
-<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.f72968a21b.js", "/assets/app.e60308fbbe.js", "/assets/tiktok.8fcf3f7d25.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v||!v.offsetParent)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
+<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.f72968a21b.js", "/assets/app.6f2104eade.js", "/assets/tiktok.8fcf3f7d25.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v||!v.offsetParent)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
 </body>
 </html>

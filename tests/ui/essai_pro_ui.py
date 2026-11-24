@@ -215,6 +215,7 @@ def run(b, PW, base, site, lang, dev):
         ev(pg, "apHide && apHide()"); pg.wait_for_timeout(200)
         menu = n(txt(pg, '#amProT'))
         check(tag + ' : menu du compte : « ' + want.strip() + ' »', menu == want.strip(), menu)
+        check(tag + ' : essai en cours = abonné : le mode Clip est ouvert (décision du 24/11)', ev(pg, "can('clip')") is True)
         check(tag + ' : plus d’offre d’essai pendant l’essai', ev(pg, 'trialOn()') is False and not ev(pg, "$$('.tr-terms').some(p => !p.hidden)"))
         check(tag + ' : aucune erreur dans la page', not errs, errs[:3])
         ctx.close()

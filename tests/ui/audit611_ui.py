@@ -10,7 +10,8 @@
     under it, above the song form; the logo is no longer a title.
 7.  The example's end screen: « Now try it with your song » (no Pro link); it starts again on the song form, highlighted.
 10. The page: no JS inside it (its own versioned files, deferred), fonts in WOFF2.
-18. « Clip » (free): the 16:9 preview, no payment page; at the export a question: Pro / TikTok-Reels / nothing (also a pack).
+18. (24/11, owner's decision) « Clip » without a subscription: the plans page, the edit stays 9:16; a subscription that ends
+    during the edit: at the export a question: Pro / TikTok-Reels / nothing (also a pack).
 22. After « Essayer avec un exemple » the keyboard is on « Lecture »; the footer's links are 44 px high.
 On an iPhone (390 px) and a computer (1280 px), in French and English."""
 import functools, glob, http.server, os, re, shutil, subprocess, sys, tempfile, threading
@@ -129,8 +130,10 @@ def clip(b, base, site, lang, iphone, PW):
     ctx, pg, errs = new_page(b, base, lang, iphone, PW)
     demo(pg); ev(pg, "S.__lock = [], lockOpen = (f, w) => S.__lock.push(f), go(1)")
     pg.locator('#kindSeg button[data-v="clip"]').click(); pg.wait_for_timeout(400)
-    check(tag + ' : « Clip » sans Pro : l’aperçu 16:9, pas la page de paiement', ev(pg, 'isClip()') and ev(pg, 'S.fmt') == '169' and ev(pg, 'S.__lock.length') == 0, (ev(pg, 'S.fmt'), ev(pg, 'S.__lock')))
-    ev(pg, "go(4), " + FAST_EXPORT)
+    check(tag + ' : « Clip » sans abonnement : la page des formules (Clip), pas d’aperçu 16:9', not ev(pg, 'isClip()') and ev(pg, 'S.fmt') == '916' and ev(pg, 'S.__lock') == ['clip']
+          and pg.locator('#kindSeg button[data-v="reel"]').get_attribute('aria-pressed') == 'true', (ev(pg, 'S.fmt'), ev(pg, 'S.__lock')))
+    # the subscription ends during the edit of a clip: the export asks
+    ev(pg, "S.__lock = [], acctHas = f => true, setKind('clip', true), acctHas = f => false, planTags(), go(4), " + FAST_EXPORT)
     pg.evaluate('() => { __ev("exportOne()"); }'); pg.wait_for_timeout(300)
     check(tag + ' : à l’export : « %s »' % t['ca'], visible(pg, '#clipAsk .card') and pg.locator('#clipAskT').inner_text().strip() == t['ca'] and not ev(pg, 'S.exporting'))
     if SHOTS: shot(pg, os.path.join(SHOTS, 'clip-%s-%s.png' % ('iphone' if iphone else 'ordi', lang)))
