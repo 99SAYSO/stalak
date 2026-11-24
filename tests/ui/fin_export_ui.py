@@ -97,7 +97,7 @@ def flow(b, base, lang, iphone, PW):
     t = T[lang]
     ctx, pg, errs = new_page(b, base, lang, iphone, PW)
     pg.evaluate("() => { navigator.canShare = () => true; navigator.share = async () => {}; }")
-    pg.locator('#demoBtn').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=90000)
+    pg.locator('#demoBtn:visible, #heroDemo:visible, #mhEx:visible').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=90000)
     # 4. the lyrics question (the example's lyrics taken away: a person who has none yet)
     ev(pg, "S.__ly = S.lyrics.lines, S.lyrics.lines = [], go(2)")
     pg.locator('#next2').click(); pg.wait_for_timeout(250)

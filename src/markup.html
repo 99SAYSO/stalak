@@ -44,6 +44,14 @@
   <section class="narrow" id="p1">
     <!-- Marketing & croissance (06/11, audit point 6, « version compacte » choisie par le propriétaire) : le vrai titre de la
          page, une phrase et une petite vidéo (un vrai montage Stalak de ses prises) ; seulement tant qu'aucun son n'est importé -->
+    <!-- App & montage (refonte mobile, lot 1, 23/11; src/mobile.css, app.js mob*): the home screen of a phone. The top line:
+         the greeting once signed in, and the formula; signed in, the card « Nouveau montage » replaces the pitch below -->
+    <div class="mh-top" id="mhTop">
+      <div class="mh-hi" id="mhHi" hidden><h2 id="mhHiT"></h2><p data-i18n="mh.sub">Prêt pour ton prochain snippet ?</p></div>
+      <button class="mh-pill" id="mhPill" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.500v19M3.800 7.250l16.400 9.500M3.800 16.750l16.400-9.500"/></svg><span id="mhPillT">Stalak Pro</span></button>
+    </div>
+    <button class="mh-new" id="mhNew" type="button"><b data-i18n="mh.new">Nouveau montage</b><span class="mh-newP" data-i18n="mh.newP">Choisis ton son, on coupe sur le rythme.</span><span class="mh-go"><span data-i18n="hero.song">Choisir mon son</span><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span><i aria-hidden="true"></i></button>
+    <button class="hero-demo mh-ex" id="mhEx" type="button"><i aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M8 5l12 7-12 7z"/></svg></i><span data-i18n="hero.demo">Voir un exemple</span></button>
     <div class="hero" id="heroPitch">
       <!-- (audit 13/11, n° 1) its picture first; it plays once the page has loaded (build_site.py app_loader; still for less motion) -->
       <!--HEROVIDEO--><video class="hero-v" src="/demo/edit.mp4" poster="/demo/edit.jpg" width="432" height="768" muted loop playsinline preload="none" aria-label="Exemple : une vidéo montée par Stalak à partir de trois prises" data-i18n-attr="aria-label:hero.v"></video>
@@ -90,6 +98,7 @@
         })(document.currentScript.previousElementSibling);</script>
       </div>
     </div>
+    <h2 class="mh-lastT" id="mhLastT" hidden data-i18n="mh.last">Tes derniers montages</h2>
     <div class="card lpoffer" id="lpOffer" hidden role="region" aria-labelledby="lpOfferT">
       <h2 id="lpOfferT" data-i18n="lp.t">Reprendre ton dernier montage ?</h2>
       <p class="hint" id="lpOfferP"></p>
@@ -98,6 +107,7 @@
         <button class="btn" id="lpNo" type="button" data-i18n="lp.no">Non merci</button>
       </div>
     </div>
+    <ul class="mh-list" id="mhList" hidden></ul>
     <div class="card">
       <h2 data-i18n="p1.title">Choisis ton son</h2>
       <div class="kindpick">
@@ -230,7 +240,9 @@
         </ol>
         <p class="ws-p" data-i18n="ws.p">Tu peux déjà écouter et changer les réglages : le montage se met à jour tout seul.</p>
       </div>
-      <div class="brollbox">
+      <!-- (23/11, the owner: « plans d'ambiance, enlève ») no longer offered; an older edit that has some still plays them, and its
+           « Ambiance » setting (step 4) stays for it -->
+      <div class="brollbox" hidden>
         <div class="brollhead">
           <label class="btn tip" for="brollFiles" data-tip="Des vidéos où tu ne chantes pas : la rue, le studio, la voiture, tes potes… Pas besoin de les caler, leur son n'est jamais utilisé." data-i18n="broll.add" data-i18n-attr="data-tip:broll.add.tip">+ Plans d'ambiance</label>
           <span class="hint" data-i18n="broll.hint">Optionnel : des vidéos sans chant, glissées entre tes prises.</span>
@@ -296,7 +308,8 @@
               <div class="row" style="margin-top:10px">
                 <button class="btn primary" id="lyTrGo" type="button">Écrire mes paroles</button>
               </div>
-              <div class="voxpick" id="lyVox">
+              <!-- (23/11, the owner: « l'option voix seule, enlève-la ») no longer offered -->
+              <div class="voxpick" id="lyVox" hidden>
                 <label class="btn link" for="lyVoxFile" id="lyVoxPick" data-i18n="lyr.vox.pick">Tu as la voix seule (a cappella) ? Importe-la pour une transcription encore plus précise</label>
                 <input type="file" id="lyVoxFile" accept="audio/*,video/*,.mp3,.wav,.m4a,.aac,.flac,.ogg,.mp4,.mov,.m4v">
                 <p class="hint" id="lyVoxOn" hidden><span id="lyVoxName"></span> <button class="btn link" type="button" id="lyVoxDel" data-i18n="lyr.vox.del">Retirer</button></p>
@@ -1055,6 +1068,15 @@
 <!-- help: the ice cube in the corner opens a little chat with an assistant -->
 <!-- (22/11, audit mobile n° 3) « Exporter » in a bar across the bottom of the screen: the page keeps room for it (body.fabon),
      so it never sits on a setting; what will be exported is written next to the button -->
+<!-- App & montage (refonte mobile, lot 1): the bar at the bottom of a phone, on the home screen and the pages opened from it;
+     never during the edit, the camera or an export (html.medit, app.js mobUi) -->
+<nav class="tabbar" id="tabBar" aria-label="Navigation" data-i18n-attr="aria-label:tab.aria">
+  <button type="button" data-tab="home" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span data-i18n="tab.home">Accueil</span></button>
+  <button type="button" data-tab="gallery"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9.500v5l4.500-2.500z"/></svg><span data-i18n="tab.gallery">Montages</span></button>
+  <button type="button" class="tab-plus" data-tab="new" aria-label="Nouveau montage" data-i18n-attr="aria-label:mh.new"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4.500v15M4.500 12h15"/></svg></button>
+  <button type="button" data-tab="stats"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 20V11M10 20V4M16 20v-7M22 20H2"/></svg><span data-i18n="tab.stats">Stats</span></button>
+  <button type="button" data-tab="account"><i class="tab-av" id="tabAv" aria-hidden="true"></i><span data-i18n="tab.account">Compte</span></button>
+</nav>
 <div class="expbar" id="expFab" hidden><button class="btn expbar-go" type="button"><span data-i18n="exp.fab">Exporter</span> <span aria-hidden="true">↓</span></button><span class="expbar-i" id="expFabI"></span></div>
 <button class="help-cube" id="helpBtn" type="button" aria-label="Aide" data-i18n-attr="aria-label:help.aria" aria-expanded="false" aria-controls="helpPanel">
   <svg viewBox="0 0 64 64" focusable="false" aria-hidden="true">

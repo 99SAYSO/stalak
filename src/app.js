@@ -1269,6 +1269,9 @@ const I18N_EN = /*@EN*/{
   "tr.manage": "Manage or cancel",
   "tr.menu": "Pro trial: {n} day left",
   "tr.menu_p": "Pro trial: {n} days left",
+  "tab.aria": "Navigation", "tab.home": "Home", "tab.gallery": "Edits", "tab.stats": "Stats", "tab.account": "Account",
+  "mh.hi": "Hey {name}", "mh.sub": "Ready for your next snippet?", "mh.pill": "Stalak Pro",
+  "mh.new": "New edit", "mh.newP": "Pick your song, we cut on the beat.", "mh.last": "Your latest edits",
   "tr.left_p": "Pro trial: {n} days left · first payment on {d} ·",
   "tr.leftEnds_p": "Pro trial: {n} days left · ends on {d}, nothing will be charged ·",
   "pp.later": "Maybe later"
@@ -1992,6 +1995,7 @@ const I18N_FR = /*@FR*/{
   "tr.manage": "Gérer ou annuler",
   "tr.menu": "Essai Pro : encore {n} jour",
   "tr.menu_p": "Essai Pro : encore {n} jours",
+  "mh.hi": "Salut {name}", "mh.pill": "Stalak Pro",
   "pp.later": "Plus tard"
 }/*FR@*/;
 let STATIC_FR = /*@STATIC_FR*/null/*STATIC_FR@*/;
@@ -8621,6 +8625,7 @@ function excludeCut(){
 /* ---------- steps ---------- */
 function canGo(n){ if (n <= 1) return true; if (!S.song) return false; if (n === 2) return true; return readyTakes().length > 0; }
 function updateNav(){
+  mobUi();
   $('#next1').disabled = !canGo(2); $('#next2').disabled = !canGo(3);
   $$('#stepper button').forEach(b => { const n = +b.dataset.go; b.disabled = S.exporting || !canGo(n); b.setAttribute('aria-current', n === S.step ? 'step' : 'false'); b.classList.toggle('done', n < S.step); });
   wmUI();
@@ -9332,7 +9337,7 @@ setRes(PREV); renderTakes(); drawEmpty(); updateNav(); go(1);
   if (run && typeof run === 'object'){ const { left, ...x } = run; setTimeout(() => acctEvent('export_fail', { cat: 'crash', x }), 0); S.lightNext = 'crash'; try { localStorage.setItem('stalak:expLight', '1'); } catch(e){}
     diag('export précédent jamais fini (onglet fermé par le navigateur' + (left ? ', après avoir quitté Stalak' : '') + ') : le prochain sera plus léger'); setTimeout(() => say('exp.crashed'), 800); } }
 { let t = null; try { t = sessionStorage.getItem('stalak:trySong'); sessionStorage.removeItem('stalak:trySong'); } catch(e){}
-  if (t){ const d = $('#songDrop'); d.classList.add('try'); try { d.scrollIntoView({ block: 'center' }); $('#songFile').focus({ preventScroll: true }); } catch(e){} say('dv.tryNow'); setTimeout(() => d.classList.remove('try'), 6000); } }
+  if (t){ const d = [$('#songDrop'), $('#mhNew'), $('#heroSong')].find(e => e && e.getClientRects().length) || $('#songDrop'); /* (refonte mobile) on a phone the import square is not on the home screen: its main button is put forward */ d.classList.add('try'); try { d.scrollIntoView({ block: 'center' }); (d.id === 'songDrop' ? $('#songFile') : d).focus({ preventScroll: true }); } catch(e){} say('dv.tryNow'); setTimeout(() => d.classList.remove('try'), 6000); } }
 if (store.get('stalak:kind') === 'clip' && !window.StalakAccount) setKind('clip', true); else kindUI();
 diag('navigateur : ' + navigator.userAgent);
 diag('WebCodecs : décodeur vidéo ' + (window.VideoDecoder ? 'oui' : 'non') + ', encodeur vidéo ' + (window.VideoEncoder ? 'oui' : 'non') + ', décodeur audio ' + (window.AudioDecoder ? 'oui' : 'non') + ', encodeur audio ' + (window.AudioEncoder ? 'oui' : 'non'));
@@ -11581,6 +11586,106 @@ const langPick = e => {
 };
 // (one listener for the page: the footer's switch is written again with the footer when the language changes)
 document.addEventListener('click', e => { if (e.target.closest && e.target.closest('.langsw button[data-lang]')) langPick(e); });
+
+/* ---- App & montage — refonte de l'interface mobile, lot 1 (23/11; démos validées : docs/audit/maquettes/mobile-2026-11-23/).
+   Under 900 px only (src/mobile.css). Three states, written on <html>:
+   - the home screen (nothing imported, no page open): the bar at the bottom, the greeting or the pitch, « Nouveau montage » ;
+   - html.mpage: « Montages » or « Compte » opened from the bar (the bar stays; html.mfull: sign-in and the plans cover it) ;
+   - html.medit: a song or takes are there, the camera, an export, the end screen: no bar, the editor as before.
+   Motion: GSAP timelines, as in the HyperFrames demos (the library comes from the site, only on a phone, never with « reduce
+   motion »); without it everything simply shows. ---- */
+var mobReady = false, mobState = '', mobUser, mobGsapP = null, mobListFor = null;
+const MOB = window.matchMedia ? matchMedia('(max-width:899px)') : { matches: false };
+function mobHome(){ return !$('#p1').hidden && $('#songBox').hidden && !S.takes.length && !S.exporting && !document.body.classList.contains('isdone'); }
+function mobGsap(){
+  if (window.gsap) return Promise.resolve(window.gsap);
+  if (!window.STALAK_GSAP || !MOB.matches || calmMotion()) return Promise.resolve(null);
+  if (!mobGsapP) mobGsapP = new Promise(res => { const e = document.createElement('script'); e.src = window.STALAK_GSAP; e.async = false;
+    e.onload = () => res(window.gsap || null); e.onerror = () => res(null); document.head.appendChild(e); });
+  return mobGsapP;
+}
+// plays a timeline if the library is there and motion is welcome; otherwise nothing moves (what is shown is already right)
+function mobPlay(build){ if (!MOB.matches || calmMotion() || !window.gsap || document.hidden) return null; try { return build(window.gsap); } catch(e){ return null; } }
+function mobUi(){
+  if (!mobReady) return;
+  const root = document.documentElement, bar = $('#tabBar'), home = mobHome(), u = ACCT ? ACCT.state.user : null;
+  const page = ACCT && isShown($('#acctPage')) ? apView : null, keep = page === 'gallery' || page === 'account';
+  const state = !home ? 'edit' : keep ? 'page:' + page : page ? 'full' : 'home';
+  const was = mobState; mobState = state;
+  root.classList.toggle('medit', !home); root.classList.toggle('mpage', home && keep); root.classList.toggle('mfull', home && !!page && !keep);
+  root.classList.toggle('mnoacct', !ACCT); root.classList.toggle('msigned', !!u);
+  // the bar: which tab is the current one
+  const cur = keep ? page : 'home';
+  $$('#tabBar [data-tab]').forEach(b => { if (b.dataset.tab === cur) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
+  // it leaves by sliding down when the edit starts, and comes back up
+  if (was && was !== state && MOB.matches){
+    const out = state === 'edit' || state === 'full', wasOut = was === 'edit' || was === 'full';
+    if (out && !wasOut) mobPlay(g => { bar.style.display = 'flex'; return g.to(bar, { yPercent: 115, duration: 0.22, ease: 'power2.in', onComplete: () => { bar.style.display = ''; g.set(bar, { clearProps: 'transform' }); } }); });
+    else if (!out && wasOut) mobPlay(g => g.fromTo(bar, { yPercent: 115 }, { yPercent: 0, duration: 0.32, ease: 'power3.out', clearProps: 'transform' }));
+  }
+  // the top line: « Salut <name> » and the formula
+  const hi = $('#mhHi'), pill = $('#mhPill');
+  hi.hidden = !u; if (u) setT('#mhHiT', 'mh.hi', { name: acctName(u) });
+  pill.hidden = !ACCT; pill.classList.toggle('paid', !!ACCT && acctPaid());
+  if (ACCT){ if (acctPaid()) setT('#mhPillT', 'pl.n.' + acctPlan()); else setT('#mhPillT', 'mh.pill'); }
+  const av = $('#tabAv'), url = u && u.avatarUrl ? u.avatarUrl : '';
+  if (av.dataset.k !== url){ av.dataset.k = url; av.style.backgroundImage = url ? 'url("' + String(url).replace(/["\\\n]/g, '') + '")' : ''; av.classList.toggle('has', !!url); }
+  // signed in (or out) since the last time: the new top comes in, it does not pop
+  const uid = u ? u.id : null;
+  if (mobUser !== undefined && mobUser !== uid && state === 'home')
+    mobPlay(g => g.fromTo(u ? ['#mhHi', '#mhNew', '#mhEx'] : ['#heroPitch'], { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.34, ease: 'power3.out', stagger: 0.06, clearProps: 'opacity,transform' }));
+  mobUser = uid;
+  mobList();
+}
+/* « Tes derniers montages »: the edit kept on this phone (the card #lpOffer, as before) and the 3 latest saved online (Creator
+   Plus; the same list as « Montages », asked once per person) */
+function mobList(){
+  const ul = $('#mhList'), u = ACCT ? ACCT.state.user : null, cloud = !!u && !!CL && acctHas('cloud') && CL.avail !== false;
+  if (cloud && !CL.list && mobListFor !== u.id && mobHome()){ mobListFor = u.id; clLoadList().then(() => mobList()).catch(() => {}); }
+  const list = cloud && CL.list ? CL.list.slice(0, 3) : [], key = list.map(p => p.id + '|' + (p.name || '') + '|' + (p.coverUrl || '')).join('\n') + '\n' + LANG;
+  if (ul.dataset.k !== key){
+    ul.dataset.k = key; ul.textContent = '';
+    for (const p of list){
+      const li = document.createElement('li'), b = document.createElement('button'), n = document.createElement('b'), name = p.name || _t('cl.noName');
+      b.type = 'button'; b.setAttribute('aria-label', _t('cl.openA', { name }));
+      if (p.coverUrl){ const img = new Image(); img.alt = ''; img.loading = 'lazy'; img.decoding = 'async'; img.draggable = false; img.onerror = () => img.remove(); img.src = p.coverUrl; b.append(img); }
+      n.textContent = name; b.append(n); b.onclick = () => { if (!S.exporting && !askDone) clOpenAsk(p); };
+      li.append(b); ul.append(li);
+    }
+  }
+  ul.hidden = !list.length;
+  $('#mhLastT').hidden = !list.length && $('#lpOffer').hidden;
+}
+function mobTab(k){
+  if (S.exporting || askDone) return;
+  const u = ACCT ? ACCT.state.user : null;
+  if (k === 'home'){ if (ACCT) apHide(); try { window.scrollTo({ top: 0, behavior: calmMotion() ? 'auto' : 'smooth' }); } catch(e){ window.scrollTo(0, 0); } }
+  else if (k === 'new'){ if (ACCT) apHide(); $('#songFile').click(); }
+  else if (!ACCT) return;
+  else if (k === 'gallery') apGo('gallery');
+  else if (k === 'account') apGo('account');
+  else if (k === 'stats'){
+    // « Mes stats » TikTok (Réseaux sociaux): its own entry of the account menu does it (link the account first if needed)
+    const am = $('#acctMenu [data-am="tiktok"]');
+    if (u && am && !am.hidden){ apHide(); am.click(); } else apGo('account');
+  }
+}
+function mobInit(){
+  $('#tabBar').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) mobTab(b.dataset.tab); });
+  $('#mhNew').onclick = () => $('#songFile').click();
+  $('#mhEx').onclick = () => $('#demoBtn').click();
+  $('#mhPill').onclick = () => { if (S.exporting || askDone || !ACCT) return; if (acctPaid()) apGo('account'); else apGo('pro', { from: 'menu' }); };
+  // what changes the state: a step, the song, the end screen, a page of the account, the person signed in
+  const mo = new MutationObserver(() => mobUi());
+  for (const id of ['p1', 'songBox', 'doneView', 'acctPage', 'lpOffer', 'apLogin', 'apAccount', 'apGallery', 'apPro']){ const n = document.getElementById(id); if (n) mo.observe(n, { attributes: true, attributeFilter: ['hidden', 'class'] }); }
+  mo.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  if (ACCT) ACCT.onChange(() => mobUi());
+  try { MOB.addEventListener('change', () => mobUi()); } catch(e){}
+  mobReady = true; mobUi();
+  if (MOB.matches) mobGsap();
+}
+mobInit();
+
 /* ---- Réseaux sociaux (21/11): what « Publier sur TikTok » and « Mes stats » (src/tiktok.js, stalak.app only) may read and
    open. Read-only: the exported file and its caption, the plan, the language; nothing here changes the edit. ---- */
 window.StalakApp = Object.freeze({

@@ -71,7 +71,7 @@ def run(b, base, lang, iphone):
     check(tag + ' : Tarifs, conditions, remboursement, confidentialité dans la bonne langue', all(w in hs for w in want), sorted(set(hs)))
     check(tag + ' : pas de script Google à l’ouverture', not google, google)
     # ---- the FR / EN switch: the address follows, the work stays ----
-    pg.locator('#demoBtn').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000)
+    pg.locator('#demoBtn:visible, #heroDemo:visible, #mhEx:visible').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000)
     pg.evaluate("() => history.replaceState(null, '', location.pathname + '#compte')")
     other = 'en' if lang == 'fr' else 'fr'
     pg.locator('#siteFoot .langsw button[data-lang="%s"]' % other).click(); pg.wait_for_timeout(300)

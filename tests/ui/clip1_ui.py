@@ -72,7 +72,7 @@ def run(b, base, lang, iphone, PW):
     pg.goto(base + ('' if lang == 'en' else 'fr/'), wait_until='load', timeout=120000); pg.wait_for_function('window.__ev && window.MP4Box', timeout=60000)
 
     # n° 3: the real example, in TikTok
-    pg.locator('#demoBtn').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=240000); pg.wait_for_timeout(600)
+    pg.locator('#demoBtn:visible, #heroDemo:visible, #mhEx:visible').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=240000); pg.wait_for_timeout(600)
     info = ev(pg, "[S.song.name, S.song.bpm, S.song.real, S.takes.map(t => [t.name, t.offset, t.status, !!t.demoReal, t.kind]), demoOnly(), S.nBars, S.kind]")
     check(tag + ' : vrai exemple en TikTok : « neva die », 157 BPM, 3 prises calées à 0, 8 mesures', info[0] == 'neva die · 99Sayso' and info[1] == 157 and info[2]
           and len(info[3]) == 3 and all(x[1] == 0 and x[3] and x[4] == 'video' for x in info[3]) and info[3][0][0] == t['take'] and info[4] and info[5] == 8 and info[6] == 'reel', info)
@@ -181,7 +181,7 @@ def claude_page(b, site, PW):
     ctx = b.new_context(viewport={'width': 1280, 'height': 900}); pg = ctx.new_page(); errs = []
     pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
     pg.goto('file://' + os.path.join(site, 'shuffle-lab.html')); pg.wait_for_function('!!window.__ev', timeout=60000)
-    pg.locator('#demoBtn').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=120000)
+    pg.locator('#demoBtn:visible, #heroDemo:visible, #mhEx:visible').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=120000)
     check('page claude.ai : l’exemple dessiné, comme avant', ev(pg, "S.takes.every(t => t.kind === 'demo') && !S.song.real") and not errs, errs)
     ctx.close()
 

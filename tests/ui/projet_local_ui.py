@@ -52,7 +52,7 @@ def run(b, base, site, lang, iphone):
     url = base + ('' if lang == 'en' else 'fr/')
     pg.goto(url, wait_until='load'); ready(pg)
     # the example alone: nothing to pick up afterwards
-    pg.locator('#demoBtn').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000)
+    pg.locator('#demoBtn:visible, #heroDemo:visible, #mhEx:visible').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000)
     pg.wait_for_timeout(7000)
     pg.reload(wait_until='load'); ready(pg); pg.wait_for_timeout(800)
     check(tag + ' : l’exemple seul n’est pas proposé', not pg.locator('#lpOffer').is_visible())

@@ -43,7 +43,7 @@ def ui(b, base, lang, phone):
     pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
     pg.goto(base + ('' if lang == 'en' else 'fr/'), wait_until='load')
     pg.wait_for_function('window.__ev && window.MP4Box', timeout=20000)
-    pg.locator('#demoBtn').click()
+    pg.locator('#demoBtn:visible, #heroDemo:visible, #mhEx:visible').click()
     pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=40000)
     pg.wait_for_timeout(800)
     # (audit 30/10) without Pro the Pro filters are behind the « + 23 » tile: opened here to see them all
@@ -108,7 +108,7 @@ def engine(b, base, video):
     ctx = b.new_context(viewport={'width': 1280, 'height': 860}, locale='fr-FR'); pg = ctx.new_page(); errs = []
     pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
     pg.goto(base + 'fr/', wait_until='load'); pg.wait_for_function('window.__ev && window.MP4Box', timeout=20000)
-    pg.locator('#demoBtn').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=40000)
+    pg.locator('#demoBtn:visible, #heroDemo:visible, #mhEx:visible').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=40000)
     # a real picture for the WebGL / 2D comparison: a test pattern in 1080×1920 (sharp colours, gradients, text)
     ev(pg, """window.__pic = (() => { const c = document.createElement('canvas'); c.width = 1080; c.height = 1920; const x = c.getContext('2d');
       const gr = x.createLinearGradient(0, 0, 1080, 1920); gr.addColorStop(0, '#1d3c8f'); gr.addColorStop(.5, '#f2a65a'); gr.addColorStop(1, '#0b0b10'); x.fillStyle = gr; x.fillRect(0, 0, 1080, 1920);
