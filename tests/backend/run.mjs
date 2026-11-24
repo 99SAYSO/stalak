@@ -880,7 +880,7 @@ test('23/11 onboarding answers on the account: closed lists, links of their own 
   assert.equal(r.status, 200, JSON.stringify(r.data));
   const p = r.data.profile;
   assert.equal(p.artistName, 'T-Crazy'); assert.deepEqual(p.genres, ['rap', 'drill']); assert.equal(p.onPlatforms, true);
-  assert.deepEqual(p.links, { spotify: 'https://open.spotify.com/artist/7abc', appleMusic: '', soundcloud: '', instagram: 'https://www.instagram.com/t.crazy/' });
+  assert.deepEqual(p.links, { spotify: 'https://open.spotify.com/artist/7abc', appleMusic: '', soundcloud: '', instagram: 'https://www.instagram.com/t.crazy/', tiktok: '', youtube: '' });
   assert.equal(p.listenersNow, '100_1k'); assert.deepEqual(p.postsOn, ['tiktok', 'reels']); assert.deepEqual(p.blockers, ['few_views']);
   assert.equal(p.listenersGoal, '10k'); assert.deepEqual(p.goals, ['song_launch']); assert.ok(p.answeredAt);
   // a link of another site: refused, nothing changed
@@ -4796,6 +4796,175 @@ test('clarity: the daily tasks take the snapshot (cron route and the 6-hour task
     assert.equal(b.status, 200, JSON.stringify(b.data)); assert.equal(b.data.fetched, 3); assert.ok(b.data.view.snapshot);
     const again = await adminCall(env, 'POST', '/api/admin/clarity/refresh', { token: await accessToken(), body: {} });
     assert.equal(again.data.clarity, 'done'); assert.equal(log.length, 6);
+  } finally { extraFetch = null; }
+});
+
+// ---- 24/11: « Stats » and the artist's analysis (artist.js, spotify.js, stats.js) ---------------------------------------
+import { spotifyWeekly, spotifyResetCache, artistFigures } from '../../functions/_lib/spotify.js';
+const SP_ARTIST = '16DsE2FfUtuGnIBXcBjKuU', SP_REL = ['1AAAAAAAAAAAAAAAAAAAAA', '2BBBBBBBBBBBBBBBBBBBBB', '3CCCCCCCCCCCCCCCCCCCCC'];
+const SP_ENV = { APIFY_TOKEN: 'apify_api_test_0123456789', SPOTIFY_CLIENT_ID: 'cid', SPOTIFY_CLIENT_SECRET: 'csecret' };
+const dayIso = (t) => new Date(t).toISOString().slice(0, 10);
+// the answers of the Chef's test (docs/audit/test-apify-spotify-2026-11-24.md): 190 listeners, 58 followers, 0 = « < 1 000 »
+function spotifyFake(log, { apify = 200, spotify = 200, listeners = 190, now = Date.now() } = {}) {
+  const rel = [[SP_REL[0], 'cash only', dayIso(now - 40 * 864e5)], [SP_REL[1], 'backwoods', dayIso(now - 30 * 864e5)], [SP_REL[2], 'neva die', dayIso(now - 3 * 864e5)]];
+  return async (url, init = {}) => {
+    if (url === 'https://accounts.spotify.com/api/token') { log.push({ kind: 'sp_token', auth: init.headers.Authorization }); return spotify === 200 ? Response.json({ access_token: 'sp_tok', expires_in: 3600 }) : new Response('{}', { status: spotify }); }
+    if (url.startsWith('https://api.spotify.com/v1/artists/')) {
+      log.push({ kind: 'sp_albums', url, auth: init.headers.Authorization });
+      if (spotify !== 200) return new Response('{}', { status: spotify });
+      return Response.json({ items: rel.map(([id, name, d]) => ({ id, name, album_type: 'single', release_date: d, release_date_precision: 'day', total_tracks: 1 })).reverse(), next: null });
+    }
+    if (url.startsWith('https://api.apify.com/v2/acts/beatanalytics~spotify-play-count-scraper/run-sync-get-dataset-items')) {
+      const body = JSON.parse(init.body); log.push({ kind: 'apify', urls: body.urls.map((x) => x.url), auth: init.headers.Authorization, q: new URL(url).searchParams });
+      if (apify !== 200) return new Response('{"error":{}}', { status: apify });
+      return Response.json(body.urls.map(({ url: u }) => {
+        const id = u.split('/').pop();
+        if (u.includes('/artist/')) return { id, name: '99Sayso', followers: 58, monthlyListeners: listeners, worldRank: 0,
+          topCities: [{ city: 'Abidjan', country: 'CI', numberOfListeners: 14 }, { city: 'Paris', country: 'FR', numberOfListeners: 13 }] };
+        const r = rel.find((x) => x[0] === id);
+        return { id, name: r[1], type: 'single', releaseDate: r[2], tracks: [{ id: id.replace(/^./, 'T'), name: r[1], streamCount: r[1] === 'cash only' ? 2249 : 0 }] };
+      }));
+    }
+    return null;
+  };
+}
+const waitFor = async (fn, ms = 2000) => { const t = Date.now(); while (Date.now() - t < ms) { if (await fn()) return true; await new Promise((r) => setTimeout(r, 20)); } return false; };
+
+test('stats 24/11: profile gets genreOther, TikTok and YouTube links (« @name »), same link checks', async () => {
+  const env = makeEnv(), a = await login(env, 'stats1@example.com');
+  let r = await call(env, 'PUT', '/api/artist', { cookie: a.cookie, body: { genres: ['autre'], genreOther: '  beatmaker \u0007 et prod ', links: { tiktok: '@t.crazy', youtube: '@TCrazy-officiel' } } });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.equal(r.data.profile.genreOther, 'beatmaker et prod');
+  assert.equal(r.data.profile.links.tiktok, 'https://www.tiktok.com/@t.crazy'); assert.equal(r.data.profile.links.youtube, 'https://www.youtube.com/@TCrazy-officiel');
+  r = await call(env, 'PUT', '/api/artist', { cookie: a.cookie, body: { links: { tiktok: 'https://vm.tiktok.com/ZMabc/#x', youtube: 'youtu.be/abc' } } });
+  assert.equal(r.data.profile.links.tiktok, 'https://vm.tiktok.com/ZMabc/'); assert.equal(r.data.profile.links.youtube, 'https://youtu.be/abc');
+  for (const links of [{ tiktok: 'https://evil.example/@x' }, { tiktok: 'tcrazy' }, { youtube: 'https://www.tiktok.com/@x' }, { youtube: 'javascript:alert(1)' }]) {
+    r = await call(env, 'PUT', '/api/artist', { cookie: a.cookie, body: { links } });
+    assert.equal(r.status, 400, JSON.stringify(links)); assert.equal(r.data.error, 'bad_link');
+  }
+  r = await call(env, 'PUT', '/api/artist', { cookie: a.cookie, body: { links: { tiktok: '' }, genreOther: '' } });
+  assert.equal(r.data.profile.links.tiktok, ''); assert.equal(r.data.profile.genreOther, '');
+});
+
+test('stats 24/11: GET /api/stats — signed in only; what is missing said; a free account gets the summary, never the Pro part', async () => {
+  const env = makeEnv(), a = await login(env, 'stats2@example.com');
+  assert.equal((await call(env, 'GET', '/api/stats')).status, 401);
+  let r = await call(env, 'GET', '/api/stats', { cookie: a.cookie });
+  assert.equal(r.status, 200); assert.equal(r.data.ready, false); assert.equal(r.data.locked, true); assert.equal(r.data.pro, null);
+  await call(env, 'PUT', '/api/artist', { cookie: a.cookie, body: { onPlatforms: true } });
+  r = await call(env, 'GET', '/api/stats', { cookie: a.cookie });
+  assert.deepEqual(r.data.missing, ['tiktok', 'spotify']); assert.equal(r.data.spotify.state, 'no_link');
+  assert.ok(r.data.summary.sentences.some((s) => s.includes('lien Spotify')) && r.data.summary.sentences.some((s) => s.includes('TikTok')));
+  // a song link, not the artist profile: said
+  await call(env, 'PUT', '/api/artist', { cookie: a.cookie, body: { links: { spotify: 'https://open.spotify.com/track/' + SP_REL[0], tiktok: '@stats2' } } });
+  r = await call(env, 'GET', '/api/stats?lang=en', { cookie: a.cookie });
+  assert.deepEqual(r.data.missing, []); assert.equal(r.data.spotify.state, 'not_artist_link');
+  assert.ok(r.data.summary.sentences[0].includes('artist profile'));
+  // no robot key: « off », and the figure the artist typed is used, said as his
+  await call(env, 'PUT', '/api/artist', { cookie: a.cookie, body: { links: { spotify: 'https://open.spotify.com/intl-fr/artist/' + SP_ARTIST + '?si=x' } } });
+  await call(env, 'PUT', '/api/artist/listeners', { cookie: a.cookie, body: { listeners: 150 } });
+  r = await call(env, 'GET', '/api/stats', { cookie: a.cookie });
+  assert.equal(r.data.spotify.state, 'off');
+  assert.deepEqual(r.data.summary.facts.listeners.source, 'artist');
+  assert.ok(r.data.summary.sentences[0].startsWith('Tu as 150 auditeurs mensuels sur Spotify (le chiffre que tu as donné)'), r.data.summary.sentences[0]);
+});
+
+test('stats 24/11: a new Spotify link → releases (official API) and figures (Apify) read at once; 0 plays shown as « < 1 000 »; Pro part for Pro', async () => {
+  spotifyResetCache();
+  const env = makeEnv(SP_ENV), log = []; extraFetch = spotifyFake(log);
+  try {
+    const a = await proUser(env, 'stats3@example.com', 'pro');
+    let r = await call(env, 'PUT', '/api/artist', { cookie: a.cookie, body: { onPlatforms: true, links: { tiktok: '@sayso', spotify: 'https://open.spotify.com/artist/' + SP_ARTIST } } });
+    assert.equal(r.status, 200);
+    assert.ok(await waitFor(() => env.DB.raw.prepare('SELECT COUNT(*) AS n FROM spotify_track_counts').get().n === 3), JSON.stringify(log.map((x) => x.kind)));
+    // official API: client-credentials token, albums and singles, 10 at most a page, a market
+    assert.equal(log[0].auth, 'Basic ' + btoa('cid:csecret'));
+    const alb = log.find((x) => x.kind === 'sp_albums');
+    assert.ok(alb.url.includes('/artists/' + SP_ARTIST + '/albums?include_groups=album,single&market=FR&limit=10&offset=0')); assert.equal(alb.auth, 'Bearer sp_tok');
+    // robot: the artist alone (1 link), then the 3 releases; Bearer token, a cost cap, a short wait
+    const runs = log.filter((x) => x.kind === 'apify');
+    assert.deepEqual(runs.map((x) => x.urls.length), [1, 3]);
+    assert.equal(runs[0].urls[0], 'https://open.spotify.com/artist/' + SP_ARTIST); assert.equal(runs[0].auth, 'Bearer apify_api_test_0123456789');
+    assert.ok(Number(runs[0].q.get('maxTotalChargeUsd')) <= 0.05 && Number(runs[0].q.get('timeout')) <= 30);
+    r = await call(env, 'GET', '/api/stats', { cookie: a.cookie });
+    const s = r.data;
+    assert.equal(s.spotify.state, 'ok'); assert.equal(s.spotify.releasesState, 'ok'); assert.equal(s.locked, false); assert.equal(s.plan, 'pro');
+    assert.deepEqual(s.summary.facts.listeners.n, 190); assert.equal(s.summary.facts.followers, 58);
+    assert.equal(s.summary.facts.lastRelease.name, 'neva die'); assert.equal(s.summary.facts.lastRelease.daysAgo, 3);
+    assert.equal(s.summary.sentences.length, 3);
+    assert.ok(s.summary.sentences[0].startsWith('Tu as 190 auditeurs mensuels sur Spotify.'), s.summary.sentences[0]);
+    assert.ok(s.summary.sentences[1].includes('« neva die »') && s.summary.sentences[1].includes('il y a 3 jours'), s.summary.sentences[1]);
+    assert.ok(s.summary.sentences[2].includes('« cash only »') && s.summary.sentences[2].replace(/\u202f|\u00a0/g, ' ').includes('2 249') && s.summary.sentences[2].includes('écoutes'), s.summary.sentences[2]);
+    // the songs: 0 is « fewer than 1,000 », never 0
+    const songs = s.pro.songs;
+    assert.deepEqual(songs.map((x) => [x.name, x.streams, x.under1000]), [['cash only', 2249, false], ['backwoods', null, true], ['neva die', null, true]]);
+    assert.ok(!JSON.stringify(s).match(/"streams":0\b/));
+    assert.deepEqual(s.pro.weeks.map((w) => w.listeners), [190]); assert.equal(s.pro.cities[0].city, 'Abidjan');
+    assert.equal(s.pro.releases.length, 3); assert.equal(s.pro.rhythm.daysSinceLast, 3); assert.equal(s.pro.byMonth.length, 12);
+    // a free account with the same data would not get the Pro part
+    const f = await login(env, 'stats3b@example.com');
+    r = await call(env, 'GET', '/api/stats', { cookie: f.cookie });
+    assert.equal(r.data.pro, null); assert.equal(r.data.locked, true);
+    // the daily task the same week: nothing asked again (1 relevé a week, songs once a month)
+    const n = log.length;
+    await spotifyWeekly(env);
+    assert.equal(log.filter((x) => x.kind === 'apify').length, runs.length);
+    assert.ok(log.length === n);
+    // another artist link: the old figures go
+    await call(env, 'PUT', '/api/artist', { cookie: a.cookie, body: { links: { spotify: '' } } });
+    assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM spotify_snapshots').get().n, 0);
+    assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM spotify_releases').get().n, 0);
+    // gone with the account
+    await call(env, 'PUT', '/api/artist', { cookie: a.cookie, body: { links: { spotify: 'https://open.spotify.com/artist/' + SP_ARTIST } } });
+    assert.ok(await waitFor(() => env.DB.raw.prepare('SELECT COUNT(*) AS n FROM spotify_snapshots').get().n === 1));
+    assert.equal((await call(env, 'DELETE', '/api/account', { cookie: a.cookie, body: { confirm: true } })).status, 200);
+    for (const t of ['spotify_snapshots', 'spotify_releases', 'spotify_track_counts', 'spotify_sync']) assert.equal(env.DB.raw.prepare(`SELECT COUNT(*) AS n FROM ${t}`).get().n, 0, t);
+  } finally { extraFetch = null; }
+});
+
+test('stats 24/11: the weekly relevé fails → nothing overwritten, « not updated this week » said, owner alerted after 2 failures (once a day)', async () => {
+  spotifyResetCache();
+  const tg = [];
+  const env = makeEnv({ ...SP_ENV, TELEGRAM_BOT_TOKEN: TG_TOKEN }), log = [];
+  env.DB.raw.prepare("INSERT INTO admin_state (key, value, updated_at) VALUES ('telegram_chat', '424242', 0)").run();
+  const t0 = Date.now() - 7 * 864e5;
+  extraFetch = spotifyFake(log, { now: t0 });
+  try {
+    const a = await login(env, 'stats4@example.com');
+    await call(env, 'PUT', '/api/artist', { cookie: a.cookie, body: { links: { tiktok: '@x4', spotify: 'https://open.spotify.com/artist/' + SP_ARTIST } } });
+    await waitFor(() => env.DB.raw.prepare('SELECT COUNT(*) AS n FROM spotify_track_counts').get().n === 3);
+    // move last week's figures one week back (the snapshot was made « now »)
+    const { isoWeek } = await import('../../functions/_lib/artist.js');
+    env.DB.raw.prepare('UPDATE spotify_snapshots SET week = ?, fetched_at = ?').run(isoWeek(t0), t0);
+    // this week: the robot fails (2 days in a row)
+    extraFetch = async (u, i) => {
+      if (String(u).startsWith('https://api.telegram.org/')) { tg.push(JSON.parse(i.body).text); return Response.json({ ok: true, result: {} }); }
+      return spotifyFake(log, { apify: 500 })(u, i);
+    };
+    const H = 3600e3;
+    let r = await spotifyWeekly(env, Date.now() + 2 * H);
+    assert.equal(r.spotify, 'none', 'tried less than 20 h ago: not again');
+    r = await spotifyWeekly(env, Date.now() + 21 * H);
+    assert.equal(r.spotify, 'http_500'); assert.equal(r.failed, 1);
+    r = await call(env, 'GET', '/api/stats', { cookie: a.cookie });
+    assert.equal(r.data.spotify.state, 'stale');
+    assert.equal(r.data.summary.facts.listeners.n, 190, 'last week\'s real figure stays, not overwritten');
+    assert.equal(r.data.spotify.week, isoWeek(t0));
+    assert.equal(tg.length, 0, 'no alert after 1 failure');
+    await spotifyWeekly(env, Date.now() + 42 * H);   // the next day
+    assert.equal(tg.length, 1); assert.ok(tg[0].includes('relevé Spotify a raté 2 fois de suite'), tg[0]);
+    await spotifyWeekly(env, Date.now() + 63 * H);
+    assert.equal(tg.length, 1, 'once a day at most');
+    // an odd answer (no figure): refused the same way
+    assert.equal(artistFigures({ id: SP_ARTIST, name: 'x' }), null);
+    assert.equal(artistFigures({ monthlyListeners: '190' }), null);
+    // never estimated: a first relevé that fails → « failed », no figure
+    const b = await login(env, 'stats5@example.com');
+    await call(env, 'PUT', '/api/artist', { cookie: b.cookie, body: { links: { spotify: 'https://open.spotify.com/artist/' + 'Z'.repeat(22) } } });
+    await waitFor(() => env.DB.raw.prepare('SELECT artist_error FROM spotify_sync WHERE user_id = ?').get(b.user.id)?.artist_error);
+    r = await call(env, 'GET', '/api/stats', { cookie: b.cookie });
+    assert.equal(r.data.spotify.state, 'failed'); assert.equal(r.data.summary.facts.listeners, null);
+    assert.equal(r.data.summary.sentences[0], 'Tes chiffres Spotify n’ont pas pu être mis à jour cette semaine.');
   } finally { extraFetch = null; }
 });
 

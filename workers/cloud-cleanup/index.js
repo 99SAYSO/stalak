@@ -9,6 +9,7 @@ import { cleanupCloud } from '../../functions/_lib/cloud.js';
 import { yearlyReminders } from '../../functions/_lib/reminders.js';
 import { dailyRetention } from '../../functions/_lib/retention.js';
 import { clarityDaily } from '../../functions/_lib/clarity.js';
+import { spotifyWeekly } from '../../functions/_lib/spotify.js';
 
 export default {
   async scheduled(controller, env, ctx) {
@@ -18,6 +19,8 @@ export default {
       // audit of 6/11, point 12: thank-you hashes 3 years, lyrics use 90 days, rate-limit counters (retention.js)
       .then(() => dailyRetention(env, Date.now())).then((r) => console.log('[stalak] retention', JSON.stringify(r)))
       // 24/11: the daily Clarity snapshot (needs the secret CLARITY_API_TOKEN on this Worker too; without it, the site does it)
-      .then(() => clarityDaily(env, Date.now())).then((r) => console.log('[stalak] clarity', JSON.stringify(r))));
+      .then(() => clarityDaily(env, Date.now())).then((r) => console.log('[stalak] clarity', JSON.stringify(r)))
+      // 24/11: the weekly Spotify figures (needs APIFY_TOKEN, SPOTIFY_CLIENT_ID / SPOTIFY_CLIENT_SECRET on this Worker too)
+      .then(() => spotifyWeekly(env, Date.now())).then((r) => console.log('[stalak] spotify', JSON.stringify(r))));
   },
 };

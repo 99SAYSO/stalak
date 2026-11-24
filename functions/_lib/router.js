@@ -8,7 +8,9 @@ import { alertOwner } from './alerts.js';
 import { turnstileSiteKey } from './turnstile.js';
 import { yearlyReminders } from './reminders.js';
 import { handleWebhook, portalLinks, cancelSubscriptionNow, changePlan } from './paddle.js';
-import { getArtist, putArtist, putListeners } from './artist.js';
+import { getArtist, putArtist, putListeners, spotifyArtistId } from './artist.js';
+import { statsFor } from './stats.js';
+import { spotifyNow, spotifyWeekly } from './spotify.js';
 import { trialPrices, trialMarkOnDelete, cancelTrial, cancelPage, trialReminders, TRIAL_DAYS } from './trial.js';
 import { social, socialWebhook, isSocialWebhook, socialProviders, deleteSocialAccounts } from './social.js';
 import { tiktok } from './tiktok.js';   // Réseaux sociaux: « Publier sur TikTok », « Mes stats »
@@ -184,7 +186,7 @@ function cronAuth(request, env) {
 }
 async function cronCleanup(request, env) {
   cronAuth(request, env);
-  return json({ ok: true, ...(await cleanupCloud(env)), ...(await yearlyReminders(env)), ...(await trialReminders(env)), ...(await clarityDaily(env)) });
+  return json({ ok: true, ...(await cleanupCloud(env)), ...(await yearlyReminders(env)), ...(await trialReminders(env)), ...(await clarityDaily(env)), ...(await spotifyWeekly(env)) });
 }
 
 // Signed in: the session cookie (and the trusted-device cookie), then the same answer as GET /api/me.
@@ -240,6 +242,7 @@ async function deleteAccount(request, env) {
     // 23/11: the onboarding answers and the listeners given in « Stats »
     env.DB.prepare('DELETE FROM artist_profiles WHERE user_id = ?1').bind(user.id),
     env.DB.prepare('DELETE FROM listener_counts WHERE user_id = ?1').bind(user.id),
+    ...['spotify_snapshots', 'spotify_releases', 'spotify_track_counts', 'spotify_sync'].map((t) => env.DB.prepare(`DELETE FROM ${t} WHERE user_id = ?1`).bind(user.id)),
     env.DB.prepare('DELETE FROM identities WHERE user_id = ?1').bind(user.id),
     env.DB.prepare('DELETE FROM rate_limits WHERE key = ?1').bind(await failKey(user.email)),
     // « Parler à un humain »: the conversations of this account go too; payments stay (accounting) without the link
@@ -330,7 +333,27 @@ async function dispatch(request, env, ctx) {
         if (method === 'GET') return json(await getArtist(env, u), 200, { 'Cache-Control': 'no-store' });
         if (method !== 'PUT') break;
         await limit(env, `artist:${u.id}`, 120, 3600e3, 'Too many requests, try again later.');
-        return json(await putArtist(env, u, await readJson(request, 4096)));
+        const before = await env.DB.prepare('SELECT spotify_url FROM artist_profiles WHERE user_id = ?1').bind(u.id).first();
+        const res = await putArtist(env, u, await readJson(request, 4096));
+        // 24/11 (« Stats »): a new Spotify artist → the old artist's figures go, the new ones are read at once in the background
+        // (for the loading screen), at most 5 times a day per account (the robot costs money)
+        const was = spotifyArtistId(before && before.spotify_url), now = spotifyArtistId(res.profile && res.profile.links.spotify);
+        if (was !== now) {
+          await env.DB.batch(['spotify_snapshots', 'spotify_releases', 'spotify_track_counts', 'spotify_sync']
+            .map((t) => env.DB.prepare(`DELETE FROM ${t} WHERE user_id = ?1`).bind(u.id)));
+          if (now && await limit(env, `spnow:${u.id}`, 5, 864e5, '').then(() => true, () => false)) {
+            const p = spotifyNow(env, u.id).catch((e) => console.warn('[stalak] spotify now', e && e.message));
+            if (ctx && typeof ctx.waitUntil === 'function') ctx.waitUntil(p); else await p;
+          }
+        }
+        return json(res);
+      }
+      // 24/11: « Stats »: the free summary, and the Pro part (null + locked for a free account). ?lang=fr|en for the sentences
+      case 'stats': {
+        if (method !== 'GET') break;
+        const u = await requireUser(request, env);
+        await limit(env, `stats:${u.id}`, 120, 3600e3, 'Too many requests, try again later.');
+        return json(await statsFor(env, u, { lang: new URL(request.url).searchParams.get('lang') }), 200, { 'Cache-Control': 'no-store' });
       }
       case 'artist/listeners': {
         if (method !== 'PUT') break;
