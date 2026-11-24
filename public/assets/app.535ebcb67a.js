@@ -9820,12 +9820,20 @@ function mobInit(){
       takes: () => S.takes.filter(t => !t.broll).map(t => ({ el: t.kind === 'video' ? t.el || null : null, demo: t.kind === 'demo', look: t.look || null, stars: t.qual ? qualSummary(t).stars : 0 })),
       cam: () => !!recStream, rec: () => (recRec && recRec.state !== 'inactive') ? 'rec' : recCd ? 'cd' : 'idle', timer: () => recDelay, timerSet: v => recTimerSet(v),
       take: () => S.takes.filter(t => !t.broll && t.kind !== 'demo').length + 1,
-      recPos: () => { if (!S.song || !(recRec && recRec.state !== 'inactive')) return 0; const a = recFrom(), b = Math.min(S.song.duration, S.segEnd + 0.3); return Math.max(0, Math.min(1, (player.currentTime - a) / Math.max(0.1, b - a))); } }) });
+      recPos: () => { if (!S.song || !(recRec && recRec.state !== 'inactive')) return 0; const a = recFrom(), b = Math.min(S.song.duration, S.segEnd + 0.3); return Math.max(0, Math.min(1, (player.currentTime - a) / Math.max(0.1, b - a))); } }),
+    // (refonte mobile, lot 4) the paywall, the 1 € offer and the « thank you » read the same figures and do the same things as the
+    // plans page: nothing here sets a price or a right
+    pw: Object.freeze({ amounts: () => plAmounts('pro'), money: (n, c) => plMoney(n, c), months: () => plMonths(plAmounts('pro')), trial: () => trialOn(), days: () => trialDays(),
+      then: i => trialThen(i), first: i => trialFirst(i), int: () => plInt, setInt: i => { const b = $('#plInt [data-int="' + i + '"]'); if (b) b.click(); },
+      buy: btn => plBuy('pro', btn), of1: () => (offer1On() ? of1Prices : null), thxOpen: () => isShown($('#proThx')), thxClose: () => ptClose(), plan: () => acctPlan() }) });
   const m2 = () => { if (!ACCT || !MOB.matches || !window.STALAK_M2 || m2.done) return; m2.done = true; const e = document.createElement('script'); e.src = window.STALAK_M2; e.async = false; document.head.appendChild(e); };
   m2(); try { MOB.addEventListener('change', m2); } catch(e){}
   // (refonte mobile, lot 3) the editor and the camera on a phone: one more file, loaded the same way
   const m3 = () => { if (!ACCT || !MOB.matches || !window.STALAK_M3 || m3.done) return; m3.done = true; const e = document.createElement('script'); e.src = window.STALAK_M3; e.async = false; document.head.appendChild(e); };
   m3(); try { MOB.addEventListener('change', m3); } catch(e){}
+  // (refonte mobile, lot 4) the tutorial, the help, the paywall, the 1 € offer and the « thank you » on a phone
+  const m4 = () => { if (!ACCT || !MOB.matches || !window.STALAK_M4 || m4.done) return; m4.done = true; const e = document.createElement('script'); e.src = window.STALAK_M4; e.async = false; document.head.appendChild(e); };
+  m4(); try { MOB.addEventListener('change', m4); } catch(e){}
 }
 mobInit();
 
