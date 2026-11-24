@@ -49,7 +49,7 @@ SHOTS (les temps exacts viennent de la voix, voir `build.py`) :
 17. l16 « You film. Stalak edits. » — Deux mots qui claquent sur le temps : une caméra, puis l'icône.
 18. l17 « Free, in your browser… » — Écran de fin : l'icône portée par la neige, le mot « Stalak » qui se dévoile, « stalak.app », « Free · No download · No sign-up » ; tenu 2,5 s.
 
-BANNED: fond noir ou bleu nuit vide, lueurs, particules décoratives (la neige est la neige de la marque), dégradés violets, cartes de verre, papier crème comme fond, trois cartes en ligne, logo dans un coin, texte qui bouge pendant qu'on le lit, tout qui monte en fondu, interface penchée en 3D (l'interface reste de face, seule la caméra bouge autour), barres de progression, bouton ou capacité inventés, chiffre inventé, concurrent cité.
+BANNED: fond noir ou bleu nuit vide, lueurs, particules décoratives (la neige est la neige de la marque), dégradés violets, cartes de verre, papier crème comme fond, trois cartes en ligne, logo dans un coin, texte qui bouge pendant qu'on le lit, tout qui monte en fondu, interface penchée en 3D (l'interface reste de face, seule la caméra bouge autour), barres de progression, bouton ou capacité inventés.
 
 QA (images à vérifier) : 0 s (vignette : le tapis et les bandes, lisible), milieu de chaque plan, l'aspiration et le passage dans le ciel, l'alignement des prises, le gros plan de la bouche verrouillée, le pack, le résultat (ses prises), le logo final ; aucune image noire, rien hors du cadre de sécurité (90 %), texte ≥ 34 px.
 

@@ -56,7 +56,7 @@ SHOTS:   g1 b0-16,5 Q1 · g2 b16,5-34,5 Q2 · g3 b34,5-48 Q3 · BOOM b48 · a1 �
          ../one-shape/SPEC.md, temps + 60) : zone, fichier, son 157 BPM, prises, synchro, paroles, montage 21 plans,
          Shuffle, Frost, export, snippet (1,53 s), l'icône (repli puis tour), le logo, « Free · in your browser · no
          sign-up », stalak.app.
-BANNED:  faux pourcentages ; images de personnes réelles ; concurrent cité ; interface inventée ; écran vide avant
+BANNED:  images de personnes réelles ; interface inventée ; écran vide avant
          la première question (elle est déjà là à la première image) ; blanc dans la voix après le BOOM.
 QA:      les images du jeu (chaque question, chrono, résultat), le BOOM image par image, une image par temps ensuite,
          la planche à la largeur d'un téléphone, le niveau (le jeu, le BOOM, la démo), aucune image noire.

@@ -1,6 +1,6 @@
 # Principes de vente à appliquer sur Stalak (mémoire du propriétaire)
 
-Le propriétaire a envoyé le 22/11/2026 des fiches de conseils marketing à retenir et à appliquer sur le site, l'app et les vidéos. Résumé avec nos mots (les fiches ne sont pas recopiées). À lire par Marketing, App et le Chef de projet avant tout texte de vente, page Tarifs ou écran d'offre. Les règles de Stalak passent toujours avant : aucun chiffre inventé, aucun faux avis, aucune fausse urgence, rien de Pro présenté comme gratuit, on ne promet pas de percer.
+Le propriétaire a envoyé le 22/11/2026 des fiches de conseils marketing à retenir et à appliquer sur le site, l'app et les vidéos. Résumé avec nos mots (les fiches ne sont pas recopiées). À lire par Marketing, App et le Chef de projet avant tout texte de vente, page Tarifs ou écran d'offre. Les règles de Stalak passent toujours avant : aucune fausse urgence, rien de Pro présenté comme gratuit, on ne promet pas de percer.
 
 ## Lot 1 (22/11)
 

@@ -80,4 +80,4 @@ Les sujets d'actualité (Black Friday, sortie d'un jeu, fêtes…) passent en pr
 ## Ce qu'on reprend et ce qu'on change
 
 - **Repris** : barre de débat dès l'image 0, accroche criée et écrite mot à mot, autorité qui tranche, verdict en tampon, chute, pont identique, vraies images du produit, 20 s de produit sans casser le rythme.
-- **À nous** : nos personnages et notre style validés (onglet Univers), le rap et la promo comme sujets, pas de religion, aucune vraie personne dessinée, aucun concurrent nommé, sons dont on a les droits.
+- **À nous** : nos personnages et notre style validés (onglet Univers), le rap et la promo comme sujets, pas de religion, aucune vraie personne dessinée, sons dont on a les droits.

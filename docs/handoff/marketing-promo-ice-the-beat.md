@@ -8,7 +8,7 @@ Résumé : vidéo promo « Ice the Beat » de Stalak (25 s, verticale 1080 × 19
   - Seules les vraies captures de l'app sont utilisées (faites sur la version réelle, à plat, jamais inclinées en 3D).
   - Le passage de 9 à 13,5 s reprend le vrai montage de Stalak (plans 7 à 11 de la version 1).
   - La synchro des lèvres est exacte.
-  - Aucun concurrent, aucun faux avis, aucun chiffre inventé ; seule la phrase « about a minute » est utilisée.
+  - Seule la phrase « about a minute » est utilisée.
 - Voix off : Flora, modèle Google Gemini TTS, avec une voix « pub sociale » amicale choisie par le propriétaire.
 - Musique : « neva die » de 99Sayso (son propre morceau, sa voix incluse), baissée sous la voix off.
 

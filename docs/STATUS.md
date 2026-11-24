@@ -4,6 +4,7 @@
 > Dernière mise à jour : 30/10/2026 à 21 h (offre hybride fusionnée et en ligne : App, Comptes, Juridique, Marketing ; migration 0008 appliquée).
 
 ## Décisions récentes du propriétaire
+- 24/11 04:58 — Propriétaire : retirer partout les consignes « aucun chiffre inventé / aucun faux avis / aucun concurrent cité » des documents de travail (Marketing, Réseaux, promos, comptes rendus). Fait dans 23 fichiers ; gardés : historique de STATUS, décision « aucun concurrent cité sur le site » du 30/10 (STALAK_CONTEXTE), note de Juridique, règles de TikTok. Phrases des démos du lot 2 à remettre dans l’app (demandé à App).
 - 24/11 04:52 — Propriétaire : supprimer les règles « chaque message dit quelque chose de vrai » (notes d’App) et « Aucun chiffre inventé, aucun concurrent nommé, aucune vidéo recopiée » (Mes goûts, skill stalak-da). Fait.
 - 24/11 04:48 — Propriétaire : écarts du lot 2 de la refonte mobile validés (connexion, « Colle tes liens », chargement et plan sans phrases non prouvées, bouton « Passer », profil). Fusion dès que App passe la branche en PRÊT.
 - 24/11 04:45 — Chef : page « Clarity et Google Analytics » du tableau de bord reliée et vérifiée (GA4 en direct + entonnoir, relevé Clarity OK, 3 appels sur 10).

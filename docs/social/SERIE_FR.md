@@ -27,9 +27,8 @@ Il n'y a plus de fichier de lot ni de dossier Drive : **la fiche `videos` de la 
 
 1. **Lire les goûts** : collection `da`, toute la liste (skill `stalak-da`). Pour les légendes, deux points comptent surtout :
    - pas de pub dès la première ligne : la situation d'abord, Stalak à la fin ;
-   - aucun chiffre inventé, aucun concurrent nommé.
 2. **Lire les fiches `valide`** (collection `videos`, `where statut == "valide"`). Pour chacune, vérifier :
-   - la légende : en français, « stalak.app » écrit, aucun concurrent, rien d'inventé ;
+   - la légende : en français, « stalak.app » écrit ;
    - la date, l'heure et la durée.
    Si une légende pose problème, ne pas la corriger soi-même : le dire au propriétaire, car la fiche est validée telle quelle.
 3. **Récupérer la vidéo** : `videoUrl` est un fichier privé de la page, que Zernio ne peut pas lire. Il faut le télécharger avec l'outil `Artifact` (`action: "read"`, `url` de la page, `path` = l'identifiant du fichier), puis l'envoyer à Zernio :
@@ -79,7 +78,7 @@ Il n'y a plus de fichier de lot ni de dossier Drive : **la fiche `videos` de la 
   ```
 - Lien : `stalak.app/fr/?ref=ig`.
 
-Tout ce que disent ces bios est vrai : gratuit sans compte, coupes sur le rythme, prises synchronisées. Aucun concurrent n'est cité.
+Tout ce que disent ces bios est vrai : gratuit sans compte, coupes sur le rythme, prises synchronisées.
 
 ## 3. Rapport du samedi, vidéo par vidéo
 

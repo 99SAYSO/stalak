@@ -9,7 +9,7 @@ Skills : `hyperframes` (story.md, types/launch.md, types/vertical.md), `saas-mot
 - Voix en anglais américain (marché visé : les États-Unis), Achird (Gemini 3.1 Flash TTS dans Flora, comme les promos v5 à v7) : environ 0,03 $ la lecture d'une minute, moins de 0,10 $ avec un second essai. **À valider par le propriétaire avant de la générer.** Option plus expressive : ElevenLabs v3, environ 0,12 $ par tranche de 15 s.
 - Le Short réutilise la même lecture (des phrases choisies) : pas de coût en plus.
 - Vraie interface de Stalak (refaite à partir de l'app, avec ses vrais mots), ses 3 vraies prises de « neva die » pour le résultat, son instru en musique. À vérifier par le propriétaire : la licence de l'instru doit autoriser YouTube (sinon réclamation Content ID possible).
-- Aucun chiffre inventé, aucun concurrent cité, aucun faux utilisateur. Les fonctions payantes sont dites payantes (Pro, Creator Plus).
+- Les fonctions payantes sont dites payantes (Pro, Creator Plus).
 
 ## A. « The edit nobody sees » (recommandée : la douleur est la plus claire, et chacun comprend les 3 étapes)
 

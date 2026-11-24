@@ -13,7 +13,7 @@ Résumé : promo v7 « Your snippet is the problem », demandée par le proprié
   - « Drop your song. Post it everywhere. » (« everywhere » entouré à la main), puis le logo et stalak.app.
 - **Voix** : Gemini 3.1 Flash TTS dans Flora, voix Achird (la même que les v5 et v6), une lecture des 9 phrases (0,013 $, accord du propriétaire), téléchargée par lui.
 - **Son** : l'instru de « neva die » (son intro, sa basse, puis le drop sur « differently »), baissée sous la voix ; sa chanson sous son snippet ; des sons sur ce qui bouge (bibliothèque HyperFrames).
-- **Rien d'inventé** : pas d'avis, pas de statistiques (les seuls chiffres sont les zéros du snippet générique et les vrais 21 plans de son montage), pas de concurrent nommé, la vraie interface pour la partie Stalak.
+- La vraie interface pour la partie Stalak.
 
 Fichiers touchés :
 - `promo/lesson/` : `SPEC.md`, `REVIEW.md`, `MEDIA.md`, `vo_cut.py`, `build.py`, `index.html` et `assets/times.js` (générés), `compositions/film.html`, `assets/engine.js`, polices (Lilita One, Rubik), logo, icône, grain, GSAP, `.gitignore` ;

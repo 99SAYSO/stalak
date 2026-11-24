@@ -7,7 +7,7 @@ Format : 1080 × 1920, 30 i/s, exactement 25,000 s, anglais américain. Brief : 
 - Vraie interface de Stalak seulement (captures faites sur l'app réelle), jamais inclinée en 3D ; seuls les éléments dessinés (cadres, éclats, illustrations) passent en 3D.
 - Synchro des lèvres exacte : temps de la prise = temps du film − 1,452 s ; la vidéo n'est montrée que pour un temps du film compris dans [1,452 ; 13,45] ou dans [17,45 ; 24,45]. Partout ailleurs, ce sont des images fixes.
 - Le plan de 9,04 s à 13,45 s reprend les plans 7 à 11 du vrai montage de Stalak (version 1 : 21 plans, 25,6 s).
-- Phrase sur le temps : seulement « Your video's ready in about a minute » / « IN ABOUT A MINUTE. ». Aucun concurrent, aucun faux avis, aucun chiffre inventé.
+- Phrase sur le temps : seulement « Your video's ready in about a minute » / « IN ABOUT A MINUTE. ».
 - Logo : `assets/brand/icon.svg` et `wordmark.svg` repris tels quels (seul un reflet passe dessus, masqué à sa forme).
 - Pas de filtre CSS sur les vidéos (entrées des cartes en profondeur, sans flou).
 

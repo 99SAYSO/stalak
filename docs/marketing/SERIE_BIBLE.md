@@ -107,7 +107,7 @@ Chaque réplique est générée à part, avec son émotion, mais reste réaliste
 
 - Stalak seulement à la fin, jamais de pub dès la première seconde.
 - Une vidéo montée qu'on montre est toujours synchronisée avec la musique.
-- Aucun chiffre inventé sur Stalak : les chiffres de l'histoire (abonnés, heures) sont de la fiction sur les personnages. Aucun concurrent nommé, aucune vraie marque. **Seule exception : l'épisode « L'appli a fermé » nomme Triller**, décision du propriétaire du 16/11 (« je veux que tu cites Triller, tu dis que Triller n'est plus disponible sur l'App Store, c'est vrai »). Le fait est vérifié (Wikipédia, août 2026 ; article du 1er novembre 2026) ; ni le logo de Triller ni celui de l'App Store ne sont dessinés. Juridique peut relire.
+- Aucune vraie marque. **L'épisode « L'appli a fermé » nomme Triller**, décision du propriétaire du 16/11 (« je veux que tu cites Triller, tu dis que Triller n'est plus disponible sur l'App Store, c'est vrai »). Le fait est vérifié (Wikipédia, août 2026 ; article du 1er novembre 2026) ; ni le logo de Triller ni celui de l'App Store ne sont dessinés. Juridique peut relire.
 - Aucun vrai artiste, ni son image ni son nom : pas de poster de star dans la chambre.
 - L'actualité attire, par exemple la sortie de GTA 6 le 19/11/2026. Mais on n'en garde que le nom :
   - ni logo, ni image, ni musique, ni personnage du jeu ;

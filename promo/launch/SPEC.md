@@ -231,7 +231,7 @@ Les transitions qui étaient déjà faites d'un élément sont gardées : la fen
 ## Interdit
 
 - Rebonds, secousses, pulsations sur les temps, titres qui bougent une fois posés.
-- Boutons inventés, faux chiffres, faux avis, concurrent cité (TikTok, Reels, Shorts et YouTube sont des plateformes, nommées seulement).
+- Boutons inventés.
 - Le logo collé dans un coin, des anneaux de clic.
 - Un fond noir vide.
 - Un simple fondu enchaîné à la place d'une transition. Depuis la v2 (sa demande), on passe d'un monde à l'autre caché par un mouvement ou un élément du décor. Depuis la v5 (sa demande) : **chaque transition est faite d'un élément à l'écran** (un mot, un appareil qui change de forme, un aperçu, une carte, une barre, un bouton, une case, l'écran de l'ordinateur, une traînée de lumière) ; plus de panoramique ni de glissé vers le côté.

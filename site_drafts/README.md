@@ -19,8 +19,6 @@ Marketing & croissance. Écrites le 30/10/2026, publiées le 01/11/2026 sur la b
 `build_site.py` s'occupe du reste : plan du site (liste `GUIDES`, anglais seul), liens « Guides » dans le pied de page de l'accueil anglais, `{{URL}}`, et le bloc vidéo `<!--DEMO-->`, qui n'apparaît que si `site_src/demo/edit.mp4` existe. Depuis le 6/11, c'est un vrai montage Stalak des prises « neva die » du propriétaire, avec son accord (avant / après dans les 6 guides, la vidéo sur la page comparative ; voir `docs/marketing/DEMO.md`). Les images de partage des guides : `make_og.py`.
 
 **Règles :**
-- aucun concurrent cité (la seule page qui en parle est `/triller-alternative`, décision du 31/10) ;
-- aucun chiffre inventé ;
 - les prix sont ceux de la page Tarifs ;
 - les boutons mènent à l'accueil avec `?ref=seo` (la page comparative : `?ref=seo-triller`).
 
@@ -40,4 +38,4 @@ Marketing & croissance, depuis le 09/11/2026 (décision du propriétaire du 9/11
    `site_src/og/` (`--no-og` pour ne pas refaire les images).
 5. Reconstruire le site : `python3 build_site.py --domain stalak.app --email contact@stalak.app`.
 
-Mêmes règles que les guides : aucun concurrent cité, aucun chiffre inventé, prix de la page Tarifs, boutons vers `?ref=seo`.
+Mêmes règles que les guides : prix de la page Tarifs, boutons vers `?ref=seo`.

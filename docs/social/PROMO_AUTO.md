@@ -61,7 +61,7 @@ Un « ok » sur une partie seulement (« ok sauf la 4 ») ne programme que les v
 - 7 vidéos toutes différentes chaque semaine ;
 - **aucune mention d'IA**, ni étiquette, ni « AI voiceover » dans la vidéo ou la légende (décision du propriétaire du 4/11, 0 h 37). Risque connu, accepté par lui : Meta demande d'indiquer une voix réaliste faite par IA et peut sanctionner ; TikTok le demande pour des scènes ou des personnes réalistes. Pour éviter tout risque : des vidéos sans voix off IA ;
 - **décision du propriétaire du 4/11 : sur TikTok, « Ta marque » (contenu promotionnel) et l'étiquette IA ne sont PAS cochés.** Risque connu, accepté par lui : TikTok demande d'indiquer le contenu qui fait la promotion d'une marque ou d'un produit. S'il juge qu'une vidéo en est, il prévient le compte, qui a 24 h pour corriger, sinon la vidéo ne va plus dans le fil « Pour toi » ;
-- aucun faux avis, aucun chiffre inventé, aucun concurrent cité. Des avis des bêta-testeurs (Bloody, Kazzy, h€r) seulement avec leurs vrais mots, leurs pseudos et sans leur photo ;
+- des avis des bêta-testeurs (Bloody, Kazzy, h€r) seulement avec leurs vrais mots, leurs pseudos et sans leur photo ;
 - des liens non cliquables dans les légendes (c'est le cas sur les deux réseaux) : « stalak.app » est écrit dans la vidéo et dans la légende.
 
 ### Réglages proposés pour chaque vidéo (à confirmer par ton « ok »)

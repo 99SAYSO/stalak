@@ -50,7 +50,6 @@ SOUND:   l'instru de « neva die » (son intro, puis sa basse à 3 s, puis le dr
          souffles des cartes, pops des étiquettes et des zéros, impact + scintillement sur le drop et sur l'icône,
          frappe des blocs, montée vers le snippet, impact du snippet, trait du cercle, impact du logo, frappe de l'URL.
 VOICE:   Gemini 3.1 Flash TTS (Flora), voix Achird, celle des v5 et v6, une seule lecture des 9 phrases (0,013 $).
-BANNED:  pas d'avis inventés, pas de chiffres inventés (les seuls chiffres sont les zéros du snippet générique
-         et les vrais 21 plans / 25,6 s de son montage), pas de concurrent nommé, pas d'image de l'exemple,
+BANNED:  pas d'image de l'exemple,
          pas de fausse interface pour la partie Stalak (la vraie carte de montage, ses vraies prises).
 ```

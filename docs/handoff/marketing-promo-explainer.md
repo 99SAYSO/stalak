@@ -25,7 +25,6 @@ Résumé : version 2 de la vidéo promo, demandée par le propriétaire : une vi
   - vraies captures (mobile et ordinateur) et interface reconstruite avec les vrais textes de l'app ;
   - fonctions payantes marquées : PRO pour la transcription auto, Creator Plus pour les packs ;
   - seule la phrase « about a minute » est utilisée ;
-  - aucun concurrent, aucun faux avis, aucun chiffre inventé ; « n°1 » et « 10x plus rapide » ont été refusés faute de preuve.
 - **Son** :
   - voix off Flora (Google Gemini TTS, voix Achird choisie par le propriétaire), blancs raccourcis ;
   - l'instru de « neva die » fournie par le propriétaire, calée pour que le retour du rythme tombe quand le montage démarre ;
