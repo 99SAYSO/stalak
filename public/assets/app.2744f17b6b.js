@@ -8242,6 +8242,7 @@ function apRender(){
     plRender();
     const w = $('#apProWhy'); w.hidden = !apWhyK; if (apWhyK) setT(w, apWhyK); else setT(w, null);
   }
+  if (typeof mobTell === 'function' && mobReady) mobTell();   // (lot 2) src/mobile2.js follows
 }
 /* ---- the plans page (offer of 30/10/2026, evening): Gratuit + Stalak Pro + Stalak Creator Plus, monthly or yearly, in
    dollars (Paddle converts them and adds the VAT of the country) — domaine Comptes ----
@@ -9632,6 +9633,7 @@ function applyLang(){
   if (S.step >= 3) redraw();   // the take's name drawn over the preview
   if (typeof LP !== 'undefined' && LP.offered && !LP.applying) lpOfferUi();
   acctSync();
+  if (mobReady) mobTell();
 }
 const langPick = e => {
   const b = e.target.closest('button[data-lang]'); if (!b || b.dataset.lang === LANG || !LANGS.includes(b.dataset.lang)) return;
@@ -9663,7 +9665,7 @@ document.addEventListener('click', e => { if (e.target.closest && e.target.close
    - html.medit: a song or takes are there, the camera, an export, the end screen: no bar, the editor as before.
    Motion: GSAP timelines, as in the HyperFrames demos (the library comes from the site, only on a phone, never with « reduce
    motion »); without it everything simply shows. ---- */
-var mobReady = false, mobState = '', mobUser, mobGsapP = null, mobListFor = null;
+var mobReady = false, mobState = '', mobUser, mobGsapP = null, mobListFor = null, mobSubs = [];
 const MOB = window.matchMedia ? matchMedia('(max-width:899px)') : { matches: false };
 function mobHome(){ return !$('#p1').hidden && $('#songBox').hidden && !S.takes.length && !S.exporting && !document.body.classList.contains('isdone'); }
 function mobGsap(){
@@ -9705,7 +9707,10 @@ function mobUi(){
     mobPlay(g => g.fromTo(u ? ['#mhHi', '#mhNew', '#mhEx'] : ['#heroPitch'], { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.34, ease: 'power3.out', stagger: 0.06, clearProps: 'opacity,transform' }));
   mobUser = uid;
   mobList();
+  mobTell();
 }
+// (lot 2) the screens of src/mobile2.js (sign-in, profile, pull to refresh, onboarding) follow what is shown
+function mobTell(){ for (const f of mobSubs) try { f(); } catch(e){ diag('mobile2 : ' + (e && e.message)); } }
 /* « Tes derniers montages »: the edit kept on this phone (the card #lpOffer, as before) and the 3 latest saved online (Creator
    Plus; the same list as « Montages », asked once per person) */
 function mobList(){
@@ -9752,6 +9757,12 @@ function mobInit(){
   try { MOB.addEventListener('change', () => mobUi()); } catch(e){}
   mobReady = true; mobUi();
   if (MOB.matches) mobGsap();
+  // lot 2: on a phone of stalak.app, the dressed screens come in their own file, after the app
+  window.StalakM = Object.freeze({ lang: () => LANG, t: (k, v) => _t(k, v), acct: ACCT, view: () => (ACCT && isShown($('#acctPage')) ? apView : null), mode: () => apMode, step: () => apStep,
+    go: (v, o) => apGo(v, o), hide: () => apHide(), plan: () => acctPlan(), paid: () => acctPaid(), name: u => acctName(u), calm: () => calmMotion(), gsap: () => mobGsap(), play: b => mobPlay(b),
+    phone: () => MOB.matches, home: () => mobHome(), cloud: () => (typeof CL !== 'undefined' ? CL : null), reload: () => clLoadList(), on: f => { mobSubs.push(f); } });
+  const m2 = () => { if (!ACCT || !MOB.matches || !window.STALAK_M2 || m2.done) return; m2.done = true; const e = document.createElement('script'); e.src = window.STALAK_M2; e.async = true; document.head.appendChild(e); };
+  m2(); try { MOB.addEventListener('change', m2); } catch(e){}
 }
 mobInit();
 

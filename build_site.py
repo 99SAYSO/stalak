@@ -373,7 +373,7 @@ def page(lang, body):
     h = meta(lang) + head.replace('<title>Stalak</title>', '<title>' + H.escape(PAGE[lang]['title']) + '</title>')
     # the banner and its script come first in the page: shown or not before the first paint, so nothing moves afterwards
     if lang == 'en': h, body = h + PWA_LANG_JS, FR_HINT_HTML + FR_HINT_JS + body
-    body = '<script>' + SPLASH_BOOT % (json.dumps(GSAP_URL), json.dumps('/assets/' + ASSETS['splash'])) + '</script>\n' + body   # first in <body>: the curtain is there before the first picture
+    body = '<script>window.STALAK_M2=' + json.dumps('/assets/' + ASSETS['mobile2']) + ';' + SPLASH_BOOT % (json.dumps(GSAP_URL), json.dumps('/assets/' + ASSETS['splash'])) + '</script>\n' + body   # first in <body>: the curtain is there before the first picture
     tail = ''
     # App & montage (audit 6/11, n° 10): the app's code is no longer written inside the page (860 KB downloaded again at every
     # visit, the page being « no-cache »): two files whose name carries their version (/assets/…), kept a year by the browser
@@ -410,7 +410,8 @@ for f in list(out.glob('*.html')) + list((out / 'fr').glob('*.html')):
 # App & montage (audit 6/11, n° 10): the app's code and the account's, as versioned files
 (out / 'assets').mkdir(exist_ok=True)
 ASSETS = {}
-for _k, _code in (('app', js), ('account', ACCOUNT_JS), ('tiktok', TIKTOK_JS), ('splash', (src / 'splash.js').read_text(encoding='utf-8'))):
+for _k, _code in (('app', js), ('account', ACCOUNT_JS), ('tiktok', TIKTOK_JS), ('splash', (src / 'splash.js').read_text(encoding='utf-8')),
+                  ('mobile2', (src / 'mobile2.js').read_text(encoding='utf-8'))):   # refonte mobile, lot 2 (phones only, loaded by the app)
     _b = _code.encode('utf-8'); _n = _k + '.' + hashlib.sha1(_b).hexdigest()[:10] + '.js'
     (out / 'assets' / _n).write_bytes(_b); ASSETS[_k] = _n
 (out / 'index.html').write_text(page('en', markup_en), encoding='utf-8')
