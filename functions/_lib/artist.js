@@ -17,7 +17,17 @@ const LINKS = {
   appleMusic: { col: 'apple_music_url', hosts: ['music.apple.com'] },
   soundcloud: { col: 'soundcloud_url', hosts: ['soundcloud.com', 'm.soundcloud.com', 'on.soundcloud.com'] },
   instagram: { col: 'instagram_url', hosts: ['instagram.com', 'www.instagram.com'] },
+  // 24/11 (« Stats »): TikTok (needed for the analysis) and YouTube; « @name » accepted for both
+  tiktok: { col: 'tiktok_url', hosts: ['tiktok.com', 'www.tiktok.com', 'm.tiktok.com', 'vm.tiktok.com', 'vt.tiktok.com'] },
+  youtube: { col: 'youtube_url', hosts: ['youtube.com', 'www.youtube.com', 'm.youtube.com', 'music.youtube.com', 'youtu.be'] },
 };
+const HANDLE_URL = { instagram: (h) => 'https://www.instagram.com/' + h + '/', tiktok: (h) => 'https://www.tiktok.com/@' + h, youtube: (h) => 'https://www.youtube.com/@' + h };
+const HANDLE_RE = { instagram: /^@?([A-Za-z0-9._]{1,30})$/, tiktok: /^@([A-Za-z0-9._]{2,24})$/, youtube: /^@([A-Za-z0-9._-]{3,30})$/ };
+// the Spotify artist id in a profile link (open.spotify.com/artist/<22 characters>, also /intl-fr/artist/…); null otherwise
+export function spotifyArtistId(link) {
+  const m = /^https:\/\/open\.spotify\.com\/(?:intl-[a-z]{2}(?:-[a-z]{2})?\/)?artist\/([A-Za-z0-9]{22})(?:[/?]|$)/.exec(String(link || ''));
+  return m ? m[1] : null;
+}
 const LIST_COL = { genres: 'genres', postsOn: 'posts_on', blockers: 'blockers', goals: 'goals' };
 
 const list = (v, allowed) => Array.isArray(v) ? [...new Set(v.map((x) => String(x).toLowerCase()).filter((x) => allowed.includes(x)))] : [];
@@ -27,7 +37,8 @@ const parse = (s) => { try { const a = JSON.parse(s || '[]'); return Array.isArr
 export function cleanLink(kind, v) {
   if (v == null || String(v).trim() === '') return '';
   let s = String(v).trim().slice(0, 300);
-  if (kind === 'instagram' && /^@?[A-Za-z0-9._]{1,30}$/.test(s)) return 'https://www.instagram.com/' + s.replace(/^@/, '') + '/';
+  const hm = HANDLE_RE[kind] && HANDLE_RE[kind].exec(s);
+  if (hm) return HANDLE_URL[kind](hm[1]);
   if (!/^https?:\/\//i.test(s)) s = 'https://' + s;
   let u; try { u = new URL(s); } catch { return undefined; }
   const host = u.hostname.toLowerCase();
@@ -45,7 +56,9 @@ function out(r) {
   if (!r) return null;
   return {
     artistName: r.artist_name || '', genres: parse(r.genres), onPlatforms: r.on_platforms == null ? null : !!r.on_platforms,
-    links: { spotify: r.spotify_url || '', appleMusic: r.apple_music_url || '', soundcloud: r.soundcloud_url || '', instagram: r.instagram_url || '' },
+    genreOther: r.genre_other || '',
+    links: { spotify: r.spotify_url || '', appleMusic: r.apple_music_url || '', soundcloud: r.soundcloud_url || '', instagram: r.instagram_url || '',
+      tiktok: r.tiktok_url || '', youtube: r.youtube_url || '' },
     listenersNow: r.listeners_now || null, postsOn: parse(r.posts_on), blockers: parse(r.blockers), listenersGoal: r.listeners_goal || null,
     goals: parse(r.goals), answeredAt: r.answered_at ? new Date(r.answered_at).toISOString() : null,
   };
@@ -77,6 +90,8 @@ export async function putArtist(env, user, b, now = Date.now()) {
   if (!b || typeof b !== 'object' || Array.isArray(b)) throw new HttpError(400, 'bad_request', 'Send the answers as an object.');
   const set = {};
   if ('artistName' in b) set.artist_name = cleanName(b.artistName) || null;
+  // 24/11: « Dis-nous ce que tu fais » (when « Autre » is chosen), short free text, kept for the analysis
+  if ('genreOther' in b) set.genre_other = cleanName(b.genreOther) || null;
   for (const k in LIST_COL) if (k in b) set[LIST_COL[k]] = JSON.stringify(list(b[k], ARTIST_LISTS[k]));
   if ('onPlatforms' in b) set.on_platforms = b.onPlatforms === true ? 1 : b.onPlatforms === false ? 0 : null;
   if ('listenersNow' in b) set.listeners_now = LISTENERS_NOW.includes(b.listenersNow) ? b.listenersNow : null;

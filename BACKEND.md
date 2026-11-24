@@ -947,3 +947,14 @@ Demande : `docs/handoff/chef-dashboard-clarity-ga4.md`. Code : `functions/_lib/g
 - **Routes** (propriétaire seulement, Cloudflare Access) : `GET /api/admin/analytics?days=1|7|30`, `GET /api/admin/analytics/live`, `GET /api/admin/analytics/tiles`, `POST /api/admin/clarity/refresh {}`.
 - **Démo** (`/admin-demo/`) : réponses inventées de GA4 et Clarity (`tests/fixtures/analytics-fake.mjs`) passées dans le vrai code par `tools/admin_demo_data.mjs`.
 - Sources : [Clarity Data Export API](https://learn.microsoft.com/en-us/clarity/setup-and-installation/clarity-data-export-api), [GA4 Data API, quotas](https://developers.google.com/analytics/devguides/reporting/data/v1/quotas), [GA4 Data API, comptes de service](https://developers.google.com/analytics/devguides/reporting/data/v1/quickstart-client-libraries).
+
+## « Stats » : analyse de l'artiste (24/11)
+
+Demande : `docs/handoff/chef-stats-analyse.md`. Contrat avec App : `docs/contrats/stats-analyse.md`. Code : `functions/_lib/artist.js` (profil), `functions/_lib/spotify.js` (sorties et relevés), `functions/_lib/stats.js` (`GET /api/stats`). **Migration 0023.**
+
+- **Profil** : `genreOther`, `links.tiktok`, `links.youtube` (+ les liens d'avant), même vérification de site.
+- **Sorties** : API officielle de Spotify (`/v1/artists/{id}/albums`, albums et singles, 10 par page, marché `SPOTIFY_MARKET`), avec un jeton d'application (`SPOTIFY_CLIENT_ID` + secret `SPOTIFY_CLIENT_SECRET`) ; lues une fois par semaine et à chaque nouveau lien.
+- **Relevé Apify** (`beatanalytics~spotify-play-count-scraper`, secret `APIFY_TOKEN`) : l'artiste **chaque semaine** (auditeurs mensuels, abonnés, villes), ses sons **une fois par mois** ou dès une nouvelle sortie. `streamCount = 0` veut dire « moins de 1 000 » : envoyé `under1000: true`, jamais « 0 ». Raté → rien n'est écrasé, l'écran le dit ; 2 ratés de suite → alerte au propriétaire (1 par jour au plus). Coût ≈ 0,004 $ par lien, plafonné par lancement.
+- **`GET /api/stats?lang=fr|en`** (connecté) : bilan gratuit en 3 phrases à partir de vraies données ; partie Pro (courbes, sons classés, sorties par mois, rythme, villes) envoyée seulement aux Pro / Creator Plus (`pro: null`, `locked: true` sinon).
+- Tables : `spotify_releases`, `spotify_snapshots`, `spotify_track_counts`, `spotify_sync`, `robot_state` ; effacées avec le compte, et à chaque changement d'artiste.
+- Sources : [Spotify, Get Artist's Albums](https://developer.spotify.com/documentation/web-api/reference/get-an-artists-albums), [Apify, run-sync-get-dataset-items](https://docs.apify.com/api/v2/act-run-sync-get-dataset-items-post), [robot Apify](https://apify.com/beatanalytics/spotify-play-count-scraper).

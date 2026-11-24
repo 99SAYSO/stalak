@@ -552,6 +552,7 @@ import { yearlyReminders } from './reminders.js';
 import { trialReminders } from './trial.js';
 import { dailyRetention } from './retention.js';
 import { clarityDaily } from './clarity.js';
+import { spotifyWeekly } from './spotify.js';
 export async function maybeCleanup(env, ctx, now = Date.now()) {
   try {
     const r = await hit(env, 'cron:cloud-cleanup', CLEANUP_EVERY_MS, now);
@@ -564,7 +565,9 @@ export async function maybeCleanup(env, ctx, now = Date.now()) {
       // audit of 6/11, point 12: what is kept no longer than the privacy page says (retention.js)
       .then(() => dailyRetention(env, now)).catch((e) => console.error('[stalak] retention', e && e.message ? e.message : e))
       // 24/11: the daily snapshot of Microsoft Clarity for the dashboard (clarity.js; once per UTC day, 3 calls of the 10 allowed)
-      .then(() => clarityDaily(env, now)).catch((e) => console.error('[stalak] clarity', e && e.message ? e.message : e));
+      .then(() => clarityDaily(env, now)).catch((e) => console.error('[stalak] clarity', e && e.message ? e.message : e))
+      // 24/11 (« Stats »): the weekly Spotify figures of the artists (spotify.js; 10 artists per run at most)
+      .then(() => spotifyWeekly(env, now)).catch((e) => console.error('[stalak] spotify', e && e.message ? e.message : e));
     if (ctx && typeof ctx.waitUntil === 'function') ctx.waitUntil(p); else await p;
     return true;
   } catch (e) {

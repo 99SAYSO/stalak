@@ -39,6 +39,10 @@ TIKTOK_PIXEL_ID = ""                # TikTok Ads Manager → Events → Web even
 # It also needs 2 SECRETS typed by the owner in Cloudflare (never here): GA4_SA_KEY (the JSON key of the service account,
 # « Lecteur » of this property) and CLARITY_API_TOKEN (Clarity → Settings → Data Export). Without them the page says what to do.
 GA4_PROPERTY_ID = "565628578"         # Google Analytics → Admin → Property details → Property ID (digits only)
+# 24/11 « Stats » (functions/_lib/spotify.js): SECRETS typed by the owner in Cloudflare, never here: APIFY_TOKEN (the robot
+# that reads the public Spotify page, weekly), SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET (developer.spotify.com → the app's
+# settings; the official API for the releases). Without them « Stats » says the figures are not available, nothing made up.
+SPOTIFY_MARKET = "FR"                 # the country used to list releases (Spotify asks one with an app token)
 # Older prices of 30/10 (test subscriptions only), still recognised so their subscribers keep their price:
 # Basic and Pro in euros → pro, Max → creator. Format: id:plan:interval, comma between them.
 PADDLE_PRICES_OLD = ""
