@@ -1,4 +1,4 @@
-Statut : EN COURS (lot 3 fait, maquette à montrer ; série de non-régression en cours ; lot 4 ensuite)
+Statut : PRÊT
 Branche : app/refonte-mobile-lot3 (créée depuis `origin/main` 5c348be le 24/11).
 Maquette de la branche : https://app-refonte-mobile-lot3.stalak-site.pages.dev/fr/ (sur un téléphone : « Voir un exemple »,
 puis la flèche de retour en haut pour remonter les étapes).
@@ -65,3 +65,6 @@ Ce qui ne rentrait pas dans la démo et où c'est allé :
 - `src/mobile3.js` (nouveau), `src/app.js` (flash ; `StalakM.ed` pour lire l'étape, les prises, la caméra ; chargement de
   `mobile3` ; « Continuer » de l'étape 2 sans la petite fenêtre sur téléphone ; l'état du téléphone suit aussi les étapes
   2 à 4), `src/markup.html` (bouton `#recFlash`), `build_site.py`, `tests/ui/refonte_mobile3_ui.py`.
+
+## Série de non-régression (24/11, soir)
+Tout passe sauf les échecs déjà présents sur `main` : `audit611_ui` 89/93 et `partager_ui` 88/92 (Comptes), `clip1_ui` 83/87 (`.band-frost a:hover`, Marketing), `formules_ui` 136/137, `lyrics_ui` 62/73. Le reste : `refonte_mobile3_ui` 91/91, `refonte_mobile4_ui` 69/69, `refonte_mobile2_ui` 142/142, `refonte_mobile_ui` 102/102, `essai_pro_ui` 193/193, `tiktok_ui` 224/224, `pied_de_page_ui` 842/842, `backend` 132/132, etc.
