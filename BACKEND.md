@@ -924,3 +924,26 @@ Décisions du propriétaire du 23/11 (`docs/handoff/chef-mesure-offre-1-euro.md`
 - **Paiement** (`StalakAccount.checkout(plan, interval, opts)`) : `opts.kind` = `'trial'` (ou `{trial: true}`) / `'offer1'` ; `opts.methods` = `allowedPaymentMethods` de Paddle (ex. `['apple_pay']`). Après un achat : évènement de page `stalak:purchase` (`detail: {plan, interval, offer, trial}`) pour l'écran « Bienvenue dans Stalak Pro ».
 
 - **Profil d'artiste et auditeurs** (23/11, 23 h ; migration **0021**, `functions/_lib/artist.js`) : `GET /api/artist`, `PUT /api/artist` (réponses de l'onboarding, listes fermées, liens de leur propre site seulement), `PUT /api/artist/listeners {listeners, week?}` (auditeurs mensuels donnés par l'artiste, semaine ISO, les 8 dernières semaines corrigeables, `null` efface). Tout part avec le compte. Tableau de bord : totaux seulement (carte « Profils d'artistes »).
+
+## Clarity et Google Analytics dans le tableau de bord (24/11)
+
+Demande : `docs/handoff/chef-dashboard-clarity-ga4.md`. Code : `functions/_lib/ga4.js`, `functions/_lib/clarity.js`, routes dans `functions/_lib/admin.js`, page dans `functions/_lib/admin-page.js`. **Migration 0022** (`clarity_snapshots`, `clarity_calls`).
+
+- **Page « 🔍 Clarity et Google Analytics »** (menu ☰) et **2 tuiles sur l'Accueil** (« Sur le site en ce moment », « Plus gros souci repéré »). Rappel en haut : seuls les visiteurs qui ont accepté les cookies sont vus, avec la part estimée (visites GA4 ÷ notre compteur `visits` des mêmes jours).
+- **Google Analytics** (Data API v1beta, propriété `GA4_PROPERTY_ID = "565628578"` dans `wrangler.toml`) :
+  - accès par un **compte de service** : le secret **`GA4_SA_KEY`** (tout le fichier JSON de la clé, tapé par le propriétaire dans Cloudflare) ; le compte de service doit être **« Lecteur »** de la propriété, et l'API « Google Analytics Data API » activée dans son projet Google Cloud ;
+  - jeton : JWT RS256 signé avec WebCrypto (aucune bibliothèque), échangé chez `oauth2.googleapis.com/token`, portée `analytics.readonly`, gardé ~50 min en mémoire ;
+  - par chargement : 1 `runReport` (entonnoir sur aujourd'hui / 7 / 30 jours) + 1 `batchRunReports` (sources, pays, appareils, langues, pages + temps d'engagement), gardés 10 min ; en direct : 2 `runRealtimeReport` (pays, pages), gardés 1 min, rafraîchis chaque minute tant que la page est ouverte ;
+  - **limites** (propriété standard, lues le 24/11) : 200 000 jetons par jour, 40 000 par heure, 14 000 par projet et par heure, 10 requêtes en même temps, 10 erreurs serveur par heure ; le temps réel a les mêmes chiffres à part. Un rapport coûte ~10 jetons : on en est très loin ;
+  - entonnoir : `accueil_vue` → `onboarding_etape_N` (seulement ceux reçus sur la période) → `export_lance` → `export_ok` → `paywall_vu` → `checkout_ouvert` → `achat`, en personnes (`totalUsers`), % de l'étape d'avant ; la plus grosse perte en rouge.
+- **Clarity** (Data Export API, projet `CLARITY_PROJECT_ID`) :
+  - secret **`CLARITY_API_TOKEN`** (Clarity → Paramètres → Exportation de données → « Générer un nouveau jeton d'API ») ;
+  - **limites** (lues le 24/11) : **10 appels par projet et par jour**, 1 à 3 jours en arrière seulement, 3 dimensions au plus, 1 000 lignes, pas de pages suivantes ; 429 = limite du jour atteinte ;
+  - **un relevé par jour UTC** (les 24 h d'avant), 3 appels : par appareil ; par page et appareil ; par canal. Gardé en base 400 jours. Jamais plus de 8 appels par jour. Un 429 arrête les appels jusqu'au lendemain ; un jeton refusé arrête aussi. **Le dernier relevé reste affiché** ;
+  - lancé par les tâches du jour (`cloud.js maybeCleanup` toutes les 6 h au plus, `POST /api/cron/cloud-cleanup`, le Worker `workers/cloud-cleanup` s'il a aussi le secret) et par le bouton « Relever maintenant » (ne fait que ce qui manque au relevé du jour ; 6 fois par jour au plus) ;
+  - signaux de friction par page et appareil (clics de rage, clics morts, retours rapides, erreurs JavaScript, clics suivis d'une erreur, défilement excessif), avec un lien « Voir les enregistrements » vers Clarity (`clarity.microsoft.com/projects/view/<id>/impressions`, nouvel onglet) et le filtre à choisir écrit dessous. Les vidéos restent chez Clarity.
+- **Vie privée** : que des totaux. Adresses de page gardées sans « ?… » ni « #… » (un lien de connexion peut porter un code), tout texte avec « @ » masqué, jamais d'IP, d'e-mail ni d'identifiant de visiteur demandés ni affichés.
+- **Secret absent ou refusé** : la page écrit quoi faire (comme « Relier mon Telegram »), sans erreur.
+- **Routes** (propriétaire seulement, Cloudflare Access) : `GET /api/admin/analytics?days=1|7|30`, `GET /api/admin/analytics/live`, `GET /api/admin/analytics/tiles`, `POST /api/admin/clarity/refresh {}`.
+- **Démo** (`/admin-demo/`) : réponses inventées de GA4 et Clarity (`tests/fixtures/analytics-fake.mjs`) passées dans le vrai code par `tools/admin_demo_data.mjs`.
+- Sources : [Clarity Data Export API](https://learn.microsoft.com/en-us/clarity/setup-and-installation/clarity-data-export-api), [GA4 Data API, quotas](https://developers.google.com/analytics/devguides/reporting/data/v1/quotas), [GA4 Data API, comptes de service](https://developers.google.com/analytics/devguides/reporting/data/v1/quickstart-client-libraries).

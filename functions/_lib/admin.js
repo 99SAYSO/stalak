@@ -19,6 +19,8 @@ import { notifyOwner, ntfyOn } from './notify.js';
 import { sendThanks, thanksEmail } from './thanks.js';
 import { tgStatus, linkTelegram, unlinkTelegram } from './telegram.js';
 import { limit } from './ratelimit.js';
+import { ga4Report, ga4Live } from './ga4.js';
+import { clarityView, clarityDaily, clarityOn } from './clarity.js';
 
 const TEAM = /^https:\/\/[a-z0-9][a-z0-9-]{0,62}\.cloudflareaccess\.com$/;
 const TICKET = /^t_[A-Za-z0-9_-]{16,32}$/;
@@ -582,6 +584,32 @@ export async function admin(request, env, method, rest) {
   if (route === 'telegram-unlink' && method === 'POST') {
     await readJson(request);
     return json(await unlinkTelegram(env));
+  }
+  // « 🔍 Clarity et Google Analytics » (24/11): GA4 asked live (kept 10 min / 1 min in memory), Clarity read from the daily
+  // snapshot in D1 (never from Clarity's API here, except « Relever maintenant »). Our own visit counter of the same days,
+  // to show which share of the visitors accepted the cookies.
+  if (route === 'analytics' && method === 'GET') {
+    const d = Number.parseInt(url.searchParams.get('days') || '7', 10), days = [1, 7, 30].includes(d) ? d : 7;
+    const from = new Date(Date.now() - (days - 1) * 864e5).toISOString().slice(0, 10);
+    const [ga4, clarity, v] = await Promise.all([ga4Report(env, days), clarityView(env),
+      env.DB.prepare('SELECT COUNT(*) AS n FROM visits WHERE day >= ?1').bind(from).first()]);
+    return json({ days, ga4, clarity, visits: (v && v.n) || 0 });
+  }
+  if (route === 'analytics/live' && method === 'GET') return json(await ga4Live(env));
+  // the 2 tiles of Accueil: people on the site now (GA4), the biggest friction of the last snapshot (Clarity)
+  if (route === 'analytics/tiles' && method === 'GET') {
+    const [live, c] = await Promise.all([ga4Live(env), clarityView(env)]);
+    const s = c.snapshot;
+    return json({ ga4: { state: live.state, error: live.error || null, missing: live.missing || null, now: live.now ?? null, top: live.countries ? live.countries.slice(0, 3) : [] },
+      clarity: { state: c.state, at: s ? s.at : null, sessions: s && s.totals ? s.totals.sessions : null, top: s && s.friction.length ? s.friction[0] : null, stale: !!c.stale } });
+  }
+  // « Relever maintenant »: what today's Clarity snapshot lacks (after adding the token, for example); same daily budget
+  if (route === 'clarity/refresh' && method === 'POST') {
+    await readJson(request);
+    if (!clarityOn(env)) return json({ clarity: 'off' });
+    await limit(env, 'clarity-refresh', 6, 864e5, 'Too many tries today.');
+    const r = await clarityDaily(env);
+    return json({ ...r, view: await clarityView(env) });
   }
   if (route === 'available' && method === 'POST') {
     const body = await readJson(request);

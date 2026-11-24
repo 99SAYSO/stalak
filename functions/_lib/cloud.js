@@ -551,6 +551,7 @@ export async function cleanupCloud(env, now = Date.now(), { max = 100 } = {}) {
 import { yearlyReminders } from './reminders.js';
 import { trialReminders } from './trial.js';
 import { dailyRetention } from './retention.js';
+import { clarityDaily } from './clarity.js';
 export async function maybeCleanup(env, ctx, now = Date.now()) {
   try {
     const r = await hit(env, 'cron:cloud-cleanup', CLEANUP_EVERY_MS, now);
@@ -561,7 +562,9 @@ export async function maybeCleanup(env, ctx, now = Date.now()) {
       // 23/11: the e-mail 2 days before the first payment of a free trial (trial.js)
       .then(() => trialReminders(env, now, { max: 10 })).catch((e) => console.error('[stalak] trial reminders', e && e.stack ? e.stack : e))
       // audit of 6/11, point 12: what is kept no longer than the privacy page says (retention.js)
-      .then(() => dailyRetention(env, now)).catch((e) => console.error('[stalak] retention', e && e.message ? e.message : e));
+      .then(() => dailyRetention(env, now)).catch((e) => console.error('[stalak] retention', e && e.message ? e.message : e))
+      // 24/11: the daily snapshot of Microsoft Clarity for the dashboard (clarity.js; once per UTC day, 3 calls of the 10 allowed)
+      .then(() => clarityDaily(env, now)).catch((e) => console.error('[stalak] clarity', e && e.message ? e.message : e));
     if (ctx && typeof ctx.waitUntil === 'function') ctx.waitUntil(p); else await p;
     return true;
   } catch (e) {

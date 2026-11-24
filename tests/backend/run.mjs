@@ -4580,6 +4580,225 @@ test('tiktok stats: free preview (followers, views and likes of the last 10); Pr
   assert.ok(!JSON.stringify(r.data).includes('act.'));
 });
 
+// ---- 24/11: Clarity and Google Analytics in the dashboard (functions/_lib/ga4.js, clarity.js) ----------------------------
+import { ga4ResetCache, funnelFrom } from '../../functions/_lib/ga4.js';
+import { clarityDaily, cleanAnswer } from '../../functions/_lib/clarity.js';
+const GA_KEYPAIR = await crypto.subtle.generateKey({ name: 'RSASSA-PKCS1-v1_5', modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: 'SHA-256' }, true, ['sign', 'verify']);
+const GA_PEM = '-----BEGIN PRIVATE KEY-----\n' + Buffer.from(await crypto.subtle.exportKey('pkcs8', GA_KEYPAIR.privateKey)).toString('base64').replace(/.{64}/g, '$&\n') + '\n-----END PRIVATE KEY-----\n';
+const GA_KEY = JSON.stringify({ type: 'service_account', project_id: 'stalak', client_email: 'dash@stalak.iam.gserviceaccount.com', private_key: GA_PEM });
+const GA_ENV = { ...ADMIN_ENV, GA4_PROPERTY_ID: '565628578', CLARITY_PROJECT_ID: 'zic7crm0mc' };
+const gaReport = (dims, metrics, rows, totals) => ({ dimensionHeaders: dims.map((name) => ({ name })), metricHeaders: metrics.map((name) => ({ name })),
+  rows: rows.map((r) => ({ dimensionValues: r.slice(0, dims.length).map((value) => ({ value })), metricValues: r.slice(dims.length).map((v) => ({ value: String(v) })) })),
+  totals: totals ? [{ metricValues: totals.map((v) => ({ value: String(v) })) }] : undefined });
+function gaFake(log, { token = 200, api = 200 } = {}) {
+  return async (url, init) => {
+    if (url === 'https://oauth2.googleapis.com/token') {
+      const form = new URLSearchParams(init.body); log.push({ kind: 'token', form });
+      return token === 200 ? Response.json({ access_token: 'ya29.fake', expires_in: 3599, token_type: 'Bearer' }) : Response.json({ error: 'invalid_grant' }, { status: token });
+    }
+    const m = /^https:\/\/analyticsdata\.googleapis\.com\/v1beta\/properties\/565628578:(\w+)$/.exec(url);
+    if (!m) return null;
+    const body = JSON.parse(init.body); log.push({ kind: m[1], body, auth: init.headers.Authorization });
+    if (api !== 200) return Response.json({ error: { code: api } }, { status: api });
+    if (m[1] === 'runReport') return Response.json(gaReport(['eventName', 'dateRange'], ['totalUsers', 'eventCount'], [
+      ['accueil_vue', 'd30', 1000, 1300], ['onboarding_etape_2', 'd30', 700, 700], ['onboarding_etape_1', 'd30', 800, 800], ['export_lance', 'd30', 400, 500],
+      ['export_ok', 'd30', 360, 420], ['paywall_vu', 'd30', 100, 120], ['checkout_ouvert', 'd30', 40, 41], ['achat', 'd30', 10, 10],
+      ['accueil_vue', 'd7', 300, 320], ['export_lance', 'd7', 120, 130], ['export_ok', 'd7', 10, 12], ['achat', 'd7', 2, 2]]));
+    if (m[1] === 'batchRunReports') return Response.json({ reports: [
+      gaReport(['sessionSource', 'sessionMedium'], ['sessions', 'totalUsers'], [['tiktok.com', 'referral', 50, 40], ['(direct)', '(none)', 30, 25]]),
+      gaReport(['countryId'], ['activeUsers', 'sessions'], [['FR', 40, 50], ['US', 20, 22], ['(not set)', 1, 1]]),
+      gaReport(['deviceCategory'], ['activeUsers', 'sessions', 'userEngagementDuration', 'screenPageViews'], [['mobile', 50, 60, 5000, 90], ['desktop', 11, 13, 1100, 20]], [61, 73, 6100, 110]),
+      gaReport(['language'], ['activeUsers'], [['French', 40], ['English', 21]]),
+      gaReport(['pagePath'], ['screenPageViews', 'activeUsers', 'userEngagementDuration'], [['/fr/?code=123456', 60, 30, 900], ['/', 30, 20, 400]]),
+    ] });
+    if (m[1] === 'runRealtimeReport') return body.dimensions[0].name === 'countryId'
+      ? Response.json(gaReport(['countryId'], ['activeUsers'], [['FR', 3], ['US', 1]], [4]))
+      : Response.json(gaReport(['unifiedScreenName'], ['activeUsers'], [['Stalak – montage', 3]]));
+    return null;
+  };
+}
+const CL_ANSWERS = {
+  Device: [{ metricName: 'Traffic', information: [{ totalSessionCount: '80', totalBotSessionCount: '5', distantUserCount: '60', PagesPerSessionPercentage: 1.5, Device: 'Mobile' },
+      { totalSessionCount: '20', totalBotSessionCount: '1', distantUserCount: '18', PagesPerSessionPercentage: 2.5, Device: 'PC' }] },
+    { metricName: 'RageClickCount', information: [{ sessionsCount: '80', sessionsWithMetricPercentage: 10, subTotal: '12', Device: 'Mobile' }] },
+    { metricName: 'ScrollDepth', information: [{ averageScrollDepth: 50, Device: 'Mobile' }, { averageScrollDepth: 70, Device: 'PC' }] }],
+  'URL,Device': [{ metricName: 'Rage Click Count', information: [
+      { sessionsCount: '40', sessionsWithMetricPercentage: 20, subTotal: '9', URL: 'https://stalak.app/fr/?code=987654#x', Device: 'Mobile' },
+      { sessionsCount: '10', sessionsWithMetricPercentage: 5, subTotal: '3', URL: 'https://stalak.app/fr/', Device: 'Mobile' },
+      { sessionsCount: '5', sessionsWithMetricPercentage: 2, subTotal: '1', URL: 'fan@example.com', Device: 'PC' }] },
+    { metricName: 'DeadClickCount', information: [{ sessionsCount: '30', sessionsWithMetricPercentage: 8, subTotal: '5', URL: 'https://stalak.app/', Device: 'PC' }] }],
+  Channel: [{ metricName: 'Traffic', information: [{ totalSessionCount: '70', Channel: 'Social' }, { totalSessionCount: '30', Channel: 'Direct' }] }],
+};
+function clarityFake(log, status = () => 200) {
+  return async (url, init) => {
+    if (!url.startsWith('https://www.clarity.ms/export-data/api/v1/project-live-insights')) return null;
+    const q = new URL(url).searchParams, dims = [q.get('dimension1'), q.get('dimension2'), q.get('dimension3')].filter(Boolean).join(',');
+    log.push({ dims, days: q.get('numOfDays'), auth: init.headers.Authorization });
+    const st = status(log.length, dims);
+    if (st !== 200) return new Response(st === 429 ? 'Exceeded daily limit' : 'no', { status: st });
+    return Response.json(CL_ANSWERS[dims] || []);
+  };
+}
+
+test('analytics page: without the secrets, it says what to do, no error, nothing sent to Google or Clarity (24/11)', async () => {
+  ga4ResetCache();
+  const env = makeEnv(GA_ENV), log = []; extraFetch = async (u, i) => (await gaFake(log)(u, i)) || (await clarityFake(log)(u, i));
+  try {
+    let r = await adminCall(env, 'GET', '/api/admin/analytics?days=7', { token: await accessToken() });
+    assert.equal(r.status, 200, JSON.stringify(r.data));
+    assert.deepEqual([r.data.ga4.state, r.data.ga4.missing, r.data.clarity.state, r.data.clarity.snapshot], ['off', 'GA4_SA_KEY', 'off', null]);
+    r = await adminCall(env, 'GET', '/api/admin/analytics/tiles', { token: await accessToken() });
+    assert.equal(r.status, 200); assert.equal(r.data.ga4.state, 'off'); assert.equal(r.data.clarity.state, 'off');
+    r = await adminCall(env, 'POST', '/api/admin/clarity/refresh', { token: await accessToken(), body: {} });
+    assert.deepEqual(r.data, { clarity: 'off' });
+    assert.deepEqual(await clarityDaily(env), { clarity: 'off' });
+    // a key that is not a service-account JSON: « bad_key », said on the page
+    r = await adminCall({ ...env, GA4_SA_KEY: '{"client_email":"x"}' }, 'GET', '/api/admin/analytics', { token: await accessToken() });
+    assert.equal(r.data.ga4.state, 'bad_key');
+    assert.equal(log.length, 0);
+    // owner only
+    r = await adminCall(env, 'GET', '/api/admin/analytics');
+    assert.equal(r.status, 403);
+  } finally { extraFetch = null; }
+});
+
+test('analytics page: GA4 with a service account (JWT RS256 signed here), funnel with the biggest loss, sources, countries, devices (24/11)', async () => {
+  ga4ResetCache();
+  const env = makeEnv({ ...GA_ENV, GA4_SA_KEY: GA_KEY }), log = []; extraFetch = gaFake(log);
+  try {
+    env.DB.raw.prepare('INSERT INTO visits (day, vid, first_at, last_at, lang) VALUES (?, ?, ?, ?, ?)')
+      .run(new Date().toISOString().slice(0, 10), 'v1', Date.now(), Date.now(), 'fr');
+    let r = await adminCall(env, 'GET', '/api/admin/analytics?days=30', { token: await accessToken() });
+    assert.equal(r.status, 200, JSON.stringify(r.data));
+    const g = r.data.ga4;
+    assert.equal(g.state, 'ok', JSON.stringify(g)); assert.equal(g.days, 30); assert.equal(r.data.visits, 1);
+    // the token: a JWT for the service account, signed with its private key, for the read-only scope
+    const tok = log.find((x) => x.kind === 'token');
+    assert.equal(tok.form.get('grant_type'), 'urn:ietf:params:oauth:grant-type:jwt-bearer');
+    const [h, c, sig] = tok.form.get('assertion').split('.');
+    const claims = JSON.parse(Buffer.from(c, 'base64url').toString());
+    assert.equal(JSON.parse(Buffer.from(h, 'base64url').toString()).alg, 'RS256');
+    assert.equal(claims.iss, 'dash@stalak.iam.gserviceaccount.com'); assert.equal(claims.aud, 'https://oauth2.googleapis.com/token');
+    assert.equal(claims.scope, 'https://www.googleapis.com/auth/analytics.readonly'); assert.equal(claims.exp - claims.iat, 3600);
+    assert.ok(await crypto.subtle.verify('RSASSA-PKCS1-v1_5', GA_KEYPAIR.publicKey, Buffer.from(sig, 'base64url'), new TextEncoder().encode(h + '.' + c)));
+    assert.ok(log.filter((x) => x.kind !== 'token').every((x) => x.auth === 'Bearer ya29.fake'));
+    // the funnel: onboarding steps in their order, % from the step before, the biggest loss marked
+    const f = g.funnel.d30;
+    assert.deepEqual(f.map((s) => s.name), ['accueil_vue', 'onboarding_etape_1', 'onboarding_etape_2', 'export_lance', 'export_ok', 'paywall_vu', 'checkout_ouvert', 'achat']);
+    assert.deepEqual(f.map((s) => s.people), [1000, 800, 700, 400, 360, 100, 40, 10]);
+    assert.equal(f.find((s) => s.worst).name, 'achat');   // 40 → 10 = 25 %
+    assert.equal(f[5].fromPrev, 27.8);
+    assert.equal(g.funnel.d7.find((s) => s.worst).name, 'paywall_vu');   // 10 → 0 (and no onboarding step: none sent that week)
+    assert.ok(!g.funnel.d7.some((s) => /^onboarding/.test(s.name)));
+    assert.equal(g.funnel.d1.filter((s) => s.worst).length, 0);
+    assert.deepEqual(g.sources[0], { source: 'tiktok.com', medium: 'referral', sessions: 50, people: 40 });
+    assert.deepEqual(g.countries.map((x) => x.country), ['FR', 'US', null]);
+    assert.deepEqual(g.totals, { people: 61, sessions: 73, views: 110, engagementPerPerson: 100 });
+    assert.equal(g.pages[0].page, '/fr/');   // no « ?code=… » ever shown
+    // asked for the right period, only totals (no user id dimension)
+    const batch = log.find((x) => x.kind === 'batchRunReports');
+    assert.equal(batch.body.requests.length, 5);
+    assert.deepEqual(batch.body.requests[0].dateRanges, [{ startDate: '29daysAgo', endDate: 'today' }]);
+    assert.ok(!JSON.stringify(log.map((x) => x.body || null)).match(/clientId|userId|ip/i));
+    // kept 10 min: the same page again asks nothing; the token is reused for another period
+    const before = log.length;
+    await adminCall(env, 'GET', '/api/admin/analytics?days=30', { token: await accessToken() });
+    assert.equal(log.length, before);
+    await adminCall(env, 'GET', '/api/admin/analytics?days=7', { token: await accessToken() });
+    assert.equal(log.filter((x) => x.kind === 'token').length, 1);
+    // live: people now, by country and page
+    r = await adminCall(env, 'GET', '/api/admin/analytics/live', { token: await accessToken() });
+    assert.equal(r.data.now, 4); assert.deepEqual(r.data.countries[0], { country: 'FR', people: 3 }); assert.equal(r.data.pages[0].people, 3);
+    r = await adminCall(env, 'GET', '/api/admin/analytics/tiles', { token: await accessToken() });
+    assert.equal(r.data.ga4.now, 4);
+  } finally { extraFetch = null; }
+});
+
+test('analytics page: GA4 errors become a sentence on the page, not a crash (24/11)', async () => {
+  for (const [opt, code] of [[{ api: 403 }, 'access'], [{ api: 429 }, 'quota'], [{ token: 400 }, 'key_refused'], [{ api: 500 }, 'http_500']]) {
+    ga4ResetCache();
+    const env = makeEnv({ ...GA_ENV, GA4_SA_KEY: GA_KEY }), log = []; extraFetch = gaFake(log, opt);
+    try {
+      const r = await adminCall(env, 'GET', '/api/admin/analytics', { token: await accessToken() });
+      assert.equal(r.status, 200); assert.deepEqual(r.data.ga4, { state: 'error', error: code });
+      const l = await adminCall(env, 'GET', '/api/admin/analytics/live', { token: await accessToken() });
+      assert.equal(l.data.state, 'error');
+    } finally { extraFetch = null; }
+  }
+  assert.equal(funnelFrom({}).d30[0].people, 0);
+});
+
+test('clarity: one snapshot a UTC day (3 calls), cleaned, read from the base; never twice the same day (24/11)', async () => {
+  const env = makeEnv({ ...GA_ENV, CLARITY_API_TOKEN: 'clarity-token-0123456789' }), log = []; extraFetch = clarityFake(log);
+  try {
+    const t0 = Date.parse('2026-11-24T08:00:00Z');
+    let r = await clarityDaily(env, t0);
+    assert.deepEqual(r, { clarity: 'ok', fetched: 3, day: '2026-11-24' });
+    assert.deepEqual(log.map((x) => x.dims), ['Device', 'URL,Device', 'Channel']);
+    assert.ok(log.every((x) => x.days === '1' && x.auth === 'Bearer clarity-token-0123456789'));
+    // later the same day (the 6-hour task, the Worker, the cron): nothing asked
+    assert.equal((await clarityDaily(env, t0 + 5 * 3600e3)).clarity, 'done');
+    assert.equal(log.length, 3);
+    const stored = env.DB.raw.prepare('SELECT data FROM clarity_snapshots').all().map((x) => x.data).join(' ');
+    assert.ok(!stored.includes('987654') && !stored.includes('@'), 'no « ?code », no e-mail stored');
+    assert.equal(env.DB.raw.prepare("SELECT n FROM clarity_calls WHERE day = '2026-11-24'").get().n, 3);
+    // the page
+    const res = await adminCall(env, 'GET', '/api/admin/analytics', { token: await accessToken() });
+    const c = res.data.clarity, s = c.snapshot;
+    assert.equal(c.state, 'ok'); assert.equal(c.calls.today >= 0, true);
+    assert.equal(s.totals.sessions, 100); assert.equal(s.totals.bots, 6); assert.equal(s.totals.pagesPerSession, 1.7);
+    assert.equal(s.totals.scrollDepth, 60); assert.deepEqual(s.signals.rage, { count: 12, pct: 10 });
+    assert.deepEqual(s.devices.map((d) => d.device), ['Mobile', 'PC']); assert.deepEqual(s.channels[0], { channel: 'Social', sessions: 70 });
+    assert.deepEqual(s.friction[0], { signal: 'rage', page: '/fr/', device: 'Mobile', count: 12, pct: 20 });   // the 2 addresses of /fr/ together
+    assert.equal(s.friction.find((x) => x.signal === 'dead').page, '/');
+    assert.ok(!JSON.stringify(res.data).includes('@'));
+    assert.equal(s.recordings, 'https://clarity.microsoft.com/projects/view/zic7crm0mc/impressions');
+    // next day: a new snapshot
+    assert.equal((await clarityDaily(env, t0 + 864e5)).fetched, 3);
+    assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM clarity_snapshots').get().n, 6);
+    assert.deepEqual(cleanAnswer('nope'), null);
+  } finally { extraFetch = null; }
+});
+
+test('clarity: daily limit reached (429) → no more calls that day, the last snapshot stays shown; token refused said (24/11)', async () => {
+  const env = makeEnv({ ...GA_ENV, CLARITY_API_TOKEN: 'clarity-token-0123456789' }), log = [];
+  const t0 = Date.parse('2026-11-23T09:00:00Z'), t1 = t0 + 864e5;
+  extraFetch = clarityFake(log);
+  try {
+    await clarityDaily(env, t0);
+    extraFetch = clarityFake(log, (i, dims) => (dims === 'Device' ? 200 : 429));
+    const r = await clarityDaily(env, t1);
+    assert.equal(r.clarity, 'quota'); assert.equal(log.length, 5);
+    assert.equal((await clarityDaily(env, t1 + 6 * 3600e3)).clarity, 'quota');
+    assert.equal(log.length, 5, 'no call after the 429');
+    // the owner's button, the same day as the 429: nothing asked
+    const { clarityView } = await import('../../functions/_lib/clarity.js');
+    const vv = await clarityView(env, t1 + 3600e3);
+    assert.equal(vv.quotaToday, true); assert.equal(vv.lastError, 'quota'); assert.ok(vv.snapshot.friction.length > 0);
+    // a token refused: stops at once
+    const env2 = makeEnv({ ...GA_ENV, CLARITY_API_TOKEN: 'clarity-token-0123456789' }), log2 = []; extraFetch = clarityFake(log2, () => 401);
+    assert.equal((await clarityDaily(env2, t0)).clarity, 'auth'); assert.equal(log2.length, 1);
+    assert.equal((await clarityView(env2, t0)).lastError, 'auth');
+    // never more than 8 calls a day (errors that are not 429 / 401 count too)
+    const env3 = makeEnv({ ...GA_ENV, CLARITY_API_TOKEN: 'clarity-token-0123456789' }), log3 = []; extraFetch = clarityFake(log3, () => 500);
+    for (let k = 0; k < 5; k++) await clarityDaily(env3, t0 + k * 60e3);
+    assert.equal(log3.length, 8);
+  } finally { extraFetch = null; }
+});
+
+test('clarity: the daily tasks take the snapshot (cron route and the 6-hour task); « Relever maintenant » (24/11)', async () => {
+  const env = makeEnv({ ...GA_ENV, MEDIA: createR2(), CLARITY_API_TOKEN: 'clarity-token-0123456789', CRON_SECRET: 'cron-secret-0123456789' }), log = []; extraFetch = clarityFake(log);
+  try {
+    const r = await call(env, 'POST', '/api/cron/cloud-cleanup', { headers: { Authorization: 'Bearer cron-secret-0123456789' }, origin: null, ct: null });
+    assert.equal(r.status, 200); assert.equal(r.data.clarity, 'ok'); assert.equal(log.length, 3);
+    env.DB.raw.exec('DELETE FROM clarity_snapshots');
+    const b = await adminCall(env, 'POST', '/api/admin/clarity/refresh', { token: await accessToken(), body: {} });
+    assert.equal(b.status, 200, JSON.stringify(b.data)); assert.equal(b.data.fetched, 3); assert.ok(b.data.view.snapshot);
+    const again = await adminCall(env, 'POST', '/api/admin/clarity/refresh', { token: await accessToken(), body: {} });
+    assert.equal(again.data.clarity, 'done'); assert.equal(log.length, 6);
+  } finally { extraFetch = null; }
+});
+
 // ---- runner --------------------------------------------------------------------------
 let failed = 0;
 for (const t of tests) {
