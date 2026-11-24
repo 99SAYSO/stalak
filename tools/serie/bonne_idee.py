@@ -28,7 +28,7 @@ import tcrazy as C  # noqa: E402
 import stalak_part as SP  # noqa: E402
 
 T, WORK, FPS = C.T, C.WORK, C.FPS
-SET = {'bi1': 1, 'bi2': 2, 'bi3': 3}      # the set of the Stalak part (stalak_part.py : 1 the kitchen in the evening, 2 the bedroom, 3 the street)
+SET = {'bi1': 1, 'bi2': 2, 'bi3': 3, 'bi7': 1, 'bi8': 2, 'bi9': 3}      # the set of the Stalak part (stalak_part.py : 1 the kitchen in the evening, 2 the bedroom, 3 the street)
 SHARED = (8, 9, 10, 11, 12, 13, 14)       # the same words in every video : recorded once (bi1). (Line 7, the verdict, is no longer used : 23/11.)
 STALAK = (11, 12, 13, 14)   # in bi1 to bi3 ; the line numbers of each video are found by their words (stalak_nums)
 STALAK_TXT = ("Va sur stalak.app, c'est gratuit.", 'Tu choisis ton son, tu te filmes plusieurs fois,', 'tu colles tes paroles.',

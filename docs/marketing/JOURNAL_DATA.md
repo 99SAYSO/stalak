@@ -44,4 +44,6 @@ Ce qu'on en tire (24/11) :
 | 21 h | n° 8 « Posté à 3 h du mat » | **Durée** : environ 30 s au lieu de 44 |
 | 22 h 30 | n° 9 « Payer une playlist » | **Type de hook** : une question criée (liste « Hooks à tester ») ; horaire 16 h 30 à New York |
 
+Durées réelles : n° 7 46,6 s, n° 8 36,3 s (visé 30 s : les voix sont plus longues que prévu), n° 9 47,2 s. Voix : 21 générations, 0,27 $.
+
 Résultats : à relever le 25/11 avant d'écrire les vidéos du jour.
