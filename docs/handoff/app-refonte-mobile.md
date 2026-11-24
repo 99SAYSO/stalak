@@ -1,4 +1,4 @@
-Statut : EN COURS (lot 1 prêt ; lot 2 : réponses de l’onboarding branchées sur le compte le 24/11, série de tests relancée après la fusion de main)
+Statut : PRÊT (lots 1 et 2 ; lots 3 et 4 à venir sur la même branche)
 Branche : app/refonte-mobile (créée depuis `origin/main` efbb0c0 le 23/11).
 Maquette de la branche : https://app-refonte-mobile.stalak-site.pages.dev (à faire valider par le propriétaire, règle 9).
 
@@ -278,3 +278,41 @@ taste, webapp-testing.
 - À savoir : lancés à plusieurs en même temps, `refonte_mobile_ui` (durée de l'ouverture) et `audit611_ui` peuvent échouer
   sur une machine chargée ; seuls, ils passent.
 - `index.html` : 394,6 Ko (limite 400).
+
+## Lot 2, suite du 24/11 (3 h 22) : les réponses de l'onboarding vont sur le compte
+Demande du Chef : ne pas attendre `StalakAccount.onboarding`, utiliser ce que Comptes a mis en ligne (`saveArtist`, `artist`,
+`PUT /api/artist`, section 8 de `docs/handoff/compte-mesure-et-offre-1-euro.md`). `origin/main` (10e90da) est fusionné.
+- **Noms et listes fermées de Comptes** repris tels quels dans `src/mobile2.js` : `artistName`, `genres`, `onPlatforms`
+  (vrai / faux), `links` (`spotify`, `appleMusic`, `soundcloud`, `instagram`), `listenersNow` (`lt100` `100_1k` `1k_10k`
+  `gt10k`), `postsOn`, `blockers` (`few_views` `editing_time` `no_ideas`), `listenersGoal` (`1k` `10k` `100k` `1m`), `goals`
+  (`song_launch` `post_more` `fill_concerts`).
+- **Envoi** dès que la personne est connectée, et à sa connexion si elle a répondu avant. Une seule fois (`sent` dans
+  `localStorage 'stalak:onb'`, version 2).
+- **Seulement ce qui a été répondu** est envoyé : une question passée n'efface rien. Après « Passer », les réponses déjà
+  données partent aussi.
+- **Liens** : même règle que Comptes, vérifiée dans le téléphone. Un lien d'un autre site est dit sous le champ avant de
+  continuer (« Ce n'est pas un lien Spotify. Corrige-le ou efface-le. »). Si le serveur refuse quand même (`bad_link`), le
+  reste est renvoyé sans les liens.
+- **Autre téléphone, même compte** : si `artist()` rend un profil déjà répondu, rien n'est redemandé. Limite : si le compte
+  n'est pas encore chargé quand l'onboarding se décide (premier lancement), il peut s'afficher une fois.
+- **Les 4 écarts honnêtes sont validés par le propriétaire** (24/11) : phrase de connexion, phrase des liens, plan sans ce
+  qui n'est pas mesuré, bouton « Passer ».
+- Pas fait ici (reste « App » de Comptes, pour les lots suivants) : `onboarding_etape_N`, `montage_lance`, la question
+  hebdomadaire des auditeurs dans « Stats » (`saveListeners`, `listenersDue`).
+
+### Résultats de la série complète (24/11, après la fusion de main, site reconstruit)
+- `refonte_mobile2_ui` **145/145** (en plus : envoi à la connexion avec les noms de Comptes, envoi après « Passer », lien
+  refusé, autre téléphone). Le serveur de test fait tourner les vraies routes de Comptes.
+- Passent : `refonte_mobile_ui` 102/102, `audit_ui` 122/122, `accueil_a_ui` 77/77, `vente_ui` 63/63, `mesure_ui` 114/114,
+  `essai_pro_ui` 193/193, `tiktok_ui` 224/224, `gallery_ui` 48/48, `projet_local_ui` 52/52, `fenetre_pro_ui` 84/84,
+  `fin_export_ui` 98/98, `exports_rates_ui` 80/80, `apercu_depart_ui` 10/10, `fluidite_ui` 30/30, `filtres_ui` 106/106,
+  `export_pub_ui` 22/22, `liens_cmp_ui` 58/58, `pied_de_page_ui` 842/842, `plans_ui` 39/39, `achat_ui` 23/23, `help_ui`
+  42/42, `support_ui` 64/64, serveur 126/126.
+- **Deux séries cassées sur `main` depuis la fusion de Comptes** (mêmes échecs sur `origin/main` 10e90da reconstruit seul,
+  donc pas de ce lot) — **à transmettre à Comptes** :
+  - `audit611_ui` 89/93 : « les scripts à part, chargés après le premier affichage » (le nouveau `/assets/consent.*.js` et
+    un script en ligne de plus) ;
+  - `partager_ui` 88/92 : « l'explication et la légende à copier » (le bloc de l'offre à 1 €, `dvOffer1`, est maintenant
+    placé avant).
+- Échecs anciens, identiques sur `main` : `animations_ui` 28/44, `formules_ui` 136/137, `clip1_ui` 83/87, `lyrics_ui` 62/73.
+- `index.html` : 395,1 Ko (limite 400).
