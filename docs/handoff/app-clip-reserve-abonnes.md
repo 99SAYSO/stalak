@@ -1,4 +1,4 @@
-Statut : EN COURS (code et tests du mode Clip faits ; série de non-régression en cours)
+Statut : PRÊT (code, tests et série de non-régression faits ; maquette à montrer au propriétaire)
 Branche : app/clip-reserve-abonnes (créée depuis `origin/main` 5c348be le 24/11).
 Maquette de la branche : https://app-clip-reserve-abonnes.stalak-site.pages.dev (à montrer au propriétaire, règle 9).
 Demande : `docs/handoff/chef-clip-reserve-abonnes.md` (décision du propriétaire du 24/11 à 7 h 55, remplace celle du 7/11).
@@ -55,3 +55,13 @@ Demande : `docs/handoff/chef-clip-reserve-abonnes.md` (décision du propriétair
   `#heroClip`.
 - `src/markup.html` : texte FR de `#heroClip` (bouton caché).
 - Tests : `clip1_ui.py`, `audit611_ui.py`, `formules_ui.py`, `projet_local_ui.py`, `essai_pro_ui.py`.
+
+## Série de non-régression (24/11, sur la branche, site reconstruit dans une copie à part)
+- Passent : `essai_pro_ui` 205/205 (dont « essai en cours = mode Clip ouvert »), `projet_local_ui` 76/76 (dont « clip gardé »,
+  4 appareils et langues), `audit_ui` 122/122, `accueil_a_ui` 77/77, `refonte_mobile_ui` 102/102, `refonte_mobile2_ui`
+  142/142, `filtres_ui` 106/106, `fin_export_ui` 98/98, `exports_rates_ui` 80/80, `vente_ui` 63/63, `fenetre_pro_ui` 84/84,
+  `plans_ui` 39/39, `achat_ui` 23/23, `gallery_ui` 48/48, serveur 132/132.
+- `clip1_ui` 91/95, `formules_ui` 136/137 : seuls les échecs déjà sur `main` restent (`.band-frost a:hover` de Marketing ;
+  filigrane de l'export gratuit).
+- `audit611_ui` 89/93 et `partager_ui` 88/92 : échecs déjà sur `main` depuis la fusion de Comptes (bandeau cookies ; bloc de
+  l'offre à 1 €) → Comptes.
