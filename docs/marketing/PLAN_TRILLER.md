@@ -13,7 +13,6 @@ La seule voix qu'on utilise est la tienne : « je suis 99Sayso, rappeur, j'ai co
 **Règles à tenir partout :**
 - Un seul compte par réseau, à ton nom d'artiste ou au nom de Stalak. Jamais de second compte qui fait semblant de découvrir l'outil.
 - Dans chaque post et chaque réponse qui parle de Stalak, dis que c'est toi qui l'as fait (« I made this », « c'est mon outil »).
-- Aucun faux avis, aucun faux chiffre, aucun vote ni « like » acheté, aucun ami à qui on demande de commenter comme un inconnu.
 - Lis les règles de chaque groupe Reddit avant de poster : beaucoup n'acceptent la promo que dans un fil dédié, ou pas du tout. En cas de doute, demande d'abord aux modérateurs.
 - Sur un fil où quelqu'un demande une alternative à Triller, tu réponds d'abord à sa question (y compris en citant CapCut ou camrip quand ils lui vont mieux), puis tu proposes Stalak.
 - Pas de message privé à des inconnus qui n'ont rien demandé.

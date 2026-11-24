@@ -267,6 +267,24 @@ details.more-d>summary::before{content:"▸ ";}details.more-d[open]>summary::bef
   .signups li{grid-template-columns:4.6em minmax(0,1fr) auto;row-gap:2px;align-items:start}.signups .when{grid-row:1 / 4}
   .signups .who{grid-column:2;grid-row:1;flex-direction:column;align-items:stretch;gap:0}.signups .who .nm{max-width:none}.signups .who .em{font-size:13.5px}
   .signups .ctry{grid-column:2;grid-row:2}.signups .src{grid-column:2;grid-row:3;font-size:13.5px;color:var(--text2)}.signups .plan{grid-row:1 / 4;grid-column:3;align-self:center}}
+/* 24/11: « Clarity et Google Analytics » */
+.anote{background:var(--warn-bg);color:var(--warn);border:2px solid var(--warn);border-radius:14px;padding:10px 14px;font-weight:600;margin:0 0 14px}
+.acard{margin-top:16px}.acard .hbest{flex-wrap:wrap}
+.setup{background:var(--sunk);border-radius:14px;padding:12px 14px;margin-top:10px}.setup p{margin:0 0 6px}.setup ol{margin:6px 0 0;padding-left:22px}.setup li{margin:4px 0}
+.setup.err{background:var(--bad-bg);color:var(--bad)}
+.livebig{display:flex;align-items:baseline;gap:10px;margin:8px 0}.livebig b{font-family:Lilita,Rubik,sans-serif;font-size:46px;line-height:1;font-variant-numeric:tabular-nums}
+.fstep.worst .tr i{background:var(--bad)}.fstep.worst .rate{color:var(--bad)}.fstep.worst .lab b::after{content:" ⚠ plus grosse perte";color:var(--bad);font-size:12.5px;font-weight:700}
+.agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px 26px;margin-top:14px}.agrid h3{margin:0 0 8px;font-size:15px}
+.akpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:10px}
+.akpis div{background:var(--sunk);border-radius:14px;padding:10px 12px}.akpis b{display:block;font-size:22px;font-variant-numeric:tabular-nums}.akpis span{color:var(--text2);font-size:13px}
+.fric{list-style:none;margin:10px 0 0;padding:0}
+.fric li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:10px 4px;border-bottom:1px solid var(--line)}
+.fric .w{font-weight:700}.fric .w small{display:block;font-weight:400;color:var(--muted);font-size:12.5px}
+.fric .c{font-variant-numeric:tabular-nums;text-align:right;font-weight:700}.fric .c small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.fric a{grid-column:1 / -1;justify-self:start;color:var(--sky-deep);font-weight:700;font-size:14px;text-decoration:none;padding:2px 0}
+.fric a:hover{text-decoration:underline}
+@media (prefers-color-scheme:dark){.fric a{color:var(--series)}}
+.fric a:focus-visible{outline:3px solid var(--sky);outline-offset:2px;border-radius:4px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -289,6 +307,7 @@ __DEMO_BANNER__<header class="top"><div class="in">
     <button type="button" id="tab-users" data-go="users"><span class="ic">🌍</span>Visiteurs et pays</button>
     <button type="button" id="tab-money" data-go="money"><span class="ic">💵</span>Argent <span class="test" data-test hidden>TEST</span></button>
     <button type="button" id="tab-funnel" data-go="funnel"><span class="ic">🪜</span>Du visiteur à l’abonné</button>
+    <button type="button" id="tab-analytics" data-go="analytics"><span class="ic">🔍</span>Clarity et Google Analytics</button>
     <button type="button" id="tab-msgs" data-go="msgs"><span class="ic">💬</span>Messages <span class="badge" id="tabBadge" hidden></span></button>
     <button type="button" id="tab-health" data-go="health"><span class="ic">🩺</span>Santé du serveur</button>
   </nav>
@@ -331,6 +350,14 @@ __DEMO_BANNER__<header class="top"><div class="in">
       <div class="hc" id="hAlerts"><div class="hk"><span class="ico">🔔</span>Alertes<span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
         <div id="hAlertsL"></div>
         <p class="he">Ce qui demande ton attention : messages sans réponse, souci sur le serveur, notifications Telegram pas reliées.</p></div>
+      <div class="hc" id="hLive"><div class="hk"><span class="ico">🔍</span>Sur le site en ce moment<span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
+        <div class="hv" id="hLiveV">–</div><div class="hs" id="hLiveS">&nbsp;</div>
+        <p class="he">Personnes actives sur Stalak ces 30 dernières minutes, d’après Google Analytics : seulement celles qui ont accepté les cookies.</p>
+        <button class="more" type="button" data-go="analytics">Voir Google Analytics →</button></div>
+      <div class="hc" id="hFric"><div class="hk"><span class="ico">😤</span>Plus gros souci repéré (Clarity)<span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
+        <div class="hs" id="hFricV">…</div>
+        <p class="he">D’après le relevé Clarity du jour (24 heures) : l’endroit où les gens ont le plus buté (clics de rage, clics sur rien, retours rapides…). Seulement les visiteurs qui ont accepté les cookies.</p>
+        <button class="more" type="button" data-go="analytics">Voir les frictions →</button></div>
     </div>
   </section>
 
@@ -507,6 +534,59 @@ __DEMO_BANNER__<header class="top"><div class="in">
     <div class="charts" id="funnelCharts" data-mt></div>
   </section>
 
+  <!-- ===== Clarity et Google Analytics (24/11) ===== -->
+  <section class="panel" id="p-analytics" aria-labelledby="tab-analytics" hidden>
+    <p class="anote" id="aNote">⚠️ Clarity et Google Analytics ne voient que les visiteurs qui ont accepté les cookies.</p>
+    <div class="row hctl">
+      <div class="seg" role="group" aria-label="Période" id="aPer"><button type="button" data-d="1" aria-pressed="false">Aujourd’hui</button><button type="button" data-d="7" aria-pressed="true">7 j</button><button type="button" data-d="30" aria-pressed="false">30 j</button></div>
+      <span class="note" id="aAt"></span>
+    </div>
+    <h2>📈 Google Analytics</h2>
+    <div class="card hq acard" id="aLiveCard">
+      <div class="hbest"><span>🟢 En direct</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
+      <p class="he">Les personnes actives sur Stalak ces 30 dernières minutes, par pays et par page (le titre de la page). Mis à jour toutes les minutes tant que cette page est ouverte.</p>
+      <div id="aLive"><p class="note">Chargement…</p></div>
+    </div>
+    <div class="card hq acard" id="aFunCard">
+      <div class="hbest"><span>🪜 L’entonnoir, étape par étape</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
+      <p class="he">Combien de personnes ont fait chaque étape sur la période, et le % par rapport à l’étape d’avant. En rouge : l’étape où l’on perd le plus de monde. Une personne peut sauter une étape (par exemple arriver sans passer par l’accueil) : le % peut alors dépasser 100.</p>
+      <div class="funnel" id="aFunnel"><p class="note">Chargement…</p></div>
+    </div>
+    <div class="card hq acard" id="aAudCard">
+      <div class="hbest"><span>🧭 Sources, pays, appareils</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
+      <p class="he">D’où viennent les visites (source / support : « tiktok.com / referral » = un lien sur TikTok, « (direct) » = adresse tapée ou lien sans indication), les pays, les appareils, les langues du navigateur et les pages les plus vues avec le temps passé dessus.</p>
+      <div id="aAudSetup"></div>
+      <div class="akpis" id="aKpis"></div>
+      <div class="agrid">
+        <div><h3>Sources</h3><ul class="blist" id="aSrc"></ul></div>
+        <div><h3>Pays</h3><ul class="blist" id="aCtry"></ul></div>
+        <div><h3>Appareils</h3><ul class="blist" id="aDev"></ul></div>
+        <div><h3>Langues</h3><ul class="blist" id="aLang"></ul></div>
+        <div><h3>Pages les plus vues</h3><ul class="blist" id="aPages"></ul></div>
+      </div>
+    </div>
+    <h2 data-mt>🎥 Microsoft Clarity</h2>
+    <div class="card hq acard" id="aClCard">
+      <div class="hbest"><span>📋 Le relevé du jour</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
+      <p class="he">Clarity ne donne ses chiffres que sur les 3 derniers jours et seulement 10 fois par jour. Stalak fait donc un relevé une fois par jour (les 24 heures d’avant) et le garde : cette page lit ces relevés, elle n’interroge pas Clarity. Les vidéos des visites restent chez Clarity.</p>
+      <div id="aClState"></div>
+      <div class="akpis" id="aClKpis"></div>
+      <div class="agrid">
+        <div><h3>Appareils</h3><ul class="blist" id="aClDev"></ul></div>
+        <div><h3>Canaux</h3><ul class="blist" id="aClCh"></ul></div>
+        <div><h3>Sessions par jour (14 jours)</h3><ul class="blist" id="aClHist"></ul></div>
+      </div>
+      <div class="row" data-mt><button class="btn" type="button" id="aClBtn">Relever maintenant</button><span class="note" id="aClOut" role="status"></span></div>
+    </div>
+    <div class="card hq acard" id="aFrCard">
+      <div class="hbest"><span>😤 Signaux de friction</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
+      <p class="he">Les endroits où les gens butent. Clics de rage : plusieurs clics rapides au même endroit (agacement). Clics morts : un clic sur quelque chose qui ne réagit pas. Retours rapides : la personne ouvre une page et revient aussitôt. Erreurs JavaScript : un bug dans la page. Défilement excessif : elle fait défiler beaucoup sans trouver. « Voir les enregistrements » ouvre Clarity : choisis-y le filtre indiqué.</p>
+      <div class="akpis" id="aSig"></div>
+      <h3 data-mt>Par page et appareil</h3>
+      <ul class="fric" id="aFric"></ul>
+    </div>
+  </section>
+
   <!-- ===== Messages ===== -->
   <section class="panel" id="p-msgs" aria-labelledby="tab-msgs" hidden>
     <div class="card">
@@ -599,7 +679,7 @@ __DEMO_BANNER__<header class="top"><div class="in">
   }
 
   // ---- menu ☰ (drawer): one page at a time; the period choice only where it means something ----
-  var PAGES = { home: 'Accueil', today: 'Aujourd’hui', hours: 'Heure par heure', signups: 'Nouveaux comptes', users: 'Visiteurs et pays', money: 'Argent', funnel: 'Du visiteur à l’abonné', msgs: 'Messages', health: 'Santé du serveur' };
+  var PAGES = { home: 'Accueil', today: 'Aujourd’hui', hours: 'Heure par heure', signups: 'Nouveaux comptes', users: 'Visiteurs et pays', money: 'Argent', funnel: 'Du visiteur à l’abonné', analytics: 'Clarity et Google Analytics', msgs: 'Messages', health: 'Santé du serveur' };
   var PERIOD = { users: 1, money: 1, funnel: 1, health: 1 };
   function menu(open) {
     var d = $('#drawer'), b = $('#menuBtn');
@@ -624,6 +704,7 @@ __DEMO_BANNER__<header class="top"><div class="in">
     if (name === 'signups' && !S.signupsLoaded) signups();
     if (name === 'hours') hours();
     if (name === 'funnel') vpp();
+    if (name === 'analytics') analytics();
     if (name === 'users') globeStart(); else globeStop();
     if (!/^#t=/.test(location.hash)) try { history.replaceState(null, '', '#' + name); } catch (e) {}
     window.scrollTo(0, 0);
@@ -718,6 +799,163 @@ __DEMO_BANNER__<header class="top"><div class="in">
     }).catch(function (er) { set('#vSum', 'Impossible de charger : ' + er.message); });
   }
   $('#vPer').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; S.vPer = b.dataset.p; vpp(); });
+  // ---- « Clarity et Google Analytics » (24/11): GA4 asked by the server (kept 10 min), Clarity from the daily snapshot ----
+  S.aDays = '7';
+  var STEP_FR = { accueil_vue: 'Arrivée sur l’accueil', export_lance: 'Export lancé', export_ok: 'Vidéo exportée', paywall_vu: 'Formules vues', checkout_ouvert: 'Paiement ouvert', achat: 'Achat' };
+  function stepName(n) { var m = /^onboarding_etape_(\d+)$/.exec(n); return m ? 'Questionnaire, étape ' + m[1] : (STEP_FR[n] || n); }
+  var SIG_FR = { rage: 'Clics de rage', dead: 'Clics morts', quickback: 'Retours rapides', jsError: 'Erreurs JavaScript', errorClick: 'Clics suivis d’une erreur', scroll: 'Défilement excessif' };
+  var SIG_FILTER = { rage: 'Rage clicks', dead: 'Dead clicks', quickback: 'Quick backs', jsError: 'JavaScript errors', errorClick: 'Error clicks', scroll: 'Excessive scrolling' };
+  var DEV_FR = { mobile: 'Téléphone', desktop: 'Ordinateur', tablet: 'Tablette', smart_tv: 'Télé', Mobile: 'Téléphone', PC: 'Ordinateur', Tablet: 'Tablette', Other: 'Autre' };
+  var GA_ERR = { access: 'Google refuse l’accès : dans Google Analytics → Admin → Gestion des accès à la propriété, ajoute l’adresse du compte de service comme « Lecteur » ; vérifie aussi que « Google Analytics Data API » est activée dans Google Cloud.',
+    key_refused: 'Google refuse la clé (elle a peut-être été supprimée) : crée une nouvelle clé du compte de service et remplace le secret GA4_SA_KEY dans Cloudflare.',
+    bad_key: 'Le secret GA4_SA_KEY n’est pas un fichier de clé de compte de service : recolle le fichier JSON entier, de { à }.',
+    quota: 'La limite de Google est atteinte pour l’instant : réessaie dans une heure.' };
+  function secs(s) { s = Math.round(s || 0); return s >= 60 ? Math.floor(s / 60) + ' min ' + (s % 60 ? (s % 60) + ' s' : '') : s + ' s'; }
+  function setupBox(node, kind, d) {
+    node.textContent = '';
+    var box = el('div', { class: 'setup' + (kind === 'err' ? ' err' : '') });
+    if (kind === 'ga_off') {
+      box.append(el('p', null, d.missing === 'GA4_PROPERTY_ID' ? 'Le numéro de la propriété (GA4_PROPERTY_ID) manque dans wrangler.toml : c’est au Chef de projet.' : 'Google Analytics n’est pas encore relié au tableau de bord. Pour le relier :'));
+      if (d.missing !== 'GA4_PROPERTY_ID') { var ol = el('ol');
+        ['Le Chef de projet crée le « compte de service » dans Google Cloud, l’ajoute comme « Lecteur » de la propriété 565628578 et te donne son fichier de clé (JSON).',
+         'Dans Cloudflare → Workers et Pages → stalak-site → Paramètres → Variables et secrets, ajoute le secret GA4_SA_KEY et colle tout le fichier JSON. C’est toi qui le tapes : ne l’envoie à personne.',
+         'Recharge cette page.'].forEach(function (t) { ol.append(el('li', null, t)); });
+        box.append(ol); }
+    } else if (kind === 'cl_off') {
+      box.append(el('p', null, 'Clarity n’est pas encore relié au tableau de bord. Pour le relier :'));
+      var ol2 = el('ol');
+      ['Dans Clarity → Paramètres → Exportation de données, touche « Générer un nouveau jeton d’API » (nom : Stalak tableau de bord).',
+       'Dans Cloudflare → Workers et Pages → stalak-site → Paramètres → Variables et secrets, ajoute le secret CLARITY_API_TOKEN et colle le jeton. C’est toi qui le tapes : ne l’envoie à personne.',
+       'Reviens ici et touche « Relever maintenant ». Ensuite, le relevé se fait tout seul une fois par jour.'].forEach(function (t) { ol2.append(el('li', null, t)); });
+      box.append(ol2);
+    } else box.append(el('p', null, d));
+    node.append(box);
+  }
+  function list(ul, rows, label, value, extra) {
+    ul.textContent = '';
+    if (!rows || !rows.length) { ul.append(el('li', { class: 'empty' }, 'Rien pour l’instant sur cette période.')); return; }
+    var top = Math.max.apply(null, rows.map(value).concat([1])), total = rows.reduce(function (s, r) { return s + value(r); }, 0);
+    rows.forEach(function (r) {
+      var li = el('li'), lab = label(r), tr = el('span', { class: 'tr' }), i = el('i'), n = el('span', { class: 'n' });
+      i.style.width = (value(r) / top * 100) + '%'; tr.append(i);
+      n.append(el('b', null, nf.format(value(r)))); n.append(document.createTextNode(extra ? extra(r) : (total ? ' · ' + pct(value(r), total) + ' %' : '')));
+      li.append(el('span', { class: 'nm', title: lab }, lab), tr, n); ul.append(li);
+    });
+  }
+  function kpis(node, items) {
+    node.textContent = '';
+    items.forEach(function (x) { if (x[1] == null) return; var d = el('div'); d.append(el('b', null, x[1]), el('span', null, x[0])); node.append(d); });
+  }
+  function ctryName(c) { return c ? flag(c) + ' ' + (MAP.names[c] || c) : '🏳️ Inconnu'; }
+  function analyticsLive() {
+    if (S.tab !== 'analytics' || document.hidden) return;
+    api('GET', 'analytics/live').then(function (d) {
+      var box = $('#aLive'); box.textContent = '';
+      if (d.state !== 'ok') { setupBox(box, d.state === 'off' ? 'ga_off' : 'err', d.state === 'off' ? d : (GA_ERR[d.error] || 'Google n’a pas répondu (' + d.error + '). Réessaie dans quelques minutes.')); return; }
+      var big = el('div', { class: 'livebig' }); big.append(el('b', null, nf.format(d.now)), el('span', null, d.now > 1 ? 'personnes en ce moment' : 'personne en ce moment')); box.append(big);
+      var g = el('div', { class: 'agrid' }), a = el('div'), b = el('div'), ua = el('ul', { class: 'blist' }), ub = el('ul', { class: 'blist' });
+      a.append(el('h3', null, 'Pays'), ua); b.append(el('h3', null, 'Pages'), ub); g.append(a, b); box.append(g);
+      list(ua, d.countries, function (r) { return ctryName(r.country); }, function (r) { return r.people; });
+      list(ub, d.pages, function (r) { return r.page || '(sans titre)'; }, function (r) { return r.people; });
+    }).catch(function (e) { set('#aLive', 'Impossible de charger : ' + e.message); });
+  }
+  function analytics() {
+    $$('#aPer button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.d === S.aDays ? 'true' : 'false'); });
+    analyticsLive();
+    return api('GET', 'analytics?days=' + S.aDays).then(function (d) {
+      var g = d.ga4, c = d.clarity, per = { 1: 'aujourd’hui', 7: 'ces 7 jours', 30: 'ces 30 jours' }[d.days];
+      // the reminder: the share of our own visit counter that GA4 sees
+      var share = g.state === 'ok' && d.visits ? Math.min(100, Math.round(g.totals.sessions / d.visits * 100)) : null;
+      set('#aNote', '⚠️ Clarity et Google Analytics ne voient que les visiteurs qui ont accepté les cookies' + (share !== null
+        ? ' : environ ' + share + ' % des visites ' + per + ' (Google Analytics : ' + nf.format(g.totals.sessions) + ' visites ; compteur de Stalak, sans cookie : ' + nf.format(d.visits) + ').'
+        : '. Les compteurs des autres pages de ce tableau de bord comptent tout le monde.'));
+      set('#aAt', g.at ? 'Google Analytics lu à ' + new Date(g.at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + ' (gardé 10 min)' : '');
+      // GA4: the funnel, then the audience
+      var fu = $('#aFunnel'), setup = $('#aAudSetup'); fu.textContent = ''; setup.textContent = '';
+      ['#aSrc', '#aCtry', '#aDev', '#aLang', '#aPages', '#aKpis'].forEach(function (s) { $(s).textContent = ''; });
+      if (g.state !== 'ok') {
+        var msg = g.state === 'off' ? null : (GA_ERR[g.error || g.state] || 'Google n’a pas répondu (' + (g.error || g.state) + '). Réessaie dans quelques minutes.');
+        setupBox(fu, g.state === 'off' ? 'ga_off' : 'err', g.state === 'off' ? g : msg);
+        setupBox(setup, 'err', g.state === 'off' ? 'Rien à montrer tant que Google Analytics n’est pas relié (voir plus haut).' : msg);
+      } else {
+        var steps = g.funnel['d' + d.days] || [], top = Math.max.apply(null, steps.map(function (s) { return s.people; }).concat([1]));
+        if (!steps[0] || !steps.some(function (s) { return s.people; })) fu.append(el('p', { class: 'note' }, 'Pas encore d’étape enregistrée sur cette période.'));
+        else steps.forEach(function (s, i) {
+          var row = el('div', { class: 'fstep' + (s.worst ? ' worst' : '') }), lab = el('div', { class: 'lab' }), tr = el('div', { class: 'tr' }), bar = el('i'), rate = el('div', { class: 'rate' });
+          lab.append(el('b', null, stepName(s.name)), el('small', null, s.name));
+          bar.style.width = Math.max(1, s.people / top * 100) + '%'; tr.append(bar, el('span', null, nf.format(s.people)));
+          rate.append(document.createTextNode(i === 0 ? '—' : s.fromPrev == null ? '—' : String(s.fromPrev).replace('.', ',') + ' %'), el('small', null, i === 0 ? 'départ' : 'de l’étape d’avant'));
+          row.setAttribute('aria-label', stepName(s.name) + ' : ' + nf.format(s.people) + ' personnes' + (i && s.fromPrev != null ? ', ' + s.fromPrev + ' % de l’étape d’avant' : '') + (s.worst ? ', plus grosse perte' : ''));
+          row.append(lab, tr, rate); fu.append(row);
+        });
+        kpis($('#aKpis'), [['personnes', nf.format(g.totals.people)], ['visites', nf.format(g.totals.sessions)], ['pages vues', nf.format(g.totals.views)], ['temps passé moyen par personne', secs(g.totals.engagementPerPerson)]]);
+        list($('#aSrc'), g.sources, function (r) { return (/tiktok/i.test(r.source) ? '🎵 ' : '') + r.source + ' / ' + r.medium; }, function (r) { return r.sessions; });
+        list($('#aCtry'), g.countries, function (r) { return ctryName(r.country); }, function (r) { return r.people; });
+        list($('#aDev'), g.devices, function (r) { return DEV_FR[r.device] || r.device; }, function (r) { return r.people; });
+        list($('#aLang'), g.languages, function (r) { return r.language; }, function (r) { return r.people; });
+        list($('#aPages'), g.pages, function (r) { return r.page; }, function (r) { return r.views; }, function (r) { return ' · ' + secs(r.engagement); });
+      }
+      clarityRender(c);
+    }).catch(function (e) { if (e.code !== 'access') banner('La page Clarity et Google Analytics n’a pas pu être chargée (' + e.message + ').'); });
+  }
+  function clarityRender(c) {
+    var st = $('#aClState'), s = c.snapshot; st.textContent = '';
+    ['#aClKpis', '#aClDev', '#aClCh', '#aClHist', '#aSig', '#aFric'].forEach(function (x) { $(x).textContent = ''; });
+    $('#aClBtn').hidden = c.state === 'off';
+    if (c.state === 'off') setupBox(st, 'cl_off', c);
+    var notes = [];
+    if (c.lastError === 'auth') notes.push('Clarity refuse le jeton : regénère-le (Clarity → Paramètres → Exportation de données) et remplace le secret CLARITY_API_TOKEN.');
+    else if (c.quotaToday) notes.push('Limite du jour de Clarity atteinte (10 appels) : le dernier relevé reste affiché, le prochain se fera demain.');
+    else if (c.lastError && c.state !== 'off') notes.push('Le dernier essai de relevé n’a pas marché (' + c.lastError + ') : il sera refait plus tard.');
+    if (s && c.stale) notes.push('Ce relevé date de plus d’un jour.');
+    if (notes.length) setupBox(st, 'err', notes.join(' '));
+    if (!s) { if (c.state !== 'off') st.append(el('p', { class: 'note' }, 'Pas encore de relevé : touche « Relever maintenant », ou attends le relevé automatique (une fois par jour).')); $('#aFric').append(el('li', { class: 'empty' }, 'Pas encore de relevé.')); return; }
+    var at = new Date(s.at || c.snapshotDay);
+    st.append(el('p', { class: 'note' }, 'Relevé du ' + at.toLocaleString('fr-FR', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }) + ' : les 24 heures d’avant. Appels à Clarity aujourd’hui : ' + c.calls.today + ' sur ' + c.calls.max + '.'));
+    var t = s.totals || {};
+    kpis($('#aClKpis'), [['sessions (hors robots)', t.sessions != null ? nf.format(Math.max(0, t.sessions - (t.bots || 0))) : null], ['pages par session', t.pagesPerSession != null ? nfmt(t.pagesPerSession) : null],
+      ['défilement moyen de la page', t.scrollDepth != null ? Math.round(t.scrollDepth) + ' %' : null], ['temps actif (selon Clarity)', t.activeTime != null ? secs(t.activeTime) : null]]);
+    list($('#aClDev'), s.devices, function (r) { return DEV_FR[r.device] || r.device; }, function (r) { return r.sessions; });
+    list($('#aClCh'), s.channels, function (r) { return r.channel; }, function (r) { return r.sessions; });
+    list($('#aClHist'), (c.history || []).slice().reverse(), function (r) { return new Date(r.day + 'T12:00:00Z').toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' }); }, function (r) { return r.sessions; }, function () { return ''; });
+    kpis($('#aSig'), Object.keys(SIG_FR).filter(function (k) { return s.signals[k]; }).map(function (k) {
+      var x = s.signals[k]; return [SIG_FR[k] + (x.pct != null ? ' · ' + nfmt(x.pct) + ' % des sessions' : ''), nf.format(x.count)]; }));
+    var ul = $('#aFric');
+    if (!s.friction.length) ul.append(el('li', { class: 'empty' }, 'Aucun signal de friction dans ce relevé 🎉'));
+    s.friction.forEach(function (f) {
+      var li = el('li'), w = el('span', { class: 'w' }), cc = el('span', { class: 'c' });
+      w.append(document.createTextNode(SIG_FR[f.signal] || f.signal), el('small', null, f.page + ' · ' + (DEV_FR[f.device] || f.device)));
+      cc.append(document.createTextNode(nf.format(f.count)), el('small', null, f.pct != null ? nfmt(f.pct) + ' % des sessions' : 'fois'));
+      li.append(w, cc);
+      if (s.recordings) {
+        var a = el('a', { href: s.recordings, target: '_blank', rel: 'noopener noreferrer' }, '▶ Voir les enregistrements ↗');
+        a.setAttribute('aria-label', 'Voir les enregistrements dans Clarity : ' + (SIG_FR[f.signal] || f.signal) + ', page ' + f.page);
+        li.append(a, el('small', { class: 'note' }, 'Dans Clarity, filtre : ' + (SIG_FILTER[f.signal] || f.signal) + ' · URL contient « ' + f.page + ' » · Device : ' + f.device + ' · 3 derniers jours'));
+      }
+      ul.append(li);
+    });
+  }
+  $('#aPer').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; S.aDays = b.dataset.d; analytics(); });
+  $('#aClBtn').addEventListener('click', function () {
+    var b = $('#aClBtn'); b.disabled = true; set('#aClOut', 'Relevé en cours…');
+    api('POST', 'clarity/refresh', {}).then(function (r) {
+      set('#aClOut', r.clarity === 'done' ? 'Le relevé du jour est déjà complet.' : r.clarity === 'ok' ? 'Relevé fait (' + r.fetched + ' sur 3).' : r.clarity === 'quota' ? 'Limite du jour de Clarity atteinte.' : r.clarity === 'auth' ? 'Clarity refuse le jeton.' : r.clarity === 'off' ? 'Ajoute d’abord le secret CLARITY_API_TOKEN.' : 'Pas plus de relevé aujourd’hui.');
+      if (r.view) clarityRender(r.view);
+    }).catch(function (e) { set('#aClOut', e.code === 'rate_limited' ? 'Trop d’essais aujourd’hui.' : e.message); }).then(function () { b.disabled = false; });
+  });
+  S.timers.aLive = setInterval(analyticsLive, 60000);
+  // the 2 tiles of Accueil
+  function homeTiles() {
+    api('GET', 'analytics/tiles').then(function (d) {
+      var g = d.ga4;
+      set('#hLiveV', g.state === 'ok' && g.now != null ? nf.format(g.now) : '–');
+      set('#hLiveS', g.state === 'ok' ? (g.top.length ? g.top.map(function (r) { return ctryName(r.country) + ' ' + r.people; }).join(' · ') : 'Personne en ce moment.')
+        : g.state === 'off' ? 'Google Analytics pas encore relié.' : 'Google Analytics ne répond pas.');
+      var c = d.clarity, f = c.top;
+      set('#hFricV', c.state === 'off' ? 'Clarity pas encore relié.' : !c.at ? 'Pas encore de relevé Clarity.'
+        : f ? (SIG_FR[f.signal] || f.signal) + ' : ' + nf.format(f.count) + ' fois sur ' + f.page + ' (' + (DEV_FR[f.device] || f.device) + ')' : 'Aucun souci repéré dans le dernier relevé 🎉');
+    }).catch(function () { set('#hFricV', '–'); });
+  }
   // ---- Accueil: the few figures that matter, with an arrow against yesterday / last week ----
   function trend(node, cur, prev, what) {
     var e = $(node); if (!e) return;
@@ -727,6 +965,7 @@ __DEMO_BANNER__<header class="top"><div class="in">
     e.setAttribute('aria-label', same ? 'Pareil que ' + what : (up ? 'En hausse de ' : 'En baisse de ') + nf.format(Math.abs(diff)) + ' par rapport à ' + what);
   }
   function home() {
+    homeTiles();
     return api('GET', 'home').then(function (d) {
       $$('[data-test]').forEach(function (x) { x.hidden = !d.test; }); $('#testNote').classList.toggle('show', !!d.test);
       var m = d.money;
@@ -1398,6 +1637,11 @@ const DEMO_JS = String.raw`var DD = __DEMO_DATA__, DS = { avail: false, tickets:
     else if (p === 'thanks-test') r = { to: 'toi@demo.stalak', fr: true, en: true };
     else if (p === 'telegram-link') r = { linked: true, name: 'Démo' };
     else if (p === 'telegram-unlink') r = { linked: false };
+    else if (p === 'analytics') r = DD.analytics[q.get('days') || '7'] || DD.analytics['7'];
+    else if (p === 'analytics/live') r = DD.analyticsLive;
+    else if (p === 'analytics/tiles') { var sn = DD.analytics['7'].clarity.snapshot; r = { ga4: { state: 'ok', now: DD.analyticsLive.now, top: DD.analyticsLive.countries.slice(0, 3) },
+      clarity: { state: 'ok', at: sn.at, sessions: sn.totals.sessions, top: sn.friction[0] || null, stale: false } }; }
+    else if (p === 'clarity/refresh') r = { clarity: 'done', fetched: 0, view: DD.analytics['7'].clarity };
     else return Promise.reject(Object.assign(new Error('Pas dans la démo'), { code: 'demo' }));
     return new Promise(function (res) { setTimeout(function () { res(JSON.parse(JSON.stringify(r))); }, 120); });
   }`;

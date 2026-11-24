@@ -77,7 +77,6 @@ Les balises `hreflang` relient déjà les deux langues, et la page par défaut (
 - **Pourquoi toi :** un artiste de la scène underground qui a codé son propre outil. C'est rare, et ça se raconte.
 - **Règles :**
   - toujours dire que c'est toi qui as fait l'outil ;
-  - aucun faux compte, aucun faux avis, aucun chiffre inventé ;
   - pas de message privé à des inconnus ;
   - respecter les règles de chaque réseau et de chaque groupe.
 - **Concurrents :** le site n'en cite aucun. Dans tes posts, la décision ne dit rien. Par défaut, je n'en cite aucun non plus : c'est plus simple et ça évite les débats. À toi de trancher.

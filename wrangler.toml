@@ -35,6 +35,10 @@ PADDLE_PRICE_PRO_OFFER1 = "pri_01m85jpx3p0vmnxevfyysgtj1h"
 CLARITY_PROJECT_ID = "zic7crm0mc"           # Microsoft Clarity → Settings → Overview → Project ID
 GA4_MEASUREMENT_ID = "G-LY6HDYZKEK"           # Google Analytics → Admin → Data streams → Measurement ID (G-…)
 TIKTOK_PIXEL_ID = ""                # TikTok Ads Manager → Events → Web events → the pixel's id (for the conversion API)
+# 24/11: the page « Clarity et Google Analytics » of the dashboard (functions/_lib/ga4.js, clarity.js). Not a secret.
+# It also needs 2 SECRETS typed by the owner in Cloudflare (never here): GA4_SA_KEY (the JSON key of the service account,
+# « Lecteur » of this property) and CLARITY_API_TOKEN (Clarity → Settings → Data Export). Without them the page says what to do.
+GA4_PROPERTY_ID = "565628578"         # Google Analytics → Admin → Property details → Property ID (digits only)
 # Older prices of 30/10 (test subscriptions only), still recognised so their subscribers keep their price:
 # Basic and Pro in euros → pro, Max → creator. Format: id:plan:interval, comma between them.
 PADDLE_PRICES_OLD = ""

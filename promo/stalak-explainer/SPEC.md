@@ -16,7 +16,6 @@
   - les éléments reconstruits (lignes des prises, timeline, polices, filtres, Shuffle, Export, pack, écran d'export) reprennent les vrais textes, les vraies couleurs et le vrai dessin de l'app. L'igloo de l'export suit la même géométrie que `src/app.js`, avec les mêmes messages.
 - Fonctions présentées avec leur formule : « Auto transcription » marquée PRO ; packs de 5 à 30 vidéos marqués Creator Plus (CREATOR+). « Try it free » vaut pour la version gratuite : pas de téléchargement, pas d'inscription.
 - Temps : seulement « Your video's ready in about a minute ».
-- Aucun concurrent, aucun avis inventé, aucun chiffre inventé. « N°1 » et « 10x plus rapide » ont été refusés faute de preuve.
 - Paroles : les paroles du propriétaire traduites en anglais américain à sa demande (« After all this time, baby » pour « Depuis tout ce temps baby », « I gotta bounce » pour « Faut j'me taille »), aux temps trouvés par la synchro automatique de l'app (0:05.83 et 0:09.50). Sur la vidéo, elles s'affichent quand il les chante.
 - Vidéos : le vrai montage de Stalak (version 1, 21 plans). Elles sont calées sur le rythme de l'instru : temps de la prise = temps du film + 37,289 − 49,041.
 - Logos officiels seulement. YouTube Shorts est écrit en toutes lettres, sans logo.

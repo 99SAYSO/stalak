@@ -40,7 +40,7 @@ Résumé :
   - Puis « Comment ça marche » (3 étapes), « Ce que tu obtiens », « Conseils pour filmer », la carte Pro (7,99 $/mois ou 49,99 $/an,
     soit 4,17 $/mois) et 5 questions. Tout ce qui est écrit, l'app le fait déjà (vérifié dans `src/app.js` : 7 effets de
     `FX_TYPES`, couper le début et la fin, filmer dans Stalak, format vertical possible en Clip), sauf l'aperçu gratuit complet
-    (n° 2). Aucun concurrent cité, aucun chiffre inventé, aucun avis.
+    (n° 2).
   - Les paroles : la page ne dit pas si elles sont affichées ou non par défaut en Clip (« colle-les… ou n'en mets pas »), pour
     rester juste quel que soit le choix d'App au n° 2.
   - Référencement : titre et description (151 et 156 caractères), canonique, hreflang FR/EN, images de partage

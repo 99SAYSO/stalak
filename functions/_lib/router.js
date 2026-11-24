@@ -12,6 +12,7 @@ import { getArtist, putArtist, putListeners } from './artist.js';
 import { trialPrices, trialMarkOnDelete, cancelTrial, cancelPage, trialReminders, TRIAL_DAYS } from './trial.js';
 import { social, socialWebhook, isSocialWebhook, socialProviders, deleteSocialAccounts } from './social.js';
 import { tiktok } from './tiktok.js';   // Réseaux sociaux: « Publier sur TikTok », « Mes stats »
+import { clarityDaily } from './clarity.js';
 import { projectCover, coverUrl, COVER_TYPES, projectFiles, storageInfo, checkProjectFiles, dropUnusedFiles, readyFiles, deleteProjectMedia, deleteUserMedia, maybeCleanup, cleanupCloud, cloudAvailable } from './cloud.js';
 import { timingSafeEqual, sha256Hex } from './crypto.js';
 import { limit } from './ratelimit.js';
@@ -183,7 +184,7 @@ function cronAuth(request, env) {
 }
 async function cronCleanup(request, env) {
   cronAuth(request, env);
-  return json({ ok: true, ...(await cleanupCloud(env)), ...(await yearlyReminders(env)), ...(await trialReminders(env)) });
+  return json({ ok: true, ...(await cleanupCloud(env)), ...(await yearlyReminders(env)), ...(await trialReminders(env)), ...(await clarityDaily(env)) });
 }
 
 // Signed in: the session cookie (and the trusted-device cookie), then the same answer as GET /api/me.

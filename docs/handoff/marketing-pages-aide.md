@@ -55,7 +55,6 @@ la langue de la page. Les 20 adresses sont dans `sitemap.xml` avec leurs liens F
   importés jusqu'à 3 minutes depuis le 18/01/2025 (annonce d'Adam Mosseri, reprise par Social Media Today) ; les Reels d'essai sont
   montrés d'abord à des non-abonnés, résultats au bout d'environ 24 h (creators.instagram.com/blog/instagram-trial-reels) ; sticker
   « Compte à rebours » et posts en collab. Aucune durée chiffrée pour TikTok (rien d'officiel et de stable).
-- Aucun concurrent cité, aucun chiffre de vues ou de résultat, pas de faux avis.
 
 ## Fichiers
 

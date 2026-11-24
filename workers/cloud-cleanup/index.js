@@ -8,6 +8,7 @@
 import { cleanupCloud } from '../../functions/_lib/cloud.js';
 import { yearlyReminders } from '../../functions/_lib/reminders.js';
 import { dailyRetention } from '../../functions/_lib/retention.js';
+import { clarityDaily } from '../../functions/_lib/clarity.js';
 
 export default {
   async scheduled(controller, env, ctx) {
@@ -15,6 +16,8 @@ export default {
       // the yearly reminder of monthly subscribers (US terms), same day
       .then(() => yearlyReminders(env, Date.now(), { max: 100 })).then((r) => console.log('[stalak] yearly reminders', JSON.stringify(r)))
       // audit of 6/11, point 12: thank-you hashes 3 years, lyrics use 90 days, rate-limit counters (retention.js)
-      .then(() => dailyRetention(env, Date.now())).then((r) => console.log('[stalak] retention', JSON.stringify(r))));
+      .then(() => dailyRetention(env, Date.now())).then((r) => console.log('[stalak] retention', JSON.stringify(r)))
+      // 24/11: the daily Clarity snapshot (needs the secret CLARITY_API_TOKEN on this Worker too; without it, the site does it)
+      .then(() => clarityDaily(env, Date.now())).then((r) => console.log('[stalak] clarity', JSON.stringify(r))));
   },
 };
