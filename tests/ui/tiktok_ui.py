@@ -153,6 +153,10 @@ def flow(b, base, lang, iphone, PW, pro):
     ctx, pg, errs = new_page(b, base, lang, iphone, PW, st)
     # 1. account page, not linked
     ev(pg, "acctOpen()"); pg.wait_for_timeout(500)
+    if iphone:   # phone (mobile redesign, lot 2): the profile comes first, the TikTok card is in the settings (gear)
+        pg.wait_for_selector('#m2Tt', timeout=5000)
+        check(tag + ' : profil du téléphone : une carte TikTok', visible(pg, '#m2Tt'))
+        pg.evaluate("() => { const g = document.querySelector('#m2Gear'); if (g && g.getClientRects().length) { g.click(); return true; } return false; }"); pg.wait_for_timeout(400)
     pg.wait_for_selector('#ttkCard', timeout=5000)
     check(tag + ' : page du compte : carte TikTok avec « %s »' % t['link'], visible(pg, '#ttkLink') and pg.locator('#ttkLink').inner_text().strip() == t['link'])
     check(tag + ' : « %s » aux couleurs de TikTok : fond noir, texte blanc, logo officiel blanc' % t['link'], brand(pg, '#ttkLink'), brand(pg, '#ttkLink', True))
@@ -276,7 +280,9 @@ def flow(b, base, lang, iphone, PW, pro):
         check(tag + ' : brouillon : Échap ferme pendant l’attente (rien ne reste bloqué)', pg.locator('.ttk-layer').count() == 0)
         st['stuck'] = False; st['lostRetry'] = False
     # « Délier » (the bug of 21/11): the request goes as JSON and the card comes back to « Relier TikTok »
-    ev(pg, "acctOpen()"); pg.wait_for_selector('#ttkUnlink', timeout=8000)
+    ev(pg, "acctOpen()"); pg.wait_for_timeout(500)
+    if iphone: pg.evaluate("() => { const g = document.querySelector('#m2Gear'); if (g && g.getClientRects().length) { g.click(); return true; } return false; }"); pg.wait_for_timeout(400)   # phone: « Délier » is in the settings (gear)
+    pg.wait_for_selector('#ttkUnlink', timeout=8000)
     pg.locator('#ttkUnlink').click(); pg.wait_for_timeout(300)
     if pg.locator('.ttk-layer #ttkUnlinkGo, .ttk-layer .btn.primary').count():
         pg.locator('.ttk-layer .btn.primary').first.click()

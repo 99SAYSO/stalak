@@ -280,6 +280,11 @@ function pfBuild(){
   out.onclick = function(){ var b = $('#apOut'); if (b) b.click(); };
   // « Retour » inside the settings comes back to the profile
   $('#apBack').addEventListener('click', function(ev){ if (root.classList.contains('m2-set') && root.classList.contains('m2-prof')){ ev.preventDefault(); ev.stopImmediatePropagation(); setOn(false); } }, true);
+  // the account's cards can arrive after the profile (TikTok answers late): the profile follows them
+  if (W.MutationObserver){ var due = 0; new MutationObserver(function(ms){
+    if (due || !root.classList.contains('m2-prof')) return;
+    for (var i = 0; i < ms.length; i++) if (!pf.contains(ms[i].target)){ due = setTimeout(function(){ due = 0; if (root.classList.contains('m2-prof')) pfRender(true, false); }, 60); return; }
+  }).observe($('#apAccount'), { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['hidden'] }); }
 }
 function setOn(on){
   root.classList.toggle('m2-set', on); var page = $('#acctPage'); if (page) page.scrollTop = 0;
@@ -299,7 +304,8 @@ function pfRender(on, fresh){
   $('i', p).textContent = ((M.paid() && sub && sub.textContent.trim()) || t('pf.plans')) + ' →';
   // what the account says about the subscription (renewal, trial and first charge, cancellation) stays written in full
   var st2 = $('#apSubT'), line = M.paid() && st2 ? st2.textContent.trim() : '', pt = $('#m2PlanT'); pt.hidden = !line; pt.textContent = line; p.classList.toggle('wide', !!line);
-  var tt = $('#m2Tt'), card = $('#ttkCard'), linked = !!(card && $('#ttkUnlink', card)), nm = card && $('b', card);
+  var tt = $('#m2Tt'), card = $('#ttkCard'); if (card && card.hidden) card = null;
+  var linked = !!(card && $('#ttkUnlink', card)), nm = card && $('b', card);
   tt.hidden = !card; tt.parentNode.classList.toggle('one', !card);
   if (card){ $('b', tt).textContent = linked && nm ? nm.textContent : t('pf.ttNo'); $('i', tt).textContent = (linked ? t('pf.ttStats') : t('pf.ttLink')) + ' →'; }
   var cl = M.cloud(), n = cl && cl.list ? cl.list.length : null;

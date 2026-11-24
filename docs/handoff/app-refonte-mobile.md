@@ -1,4 +1,4 @@
-Statut : EN COURS (lot 1 prêt ; lot 2 fait, série de tests en cours ; lots 3 et 4 à venir)
+Statut : PRÊT (lots 1 et 2 ; lots 3 et 4 à venir sur la même branche)
 Branche : app/refonte-mobile (créée depuis `origin/main` efbb0c0 le 23/11).
 Maquette de la branche : https://app-refonte-mobile.stalak-site.pages.dev (à faire valider par le propriétaire, règle 9).
 
@@ -259,3 +259,22 @@ taste, webapp-testing.
   - `lyrics_ui` 62/73 : l'exemple ne dure plus que 12 s (le test attend un passage de plus de 30 s coupé en morceaux) et
     la page des formules n'affiche plus la phrase « Les paroles automatiques font partie de Stalak Pro ».
 - À lancer avec `http://localhost:…` pour `lyrics_ui` et `support_ui` (leur cookie de test est posé sur `localhost`).
+
+## Lot 2 : résultats des tests (24/11, sur la branche, site reconstruit)
+- nouveau `refonte_mobile2_ui` **124/124** (connexion, profil, tirer pour rafraîchir, onboarding, mouvements réduits,
+  ordinateur inchangé, version claude.ai).
+- `refonte_mobile_ui` 102/102, `audit611_ui` 93/93, `audit_ui` 122/122, `accueil_a_ui` 77/77, `vente_ui` 63/63,
+  `projet_local_ui` 52/52, `fenetre_pro_ui` 84/84, `fin_export_ui` 98/98, `partager_ui` 92/92, `exports_rates_ui` 80/80,
+  `apercu_depart_ui` 10/10, `fluidite_ui` 30/30, `filtres_ui` 106/106, `export_pub_ui` 22/22, `liens_cmp_ui` 58/58,
+  `pied_de_page_ui` 842/842, `plans_ui` 39/39, `achat_ui` 23/23, `help_ui` 42/42, `support_ui` 64/64, serveur 121/121.
+- **Trois tests adaptés au profil du téléphone** (sur téléphone, les anciennes cartes du compte sont derrière la roue
+  « Réglages ») : `essai_pro_ui` **193/193** (vérifie en plus que la carte de la formule du profil écrit « Essai Pro : encore
+  3 jours », puis ouvre les réglages pour « Gérer ou annuler »), `tiktok_ui` **224/224** (carte TikTok du profil, puis
+  réglages pour « Relier » / « Délier »), `gallery_ui` **48/48** (ligne « Mes montages » et « Se déconnecter » du profil).
+- **Un vrai défaut trouvé et corrigé** par `tiktok_ui` : la carte TikTok du profil restait cachée quand TikTok répondait
+  après l'ouverture du profil. Le profil suit maintenant les cartes du compte qui arrivent en retard.
+- Échecs identiques sur `main` (pas des régressions) : `animations_ui` 28/44, `formules_ui` 136/137, `clip1_ui` 83/87
+  (`.band-frost a:hover`, Marketing), `lyrics_ui` 62/73.
+- À savoir : lancés à plusieurs en même temps, `refonte_mobile_ui` (durée de l'ouverture) et `audit611_ui` peuvent échouer
+  sur une machine chargée ; seuls, ils passent.
+- `index.html` : 394,6 Ko (limite 400).
