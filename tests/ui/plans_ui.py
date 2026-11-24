@@ -89,7 +89,7 @@ async def close_pages(page):
 
 
 async def demo_ready(page):
-    await page.click('#demoBtn')
+    await page.click('#demoBtn:visible, #heroDemo:visible, #mhEx:visible')
     await page.wait_for_selector('#exportBtn:not([disabled])', state='visible', timeout=40000)
     await page.wait_for_timeout(800)
 

@@ -86,7 +86,7 @@ def open_app(pg, base, lang):
 
 
 def demo(pg):
-    pg.locator('#demoBtn').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=180000); pg.wait_for_timeout(300)
+    pg.locator('#demoBtn:visible, #heroDemo:visible, #mhEx:visible').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=180000); pg.wait_for_timeout(300)
     ev(pg, "store.set(PP_KEY, 1), " + OPUS)
 
 

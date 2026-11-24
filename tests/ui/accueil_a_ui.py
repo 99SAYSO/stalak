@@ -61,10 +61,10 @@ def run(b, base, lang, dev, PW):
         mid = L['vw'] / 2; items = [L['m'], L['h1'], L['s2'], L['song'], L['demo'], L['pill']]
         check(tag + ' : dans l’ordre : mascotte, titre, phrase, bouton, lien, pastille', all(items) and all(items[i]['b'] <= items[i + 1]['y'] + 6 for i in range(5)), items)
         check(tag + ' : tout centré', all(items) and all(abs(x['cx'] - mid) <= 2 for x in items), [x and x['cx'] for x in items])
-        check(tag + ' : la mascotte qui fait coucou, environ 90 px de large (64 px sur un petit écran)', L['m'] and (L['m']['w'] == 90 or (L['vh'] <= 600 and L['m']['w'] == 64)) and L['mBg'] == 'url(', L['m'])
+        check(tag + ' : la mascotte qui fait coucou, 112 px de large (78 px sur un petit écran ; refonte mobile du 23/11)', L['m'] and (L['m']['w'] == 112 or (L['vh'] <= 600 and L['m']['w'] == 78)) and L['mBg'] == 'url(', L['m'])
         check(tag + ' : le titre sur 2 lignes', L['lines'] == 2 and L['h1t'] == t['h1'], (L['lines'], L['h1t']))
         check(tag + ' : la phrase courte (la longue n’est pas affichée)', L['s2t'] == t['s'] and not L['s1'], (L['s2t'], L['s1']))
-        check(tag + ' : un seul gros bouton noir « %s », dans le premier écran sans défiler (%d px)' % (t['song'], L['vh']), L['songT'] == t['song'] and L['songBg'] == 'rgb(10, 13, 20)' and L['song']['b'] <= L['vh']
+        check(tag + ' : un seul gros bouton bleu (refonte mobile du 23/11) « %s », dans le premier écran sans défiler (%d px)' % (t['song'], L['vh']), L['songT'] == t['song'] and L['songBg'] == 'rgb(31, 111, 214)' and L['song']['b'] <= L['vh']
               and L['song']['b'] - L['song']['y'] >= 56 and pg.evaluate('scrollY') == 0, (L['song'], L['songBg'], L['vh']))
         check(tag + ' : « %s » en lien souligné avec un petit rond ▶, d’au moins 44 px' % t['demo'], L['demoT'] == t['demo'] and 'underline' in L['demoLine'] and L['demoDot'] == '50%' and L['demo']['b'] - L['demo']['y'] >= 44, (L['demoT'], L['demoLine'], L['demoDot'], L['demo']))
         check(tag + ' : la pastille blanche : étoiles, « %s · %s » (vrais chiffres)' % (t['note'], t['vids']), L['pillT'] == '★★★★★ ' + t['note'] + ' · ' + t['vids'] and L['pillBg'] == 'rgb(255, 255, 255)', (L['pillT'], L['pillBg']))

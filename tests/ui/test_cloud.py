@@ -79,7 +79,7 @@ async def shot(pg, name, full=False):
 async def status(pg): return (await pg.text_content('#status') or '').strip()
 
 async def load_demo(pg):
-    await pg.click('#demoBtn')
+    await pg.click('#demoBtn:visible, #heroDemo:visible, #mhEx:visible')
     await pg.wait_for_function("window.__S.step === 4 && window.__S.cuts.length > 0", timeout=60000)
 
 async def load_media(pg, song=SONG, takes=TAKES):

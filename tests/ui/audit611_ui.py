@@ -64,7 +64,7 @@ def shot(pg, path):
 
 
 def demo(pg):
-    pg.locator('#demoBtn').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=180000); pg.wait_for_timeout(300)
+    pg.locator('#demoBtn:visible, #heroDemo:visible, #mhEx:visible').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=180000); pg.wait_for_timeout(300)
 
 
 def flow(b, base, site, lang, iphone, PW):
@@ -73,13 +73,14 @@ def flow(b, base, site, lang, iphone, PW):
     ctx, pg, errs = new_page(b, base, lang, iphone, PW)
     # 6. the real title
     h1 = pg.evaluate("() => [...document.querySelectorAll('h1')].filter(e => e.getClientRects().length).map(e => e.textContent.replace(/\\s+/g, ' ').trim())")
-    check(tag + ' : un seul H1, « %s », au-dessus du formulaire' % t['h1'], h1 == [t['h1']] and pg.locator('#heroPitch').bounding_box()['y'] < pg.locator('#songDrop').bounding_box()['y']
+    check(tag + ' : un seul H1, « %s », au-dessus du formulaire' % t['h1'], h1 == [t['h1']] and pg.locator('#heroPitch').bounding_box()['y'] < (pg.locator('#songDrop').bounding_box() or pg.locator('#tabBar').bounding_box())['y']   # (refonte mobile) no import square on the home screen of a phone
+         
           and not pg.evaluate("() => !!document.querySelector('#homeBtn').closest('h1')"), h1)
     # (23/11) under 900 px the short sentence (.hero-s2) is the one shown, the long one on a computer
     HS = '.hero-s2' if iphone else '.hero-s:not(.hero-s2)'
     tag_ok = pg.locator(HS).inner_text().strip()
     check(tag + ' : une ligne d’accroche sous le titre', len(tag_ok) > 30, tag_ok)
-    hb, mb = pg.evaluate("() => { const r = document.createRange(); r.selectNodeContents(document.querySelector('%s')); const b = r.getBoundingClientRect(); return { x: b.x, y: b.y, width: b.width, height: b.height }; }" % HS), pg.evaluate("() => { const c = document.querySelector('#p1 > .card:not(.lpoffer)'); const r = c.getBoundingClientRect(), a = getComputedStyle(c, '::after'); return { right: r.right - parseFloat(a.right), w: parseFloat(a.width) }; }")
+    hb, mb = pg.evaluate("() => { const r = document.createRange(); r.selectNodeContents(document.querySelector('%s')); const c = document.querySelector('#p1 > .card:not(.lpoffer)').getBoundingClientRect(), a = getComputedStyle(document.querySelector('#p1 > .card:not(.lpoffer)'), '::after'), left = c.right - parseFloat(a.right) - parseFloat(a.width); const ls = [...r.getClientRects()].filter(b => b.right > left + 4); const b = ls.length ? ls.reduce((m, x) => x.bottom > m.bottom ? x : m) : { x: 0, y: 0, width: 0, height: 0 }; return { x: b.x, y: b.y, width: b.width, height: b.height }; }" % HS), pg.evaluate("() => { const c = document.querySelector('#p1 > .card:not(.lpoffer)'); const r = c.getBoundingClientRect(), a = getComputedStyle(c, '::after'); return { right: r.right - parseFloat(a.right), w: parseFloat(a.width) }; }")
     check(tag + ' : l’accroche ne passe pas sous la mascotte', iphone or hb['x'] + hb['width'] <= mb['right'] - mb['w'] + 4 or hb['y'] + hb['height'] <= pg.evaluate("() => { const c = document.querySelector('#p1 > .card:not(.lpoffer)'), a = getComputedStyle(c, '::after'); return c.getBoundingClientRect().top + 22 - parseFloat(a.height); }") + 4, (hb, mb))   # (beside it, or above its head)
     if SHOTS: shot(pg, os.path.join(SHOTS, 'accueil-%s-%s.png' % ('iphone' if iphone else 'ordi', lang)))
     # (6/11, Chef de projet: the home title is Marketing's « version compacte », chosen by the owner: #heroPitch, .hero-s)
@@ -96,7 +97,7 @@ def flow(b, base, site, lang, iphone, PW):
     with pg.expect_navigation(wait_until='load', timeout=120000): pg.locator('#dvTry').click()
     pg.wait_for_function('window.__ev && window.MP4Box', timeout=60000); pg.wait_for_timeout(300)
     check(tag + ' : « %s » : retour au choix du son, mis en avant, le clavier dessus' % t['try'],
-          ev(pg, 'S.step') == 1 and not ev(pg, 'S.song') and pg.evaluate("document.querySelector('#songDrop').classList.contains('try')") and pg.evaluate("document.activeElement && document.activeElement.id") == 'songFile')
+          ev(pg, 'S.step') == 1 and not ev(pg, 'S.song') and pg.evaluate("document.querySelector('%s').classList.contains('try')" % ('#heroSong' if iphone else '#songDrop')) and pg.evaluate("document.activeElement && document.activeElement.id") == ('heroSong' if iphone else 'songFile'))   # (refonte mobile) on a phone: the main button of the home screen
     # 5. one's own video: on a phone the window waits for « Enregistrer »
     pg.set_input_files('#songFile', os.path.join(site, 'beat.wav')); pg.wait_for_function('() => __ev("!!S.song")', timeout=120000)
     pg.set_input_files('#takeFiles', [os.path.join(site, 'take.mp4')]); pg.wait_for_function('() => __ev("S.takes.length === 1 && S.takes[0].status !== \'pending\'")', timeout=180000)
@@ -170,7 +171,7 @@ def page_files(b, base, lang, iphone, PW):
           and '<script defer src=' not in html and '<script src=' not in html, scripts)
     # 22. the footer's links
     hs = pg.evaluate("() => [...document.querySelectorAll('.ft-list a')].map(a => Math.round(a.getBoundingClientRect().height))")
-    check(tag + ' : liens du pied de page : 44 px', hs and min(hs) >= 44, hs)
+    check(tag + (' : pas de pied de page de site sur l’accueil du téléphone (refonte mobile)' if iphone else ' : liens du pied de page : 44 px'), hs and (max(hs) == 0 if iphone else min(hs) >= 44), hs)
     ctx.close()
 
 

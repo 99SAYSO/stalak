@@ -217,6 +217,24 @@ css += '\n' + (src / 'footer.css').read_text(encoding='utf-8')
 css += '\n' + (src / 'fx.css').read_text(encoding='utf-8')   # Marketing (23/11): the animation ideas the owner picked
 css += '\n' + (src / 'bands.css').read_text(encoding='utf-8')   # Marketing (23/11): « Bandes de glace »
 css += '\n' + (src / 'tiktok.css').read_text(encoding='utf-8')   # Réseaux sociaux (21/11)
+css += '\n' + (src / 'mobile.css').read_text(encoding='utf-8')   # App & montage (23/11): refonte mobile (phones only)
+# the opening « le glaçon » (phones, once per session) and where the app finds GSAP: served by the site, loaded only on a phone
+GSAP_URL = '/vendor/gsap-3.15.0.min.js'
+assert (extra / 'vendor' / 'gsap-3.15.0.min.js').exists()
+# what the page itself does, first thing in <body> (the rest is /assets/splash.<version>.js, written further down with the app's files)
+SPLASH_BOOT = ("(function(){var d=document,W=window,G=W.STALAK_GSAP=%s;try{"
+               "if(!W.matchMedia||!matchMedia('(max-width:899px)').matches||matchMedia('(prefers-reduced-motion: reduce)').matches)return;"
+               "if(navigator.webdriver&&!W.__stalakSplash)return;"   # automated checks: only the one that asks for it
+               "if(location.hash&&location.hash.length>1)return;"
+               "if(sessionStorage.getItem('stalak:splash')||sessionStorage.getItem('stalak:openProject'))return;"
+               "sessionStorage.setItem('stalak:splash','1');}catch(e){return;}"
+               "var sp=d.createElement('div'),r=d.documentElement;sp.id='splash';sp.setAttribute('aria-hidden','true');"
+               "sp.innerHTML='<div class=\"sp-curtain\"><div class=\"sp-bg\"></div></div>';r.classList.add('splash-on');d.body.insertBefore(sp,d.body.firstChild);"
+               "W.__stalakSplashT=Date.now();"
+               "function bye(){if(W.__stalakSplashGo||!sp.parentNode)return;sp.style.transition='opacity .3s ease-out';sp.style.opacity='0';"
+               "setTimeout(function(){r.classList.remove('splash-on');if(sp.parentNode)sp.parentNode.removeChild(sp);W.__stalakSplashDone=true;},320);}"
+               "[G,%s].forEach(function(u){var s=d.createElement('script');s.src=u;s.async=false;s.onerror=bye;d.head.appendChild(s);});"
+               "setTimeout(bye,3000);})();")
 css += '\n.about{font-size:15px;line-height:1.6}.about h2{font:400 24px/1.2 var(--display);margin:0 0 8px}.about p{margin:0 0 8px}.about ul{margin:0 0 8px;padding-left:20px}.about strong{font-weight:700}.about a{font-weight:700;text-decoration:underline;text-underline-offset:3px}\n'
 
 # 3. languages: the dictionaries are in app.js (between /*@EN*/ … /*EN@*/ and /*@FR*/ … /*FR@*/); the French of the page's
@@ -355,6 +373,7 @@ def page(lang, body):
     h = meta(lang) + head.replace('<title>Stalak</title>', '<title>' + H.escape(PAGE[lang]['title']) + '</title>')
     # the banner and its script come first in the page: shown or not before the first paint, so nothing moves afterwards
     if lang == 'en': h, body = h + PWA_LANG_JS, FR_HINT_HTML + FR_HINT_JS + body
+    body = '<script>' + SPLASH_BOOT % (json.dumps(GSAP_URL), json.dumps('/assets/' + ASSETS['splash'])) + '</script>\n' + body   # first in <body>: the curtain is there before the first picture
     tail = ''
     # App & montage (audit 6/11, n° 10): the app's code is no longer written inside the page (860 KB downloaded again at every
     # visit, the page being « no-cache »): two files whose name carries their version (/assets/…), kept a year by the browser
@@ -391,7 +410,7 @@ for f in list(out.glob('*.html')) + list((out / 'fr').glob('*.html')):
 # App & montage (audit 6/11, n° 10): the app's code and the account's, as versioned files
 (out / 'assets').mkdir(exist_ok=True)
 ASSETS = {}
-for _k, _code in (('app', js), ('account', ACCOUNT_JS), ('tiktok', TIKTOK_JS)):
+for _k, _code in (('app', js), ('account', ACCOUNT_JS), ('tiktok', TIKTOK_JS), ('splash', (src / 'splash.js').read_text(encoding='utf-8'))):
     _b = _code.encode('utf-8'); _n = _k + '.' + hashlib.sha1(_b).hexdigest()[:10] + '.js'
     (out / 'assets' / _n).write_bytes(_b); ASSETS[_k] = _n
 (out / 'index.html').write_text(page('en', markup_en), encoding='utf-8')

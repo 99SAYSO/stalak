@@ -302,8 +302,9 @@ body.lite .tl .cut{box-shadow:none!important;text-shadow:none!important}
   --bg:var(--sky); --surface:var(--snow); --sunk:var(--frost); --muted:#3f5170; --line:var(--ink);
   --accent:var(--sky); --accent-ink:#ffffff; --ok:#11804a; --warn:#a65300;
   --display:'Lilita One','Arial Rounded MT Bold','Arial Black',system-ui,sans-serif;
-  --body:'Rubik','Arial Rounded MT Bold','Helvetica Neue',Arial,system-ui,sans-serif;
-  --mono:'Rubik','Helvetica Neue',Arial,sans-serif;
+  /* (23/11, the owner: DM Sans for the text of the app, on a phone and on a computer; Lilita One stays for titles and buttons) */
+  --body:'DM Sans','Helvetica Neue',Arial,system-ui,sans-serif;
+  --mono:'DM Sans','Helvetica Neue',Arial,sans-serif;
 
   --stroke:3px;
   --pop:0 5px 0 var(--ink);                 /* relief de dessin animé */
@@ -1124,6 +1125,7 @@ header .stepper{margin-left:auto}
 @media (prefers-reduced-motion:reduce){ .pricebtn{animation:none} .pricebtn::before{animation:none} .pricebtn::after{display:none} }
 /* « voix seule » link under « Écrire mes paroles » */
 .voxpick{margin-top:6px}
+.voxpick[hidden],.brollbox[hidden]{display:none}
 .voxpick .btn.link{color:var(--ink);font-weight:500;white-space:normal;text-align:left;padding:6px 0;min-height:44px;font-size:14px;text-decoration-thickness:1px;text-underline-offset:3px}
 .voxpick #lyVoxOn{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px}
 .voxpick #lyVoxOn[hidden]{display:none}
@@ -1443,6 +1445,7 @@ body.isdone > .help-cube{display:none}
 .dv-card .dv-try,.dv-card .dv-nowm{width:100%;justify-content:center;min-height:62px;font-size:21px;margin:0 0 14px}
 .dv-card .dv-try[hidden],.dv-card .dv-nowm[hidden]{display:none}
 .drop.try{outline:4px solid var(--sky-deep);outline-offset:4px}
+.mh-new.try,.hero-song.try{outline:4px solid var(--sky-deep);outline-offset:4px}
 
 /* ---------- Marketing & croissance (06/11, audit point 6) : le premier écran dit ce qu'est Stalak ----------
    « Version compacte » choisie par le propriétaire : le titre de la page (h1), une phrase et une petite vidéo (un vrai
@@ -2122,12 +2125,192 @@ body.ttk-on{overflow:hidden}
 .ttk-toast[hidden]{display:none}
 @media (max-width:420px){.ttk-box{padding:14px 14px 18px}.ttk-h{font-size:21px}.ttk-v{grid-template-columns:40px minmax(0,1fr) auto}}
 
+/* ---- App & montage — refonte de l'interface mobile (demande du Chef de projet du 23/11, démos validées par le propriétaire :
+   docs/audit/maquettes/mobile-2026-11-23/). Tout est sous 900 px : l'ordinateur ne change pas.
+   Lot 1 : barre du bas (DM Sans pour le texte : src/theme.css, partout), accueil, ouverture « le glaçon » (src/splash.js, stalak.app seulement).
+   The state comes from app.js (mobUi): html.medit = the editor, the camera, an export (no bar, the page as before);
+   html.mpage = a page of the account opened from the bar (the bar stays); neither = the home screen.
+   Motion: the timelines are GSAP ones, as in the HyperFrames demos (app.js mob*, splash.js); nothing moves with « reduce motion ». ---- */
+.tabbar,.mh-top,.mh-new,.mh-ex,.mh-lastT,.mh-list{display:none}
+#splash{display:none}
+
+@media (max-width:899px){
+  :root{
+    --tabh:66px;                                  /* the bar, without the safe area of the phone */
+    --tabs:calc(var(--tabh) + env(safe-area-inset-bottom,0px));
+    --blue:#1f6fd6; --tab-ink:#56657f;
+  }
+
+  /* ===== the bar at the bottom: Accueil, Montages, « + », Stats, Compte ===== */
+  .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:75;display:flex;justify-content:space-around;align-items:flex-start;box-sizing:border-box;
+    height:var(--tabs);padding:8px max(8px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(8px,env(safe-area-inset-left,0px));
+    background:#fff;border-top:3.5px solid var(--ink)}
+  html.medit .tabbar{display:none}
+  .tabbar button{flex:1 1 0;min-width:0;max-width:84px;min-height:50px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:3px;
+    padding:2px 0 0;border:0;background:none;color:var(--tab-ink);font:600 11.5px/1.15 var(--body);cursor:pointer;-webkit-tap-highlight-color:transparent;
+    touch-action:manipulation;transition:transform var(--dur-1) var(--ease-press)}
+  .tabbar button:active{transform:scale(.94)}
+  .tabbar button[aria-current="page"]{color:var(--blue)}
+  .tabbar button:focus-visible{outline:3px solid var(--blue);outline-offset:2px;border-radius:12px}
+  .tabbar svg{width:27px;height:27px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+  .tabbar span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .tabbar .tab-av{width:28px;height:28px;box-sizing:border-box;border-radius:50%;border:2.4px solid currentColor;background:var(--ice) var(--mascot-head) center/118% no-repeat;margin-bottom:-1px}
+  .tabbar .tab-av.has{background-size:cover}
+  .tabbar .tab-plus{flex:none;width:64px;height:64px;max-width:none;min-height:0;margin:-34px 4px 0;padding:0;justify-content:center;border:3.5px solid var(--ink);border-radius:50%;
+    background:var(--blue);color:#fff;box-shadow:0 5px 0 var(--ink)}
+  .tabbar .tab-plus svg{width:30px;height:30px;stroke-width:3.4}
+  .tabbar .tab-plus:active{transform:translateY(3px);box-shadow:0 2px 0 var(--ink)}
+  .tabbar .tab-plus:focus-visible{outline-offset:3px;border-radius:50%}
+
+  /* what floats above the bar, and the room it takes at the bottom of the page */
+  html:not(.medit) .help-cube{bottom:calc(var(--tabs) + 10px)}
+  html:not(.medit) .help-panel{bottom:calc(var(--tabs) + 66px)}
+  html.mpage .acctpage{padding-bottom:calc(var(--tabs) + 12px)}
+  html.mpage > body > .help-cube{display:none}
+
+  /* ===== the home screen (nothing imported yet) ===== */
+  /* (the owner, 23/11: « fade, juste le bleu clair » and « ça reste le site, on peut slider vers le bas ») the snow falls
+     on the ice colour too (blue flakes: white ones would not show), and the home screen is ONE screen, like an app: it does not scroll
+     down to the reviews, the pitch and the footer of the site (hidden on a phone; the legal links are on the plans screen and
+     at sign-up, and go to the profile in lot 2). If its content is taller than a small phone, it scrolls inside itself. */
+  html:root:not(.medit){background:radial-gradient(120vw 70vh at 50% 0,#eef7ff 0,var(--ice) 62%) no-repeat var(--ice);height:100%;overflow:hidden;overscroll-behavior:none;
+    --flakes:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cg fill='%2379b4f3'%3E%3Ccircle cx='18' cy='22' r='3' opacity='.9'/%3E%3Ccircle cx='96' cy='12' r='2' opacity='.6'/%3E%3Ccircle cx='170' cy='40' r='3.5' opacity='.85'/%3E%3Ccircle cx='222' cy='96' r='2' opacity='.6'/%3E%3Ccircle cx='60' cy='88' r='2.5' opacity='.7'/%3E%3Ccircle cx='132' cy='120' r='3' opacity='.85'/%3E%3Ccircle cx='28' cy='160' r='2' opacity='.6'/%3E%3Ccircle cx='196' cy='176' r='3' opacity='.8'/%3E%3Ccircle cx='100' cy='204' r='2.5' opacity='.7'/%3E%3Ccircle cx='150' cy='226' r='1.6' opacity='.5'/%3E%3C/g%3E%3C/svg%3E")}
+  html:not(.medit) body{height:100svh;margin-block:0;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;padding-top:max(14px,env(safe-area-inset-top,0px));padding-bottom:0}
+  html:not(.medit) .wrap{flex:1 1 auto;min-height:0;width:100%;overflow-x:clip;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  html:not(.medit) .wrap::-webkit-scrollbar{display:none}
+  html:not(.medit) .proof,html:not(.medit) body > .bands,html:not(.medit):not(.mnoacct) body > .ft,html:not(.medit) .installtip,html:not(.medit) .byalaska{display:none !important}
+  html:not(.medit) .wrap > header{display:none}
+  /* the claude.ai version (no accounts, so no profile to come): its light footer (language, cookies) stays under the screen */
+  html.mnoacct:root:not(.medit){height:auto;overflow:visible}
+  html.mnoacct:not(.medit) body{height:auto;min-height:100svh;overflow:visible;display:block}
+  html.mnoacct:not(.medit) .wrap{overflow:visible;min-height:calc(100svh - 14px)}
+  html.mnoacct:not(.medit) body > .ft{padding-bottom:calc(var(--tabs) + 44px)}
+  /* … and no dead tab: without accounts there is no gallery, no stats, no profile */
+  html.mnoacct .tabbar [data-tab="gallery"],html.mnoacct .tabbar [data-tab="stats"],html.mnoacct .tabbar [data-tab="account"]{display:none}
+  html:not(.medit) .wrap{padding-bottom:0}
+  /* the first screen is the app: what follows (reviews, footer) starts under it */
+  html:not(.medit) #p1{flex:none;min-height:100%;padding-bottom:calc(var(--tabs) + 18px);box-sizing:border-box;gap:0}
+  html:not(.medit) .status{color:var(--ink);text-shadow:none;text-align:center;margin:0}
+  html:not(.medit) .status:empty{display:none}
+  /* the card « Choisis ton son » and its buttons come back once a song is there (the editor); its messages stay readable */
+  html:not(.medit) #p1 > .card:not(.lpoffer){border:0;background:none;box-shadow:none;padding:0;margin:0;min-height:0}
+  html:not(.medit) #p1 > .card:not(.lpoffer)::before,html:not(.medit) #p1 > .card:not(.lpoffer)::after{display:none}
+  html:not(.medit) #p1 > .card:not(.lpoffer) > :not(.nearbox){display:none}
+  html:not(.medit) #p1 > .nav{display:none}
+  /* a problem with the file just chosen: said right under the top line, in view (not at the bottom, under the bar) */
+  html:not(.medit) .mh-top{order:-2}
+  html:not(.medit) #p1 > .card:not(.lpoffer):has(.nearmsg){order:-1;margin:10px 0 0}
+
+  /* the top line: the greeting (signed in) and the formula */
+  html:not(.medit) .mh-top{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;margin:0 2px}
+  .mh-hi h2{margin:0;font:400 clamp(25px,7.4vw,30px)/1.1 var(--display);color:var(--ink);overflow-wrap:anywhere}
+  .mh-hi p{margin:3px 0 0;font:500 15px/1.3 var(--body);color:var(--muted)}
+  .mh-pill{flex:none;margin-left:auto;min-height:44px;padding:0 14px;display:inline-flex;align-items:center;gap:7px;border:3px solid var(--ink);border-radius:999px;background:#fff;
+    color:var(--blue);font:400 15px/1 var(--display);letter-spacing:.02em;box-shadow:0 3px 0 var(--ink);cursor:pointer;-webkit-tap-highlight-color:transparent;
+    transition:transform var(--dur-1) var(--ease-press)}
+  .mh-pill:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+  .mh-pill svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round}
+  .mh-pill:focus-visible,.mh-new:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+
+  /* signed out: the first screen chosen on 23/11 (mascot, title, sentence, one button, the example as a link, the note) */
+  html:not(.medit) #p1 > .hero{display:flex;flex:1 1 auto;justify-content:center;margin:0;padding:10px 0 26px;color:var(--ink)}
+  html:not(.medit).msigned #p1 > .hero{display:none !important}
+  html:not(.medit) .hero-m{width:112px;margin-bottom:6px}
+  html:not(.medit) .hero-h1{color:var(--ink);text-shadow:none;font-size:clamp(25px,7.3vw,33px);text-wrap:balance}
+  html:not(.medit) .hero-s.hero-s2{color:var(--muted);text-shadow:none;font-weight:500;font-size:16.5px}
+  html:not(.medit) .hero-go{margin-top:22px;gap:8px;width:100%}
+  /* the one main button of the screen: blue, ink outline, hard ink shadow (no icicles on it) */
+  html:not(.medit) .hero-go .hero-song,.mbtn{min-height:64px;border:3.5px solid var(--ink);border-radius:22px;background:var(--blue);color:#fff;box-shadow:0 6px 0 var(--ink);
+    font:400 23px/1 var(--display);letter-spacing:.02em;text-shadow:0 2px 0 rgba(10,13,20,.35)}
+  html:not(.medit) .hero-go .hero-song::before,html:not(.medit) .hero-go .hero-song::after{display:none}
+  html:not(.medit) .hero-go .hero-song:active{transform:translateY(4px);box-shadow:0 2px 0 var(--ink)}
+  html:not(.medit) .hero-demo{color:var(--blue);text-shadow:none;min-height:48px}
+  html:not(.medit) .hero-demo:focus-visible{outline-color:var(--ink)}
+  html:not(.medit) .hero-proof{width:auto;margin-top:10px;padding:6px 16px}
+
+  /* signed in: « Nouveau montage », the whole card is the button */
+  html:not(.medit).msigned .mh-new{display:flex}
+  .mh-new{position:relative;flex-direction:column;align-items:flex-start;width:100%;min-height:178px;margin:20px 0 0;padding:20px 142px 18px 20px;box-sizing:border-box;overflow:hidden;text-align:left;
+    border:3.5px solid var(--ink);border-radius:28px;background:var(--blue);color:#fff;box-shadow:0 6px 0 var(--ink);cursor:pointer;-webkit-tap-highlight-color:transparent;
+    transition:transform var(--dur-1) var(--ease-press)}
+  .mh-new:active{transform:translateY(4px);box-shadow:0 2px 0 var(--ink)}
+  .mh-new b{display:block;font:400 27px/1.1 var(--display);text-shadow:0 3px 0 var(--ink)}
+  .mh-new .mh-newP{display:block;margin:8px 0 14px;font:500 15px/1.35 var(--body)}
+  .mh-new i{position:absolute;right:12px;bottom:10px;width:126px;aspect-ratio:118/142;background:var(--mascot) center bottom/contain no-repeat;pointer-events:none}
+  .mh-new .mh-go{margin-top:auto;display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 13px;border:2.5px solid var(--ink);border-radius:999px;
+    background:#fff;color:var(--ink);font:700 14px/1 var(--body);box-shadow:0 2px 0 var(--ink)}
+  .mh-new .mh-go svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+  html:not(.medit).msigned .mh-ex{display:inline-flex}
+  .mh-ex{display:none;align-self:center;margin-top:10px}
+
+  /* « Tes derniers montages »: the one kept on this phone, and those saved online (Creator Plus) */
+  html:not(.medit) .mh-lastT:not([hidden]){display:block;margin:26px 2px 12px;font:400 21px/1.15 var(--display);color:var(--ink)}
+  html:not(.medit) .mh-list:not([hidden]){display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 0 6px;padding:0;list-style:none}
+  .mh-list button{position:relative;display:block;width:100%;aspect-ratio:9/15;padding:0;overflow:hidden;border:3px solid var(--ink);border-radius:20px;
+    background:linear-gradient(160deg,#0e3f8f,var(--ink));box-shadow:0 4px 0 var(--ink);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform var(--dur-1) var(--ease-press)}
+  .mh-list li:nth-child(3n+2) button{background:linear-gradient(160deg,#1f6fd6,var(--ink))}
+  .mh-list li:nth-child(3n) button{background:linear-gradient(160deg,#3a5fa8,var(--ink))}
+  .mh-list button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+  .mh-list button:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+  .mh-list img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .mh-list b{position:absolute;left:0;right:0;bottom:0;padding:22px 8px 8px;background:linear-gradient(rgba(10,13,20,0),rgba(10,13,20,.82));color:#fff;font:600 12.5px/1.2 var(--body);
+    text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  html:not(.medit) #p1 > .lpoffer{margin:0 0 12px;padding:16px 16px 14px}
+  html:not(.medit) #p1 > .lpoffer::before,html:not(.medit) #p1 > .lpoffer::after{display:none}
+  html:not(.medit) #p1 > .lpoffer h2{font-size:19px}
+  html:not(.medit) #p1 > .lpoffer .row{gap:10px;margin-top:10px}
+  html:not(.medit) #p1 > .lpoffer .btn{flex:1 1 0;min-height:48px;justify-content:center}
+  html:not(.medit) #p1 > .lpoffer .btn.primary{background:#fff;color:var(--ink);border-color:var(--ink);box-shadow:0 3px 0 var(--ink)}
+  html:not(.medit) #p1 > .lpoffer .btn.primary::before,html:not(.medit) #p1 > .lpoffer .btn.primary::after{display:none}
+  /* the offer of the last edit used to hide the top of the page: here both are shown, the offer under its title */
+  html:not(.medit):not(.msigned) #p1:has(> .lpoffer:not([hidden])) > .hero{flex:0 0 auto;padding-bottom:6px}
+
+  @media (max-height:600px){
+    html:not(.medit) .hero-m{width:78px}
+    html:not(.medit) .hero-h1{font-size:clamp(24px,7vw,30px)}
+    html:not(.medit) .hero-go{margin-top:14px}
+    html:not(.medit) .hero-go .hero-song{min-height:58px}
+    .mh-new{min-height:150px}
+  }
+}
+
+/* ===== the opening « le glaçon » (stalak.app, phones, once per session; src/splash.js) ===== */
+html.splash-on{overflow:hidden}
+html.splash-on #splash{display:block}
+#splash{position:fixed;inset:0;z-index:300;overflow:hidden;touch-action:none;-webkit-tap-highlight-color:transparent;cursor:pointer}
+#splash .sp-curtain{position:absolute;inset:0}
+#splash .sp-bg{position:absolute;inset:-8% 0;background:radial-gradient(84vw 84vw at 50% 46%,#4b93f0 0,#1f6fd6 55%,#1657b3 100%)}
+#splash .sp-rays{position:absolute;left:50%;top:46%;width:190vw;height:190vw;margin:-95vw 0 0 -95vw;border-radius:50%;opacity:0;
+  background:repeating-conic-gradient(from 0deg,rgba(255,255,255,.55) 0 9deg,rgba(255,255,255,0) 9deg 22deg);-webkit-mask:radial-gradient(circle,#000 18%,transparent 62%);mask:radial-gradient(circle,#000 18%,transparent 62%)}
+#splash .sp-fl{position:absolute;border-radius:50%;background:#fff}
+#splash .sp-edge{position:absolute;left:0;top:100%;width:100%;height:auto;margin-top:-1px;display:block}
+#splash .sp-ice{position:absolute;left:0;top:0;width:100%;height:auto;display:block}
+/* the stage: the 1080-wide drawing of the demo, scaled to the width of the phone (splash.js sets --sp) */
+#splash .sp-stage{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-origin:0 0;transform:translateY(var(--sp-y,0px)) scale(var(--sp,.36))}
+#splash .sp-word{position:absolute;left:0;right:0;top:1262px;text-align:center;font:400 196px/1 'Lilita One','Arial Rounded MT Bold',system-ui,sans-serif;color:#fff;letter-spacing:4px}
+#splash .sp-word span{display:inline-block;opacity:0;text-shadow:0 14px 0 #0a0d14,9px 0 0 #0a0d14,-9px 0 0 #0a0d14,0 -9px 0 #0a0d14,8px 8px 0 #0a0d14,-8px 8px 0 #0a0d14,8px -8px 0 #0a0d14,-8px -8px 0 #0a0d14,0 26px 0 rgba(10,13,20,.25)}
+#splash .sp-shadow{position:absolute;left:310px;top:1124px;width:460px;height:70px;border-radius:50%;background:rgba(10,13,20,.28);opacity:0}
+#splash .sp-flash{position:absolute;left:340px;top:690px;width:400px;height:400px;border-radius:50%;border:40px solid #fff;opacity:0}
+#splash .sp-cube{position:absolute;left:290px;top:640px;width:500px;height:500px;opacity:0}
+#splash .sp-cubeIn{position:absolute;inset:0}
+#splash .sp-box{position:absolute;inset:0;border-radius:74px;border:16px solid #0a0d14;background:linear-gradient(135deg,#fff 0 14%,#e8f4ff 14% 42%,#bfe0ff 42% 78%,#8fc4ff 78%);overflow:hidden;box-shadow:inset -22px -26px 0 rgba(31,111,214,.28)}
+#splash .sp-box img{position:absolute;left:40px;top:62px;width:400px;height:400px;filter:saturate(.55) brightness(1.12)}
+#splash .sp-frost{position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.75) 0 12%,rgba(214,236,255,.38) 12% 60%,rgba(143,196,255,.5) 60%)}
+#splash .sp-shine{position:absolute;left:44px;top:36px;width:130px;height:34px;border-radius:20px;background:#fff}
+#splash .sp-shine2{position:absolute;left:190px;top:40px;width:40px;height:28px;border-radius:20px;background:#fff}
+#splash .sp-cracks{position:absolute;inset:0;width:100%;height:100%}
+#splash .sp-sh{position:absolute;left:480px;top:830px;width:120px;height:120px;opacity:0}
+#splash .sp-pf{position:absolute;left:520px;top:1110px;width:44px;height:44px;border-radius:50%;background:#fff;border:6px solid #0a0d14;opacity:0}
+#splash .sp-masc{position:absolute;left:250px;top:482px;width:580px;height:698px;opacity:0}
+#splash .sp-mascIn{position:absolute;inset:0;background:var(--mascot) center bottom/contain no-repeat}
+
 .about{font-size:15px;line-height:1.6}.about h2{font:400 24px/1.2 var(--display);margin:0 0 8px}.about p{margin:0 0 8px}.about ul{margin:0 0 8px;padding-left:20px}.about strong{font-weight:700}.about a{font-weight:700;text-decoration:underline;text-underline-offset:3px}
 
 .frhint{display:flex;align-items:center;gap:2px;width:max-content;max-width:calc(100% - 32px);margin:0 auto 12px;background:#fff;color:var(--ink,#0a0d14);border:2px solid var(--ink,#0a0d14);border-radius:999px;box-shadow:0 3px 0 var(--ink,#0a0d14);font-size:14.5px;font-weight:600;line-height:1.2}.frhint[hidden]{display:none}.frhint a{color:inherit;text-decoration:none;padding:10px 4px 10px 16px}.frhint button{flex:none;width:40px;height:40px;border:0;border-radius:50%;background:transparent;color:inherit;font:inherit;font-size:20px;line-height:1;cursor:pointer}
 </style>
 </head>
 <body>
+<script>(function(){var d=document,W=window,G=W.STALAK_GSAP="/vendor/gsap-3.15.0.min.js";try{if(!W.matchMedia||!matchMedia('(max-width:899px)').matches||matchMedia('(prefers-reduced-motion: reduce)').matches)return;if(navigator.webdriver&&!W.__stalakSplash)return;if(location.hash&&location.hash.length>1)return;if(sessionStorage.getItem('stalak:splash')||sessionStorage.getItem('stalak:openProject'))return;sessionStorage.setItem('stalak:splash','1');}catch(e){return;}var sp=d.createElement('div'),r=d.documentElement;sp.id='splash';sp.setAttribute('aria-hidden','true');sp.innerHTML='<div class="sp-curtain"><div class="sp-bg"></div></div>';r.classList.add('splash-on');d.body.insertBefore(sp,d.body.firstChild);W.__stalakSplashT=Date.now();function bye(){if(W.__stalakSplashGo||!sp.parentNode)return;sp.style.transition='opacity .3s ease-out';sp.style.opacity='0';setTimeout(function(){r.classList.remove('splash-on');if(sp.parentNode)sp.parentNode.removeChild(sp);W.__stalakSplashDone=true;},320);}[G,"/assets/splash.5480163793.js"].forEach(function(u){var s=d.createElement('script');s.src=u;s.async=false;s.onerror=bye;d.head.appendChild(s);});setTimeout(bye,3000);})();</script>
 <div class="frhint" id="frHint" lang="fr" hidden><a href="/fr/" id="frHintGo">Version française <span aria-hidden="true">→</span></a><button type="button" id="frHintX" aria-label="Fermer">×</button></div>
 <script>/* Marketing & croissance: « Version française → » on the English home, for a phone set to French */
 (function(){var b=document.getElementById('frHint');if(!b)return;
@@ -2185,6 +2368,14 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
   <section class="narrow" id="p1">
     <!-- Marketing & croissance (06/11, audit point 6, « version compacte » choisie par le propriétaire) : le vrai titre de la
          page, une phrase et une petite vidéo (un vrai montage Stalak de ses prises) ; seulement tant qu'aucun son n'est importé -->
+    <!-- App & montage (refonte mobile, lot 1, 23/11; src/mobile.css, app.js mob*): the home screen of a phone. The top line:
+         the greeting once signed in, and the formula; signed in, the card « Nouveau montage » replaces the pitch below -->
+    <div class="mh-top" id="mhTop">
+      <div class="mh-hi" id="mhHi" hidden><h2 id="mhHiT"></h2><p data-i18n="mh.sub">Ready for your next snippet?</p></div>
+      <button class="mh-pill" id="mhPill" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.500v19M3.800 7.250l16.400 9.500M3.800 16.750l16.400-9.500"/></svg><span id="mhPillT">Stalak Pro</span></button>
+    </div>
+    <button class="mh-new" id="mhNew" type="button"><b data-i18n="mh.new">New edit</b><span class="mh-newP" data-i18n="mh.newP">Pick your song, we cut on the beat.</span><span class="mh-go"><span data-i18n="hero.song">Choose my song</span><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span><i aria-hidden="true"></i></button>
+    <button class="hero-demo mh-ex" id="mhEx" type="button"><i aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M8 5l12 7-12 7z"/></svg></i><span data-i18n="hero.demo">See an example</span></button>
     <div class="hero" id="heroPitch">
       <!-- (audit 13/11, n° 1) its picture first; it plays once the page has loaded (build_site.py app_loader; still for less motion) -->
       <video class="hero-v" src="/demo/edit.mp4" poster="/demo/edit.jpg" width="432" height="768" muted loop playsinline preload="none" aria-label="Example: a video Stalak edited from three takes" data-i18n-attr="aria-label:hero.v"></video>
@@ -2231,6 +2422,7 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
         })(document.currentScript.previousElementSibling);</script>
       </div>
     </div>
+    <h2 class="mh-lastT" id="mhLastT" hidden data-i18n="mh.last">Your latest edits</h2>
     <div class="card lpoffer" id="lpOffer" hidden role="region" aria-labelledby="lpOfferT">
       <h2 id="lpOfferT" data-i18n="lp.t">Pick up your last edit?</h2>
       <p class="hint" id="lpOfferP"></p>
@@ -2239,6 +2431,7 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
         <button class="btn" id="lpNo" type="button" data-i18n="lp.no">No thanks</button>
       </div>
     </div>
+    <ul class="mh-list" id="mhList" hidden></ul>
     <div class="card">
       <h2 data-i18n="p1.title">Pick your song</h2>
       <div class="kindpick">
@@ -2371,7 +2564,9 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
         </ol>
         <p class="ws-p" data-i18n="ws.p">You can already listen and change the settings: the edit updates by itself.</p>
       </div>
-      <div class="brollbox">
+      <!-- (23/11, the owner: « plans d'ambiance, enlève ») no longer offered; an older edit that has some still plays them, and its
+           « Ambiance » setting (step 4) stays for it -->
+      <div class="brollbox" hidden>
         <div class="brollhead">
           <label class="btn tip" for="brollFiles" data-tip="Videos where you’re not singing: the street, the studio, the car, your friends… No need to sync them, their sound is never used." data-i18n="broll.add" data-i18n-attr="data-tip:broll.add.tip">+ B-roll</label>
           <span class="hint" data-i18n="broll.hint">Optional: videos without singing, slipped between your takes.</span>
@@ -2437,7 +2632,8 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
               <div class="row" style="margin-top:10px">
                 <button class="btn primary" id="lyTrGo" type="button">Écrire mes paroles</button>
               </div>
-              <div class="voxpick" id="lyVox">
+              <!-- (23/11, the owner: « l'option voix seule, enlève-la ») no longer offered -->
+              <div class="voxpick" id="lyVox" hidden>
                 <label class="btn link" for="lyVoxFile" id="lyVoxPick" data-i18n="lyr.vox.pick">Got the vocals alone (a cappella)? Import them for an even more accurate transcription</label>
                 <input type="file" id="lyVoxFile" accept="audio/*,video/*,.mp3,.wav,.m4a,.aac,.flac,.ogg,.mp4,.mov,.m4v">
                 <p class="hint" id="lyVoxOn" hidden><span id="lyVoxName"></span> <button class="btn link" type="button" id="lyVoxDel" data-i18n="lyr.vox.del">Remove</button></p>
@@ -3232,6 +3428,15 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
 <!-- help: the ice cube in the corner opens a little chat with an assistant -->
 <!-- (22/11, audit mobile n° 3) « Exporter » in a bar across the bottom of the screen: the page keeps room for it (body.fabon),
      so it never sits on a setting; what will be exported is written next to the button -->
+<!-- App & montage (refonte mobile, lot 1): the bar at the bottom of a phone, on the home screen and the pages opened from it;
+     never during the edit, the camera or an export (html.medit, app.js mobUi) -->
+<nav class="tabbar" id="tabBar" aria-label="Navigation" data-i18n-attr="aria-label:tab.aria">
+  <button type="button" data-tab="home" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span data-i18n="tab.home">Home</span></button>
+  <button type="button" data-tab="gallery"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9.500v5l4.500-2.500z"/></svg><span data-i18n="tab.gallery">Edits</span></button>
+  <button type="button" class="tab-plus" data-tab="new" aria-label="New edit" data-i18n-attr="aria-label:mh.new"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4.500v15M4.500 12h15"/></svg></button>
+  <button type="button" data-tab="stats"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 20V11M10 20V4M16 20v-7M22 20H2"/></svg><span data-i18n="tab.stats">Stats</span></button>
+  <button type="button" data-tab="account"><i class="tab-av" id="tabAv" aria-hidden="true"></i><span data-i18n="tab.account">Account</span></button>
+</nav>
 <div class="expbar" id="expFab" hidden><button class="btn expbar-go" type="button"><span data-i18n="exp.fab">Export</span> <span aria-hidden="true">↓</span></button><span class="expbar-i" id="expFabI"></span></div>
 <button class="help-cube" id="helpBtn" type="button" aria-label="Help" data-i18n-attr="aria-label:help.aria" aria-expanded="false" aria-controls="helpPanel">
   <svg viewBox="0 0 64 64" focusable="false" aria-hidden="true">
@@ -3259,6 +3464,6 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
   <button class="hp-human" id="helpHuman" type="button" data-i18n="help.human" hidden>Talk to a human</button>
   <button class="hp-diag" id="helpDiag" type="button" data-i18n="help.diag">Copy info for the team</button>
 </section>
-<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.c9f4369178.js", "/assets/app.df2b5072c7.js", "/assets/tiktok.8fcf3f7d25.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v||!v.offsetParent)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
+<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.c9f4369178.js", "/assets/app.7e13e1323d.js", "/assets/tiktok.8fcf3f7d25.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v||!v.offsetParent)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
 </body>
 </html>
