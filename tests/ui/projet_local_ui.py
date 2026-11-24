@@ -109,6 +109,51 @@ def run(b, base, site, lang, iphone):
     ctx.close()
 
 
+def run_clip(b, base, site, lang, iphone):
+    """(24/11) the Clip mode is for subscribers: a clip kept in the phone and opened without a subscription comes as a TikTok /
+    Reels, loses nothing, and the clip comes back as it was when Clip is chosen with a subscription."""
+    tag = ('iPhone' if iphone else 'ordinateur') + ' ' + lang + ' (clip gardé)'
+    opts = dict(PW.devices['iPhone 15 Pro']) if iphone else {'viewport': {'width': 1280, 'height': 860}}
+    ctx = b.new_context(**opts, locale='en-US' if lang == 'en' else 'fr-FR')
+    pg = ctx.new_page(); errs = []
+    pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
+    pg.goto(base + ('' if lang == 'en' else 'fr/'), wait_until='load'); ready(pg)
+    # a subscriber makes a clip
+    ev(pg, "acctHas = f => true")
+    pg.set_input_files('#songFile', os.path.join(site, 'beat.wav'))
+    pg.wait_for_function('() => __ev("!!S.song")', timeout=30000)
+    pg.set_input_files('#takeFiles', [os.path.join(site, 'take1.webm'), os.path.join(site, 'take2.webm')])
+    pg.wait_for_function('() => __ev("S.takes.length === 2 && S.takes.every(t => t.status !== \'pending\')")', timeout=90000)
+    ev(pg, "go(4)"); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=30000)
+    ev(pg, "kindPick('clip')"); pg.wait_for_timeout(800)
+    ev(pg, "segFree('l', 2.5), updateSegment(), segFree('r', 14.5), updateSegment(), rebuild(false)"); pg.wait_for_timeout(300)
+    q = "({ k: S.kind, f: S.fmt, a: +S.segStart.toFixed(3), b: +S.segEnd.toFixed(3), cuts: S.cuts.map(c => [+c.t0.toFixed(3), +c.t1.toFixed(3), S.takes.indexOf(baseOf(c.take))]) })"
+    before = ev(pg, q)
+    check(tag + ' : abonné : un clip 16:9 fait', before['k'] == 'clip' and before['f'] == '169' and len(before['cuts']) > 0, before)
+    pg.wait_for_function('() => __ev("LP.saved != null && !LP.running && LP.pending == null && LP.quick === lpQuick() && !lpUnsaved()")', timeout=30000)
+    # opened again without a subscription
+    pg.reload(wait_until='load'); ready(pg); pg.wait_for_selector('#lpOffer:not([hidden])', timeout=10000)
+    pg.locator('#lpYes').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0 && !LP.applying")', timeout=90000)
+    st = pg.locator('#status').inner_text()
+    check(tag + ' : sans abonnement : il s’ouvre en TikTok / Reels 9:16, et le message dit que le clip est gardé', ev(pg, '[S.kind, S.fmt]') == ['reel', '916']
+          and (('kept' in st) if lang == 'en' else ('gardé' in st)), (ev(pg, '[S.kind, S.fmt]'), st))
+    pg.wait_for_function('() => __ev("!lpUnsaved() && !LP.running && LP.pending == null")', timeout=30000)
+    # kept in the phone again (as a TikTok), opened again: the clip is still kept
+    pg.reload(wait_until='load'); ready(pg); pg.wait_for_selector('#lpOffer:not([hidden])', timeout=10000)
+    pg.locator('#lpYes').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0 && !LP.applying")', timeout=90000)
+    check(tag + ' : gardé de nouveau, rouvert : le clip est toujours là', ev(pg, '!!S.clipKept && S.kind === "reel"'))
+    # « Clip » without a subscription: the plans page; with one: the clip as it was
+    ev(pg, "S.__lock = [], lockOpen = (f, w) => S.__lock.push(f)")
+    pg.locator('#kindSeg4 button[data-v="clip"]').click(); pg.wait_for_timeout(600)
+    check(tag + ' : « Clip » sans abonnement : la page des formules, le clip reste gardé', ev(pg, '[S.kind, S.__lock, !!S.clipKept]') == ['reel', ['clip'], True])
+    ev(pg, "acctHas = f => true, planTags()")
+    pg.locator('#kindSeg4 button[data-v="clip"]').click(); pg.wait_for_timeout(1500)
+    after = ev(pg, q)
+    check(tag + ' : abonné, « Clip » : le clip revient comme il était (passage, 16:9, montage)', after == before, (before, after))
+    check(tag + ' : aucune erreur dans la page', not errs, errs)
+    ctx.close()
+
+
 def main():
     tmp = tempfile.mkdtemp(prefix='stalak-local-')
     site = os.path.join(tmp, 'site'); shutil.copytree(PUBLIC, site)
@@ -131,6 +176,8 @@ def main():
                 if only and only != ('iphone' if iphone else 'ordi') + '-' + lang: continue
                 try: run(b, base, site, lang, iphone)
                 except Exception as e: check(('iPhone' if iphone else 'ordinateur') + ' ' + lang + ' : déroulé complet', False, str(e)[:300])
+                try: run_clip(b, base, site, lang, iphone)
+                except Exception as e: check(('iPhone' if iphone else 'ordinateur') + ' ' + lang + ' : clip gardé, déroulé complet', False, str(e)[:300])
         b.close()
     srv.shutdown(); shutil.rmtree(tmp, ignore_errors=True)
     print('%d/%d réussis' % (sum(results), len(results)))
