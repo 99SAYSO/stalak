@@ -4,6 +4,7 @@
 > Dernière mise à jour : 30/10/2026 à 21 h (offre hybride fusionnée et en ligne : App, Comptes, Juridique, Marketing ; migration 0008 appliquée).
 
 ## Décisions récentes du propriétaire
+- 24/11 08:05 — Chef : fusion et mise en ligne du lot 2 de la refonte mobile (connexion plein écran, profil, tirer pour rafraîchir, onboarding avec les textes des démos). Tests : serveur 132/132, refonte_mobile2 142/142, refonte_mobile 102/102, audit 122/122, vente 63/63, mesure 114/114, essai_pro 193/193, tiktok 224/224. À transmettre à Comptes : audit611_ui 89/93 et partager_ui 88/92 cassés sur main depuis sa fusion.
 - 24/11 06:52 — Chef : carrousels Instagram programmés sur @stalak_app à 18 h (Paris) : galères le 24/11, placard le 27/11, Noël le 1/12.
 - 24/11 06:50 — Chef : 3 carrousels Instagram (placard = studio, Noël, galères du rappeur indé) créés en brouillon dans Zernio sur @stalak_app (images ChatGPT validées, slides variées). Dates de publication à valider par le propriétaire.
 - 24/11 06:08 — Propriétaire : liste de hooks à tester, adaptée à Stalak dans docs/marketing/HOOKS_A_TESTER.md (Marketing et Réseaux). Instagram : carrousels seulement.
