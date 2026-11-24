@@ -1,4 +1,4 @@
-Statut : PRÊT (lot 1 : police, barre du bas, accueil, ouverture ; lots 2 à 4 à venir sur la même branche)
+Statut : PRÊT (lots 1 et 2 ; lots 3 et 4 à venir sur la même branche)
 Branche : app/refonte-mobile (créée depuis `origin/main` efbb0c0 le 23/11).
 Maquette de la branche : https://app-refonte-mobile.stalak-site.pages.dev (à faire valider par le propriétaire, règle 9).
 
@@ -154,6 +154,61 @@ Lot 1 déjà fait (ci-dessous). Répartition proposée au propriétaire pour la 
 - **Lot 4** : tutoriel, glaçon d'aide, écran après achat, choix du paiement, **paywall (n° 14)** et **offre à 1 € sur
   l'écran de fin (n° 15)** (avec Comptes ; la demande du Chef dit ces deux écrans « en attente du ok final du propriétaire »).
 
+# Lot 2 : connexion, profil, tirer pour rafraîchir, onboarding (24/11)
+
+Accord du propriétaire le 24/11 à 1 h 17 (maquette du lot 1 : « oui » ; onboarding au lot 2, paywall et offre à 1 € au lot 4 : « oui »).
+Tout est sous 900 px et seulement sur stalak.app (la version claude.ai n'a pas de compte). Skills : stalak-da, motion-design,
+taste, webapp-testing.
+
+## Ce qui est fait
+1. **Connexion / inscription en plein écran** (démo n° 2) : scène bleue (rayons, neige, glace en haut), mascotte sur sa
+   butte avec une bulle, la barre du bas part. **L'e-mail d'abord**, puis « Continuer » fait arriver le reste du **même
+   formulaire** (mot de passe, « Mot de passe oublié ? », pseudo à l'inscription). Google / Apple / Microsoft passent sous
+   le formulaire, après « ou ». Les règles des comptes ne changent pas : mêmes champs, mêmes boutons, même envoi au serveur.
+2. **Profil, son écran à lui** (démo n° 3) : photo dans un rond, nom, formule, e-mail ; cartes « Ma formule » (ouvre les
+   formules, ou « Gérer » pour un abonné ; **la phrase d'abonnement du compte y reste écrite en entier** : renouvellement,
+   essai et date du 1er prélèvement, annulation) et « TikTok » (si TikTok est proposé) ; une liste : Mes montages, Langue
+   (FR / EN), Aide, « Photo, pseudo, mot de passe », « Infos légales et guides » ; « Se déconnecter » en bas.
+   - La roue en haut à droite (et la ligne « Photo, pseudo, mot de passe ») ouvre **les réglages** : ce sont les cartes
+     d'avant, toutes là (photo, pseudo, e-mail, mot de passe, comptes liés, abonnement, galerie, langue, se déconnecter,
+     supprimer mon compte). « Retour » revient au profil.
+   - **« Infos légales et guides »** : une feuille qui reprend les liens du pied de page du site (tarifs, conditions,
+     confidentialité, remboursement, mentions légales, guides…), lus dans la page : toujours les mêmes qu'en bas du site.
+     « Gérer les cookies » est le lien vers la page de confidentialité, comme dans le pied de page.
+3. **Tirer pour rafraîchir sur « Montages »** (démo n° 4) : la page descend, fond bleu et flocons derrière, la capuche de
+   la mascotte dépasse, surgit au seuil (« Quoi de neuf ? »), regarde à gauche et à droite pendant que la liste est
+   redemandée au serveur, replonge, les vignettes reviennent.
+4. **Onboarding** (démo n° 13) : au premier lancement sur ce téléphone, après l'ouverture. Une question par écran, barre
+   jaune, la mascotte change de tête et répond dans sa bulle, plusieurs choix là où c'est dit, retour en arrière, puis
+   l'écran de chargement (cercle jaune, une phrase par réponse) et « Ton plan est prêt, <nom> ! » → « Faire ma 1re vidéo ».
+   Jamais deux fois ; jamais par-dessus un montage, une page du compte ou un lien.
+
+## Textes des démos (décision du propriétaire du 24/11, 4 h 48 à 4 h 58)
+Les textes des démos validées sont repris **mot pour mot** (voir la section « Lot 2, suite du 24/11 (4 h 54) » en bas).
+Les écarts que cette section listait sont annulés, sauf le bouton « Passer » et le profil, validés tels quels.
+Aucun texte d'une démo validée ne se change sans demander au propriétaire.
+
+## Pour Comptes (rien de `functions/` ni `account.js` n'est touché)
+- **Réponses de l'onboarding** : gardées sur le téléphone (`localStorage`, clé `stalak:onb` :
+  `{ v: 1, done | skipped: <date>, a: { name, genres[], onPlatforms: 'oui'|'non'|'', links: { spotify, apple, soundcloud,
+  instagram }, listeners: 'a'..'d'|'', posts[], blocks[], target: 'a'..'d'|'', goals[] } }`). **Contrat attendu** : si
+  `StalakAccount.onboarding(answers)` existe et que la personne est connectée, l'app l'appelle une fois (puis note `sent`) ;
+  sinon rien n'est envoyé. À Comptes de créer cette fonction et la route (par exemple `PUT /api/me/onboarding`).
+- **Juridique** : ces réponses (liens Spotify / Apple Music / SoundCloud / Instagram, auditeurs déclarés) sont des données
+  personnelles dès qu'elles partent sur le compte : à ajouter à la politique de confidentialité avant d'activer l'envoi.
+- Les écrans du compte sont **habillés**, pas réécrits : `src/mobile2.js` range et décore les éléments existants
+  (`#apLogin`, `#apAccount`) et clique sur les boutons existants (`#apOut`, `#apSubGo`, `#ttkStats`…). Un changement de
+  Comptes dans ces écrans continue de marcher ; s'il ajoute une carte au compte, elle apparaît dans « réglages ».
+- L'app expose `window.StalakM` (lecture seule) pour ce fichier.
+
+## Fichiers du lot 2
+- **Nouveau** `src/mobile2.js` → servi à part (`/assets/mobile2.<version>.js`), chargé par l'app **seulement sur
+  téléphone et sur stalak.app** ; il porte son style et ses textes FR / EN. `index.html` ne grossit presque pas.
+- `src/app.js` (`mobTell`, `window.StalakM`, chargement du fichier), `src/mobile.css` (la barre part sur les écrans plein
+  écran), `build_site.py` (le fichier à part, `window.STALAK_M2`) → **Marketing** prévenu ici.
+- Images de la mascotte : `/emoji/*.webp` déjà servies par le site (256 px : un peu floues sur un écran ×3).
+- Nouveau test `tests/ui/refonte_mobile2_ui.py` (serveur de test avec de vrais comptes).
+
 ## Ajouts du 24/11 (après la série complète des tests)
 - **« Essaie avec ton son »** (fin de l'exemple) : sur téléphone, le carré d'import n'est plus sur l'accueil ; c'est le gros
   bouton de l'accueil (« Choisir mon son » ou la carte « Nouveau montage ») qui est mis en avant, avec le clavier dessus.
@@ -185,3 +240,86 @@ Lot 1 déjà fait (ci-dessous). Répartition proposée au propriétaire pour la 
   - `lyrics_ui` 62/73 : l'exemple ne dure plus que 12 s (le test attend un passage de plus de 30 s coupé en morceaux) et
     la page des formules n'affiche plus la phrase « Les paroles automatiques font partie de Stalak Pro ».
 - À lancer avec `http://localhost:…` pour `lyrics_ui` et `support_ui` (leur cookie de test est posé sur `localhost`).
+
+## Lot 2 : résultats des tests (24/11, sur la branche, site reconstruit)
+- nouveau `refonte_mobile2_ui` **124/124** (connexion, profil, tirer pour rafraîchir, onboarding, mouvements réduits,
+  ordinateur inchangé, version claude.ai).
+- `refonte_mobile_ui` 102/102, `audit611_ui` 93/93, `audit_ui` 122/122, `accueil_a_ui` 77/77, `vente_ui` 63/63,
+  `projet_local_ui` 52/52, `fenetre_pro_ui` 84/84, `fin_export_ui` 98/98, `partager_ui` 92/92, `exports_rates_ui` 80/80,
+  `apercu_depart_ui` 10/10, `fluidite_ui` 30/30, `filtres_ui` 106/106, `export_pub_ui` 22/22, `liens_cmp_ui` 58/58,
+  `pied_de_page_ui` 842/842, `plans_ui` 39/39, `achat_ui` 23/23, `help_ui` 42/42, `support_ui` 64/64, serveur 121/121.
+- **Trois tests adaptés au profil du téléphone** (sur téléphone, les anciennes cartes du compte sont derrière la roue
+  « Réglages ») : `essai_pro_ui` **193/193** (vérifie en plus que la carte de la formule du profil écrit « Essai Pro : encore
+  3 jours », puis ouvre les réglages pour « Gérer ou annuler »), `tiktok_ui` **224/224** (carte TikTok du profil, puis
+  réglages pour « Relier » / « Délier »), `gallery_ui` **48/48** (ligne « Mes montages » et « Se déconnecter » du profil).
+- **Un vrai défaut trouvé et corrigé** par `tiktok_ui` : la carte TikTok du profil restait cachée quand TikTok répondait
+  après l'ouverture du profil. Le profil suit maintenant les cartes du compte qui arrivent en retard.
+- Échecs identiques sur `main` (pas des régressions) : `animations_ui` 28/44, `formules_ui` 136/137, `clip1_ui` 83/87
+  (`.band-frost a:hover`, Marketing), `lyrics_ui` 62/73.
+- À savoir : lancés à plusieurs en même temps, `refonte_mobile_ui` (durée de l'ouverture) et `audit611_ui` peuvent échouer
+  sur une machine chargée ; seuls, ils passent.
+- `index.html` : 394,6 Ko (limite 400).
+
+## Lot 2, suite du 24/11 (3 h 22) : les réponses de l'onboarding vont sur le compte
+Demande du Chef : ne pas attendre `StalakAccount.onboarding`, utiliser ce que Comptes a mis en ligne (`saveArtist`, `artist`,
+`PUT /api/artist`, section 8 de `docs/handoff/compte-mesure-et-offre-1-euro.md`). `origin/main` (10e90da) est fusionné.
+- **Noms et listes fermées de Comptes** repris tels quels dans `src/mobile2.js` : `artistName`, `genres`, `onPlatforms`
+  (vrai / faux), `links` (`spotify`, `appleMusic`, `soundcloud`, `instagram`), `listenersNow` (`lt100` `100_1k` `1k_10k`
+  `gt10k`), `postsOn`, `blockers` (`few_views` `editing_time` `no_ideas`), `listenersGoal` (`1k` `10k` `100k` `1m`), `goals`
+  (`song_launch` `post_more` `fill_concerts`).
+- **Envoi** dès que la personne est connectée, et à sa connexion si elle a répondu avant. Une seule fois (`sent` dans
+  `localStorage 'stalak:onb'`, version 2).
+- **Seulement ce qui a été répondu** est envoyé : une question passée n'efface rien. Après « Passer », les réponses déjà
+  données partent aussi.
+- **Liens** : même règle que Comptes, vérifiée dans le téléphone. Un lien d'un autre site est dit sous le champ avant de
+  continuer (« Ce n'est pas un lien Spotify. Corrige-le ou efface-le. »). Si le serveur refuse quand même (`bad_link`), le
+  reste est renvoyé sans les liens.
+- **Autre téléphone, même compte** : si `artist()` rend un profil déjà répondu, rien n'est redemandé. Limite : si le compte
+  n'est pas encore chargé quand l'onboarding se décide (premier lancement), il peut s'afficher une fois.
+- Décision du propriétaire remplacée le 24/11 à 4 h 54 : voir la section suivante.
+- Pas fait ici (reste « App » de Comptes, pour les lots suivants) : `onboarding_etape_N`, `montage_lance`, la question
+  hebdomadaire des auditeurs dans « Stats » (`saveListeners`, `listenersDue`).
+
+### Résultats de la série complète (24/11, après la fusion de main, site reconstruit)
+- `refonte_mobile2_ui` **145/145** (en plus : envoi à la connexion avec les noms de Comptes, envoi après « Passer », lien
+  refusé, autre téléphone). Le serveur de test fait tourner les vraies routes de Comptes.
+- Passent : `refonte_mobile_ui` 102/102, `audit_ui` 122/122, `accueil_a_ui` 77/77, `vente_ui` 63/63, `mesure_ui` 114/114,
+  `essai_pro_ui` 193/193, `tiktok_ui` 224/224, `gallery_ui` 48/48, `projet_local_ui` 52/52, `fenetre_pro_ui` 84/84,
+  `fin_export_ui` 98/98, `exports_rates_ui` 80/80, `apercu_depart_ui` 10/10, `fluidite_ui` 30/30, `filtres_ui` 106/106,
+  `export_pub_ui` 22/22, `liens_cmp_ui` 58/58, `pied_de_page_ui` 842/842, `plans_ui` 39/39, `achat_ui` 23/23, `help_ui`
+  42/42, `support_ui` 64/64, serveur 126/126.
+- **Deux séries cassées sur `main` depuis la fusion de Comptes** (mêmes échecs sur `origin/main` 10e90da reconstruit seul,
+  donc pas de ce lot) — **à transmettre à Comptes** :
+  - `audit611_ui` 89/93 : « les scripts à part, chargés après le premier affichage » (le nouveau `/assets/consent.*.js` et
+    un script en ligne de plus) ;
+  - `partager_ui` 88/92 : « l'explication et la légende à copier » (le bloc de l'offre à 1 €, `dvOffer1`, est maintenant
+    placé avant).
+- Échecs anciens, identiques sur `main` : `animations_ui` 28/44, `formules_ui` 136/137, `clip1_ui` 83/87, `lyrics_ui` 62/73.
+- `index.html` : 395,1 Ko (limite 400).
+
+## Lot 2, suite du 24/11 (4 h 54) : textes des démos validées, mot pour mot
+Demande du Chef (décisions du propriétaire, 4 h 48 à 4 h 58). `origin/main` fusionné (commits ff8195a et b1d4222 compris).
+- **Connexion** (démo n° 2) : titre « Connecte-toi pour **garder tes montages** », dessous « Retrouve-les sur tous tes
+  appareils. ». Sur cet écran, cette phrase remplace « Pas besoin de compte… » (qui reste sur « Créer un compte »).
+- **« Colle tes liens »** (démo n° 13) : « On s'en sert pour suivre tes écoutes ».
+- **Chargement** : « Tu pars de **100 à 1 000** auditeurs par mois », « Rap et drill : coupes calées sur des tempos
+  rapides », « Format **9:16** pour TikTok et Reels », « Objectif : **10 000 auditeurs** par mois ».
+- **Plan** : « Rap et drill, sur TikTok et Reels », « De 100-1 000 à 10 000 auditeurs par mois », « 3 vidéos par semaine,
+  coupées sur le rythme », « Tes auditeurs suivis chaque semaine dans « Stats » », « Ta 1re vidéo en 1 minute ».
+- Les parties qui viennent des réponses (genres, réseaux, auditeurs) suivent ce que la personne a choisi ; le reste est
+  fixe. Quelqu'un qui ne répond à rien voit les 3 dernières lignes du plan.
+- **Inchangés** (validés) : le bouton « Passer », le profil.
+- Anglais : traduction directe des mêmes phrases.
+
+### Résultats de la série complète (24/11, 6 h 30, après la fusion de main et les textes des démos, site reconstruit)
+- `refonte_mobile2_ui` **142/142** (les textes des démos sont vérifiés mot pour mot : connexion, liens, chargement, plan).
+- Passent : `refonte_mobile_ui` 102/102, `audit_ui` 122/122, `accueil_a_ui` 77/77, `vente_ui` 63/63, `mesure_ui` 114/114,
+  `analytics_ui` 76/76, `essai_pro_ui` 193/193, `tiktok_ui` 224/224, `gallery_ui` 48/48, `projet_local_ui` 52/52,
+  `fenetre_pro_ui` 84/84, `fin_export_ui` 98/98, `exports_rates_ui` 80/80, `apercu_depart_ui` 10/10, `fluidite_ui` 30/30,
+  `filtres_ui` 106/106, `export_pub_ui` 22/22, `liens_cmp_ui` 58/58, `pied_de_page_ui` 842/842, `plans_ui` 39/39,
+  `achat_ui` 23/23, `help_ui` 42/42, `support_ui` 64/64, serveur 132/132.
+- Toujours cassés sur `main` depuis la fusion de Comptes (pas de ce lot, à transmettre à Comptes) : `audit611_ui` 89/93,
+  `partager_ui` 88/92.
+- Échecs anciens, identiques sur `main` : `animations_ui` 28/44, `formules_ui` 136/137, `clip1_ui` 83/87, `lyrics_ui` 62/73.
+- `index.html` : 395,1 Ko (limite 400).
+- **Maquette validée par le propriétaire** le 24/11 à 6 h 46 (« oui elle me va ») : lots 1 et 2 prêts à fusionner.

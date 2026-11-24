@@ -19,6 +19,7 @@
     height:var(--tabs);padding:8px max(8px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(8px,env(safe-area-inset-left,0px));
     background:#fff;border-top:3.5px solid var(--ink)}
   html.medit .tabbar{display:none}
+  html.mfull .tabbar,html.m2-onb .tabbar{display:none}
   .tabbar button{flex:1 1 0;min-width:0;max-width:84px;min-height:50px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:3px;
     padding:2px 0 0;border:0;background:none;color:var(--tab-ink);font:600 11.5px/1.15 var(--body);cursor:pointer;-webkit-tap-highlight-color:transparent;
     touch-action:manipulation;transition:transform var(--dur-1) var(--ease-press)}

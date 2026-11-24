@@ -201,6 +201,10 @@ def run(b, PW, base, site, lang, dev):
         ctx, pg, errs = page(b, PW, base, lang, dev, kind)
         pg.wait_for_timeout(1500); ev(pg, "typeof ptClose === 'function' && ptClose()"); pg.wait_for_timeout(500)   # « Bienvenue dans Pro », shown once
         ev(pg, "apGo('account')"); pg.wait_for_timeout(700)
+        if dev != 'ordinateur':   # phone (mobile redesign, lot 2): the profile says it first, the detail is behind the gear
+            prof = n(txt(pg, '#m2PlanT'))
+            check(tag + ' : profil du téléphone : « ' + want.strip() + ' » sur la carte de la formule', want.strip() in prof and vis(pg, '#m2PlanT'), prof)
+            pg.evaluate("() => { const g = document.querySelector('#m2Gear'); if (g && g.getClientRects().length) { g.click(); return true; } return false; }"); pg.wait_for_timeout(400)
         sub, go = n(txt(pg, '#apSubT')), n(txt(pg, '#apSubGo'))
         check(tag + ' : compte : « ' + want.strip() + ' »', (want if kind != 'trial1' else want.strip()) in sub and vis(pg, '#apSubT'), sub)
         if kind == 'trialX': check(tag + ' : compte : annulé, « rien ne sera prélevé » et la date de fin', t['nothing'] in sub, sub)
