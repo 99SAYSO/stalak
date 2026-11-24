@@ -155,7 +155,7 @@
     if (n === 'checkout.loaded') { coStage = 'start'; coDone = false; }
     else if (coStage && CO_DETAILS.indexOf(n) >= 0 && coStage === 'start') coStage = 'details';
     else if (coStage && CO_PAYMENT.indexOf(n) >= 0) coStage = 'payment';
-    else if (n === 'checkout.completed' && !coDone) { coDone = true; event('checkout_done'); }
+    else if (n === 'checkout.completed' && !coDone) { coDone = true; event('checkout_done'); purchased(ev.data || {}); }
     else if (n === 'checkout.closed' && coStage && !coDone) { event('checkout_close', { stage: coStage }); coStage = null; }
     if (n === 'checkout.closed') coStage = null;
     if (ev && ev.name === 'checkout.loaded' && loadedWait) loadedWait(true);
@@ -166,6 +166,18 @@
 
   var PLANS = ['pro', 'creator'];
 
+  /* Comptes (23/11): after a purchase seen by the page. GA4 « achat » (only after « Accepter », consent.js), and the event
+     « stalak:purchase » for the app's « Bienvenue dans Stalak Pro » screen (detail: plan, interval, offer, trial). The account
+     becomes Pro a few seconds later (waitForPlan); « stalak:plan » is not needed: listen to StalakAccount.onChange too. */
+  var buyingInfo = null;
+  function purchased(d) {
+    var info = buyingInfo || {}, t = d.totals || {}, cur = d.currency_code || (d.currency && d.currency.code) || null;
+    try { if (window.StalakConsent) window.StalakConsent.track('achat', { formule: info.plan || null, periode: info.interval || null, offre: info.kind || 'normal',
+      value: t.total != null ? Number(t.total) : undefined, currency: cur || undefined, transaction_id: d.transaction_id || undefined }); } catch (e) {}
+    try { window.dispatchEvent(new CustomEvent('stalak:purchase', { detail: { plan: info.plan || null, interval: info.interval || null, offer: info.kind === 'offer1', trial: info.kind === 'trial' } })); } catch (e) {}
+    buyingInfo = null;
+  }
+
   /* ---- anonymous counters of the funnel (dashboard): visit → export → ad → plans page → payment window → payment ---- */
   var IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   // report of 7/11, n°2: the source of this visit (the page's VISIT_SRC, for this tab only) goes with each step, for the
@@ -174,6 +186,8 @@
   function setSource(v) { visitSrc = typeof v === 'string' && v.length <= 60 ? v : null; }
   function event(name, extra) {
     try {
+      // 23/11: the same step in GA4, only after « Accepter » (consent.js); the anonymous counter below stays
+      try { if (window.StalakConsent) window.StalakConsent.counter(String(name), extra); } catch (e) {}
       var b = { name: String(name) }; if (IOS) b.ios = true; if (visitSrc) b.src = visitSrc;
       if (extra && typeof extra === 'object') { if (extra.cat) b.cat = String(extra.cat); if (extra.why) b.why = String(extra.why); if (extra.vid) b.vid = String(extra.vid); if (extra.stage) b.stage = String(extra.stage);
         // (7/11) the details of a failed export: short words only (the server keeps the ones of its closed lists)
@@ -227,8 +241,15 @@
       });
     });
   }
-  function checkout(plan, interval) {
+  /* checkout(plan, interval, opts): opts.kind = 'trial' (7 free days of Pro, only with entitlements.trialEligible) or 'offer1'
+     (« Retire le filigrane pour 1 € »: 7 days of Pro for 1 €, then Pro monthly; only with entitlements.offer1Eligible);
+     opts.methods = the payment ways to show (Paddle allowedPaymentMethods, e.g. ['apple_pay'], ['google_pay'], ['card'],
+     ['paypal']): Paddle shows only these, when they exist for this price and country (else its usual list). */
+  function checkout(plan, interval, opts) {
+    opts = opts || {};
+    if (opts.trial === true && !opts.kind) opts.kind = 'trial';   // the app's call (app/essai-pro): { trial: true }
     if (plan === 'month' || plan === 'year') { interval = plan; plan = 'pro'; }   // the older call
+    if (opts.kind === 'offer1') { plan = 'pro'; interval = 'month'; }
     if (plan === 'basic') plan = 'pro'; else if (plan === 'max') plan = 'creator';   // names of the earlier offer
     if (PLANS.indexOf(plan) < 0 || (interval !== 'month' && interval !== 'year')) {
       return Promise.reject(Object.assign(new Error('plan: pro or creator; interval: month or year'), { code: 'invalid_plan' }));
@@ -237,16 +258,25 @@
       var cfg = r[0], st = r[1];
       if (!st.user) throw Object.assign(new Error('Sign in first.'), { code: 'not_logged_in', status: 401 });
       var p = cfg.paddle.prices[plan], priceId = p && typeof p === 'object' ? p[interval] : null;
-      buying = plan;
+      // 23/11: the free trial and the 1 € offer have their own Paddle prices (the server checks the right to them again)
+      if (opts.kind === 'trial') priceId = plan === 'pro' && cfg.paddle.prices.proTrial ? cfg.paddle.prices.proTrial[interval] : null;
+      else if (opts.kind === 'offer1') priceId = cfg.paddle.prices.proOffer1 || null;
+      buying = plan; buyingInfo = { plan: plan, interval: interval, kind: opts.kind || 'normal' };
       if (!priceId) throw Object.assign(new Error('Payments are not configured yet.'), { code: 'not_configured' });
       return loadPaddle(cfg).then(function (P) {
         checkoutOpen = true;
         event('checkout_open');
+        // 23/11: the measuring consent goes with the purchase (and the TikTok click id after « Accepter »): the server sends the
+        // TikTok conversion only then (functions/_lib/conversions.js)
+        var cd = { user_id: st.user.id };
+        try { if (window.StalakConsent) { var c = window.StalakConsent.forCheckout(); cd.mc = c.mc; if (c.ttclid) cd.ttclid = c.ttclid; } } catch (e) {}
+        var settings = { displayMode: 'overlay', locale: lang(), allowLogout: false };   // the page's language, not the one at sign-up
+        if (Array.isArray(opts.methods) && opts.methods.length) settings.allowedPaymentMethods = opts.methods.map(String);
         P.Checkout.open({
           items: [{ priceId: priceId, quantity: 1 }],
           customer: { email: st.user.email },
-          customData: { user_id: st.user.id },
-          settings: { displayMode: 'overlay', locale: lang(), allowLogout: false }   // the page's language, not the one at sign-up
+          customData: cd,
+          settings: settings
         });
         // audit of 6/11, point 20: the window can be blocked (an ad blocker) after paddle.js loaded: no « checkout.loaded »
         // and no Paddle frame on the page after a while → a clear message instead of nothing
@@ -260,6 +290,44 @@
         });
       });
     });
+  }
+
+  /* 23/11, the 1 € offer: the two amounts written next to the button, in the person's currency, as Paddle will charge them
+     (Paddle.PricePreview of the offer price, pri_01m85jpx3p0vmnxevfyysgtj1h): today (the 7 paid days) and then each month.
+     24/11: the price (made by hand in Paddle by the Chef de projet) is 7,99 € a month in the euro countries and 7,99 $
+     elsewhere, its trial 1 € / 1 $, taxes « automatic by country » (included in Europe, added in the United States).
+     « then » is the monthly amount of the offer price itself, for the person's country (its override, else its base amount).
+     Written by the page, short: « 1 € », « 7,99 € », « 1 $ », « 7,99 $ » (fr), « €1 », « $7.99 » (en): no « ,00 », no « US ».
+     null when Paddle does not answer or gives a currency the price does not have: then the page does not show the offer
+     (an amount that might be wrong is never written next to a payment button). */
+  function offerMoney(minor, cur) {
+    try {
+      var f = new Intl.NumberFormat(lang() === 'fr' ? 'fr-FR' : 'en-US', { style: 'currency', currency: cur, currencyDisplay: 'narrowSymbol' });
+      var digits = f.resolvedOptions().maximumFractionDigits, v = Number(minor) / Math.pow(10, digits);
+      if (v % 1 === 0) f = new Intl.NumberFormat(lang() === 'fr' ? 'fr-FR' : 'en-US', { style: 'currency', currency: cur, currencyDisplay: 'narrowSymbol', minimumFractionDigits: 0, maximumFractionDigits: 0 });
+      return f.format(v).replace(/\u202f/g, '\u00a0');
+    } catch (e) { return null; }
+  }
+  function offerPrices() {
+    return config().then(function (cfg) {
+      var offer = cfg.paddle && cfg.paddle.prices && cfg.paddle.prices.proOffer1;
+      if (!offer) return null;
+      return loadPaddle(cfg).then(function (P) {
+        return P.PricePreview({ items: [{ priceId: offer, quantity: 1 }] }).then(function (r) {
+          var d = r && r.data, li = d && d.details && d.details.lineItems && d.details.lineItems[0];
+          if (!li || !li.totals || !/^\d+$/.test(String(li.totals.total))) return null;
+          var cur = String(d.currencyCode || '').toUpperCase(), country = String((d.address && d.address.countryCode) || '').toUpperCase(), pr = li.price || {};
+          var up = null;
+          (pr.unitPriceOverrides || []).forEach(function (o) {
+            if (!up && o && o.unitPrice && String(o.unitPrice.currencyCode).toUpperCase() === cur && (o.countryCodes || []).indexOf(country) >= 0) up = o.unitPrice;
+          });
+          if (!up && pr.unitPrice && String(pr.unitPrice.currencyCode).toUpperCase() === cur) up = pr.unitPrice;
+          if (!up || !/^\d+$/.test(String(up.amount))) return null;
+          var today = offerMoney(li.totals.total, cur), then = offerMoney(up.amount, cur);
+          return today && then ? { today: today, then: then, currency: cur } : null;
+        });
+      });
+    }).catch(function () { return null; });
   }
 
   /* ---- online saving: the media files of a project (Stalak Pro). Big files go part by part (file.slice: never the whole
@@ -404,7 +472,14 @@
     uploadAvatar: function (blob) { return api('PUT', 'me/avatar', blob, blob.type || 'image/jpeg').then(me); },
     removeAvatar: function () { return api('DELETE', 'me/avatar').then(me); },
     logout: function () { return api('POST', 'auth/logout').then(function () { return setState({}); }); },
-    checkout: checkout,
+    checkout: checkout, offerPrices: offerPrices, offerMoney: offerMoney,
+    // 23/11: the onboarding answers (mobile redesign, point 13) and the monthly listeners given each week in « Stats ».
+    // artist() → { profile, listeners: [{week, platform, listeners}], week, listenersDue }; saveArtist({artistName, genres,
+    // onPlatforms, links: {spotify, appleMusic, soundcloud, instagram}, listenersNow, postsOn, blockers, listenersGoal, goals})
+    // (only the fields given change); saveListeners(n[, week]) (this week by default; null removes it). Signed in only.
+    artist: function () { return api('GET', 'artist'); },
+    saveArtist: function (answers) { return api('PUT', 'artist', answers || {}); },
+    saveListeners: function (n, week) { var b = { listeners: n }; if (week) b.week = week; return api('PUT', 'artist/listeners', b); },
     event: event, setSource: setSource,
     portal: function () { return api('POST', 'paddle/portal'); },
     // a subscriber moves to another plan (same subscription, the difference billed now): then wait for the webhook

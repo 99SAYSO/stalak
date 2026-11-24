@@ -54,6 +54,12 @@ export function seedDashboard(env, { now = Date.now() } = {}) {
       insU.run('u_seed' + i + '_' + k, `fan${i}_${k}@example.com`, c === 'FR' ? 'fr' : 'en', Math.round(atHour(t, ((i * 37 + k * 101) % 97) / 97)), t, t, c, pick(DEV), rnd() < 0.62 ? 'email' : 'google',
         pick([['tiktok', 30], ['ig', 14], ['yt', 8], ['google', 12], ['direct', 16], ['ref:tiktok', 6], ['ref:ytshort', 4], ['dir:alternativeto', 3], ['dir:saashub', 2], ['site:reddit.com', 2], [null, 3]]));
       if ((i * 7 + k) % 5) setName.run(NAMES[(i * 3 + k) % NAMES.length], 'u_seed' + i + '_' + k);
+      // 23/11: about 7 accounts in 10 answered the onboarding (made up, not from rnd(): the other figures stay the same)
+      if ((i * 3 + k * 7) % 10 < 7) { const j = i * 3 + k, pick = (l, n) => JSON.stringify(l.filter((_, x) => ((j >> x) + n) % 3 !== 0));
+        db.prepare(`INSERT OR IGNORE INTO artist_profiles (user_id, artist_name, genres, on_platforms, listeners_now, posts_on, blockers, listeners_goal, goals, answered_at, updated_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).run('u_seed' + i + '_' + k, 'Artiste ' + j, pick(['rap', 'drill', 'chant', 'autre'], 1), j % 4 ? 1 : 0,
+          ['lt100', '100_1k', '1k_10k', 'gt10k'][j % 7 < 3 ? 0 : j % 7 < 5 ? 1 : j % 7 < 6 ? 2 : 3], pick(['tiktok', 'reels', 'shorts'], 2),
+          pick(['few_views', 'editing_time', 'no_ideas'], 0), ['1k', '10k', '100k', '1m'][j % 4], pick(['song_launch', 'post_more', 'fill_concerts'], 1), now, now); }
       // some come back a few days later (a new session)
       if (i > 3 && rnd() < 0.3) db.prepare("INSERT OR IGNORE INTO sessions (token_hash, user_id, created_at, expires_at, method) VALUES (?, ?, ?, ?, 'password')").run('seedsess' + i + '_' + k, 'u_seed' + i + '_' + k, t + 3 * 864e5, t + 60 * 864e5);
     }

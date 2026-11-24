@@ -487,6 +487,17 @@ __DEMO_BANNER__<header class="top"><div class="in">
       <div class="hbest"><span>🎁 Essai gratuit de Pro (7 jours)</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
       <p class="he">Les essais commencés sur la période (avec carte, Pro seulement), puis ce qu’ils sont devenus : annulés pendant l’essai (rien prélevé), devenus payants au bout de 7 jours, ou 1er prélèvement raté. Le % compte les essais déjà finis. Les comptes supprimés ne comptent plus.</p>
       <p class="vsum" id="trialSum">…</p><p class="note" id="trialNote"></p>
+      <p class="note" id="offerNote"></p>
+    </div>
+    <div class="card hq" id="artistCard">
+      <div class="hbest"><span>🎤 Profils d’artistes (onboarding)</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
+      <p class="he">Ce que les comptes ont répondu au questionnaire du premier lancement, en totaux (jamais les réponses d’une personne). Les auditeurs sont ce que l’artiste dit : les plateformes ne donnent pas ce chiffre. Depuis le début.</p>
+      <p class="vsum" id="arSum">…</p><div id="arList"></div>
+    </div>
+    <div class="card hq" id="consentCard">
+      <div class="hbest"><span>🍪 Bandeau cookies</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
+      <p class="he">Combien de personnes ont accepté ou refusé la mesure (Clarity, Google Analytics, TikTok) sur la période. Seules celles qui acceptent sont vues dans Clarity et Google Analytics ; les compteurs de ce tableau de bord comptent tout le monde, sans cookie.</p>
+      <p class="vsum" id="ccSum">…</p><p class="note" id="ccNote"></p>
     </div>
     <div class="card hq" id="optCard">
       <div class="hbest"><span>📩 E-mails récoltés</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
@@ -1159,6 +1170,24 @@ __DEMO_BANNER__<header class="top"><div class="in">
         var tr = fu.trial || {};
         set('#trialSum', nf.format(tr.started || 0) + ' essai' + ((tr.started || 0) > 1 ? 's' : '') + ' commencé' + ((tr.started || 0) > 1 ? 's' : '') + ' · ' + nf.format(tr.paid || 0) + ' devenu' + ((tr.paid || 0) > 1 ? 's' : '') + ' payant' + ((tr.paid || 0) > 1 ? 's' : '') + (tr.paidRate != null ? ' (' + String(tr.paidRate).replace('.', ',') + ' % des essais finis)' : ''));
         set('#trialNote', nf.format(tr.canceled || 0) + ' annulé' + ((tr.canceled || 0) > 1 ? 's' : '') + ' pendant l’essai · ' + nf.format(tr.failed || 0) + ' prélèvement' + ((tr.failed || 0) > 1 ? 's' : '') + ' raté' + ((tr.failed || 0) > 1 ? 's' : '') + ' · ' + nf.format(tr.running || 0) + ' en cours');
+        var of = fu.offer1 || {};
+        set('#offerNote', '💶 Offre à 1 € (écran de fin avec filigrane) : ' + nf.format(of.started || 0) + ' prise' + ((of.started || 0) > 1 ? 's' : '') + ' · ' + nf.format(of.paid || 0) + ' passée' + ((of.paid || 0) > 1 ? 's' : '') + ' à Pro mensuel' + (of.paidRate != null ? ' (' + String(of.paidRate).replace('.', ',') + ' % des finies)' : '') + ' · ' + nf.format(of.canceled || 0) + ' annulée' + ((of.canceled || 0) > 1 ? 's' : '') + ' · ' + nf.format(of.running || 0) + ' en cours');
+        var ar = fu.artists || {}, AR = {
+          genres: ['Genres', { rap: 'Rap', drill: 'Drill', chant: 'Chant', autre: 'Autre' }],
+          listenersNow: ['Auditeurs par mois aujourd’hui', { lt100: 'moins de 100', '100_1k': '100 à 1 000', '1k_10k': '1 000 à 10 000', gt10k: 'plus de 10 000' }],
+          listenersGoal: ['Auditeurs par mois visés', { '1k': '1 000', '10k': '10 000', '100k': '100 000', '1m': '1 million et plus' }],
+          postsOn: ['Où ils postent', { tiktok: 'TikTok', reels: 'Reels', shorts: 'YouTube Shorts' }],
+          blockers: ['Ce qui les bloque', { few_views: 'Peu de vues', editing_time: 'Le montage prend du temps', no_ideas: 'Pas d’idée de quoi poster' }],
+          goals: ['Objectifs', { song_launch: 'Faire décoller un son', post_more: 'Poster plus souvent', fill_concerts: 'Remplir mes concerts' }] };
+        var lg = ar.listenersGiven || {};
+        set('#arSum', nf.format(ar.profiles || 0) + ' profil' + ((ar.profiles || 0) > 1 ? 's' : '') + ' · ' + nf.format(ar.onPlatforms || 0) + ' déjà sur les plateformes · auditeurs donnés cette semaine : ' + nf.format(lg.thisWeek || 0) + ' (4 dernières semaines : ' + nf.format(lg.last4Weeks || 0) + ')');
+        var arBox = $('#arList'); if (arBox) { arBox.textContent = ''; Object.keys(AR).forEach(function (k) {
+          var p = document.createElement('p'); p.className = 'note'; var o = ar[k] || {};
+          p.textContent = AR[k][0] + ' : ' + Object.keys(AR[k][1]).map(function (v) { return AR[k][1][v] + ' ' + nf.format(o[v] || 0); }).join(' · ');
+          arBox.appendChild(p); }); }
+        var cc = fu.consent || {}, cct = (cc.yes || 0) + (cc.no || 0), tc = fu.ttConv || {};
+        set('#ccSum', cct ? nf.format(cc.yes || 0) + ' acceptent · ' + nf.format(cc.no || 0) + ' refusent (' + Math.round((cc.yes || 0) / cct * 100) + ' % acceptent)' : 'Pas encore de réponse (le bandeau apparaît une fois Clarity ou Google Analytics réglés)');
+        set('#ccNote', 'Achats envoyés à TikTok (API de conversion, avec accord) : ' + nf.format(tc.ok || 0) + (tc.fail ? ' · ' + nf.format(tc.fail) + ' refusé' + (tc.fail > 1 ? 's' : '') + ' par TikTok' : ''));
         var op = fu.optins || {};
         set('#optSum', nf.format(op.confirmed || 0) + ' e-mail' + ((op.confirmed || 0) > 1 ? 's' : '') + ' confirmé' + ((op.confirmed || 0) > 1 ? 's' : '') +
           ' (dont ' + nf.format(op.week || 0) + ' cette semaine) · ' + nf.format(op.waiting || 0) + ' en attente de confirmation');

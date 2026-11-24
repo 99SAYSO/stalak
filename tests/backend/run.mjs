@@ -113,7 +113,7 @@ function makeEnv(extra = {}) {
     APP_ORIGIN: ORIGIN, PADDLE_ENV: 'sandbox', PADDLE_WEBHOOK_SECRET: WEBHOOK_SECRET, PADDLE_API_KEY: 'pdl_sdbx_apikey_test',
     PADDLE_CLIENT_TOKEN: 'test_clienttoken', PADDLE_PRICE_MONTH: 'pri_month', PADDLE_PRICE_YEAR: 'pri_year',
     PADDLE_PRICE_PRO_MONTH: 'pri_pro_m', PADDLE_PRICE_PRO_YEAR: 'pri_pro_y', PADDLE_PRICE_CREATOR_MONTH: 'pri_creator_m', PADDLE_PRICE_CREATOR_YEAR: 'pri_creator_y',
-    PADDLE_PRICE_PRO_MONTH_TRIAL: 'pri_pro_m_trial', PADDLE_PRICE_PRO_YEAR_TRIAL: 'pri_pro_y_trial',
+    PADDLE_PRICE_PRO_MONTH_TRIAL: 'pri_pro_m_trial', PADDLE_PRICE_PRO_YEAR_TRIAL: 'pri_pro_y_trial', PADDLE_PRICE_PRO_OFFER1: 'pri_pro_offer1',
     // older prices of 30/10 (Basic / Pro in euros → pro, Max → creator)
     PADDLE_PRICES_OLD: 'pri_basic_m:pro:month,pri_basic_y:pro:year,pri_proeur_m:pro:month,pri_max_m:creator:month,pri_max_y:creator:year',
     RESEND_API_KEY: 're_test', ...extra,
@@ -195,17 +195,17 @@ function sub(userId, over = {}) {
 const tests = [];
 const test = (name, fn) => tests.push({ name, fn });
 const FREE_ENT = { plan: 'free', features: ['unlimited'], limits: { lyricsPerDay: 0, lyricsMinutesPerDay: 0, cloudBytes: 0 },
-  outro: false, cloudSave: false, clipMode: false, autoLyrics: false, packs: false, trialEligible: false, trialDays: 7 };
+  outro: false, cloudSave: false, clipMode: false, autoLyrics: false, packs: false, trialEligible: false, offer1Eligible: false, trialDays: 7 };
 const PRO_ENT = { plan: 'pro', features: ['nowm', 'clip', 'fx', 'text', 'filters', 'lyrics', 'tiktok', 'nologo', 'unlimited'],
   limits: { lyricsPerDay: 20, lyricsMinutesPerDay: 90, cloudBytes: 0 },
-  outro: false, cloudSave: false, clipMode: true, autoLyrics: true, packs: false, trialEligible: false, trialDays: 7 };
+  outro: false, cloudSave: false, clipMode: true, autoLyrics: true, packs: false, trialEligible: false, offer1Eligible: false, trialDays: 7 };
 
 test('config exposes only public settings; sign-in providers only when configured', async () => {
   let r = await call(makeEnv(), 'GET', '/api/config');
   assert.equal(r.status, 200);
   assert.deepEqual(r.data.paddle, { environment: 'sandbox', clientToken: 'test_clienttoken', prices: {
     pro: { month: 'pri_pro_m', year: 'pri_pro_y' }, creator: { month: 'pri_creator_m', year: 'pri_creator_y' },
-    month: 'pri_pro_m', year: 'pri_pro_y', proTrial: { month: 'pri_pro_m_trial', year: 'pri_pro_y_trial' } }, trialDays: 7 });
+    month: 'pri_pro_m', year: 'pri_pro_y', proTrial: { month: 'pri_pro_m_trial', year: 'pri_pro_y_trial' }, proOffer1: 'pri_pro_offer1' }, trialDays: 7 });
   assert.deepEqual(Object.keys(r.data.plans), ['pro', 'creator']);
   assert.deepEqual(r.data.plans.pro.month, { amount: '7.99', currency: 'USD' });
   assert.deepEqual(r.data.plans.creator.year, { amount: '99.99', currency: 'USD' });
@@ -746,6 +746,195 @@ test('23/11 free trial: paid after 7 days, or 1st payment failed (Pro stops unti
     s = (await adminCall(env, 'GET', '/api/admin/stats?days=7', { token })).data.usage.funnel.trial;
     assert.deepEqual(s, { started: 3, canceled: 0, paid: 2, failed: 0, running: 1, paidRate: 100 });
   } finally { extraFetch = null; }
+});
+
+// ---- 23/11 (evening): measuring after consent, TikTok conversion API, the 1 € offer ----
+test('23/11 measure: config gives the Clarity / GA4 ids (not secrets) and whether TikTok is on, never the TikTok token; the banner answers are counted', async () => {
+  let env = makeEnv();
+  let r = await call(env, 'GET', '/api/config');
+  assert.deepEqual(r.data.measure, { clarity: null, ga4: null, tiktok: false });
+  // the free trial as the app reads it (app/essai-pro): { days, plans }
+  assert.deepEqual(r.data.trial, { days: 7, plans: ['pro'] });
+  assert.equal((await call(makeEnv({ PADDLE_PRICE_PRO_MONTH_TRIAL: '', PADDLE_PRICE_PRO_YEAR_TRIAL: '' }), 'GET', '/api/config')).data.trial, null);
+  env = makeEnv({ CLARITY_PROJECT_ID: 'abc123def4', GA4_MEASUREMENT_ID: 'G-TEST12345', TIKTOK_PIXEL_ID: 'CPIX123', TIKTOK_EVENTS_TOKEN: 'tt-secret-token-123', ...ADMIN_ENV });
+  r = await call(env, 'GET', '/api/config');
+  assert.deepEqual(r.data.measure, { clarity: 'abc123def4', ga4: 'G-TEST12345', tiktok: true });
+  assert.ok(!JSON.stringify(r.data).includes('tt-secret-token-123'));
+  let n = 0;
+  for (const name of ['consent_yes', 'consent_yes', 'consent_no']) assert.equal((await call(env, 'POST', '/api/event', { body: { name }, ip: '10.77.0.' + (++n) })).status, 200);
+  const token = await accessToken();
+  r = await adminCall(env, 'GET', '/api/admin/stats?days=7', { token });
+  assert.deepEqual(r.data.usage.funnel.consent, { yes: 2, no: 1 });
+});
+
+const TT_ENV = { TIKTOK_PIXEL_ID: 'CPIX123', TIKTOK_EVENTS_TOKEN: 'tt-secret-token-123' };
+function ttTxn(id, userId, subId, total, { mc = 1, ttclid = null, origin = 'web', priceId = 'pri_pro_m' } = {}) {
+  return subEvent('transaction.completed', { id, status: 'completed', customer_id: 'ctm_tt', subscription_id: subId, origin, billed_at: new Date().toISOString(),
+    currency_code: 'USD', custom_data: { user_id: userId, mc, ...(ttclid ? { ttclid } : {}) }, items: [{ price: { id: priceId } }],
+    details: { totals: { subtotal: String(total), tax: '0', discount: '0', total: String(total), grand_total: String(total), fee: null, earnings: null, currency_code: 'USD' } } });
+}
+test('23/11 TikTok conversion API: a first payment, with consent only, e-mail hashed (never in clear), once; renewals, refusals and no token: nothing', async () => {
+  const env = makeEnv(TT_ENV);
+  const tick = () => new Promise((res) => setTimeout(res, 60));   // sent after the answer to Paddle (waitUntil)
+  const sent = []; extraFetch = async (url, init) => { if (url.startsWith('https://business-api.tiktok.com/')) { sent.push({ url, headers: init.headers, body: JSON.parse(init.body) }); return Response.json({ code: 0, message: 'OK' }); } return null; };
+  try {
+    const a = await login(env, 'buyer.tt@example.com');
+    let r = await webhook(env, ttTxn('txn_tt0000001', a.user.id, 'sub_tt0000001', 799, { ttclid: 'E.C.P.abc12345' })); await tick(); await tick();
+    assert.equal(r.status, 200);
+    assert.equal(sent.length, 1);
+    const b = sent[0].body, ev = b.data[0];
+    assert.equal(sent[0].url, 'https://business-api.tiktok.com/open_api/v1.3/event/track/');
+    assert.equal(sent[0].headers['Access-Token'], 'tt-secret-token-123');
+    assert.equal(b.event_source, 'web'); assert.equal(b.event_source_id, 'CPIX123');
+    assert.equal(ev.event, 'CompletePayment'); assert.equal(ev.event_id, 'txn_tt0000001');
+    const { sha256Hex } = await import('../../functions/_lib/crypto.js');
+    assert.equal(ev.user.email, await sha256Hex('buyer.tt@example.com'));
+    assert.equal(ev.user.external_id, await sha256Hex(a.user.id));
+    assert.equal(ev.user.ttclid, 'E.C.P.abc12345');
+    assert.deepEqual([ev.properties.value, ev.properties.currency], [7.99, 'USD']);
+    assert.ok(!JSON.stringify(b).toLowerCase().includes('buyer.tt@example.com'));
+    // the same webhook again, then a renewal: nothing more
+    await webhook(env, ttTxn('txn_tt0000001', a.user.id, 'sub_tt0000001', 799)); await tick();
+    await webhook(env, ttTxn('txn_tt0000002', a.user.id, 'sub_tt0000001', 799, { origin: 'subscription_recurring' })); await tick();
+    assert.equal(sent.length, 1);
+    // no consent (Refuser, or no banner answer): nothing
+    const c = await login(env, 'noconsent@example.com');
+    await webhook(env, ttTxn('txn_tt0000003', c.user.id, 'sub_tt0000003', 799, { mc: 0 })); await tick();
+    assert.equal(sent.length, 1);
+    // TikTok refuses: counted, the webhook still answers 200
+    extraFetch = async (url) => url.startsWith('https://business-api.tiktok.com/') ? Response.json({ code: 40001, message: 'bad token' }, { status: 401 }) : null;
+    const d = await login(env, 'tt4@example.com');
+    r = await webhook(env, ttTxn('txn_tt0000004', d.user.id, 'sub_tt0000004', 799)); await tick(); await tick();
+    assert.equal(r.status, 200);
+    assert.equal(env.DB.raw.prepare("SELECT SUM(n) AS n FROM daily_counts WHERE name = 'tt_conv_fail'").get().n, 1);
+    // without the token (not set up yet): nothing is ever sent
+    const env2 = makeEnv(); const sent2 = [];
+    extraFetch = async (url) => { if (url.startsWith('https://business-api.tiktok.com/')) { sent2.push(url); return Response.json({ code: 0 }); } return null; };
+    const e = await login(env2, 'tt5@example.com');
+    await webhook(env2, ttTxn('txn_tt0000005', e.user.id, 'sub_tt0000005', 799)); await tick();
+    assert.equal(sent2.length, 0);
+  } finally { extraFetch = null; }
+});
+
+test('23/11 the 1 € offer: own price (Pro monthly, 7 paid days), one trial of either kind per account; a refused one is stopped and its 1 € refunded; its own dashboard line', async () => {
+  const env = makeEnv({ ...ADMIN_ENV, AUTH_SECRET: TRIAL_SECRET }), token = await accessToken();
+  const calls = [];
+  const fake = paddleFake(calls);
+  extraFetch = async (url, init) => {
+    let m = url.match(/paddle\.com\/transactions\?subscription_id=(sub_\w+)/);
+    if (m) { calls.push(['txns', m[1]]); return Response.json({ data: [{ id: 'txn_offer' + m[1].slice(-4), details: { line_items: [{ id: 'txnitm_1' }] } }] }); }
+    if (/paddle\.com\/adjustments$/.test(url)) { const b = JSON.parse(init.body); calls.push(['refund', b]); return Response.json({ data: { id: 'adj_1', status: 'pending_approval' } }, { status: 201 }); }
+    return fake(url, init);
+  };
+  try {
+    const a = await login(env, 'offer1@example.com');
+    let d = await me(env, a);
+    assert.equal(d.entitlements.offer1Eligible, true); assert.equal(d.entitlements.trialEligible, true);
+    const o = trialSub(a.user.id);
+    o.items[0].price = { id: 'pri_pro_offer1', product_id: 'pro_pro', billing_cycle: { interval: 'month', frequency: 1 }, unit_price: { amount: '799', currency_code: 'USD' }, trial_period: { interval: 'day', frequency: 7, unit_price: { amount: '100', currency_code: 'USD' } } };
+    let r = await webhook(env, subEvent('subscription.created', o));
+    assert.equal(r.data.trial, 'started');
+    d = await me(env, a);
+    assert.equal(d.entitlements.plan, 'pro'); assert.equal(d.subscription.interval, 'month'); assert.ok(d.subscription.trialEndsAt);
+    // its one trial is used: neither the free trial nor the offer again
+    assert.equal(d.entitlements.offer1Eligible, false); assert.equal(d.entitlements.trialEligible, false);
+    // an account that already had the free trial takes the offer anyway: stopped now, no Pro, the 1 € refunded in full
+    const b = await login(env, 'offer2@example.com');
+    await webhook(env, subEvent('subscription.created', trialSub(b.user.id)));
+    assert.equal((await me(env, b)).entitlements.offer1Eligible, false);
+    const o2 = trialSub(b.user.id); o2.items[0].price = { ...o.items[0].price };
+    r = await webhook(env, subEvent('subscription.created', o2));
+    assert.equal(r.data.trial, 'refused');
+    assert.deepEqual(calls.filter((c) => c[0] === 'cancel' && c[1] === o2.id), [['cancel', o2.id, { effective_from: 'immediately' }]]);
+    const refund = calls.find((c) => c[0] === 'refund');
+    assert.ok(refund, JSON.stringify(calls));
+    assert.deepEqual(refund[1].items, [{ item_id: 'txnitm_1', type: 'full' }]); assert.equal(refund[1].action, 'refund');
+    // a refused FREE trial has nothing to refund
+    const c0 = calls.filter((c) => c[0] === 'refund').length;
+    const c = await login(env, 'offer3@example.com');
+    await webhook(env, subEvent('subscription.created', trialSub(c.user.id)));
+    await webhook(env, subEvent('subscription.created', trialSub(c.user.id)));
+    assert.equal(calls.filter((x) => x[0] === 'refund').length, c0);
+    // the dashboard: the offer apart from the free trial
+    r = await adminCall(env, 'GET', '/api/admin/stats?days=7', { token });
+    assert.equal(r.data.usage.funnel.offer1.started, 1);
+    assert.equal(r.data.usage.funnel.trial.started, 2);
+    // paid after the 7 days: Pro monthly
+    r = await webhook(env, subEvent('subscription.activated', { ...o, status: 'active' }));
+    assert.equal(r.data.trial, 'paid');
+    r = await adminCall(env, 'GET', '/api/admin/stats?days=7', { token });
+    assert.equal(r.data.usage.funnel.offer1.paid, 1);
+  } finally { extraFetch = null; }
+});
+
+test('23/11 onboarding answers on the account: closed lists, links of their own site only, some or all fields, gone with the account; totals only on the dashboard', async () => {
+  const env = makeEnv(ADMIN_ENV), token = await accessToken();
+  let r = await call(env, 'GET', '/api/artist');
+  assert.equal(r.status, 401);
+  const a = await login(env, 'artist1@example.com');
+  r = await call(env, 'GET', '/api/artist', { cookie: a.cookie });
+  assert.equal(r.data.profile, null); assert.deepEqual(r.data.listeners, []); assert.equal(r.data.listenersDue, true);
+  r = await call(env, 'PUT', '/api/artist', { cookie: a.cookie, body: { artistName: '  T-Crazy​  ', genres: ['rap', 'drill', 'jazz', 'rap'], onPlatforms: true,
+    links: { spotify: 'open.spotify.com/artist/7abc', instagram: '@t.crazy', soundcloud: '' }, listenersNow: '100_1k', postsOn: ['tiktok', 'reels'],
+    blockers: ['few_views', 'hack'], listenersGoal: '10k', goals: ['song_launch'] } });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  const p = r.data.profile;
+  assert.equal(p.artistName, 'T-Crazy'); assert.deepEqual(p.genres, ['rap', 'drill']); assert.equal(p.onPlatforms, true);
+  assert.deepEqual(p.links, { spotify: 'https://open.spotify.com/artist/7abc', appleMusic: '', soundcloud: '', instagram: 'https://www.instagram.com/t.crazy/' });
+  assert.equal(p.listenersNow, '100_1k'); assert.deepEqual(p.postsOn, ['tiktok', 'reels']); assert.deepEqual(p.blockers, ['few_views']);
+  assert.equal(p.listenersGoal, '10k'); assert.deepEqual(p.goals, ['song_launch']); assert.ok(p.answeredAt);
+  // a link of another site: refused, nothing changed
+  r = await call(env, 'PUT', '/api/artist', { cookie: a.cookie, body: { links: { spotify: 'https://evil.example/artist' } } });
+  assert.equal(r.status, 400); assert.equal(r.data.error, 'bad_link');
+  r = await call(env, 'PUT', '/api/artist', { cookie: a.cookie, body: { links: { appleMusic: 'javascript:alert(1)' } } });
+  assert.equal(r.status, 400);
+  // some fields only: the others stay
+  r = await call(env, 'PUT', '/api/artist', { cookie: a.cookie, body: { listenersGoal: '100k', unknown: 'x' } });
+  assert.equal(r.data.profile.listenersGoal, '100k'); assert.equal(r.data.profile.artistName, 'T-Crazy'); assert.deepEqual(r.data.profile.genres, ['rap', 'drill']);
+  // no JSON: refused (CSRF rule)
+  r = await call(env, 'PUT', '/api/artist', { cookie: a.cookie, raw: 'x', ct: 'text/plain' });
+  assert.equal(r.status, 415);
+  // the dashboard: totals only
+  const b = await login(env, 'artist2@example.com');
+  await call(env, 'PUT', '/api/artist', { cookie: b.cookie, body: { genres: ['chant'], onPlatforms: false, listenersNow: 'lt100', blockers: ['no_ideas', 'few_views'] } });
+  r = await adminCall(env, 'GET', '/api/admin/stats?days=7', { token });
+  const t = r.data.usage.funnel.artists;
+  assert.equal(t.profiles, 2); assert.equal(t.onPlatforms, 1);
+  assert.deepEqual(t.genres, { rap: 1, drill: 1, chant: 1, autre: 0 });
+  assert.deepEqual(t.blockers, { few_views: 2, editing_time: 0, no_ideas: 1 });
+  assert.deepEqual(t.listenersNow, { lt100: 1, '100_1k': 1, '1k_10k': 0, gt10k: 0 });
+  assert.ok(!JSON.stringify(r.data).includes('T-Crazy') && !JSON.stringify(r.data).includes('open.spotify.com/artist/7abc'));
+  // gone with the account
+  assert.equal((await call(env, 'DELETE', '/api/account', { cookie: a.cookie, body: { confirm: true } })).status, 200);
+  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM artist_profiles WHERE user_id = ?').get(a.user.id).n, 0);
+});
+
+test('23/11 monthly listeners given each week in « Stats »: this week (or one of the last 8 to fix), whole numbers, Spotify, the curve back, « due » once a week', async () => {
+  const env = makeEnv();
+  const a = await login(env, 'artist3@example.com');
+  const { isoWeek } = await import('../../functions/_lib/artist.js');
+  const now = Date.now(), wk = isoWeek(now), w2 = isoWeek(now - 14 * 864e5), old = isoWeek(now - 70 * 864e5);
+  let r = await call(env, 'PUT', '/api/artist/listeners', { cookie: a.cookie, body: { listeners: 850 } });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.deepEqual(r.data.listeners, [{ week: wk, platform: 'spotify', listeners: 850 }]); assert.equal(r.data.listenersDue, false);
+  r = await call(env, 'PUT', '/api/artist/listeners', { cookie: a.cookie, body: { listeners: 600, week: w2 } });
+  assert.deepEqual(r.data.listeners.map((x) => [x.week, x.listeners]), [[w2, 600], [wk, 850]]);
+  r = await call(env, 'PUT', '/api/artist/listeners', { cookie: a.cookie, body: { listeners: 900 } });   // the same week again: replaced
+  assert.deepEqual(r.data.listeners.map((x) => x.listeners), [600, 900]);
+  for (const [body, code] of [[{ listeners: 5, week: old }, 'bad_week'], [{ listeners: -1 }, 'bad_listeners'], [{ listeners: 1.5 }, 'bad_listeners'],
+    [{ listeners: '12a' }, 'bad_listeners'], [{ listeners: '' }, 'bad_listeners'], [{ listeners: 5, platform: 'deezer' }, 'bad_platform'], [{ listeners: 5, week: '2026-W99x' }, 'bad_week']]) {
+    r = await call(env, 'PUT', '/api/artist/listeners', { cookie: a.cookie, body });
+    assert.equal(r.status, 400, JSON.stringify(body)); assert.equal(r.data.error, code, JSON.stringify(body));
+  }
+  r = await call(env, 'PUT', '/api/artist/listeners', { cookie: a.cookie, body: { listeners: null, week: w2 } });   // removed
+  assert.deepEqual(r.data.listeners.map((x) => x.week), [wk]);
+  // another account sees nothing of it
+  const b = await login(env, 'artist4@example.com');
+  r = await call(env, 'GET', '/api/artist', { cookie: b.cookie });
+  assert.deepEqual(r.data.listeners, []); assert.equal(r.data.listenersDue, true);
+  assert.equal((await call(env, 'PUT', '/api/artist/listeners', { body: { listeners: 1 } })).status, 401);
+  await call(env, 'DELETE', '/api/account', { cookie: a.cookie, body: { confirm: true } });
+  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS n FROM listener_counts WHERE user_id = ?').get(a.user.id).n, 0);
 });
 
 test('account delete: removes devices, identities and pending codes too', async () => {

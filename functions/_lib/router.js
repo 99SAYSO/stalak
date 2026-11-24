@@ -8,6 +8,7 @@ import { alertOwner } from './alerts.js';
 import { turnstileSiteKey } from './turnstile.js';
 import { yearlyReminders } from './reminders.js';
 import { handleWebhook, portalLinks, cancelSubscriptionNow, changePlan } from './paddle.js';
+import { getArtist, putArtist, putListeners } from './artist.js';
 import { trialPrices, trialMarkOnDelete, cancelTrial, cancelPage, trialReminders, TRIAL_DAYS } from './trial.js';
 import { social, socialWebhook, isSocialWebhook, socialProviders, deleteSocialAccounts } from './social.js';
 import { tiktok } from './tiktok.js';   // Réseaux sociaux: « Publier sur TikTok », « Mes stats »
@@ -55,6 +56,13 @@ async function meResponse(env, user, headers) {
 
 function config(env) {
   return {
+    // 23/11: the free trial as the app reads it (App, app/essai-pro: config.trial = {days, plans}); null without its prices
+    trial: (trialPrices(env).month || trialPrices(env).year) ? { days: TRIAL_DAYS, plans: ['pro'] } : null,
+    // 23/11 (owner): the measuring tools, loaded by src/consent.js only after « Accepter » (ids, not secrets; none = no banner)
+    measure: {
+      clarity: env.CLARITY_PROJECT_ID || null, ga4: env.GA4_MEASUREMENT_ID || null,
+      tiktok: !!(env.TIKTOK_PIXEL_ID && env.TIKTOK_EVENTS_TOKEN),
+    },
     paddle: {
       environment: env.PADDLE_ENV === 'production' ? 'production' : 'sandbox',
       clientToken: env.PADDLE_CLIENT_TOKEN || null,
@@ -67,6 +75,9 @@ function config(env) {
         // 23/11: Stalak Pro with a 7-day free trial (same amounts). Only for an account with entitlements.trialEligible;
         // a trial taken without the right to it is ended at once by the server (trial.js)
         proTrial: trialPrices(env),
+        // 23/11 (evening): « Retire le filigrane pour 1 € » (end screen with the watermark only): 7 days of Pro for 1 €, then
+        // Pro monthly. Only with entitlements.offer1Eligible (checked again by the server at the webhook)
+        proOffer1: env.PADDLE_PRICE_PRO_OFFER1 || null,
       },
       trialDays: TRIAL_DAYS,
     },
@@ -225,6 +236,9 @@ async function deleteAccount(request, env) {
     env.DB.prepare('DELETE FROM trusted_devices WHERE user_id = ?1').bind(user.id),
     // audit of 6/11, point 12: the daily use of the automatic lyrics goes with the account too
     env.DB.prepare('DELETE FROM lyrics_usage WHERE user_id = ?1').bind(user.id),
+    // 23/11: the onboarding answers and the listeners given in « Stats »
+    env.DB.prepare('DELETE FROM artist_profiles WHERE user_id = ?1').bind(user.id),
+    env.DB.prepare('DELETE FROM listener_counts WHERE user_id = ?1').bind(user.id),
     env.DB.prepare('DELETE FROM identities WHERE user_id = ?1').bind(user.id),
     env.DB.prepare('DELETE FROM rate_limits WHERE key = ?1').bind(await failKey(user.email)),
     // « Parler à un humain »: the conversations of this account go too; payments stay (accounting) without the link
@@ -309,6 +323,20 @@ async function dispatch(request, env, ctx) {
       case 'stats/exports':   // public: the total of videos exported (home page counter), cached 5 minutes
         if (method !== 'GET') break;
         return json(await exportTotal(env), 200, { 'Cache-Control': 'public, max-age=300' });
+      // Comptes (23/11): the onboarding answers (mobile redesign, point 13) and the weekly monthly listeners of « Stats »
+      case 'artist': {
+        const u = await requireUser(request, env);
+        if (method === 'GET') return json(await getArtist(env, u), 200, { 'Cache-Control': 'no-store' });
+        if (method !== 'PUT') break;
+        await limit(env, `artist:${u.id}`, 120, 3600e3, 'Too many requests, try again later.');
+        return json(await putArtist(env, u, await readJson(request, 4096)));
+      }
+      case 'artist/listeners': {
+        if (method !== 'PUT') break;
+        const u = await requireUser(request, env);
+        await limit(env, `artistl:${u.id}`, 60, 3600e3, 'Too many requests, try again later.');
+        return json(await putListeners(env, u, await readJson(request, 512)));
+      }
       case 'trial/cancel':
         // 23/11: the link of the reminder e-mail (GET: a page with one button) and its button (POST {s, t}), or the account
         // itself ({s} of its own subscription, signed in)

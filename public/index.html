@@ -1692,6 +1692,10 @@ body.isdone > .bands{display:none}
 /* (owner, 23/11) the 7-day free trial of Pro: what it costs then and that it can be cancelled, always under the button */
 .tr-terms{margin:4px 0 0;font:500 13.5px/1.4 var(--body);color:#3b4a66;text-align:center}
 .tr-terms[hidden]{display:none}
+/* Comptes (23/11): the 1 € offer's terms next to its button, in clear (owner's decision; Juridique: not hidden) */
+.of1-terms{margin:6px 0 0;font:600 14px/1.4 var(--body);color:#0a0d14;text-align:center}
+.of1-terms[hidden]{display:none}
+.doneview #dvOffer1{order:3;margin-top:-6px}
 .fa-row .tr-terms{flex-basis:100%;order:0;margin:-2px 0 4px}
 .propop .tr-terms{margin:-4px 0 0}
 #apBuy .tr-terms{margin:12px 0 0;font-size:13px}   /* below the button's hard shadow */
@@ -2309,9 +2313,10 @@ html.splash-on #splash{display:block}
 
 .frhint{display:flex;align-items:center;gap:2px;width:max-content;max-width:calc(100% - 32px);margin:0 auto 12px;background:#fff;color:var(--ink,#0a0d14);border:2px solid var(--ink,#0a0d14);border-radius:999px;box-shadow:0 3px 0 var(--ink,#0a0d14);font-size:14.5px;font-weight:600;line-height:1.2}.frhint[hidden]{display:none}.frhint a{color:inherit;text-decoration:none;padding:10px 4px 10px 16px}.frhint button{flex:none;width:40px;height:40px;border:0;border-radius:50%;background:transparent;color:inherit;font:inherit;font-size:20px;line-height:1;cursor:pointer}
 </style>
+<script defer src="/assets/consent.a66a80ab81.js"></script>
 </head>
 <body>
-<script>window.STALAK_M2="/assets/mobile2.651ac5edd9.js";(function(){var d=document,W=window,G=W.STALAK_GSAP="/vendor/gsap-3.15.0.min.js";try{if(!W.matchMedia||!matchMedia('(max-width:899px)').matches||matchMedia('(prefers-reduced-motion: reduce)').matches)return;if(navigator.webdriver&&!W.__stalakSplash)return;if(location.hash&&location.hash.length>1)return;if(sessionStorage.getItem('stalak:splash')||sessionStorage.getItem('stalak:openProject'))return;sessionStorage.setItem('stalak:splash','1');}catch(e){return;}var sp=d.createElement('div'),r=d.documentElement;sp.id='splash';sp.setAttribute('aria-hidden','true');sp.innerHTML='<div class="sp-curtain"><div class="sp-bg"></div></div>';r.classList.add('splash-on');d.body.insertBefore(sp,d.body.firstChild);W.__stalakSplashT=Date.now();function bye(){if(W.__stalakSplashGo||!sp.parentNode)return;sp.style.transition='opacity .3s ease-out';sp.style.opacity='0';setTimeout(function(){r.classList.remove('splash-on');if(sp.parentNode)sp.parentNode.removeChild(sp);W.__stalakSplashDone=true;},320);}[G,"/assets/splash.5480163793.js"].forEach(function(u){var s=d.createElement('script');s.src=u;s.async=false;s.onerror=bye;d.head.appendChild(s);});setTimeout(bye,3000);})();</script>
+<script>window.STALAK_M2="/assets/mobile2.21a14a2d1b.js";(function(){var d=document,W=window,G=W.STALAK_GSAP="/vendor/gsap-3.15.0.min.js";try{if(!W.matchMedia||!matchMedia('(max-width:899px)').matches||matchMedia('(prefers-reduced-motion: reduce)').matches)return;if(navigator.webdriver&&!W.__stalakSplash)return;if(location.hash&&location.hash.length>1)return;if(sessionStorage.getItem('stalak:splash')||sessionStorage.getItem('stalak:openProject'))return;sessionStorage.setItem('stalak:splash','1');}catch(e){return;}var sp=d.createElement('div'),r=d.documentElement;sp.id='splash';sp.setAttribute('aria-hidden','true');sp.innerHTML='<div class="sp-curtain"><div class="sp-bg"></div></div>';r.classList.add('splash-on');d.body.insertBefore(sp,d.body.firstChild);W.__stalakSplashT=Date.now();function bye(){if(W.__stalakSplashGo||!sp.parentNode)return;sp.style.transition='opacity .3s ease-out';sp.style.opacity='0';setTimeout(function(){r.classList.remove('splash-on');if(sp.parentNode)sp.parentNode.removeChild(sp);W.__stalakSplashDone=true;},320);}[G,"/assets/splash.5480163793.js"].forEach(function(u){var s=d.createElement('script');s.src=u;s.async=false;s.onerror=bye;d.head.appendChild(s);});setTimeout(bye,3000);})();</script>
 <div class="frhint" id="frHint" lang="fr" hidden><a href="/fr/" id="frHintGo">Version française <span aria-hidden="true">→</span></a><button type="button" id="frHintX" aria-label="Fermer">×</button></div>
 <script>/* Marketing & croissance: « Version française → » on the English home, for a phone set to French */
 (function(){var b=document.getElementById('frHint');if(!b)return;
@@ -2845,6 +2850,8 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
             <button class="btn big dv-cmpgo" id="dvCmpGo" type="button" hidden><span data-i18n="cmp.go">Export without the logo</span> <b class="cmp-tag">PRO</b></button>
             <p class="cmp-price" id="dvCmpP" hidden></p>
             <p class="tr-terms" id="dvTrial" data-trial-int="year" hidden></p>
+            <!-- Comptes (23/11): the 1 € offer's terms, next to its button, always readable (app.js offer1Ui) -->
+            <p class="of1-terms" id="dvOffer1" hidden></p>
             <div class="sharebox" id="shareBox" hidden></div>
             <div class="capbox" id="capBox">
               <label class="label" for="capText" data-i18n="cap.t">Caption, ready to copy</label>
@@ -3465,6 +3472,6 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
   <button class="hp-human" id="helpHuman" type="button" data-i18n="help.human" hidden>Talk to a human</button>
   <button class="hp-diag" id="helpDiag" type="button" data-i18n="help.diag">Copy info for the team</button>
 </section>
-<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.c9f4369178.js", "/assets/app.34b38f63c0.js", "/assets/tiktok.8fcf3f7d25.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v||!v.offsetParent)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
+<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.f72968a21b.js", "/assets/app.e60308fbbe.js", "/assets/tiktok.8fcf3f7d25.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v||!v.offsetParent)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
 </body>
 </html>

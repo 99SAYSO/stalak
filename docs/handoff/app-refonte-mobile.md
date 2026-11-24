@@ -1,4 +1,4 @@
-Statut : PRÊT (lots 1 et 2 ; lots 3 et 4 à venir sur la même branche)
+Statut : EN COURS (lot 1 prêt ; lot 2 : réponses de l’onboarding branchées sur le compte le 24/11, série de tests relancée après la fusion de main)
 Branche : app/refonte-mobile (créée depuis `origin/main` efbb0c0 le 23/11).
 Maquette de la branche : https://app-refonte-mobile.stalak-site.pages.dev (à faire valider par le propriétaire, règle 9).
 

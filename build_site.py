@@ -446,6 +446,16 @@ for p in [f for f in list(out.glob('*.html')) + list((out / 'fr').glob('*.html')
     t = re.sub(r'<footer>.*?</footer>', lambda m: FOOT.render('fr' if fr else 'en', page=('/fr/' if fr else '/') + p.stem), t, flags=re.S)
     if '</body>' in t: t = t.replace('</body>', FX_TAG + '</body>', 1)   # (23/11) blocks that come up softly, snow on the main buttons
     p.write_text(t, encoding='utf-8')
+# Comptes (23/11, owner's decisions): the cookie banner and the measuring tools (src/consent.js), on every page of stalak.app
+# (never in the claude.ai version, build.py). It shows nothing and loads nothing until Clarity / GA4 / TikTok are set
+# (/api/config measure), and nothing at all before « Accepter ».
+_cb = (src / 'consent.js').read_text(encoding='utf-8').encode('utf-8'); _cn = 'consent.' + hashlib.sha1(_cb).hexdigest()[:10] + '.js'
+(out / 'assets' / _cn).write_bytes(_cb)
+_ctag = '<script defer src="/assets/' + _cn + '"></script>'
+for _f in list(out.glob('*.html')) + list((out / 'fr').glob('*.html')) + list(out.glob('aide/**/*.html')) + list((out / 'fr').glob('aide/**/*.html')):
+    _t = _f.read_text(encoding='utf-8')
+    if '/assets/consent.' in _t or '</head>' not in _t: continue
+    _f.write_text(_t.replace('</head>', _ctag + '\n</head>', 1), encoding='utf-8')
 (out / 'robots.txt').write_text(f'User-agent: *\nAllow: /\nSitemap: {URL}/sitemap.xml\n', encoding='utf-8')
 today = datetime.date.today().isoformat()
 # plan du site : l'anglais à la racine, le français dans /fr/ ; chaque page listée doit exister (pas de lien mort envoyé à Google)

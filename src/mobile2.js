@@ -29,7 +29,7 @@ fr: {
   'ob.q0': 'Ton nom d’artiste ?', 'ob.q0ph': 'Ton nom',
   'ob.q1': 'Tu fais quoi ?', 'ob.g.rap': 'Rap', 'ob.g.drill': 'Drill', 'ob.g.chant': 'Chant', 'ob.g.autre': 'Autre',
   'ob.q2': 'Ta musique est déjà sur les plateformes ?', 'ob.p.oui': 'Oui, déjà en ligne', 'ob.p.non': 'Pas encore',
-  'ob.q3': 'Colle tes liens', 'ob.q3h': 'Facultatif. On ne lit pas tes écoutes : c’est toi qui nous les dis.',
+  'ob.badlink': 'Ce n’est pas un lien {site}. Corrige-le ou efface-le.', 'ob.q3': 'Colle tes liens', 'ob.q3h': 'Facultatif. On ne lit pas tes écoutes : c’est toi qui nous les dis.',
   'ob.q4': 'Tu as combien d’auditeurs par mois aujourd’hui ?', 'ob.q4h': 'Regarde dans Spotify for Artists',
   'ob.l.a': 'Moins de 100', 'ob.l.b': '100 à 1 000', 'ob.l.c': '1 000 à 10 000', 'ob.l.d': 'Plus de 10 000',
   'ob.q5': 'Où tu postes tes vidéos ?', 'ob.s.tiktok': 'TikTok', 'ob.s.reels': 'Reels', 'ob.s.shorts': 'YouTube Shorts',
@@ -56,7 +56,7 @@ en: {
   'ob.q0': 'Your artist name?', 'ob.q0ph': 'Your name',
   'ob.q1': 'What do you make?', 'ob.g.rap': 'Rap', 'ob.g.drill': 'Drill', 'ob.g.chant': 'Singing', 'ob.g.autre': 'Other',
   'ob.q2': 'Is your music already on streaming platforms?', 'ob.p.oui': 'Yes, already out', 'ob.p.non': 'Not yet',
-  'ob.q3': 'Paste your links', 'ob.q3h': 'Optional. We do not read your streams: you tell us.',
+  'ob.badlink': 'This is not a {site} link. Fix it or clear it.', 'ob.q3': 'Paste your links', 'ob.q3h': 'Optional. We do not read your streams: you tell us.',
   'ob.q4': 'How many monthly listeners do you have today?', 'ob.q4h': 'Look in Spotify for Artists',
   'ob.l.a': 'Under 100', 'ob.l.b': '100 to 1,000', 'ob.l.c': '1,000 to 10,000', 'ob.l.d': 'Over 10,000',
   'ob.q5': 'Where do you post your videos?', 'ob.s.tiktok': 'TikTok', 'ob.s.reels': 'Reels', 'ob.s.shorts': 'YouTube Shorts',
@@ -177,6 +177,7 @@ var CSS = '@media (max-width:899px){'
 + '.ob-in{display:flex;align-items:center;gap:11px;min-height:56px;box-sizing:border-box;padding:4px 14px;border-radius:17px;border:3px solid #0a0d14;background:#fff;box-shadow:inset 0 4px 0 #eaf4ff}'
 + '.ob-in > i{flex:none;width:30px;height:30px;border-radius:9px;border:2px solid #0a0d14;font:900 15px/26px var(--body);font-style:normal;text-align:center;color:#fff}'
 + '.ob-in label{flex:1;min-width:0;display:block;font:600 12px var(--body);color:#7a8aa6}.ob-in input{display:block;width:100%;min-height:26px;padding:0;border:0;outline:0;background:none;box-shadow:none;font:600 16px var(--body);color:#0a0d14;border-radius:0}'
++ '.ob-in[data-l]{flex-wrap:wrap}.ob-in.bad{border-color:#c62828}.ob-bad{flex:0 0 100%;padding:2px 0 6px 41px;font:600 13px/1.3 var(--body);font-style:normal;color:#b3261e}.ob-bad[hidden]{display:none}'
 + '.ob-in.big{min-height:66px}.ob-in.big input{font:700 24px var(--body);text-align:center;min-height:44px}'
 + '.ob-in:focus-within{box-shadow:inset 0 4px 0 #eaf4ff,0 0 0 3px #1f6fd6}'
 + '.ob-in .ok{flex:none;width:24px;height:24px;border-radius:50%;background:#2ecc71;border:2px solid #0a0d14;color:#fff;font:900 14px/20px var(--body);text-align:center;transform:scale(0)}.ob-in.has .ok{transform:scale(1)}'
@@ -384,50 +385,78 @@ function ptrRun(){
 var OB_KEY = 'stalak:onb', ob = null;
 var POSE = ['hello', 'hype', 'cool', 'love', 'focus', 'think', 'focus', 'hype', 'hype', 'gg'];
 var QS = [
-  { id: 'name', kind: 'text' },
+  { id: 'artistName', kind: 'text' },
   { id: 'genres', kind: 'multi', grid: true, ops: [['rap', '🎤', 'ob.g.rap'], ['drill', '🔥', 'ob.g.drill'], ['chant', '🎶', 'ob.g.chant'], ['autre', '✨', 'ob.g.autre']] },
   { id: 'onPlatforms', kind: 'one', ops: [['oui', '✅', 'ob.p.oui'], ['non', '⏳', 'ob.p.non']] },
   { id: 'links', kind: 'links', only: function(a){ return a.onPlatforms === 'oui'; } },
-  { id: 'listeners', kind: 'one', hint: 'ob.q4h', only: function(a){ return a.onPlatforms === 'oui'; }, ops: [['a', '🌱', 'ob.l.a'], ['b', '🔥', 'ob.l.b'], ['c', '🚀', 'ob.l.c'], ['d', '👑', 'ob.l.d']] },
-  { id: 'posts', kind: 'multi', ops: [['tiktok', '📱', 'ob.s.tiktok'], ['reels', '📸', 'ob.s.reels'], ['shorts', '▶️', 'ob.s.shorts']] },
-  { id: 'blocks', kind: 'multi', ops: [['vues', '👀', 'ob.b.vues'], ['temps', '⏳', 'ob.b.temps'], ['idees', '🤷', 'ob.b.idees']] },
-  { id: 'target', kind: 'one', ops: [['a', '🌱', 'ob.t.a'], ['b', '🔥', 'ob.t.b'], ['c', '🚀', 'ob.t.c'], ['d', '👑', 'ob.t.d']] },
-  { id: 'goals', kind: 'multi', ops: [['son', '💿', 'ob.o.son'], ['poster', '📅', 'ob.o.poster'], ['concerts', '🎤', 'ob.o.concerts']] }
+  { id: 'listenersNow', kind: 'one', hint: 'ob.q4h', only: function(a){ return a.onPlatforms === 'oui'; }, ops: [['lt100', '🌱', 'ob.l.a'], ['100_1k', '🔥', 'ob.l.b'], ['1k_10k', '🚀', 'ob.l.c'], ['gt10k', '👑', 'ob.l.d']] },
+  { id: 'postsOn', kind: 'multi', ops: [['tiktok', '📱', 'ob.s.tiktok'], ['reels', '📸', 'ob.s.reels'], ['shorts', '▶️', 'ob.s.shorts']] },
+  { id: 'blockers', kind: 'multi', ops: [['few_views', '👀', 'ob.b.vues'], ['editing_time', '⏳', 'ob.b.temps'], ['no_ideas', '🤷', 'ob.b.idees']] },
+  { id: 'listenersGoal', kind: 'one', ops: [['1k', '🌱', 'ob.t.a'], ['10k', '🔥', 'ob.t.b'], ['100k', '🚀', 'ob.t.c'], ['1m', '👑', 'ob.t.d']] },
+  { id: 'goals', kind: 'multi', ops: [['song_launch', '💿', 'ob.o.son'], ['post_more', '📅', 'ob.o.poster'], ['fill_concerts', '🎤', 'ob.o.concerts']] }
 ];
-var LINKS = [['spotify', 'Spotify', '#1db954', '♫', 'open.spotify.com/artist/…'], ['apple', 'Apple Music', '#fa2d48', '', 'music.apple.com/…'], ['soundcloud', 'SoundCloud', '#ff5500', '☁', 'soundcloud.com/…'], ['instagram', 'Instagram', 'linear-gradient(45deg,#f9a12e,#e1306c,#833ab4)', '@', '@…']];
+// the sites Comptes accepts for each link (functions/_lib/artist.js); « @name » for Instagram
+var LINKS = [['spotify', 'Spotify', '#1db954', '♫', 'open.spotify.com/artist/…', ['open.spotify.com', 'spotify.link']], ['appleMusic', 'Apple Music', '#fa2d48', '', 'music.apple.com/…', ['music.apple.com']],
+  ['soundcloud', 'SoundCloud', '#ff5500', '☁', 'soundcloud.com/…', ['soundcloud.com', 'm.soundcloud.com', 'on.soundcloud.com']], ['instagram', 'Instagram', 'linear-gradient(45deg,#f9a12e,#e1306c,#833ab4)', '@', '@…', ['instagram.com', 'www.instagram.com']]];
+function linkOk(kind, v){
+  v = String(v || '').trim(); if (!v) return true;
+  var l = LINKS.filter(function(x){ return x[0] === kind; })[0]; if (!l) return false;
+  if (kind === 'instagram' && /^@?[A-Za-z0-9._]{1,30}$/.test(v)) return true;
+  if (!/^https?:\/\//i.test(v)) v = 'https://' + v;
+  try { var u = new URL(v); return l[5].indexOf(u.hostname.toLowerCase()) >= 0 && !u.username && !u.password; } catch(e){ return false; }
+}
 function obState(){ try { return JSON.parse(store.get(OB_KEY) || 'null'); } catch(e){ return null; } }
 function obSave(st){ store.set(OB_KEY, JSON.stringify(st)); obSend(); }
-// the answers go to the account when the person has one (Comptes: StalakAccount.onboarding(answers); until it exists they stay on this phone)
-function obSend(){ var st = obState(), A = M.acct; if (!st || !st.done || st.sent || !A || !A.state.user || typeof A.onboarding !== 'function') return;
-  try { Promise.resolve(A.onboarding(st.a)).then(function(){ var s = obState(); if (s){ s.sent = 1; store.set(OB_KEY, JSON.stringify(s)); } }).catch(function(){}); } catch(e){} }
+// the answers go to the account (Comptes: StalakAccount.saveArtist, PUT /api/artist) as soon as the person is signed in, and at
+// sign-in when the answers came first. Only what was answered is sent, so a question that was passed never erases an answer.
+function obWire(a){
+  var o = {}, k;
+  if (a.artistName) o.artistName = a.artistName;
+  ['genres', 'postsOn', 'blockers', 'goals'].forEach(function(k){ if (a[k] && a[k].length) o[k] = a[k].slice(); });
+  if (a.onPlatforms) o.onPlatforms = a.onPlatforms === 'oui';
+  if (a.listenersNow) o.listenersNow = a.listenersNow; if (a.listenersGoal) o.listenersGoal = a.listenersGoal;
+  var L = {}; for (k in (a.links || {})) if (a.links[k] && linkOk(k, a.links[k])) L[k] = a.links[k]; if (Object.keys(L).length) o.links = L;
+  return o;
+}
+var obBusy = false;
+function obSend(){
+  var st = obState(), A = M.acct, u = A && A.state.user;
+  if (obBusy || !st || !(st.done || st.skipped) || st.sent || !st.a || !u || typeof A.saveArtist !== 'function') return;
+  var o = obWire(st.a), mark = function(){ var s = obState(); if (s){ s.sent = Date.now(); store.set(OB_KEY, JSON.stringify(s)); } };
+  if (!Object.keys(o).length){ mark(); return; }
+  obBusy = true;
+  var put = function(x){ return Promise.resolve(A.saveArtist(x)); };
+  try { put(o).catch(function(e){ if (e && e.code === 'bad_link' && o.links){ delete o.links; return put(o); } throw e; })
+    .then(mark).catch(function(){}).then(function(){ obBusy = false; }); } catch(e){ obBusy = false; }
+}
 function labels(q, vals){ var q2 = QS.filter(function(x){ return x.id === q; })[0]; return (vals || []).map(function(v){ var o = q2.ops.filter(function(o){ return o[0] === v; })[0]; return o ? t(o[2]) : v; }); }
 function obBubble(i, a){
-  var g = labels('genres', a.genres), p = labels('posts', a.posts);
-  switch (i){ case 0: return t('ob.b0'); case 1: return a.name ? t('ob.b1', { name: a.name }) : t('ob.b1n'); case 2: return g.length ? t('ob.b2', { list: list(g) }) : t('ob.b2n');
+  var g = labels('genres', a.genres), p = labels('postsOn', a.postsOn);
+  switch (i){ case 0: return t('ob.b0'); case 1: return a.artistName ? t('ob.b1', { name: a.artistName }) : t('ob.b1n'); case 2: return g.length ? t('ob.b2', { list: list(g) }) : t('ob.b2n');
     case 3: return a.onPlatforms === 'oui' ? t('ob.b3') : t('ob.b3n'); case 4: return t('ob.b4'); case 5: return a.onPlatforms === 'oui' ? t('ob.b5') : t('ob.b3n');
     case 6: return p.length ? t('ob.b6', { list: list(p) }) : t('ob.b6n'); case 7: return t('ob.b7'); case 8: return t('ob.b8'); default: return t('ob.b9'); } }
 // the lines of the loading screen and of the plan: only what the person answered, or what Stalak really does
 function obLines(a){
-  var g = labels('genres', a.genres), p = labels('posts', a.posts), L = [];
-  if (a.listeners) L.push(['🎧', t('ob.ln.from', { v: esc(t('ob.l.' + a.listeners).toLowerCase()) })]);
+  var g = labels('genres', a.genres), p = labels('postsOn', a.postsOn), L = [], now = labels('listenersNow', [a.listenersNow])[0], to = labels('listenersGoal', [a.listenersGoal])[0];
+  if (a.listenersNow) L.push(['🎧', t('ob.ln.from', { v: esc(now.toLowerCase()) })]);
   if (g.length) L.push(['🔥', t('ob.ln.genre', { list: esc(list(g)) })]);
   if (p.length) L.push(['📱', t('ob.ln.fmt', { list: esc(list(p)) })]);
-  if (a.target) L.push(['🎯', t('ob.ln.goal', { v: esc(t('ob.t.' + a.target)) })]);
+  if (a.listenersGoal) L.push(['🎯', t('ob.ln.goal', { v: esc(to) })]);
   if (!L.length) L.push(['✂️', esc(t('ob.ln.none'))]);
   return L; }
 function obPlan(a){
-  var g = labels('genres', a.genres), p = labels('posts', a.posts), go = labels('goals', a.goals), P = [];
+  var g = labels('genres', a.genres), p = labels('postsOn', a.postsOn), go = labels('goals', a.goals), P = [], now = labels('listenersNow', [a.listenersNow])[0], to = labels('listenersGoal', [a.listenersGoal])[0];
   if (g.length && p.length) P.push(t('ob.pl.who', { genres: list(g), posts: list(p) })); else if (g.length) P.push(t('ob.pl.whoG', { genres: list(g) })); else if (p.length) P.push(t('ob.pl.whoP', { posts: list(p) }));
-  if (a.target && a.listeners) P.push(t('ob.pl.path', { from: t('ob.l.' + a.listeners).toLowerCase(), to: t('ob.t.' + a.target) })); else if (a.target) P.push(t('ob.pl.to', { to: t('ob.t.' + a.target) }));
+  if (a.listenersGoal && a.listenersNow) P.push(t('ob.pl.path', { from: now.toLowerCase(), to: to })); else if (a.listenersGoal) P.push(t('ob.pl.to', { to: to }));
   if (go.length) P.push(t('ob.pl.goals', { list: list(go).toLowerCase() }));
-  if ((a.blocks || []).indexOf('temps') >= 0) P.push(t('ob.pl.temps'));
-  if ((a.blocks || []).indexOf('idees') >= 0) P.push(t('ob.pl.idees'));
+  if ((a.blockers || []).indexOf('editing_time') >= 0) P.push(t('ob.pl.temps'));
+  if ((a.blockers || []).indexOf('no_ideas') >= 0) P.push(t('ob.pl.idees'));
   P.push(t('ob.pl.first')); return P; }
 
 function obOpen(){
   if (ob) return;
-  var a = { name: '', genres: [], onPlatforms: '', links: {}, listeners: '', posts: [], blocks: [], target: '', goals: [] };
-  var u = M.acct && M.acct.state.user; if (u && u.displayName) a.name = u.displayName;
+  var a = { artistName: '', genres: [], onPlatforms: '', links: {}, listenersNow: '', postsOn: [], blockers: [], listenersGoal: '', goals: [] };
+  var u = M.acct && M.acct.state.user; if (u && u.displayName) a.artistName = u.displayName;
   var box = el('div', 'm2-ob'); box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.id = 'm2Onb';
   var sc = scene('<div class="ob-m">' + POSE.filter(function(p, i){ return POSE.indexOf(p) === i; }).map(function(p){ return '<img alt="" data-p="' + p + '" src="/emoji/' + p + '.webp">'; }).join('') + '</div><div class="m2-bub" aria-live="polite"></div>', 3);
   var back = el('button', 'm2-round', '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7"/></svg>'); back.type = 'button'; back.setAttribute('aria-label', t('ob.back'));
@@ -442,7 +471,7 @@ function obOpen(){
     var s = el('section', 'ob-q'); s.dataset.i = i; var h = '<h1 id="obT' + i + '">' + esc(t('ob.q' + i)) + '</h1>';
     if (q.kind === 'multi') h += '<p class="ob-hint">' + esc(t('ob.multi')) + '</p>'; else if (q.hint) h += '<p class="ob-hint">' + esc(t(q.hint)) + '</p>'; else if (q.kind === 'links') h += '<p class="ob-hint">' + esc(t('ob.q3h')) + '</p>';
     if (q.kind === 'text') h += '<div class="ob-ops"><div class="ob-in big"><label style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)" for="obName">' + esc(t('ob.q0')) + '</label><input id="obName" type="text" maxlength="30" autocomplete="nickname" autocapitalize="words" spellcheck="false" enterkeyhint="next" placeholder="' + esc(t('ob.q0ph')) + '"></div></div>';
-    else if (q.kind === 'links') h += '<div class="ob-ops">' + LINKS.map(function(l){ return '<div class="ob-in" data-l="' + l[0] + '"><i style="background:' + l[2] + '">' + l[3] + '</i><label>' + l[1] + '<input type="text" inputmode="url" autocapitalize="off" autocomplete="off" spellcheck="false" maxlength="200" placeholder="' + esc(l[4]) + '"></label><span class="ok" aria-hidden="true">✓</span></div>'; }).join('') + '</div>';
+    else if (q.kind === 'links') h += '<div class="ob-ops">' + LINKS.map(function(l){ return '<div class="ob-in" data-l="' + l[0] + '"><i style="background:' + l[2] + '">' + l[3] + '</i><label>' + l[1] + '<input type="text" inputmode="url" autocapitalize="off" autocomplete="off" spellcheck="false" maxlength="200" placeholder="' + esc(l[4]) + '"></label><span class="ok" aria-hidden="true">✓</span><em class="ob-bad" role="alert" hidden></em></div>'; }).join('') + '</div>';
     else h += '<div class="ob-ops' + (q.grid ? ' grid' : '') + '" role="group" aria-labelledby="obT' + i + '">' + q.ops.map(function(o){ return '<button type="button" class="ob-op" data-v="' + o[0] + '" aria-pressed="false"><i aria-hidden="true">' + o[1] + '</i><span>' + esc(t(o[2])) + '</span>' + (q.kind === 'multi' ? '<span class="ck" aria-hidden="true">✓</span>' : '') + '</button>'; }).join('') + '</div>';
     s.innerHTML = h; qs.appendChild(s);
   });
@@ -450,7 +479,7 @@ function obOpen(){
   D.body.appendChild(box); root.classList.add('m2-onb');
   var cur = -1, bub = $('.m2-bub', box), bar = $('i', prog), last = D.activeElement, busy = false;
   ob = { box: box };
-  var nameIn = $('#obName', box); nameIn.value = a.name;
+  var nameIn = $('#obName', box); nameIn.value = a.artistName;
   function steps(){ return QS.map(function(q, i){ return i; }).filter(function(i){ return !QS[i].only || QS[i].only(a); }); }
   function pose(i){ var p = POSE[i]; $$('.ob-m img', box).forEach(function(im){ im.classList.toggle('on', im.dataset.p === p); });
     play(function(g){ return g.fromTo($('.ob-m', box), { scaleX: 1.15, scaleY: 0.85, y: 8 }, { scaleX: 1, scaleY: 1, y: 0, duration: 0.5, ease: 'elastic.out(1,0.4)', transformOrigin: '50% 100%', clearProps: 'transform' }); }); }
@@ -475,9 +504,17 @@ function obOpen(){
   function next(){
     if (busy) return;
     if (cur === 9){ finish(true); return; }
-    if (cur === 0) a.name = nameIn.value.trim().slice(0, 30);
+    if (cur === 0) a.artistName = nameIn.value.trim().slice(0, 30);
+    if (QS[cur] && QS[cur].kind === 'links' && !linksCheck()) return;
     var st = steps(), k = st.indexOf(cur);
     if (k < st.length - 1) show(st[k + 1], 1); else loading();
+  }
+  function linksCheck(){
+    var first = null;
+    $$('.ob-in[data-l]', box).forEach(function(w){ var bad = !linkOk(w.dataset.l, a.links[w.dataset.l]), m = $('.ob-bad', w), l = LINKS.filter(function(x){ return x[0] === w.dataset.l; })[0];
+      w.classList.toggle('bad', bad); m.hidden = !bad; m.textContent = bad ? t('ob.badlink', { site: l[1] }) : ''; if (bad && !first) first = w; });
+    if (first){ try { $('input', first).focus(); } catch(e){} }
+    return !first;
   }
   function prev(){ if (busy) return; var st = steps(), k = st.indexOf(cur); if (k > 0) show(st[k - 1], -1); }
   function loading(){
@@ -502,14 +539,14 @@ function obOpen(){
   }
   function plan(){
     load.classList.remove('on'); busy = false;
-    planS.innerHTML = '<h1>' + esc(a.name ? t('ob.plan', { name: a.name }) : t('ob.planN')) + '</h1><div class="ob-plan">' + obPlan(a).map(function(p){ return '<div><u aria-hidden="true">✓</u><span>' + esc(p) + '</span></div>'; }).join('') + '</div>';
-    obSave({ v: 1, done: Date.now(), a: a });
+    planS.innerHTML = '<h1>' + esc(a.artistName ? t('ob.plan', { name: a.artistName }) : t('ob.planN')) + '</h1><div class="ob-plan">' + obPlan(a).map(function(p){ return '<div><u aria-hidden="true">✓</u><span>' + esc(p) + '</span></div>'; }).join('') + '</div>';
+    obSave({ v: 2, done: Date.now(), a: a });
     var from = $('.ob-q.on', box); if (from) from.classList.remove('on');
     show(9, 1);
     play(function(g){ return g.fromTo(cta, { y: 30, scale: 0.92 }, { y: 0, scale: 1, duration: 0.5, ease: 'back.out(2)', clearProps: 'transform' }, 0.5); });
   }
   function finish(done){
-    if (!done) obSave({ v: 1, skipped: Date.now(), a: a });
+    if (!done){ for (var k in a.links) if (!linkOk(k, a.links[k])) delete a.links[k]; obSave({ v: 2, skipped: Date.now(), a: a }); }
     var end = function(){ box.remove(); root.classList.remove('m2-onb'); ob = null; try { last && last.focus && last.focus(); } catch(e){} W.__stalakOnbDone = 1; };
     if (!play(function(g){ return g.to(box, { yPercent: -104, duration: 0.42, ease: 'power3.in', onComplete: end }); })) end();
   }
@@ -520,7 +557,7 @@ function obOpen(){
     else { a[q.id] = a[q.id] === v ? '' : v; $$('.ob-op', b.parentNode).forEach(function(x){ x.setAttribute('aria-pressed', String(x.dataset.v === a[q.id])); }); }
     play(function(g){ return g.timeline().to(b, { scale: 0.96, duration: 0.08 }).to(b, { scale: 1, duration: 0.3, ease: 'back.out(3)', clearProps: 'transform' }); });
   });
-  box.addEventListener('input', function(ev){ var w = ev.target.closest && ev.target.closest('.ob-in[data-l]'); if (!w) return; var v = ev.target.value.trim().slice(0, 200); if (v) a.links[w.dataset.l] = v; else delete a.links[w.dataset.l]; w.classList.toggle('has', !!v); });
+  box.addEventListener('input', function(ev){ var w = ev.target.closest && ev.target.closest('.ob-in[data-l]'); if (!w) return; var v = ev.target.value.trim().slice(0, 200); if (v) a.links[w.dataset.l] = v; else delete a.links[w.dataset.l]; w.classList.toggle('has', !!v && linkOk(w.dataset.l, v)); if (w.classList.contains('bad') && linkOk(w.dataset.l, v)){ w.classList.remove('bad'); $('.ob-bad', w).hidden = true; } });
   nameIn.addEventListener('keydown', function(ev){ if (ev.key === 'Enter'){ ev.preventDefault(); next(); } });
   box.addEventListener('keydown', function(ev){ if (ev.key === 'Tab'){ var f = $$('button:not([hidden]), input', box).filter(function(x){ return x.getClientRects().length; }); if (!f.length) return;
     if (ev.shiftKey && D.activeElement === f[0]){ ev.preventDefault(); f[f.length - 1].focus(); } else if (!ev.shiftKey && D.activeElement === f[f.length - 1]){ ev.preventDefault(); f[0].focus(); } } });
@@ -533,7 +570,12 @@ function obMaybe(){
   if (ob || obState() || !M.phone() || !M.home() || M.view() || location.hash) return;
   if (navigator.webdriver && !W.__stalakOnb) return;
   if (root.classList.contains('splash-on')){ setTimeout(obMaybe, 300); return; }
-  M.gsap().then(function(){ if (!ob && !obState() && M.home() && !M.view()) obOpen(); });
+  var open = function(){ M.gsap().then(function(){ if (!ob && !obState() && M.home() && !M.view()) obOpen(); }); };
+  var A = M.acct;
+  // signed in and already answered on another phone: nothing is asked twice
+  if (A && A.state.user && typeof A.artist === 'function'){
+    Promise.resolve(A.artist()).then(function(r){ if (r && r.profile && r.profile.answeredAt){ if (!obState()) store.set(OB_KEY, JSON.stringify({ v: 2, done: Date.now(), sent: Date.now(), remote: 1 })); W.__stalakOnbDone = 1; } else open(); }).catch(open);
+  } else open();
 }
 
 /* ---- the app tells what is shown ---------------------------------------------------------------------------------------- */

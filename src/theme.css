@@ -1421,6 +1421,10 @@ body.isdone > .bands{display:none}
 /* (owner, 23/11) the 7-day free trial of Pro: what it costs then and that it can be cancelled, always under the button */
 .tr-terms{margin:4px 0 0;font:500 13.5px/1.4 var(--body);color:#3b4a66;text-align:center}
 .tr-terms[hidden]{display:none}
+/* Comptes (23/11): the 1 € offer's terms next to its button, in clear (owner's decision; Juridique: not hidden) */
+.of1-terms{margin:6px 0 0;font:600 14px/1.4 var(--body);color:#0a0d14;text-align:center}
+.of1-terms[hidden]{display:none}
+.doneview #dvOffer1{order:3;margin-top:-6px}
 .fa-row .tr-terms{flex-basis:100%;order:0;margin:-2px 0 4px}
 .propop .tr-terms{margin:-4px 0 0}
 #apBuy .tr-terms{margin:12px 0 0;font-size:13px}   /* below the button's hard shadow */
