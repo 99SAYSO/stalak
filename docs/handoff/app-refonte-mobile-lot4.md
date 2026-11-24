@@ -1,4 +1,4 @@
-Statut : EN COURS (lot 4 fait, maquette à montrer ; série de non-régression en cours)
+Statut : PRÊT
 Branche : app/refonte-mobile-lot4, partie de `app/refonte-mobile-lot3` : **elle contient le lot 3** (fusionner celle-ci suffit
 pour les deux, une fois les deux maquettes validées).
 Maquette de la branche : https://app-refonte-mobile-lot4.stalak-site.pages.dev/fr/ (sur un téléphone).
@@ -79,3 +79,6 @@ Remplace le paywall ci-dessus (n° 14) :
 - **Marketing** : 2 images ajoutées dans `site_src/` (`decors/scene-salle.webp`, `emoji/star.webp`).
 - Test `refonte_mobile4_ui` : **69/69** (en plus : police et couleur du titre, une ligne ; décor et sticker servis ; pastille
   « ou » à sa place ; avis au doigt, points qui suivent).
+
+## Série de non-régression (24/11, soir)
+Tout passe sauf les échecs déjà présents sur `main` : `audit611_ui` 89/93 et `partager_ui` 88/92 (Comptes), `clip1_ui` 83/87 (`.band-frost a:hover`, Marketing), `formules_ui` 136/137, `lyrics_ui` 62/73. Le reste : `refonte_mobile3_ui` 91/91, `refonte_mobile4_ui` 69/69, `refonte_mobile2_ui` 142/142, `refonte_mobile_ui` 102/102, `essai_pro_ui` 193/193, `tiktok_ui` 224/224, `pied_de_page_ui` 842/842, `backend` 132/132, etc.
