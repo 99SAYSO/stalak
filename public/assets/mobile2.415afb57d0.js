@@ -572,12 +572,13 @@ function obOpen(opts){
   function ready(){
     load.classList.remove('on'); busy = false;
     var signed = !!(M.acct && M.acct.state.user);
-    planS.innerHTML = '<h1>' + esc(t('ob.ready')) + '</h1><div class="ob-lock" aria-hidden="true"><div class="ob-fake"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="ob-fl"><b></b><b></b><b></b></div><span class="ob-pad">🔒</span></div>'
+    var rich = W.StalakM5 && W.StalakM5.preview && W.StalakM5.preview();
+    planS.innerHTML = '<h1>' + esc(t('ob.ready')) + '</h1>' + (rich ? '<div class="ob-lock ob-rich">' + rich + '</div>' : '<div class="ob-lock" aria-hidden="true"><div class="ob-fake"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="ob-fl"><b></b><b></b><b></b></div><span class="ob-pad">🔒</span></div>')
       + '<p class="ob-hint">' + esc(t(signed ? 'ob.readyIn' : 'ob.readyP')) + '</p>';
     var from = $('.ob-q.on', box); if (from) from.classList.remove('on');
     show(9, 1); cta.textContent = t(signed ? 'ob.see' : 'ob.create');
     play(function(g){ return g.timeline().fromTo($('.ob-lock', planS), { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.45, ease: 'back.out(2)', clearProps: 'transform,opacity' }, 0.2)
-      .fromTo($('.ob-pad', planS), { scale: 0.3, rotation: -20 }, { scale: 1, rotation: 0, duration: 0.5, ease: 'back.out(3)', clearProps: 'transform' }, 0.45)
+      .fromTo($('.ob-pad, .m5-pad', planS), { scale: 0.3, rotation: -20 }, { scale: 1, rotation: 0, duration: 0.5, ease: 'back.out(3)', clearProps: 'transform' }, 0.45)
       .fromTo(cta, { y: 30, scale: 0.92 }, { y: 0, scale: 1, duration: 0.5, ease: 'back.out(2)', clearProps: 'transform' }, 0.5); });
   }
   function finish(done){

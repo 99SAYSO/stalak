@@ -31,7 +31,10 @@ fr: { title: 'Tes stats', ready: 'Ton analyse est prête', readyP: 'Crée ton co
   rhythm: 'Ton rythme', rhythmP: 'Ton dernier son date de {d} jours ; en moyenne, {a} jours entre deux sorties.', advice: 'Conseil', adviceKeep: 'Garde ce rythme : un son toutes les {w} semaines environ.',
   adviceMore: 'Essaie de sortir un son toutes les 3 à 4 semaines : ton public garde le fil.', plan: 'Ton plan de la semaine', planNew: 'Fais vivre « {name} » : poste 3 extraits de ce son cette semaine.',
   planNext: 'Prépare le teaser de ton prochain son : 2 vidéos cette semaine.', planAny: 'Poste 3 vidéos de ton meilleur passage cette semaine.', cities: 'Tes villes', noData: 'Pas encore de chiffres.',
-  err: 'Impossible de charger tes stats pour l’instant. Réessaie dans un moment.', retry: 'Réessayer', back: 'Retour' },
+  err: 'Impossible de charger tes stats pour l’instant. Réessaie dans un moment.', retry: 'Réessayer', back: 'Retour',
+  pvNums: 'Tes chiffres', pvL: 'Auditeurs', pvF: 'Abonnés TikTok', pvV: 'Vues moyennes', pvVid: 'Classement de tes vidéos', pvPace: 'Rythme de sortie conseillé',
+  pvPaceX: 'Un son toutes les 3 semaines', pvWeek: 'Ton plan de la semaine', d1: 'Lun', d2: 'Mer', d3: 'Ven', pvChart: 'Tes auditeurs, semaine par semaine',
+  demo: 'Exemple : ces chiffres sont inventés pour voir l’écran. Sur stalak.app, ce sont les tiens.', demoName: 'Exemple' },
 en: { title: 'Your stats', ready: 'Your analysis is ready', readyP: 'Create your account to see your analysis.', create: 'Create your account to see it',
   loading: 'Preparing your analysis…', sum: 'Your summary', missing: '{list} {is} missing: without {them}, we can’t make your analysis.', addLinks: 'Add my links',
   them1: 'it', them2: 'them', and: ' and ', tt: 'Your TikTok link', sp: 'your Spotify link', is1: 'is', is2: 'are',
@@ -44,7 +47,10 @@ en: { title: 'Your stats', ready: 'Your analysis is ready', readyP: 'Create your
   rhythm: 'Your pace', rhythmP: 'Your latest song is {d} days old; on average, {a} days between two releases.', advice: 'Tip', adviceKeep: 'Keep this pace: a song about every {w} weeks.',
   adviceMore: 'Try to release a song every 3 to 4 weeks: your audience keeps track.', plan: 'Your plan for the week', planNew: 'Keep “{name}” alive: post 3 clips of it this week.',
   planNext: 'Get the teaser of your next song ready: 2 videos this week.', planAny: 'Post 3 videos of your best part this week.', cities: 'Your cities', noData: 'No figures yet.',
-  err: 'Your stats can’t be loaded right now. Try again in a moment.', retry: 'Try again', back: 'Back' }
+  err: 'Your stats can’t be loaded right now. Try again in a moment.', retry: 'Try again', back: 'Back',
+  pvNums: 'Your figures', pvL: 'Listeners', pvF: 'TikTok followers', pvV: 'Average views', pvVid: 'Your videos ranked', pvPace: 'Advised release pace',
+  pvPaceX: 'A song every 3 weeks', pvWeek: 'Your plan for the week', d1: 'Mon', d2: 'Wed', d3: 'Fri', pvChart: 'Your listeners, week by week',
+  demo: 'Example: these figures are made up to show the screen. On stalak.app, they are yours.', demoName: 'Example' }
 };
 function t(k, v){ var s = (TX[M.lang()] || TX.en)[k]; if (s == null) s = TX.en[k] != null ? TX.en[k] : k; if (v) for (var x in v) s = s.split('{' + x + '}').join(v[x]); return s; }
 function num(n){ try { return new Intl.NumberFormat(M.lang() === 'fr' ? 'fr-FR' : 'en-US').format(n); } catch(e){ return String(n); } }
@@ -53,7 +59,8 @@ function day(iso){ try { return new Date(iso).toLocaleDateString(M.lang() === 'f
 var INK = '#0a0d14', BLUE = '#1f6fd6';
 var CSS = '@media (max-width:899px){'
 + '.m5{display:none}html.m5on .m5{display:block;position:fixed;z-index:130;left:0;right:0;top:0;bottom:var(--tabs,74px);overflow-y:auto;overscroll-behavior:contain;background:radial-gradient(120vw 70vh at 50% 0,#eef7ff 0,#d6ecff 62%);padding:max(14px,env(safe-area-inset-top,0px)) 16px 26px;box-sizing:border-box}'
-+ 'html.m5on .help-cube{display:none !important}'
++ 'html.m5on .help-cube{display:none !important}html.m5on .tabbar{z-index:131}'
++ '.m5{overflow-x:hidden}.m5 *,.m5 *::before,.m5 *::after,.m5-pv *,.m5-ph *{box-sizing:border-box}.m5 > *{max-width:100%}'
 + '.m5 h1{margin:6px 0 2px;font:400 30px/1.1 var(--display);color:' + INK + ';text-shadow:none}.m5 .m5-who{margin:0 0 14px;font:700 15px/1.3 var(--body);color:#3d4a63}'
 + '.m5-card{margin:0 0 14px;padding:16px;border:3px solid ' + INK + ';border-radius:22px;background:#fff;box-shadow:0 5px 0 ' + INK + ';color:' + INK + '}'
 + '.m5-card h2{margin:0 0 10px;font:400 21px/1.15 var(--display);color:' + INK + ';text-shadow:none}.m5-card p{margin:0;font:500 15px/1.45 var(--body);color:#3d4a63}'
@@ -66,6 +73,15 @@ var CSS = '@media (max-width:899px){'
 + '.m5-btn.blue{background:' + BLUE + ';color:#fff;font:400 20px/1 var(--display)}.m5-btn:active{transform:translateY(3px);box-shadow:0 1px 0 ' + INK + '}'
 + '.m5-give{display:flex;gap:8px;margin-top:10px}.m5-give input{flex:1;min-width:0;min-height:48px;padding:0 14px;border:3px solid ' + INK + ';border-radius:14px;font:700 17px/1 var(--body)}.m5-give button{flex:none;min-height:48px;padding:0 16px;border:3px solid ' + INK + ';border-radius:14px;background:' + BLUE + ';color:#fff;font:800 15px/1 var(--body)}'
 + '.m5-pro{position:relative}.m5-lock .m5-fakebox{filter:blur(7px);pointer-events:none;user-select:none}'
++ '.m5-ph{display:flex;align-items:center;gap:12px;margin:0 0 6px}.m5-ph .m5-pad{flex:none;width:56px;height:56px;font-size:26px}.m5-ph h2{margin:0 0 3px}.m5-ph p{font-size:13.5px}'
++ '.m5-pv h3{margin:16px 0 8px;font:800 13px/1.2 var(--body);letter-spacing:.04em;text-transform:uppercase;color:' + INK + '}.m5-pv h3::before{content:"🔒 ";font-size:11px}'
++ '.m5-bl{filter:blur(6px);pointer-events:none;user-select:none}'
++ '.m5-pvn{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.m5-pvn div{padding:9px 8px;border:2.5px solid ' + INK + ';border-radius:14px;background:#f4f9ff;min-width:0}.m5-pvn small{display:block;font:700 11px/1.2 var(--body);color:#3d4a63;overflow-wrap:anywhere}.m5-pvn b{display:block;margin-top:4px;font:900 19px/1 var(--body);color:' + INK + '}'
++ '.m5-pvv{margin:0;padding:0;list-style:none}.m5-pvv li{display:flex;align-items:center;gap:10px;padding:6px 0}.m5-pvv .th{flex:none;width:38px;height:50px;border:2.5px solid ' + INK + ';border-radius:9px;background:linear-gradient(160deg,#0e3f8f,' + BLUE + ' 55%,#8fd0ff)}.m5-pvv .tx{flex:1;min-width:0}.m5-pvv .tx i{display:block;height:11px;margin:4px 0;border-radius:6px;background:#c9dcf3}.m5-pvv .tx i+i{width:55%;background:#e3ecf8}.m5-pvv b{flex:none;font:900 15px/1 var(--body);color:' + BLUE + '}'
++ '.m5-pvp{padding:10px 12px;border-radius:14px;background:#eaf5ff;font:800 16px/1.3 var(--body);color:' + INK + '}'
++ '.m5-pvw{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.m5-pvw div{border:2.5px solid ' + INK + ';border-radius:14px;overflow:hidden;background:#fff;min-width:0}.m5-pvw small{display:block;padding:5px 8px;background:#ffd23f;border-bottom:2.5px solid ' + INK + ';font:800 12px/1 var(--body);color:' + INK + '}.m5-pvw p{margin:0;padding:8px;font:600 12px/1.35 var(--body);color:#3d4a63}'
++ '.m5-pv .bars{display:flex;align-items:flex-end;gap:7px;height:80px}.m5-pv .bars i{flex:1;border-radius:7px 7px 0 0;background:' + BLUE + '}'
++ '.m5-demo{background:#e6f2ff}'
 + '.m5-fakebox .bars{display:flex;align-items:flex-end;gap:7px;height:120px}.m5-fakebox .bars i{flex:1;border-radius:7px 7px 0 0;background:' + BLUE + '}'
 + '.m5-fakebox .ln{display:block;height:13px;margin:10px 0;border-radius:6px;background:#c9dcf3}'
 + '.m5-padbox{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:16px;text-align:center}'
@@ -92,14 +108,28 @@ function show(v){
   if (v){ box.setAttribute('aria-label', t('title')); box.scrollTop = 0; }
 }
 function fakePro(){
-  return '<div class="m5-fakebox" aria-hidden="true"><div class="bars"><i style="height:28%"></i><i style="height:44%"></i><i style="height:36%"></i><i style="height:58%"></i><i style="height:52%"></i><i style="height:74%"></i><i style="height:90%"></i></div><span class="ln"></span><span class="ln" style="width:78%"></span><span class="ln" style="width:56%"></span></div>';
+  // the full analysis as it will look, its real titles readable, its contents blurred under the padlock (no real figure inside)
+  var bl = function(h){ return '<div class="m5-bl" aria-hidden="true">' + h + '</div>'; };
+  var vid = function(n, w){ return '<li><span class="th"></span><span class="tx"><i style="width:' + w + '%"></i><i></i></span><b>' + n + '</b></li>'; };
+  return '<div class="m5-pv">'
+    + '<h3>' + esc(t('pvNums')) + '</h3><div class="m5-pvn">'
+    + [['pvL', '4 812'], ['pvF', '1 930'], ['pvV', '2 406']].map(function(x){ return '<div><small>' + esc(t(x[0])) + '</small>' + bl('<b>' + x[1] + '</b>') + '</div>'; }).join('') + '</div>'
+    + '<h3>' + esc(t('pvVid')) + '</h3>' + bl('<ol class="m5-pvv">' + vid('12,4 k', 90) + vid('8,1 k', 72) + vid('5,6 k', 80) + '</ol>')
+    + '<h3>' + esc(t('pvPace')) + '</h3>' + bl('<p class="m5-pvp">' + esc(t('pvPaceX')) + '</p>')
+    + '<h3>' + esc(t('pvWeek')) + '</h3><div class="m5-pvw">'
+    + ['d1', 'd2', 'd3'].map(function(k){ return '<div><small>' + esc(t(k)) + '</small>' + bl('<p>' + esc(t('planAny')) + '</p>') + '</div>'; }).join('') + '</div>'
+    + '<h3>' + esc(t('pvChart')) + '</h3>' + bl('<div class="bars"><i style="height:28%"></i><i style="height:44%"></i><i style="height:36%"></i><i style="height:58%"></i><i style="height:52%"></i><i style="height:74%"></i><i style="height:90%"></i></div>')
+    + '</div>';
 }
+function lockHead(){ return '<div class="m5-ph"><span class="m5-pad" aria-hidden="true">🔒</span><div><h2>' + esc(t('proT')) + '</h2><p>' + esc(t('proP')) + '</p></div></div>'; }
+// for the questionnaire's « Ton analyse est prête » (lot 2): the same preview
+function preview(){ build(); return '<div class="m5-card m5-pro m5-lock" style="margin:0;box-shadow:none;border:0;padding:0">' + lockHead() + fakePro() + '</div>'; }
 function enter(){ M.play(function(g){ return g.fromTo($$('.m5 > *', D), { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.35, ease: 'power3.out', stagger: 0.05, clearProps: 'opacity,transform' }); }); }
 
 /* ---- « Ton analyse est prête » (signed out): the account to create first --------------------------------------------- */
 function readyScreen(){
   box.innerHTML = '<div class="m5-ready"><h1>' + esc(t('ready')) + '</h1><p class="m5-who">' + esc(t('readyP')) + '</p></div>'
-    + '<div class="m5-card m5-pro m5-lock">' + fakePro() + '<div class="m5-padbox"><span class="m5-pad" aria-hidden="true">🔒</span></div></div>'
+    + '<div class="m5-card m5-pro m5-lock">' + lockHead() + fakePro() + '</div>'
     + '<button type="button" class="m5-btn blue m5-create"></button>';
   $('.m5-create', box).textContent = t('create');
   $('.m5-create', box).onclick = function(){ store.set(WANT, '1'); show(false); M.go('login', { mode: 'up' }); };
@@ -130,7 +160,8 @@ function load(){
 }
 function render(d){
   var s = d.summary || {}, f = s.facts || {}, sp = d.spotify || {}, h = '';
-  var st = W.StalakM2 && W.StalakM2.state(), name = st && st.a && st.a.artistName;
+  var st = W.StalakM2 && W.StalakM2.state(), name = d.demo ? t('demoName') : st && st.a && st.a.artistName;
+  if (d.demo) h += '<div class="m5-note m5-demo" role="note">' + esc(t('demo')) + '</div>';
   h += '<h1>' + esc(t('title')) + '</h1>' + (name ? '<p class="m5-who">' + esc(name) + '</p>' : '');
   // the links the analysis needs
   var miss = (d.missing || []).map(function(k){ return t(k === 'tiktok' ? 'tt' : 'sp'); });
@@ -155,7 +186,7 @@ function render(d){
   // TikTok: the stats that already exist (Réseaux sociaux)
   h += '<button type="button" class="m5-btn m5-tt"></button>';
   // the Pro part: real for Pro / Creator Plus, a blurred generic drawing with a padlock otherwise
-  if (d.locked || !d.pro) h += '<div class="m5-card m5-pro m5-lock" style="margin-top:14px">' + fakePro() + '<div class="m5-padbox"><span class="m5-pad" aria-hidden="true">🔒</span><h2>' + esc(t('proT')) + '</h2><p>' + esc(t('proP')) + '</p><button type="button" class="m5-btn blue m5-unlock"></button></div></div>';
+  if (d.locked || !d.pro) h += '<div class="m5-card m5-pro m5-lock" style="margin-top:14px">' + lockHead() + fakePro() + '<button type="button" class="m5-btn blue m5-unlock"></button></div>';
   else h += proPart(d.pro, f);
   box.innerHTML = h;
   $$('.m5-links', box).forEach(function(b){ b.textContent = t('addLinks'); b.onclick = function(){ show(false); if (W.StalakM2) W.StalakM2.onboarding({ from: 'stats', start: 'links' }); }; });
@@ -196,8 +227,25 @@ function proPart(p, f){
 }
 
 /* ---- the way in: the « Stats » tab ------------------------------------------------------------------------------------- */
+/* ---- demo of the mock-ups (24/11, owner's feedback): ?demo=gratuit / ?demo=pro shows « Stats » as for a signed-in free / Pro
+   account, with example figures said to be examples. Never on stalak.app: only on the previews (*.pages.dev) and the tests ---- */
+var DEMO = (function(){ try { if (/(^|\.)stalak\.app$/i.test(location.hostname)) return null; var m = /[?&]demo=(gratuit|free|pro)(&|$)/i.exec(location.search); return m ? (m[1].toLowerCase() === 'pro' ? 'pro' : 'free') : null; } catch(e){ return null; } })();
+function demoData(){
+  var fr = M.lang() === 'fr', ago = function(n){ return new Date(Date.now() - n * 864e5).toISOString().slice(0, 10); };
+  var d = { demo: true, missing: [], tiktokLinked: true, spotify: { state: 'ok', updatedAt: ago(2) },
+    summary: { sentences: fr ? ['Tu as 4 812 auditeurs ce mois-ci, 6 % de plus que le mois dernier.', 'Ton dernier son, « Neva Die », est sorti il y a 12 jours.', 'Ton public est surtout à Toulouse.']
+                             : ['You have 4,812 listeners this month, 6% more than last month.', 'Your latest song, “Neva Die”, came out 12 days ago.', 'Your audience is mostly in Toulouse.'],
+      facts: { listeners: { n: 4812, source: 'spotify' }, followers: 1930, lastRelease: { name: 'Neva Die', daysAgo: 12 }, topSong: { name: 'Neva Die', streams: 18400 }, topCity: { city: 'Toulouse' } } } };
+  if (DEMO === 'pro') d.pro = { weeks: [3900, 4100, 4050, 4380, 4520, 4700, 4812].map(function(n, i){ return { week: fr ? 'S' + (41 + i) : 'W' + (41 + i), listeners: n }; }),
+      songs: [{ name: 'Neva Die', streams: 18400 }, { name: 'Glaçon', streams: 9200 }, { name: 'Albi Nuit', streams: 3100 }, { name: 'Premier Son', under1000: true }],
+      byMonth: [1, 0, 1, 1, 0, 1].map(function(n, i){ return { month: String(i + 6), songs: n }; }),
+      rhythm: { daysSinceLast: 12, avgGapDays: 24 }, cities: [{ city: 'Toulouse', country: 'FR', listeners: 1240 }, { city: 'Paris', country: 'FR', listeners: 860 }, { city: 'Lyon', country: 'FR', listeners: 410 }] };
+  else d.locked = true;
+  return d;
+}
 function open(){
   if (!M.phone()) return false;
+  if (DEMO){ build(); show(true); render(demoData()); return true; }
   var st = W.StalakM2 && W.StalakM2.state();
   // never answered (or never opened): the questionnaire first
   if (!st || !(st.done || st.skipped)){ if (W.StalakM2){ W.StalakM2.onboarding({ from: 'stats' }); return true; } }
@@ -215,6 +263,7 @@ function sync(){
   if (u && store.get(WANT) && !M.view()){ store.set(WANT, null); open(); }
 }
 M.on(sync); setTimeout(sync, 600);
+if (DEMO) setTimeout(function(){ if (M.phone() && !M.view() && !on) open(); }, 900);
 $('#tabBar') && $('#tabBar').addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('[data-tab]'); if (b && b.dataset.tab !== 'stats' && on) show(false); }, true);
-W.StalakM5 = { open: open, after: after, close: function(){ show(false); }, on: function(){ return on; } };
+W.StalakM5 = { open: open, after: after, preview: preview, demo: function(){ return DEMO; }, close: function(){ show(false); }, on: function(){ return on; } };
 })();

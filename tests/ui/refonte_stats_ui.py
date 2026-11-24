@@ -101,8 +101,9 @@ def signed_out(b, PW, dev, lang):
     seen = ' '.join(lines)
     check(tag + ' : des étapes qui traînent : « %s », « %s »' % (t['tt1'], t['sp1']), t['tt1'] in seen and t['sp1'] in seen and seen.count(t['tt1']) >= 3, lines)
     pg.wait_for_timeout(900)
-    check(tag + ' : « %s », un aperçu flouté avec un cadenas, « %s »' % (t['ready'], t['create']), pg.locator('.ob-q.on h1').inner_text().strip() == t['ready'] and vis(pg, '.ob-lock .ob-pad')
-          and pg.locator('.ob-cta').inner_text().strip() == t['create'] and 'blur' in pg.evaluate("() => getComputedStyle(document.querySelector('.ob-fake')).filter"))
+    check(tag + ' : « %s », un aperçu flouté avec un cadenas, « %s »' % (t['ready'], t['create']), pg.locator('.ob-q.on h1').inner_text().strip() == t['ready'] and vis(pg, '.ob-lock .m5-pad')
+          and pg.locator('.ob-cta').inner_text().strip() == t['create'] and 'blur' in pg.evaluate("() => getComputedStyle(document.querySelector('.ob-lock .m5-bl')).filter"))
+    check(tag + ' : l’aperçu : 5 parties aux titres lisibles, leur contenu flouté', pg.evaluate("() => document.querySelectorAll('.ob-lock .m5-pv h3').length") == 5 and pg.evaluate("() => [...document.querySelectorAll('.ob-lock .m5-pv h3')].every(h => getComputedStyle(h).filter === 'none')"))
     shot(pg, 'stats-pret-%s' % lang)
     st = json.loads(pg.evaluate("localStorage.getItem('stalak:onb')"))
     check(tag + ' : les réponses gardées (genreOther, liens TikTok / YouTube)', st['a'].get('genreOther') == 'Afro trap' and st['a']['links'].get('tiktok') == '@tcrazy' and st['a']['links'].get('youtube') == 'youtube.com/@tcrazy', st['a'])
@@ -117,7 +118,7 @@ def signed_out(b, PW, dev, lang):
     check(tag + ' : sur le compte : genreOther, liens TikTok, Spotify, YouTube', pr.get('genreOther') == 'Afro trap' and pr.get('links', {}).get('tiktok') and pr.get('links', {}).get('spotify') and pr.get('links', {}).get('youtube'), pr)
     check(tag + ' : « %s » : le bilan gratuit (les phrases de Comptes)' % t['sum'], vis(pg, '.m5-card h2') and pg.locator('.m5-card h2').first.inner_text().strip() == t['sum'])
     check(tag + ' : compte gratuit : le reste flouté avec un cadenas et « %s » (aucun chiffre Pro envoyé)' % t['unlock'], vis(pg, '.m5-lock .m5-pad') and pg.locator('.m5-unlock').inner_text().strip() == t['unlock']
-          and 'blur' in pg.evaluate("() => getComputedStyle(document.querySelector('.m5-lock .m5-fakebox')).filter"))
+          and 'blur' in pg.evaluate("() => getComputedStyle(document.querySelector('.m5-lock .m5-bl')).filter"))
     shot(pg, 'stats-gratuit-%s' % lang)
     pg.locator('.m5-unlock').click(); pg.wait_for_timeout(900)
     check(tag + ' : « %s » ouvre le paywall' % t['unlock'], ev(pg, 'apView') == 'pro' and not vis(pg, '#m5Stats'))
@@ -151,16 +152,44 @@ def pro(b, PW, dev, lang):
     pg.locator('#tabBar [data-tab="stats"]').click(); pg.wait_for_selector('#m5Stats .m5-card', timeout=15000); pg.wait_for_timeout(1500)
     check(tag + ' : Pro : pas de cadenas, l’analyse complète (avec « %s » présenté comme un conseil)' % t['plan'], pg.locator('.m5-lock').count() == 0 and t['plan'] in pg.locator('#m5Stats').inner_text())
     shot(pg, 'stats-pro-%s' % lang)
+    check(tag + ' : rien ne dépasse, le « + » au-dessus', not pg.evaluate(OVER) and pg.evaluate(PLUS), pg.evaluate(OVER))
     pg.locator('#tabBar [data-tab="home"]').click(); pg.wait_for_timeout(600)
     check(tag + ' : un autre onglet ferme « Stats »', not vis(pg, '#m5Stats'))
     check(tag + ' : aucune erreur dans la page', not errs, errs)
     ctx.close()
 
 
+OVER = """() => { const W = innerWidth; return [...document.querySelectorAll('#m5Stats *')].filter(e => { const r = e.getBoundingClientRect(); return r.width && (r.right > W + 0.5 || r.left < -0.5); }).map(e => String(e.className)).slice(0, 4); }"""
+PLUS = """() => { const p = document.querySelector('.tab-plus'); const r = p.getBoundingClientRect(); const e = document.elementFromPoint(r.left + r.width / 2, r.top + 5); return p.contains(e); }"""
+
+
+def demo(b, PW, dev, lang, mode):
+    """the mock-ups (owner's feedback 24/11): ?demo=gratuit / ?demo=pro shows « Stats » signed in, example figures said so"""
+    tag = dev + ' ' + lang + ' (démo ' + mode + ')'; t = T[lang]
+    ctx = b.new_context(**PW.devices[dev], locale='fr-FR' if lang == 'fr' else 'en-US')
+    ctx.add_init_script("window.__stalakM4on = 1; window.__stalakM5on = 1; try { localStorage.setItem('stalak:tuto', '1'); } catch (e) {}")
+    pg = ctx.new_page(); errs = []; pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
+    pg.goto(BASE + ('/fr/' if lang == 'fr' else '/') + '?demo=' + mode, wait_until='load')
+    pg.wait_for_selector('#m5Stats .m5-card', timeout=15000); pg.wait_for_timeout(1500)
+    txt = pg.locator('#m5Stats').inner_text()
+    check(tag + ' : « Stats » s’ouvre seul, comme connecté, sans questionnaire', vis(pg, '#m5Stats') and pg.locator('#m2Onb').count() == 0 and pg.locator('#m5Stats h1').inner_text().strip() == t['title'])
+    check(tag + ' : les chiffres sont dits « exemple »', ('Exemple' if lang == 'fr' else 'Example') in pg.locator('.m5-demo').inner_text())
+    if mode == 'pro': check(tag + ' : la partie Pro en entier', pg.locator('.m5-lock').count() == 0 and t['plan'] in txt)
+    else: check(tag + ' : gratuit : bilan, puis la partie Pro floutée sous le cadenas', t['sum'] in txt and pg.locator('.m5-lock .m5-unlock').count() == 1 and pg.locator('.m5-lock .m5-pv h3').count() == 5)
+    check(tag + ' : rien ne dépasse à droite ni à gauche', not pg.evaluate(OVER), pg.evaluate(OVER))
+    check(tag + ' : le « + » de la barre du bas reste au-dessus de la page', pg.evaluate(PLUS))
+    pg.evaluate("() => { const s = document.getElementById('m5Stats'); s.scrollTop = s.scrollHeight; }"); pg.wait_for_timeout(400)
+    check(tag + ' : en bas de page aussi, le « + » au-dessus', pg.evaluate(PLUS))
+    shot(pg, 'stats-demo-%s-%s' % (mode, lang))
+    ctx.close(); pg2 = b.new_page(); pg2.goto(BASE + '/fr/', wait_until='load'); pg2.close()
+    check(tag + ' : aucune erreur dans la page', not errs, errs)
+
+
 def main():
     with sync_playwright() as p:
         b = p.chromium.launch()
-        for fn, a in ((signed_out, ('iPhone 12', 'fr')), (signed_out, ('iPhone SE', 'en')), (skipped, ('iPhone 12', 'fr')), (pro, ('iPhone 12', 'fr')), (pro, ('iPhone SE', 'en'))):
+        for fn, a in ((signed_out, ('iPhone 12', 'fr')), (signed_out, ('iPhone SE', 'en')), (skipped, ('iPhone 12', 'fr')), (pro, ('iPhone 12', 'fr')), (pro, ('iPhone SE', 'en')),
+                      (demo, ('iPhone 12', 'fr', 'gratuit')), (demo, ('iPhone SE', 'en', 'pro')), (demo, ('iPhone SE', 'fr', 'gratuit'))):
             try: fn(b, p, *a)
             except Exception as e: check(' '.join(str(x) for x in a) + ' : déroulé complet (' + fn.__name__ + ')', False, str(e)[:400])
         b.close()
