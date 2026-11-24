@@ -455,6 +455,9 @@ _ctag = '<script defer src="/assets/' + _cn + '"></script>'
 for _f in list(out.glob('*.html')) + list((out / 'fr').glob('*.html')) + list(out.glob('aide/**/*.html')) + list((out / 'fr').glob('aide/**/*.html')):
     _t = _f.read_text(encoding='utf-8')
     if '/assets/consent.' in _t or '</head>' not in _t: continue
+    # (24/11) the 2 app pages: no « defer » script in the HTML (audit 13/11, n° 1): consent.js joins the scripts the page adds
+    # right after its first picture, first of the list (async = false keeps the order: it is there before the app)
+    if 'var L=["' in _t: _f.write_text(_t.replace('var L=["', 'var L=["/assets/' + _cn + '", "', 1), encoding='utf-8'); continue
     _f.write_text(_t.replace('</head>', _ctag + '\n</head>', 1), encoding='utf-8')
 (out / 'robots.txt').write_text(f'User-agent: *\nAllow: /\nSitemap: {URL}/sitemap.xml\n', encoding='utf-8')
 today = datetime.date.today().isoformat()
