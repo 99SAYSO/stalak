@@ -1,7 +1,10 @@
 // Comptes, 23/11 (evening): the Paddle price of the « 1 € » offer, made from the dashboard (« Créer le prix … ») with the
 // server's own Paddle key, so nobody has to type a key. Paddle's « paid trial » (2026): a recurring price whose trial has its
 // own amount (trial_period.unit_price), card required. Made from the Stalak Pro MONTHLY price on sale (same product, same
-// amounts by country, same tax mode), with a 7-day trial at 1 USD, and 1 EUR in the euro countries.
+// amounts by country), with a 7-day trial at 1 USD, and 1 EUR in the euro countries.
+// 24/11 (owner): TAXES INCLUDED (tax_mode « internal »), so the button says « 1 € » and not « 1,20 € ». Paddle has one tax
+// mode per price (not one for the trial): the monthly amount after the 7 days is then taxes included too (7,99 $ all in,
+// where the Pro price on sale adds the tax of the country). A price already made the other way is switched (PATCH).
 // Once made, its id goes in wrangler.toml (PADDLE_PRICE_PRO_OFFER1) by the Chef de projet. Asking again gives the same price.
 import { HttpError } from './http.js';
 import { paddleApi } from './paddle.js';
@@ -19,7 +22,10 @@ export async function createOffer1Price(env) {
   // already made? (the same price again)
   const list = await paddleApi(env, 'GET', `/prices?product_id=${encodeURIComponent(p.product_id)}&status=active&per_page=100`);
   const found = ((list && list.data) || []).find((x) => x && x.custom_data && x.custom_data.stalak === MARK);
-  if (found) return { priceId: found.id, existed: true, environment };
+  if (found) {
+    if (found.tax_mode !== 'internal') await paddleApi(env, 'PATCH', `/prices/${encodeURIComponent(found.id)}`, { tax_mode: 'internal' });
+    return { priceId: found.id, existed: true, environment, taxIncluded: true };
+  }
   const cur = String((p.unit_price && p.unit_price.currency_code) || 'USD').toUpperCase();
   const body = {
     product_id: p.product_id,
@@ -33,11 +39,11 @@ export async function createOffer1Price(env) {
     },
     unit_price: p.unit_price,
     unit_price_overrides: p.unit_price_overrides || [],
-    tax_mode: p.tax_mode || 'account_setting',
+    tax_mode: 'internal',   // taxes included: 1 € is 1 € (owner, 24/11)
     quantity: p.quantity || { minimum: 1, maximum: 1 },
     custom_data: { stalak: MARK, plan: 'pro' },
   };
   const made = await paddleApi(env, 'POST', '/prices', body);
   if (!made || !made.data || !made.data.id) throw new HttpError(502, 'paddle_error', 'Paddle did not make the price.');
-  return { priceId: made.data.id, existed: false, environment };
+  return { priceId: made.data.id, existed: false, environment, taxIncluded: true };
 }

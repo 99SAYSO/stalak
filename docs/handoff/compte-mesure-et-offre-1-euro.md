@@ -1,4 +1,6 @@
 # Compte rendu — compte/mesure-et-offre-1-euro
+**Maquette : https://compte-mesure-et-offre-1-eur.stalak-site.pages.dev** (Cloudflare coupe le nom de la branche à 28 caractères : l'adresse avec « …-1-euro » donne 404 ; le déploiement, lui, a réussi).
+
 **Statut : PRÊT.** **Migration 0021** (réponses de l'onboarding et auditeurs) à lancer dans la console D1 avant la mise en ligne.
 - Mise à jour du 23/11, 23 h : identifiants Clarity (`zic7crm0mc`) et GA4 (`G-LY6HDYZKEK`) **mis dans `wrangler.toml`** : le bandeau apparaîtra dès la mise en ligne.
 - Ajoutés aussi : l'enregistrement des réponses de l'onboarding, et la saisie hebdomadaire des auditeurs (sections 8 et 9).
@@ -44,7 +46,8 @@ Demande : `docs/handoff/chef-mesure-offre-1-euro.md`, partie « Pour Comptes » 
   - Redemander donne le même prix.
 - **Sur l'écran** : le bouton « Exporter sans le logo » devient « **Retire le filigrane pour 1 €** ». Juste dessous, en clair (14 px, encre) : « **1 € aujourd'hui, puis 7,99 $/mois dans 7 jours. Annulable à tout moment.** »
   - Les deux montants sont ceux que Paddle prélèvera, **taxes comprises et dans la monnaie de la personne** (ex. « 1,20 € aujourd'hui, puis 9,59 $US/mois »). « 1 € » et « 7,99 $ » ne servent que si Paddle ne répond pas.
-  - **À décider (Juridique / propriétaire)** : si les prix Paddle sont hors taxes, le bouton dira « 1,20 € » en France. Pour afficher « 1 € » pile, il faut des prix TTC dans Paddle.
+  - **Décision du propriétaire du 24/11 : « 1 € » pile.** Le prix de l'offre est créé **taxes comprises** (`tax_mode: internal`) par le bouton du tableau de bord ; s'il avait déjà été créé hors taxes, le bouton le passe en taxes comprises. Le bouton écrit « 1 € » (et non « 1,00 € »).
+  - **Conséquence à connaître** : Paddle n'a qu'un mode de taxe par prix (pas un pour l'essai et un pour la suite). Après les 7 jours, ces abonnés paient donc **7,99 $/mois taxes comprises**, alors que le Pro en vente coûte 7,99 $ **plus** la taxe du pays (environ 17 % de moins encaissé en France sur ces abonnés). Le texte sous le bouton affiche ce vrai montant (lu sur le prix de l'offre, pas sur le Pro en vente). Autre possibilité si le propriétaire le préfère : garder le prix hors taxes et régler le montant de l'essai pays par pays (0,83 € en France, 0,84 € en Allemagne…) pour tomber sur 1 € ; c'est plus fragile (à refaire quand un taux change).
 - **Une fois par personne** : un seul essai par compte, gratuit **ou** à 1 € (`entitlements.offer1Eligible`). C'est vérifié encore par le serveur au webhook : une offre prise sans droit est arrêtée tout de suite, **le 1 € est remboursé**, et elle ne donne pas Pro. Remboursements : les mêmes (14 jours), le 1 € est un vrai paiement.
 - **Sans compte** : l'offre est montrée, et le bouton demande d'abord de se connecter. **Sans droit** : l'écran reste comme avant (essai gratuit si le compte y a droit, sinon Pro).
 - Après le paiement, le compte est Pro et l'écran propose de refaire la même vidéo sans filigrane (déjà là).

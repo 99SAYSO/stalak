@@ -8303,8 +8303,10 @@ function offer1On(){
   // signed out: shown (the right is checked once signed in, as for the free trial)
   const st = ACCT.state; return st.user ? !!(st.entitlements && st.entitlements.offer1Eligible === true) : true;
 }
+// « 1,00 € » / « €1.00 » → « 1 € » / « €1 » (owner, 24/11: the button says « 1 € » pile); other amounts stay as Paddle wrote them
+const of1Round = (s) => String(s || '').replace(/([.,])00(?=\D*$)/, '');
 function offer1Text(){
-  const a = plAmounts('pro'), p = of1Prices ? of1Prices.today : plMoney(1, 'EUR'), m = of1Prices ? of1Prices.then : plMoney(a.m, a.cur);
+  const a = plAmounts('pro'), p = of1Prices ? of1Round(of1Prices.today) : plMoney(1, 'EUR'), m = of1Prices ? of1Prices.then : plMoney(a.m, a.cur);
   return { go: _t('of1.go', { p }), terms: _t('of1.terms', { p, m }) };
 }
 function offer1Go(){

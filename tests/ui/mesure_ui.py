@@ -162,7 +162,7 @@ def offer_run(b, PW, base, site, lang, dev):
         pg.goto(base + ('' if lang == 'en' else 'fr/'), wait_until='load'); pg.wait_for_function('window.__ev && window.MP4Box', timeout=60000)
         pg.wait_for_function('() => __ev("!!plCfg && ACCT.state.user !== null")', timeout=20000); pg.wait_for_timeout(500)
         pg.evaluate('s => __ev(s)', "ACCT.checkout = (p, i, o) => { window.__co = [p, i, o || null]; return new Promise(() => {}); }")
-        if me == 'yes': pg.evaluate('s => __ev(s)', "ACCT.offerPrices = () => Promise.resolve({ today: " + json.dumps('1,20 €' if lang == 'fr' else '€1.20') + ", then: " + json.dumps('9,59 $US' if lang == 'fr' else '$9.59') + " })")
+        if me == 'yes': pg.evaluate('s => __ev(s)', "ACCT.offerPrices = () => Promise.resolve({ today: " + json.dumps('1,00 €' if lang == 'fr' else '€1.00') + ", then: " + json.dumps('7,99 $US' if lang == 'fr' else '$7.99') + " })")
         pg.set_input_files('#songFile', os.path.join(site, 'beat.wav')); pg.wait_for_function('() => __ev("!!S.song")', timeout=60000)
         pg.set_input_files('#takeFiles', [os.path.join(site, 'take1.mp4')])
         pg.wait_for_function('''() => __ev("S.takes.length === 1 && S.takes.every(t => t.status !== 'pending')")''', timeout=180000)
@@ -176,8 +176,10 @@ def offer_run(b, PW, base, site, lang, dev):
               gap: of.getBoundingClientRect().top - go.getBoundingClientRect().bottom, fs: parseFloat(getComputedStyle(of).fontSize), color: getComputedStyle(of).color,
               vw: innerWidth, sw: document.documentElement.scrollWidth }; }''')
         if me == 'yes':
-            check(tag + ' : écran de fin avec filigrane : « %s 1,20 € » (montant donné par Paddle)' % t['go'], r['goShown'] and r['go'].startswith(t['go']) and ('1,20 €' in r['go'] or '€1.20' in r['go']), r['go'])
-            check(tag + ' : juste dessous, lisible : le prix aujourd’hui, puis par mois dans 7 jours, annulable', r['ofShown'] and all(x in r['of'] for x in t['terms']) and ('9,59' in r['of'] or '9.59' in r['of']) and 0 <= r['gap'] <= 24 and r['fs'] >= 13.5, r)
+            # 24/11 (owner): « Retire le filigrane pour 1 € » pile (price taxes included in Paddle; « 1,00 € » written « 1 € »)
+            check(tag + ' : écran de fin avec filigrane : « %s 1 € » pile (montant donné par Paddle, taxes comprises)' % t['go'],
+                  r['goShown'] and r['go'] == (t['go'] + (' 1 €' if lang == 'fr' else ' €1')), r['go'])
+            check(tag + ' : juste dessous, lisible : le prix aujourd’hui, puis par mois dans 7 jours, annulable', r['ofShown'] and r['of'].startswith('1 € ' if lang == 'fr' else '€1 ') and all(x in r['of'] for x in t['terms']) and ('7,99' in r['of'] or '7.99' in r['of']) and 0 <= r['gap'] <= 24 and r['fs'] >= 13.5, r)
             check(tag + ' : pas de texte d’essai gratuit sur cet écran', not r['trShown'] and t['trial'] not in r['go'], r)
             if SHOTS:
                 pg.locator('#dvCmpGo').scroll_into_view_if_needed(); pg.wait_for_timeout(300)

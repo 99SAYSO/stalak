@@ -293,17 +293,33 @@
   }
 
   /* 23/11, the 1 € offer: the two amounts written next to the button, in the person's currency and taxes included, as Paddle
-     will charge them (Paddle.PricePreview): today (the 7 paid days) and then each month (the Pro monthly price). null when
-     Paddle does not answer (the page then writes its fixed text). */
+     will charge them (Paddle.PricePreview of the offer price): today (the 7 paid days) and then each month. 24/11: the offer
+     price is TAXES INCLUDED (owner: « 1 € » pile), so its monthly amount is its own (7,99 $ all in), not the Pro price on
+     sale (7,99 $ + the tax of the country): « then » is read from the offer price itself, in the currency of the preview.
+     null when Paddle does not answer (the page then writes its fixed text). */
   function offerPrices() {
     return config().then(function (cfg) {
-      var offer = cfg.paddle && cfg.paddle.prices && cfg.paddle.prices.proOffer1, month = cfg.paddle && cfg.paddle.prices && cfg.paddle.prices.pro && cfg.paddle.prices.pro.month;
-      if (!offer || !month) return null;
+      var offer = cfg.paddle && cfg.paddle.prices && cfg.paddle.prices.proOffer1;
+      if (!offer) return null;
       return loadPaddle(cfg).then(function (P) {
-        var one = function (id) { return P.PricePreview({ items: [{ priceId: id, quantity: 1 }] }).then(function (r) {
-          var li = r && r.data && r.data.details && r.data.details.lineItems && r.data.details.lineItems[0];
-          return li && li.formattedTotals ? li.formattedTotals.total : null; }); };
-        return Promise.all([one(offer), one(month)]).then(function (a) { return a[0] && a[1] ? { today: a[0], then: a[1] } : null; });
+        return P.PricePreview({ items: [{ priceId: offer, quantity: 1 }] }).then(function (r) {
+          var d = r && r.data, li = d && d.details && d.details.lineItems && d.details.lineItems[0];
+          if (!li || !li.formattedTotals) return null;
+          var cur = String(d.currencyCode || '').toUpperCase(), country = String((d.address && d.address.countryCode) || '').toUpperCase(), pr = li.price || {};
+          // the monthly amount of the offer price in that currency: the override of the person's country, else the base amount
+          var up = null;
+          (pr.unitPriceOverrides || []).forEach(function (o) {
+            if (!up && o && o.unitPrice && String(o.unitPrice.currencyCode).toUpperCase() === cur && (o.countryCodes || []).indexOf(country) >= 0) up = o.unitPrice;
+          });
+          if (!up && pr.unitPrice && String(pr.unitPrice.currencyCode).toUpperCase() === cur) up = pr.unitPrice;
+          if (!up || !/^\d+$/.test(String(up.amount))) return null;   // a currency Paddle converted itself: the page writes its fixed text
+          var then;
+          try {
+            var f = new Intl.NumberFormat(lang() === 'fr' ? 'fr-FR' : 'en-US', { style: 'currency', currency: cur });
+            then = f.format(Number(up.amount) / Math.pow(10, f.resolvedOptions().maximumFractionDigits));
+          } catch (e) { return null; }
+          return { today: li.formattedTotals.total, then: then };
+        });
       });
     }).catch(function () { return null; });
   }
