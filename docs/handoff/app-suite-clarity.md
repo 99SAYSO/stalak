@@ -1,4 +1,4 @@
-Statut : EN COURS (points 1 à 3 faits et testés ; série de non-régression avec celle des lots 3 et 4 ; maquette à montrer)
+Statut : PRÊT
 Branche : app/suite-clarity, partie de `app/refonte-mobile-lot4` (elle touche la caméra et l'éditeur du lot 3) : **elle contient
 les lots 3 et 4**. À fusionner après eux.
 Maquette de la branche : https://app-suite-clarity.stalak-site.pages.dev/fr/
@@ -44,3 +44,6 @@ Demande : `docs/handoff/chef-suite-clarity.md` (analyse `docs/audit/clarity-2026
 ## Fichiers
 `src/app.js` (temps restant, caméra sans image, poignée qui joue, choix rapides `segQuick`, barre d'export lissée `EXP_SM` et
 temps restant), `src/markup.html` (`#segQuick`, `#expEta`), `src/theme.css`, `tests/ui/suite_clarity_ui.py`.
+
+## Série de non-régression (24/11, soir)
+Correction trouvée par la série : sur iPhone SE, les choix rapides poussaient « Écouter le passage » hors de l'écran → ils sont maintenant placés sous ce bouton (téléphone seulement). Après correction : `refonte_mobile3_ui` 91/91, `suite_clarity_ui` 24/24. Le reste : `fin_export_ui` 98/98, `exports_rates_ui` 80/80, `fluidite_ui` 30/30, `mesure_ui` 114/114, `projet_local_ui` 52/52, `essai_pro_ui` 193/193, `filtres_ui` 106/106, `export_pub_ui` 22/22, `refonte_mobile4_ui` 69/69.
