@@ -68,7 +68,7 @@ function evt(name, detail){
   } catch(e){}
 }
 let progMax = 0;
-const progress = p => { $('#prog').hidden = p == null; if (p != null){ if (p === 0) progMax = 0; p = Math.max(progMax, p); progMax = p; if (S.exporting){ S.expP = p; expRunMark(); } $('#progBar').style.width = Math.round(p*100) + '%'; expUpdate(p); } };
+const progress = p => { $('#prog').hidden = p == null; if (p != null){ if (p === 0) progMax = 0; p = Math.max(progMax, p); progMax = p; if (S.exporting){ S.expP = p; expRunMark(); expUpdate(p); } $('#progBar').style.width = Math.round(p*100) + '%'; } };
 function rng(seed){ return () => { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed>>>15, 1|seed); t = t + Math.imul(t ^ t>>>7, 61|t) ^ t; return ((t ^ t>>>14)>>>0)/4294967296; }; }
 const pickW = (rnd, list) => { let x = rnd() * list.reduce((s,e)=>s+e[1],0); for (const e of list){ if ((x -= e[1]) <= 0) return e[0]; } return list[list.length-1][0]; };
 const yieldCh = new MessageChannel(), yieldQ = []; yieldCh.port1.onmessage = () => { const r = yieldQ.shift(); if (r) r(); };
@@ -122,6 +122,9 @@ const I18N_EN = /*@EN*/{
   "bars.12": "12 bars",
   "bars.end": "To the end",
   "wave.hint.reel": "Drag the handles to set exactly where the part starts and ends. Drag the red playhead to listen wherever you want.",
+  "seg.quick": "Quick picks for the part",
+  "seg.ref": "Chorus",
+  "seg.noRef": "No chorus found in this song",
   "wave.hint.clip": "Drag the handles to set exactly where the video starts and ends. Drag the red playhead to listen wherever you want.",
   "beat.sum": "Cuts not on the beat?",
   "beat.hint": "Tap <b>TAP</b> along with the music, starting on a strong beat.",
@@ -484,6 +487,8 @@ const I18N_EN = /*@EN*/{
   "cam.fail": "The camera won’t open ({why}). Try again, or film with your phone (song playing out loud) and import the videos.",
   "rec.blocked": "The browser blocked the sound. Try again.",
   "rec.ready": "● ready",
+  "rec.left": "● {s} s left",
+  "cam.black": "The camera shows nothing. Close the other apps that use it (FaceTime, Instagram…), then open it again. You can also import a video filmed with your camera app.",
   "rec.none": "The take wasn’t recorded.",
   "rec.file": "take",
   "rec.saved": "Take recorded. You can film another one.",
@@ -1203,6 +1208,8 @@ const I18N_EN = /*@EN*/{
   "exp.crashed": "Your last export stopped halfway (the browser closed the page: the device ran out of memory). The next one will be made lighter.",
   "exp.failMem": "This video is too heavy for this device’s memory. Pick a shorter part of the song, then try again.",
   "exps.stay": "Stay on Stalak until it’s done: the screen stays on.",
+  "exps.eta": "About {s} s left",
+  "exps.etaM": "About {m} min {s} left",
   "pack.mem": "Too heavy for this device’s memory: {n} videos of {s} s. Pick a pack of {nmax} videos, or a shorter part (up to {smax} s).",
   "pack.mem1": "Too heavy for this device’s memory: {n} videos of {s} s. Pick a shorter part of the song (up to {smax} s).",
   "exp.mem": "This video of {s} s is too long for this device’s memory: it could close the page halfway. Pick a part of up to {smax} s (step 1), or export it on a computer.",
@@ -1282,6 +1289,9 @@ const I18N_FR = /*@FR*/{
   "kind.hint.reel": "Une vidéo verticale 9:16, de tout le son ou de quelques mesures.",
   "kind.hint.clip": "Le morceau entier, en paysage 16:9 pour YouTube. Tu peux couper le début et la fin.",
   "wave.hint.reel": "Tire les poignées pour placer exactement le début et la fin du passage. Fais glisser le curseur rouge pour écouter où tu veux.",
+  "seg.quick": "Choix rapides du passage",
+  "seg.ref": "Refrain",
+  "seg.noRef": "Pas de refrain trouvé dans ce son",
   "wave.hint.clip": "Tire les poignées pour placer exactement le début et la fin du clip. Fais glisser le curseur rouge pour écouter où tu veux.",
   "exp.q": "Pleine qualité, à partir de tes vidéos originales.",
   "exp.q.clip": "Pleine qualité, à partir de tes vidéos originales. Un clip de quelques minutes prend quelques minutes à exporter.",
@@ -1472,6 +1482,8 @@ const I18N_FR = /*@FR*/{
   "cam.fail": "La caméra ne s’ouvre pas ({why}). Réessaie, ou filme avec ton téléphone (son en haut-parleur) et importe les vidéos.",
   "rec.blocked": "Le navigateur a bloqué le son. Réessaie.",
   "rec.ready": "● prêt",
+  "rec.left": "● encore {s} s",
+  "cam.black": "La caméra n’affiche rien. Ferme les autres applis qui l’utilisent (FaceTime, Instagram…), puis rouvre-la. Tu peux aussi importer une vidéo filmée avec l’appareil photo.",
   "rec.none": "La prise n’a pas été enregistrée.",
   "rec.file": "prise",
   "rec.saved": "Prise enregistrée. Tu peux en refaire une autre.",
@@ -1947,6 +1959,8 @@ const I18N_FR = /*@FR*/{
   "exp.crashed": "Ton dernier export s’est arrêté en route (le navigateur a fermé la page : l’appareil a manqué de mémoire). Le prochain sera fait plus léger.",
   "exp.failMem": "Cette vidéo est trop lourde pour la mémoire de cet appareil. Choisis un passage plus court du son, puis réessaie.",
   "exps.stay": "Reste sur Stalak jusqu’à la fin : l’écran reste allumé.",
+  "exps.eta": "Encore environ {s} s",
+  "exps.etaM": "Encore environ {m} min {s}",
   "pack.mem": "Trop lourd pour la mémoire de cet appareil : {n} vidéos de {s} s. Choisis un pack de {nmax} vidéos, ou un passage plus court (jusqu’à {smax} s).",
   "pack.mem1": "Trop lourd pour la mémoire de cet appareil : {n} vidéos de {s} s. Choisis un passage plus court du son (jusqu’à {smax} s).",
   "exp.mem": "Cette vidéo de {s} s est trop longue pour la mémoire de cet appareil : la page risquerait de se fermer en route. Choisis un passage de {smax} s au plus (étape 1), ou exporte-la sur un ordinateur.",
@@ -3236,6 +3250,7 @@ function gridHalf(){ const sg=S.song; sg.lyr = null; if (sg.bpm < 60) return; co
 function gridDouble(){ const sg=S.song; sg.lyr = null; if (sg.bpm > 200) return; const nb = []; for (let i=0;i<sg.beats.length;i++){ nb.push(sg.beats[i]); if (i+1<sg.beats.length) nb.push((sg.beats[i]+sg.beats[i+1])/2); } sg.beats = nb; sg.down = (sg.down*2) % 4; sg.bpm *= 2; S.startBar = S.startBar*2; padGrid(sg); }
 function gridShift(){ const sg=S.song; sg.lyr = null; sg.down = (sg.down + 1) % 4; padGrid(sg); }
 function updateSegment(){
+  try { segQuickUi(); } catch(e){}
   const sg = S.song; S.startBar = Math.max(0, Math.min(S.startBar, maxStart()));
   const nb = barsInSnippet(), b0 = sg.down + 4*S.startBar, b1 = Math.min(sg.beats.length-1, b0 + 4*nb);
   S.segStart = Math.max(0, sg.beats[b0]); S.segEnd = Math.min(sg.duration, sg.beats[b1]);
@@ -6842,7 +6857,7 @@ function finish(){ const hook = !!endHook; stop(true); if (!hook) showFrame(S.se
 
 /* ---------- recording on the site ---------- */
 let recStream = null, recRec = null, recTimer = 0, recStopReq = false;
-let camFacing = 'user';
+let camFacing = 'user', camWatch = 0;
 // (23/11, the owner: « un flash dans la caméra : oui ») the torch of the phone when the camera has one (back camera, Android
 // mostly); otherwise (front camera, iPhone) a bright white frame round the picture lights the face. Kept for the next takes
 let camFlash = store.get('stalak:camFlash') === 1;
@@ -6917,6 +6932,8 @@ async function openCamera(){
     return;
   }
   camShow(); recUi('idle'); recGoUi();
+  // (Clarity 24/11) a camera that is open but shows nothing (used by another app, iPhone in low power): said plainly after 4 s
+  clearTimeout(camWatch); camWatch = setTimeout(() => { const v = $('#recVideo'); if (recStream && v && !v.videoWidth){ diag('caméra : aucune image après 4 s'); say('cam.black'); } }, 4000);
   $('#recPanel').hidden = false; $('#takeChoices').hidden = true; status('');
 }
 function closeCamera(){
@@ -7016,7 +7033,7 @@ function startTake(){
       $('#recCount').textContent = '';
       // song time minus video time, measured all along the take
       if (recRec.state === 'recording' && st > from + 0.25) samples.push(st - (performance.now() - recT0) / 1000);
-      $('#recTime').textContent = st < S.segStart ? _t('rec.ready') : '● ' + (st - S.segStart).toFixed(1) + ' s';
+      $('#recTime').textContent = st < S.segStart ? _t('rec.ready') : _t('rec.left', { s: Math.max(0, Math.ceil(S.segEnd - st)) });   // (Clarity 24/11) the time left; the take stops by itself at the end of the passage
     }
     if (!recStopReq && !player.ended && !(st != null && st >= endAt)){ recTimer = requestAnimationFrame(tick); return; }
     player.pause(); $('#recCount').textContent = '';
@@ -7904,6 +7921,28 @@ function expNearAt(){ return S.done ? '#dvSlot' : '#expNear'; }
 function endExport(ok){ wakeOff(); expRunClear(); S.expX = null; S.realtime = false; expClose(ok === undefined ? !$('#result').hidden : !!ok);   /* (7/11) ok: this export made its video (a failed one after a good one must not show the end screen of the old video) */ S.exporting = false; proOfferUi(); if (RES !== PREV) setRes(PREV); if (S.rebuildLater){ S.rebuildLater = false; setTimeout(() => rebuild(false), 0); } specCache.clear(); S.takes.forEach(t => { if (t.orig && t.el !== t.orig) t.orig.remove(); }); S.takes.forEach(t => { if (t.proxyWaiting) applyProxy(t); }); setBusy(false); progress(null); $('#cancelBtn').hidden = true; showFrame(cursorIn()); }
 /* the export screen: the igloo gets one more block as the video advances; done, the mascot waves and the screen goes */
 let expBlocks = null, expShown = -1, expT = 0;
+/* (Clarity 24/11: a visitor tapped everywhere while the export went from 16 to 17 % in 5 s) what is shown moves on smoothly and
+   steadily: the real progress is the target, the bar glides to it and keeps creeping at the pace measured so far (never past
+   the real value by more than a little, never to 100 % before the end); the time left comes from that pace */
+const EXP_SM = { p: 0, target: 0, raf: 0, hist: [], eta: null };
+function expTick(){
+  const sm = EXP_SM; if ($('#expScreen').hidden || sm.target >= 1){ sm.raf = 0; if (sm.target >= 1) expDraw(1); return; }
+  const now = performance.now(), h = sm.hist;
+  // the measured pace (fraction a second) over the last 12 s
+  while (h.length > 2 && now - h[0][0] > 12000) h.shift();
+  const rate = h.length > 1 ? Math.max(0, (h[h.length-1][1] - h[0][1]) / Math.max(0.5, (h[h.length-1][0] - h[0][0]) / 1000)) : 0;
+  // below the real value: it glides to it; above: it creeps on more and more slowly towards a ceiling a little ahead
+  const ceil = Math.min(0.985, sm.target + Math.min(0.035, Math.max(0.008, rate * 3)));
+  if (sm.p < sm.target) sm.p += Math.max((sm.target - sm.p) * 0.12, 0.0004);
+  else if (ceil > sm.p) sm.p += (ceil - sm.p) * 0.015;
+  expDraw(sm.p);
+  // the time left: after 3 s and a few per cent, rounded (5 s steps over 20 s), shown only when the pace is known
+  const el = $('#expEta');
+  if (el){ const left = rate > 0 && now - expT > 3000 && sm.target > 0.03 ? (1 - sm.target) / rate : null;
+    if (left != null && isFinite(left) && left < 3600){ const r = left > 20 ? Math.ceil(left / 5) * 5 : Math.ceil(left), txt = r >= 60 ? _t('exps.etaM', { m: Math.floor(r / 60), s: String(r % 60).padStart(2, '0') }) : _t('exps.eta', { s: Math.max(1, r) });
+      if (el.textContent !== txt) el.textContent = txt; el.hidden = false; } else el.hidden = true; }
+  sm.raf = requestAnimationFrame(expTick);
+}
 function expBuild(){
   if (expBlocks) return; const NS = 'http://www.w3.org/2000/svg', gI = $('#expIgloo'); expBlocks = [];
   // a dome of ice blocks, row by row from the floe up, centred on x 420, base y 210, radius 112
@@ -7968,7 +8007,7 @@ document.addEventListener('keydown', e => {
   else if (!e.shiftKey && i === f.length - 1){ e.preventDefault(); f[0].focus(); }
 }, true);
 function expOpen(){
-  expBuild(); expShown = -1; expT = performance.now();
+  expBuild(); expShown = -1; expT = performance.now(); EXP_SM.p = 0; EXP_SM.target = 0; EXP_SM.hist = []; $('#expEta').hidden = true;
   expBlocks.forEach(b => b.classList.remove('on')); $('#expDoor').classList.remove('on'); $('#expFlag').classList.remove('on');
   $('#expRetry').hidden = true; $('#expMsg').hidden = true; setT('#expMsg', null); const sc = $('#expScreen'); sc.classList.remove('done'); sc.hidden = false; modalOn(true); expUpdate(0); $('#expCancel').disabled = false;
   $('#expTitle').textContent = S.packN > 1 ? _t('exps.many', { n: S.packN }) : _t('exps.one');
@@ -7978,11 +8017,20 @@ function expOpen(){
 function expUpdate(p){
   if (!expBlocks || $('#expScreen').hidden) return;
   p = Math.max(0, Math.min(1, p || 0));
+  const sm = EXP_SM, now = performance.now();
+  if (p < sm.target - 0.2 || !sm.hist.length){ sm.p = p; sm.hist = []; }   // a new export (or a new try)
+  sm.target = p; sm.hist.push([now, p]);
+  if (p >= 1){ sm.p = 1; expDraw(1); return; }
+  if (!sm.raf) sm.raf = requestAnimationFrame(expTick);
+}
+function expDraw(p){
   const k = Math.min(expBlocks.length, Math.floor(p * (expBlocks.length + 1)));
   if (k !== expShown){ for (let i=0; i<expBlocks.length; i++) expBlocks[i].classList.toggle('on', i < k); expShown = k; }
   $('#expDoor').classList.toggle('on', p >= 0.95);
   $('#expPct').textContent = pctT(Math.floor(p * 100)); $('#expBar').style.width = (p * 100).toFixed(1) + '%';
-  // (22/11) the steps: the files ready (the first picture made), the pictures, the sound put with them, the file written
+  // (22/11) the steps: the files ready (the first picture made), the pictures, the sound put with them, the file written;
+  // shown from the real progress, not the smoothed one
+  p = EXP_SM.target;
   const xs = S.expX, si = xs && xs.st === 'file' ? 3 : p >= 0.92 ? 2 : p > 0 ? 1 : 0;
   expSteps(si);
 }
@@ -8878,7 +8926,28 @@ const waveUp = e => {
   if (d.side === 'ph'){ if (e.type !== 'pointercancel') listenStart(S.listenAt); return; }
   if (d.moved) rebuild(false);
   S.listenAt = null; waveHead();
+  // (Clarity 24/11) the handle let go: the passage is heard from there (the end handle: its last 3 seconds)
+  if (d.moved && e.type !== 'pointercancel' && (d.side === 'l' || d.side === 'r')) listenStart(d.side === 'l' ? S.segStart : Math.max(S.segStart, S.segEnd - 3), true);
 };
+/* (Clarity 24/11) quick choices of the passage: 15 s or 30 s from its start, or the first chorus found in the song */
+function segChorus(){
+  const m = S.song && S.song.music, secs = m && m.sections && m.sections.length ? m.sections : [];
+  return secs.find(sc => sc.kind === 'refrain' && sc.t1 - sc.t0 >= 6) || null;
+}
+function segQuick(k){
+  if (!S.song || S.exporting) return;
+  const sg = S.song; let a = S.segStart, b;
+  if (k === 'ref'){ const c = segChorus(); if (!c) return; a = c.t0; b = Math.min(c.t1, c.t0 + 30); }
+  else { const len = +k; if (a + len > sg.duration) a = Math.max(0, sg.duration - len); b = Math.min(sg.duration, a + len); }
+  stop(true); S.segA = a; S.segB = b; segBars(a, b); S.locks = []; updateSegment(); renderWave(); rebuild(false);
+  segQuickUi(); listenStart(S.segStart, true);
+}
+function segQuickUi(){
+  const box = $('#segQuick'); if (!box) return; box.hidden = !S.song || isClip();
+  const r = $('#segQuick [data-q="ref"]'); if (r){ const c = segChorus(); r.disabled = !c; r.title = c ? '' : _t('seg.noRef'); }
+  $$('#segQuick button').forEach(b => { const on = b.dataset.q === 'ref' ? (() => { const c = segChorus(); return !!c && Math.abs(S.segStart - c.t0) < 0.05; })() : Math.abs((S.segEnd - S.segStart) - +b.dataset.q) < 0.05; b.setAttribute('aria-pressed', String(on)); });
+}
+$$('#segQuick button').forEach(b => { b.onclick = () => segQuick(b.dataset.q); });
 $('#waveBox').addEventListener('pointerup', waveUp); $('#waveBox').addEventListener('pointercancel', waveUp);
 /* « Écouter le passage »: the passage chosen, from its start, and it stops at its end */
 $('#segPlay').onclick = () => { if (!S.song) return; if (S.playing && listenSeg){ stop(true); return; } listenStart(S.segStart, true); };

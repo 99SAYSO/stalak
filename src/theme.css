@@ -1430,3 +1430,10 @@ body.isdone > .bands{display:none}
 #apBuy .tr-terms{margin:12px 0 0;font-size:13px}   /* below the button's hard shadow */
 .btn.primary:not(.sm) + .tr-terms{margin-top:18px}   /* under the icicles of a primary button */
 .doneview #dvTrial{order:3;margin-top:-6px}
+/* (Clarity 24/11) the export: the time left under the bar; the steps are a plain list, not cards that look like buttons; the quick
+   choices of the passage */
+.expeta{margin:8px 0 0;text-align:center;font:600 14px/1.3 var(--body);color:var(--muted)}
+#expScreen .xsteps{border:0;background:none;box-shadow:none;padding:4px 0}
+#expScreen .xsteps li{cursor:default}
+.segquick{display:flex;width:max-content;max-width:100%;margin:10px 0 0}
+.segquick button{min-width:64px}
