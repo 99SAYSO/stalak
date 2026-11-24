@@ -2277,6 +2277,28 @@ body.ttk-on{overflow:hidden}
     html:not(.medit) .hero-go .hero-song{min-height:58px}
     .mh-new{min-height:150px}
   }
+
+  /* ===== the background of the screens with the bottom bar (owner, 24/11 21 h 58: « je préfère le A », docs/handoff/chef-fond-degrade.md):
+     night blue at the top → light blue at the bottom, a soft white halo behind the mascot, white flakes; the texts set on it go white
+     (titles with a thick ink outline). The editor, the camera, the paywall, sign-in and the computer do not change. ===== */
+  html:root:not(.medit){--skyA:linear-gradient(180deg,#0b2f73 0%,#1f6fd6 48%,#6fb6ff 80%,#cfe8ff 100%);
+    --titleA:#fff;
+    background:radial-gradient(70vw 34vh at 50% 30%,rgba(255,255,255,.35),transparent 70%) fixed,var(--skyA) fixed;background-color:#1f6fd6;
+    --flakes:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cg fill='%23ffffff'%3E%3Ccircle cx='18' cy='22' r='3' opacity='.9'/%3E%3Ccircle cx='96' cy='12' r='2' opacity='.6'/%3E%3Ccircle cx='170' cy='40' r='3.5' opacity='.85'/%3E%3Ccircle cx='222' cy='96' r='2' opacity='.6'/%3E%3Ccircle cx='60' cy='88' r='2.5' opacity='.7'/%3E%3Ccircle cx='132' cy='120' r='3' opacity='.85'/%3E%3Ccircle cx='28' cy='160' r='2' opacity='.6'/%3E%3Ccircle cx='196' cy='176' r='3' opacity='.8'/%3E%3Ccircle cx='100' cy='204' r='2.5' opacity='.7'/%3E%3Ccircle cx='150' cy='226' r='1.6' opacity='.5'/%3E%3C/g%3E%3C/svg%3E");}
+  /* the pages with the bottom bar that cover the home screen (Montages, Compte): the same sky, without the halo */
+  html.mpage .acctpage{background:var(--skyA) fixed;background-color:#1f6fd6}
+  html.mpage.m2-prof .acctpage{background:var(--skyA) fixed}
+  html.mpage .m2-pf .m2-scene{background:transparent}
+  html.mpage .m2-pf .m2-mound{display:none}
+  .m2-ptr{background:radial-gradient(300px 260px at 50% 46%,#3d7fe0 0,#1657b3 55%,#0b2f73 100%)}
+  /* the texts set on the sky: titles white with a thick ink outline (drawn under the letters, not stacked shadows), sentences white,
+     links white. The white cards, the buttons and the pills keep their colours. */
+  html:not(.medit) .hero-h1,html:not(.medit) #mhHiT,html.mpage .m2-name,html.mpage #apAccT{color:#fff;-webkit-text-stroke:7px #0a0d14;paint-order:stroke fill;text-shadow:0 3px 0 #0a0d14}
+  html:not(.medit) .hero-s.hero-s2,html:not(.medit) #mhHi p,html.mpage .m2-mail{color:rgba(255,255,255,.9)}
+  html:not(.medit) .hero-demo > span{color:#fff;text-decoration-color:#fff}
+  html:not(.medit) .status{color:#fff}
+  html.mpage.m2-prof.m2-set #apAccT{color:#fff;text-shadow:0 3px 0 #0a0d14}
+  html.mpage .m2-out{padding:12px 22px;border:3px solid #0a0d14;border-radius:16px;background:#fff;box-shadow:0 4px 0 #0a0d14}
 }
 
 /* ===== the opening « le glaçon » (stalak.app, phones, once per session; src/splash.js) ===== */
@@ -2315,7 +2337,7 @@ html.splash-on #splash{display:block}
 </style>
 </head>
 <body>
-<script>window.STALAK_M2="/assets/mobile2.415afb57d0.js";window.STALAK_M3="/assets/mobile3.4d94ad2048.js";window.STALAK_M4="/assets/mobile4.6890c019a9.js";window.STALAK_M5="/assets/mobile5.086e618f85.js";(function(){var d=document,W=window,G=W.STALAK_GSAP="/vendor/gsap-3.15.0.min.js";try{if(!W.matchMedia||!matchMedia('(max-width:899px)').matches||matchMedia('(prefers-reduced-motion: reduce)').matches)return;if(navigator.webdriver&&!W.__stalakSplash)return;if(location.hash&&location.hash.length>1)return;if(sessionStorage.getItem('stalak:splash')||sessionStorage.getItem('stalak:openProject'))return;sessionStorage.setItem('stalak:splash','1');}catch(e){return;}var sp=d.createElement('div'),r=d.documentElement;sp.id='splash';sp.setAttribute('aria-hidden','true');sp.innerHTML='<div class="sp-curtain"><div class="sp-bg"></div></div>';r.classList.add('splash-on');d.body.insertBefore(sp,d.body.firstChild);W.__stalakSplashT=Date.now();function bye(){if(W.__stalakSplashGo||!sp.parentNode)return;sp.style.transition='opacity .3s ease-out';sp.style.opacity='0';setTimeout(function(){r.classList.remove('splash-on');if(sp.parentNode)sp.parentNode.removeChild(sp);W.__stalakSplashDone=true;},320);}[G,"/assets/splash.5480163793.js"].forEach(function(u){var s=d.createElement('script');s.src=u;s.async=false;s.onerror=bye;d.head.appendChild(s);});setTimeout(bye,3000);})();</script>
+<script>window.STALAK_M2="/assets/mobile2.415afb57d0.js";window.STALAK_M3="/assets/mobile3.4d94ad2048.js";window.STALAK_M4="/assets/mobile4.6890c019a9.js";window.STALAK_M5="/assets/mobile5.59c8fb7bb0.js";(function(){var d=document,W=window,G=W.STALAK_GSAP="/vendor/gsap-3.15.0.min.js";try{if(!W.matchMedia||!matchMedia('(max-width:899px)').matches||matchMedia('(prefers-reduced-motion: reduce)').matches)return;if(navigator.webdriver&&!W.__stalakSplash)return;if(location.hash&&location.hash.length>1)return;if(sessionStorage.getItem('stalak:splash')||sessionStorage.getItem('stalak:openProject'))return;sessionStorage.setItem('stalak:splash','1');}catch(e){return;}var sp=d.createElement('div'),r=d.documentElement;sp.id='splash';sp.setAttribute('aria-hidden','true');sp.innerHTML='<div class="sp-curtain"><div class="sp-bg"></div></div>';r.classList.add('splash-on');d.body.insertBefore(sp,d.body.firstChild);W.__stalakSplashT=Date.now();function bye(){if(W.__stalakSplashGo||!sp.parentNode)return;sp.style.transition='opacity .3s ease-out';sp.style.opacity='0';setTimeout(function(){r.classList.remove('splash-on');if(sp.parentNode)sp.parentNode.removeChild(sp);W.__stalakSplashDone=true;},320);}[G,"/assets/splash.5480163793.js"].forEach(function(u){var s=d.createElement('script');s.src=u;s.async=false;s.onerror=bye;d.head.appendChild(s);});setTimeout(bye,3000);})();</script>
 <div class="frhint" id="frHint" lang="fr" hidden><a href="/fr/" id="frHintGo">Version française <span aria-hidden="true">→</span></a><button type="button" id="frHintX" aria-label="Fermer">×</button></div>
 <script>/* Marketing & croissance: « Version française → » on the English home, for a phone set to French */
 (function(){var b=document.getElementById('frHint');if(!b)return;

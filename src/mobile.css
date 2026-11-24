@@ -146,6 +146,28 @@
     html:not(.medit) .hero-go .hero-song{min-height:58px}
     .mh-new{min-height:150px}
   }
+
+  /* ===== the background of the screens with the bottom bar (owner, 24/11 21 h 58: « je préfère le A », docs/handoff/chef-fond-degrade.md):
+     night blue at the top → light blue at the bottom, a soft white halo behind the mascot, white flakes; the texts set on it go white
+     (titles with a thick ink outline). The editor, the camera, the paywall, sign-in and the computer do not change. ===== */
+  html:root:not(.medit){--skyA:linear-gradient(180deg,#0b2f73 0%,#1f6fd6 48%,#6fb6ff 80%,#cfe8ff 100%);
+    --titleA:#fff;
+    background:radial-gradient(70vw 34vh at 50% 30%,rgba(255,255,255,.35),transparent 70%) fixed,var(--skyA) fixed;background-color:#1f6fd6;
+    --flakes:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'%3E%3Cg fill='%23ffffff'%3E%3Ccircle cx='18' cy='22' r='3' opacity='.9'/%3E%3Ccircle cx='96' cy='12' r='2' opacity='.6'/%3E%3Ccircle cx='170' cy='40' r='3.5' opacity='.85'/%3E%3Ccircle cx='222' cy='96' r='2' opacity='.6'/%3E%3Ccircle cx='60' cy='88' r='2.5' opacity='.7'/%3E%3Ccircle cx='132' cy='120' r='3' opacity='.85'/%3E%3Ccircle cx='28' cy='160' r='2' opacity='.6'/%3E%3Ccircle cx='196' cy='176' r='3' opacity='.8'/%3E%3Ccircle cx='100' cy='204' r='2.5' opacity='.7'/%3E%3Ccircle cx='150' cy='226' r='1.6' opacity='.5'/%3E%3C/g%3E%3C/svg%3E");}
+  /* the pages with the bottom bar that cover the home screen (Montages, Compte): the same sky, without the halo */
+  html.mpage .acctpage{background:var(--skyA) fixed;background-color:#1f6fd6}
+  html.mpage.m2-prof .acctpage{background:var(--skyA) fixed}
+  html.mpage .m2-pf .m2-scene{background:transparent}
+  html.mpage .m2-pf .m2-mound{display:none}
+  .m2-ptr{background:radial-gradient(300px 260px at 50% 46%,#3d7fe0 0,#1657b3 55%,#0b2f73 100%)}
+  /* the texts set on the sky: titles white with a thick ink outline (drawn under the letters, not stacked shadows), sentences white,
+     links white. The white cards, the buttons and the pills keep their colours. */
+  html:not(.medit) .hero-h1,html:not(.medit) #mhHiT,html.mpage .m2-name,html.mpage #apAccT{color:#fff;-webkit-text-stroke:7px #0a0d14;paint-order:stroke fill;text-shadow:0 3px 0 #0a0d14}
+  html:not(.medit) .hero-s.hero-s2,html:not(.medit) #mhHi p,html.mpage .m2-mail{color:rgba(255,255,255,.9)}
+  html:not(.medit) .hero-demo > span{color:#fff;text-decoration-color:#fff}
+  html:not(.medit) .status{color:#fff}
+  html.mpage.m2-prof.m2-set #apAccT{color:#fff;text-shadow:0 3px 0 #0a0d14}
+  html.mpage .m2-out{padding:12px 22px;border:3px solid #0a0d14;border-radius:16px;background:#fff;box-shadow:0 4px 0 #0a0d14}
 }
 
 /* ===== the opening « le glaçon » (stalak.app, phones, once per session; src/splash.js) ===== */
