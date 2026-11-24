@@ -25,10 +25,12 @@ from playwright.sync_api import sync_playwright
 BASE = sys.argv[1].rstrip('/')
 SHOTS = sys.argv[2] if len(sys.argv) > 2 else None
 results = []
-T = {'fr': {'in': 'Connecte-toi à Stalak', 'up': 'Crée ton compte Stalak', 'cont': 'Continuer', 'plan': 'Ma formule', 'free': 'Gratuit', 'out': 'Se déconnecter', 'gal': 'Mes montages',
+T = {'fr': {'in': 'Connecte-toi pour garder tes montages', 'inS': 'Retrouve-les sur tous tes appareils.', 'hint': 'On s’en sert pour suivre tes écoutes', 'ln': 'Rap et drill : coupes calées sur des tempos rapides',
+            'plan5': ['Rap et drill, sur TikTok et Reels', 'De 100-1 000 à 10 000 auditeurs par mois', '3 vidéos par semaine, coupées sur le rythme', 'Tes auditeurs suivis chaque semaine dans « Stats »', 'Ta 1re vidéo en 1 minute'], 'up': 'Crée ton compte Stalak', 'cont': 'Continuer', 'plan': 'Ma formule', 'free': 'Gratuit', 'out': 'Se déconnecter', 'gal': 'Mes montages',
             'legal': ['/fr/conditions', '/fr/confidentialite', '/fr/remboursement'], 'q0': 'Ton nom d’artiste ?', 'skip': 'Passer', 'go': 'Faire ma 1re vidéo', 'ready': 'Ton plan est prêt, T-Crazy !',
             'readyN': 'Ton plan est prêt !', 'from': '100 à 1 000', 'to': '10 000', 'who': 'Rap et Drill, sur TikTok et Reels', 'temps': 'Stalak coupe tes prises sur le rythme à ta place', 'aud': 'auditeurs'},
-     'en': {'in': 'Sign in to Stalak', 'up': 'Create your Stalak account', 'cont': 'Continue', 'plan': 'My plan', 'free': 'Free', 'out': 'Sign out', 'gal': 'My edits',
+     'en': {'in': 'Sign in to keep your edits', 'inS': 'Find them on all your devices.', 'hint': 'We use them to track your streams', 'ln': 'Rap and drill: cuts set to fast tempos',
+            'plan5': ['Rap and drill, on TikTok and Reels', 'From 100-1,000 to 10,000 monthly listeners', '3 videos a week, cut to the beat', 'Your listeners tracked every week in “Stats”', 'Your 1st video in 1 minute'], 'up': 'Create your Stalak account', 'cont': 'Continue', 'plan': 'My plan', 'free': 'Free', 'out': 'Sign out', 'gal': 'My edits',
             'legal': ['/terms', '/privacy', '/refunds'], 'q0': 'Your artist name?', 'skip': 'Skip', 'go': 'Make my first video', 'ready': 'Your plan is ready, T-Crazy!',
             'readyN': 'Your plan is ready!', 'from': '100 to 1,000', 'to': '10,000', 'who': 'Rap and Drill, on TikTok and Reels', 'temps': 'Stalak cuts your takes to the beat for you', 'aud': 'listeners'}}
 
@@ -77,8 +79,8 @@ def login(b, PW, dev, lang):
     pg.tap('#tabBar [data-tab=account]'); pg.wait_for_selector('#apLogin:not([hidden]) .m2-scene', timeout=8000); pg.wait_for_timeout(1100)
     check(tag + ' : plein écran, la barre du bas est partie', not vis(pg, '#tabBar') and pg.evaluate("document.documentElement.classList.contains('m2-login')"))
     title = pg.locator('.m2-lt').inner_text().replace('\n', ' ').strip()
-    check(tag + ' : la scène (mascotte, bulle) et le titre « %s »' % t['in'], vis(pg, '.m2-masc') and vis(pg, '.m2-bub') and title == t['in'] and len(pg.locator('.m2-bub').inner_text().strip()) > 3, title)
-    check(tag + ' : la phrase qui dit vrai sur le compte reste (pas de promesse de sauvegarde gratuite)', vis(pg, '.ap-noacct'))
+    check(tag + ' : la scène (mascotte, bulle) et le titre « %s »' % t['in'], vis(pg, '.m2-masc') and vis(pg, '.m2-bub') and title == t['in'] and pg.locator('.m2-ls').inner_text().strip() == t['inS'] and len(pg.locator('.m2-bub').inner_text().strip()) > 3, title)
+    check(tag + ' : sous le titre, la phrase de la démo validée, et elle seule', vis(pg, '.m2-ls') and not vis(pg, '.ap-noacct'))
     check(tag + ' : l’e-mail d’abord : un champ, « %s », pas encore de mot de passe' % t['cont'], vis(pg, '#apInMail') and vis(pg, '#apInF .m2-cont') and not vis(pg, '#apInPw') and not vis(pg, '#apInF .ap-go')
           and pg.locator('#apInF .m2-cont').inner_text().strip() == t['cont'])
     bb = pg.locator('#apInF .m2-cont').bounding_box(); cs = pg.evaluate("() => { const c = getComputedStyle(document.querySelector('#apInF .m2-cont')); return [c.backgroundColor, c.borderTopColor, c.boxShadow]; }")
@@ -210,8 +212,8 @@ def onboarding(b, PW, dev, lang, calm=False):
     check(tag + ' : plusieurs choix possibles (2 cochés)', pg.locator('.ob-q.on .ob-op[aria-pressed=true]').count() == 2)
     shot(pg, 'onboarding-1-%s-%s' % (dev.replace(' ', ''), lang))
     i = nxt(); pg.tap('.ob-q.on [data-v=oui]'); i = nxt()
-    check(tag + ' : déjà sur les plateformes : les liens (facultatifs, et la phrase dit qu’on ne lit pas ses écoutes)', i == 3 and pg.locator('.ob-q.on .ob-in').count() == 4
-          and ('ne lit pas' in pg.locator('.ob-q.on .ob-hint').inner_text() or 'do not read' in pg.locator('.ob-q.on .ob-hint').inner_text()), i)
+    check(tag + ' : déjà sur les plateformes : les liens, avec la phrase de la démo validée', i == 3 and pg.locator('.ob-q.on .ob-in').count() == 4
+          and pg.locator('.ob-q.on .ob-hint').inner_text().strip() == t['hint'], pg.locator('.ob-q.on .ob-hint').inner_text())
     pg.fill('.ob-in[data-l=spotify] input', 'youtube.com/watch?v=abc'); pg.tap('.ob-cta'); pg.wait_for_timeout(500)
     bad = pg.locator('.ob-in[data-l=spotify] .ob-bad').inner_text().strip() if vis(pg, '.ob-in[data-l=spotify] .ob-bad') else ''
     check(tag + ' : un lien d’un autre site : on reste sur la question, et c’est écrit sous le champ', int(pg.locator('.ob-q.on').get_attribute('data-i')) == 3 and 'Spotify' in bad, bad)
@@ -230,12 +232,11 @@ def onboarding(b, PW, dev, lang, calm=False):
         pg.wait_for_selector('.ob-load.on', timeout=4000); pg.wait_for_timeout(700)
         lines = pg.evaluate("() => [...document.querySelectorAll('.ob-ln')].map(l => l.innerText.trim())")
         check(tag + ' : chargement : 4 phrases, toutes tirées de ses réponses (auditeurs, genres, 9:16 pour ses réseaux, objectif)',
-              len(lines) == 4 and t['from'].lower() in lines[0].lower() and 'Rap' in lines[1] and '9:16' in lines[2] and 'TikTok' in lines[2] and t['to'] in lines[3], lines)
+              len(lines) == 4 and t['from'].lower() in lines[0].lower() and lines[1].split('\n')[-1] == t['ln'] and '9:16' in lines[2] and 'TikTok' in lines[2] and t['to'] in lines[3], lines)
         shot(pg, 'onboarding-chargement-%s-%s' % (dev.replace(' ', ''), lang))
     pg.wait_for_selector('.ob-plan', timeout=15000); pg.wait_for_timeout(W + 600)
     plan = pg.evaluate("() => [...document.querySelectorAll('.ob-plan div > span')].map(l => l.innerText.trim())"); head = pg.locator('.ob-q.on h1').inner_text().replace('\n', ' ').strip()
-    check(tag + ' : « %s » et un plan fait de ses réponses' % t['ready'], head == t['ready'] and plan[0] == t['who'] and t['from'].lower() in plan[1].lower() and t['to'] in plan[1] and t['temps'] in plan, (head, plan))
-    check(tag + ' : aucune promesse : ni nombre de vues, ni « 3 vidéos par semaine », ni suivi automatique des écoutes', not any(w in ' '.join(plan + lines).lower() for w in ('vues', 'views', 'par semaine', 'per week', 'chaque semaine', 'every week')), plan)
+    check(tag + ' : « %s » et un plan fait de ses réponses' % t['ready'], head == t['ready'] and plan == t['plan5'], (head, plan))
     check(tag + ' : un seul bouton : « %s »' % t['go'], pg.locator('.ob-cta').inner_text().strip() == t['go'] and not vis(pg, '.ob-skip'))
     shot(pg, 'onboarding-plan-%s-%s' % (dev.replace(' ', ''), lang))
     st = json.loads(pg.evaluate("localStorage.getItem('stalak:onb')"))
@@ -296,7 +297,7 @@ def onboarding_short(b, PW, dev, lang):
     check(tag + ' : chargement : une seule phrase, sur ce que Stalak fait vraiment (aucune réponse à répéter)', len(lines) == 1 and t['aud'] not in lines[0], lines)
     pg.locator('.ob-load').tap(); pg.wait_for_selector('.ob-plan', timeout=15000); pg.wait_for_timeout(1500)
     plan = pg.evaluate("() => [...document.querySelectorAll('.ob-plan div > span')].map(l => l.innerText.trim())"); head = pg.locator('.ob-q.on h1').inner_text().strip()
-    check(tag + ' : « %s » (sans nom), et un plan sans chiffre inventé' % t['readyN'], head == t['readyN'] and len(plan) == 1 and not any(c.isdigit() for c in plan[0].replace('1re', '').replace('first', '')), (head, plan))
+    check(tag + ' : « %s » (sans nom), et les 3 lignes fixes du plan de la démo' % t['readyN'], head == t['readyN'] and plan == t['plan5'][2:], (head, plan))
     ctx.close()
     # « Passer » at the first question: nothing more, and never again
     ctx, pg, errs2 = page(b, PW, dev, lang, onb=True)

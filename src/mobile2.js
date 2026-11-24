@@ -18,7 +18,7 @@ function play(build){ return M.play(build); }
 /* ---- words ---------------------------------------------------------------------------------------------------------- */
 var TX = {
 fr: {
-  'lg.in': 'Connecte-toi à <b>Stalak</b>', 'lg.up': 'Crée ton compte <b>Stalak</b>', 'lg.code': 'Regarde <b>tes e-mails</b>', 'lg.forgot': 'Mot de passe <b>oublié ?</b>', 'lg.newpw': 'Nouveau <b>mot de passe</b>',
+  'lg.in': 'Connecte-toi pour <b>garder tes montages</b>', 'lg.inS': 'Retrouve-les sur tous tes appareils.', 'lg.up': 'Crée ton compte <b>Stalak</b>', 'lg.code': 'Regarde <b>tes e-mails</b>', 'lg.forgot': 'Mot de passe <b>oublié ?</b>', 'lg.newpw': 'Nouveau <b>mot de passe</b>',
   'lg.bIn': 'Content de te voir !', 'lg.bUp': 'Bienvenue !', 'lg.bCode': 'Presque fini !', 'lg.bPw': 'Ça arrive à tout le monde',
   'lg.cont': 'Continuer', 'lg.mailPh': 'Ton e-mail', 'lg.close': 'Fermer',
   'pf.set': 'Réglages du compte', 'pf.back': 'Retour', 'pf.plan': 'Ma formule', 'pf.free': 'Gratuit', 'pf.plans': 'Voir les formules', 'pf.tt': 'TikTok', 'pf.ttNo': 'Pas relié', 'pf.ttLink': 'Relier', 'pf.ttStats': 'Mes stats',
@@ -29,7 +29,7 @@ fr: {
   'ob.q0': 'Ton nom d’artiste ?', 'ob.q0ph': 'Ton nom',
   'ob.q1': 'Tu fais quoi ?', 'ob.g.rap': 'Rap', 'ob.g.drill': 'Drill', 'ob.g.chant': 'Chant', 'ob.g.autre': 'Autre',
   'ob.q2': 'Ta musique est déjà sur les plateformes ?', 'ob.p.oui': 'Oui, déjà en ligne', 'ob.p.non': 'Pas encore',
-  'ob.badlink': 'Ce n’est pas un lien {site}. Corrige-le ou efface-le.', 'ob.q3': 'Colle tes liens', 'ob.q3h': 'Facultatif. On ne lit pas tes écoutes : c’est toi qui nous les dis.',
+  'ob.badlink': 'Ce n’est pas un lien {site}. Corrige-le ou efface-le.', 'ob.q3': 'Colle tes liens', 'ob.q3h': 'On s’en sert pour suivre tes écoutes',
   'ob.q4': 'Tu as combien d’auditeurs par mois aujourd’hui ?', 'ob.q4h': 'Regarde dans Spotify for Artists',
   'ob.l.a': 'Moins de 100', 'ob.l.b': '100 à 1 000', 'ob.l.c': '1 000 à 10 000', 'ob.l.d': 'Plus de 10 000',
   'ob.q5': 'Où tu postes tes vidéos ?', 'ob.s.tiktok': 'TikTok', 'ob.s.reels': 'Reels', 'ob.s.shorts': 'YouTube Shorts',
@@ -38,14 +38,15 @@ fr: {
   'ob.q8': 'Ton objectif ?', 'ob.o.son': 'Faire décoller un son', 'ob.o.poster': 'Poster plus souvent', 'ob.o.concerts': 'Remplir mes concerts',
   'ob.b0': 'Salut !', 'ob.b1': 'Enchanté, {name} !', 'ob.b1n': 'Enchanté !', 'ob.b2': '{list}, noté !', 'ob.b2n': 'C’est noté !', 'ob.b3': 'Trop bien !', 'ob.b3n': 'Ça viendra !', 'ob.b4': 'Je note tout', 'ob.b5': 'Bien, on part de là',
   'ob.b6': '{list}, top', 'ob.b6n': 'Ça marche', 'ob.b7': 'Merci de me le dire', 'ob.b8': 'Gros objectif, j’aime', 'ob.b9': 'C’est parti !',
-  'ob.load': 'On prépare ton plan…', 'ob.ln.from': 'Tu pars de <b>{v}</b> auditeurs par mois', 'ob.ln.genre': 'Tu fais : <b>{list}</b>', 'ob.ln.fmt': 'Format <b>9:16</b> pour {list}', 'ob.ln.goal': 'Objectif : <b>{v}</b> auditeurs par mois', 'ob.ln.none': 'Stalak coupe tes prises sur le rythme de ton son',
+  'ob.load': 'On prépare ton plan…', 'ob.ln.from': 'Tu pars de <b>{v}</b> auditeurs par mois', 'ob.ln.genre': '{list} : coupes calées sur des tempos rapides', 'ob.ln.fmt': 'Format <b>9:16</b> pour {list}', 'ob.ln.goal': 'Objectif : <b>{v}</b> auditeurs par mois', 'ob.ln.none': 'Stalak coupe tes prises sur le rythme de ton son',
   'ob.plan': 'Ton plan est prêt, {name} !', 'ob.planN': 'Ton plan est prêt !',
-  'ob.pl.who': '{genres}, sur {posts}', 'ob.pl.whoG': 'Tu fais : {genres}', 'ob.pl.whoP': 'Tu postes sur {posts}', 'ob.pl.path': 'Ton objectif : {to} auditeurs par mois (aujourd’hui : {from})', 'ob.pl.to': 'Ton objectif : {to} auditeurs par mois',
-  'ob.pl.goals': 'Tes priorités : {list}', 'ob.pl.temps': 'Stalak coupe tes prises sur le rythme à ta place', 'ob.pl.idees': 'Des idées de vidéos t’attendent dans nos guides', 'ob.pl.first': 'On commence par ta 1re vidéo',
+  'ob.pl.who': '{genres}, sur {posts}', 'ob.pl.whoG': '{genres}', 'ob.pl.whoP': 'Sur {posts}', 'ob.pl.path': 'De {from} à {to} auditeurs par mois', 'ob.pl.to': 'Objectif : {to} auditeurs par mois',
+  'ob.f.lt100': 'moins de 100', 'ob.f.100_1k': '100-1 000', 'ob.f.1k_10k': '1 000-10 000', 'ob.f.gt10k': 'plus de 10 000',
+  'ob.pl.week': '3 vidéos par semaine, coupées sur le rythme', 'ob.pl.stats': 'Tes auditeurs suivis chaque semaine dans « Stats »', 'ob.pl.first': 'Ta 1re vidéo en 1 minute',
   'and': ' et '
 },
 en: {
-  'lg.in': 'Sign in to <b>Stalak</b>', 'lg.up': 'Create your <b>Stalak</b> account', 'lg.code': 'Check <b>your e-mail</b>', 'lg.forgot': 'Forgot your <b>password?</b>', 'lg.newpw': 'New <b>password</b>',
+  'lg.in': 'Sign in to <b>keep your edits</b>', 'lg.inS': 'Find them on all your devices.', 'lg.up': 'Create your <b>Stalak</b> account', 'lg.code': 'Check <b>your e-mail</b>', 'lg.forgot': 'Forgot your <b>password?</b>', 'lg.newpw': 'New <b>password</b>',
   'lg.bIn': 'Good to see you!', 'lg.bUp': 'Welcome!', 'lg.bCode': 'Almost done!', 'lg.bPw': 'Happens to everyone',
   'lg.cont': 'Continue', 'lg.mailPh': 'Your e-mail', 'lg.close': 'Close',
   'pf.set': 'Account settings', 'pf.back': 'Back', 'pf.plan': 'My plan', 'pf.free': 'Free', 'pf.plans': 'See the plans', 'pf.tt': 'TikTok', 'pf.ttNo': 'Not linked', 'pf.ttLink': 'Link', 'pf.ttStats': 'My stats',
@@ -56,7 +57,7 @@ en: {
   'ob.q0': 'Your artist name?', 'ob.q0ph': 'Your name',
   'ob.q1': 'What do you make?', 'ob.g.rap': 'Rap', 'ob.g.drill': 'Drill', 'ob.g.chant': 'Singing', 'ob.g.autre': 'Other',
   'ob.q2': 'Is your music already on streaming platforms?', 'ob.p.oui': 'Yes, already out', 'ob.p.non': 'Not yet',
-  'ob.badlink': 'This is not a {site} link. Fix it or clear it.', 'ob.q3': 'Paste your links', 'ob.q3h': 'Optional. We do not read your streams: you tell us.',
+  'ob.badlink': 'This is not a {site} link. Fix it or clear it.', 'ob.q3': 'Paste your links', 'ob.q3h': 'We use them to track your streams',
   'ob.q4': 'How many monthly listeners do you have today?', 'ob.q4h': 'Look in Spotify for Artists',
   'ob.l.a': 'Under 100', 'ob.l.b': '100 to 1,000', 'ob.l.c': '1,000 to 10,000', 'ob.l.d': 'Over 10,000',
   'ob.q5': 'Where do you post your videos?', 'ob.s.tiktok': 'TikTok', 'ob.s.reels': 'Reels', 'ob.s.shorts': 'YouTube Shorts',
@@ -65,13 +66,15 @@ en: {
   'ob.q8': 'Your goal?', 'ob.o.son': 'Make a song take off', 'ob.o.poster': 'Post more often', 'ob.o.concerts': 'Fill my shows',
   'ob.b0': 'Hey!', 'ob.b1': 'Nice to meet you, {name}!', 'ob.b1n': 'Nice to meet you!', 'ob.b2': '{list}, noted!', 'ob.b2n': 'Noted!', 'ob.b3': 'Love it!', 'ob.b3n': 'It will come!', 'ob.b4': 'Writing it all down', 'ob.b5': 'Good, we start from there',
   'ob.b6': '{list}, nice', 'ob.b6n': 'Works for me', 'ob.b7': 'Thanks for telling me', 'ob.b8': 'Big goal, I like it', 'ob.b9': 'Let’s go!',
-  'ob.load': 'Getting your plan ready…', 'ob.ln.from': 'You start from <b>{v}</b> monthly listeners', 'ob.ln.genre': 'You make: <b>{list}</b>', 'ob.ln.fmt': '<b>9:16</b> format for {list}', 'ob.ln.goal': 'Goal: <b>{v}</b> monthly listeners', 'ob.ln.none': 'Stalak cuts your takes to the beat of your song',
+  'ob.load': 'Getting your plan ready…', 'ob.ln.from': 'You start from <b>{v}</b> monthly listeners', 'ob.ln.genre': '{list}: cuts set to fast tempos', 'ob.ln.fmt': '<b>9:16</b> format for {list}', 'ob.ln.goal': 'Goal: <b>{v}</b> monthly listeners', 'ob.ln.none': 'Stalak cuts your takes to the beat of your song',
   'ob.plan': 'Your plan is ready, {name}!', 'ob.planN': 'Your plan is ready!',
-  'ob.pl.who': '{genres}, on {posts}', 'ob.pl.whoG': 'You make: {genres}', 'ob.pl.whoP': 'You post on {posts}', 'ob.pl.path': 'Your goal: {to} monthly listeners (today: {from})', 'ob.pl.to': 'Your goal: {to} monthly listeners',
-  'ob.pl.goals': 'Your priorities: {list}', 'ob.pl.temps': 'Stalak cuts your takes to the beat for you', 'ob.pl.idees': 'Video ideas are waiting in our guides', 'ob.pl.first': 'We start with your first video',
+  'ob.pl.who': '{genres}, on {posts}', 'ob.pl.whoG': '{genres}', 'ob.pl.whoP': 'On {posts}', 'ob.pl.path': 'From {from} to {to} monthly listeners', 'ob.pl.to': 'Goal: {to} monthly listeners',
+  'ob.f.lt100': 'under 100', 'ob.f.100_1k': '100-1,000', 'ob.f.1k_10k': '1,000-10,000', 'ob.f.gt10k': 'over 10,000',
+  'ob.pl.week': '3 videos a week, cut to the beat', 'ob.pl.stats': 'Your listeners tracked every week in “Stats”', 'ob.pl.first': 'Your 1st video in 1 minute',
   'and': ' and '
 } };
 function t(k, v){ var s = (TX[M.lang()] || TX.en)[k]; if (s == null) s = TX.en[k] || k; if (v) for (var n in v) s = s.split('{' + n + '}').join(v[n]); return s; }
+function low(a){ return a.map(function(x, i){ return i && /^[A-ZÀ-Ý][a-zà-ÿ]+$/.test(x) ? x.toLowerCase() : x; }); }
 function list(a){ return a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + t('and') + a[a.length - 1]; }
 
 /* ---- style (phones only) -------------------------------------------------------------------------------------------- */
@@ -97,7 +100,7 @@ var CSS = '@media (max-width:899px){'
 + 'html.m2-login #apLogin{display:flex;flex-direction:column;flex:1}'
 + 'html.m2-login #apLogin[hidden]{display:none}'
 + 'html.m2-login #apLoginT{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}'
-+ 'html.m2-login #apLogin .m2-lt{margin:16px 0 0;font:400 30px/1.08 var(--display);text-align:center;color:#0a0d14;text-shadow:none;text-wrap:balance;-webkit-text-stroke:0}html.m2-login #apLogin .m2-lt b{font-weight:400;color:#1f6fd6}'
++ 'html.m2-login #apLogin .m2-lt{margin:16px 0 0;font:400 30px/1.08 var(--display);text-align:center;color:#0a0d14;text-shadow:none;text-wrap:balance;-webkit-text-stroke:0}html.m2-login #apLogin .m2-lt b{font-weight:400;color:#1f6fd6}.m2-ls{margin:8px 0 0;font:500 15px/1.35 var(--body);text-align:center;color:#3d4a63}.m2-ls[hidden]{display:none}'
 + 'html.m2-login .ap-noacct,html.m2-login .ap-why{margin:8px auto 0;max-width:21em;font:500 15px/1.4 var(--body);color:#3f5170;text-align:center;text-shadow:none}'
 + 'html.m2-login .ap-why:not([hidden]) ~ .ap-noacct,html.m2-login .ap-noacct.m2-off{display:none}'
 + 'html.m2-login .ap-auth{margin:14px 0 0;padding:0;border:0;box-shadow:none;background:none;border-radius:0}'
@@ -204,12 +207,12 @@ function scene(extra, seed){ var s = el('div', 'm2-scene', '<div class="m2-rays"
 var CHEV = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7"/></svg>';
 
 /* ---- 1. the sign-in --------------------------------------------------------------------------------------------------- */
-var lgScene, lgT, lgBub, e1 = true, lgKey = '';
+var lgScene, lgT, lgS, lgBub, e1 = true, lgKey = '';
 function lgBuild(){
   var v = $('#apLogin'); if (!v || lgScene) return;
   lgScene = scene('<div class="m2-masc"></div><div class="m2-bub"></div>', 9); lgBub = $('.m2-bub', lgScene);
-  lgT = el('h2', 'm2-lt'); lgT.setAttribute('aria-hidden', 'true');
-  v.insertBefore(lgT, v.firstChild); v.insertBefore(lgScene, v.firstChild);
+  lgT = el('h2', 'm2-lt'); lgT.setAttribute('aria-hidden', 'true'); lgS = el('p', 'm2-ls');
+  v.insertBefore(lgS, v.firstChild); v.insertBefore(lgT, v.firstChild); v.insertBefore(lgScene, v.firstChild);
   // « Continuer »: the e-mail first, then the rest of the same form
   ['#apInF', '#apUpF'].forEach(function(id){ var f = $(id); if (!f) return;
     var b = el('button', 'm2-cont', '<span></span><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>'); b.type = 'button';
@@ -239,7 +242,7 @@ function lgRender(on, fresh){
   var bub = k === 'in' ? 'lg.bIn' : k === 'up' ? 'lg.bUp' : k === 'code' ? 'lg.bCode' : 'lg.bPw';
   $$('#apInMail, #apUpMail, #apFgMail').forEach(function(i){ i.placeholder = t('lg.mailPh'); });
   $$('.m2-cont span').forEach(function(s){ s.textContent = t('lg.cont'); });
-  $('.ap-noacct').classList.toggle('m2-off', step !== 'form');
+  $('.ap-noacct').classList.toggle('m2-off', step !== 'form' || k === 'in'); lgS.hidden = !(k === 'in' && step === 'form'); lgS.textContent = t('lg.inS');
   $('#apBack').setAttribute('aria-label', t('lg.close'));
   if (key === lgKey) return;
   var was = lgKey; lgKey = key; lgT.innerHTML = t(title); lgBub.textContent = t(bub);
@@ -439,18 +442,16 @@ function obBubble(i, a){
 function obLines(a){
   var g = labels('genres', a.genres), p = labels('postsOn', a.postsOn), L = [], now = labels('listenersNow', [a.listenersNow])[0], to = labels('listenersGoal', [a.listenersGoal])[0];
   if (a.listenersNow) L.push(['🎧', t('ob.ln.from', { v: esc(now.toLowerCase()) })]);
-  if (g.length) L.push(['🔥', t('ob.ln.genre', { list: esc(list(g)) })]);
+  if (g.length) L.push(['🔥', t('ob.ln.genre', { list: esc(list(low(g))) })]);
   if (p.length) L.push(['📱', t('ob.ln.fmt', { list: esc(list(p)) })]);
   if (a.listenersGoal) L.push(['🎯', t('ob.ln.goal', { v: esc(to) })]);
   if (!L.length) L.push(['✂️', esc(t('ob.ln.none'))]);
   return L; }
 function obPlan(a){
   var g = labels('genres', a.genres), p = labels('postsOn', a.postsOn), go = labels('goals', a.goals), P = [], now = labels('listenersNow', [a.listenersNow])[0], to = labels('listenersGoal', [a.listenersGoal])[0];
-  if (g.length && p.length) P.push(t('ob.pl.who', { genres: list(g), posts: list(p) })); else if (g.length) P.push(t('ob.pl.whoG', { genres: list(g) })); else if (p.length) P.push(t('ob.pl.whoP', { posts: list(p) }));
-  if (a.listenersGoal && a.listenersNow) P.push(t('ob.pl.path', { from: now.toLowerCase(), to: to })); else if (a.listenersGoal) P.push(t('ob.pl.to', { to: to }));
-  if (go.length) P.push(t('ob.pl.goals', { list: list(go).toLowerCase() }));
-  if ((a.blockers || []).indexOf('editing_time') >= 0) P.push(t('ob.pl.temps'));
-  if ((a.blockers || []).indexOf('no_ideas') >= 0) P.push(t('ob.pl.idees'));
+  if (g.length && p.length) P.push(t('ob.pl.who', { genres: list(low(g)), posts: list(p) })); else if (g.length) P.push(t('ob.pl.whoG', { genres: list(low(g)) })); else if (p.length) P.push(t('ob.pl.whoP', { posts: list(p) }));
+  if (a.listenersGoal && a.listenersNow) P.push(t('ob.pl.path', { from: t('ob.f.' + a.listenersNow), to: to })); else if (a.listenersGoal) P.push(t('ob.pl.to', { to: to }));
+  P.push(t('ob.pl.week')); P.push(t('ob.pl.stats'));
   P.push(t('ob.pl.first')); return P; }
 
 function obOpen(){

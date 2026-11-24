@@ -1,4 +1,4 @@
-Statut : PRÊT (lots 1 et 2 ; lots 3 et 4 à venir sur la même branche)
+Statut : EN COURS (lot 1 prêt ; lot 2 : textes des démos remis mot pour mot le 24/11, série de tests relancée après la fusion de main)
 Branche : app/refonte-mobile (créée depuis `origin/main` efbb0c0 le 23/11).
 Maquette de la branche : https://app-refonte-mobile.stalak-site.pages.dev (à faire valider par le propriétaire, règle 9).
 
@@ -183,26 +183,10 @@ taste, webapp-testing.
    l'écran de chargement (cercle jaune, une phrase par réponse) et « Ton plan est prêt, <nom> ! » → « Faire ma 1re vidéo ».
    Jamais deux fois ; jamais par-dessus un montage, une page du compte ou un lien.
 
-## Écarts avec les démos, à valider par le propriétaire (honnêteté, règle du 24/11 : « toujours dire quelque chose de vrai »)
-- **Connexion** : la démo dit « Connecte-toi pour garder tes montages · Retrouve-les sur tous tes appareils ». C'est vrai
-  seulement avec Creator Plus (la sauvegarde en ligne est payante). J'ai gardé le titre « Connecte-toi à Stalak » et la
-  phrase actuelle, qui est vraie pour tout le monde : « Pas besoin de compte pour faire tes vidéos : il sert seulement à
-  t'abonner et à retrouver tes projets. »
-- **Onboarding, « Colle tes liens »** : la démo dit « On s'en sert pour suivre tes écoutes ». On ne peut pas les lire
-  (limite Spotify notée par le Chef). Écrit à la place : « Facultatif. On ne lit pas tes écoutes : c'est toi qui nous les dis. »
-- **Chargement** : chaque phrase reprend une réponse (ses auditeurs, ses genres, « Format 9:16 pour » ses réseaux, son
-  objectif). La phrase de la démo « Rap et drill : coupes calées sur des tempos rapides » est retirée (Stalak coupe sur le
-  rythme du son, quel que soit le genre). Sans aucune réponse : une seule phrase, « Stalak coupe tes prises sur le rythme de
-  ton son ». Un toucher fait passer le chargement.
-- **Plan** : retirés « 3 vidéos par semaine » (un conseil sans base) et « Tes auditeurs suivis chaque semaine dans
-  Stats » (**pas encore fait** : à remettre quand le rappel hebdomadaire existera) et « Ta 1re vidéo en 1 minute » (non
-  mesuré). Le plan dit : ses genres et ses réseaux, son objectif (avec son point de départ), ses priorités, et selon ce
-  qui le bloque « Stalak coupe tes prises sur le rythme à ta place » ou « Des idées de vidéos t'attendent dans nos guides ».
-  Rien sur les vues.
-- **« Passer »** en haut à droite de chaque question (absent de la démo) : personne n'est coincé. Passer = plus jamais proposé.
-- **Profil** : « Revoir le tutoriel » n'est pas dans la liste tant que le tutoriel (lot 4) n'existe pas. « Confidentialité »
-  de la démo est devenu « Infos légales et guides » (tous les liens du pied de page).
-- **Écran « Montages »** : seul le tirer pour rafraîchir est fait ; la page garde son habillage actuel (« Galerie »).
+## Textes des démos (décision du propriétaire du 24/11, 4 h 48 à 4 h 58)
+Les textes des démos validées sont repris **mot pour mot** (voir la section « Lot 2, suite du 24/11 (4 h 54) » en bas).
+Les écarts que cette section listait sont annulés, sauf le bouton « Passer » et le profil, validés tels quels.
+Aucun texte d'une démo validée ne se change sans demander au propriétaire.
 
 ## Pour Comptes (rien de `functions/` ni `account.js` n'est touché)
 - **Réponses de l'onboarding** : gardées sur le téléphone (`localStorage`, clé `stalak:onb` :
@@ -292,8 +276,7 @@ Demande du Chef : ne pas attendre `StalakAccount.onboarding`, utiliser ce que Co
   reste est renvoyé sans les liens.
 - **Autre téléphone, même compte** : si `artist()` rend un profil déjà répondu, rien n'est redemandé. Limite : si le compte
   n'est pas encore chargé quand l'onboarding se décide (premier lancement), il peut s'afficher une fois.
-- **Les 4 écarts honnêtes sont validés par le propriétaire** (24/11) : phrase de connexion, phrase des liens, plan sans ce
-  qui n'est pas mesuré, bouton « Passer ».
+- Décision du propriétaire remplacée le 24/11 à 4 h 54 : voir la section suivante.
 - Pas fait ici (reste « App » de Comptes, pour les lots suivants) : `onboarding_etape_N`, `montage_lance`, la question
   hebdomadaire des auditeurs dans « Stats » (`saveListeners`, `listenersDue`).
 
@@ -313,3 +296,17 @@ Demande du Chef : ne pas attendre `StalakAccount.onboarding`, utiliser ce que Co
     placé avant).
 - Échecs anciens, identiques sur `main` : `animations_ui` 28/44, `formules_ui` 136/137, `clip1_ui` 83/87, `lyrics_ui` 62/73.
 - `index.html` : 395,1 Ko (limite 400).
+
+## Lot 2, suite du 24/11 (4 h 54) : textes des démos validées, mot pour mot
+Demande du Chef (décisions du propriétaire, 4 h 48 à 4 h 58). `origin/main` fusionné (commits ff8195a et b1d4222 compris).
+- **Connexion** (démo n° 2) : titre « Connecte-toi pour **garder tes montages** », dessous « Retrouve-les sur tous tes
+  appareils. ». Sur cet écran, cette phrase remplace « Pas besoin de compte… » (qui reste sur « Créer un compte »).
+- **« Colle tes liens »** (démo n° 13) : « On s'en sert pour suivre tes écoutes ».
+- **Chargement** : « Tu pars de **100 à 1 000** auditeurs par mois », « Rap et drill : coupes calées sur des tempos
+  rapides », « Format **9:16** pour TikTok et Reels », « Objectif : **10 000 auditeurs** par mois ».
+- **Plan** : « Rap et drill, sur TikTok et Reels », « De 100-1 000 à 10 000 auditeurs par mois », « 3 vidéos par semaine,
+  coupées sur le rythme », « Tes auditeurs suivis chaque semaine dans « Stats » », « Ta 1re vidéo en 1 minute ».
+- Les parties qui viennent des réponses (genres, réseaux, auditeurs) suivent ce que la personne a choisi ; le reste est
+  fixe. Quelqu'un qui ne répond à rien voit les 3 dernières lignes du plan.
+- **Inchangés** (validés) : le bouton « Passer », le profil.
+- Anglais : traduction directe des mêmes phrases.
