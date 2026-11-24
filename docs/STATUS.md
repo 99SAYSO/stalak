@@ -4,6 +4,7 @@
 > Dernière mise à jour : 30/10/2026 à 21 h (offre hybride fusionnée et en ligne : App, Comptes, Juridique, Marketing ; migration 0008 appliquée).
 
 ## Décisions récentes du propriétaire
+- 24/11 04:48 — Propriétaire : écarts du lot 2 de la refonte mobile validés (connexion, « Colle tes liens », chargement et plan sans phrases non prouvées, bouton « Passer », profil). Fusion dès que App passe la branche en PRÊT.
 - 24/11 04:45 — Chef : page « Clarity et Google Analytics » du tableau de bord reliée et vérifiée (GA4 en direct + entonnoir, relevé Clarity OK, 3 appels sur 10).
 - **24/11, 4 h 40 : secrets `GA4_SA_KEY` et `CLARITY_API_TOKEN` collés par le propriétaire** dans Cloudflare ; nouvelle mise en ligne pour qu'ils soient pris en compte.
 - **24/11, 4 h 45 : accès Google Analytics préparé par le Chef de projet** (après la validation en deux étapes activée par le propriétaire sur le compte du projet Google Cloud « Stalak », `stalak-512913`) : API « Google Analytics Data » activée ; compte de service `stalak-dashboard-ga4@stalak-512913.iam.gserviceaccount.com` créé (aucun rôle dans le projet) ; ajouté en **Lecteur** sur la propriété GA4 `565628578` (sans e-mail de notification). **Reste au propriétaire** : créer la clé JSON de ce compte de service et la coller dans le secret Cloudflare `GA4_SA_KEY`, puis supprimer le fichier téléchargé ; et le jeton Clarity `CLARITY_API_TOKEN`.
