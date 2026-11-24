@@ -29,6 +29,7 @@ h1.t{position:absolute;left:40px;right:40px;text-align:center;font:400 96px/1 "L
 .tag{position:absolute;left:110px;padding:8px 28px;border-radius:24px;background:#ffd23f;border:6px solid #0a0d14;font:800 36px "DM Sans";z-index:11}
 #cta{position:absolute;left:60px;right:60px;height:180px;border-radius:56px;background:#1f6fd6;border:10px solid #0a0d14;box-shadow:0 18px 0 #0a0d14;color:#fff;font:400 70px/160px "Lilita One";text-align:center;text-shadow:0 6px 0 #0a0d14;overflow:hidden;z-index:10}
 #cta .sh{position:absolute;top:-40px;bottom:-40px;width:140px;left:-200px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg)}
+.ou{position:absolute;left:490px;width:100px;height:68px;border-radius:34px;background:#ffd23f;border:7px solid #0a0d14;font:400 40px/54px "Lilita One";text-align:center;z-index:12}
 .legal{position:absolute;left:60px;right:60px;text-align:center;font:500 30px "DM Sans";z-index:10}
 #finger{position:absolute;left:0;top:0;width:130px;height:130px;margin:-65px 0 0 -65px;border-radius:50%;background:rgba(10,13,20,.25);border:8px solid rgba(255,255,255,.95);z-index:30;opacity:0}
 .fl{position:absolute;border-radius:50%;background:#fff}
@@ -80,11 +81,11 @@ def bottom(y_t, y_rev, y_dots, y_tag, y_p1, y_p2, y_cta, y_legal, tcolor, lcolor
 <div class="tag" style="top:{y_tag}px">Meilleur prix · −48 %</div>
 <div class="plan on" id="p1" style="top:{y_p1}px"><span class="r"></span><div><b>Pro · à l’année</b><small>7 jours gratuits</small></div><div class="pr"><b>4,17 $/mois</b><small>49,99 $ par an</small></div></div>
 <div class="plan" id="p2" style="top:{y_p2}px"><span class="r"></span><div><b>Pro · au mois</b><small>7 jours gratuits</small></div><div class="pr"><b>7,99 $/mois</b></div></div>
-<div id="cta" style="top:{y_cta}px"><span class="sh" id="sh"></span>Essayer gratuitement</div>
+<div class="ou" style="top:{(y_p2+190+y_cta)//2-34}px">ou</div><div id="cta" style="top:{y_cta}px"><span class="sh" id="sh"></span>Essayer gratuitement</div>
 <div class="legal" style="top:{y_legal}px;color:{lcolor}">Rien à payer aujourd’hui · Annulable en 1 geste</div>"""
 
 INTRO_JS = r"""
-['h1.t','.revw','.dots','.tag','#p1','#p2','#cta','.legal'].forEach((s,k)=>{ tl.from(s,{ y:90, opacity:0, duration:0.55, ease:'back.out(1.6)' }, 0.5 + k*0.09); });
+['h1.t','.revw','.dots','.tag','#p1','.ou','#p2','#cta','.legal'].forEach((s,k)=>{ tl.from(s,{ y:90, opacity:0, duration:0.55, ease:'back.out(1.6)' }, 0.5 + k*0.09); });
 tl.to('#sh', { left: 1100, duration: 0.9, ease: 'power2.inOut' }, 2.2);
 tl.to('#sh', { left: -200, duration: 0 }, 3.2);
 tl.to('#sh', { left: 1100, duration: 0.9, ease: 'power2.inOut' }, 9.6);
@@ -121,11 +122,11 @@ cssB = r"""
 #stage{position:absolute;left:-100px;right:-100px;top:500px;height:110px;border-radius:50%;background:radial-gradient(closest-side,#ffffffaa,#7fc0ff55 60%,transparent)}
 #crowd{position:absolute;left:0;right:0;top:470px;height:120px}
 #crowd i{position:absolute;bottom:0;width:70px;height:90px;border-radius:35px 35px 0 0;background:#06102e}
-#m{position:absolute;left:375px;top:150px;width:330px}
+#m{position:absolute;left:365px;top:70px;width:350px}
 #conf i{position:absolute;width:18px;height:26px;border:4px solid #0a0d14;border-radius:4px}
 """
-bodyB = '<div id="bg"></div><div class="beam" id="b1"></div><div class="beam" id="b2"></div><div id="stage"></div><img id="m" src="assets/img/love.png"><div id="crowd"></div><div id="conf"></div><div id="x">×</div>' + \
-    bottom(620, 770, 1085, 1150, 1180, 1410, 1640, 1850, '#fff', '#d6ecff')
+bodyB = '<div id="bg"></div><div class="beam" id="b1"></div><div class="beam" id="b2"></div><div id="stage"></div><img id="m" src="assets/img/star.png"><div id="crowd"></div><div id="conf"></div><div id="x">×</div>' + \
+    bottom(620, 770, 1085, 1140, 1170, 1390, 1650, 1860, '#fff', '#d6ecff')
 jsB = r"""
 tl.fromTo('#b1',{rotation:-28},{rotation:22,duration:3,yoyo:true,repeat:3,ease:'sine.inOut'},0);
 tl.fromTo('#b2',{rotation:26},{rotation:-24,duration:3.4,yoyo:true,repeat:3,ease:'sine.inOut'},0);
