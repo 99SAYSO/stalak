@@ -1,4 +1,4 @@
-Statut : PRÊT (lot 1 : police, barre du bas, accueil, ouverture ; lots 2 à 4 à venir sur la même branche)
+Statut : EN COURS (lot 1 prêt ; lot 2 fait, série de tests en cours ; lots 3 et 4 à venir)
 Branche : app/refonte-mobile (créée depuis `origin/main` efbb0c0 le 23/11).
 Maquette de la branche : https://app-refonte-mobile.stalak-site.pages.dev (à faire valider par le propriétaire, règle 9).
 
@@ -156,6 +156,77 @@ Lot 1 déjà fait (ci-dessous). Répartition proposée au propriétaire pour la 
 - **Règle pour l'onboarding** (propriétaire) : chaque message dit quelque chose de vrai. L'écran de chargement ne reprend
   que ses réponses ; jamais « on analyse ton Spotify » ni une lecture qu'on ne fait pas ; pas de faux temps de calcul présenté
   comme un travail réel.
+
+# Lot 2 : connexion, profil, tirer pour rafraîchir, onboarding (24/11)
+
+Accord du propriétaire le 24/11 à 1 h 17 (maquette du lot 1 : « oui » ; onboarding au lot 2, paywall et offre à 1 € au lot 4 : « oui »).
+Tout est sous 900 px et seulement sur stalak.app (la version claude.ai n'a pas de compte). Skills : stalak-da, motion-design,
+taste, webapp-testing.
+
+## Ce qui est fait
+1. **Connexion / inscription en plein écran** (démo n° 2) : scène bleue (rayons, neige, glace en haut), mascotte sur sa
+   butte avec une bulle, la barre du bas part. **L'e-mail d'abord**, puis « Continuer » fait arriver le reste du **même
+   formulaire** (mot de passe, « Mot de passe oublié ? », pseudo à l'inscription). Google / Apple / Microsoft passent sous
+   le formulaire, après « ou ». Les règles des comptes ne changent pas : mêmes champs, mêmes boutons, même envoi au serveur.
+2. **Profil, son écran à lui** (démo n° 3) : photo dans un rond, nom, formule, e-mail ; cartes « Ma formule » (ouvre les
+   formules, ou « Gérer » pour un abonné ; **la phrase d'abonnement du compte y reste écrite en entier** : renouvellement,
+   essai et date du 1er prélèvement, annulation) et « TikTok » (si TikTok est proposé) ; une liste : Mes montages, Langue
+   (FR / EN), Aide, « Photo, pseudo, mot de passe », « Infos légales et guides » ; « Se déconnecter » en bas.
+   - La roue en haut à droite (et la ligne « Photo, pseudo, mot de passe ») ouvre **les réglages** : ce sont les cartes
+     d'avant, toutes là (photo, pseudo, e-mail, mot de passe, comptes liés, abonnement, galerie, langue, se déconnecter,
+     supprimer mon compte). « Retour » revient au profil.
+   - **« Infos légales et guides »** : une feuille qui reprend les liens du pied de page du site (tarifs, conditions,
+     confidentialité, remboursement, mentions légales, guides…), lus dans la page : toujours les mêmes qu'en bas du site.
+     « Gérer les cookies » est le lien vers la page de confidentialité, comme dans le pied de page.
+3. **Tirer pour rafraîchir sur « Montages »** (démo n° 4) : la page descend, fond bleu et flocons derrière, la capuche de
+   la mascotte dépasse, surgit au seuil (« Quoi de neuf ? »), regarde à gauche et à droite pendant que la liste est
+   redemandée au serveur, replonge, les vignettes reviennent.
+4. **Onboarding** (démo n° 13) : au premier lancement sur ce téléphone, après l'ouverture. Une question par écran, barre
+   jaune, la mascotte change de tête et répond dans sa bulle, plusieurs choix là où c'est dit, retour en arrière, puis
+   l'écran de chargement (cercle jaune, une phrase par réponse) et « Ton plan est prêt, <nom> ! » → « Faire ma 1re vidéo ».
+   Jamais deux fois ; jamais par-dessus un montage, une page du compte ou un lien.
+
+## Écarts avec les démos, à valider par le propriétaire (honnêteté, règle du 24/11 : « toujours dire quelque chose de vrai »)
+- **Connexion** : la démo dit « Connecte-toi pour garder tes montages · Retrouve-les sur tous tes appareils ». C'est vrai
+  seulement avec Creator Plus (la sauvegarde en ligne est payante). J'ai gardé le titre « Connecte-toi à Stalak » et la
+  phrase actuelle, qui est vraie pour tout le monde : « Pas besoin de compte pour faire tes vidéos : il sert seulement à
+  t'abonner et à retrouver tes projets. »
+- **Onboarding, « Colle tes liens »** : la démo dit « On s'en sert pour suivre tes écoutes ». On ne peut pas les lire
+  (limite Spotify notée par le Chef). Écrit à la place : « Facultatif. On ne lit pas tes écoutes : c'est toi qui nous les dis. »
+- **Chargement** : chaque phrase reprend une réponse (ses auditeurs, ses genres, « Format 9:16 pour » ses réseaux, son
+  objectif). La phrase de la démo « Rap et drill : coupes calées sur des tempos rapides » est retirée (Stalak coupe sur le
+  rythme du son, quel que soit le genre). Sans aucune réponse : une seule phrase, « Stalak coupe tes prises sur le rythme de
+  ton son ». Un toucher fait passer le chargement.
+- **Plan** : retirés « 3 vidéos par semaine » (un conseil sans base) et « Tes auditeurs suivis chaque semaine dans
+  Stats » (**pas encore fait** : à remettre quand le rappel hebdomadaire existera) et « Ta 1re vidéo en 1 minute » (non
+  mesuré). Le plan dit : ses genres et ses réseaux, son objectif (avec son point de départ), ses priorités, et selon ce
+  qui le bloque « Stalak coupe tes prises sur le rythme à ta place » ou « Des idées de vidéos t'attendent dans nos guides ».
+  Rien sur les vues.
+- **« Passer »** en haut à droite de chaque question (absent de la démo) : personne n'est coincé. Passer = plus jamais proposé.
+- **Profil** : « Revoir le tutoriel » n'est pas dans la liste tant que le tutoriel (lot 4) n'existe pas. « Confidentialité »
+  de la démo est devenu « Infos légales et guides » (tous les liens du pied de page).
+- **Écran « Montages »** : seul le tirer pour rafraîchir est fait ; la page garde son habillage actuel (« Galerie »).
+
+## Pour Comptes (rien de `functions/` ni `account.js` n'est touché)
+- **Réponses de l'onboarding** : gardées sur le téléphone (`localStorage`, clé `stalak:onb` :
+  `{ v: 1, done | skipped: <date>, a: { name, genres[], onPlatforms: 'oui'|'non'|'', links: { spotify, apple, soundcloud,
+  instagram }, listeners: 'a'..'d'|'', posts[], blocks[], target: 'a'..'d'|'', goals[] } }`). **Contrat attendu** : si
+  `StalakAccount.onboarding(answers)` existe et que la personne est connectée, l'app l'appelle une fois (puis note `sent`) ;
+  sinon rien n'est envoyé. À Comptes de créer cette fonction et la route (par exemple `PUT /api/me/onboarding`).
+- **Juridique** : ces réponses (liens Spotify / Apple Music / SoundCloud / Instagram, auditeurs déclarés) sont des données
+  personnelles dès qu'elles partent sur le compte : à ajouter à la politique de confidentialité avant d'activer l'envoi.
+- Les écrans du compte sont **habillés**, pas réécrits : `src/mobile2.js` range et décore les éléments existants
+  (`#apLogin`, `#apAccount`) et clique sur les boutons existants (`#apOut`, `#apSubGo`, `#ttkStats`…). Un changement de
+  Comptes dans ces écrans continue de marcher ; s'il ajoute une carte au compte, elle apparaît dans « réglages ».
+- L'app expose `window.StalakM` (lecture seule) pour ce fichier.
+
+## Fichiers du lot 2
+- **Nouveau** `src/mobile2.js` → servi à part (`/assets/mobile2.<version>.js`), chargé par l'app **seulement sur
+  téléphone et sur stalak.app** ; il porte son style et ses textes FR / EN. `index.html` ne grossit presque pas.
+- `src/app.js` (`mobTell`, `window.StalakM`, chargement du fichier), `src/mobile.css` (la barre part sur les écrans plein
+  écran), `build_site.py` (le fichier à part, `window.STALAK_M2`) → **Marketing** prévenu ici.
+- Images de la mascotte : `/emoji/*.webp` déjà servies par le site (256 px : un peu floues sur un écran ×3).
+- Nouveau test `tests/ui/refonte_mobile2_ui.py` (serveur de test avec de vrais comptes).
 
 ## Ajouts du 24/11 (après la série complète des tests)
 - **« Essaie avec ton son »** (fin de l'exemple) : sur téléphone, le carré d'import n'est plus sur l'accueil ; c'est le gros

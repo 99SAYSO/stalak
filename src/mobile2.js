@@ -137,6 +137,7 @@ var CSS = '@media (max-width:899px){'
 + '.m2-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}.m2-cards.one{grid-template-columns:1fr}'
 + '.m2-card{display:block;width:100%;text-align:left;padding:13px 14px 12px;border-radius:20px;background:#fff;color:#0a0d14;border:3px solid #0a0d14;box-shadow:0 5px 0 #0a0d14;min-width:0}'
 + '.m2-card small{display:block;font:500 13px var(--body);color:#7a8aa6}.m2-card b{display:block;font:400 19px/1.2 var(--display);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.m2-card i{display:block;margin-top:2px;font:600 14px var(--body);font-style:normal;color:#1f6fd6}'
++ '.m2-card em{display:block;margin-top:3px;font:500 13.5px/1.35 var(--body);font-style:normal;color:#3f5170;white-space:normal}.m2-card.wide{grid-column:1/-1}'
 + '.m2-list{margin-top:14px;padding:4px 14px;border-radius:22px;background:#fff;border:3px solid #0a0d14;box-shadow:0 5px 0 #0a0d14}'
 + '.m2-row{display:flex;align-items:center;gap:12px;width:100%;min-height:58px;padding:6px 0;background:none;border:0;border-top:2px solid #e3f0ff;color:#0a0d14;font:600 17px var(--body);text-align:left}'
 + '.m2-row:first-child{border-top:0}.m2-row > u{flex:none;width:38px;height:38px;border-radius:12px;border:2.5px solid #0a0d14;background:#eef6ff;display:grid;place-items:center;text-decoration:none}'
@@ -179,6 +180,7 @@ var CSS = '@media (max-width:899px){'
 + '.ob-in.big{min-height:66px}.ob-in.big input{font:700 24px var(--body);text-align:center;min-height:44px}'
 + '.ob-in:focus-within{box-shadow:inset 0 4px 0 #eaf4ff,0 0 0 3px #1f6fd6}'
 + '.ob-in .ok{flex:none;width:24px;height:24px;border-radius:50%;background:#2ecc71;border:2px solid #0a0d14;color:#fff;font:900 14px/20px var(--body);text-align:center;transform:scale(0)}.ob-in.has .ok{transform:scale(1)}'
++ '@media (max-width:359px){.ob-ops.grid .ob-op{width:100%}.ob-q h1{font-size:25px}}'
 + '.ob-foot{flex:none;padding:8px 20px calc(18px + env(safe-area-inset-bottom,0px))}'
 + '.ob-cta{display:block;width:100%;min-height:62px;border-radius:19px;background:#1f6fd6;color:#fff;border:3.5px solid #0a0d14;box-shadow:0 6px 0 #0a0d14;font:400 23px/1 var(--display);text-shadow:0 2px 0 #0a0d14}'
 + '.ob-cta:active{transform:translateY(3px);box-shadow:0 3px 0 #0a0d14}'
@@ -258,7 +260,7 @@ function pfBuild(){
   var gear = el('button', 'm2-round r', '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.500v3M2.500 12h3M18.500 12h3M5.300 5.300l2.100 2.100M16.600 16.600l2.100 2.100M5.300 18.700l2.100-2.100M16.600 7.400l2.100-2.100"/></svg>'); gear.type = 'button'; gear.id = 'm2Gear';
   sc.appendChild(back); sc.appendChild(gear); pf.appendChild(sc);
   pf.appendChild(el('div', 'm2-who', '<div class="m2-name"><span id="m2Name"></span><span class="m2-badge" id="m2Badge" hidden></span></div><p class="m2-mail" id="m2Mail"></p>'));
-  pf.appendChild(el('div', 'm2-cards', '<button type="button" class="m2-card" id="m2Plan"><small></small><b></b><i></i></button><button type="button" class="m2-card" id="m2Tt"><small>TikTok</small><b></b><i></i></button>'));
+  pf.appendChild(el('div', 'm2-cards', '<button type="button" class="m2-card" id="m2Plan"><small></small><b></b><em id="m2PlanT" hidden></em><i></i></button><button type="button" class="m2-card" id="m2Tt"><small>TikTok</small><b></b><i></i></button>'));
   var lang = '<span class="langsw" role="group" aria-label="Langue · Language"><button type="button" data-lang="fr" lang="fr" aria-pressed="false">FR</button><button type="button" data-lang="en" lang="en" aria-pressed="false">EN</button></span>';
   pf.appendChild(el('div', 'm2-list',
     '<button type="button" class="m2-row" id="m2Gal">' + ico('<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9.500v5l4.500-2.500z"/>') + '<span></span><em></em>' + CHEV + '</button>'
@@ -295,6 +297,8 @@ function pfRender(on, fresh){
   var badge = $('#m2Badge'); badge.hidden = !M.paid(); if (M.paid()) badge.textContent = M.t('pl.n.' + M.plan()).replace(/^Stalak\s+/i, '');
   var p = $('#m2Plan'), sub = $('#apSubGo'); $('small', p).textContent = t('pf.plan'); $('b', p).textContent = M.paid() ? M.t('pl.n.' + M.plan()) : t('pf.free');
   $('i', p).textContent = ((M.paid() && sub && sub.textContent.trim()) || t('pf.plans')) + ' →';
+  // what the account says about the subscription (renewal, trial and first charge, cancellation) stays written in full
+  var st2 = $('#apSubT'), line = M.paid() && st2 ? st2.textContent.trim() : '', pt = $('#m2PlanT'); pt.hidden = !line; pt.textContent = line; p.classList.toggle('wide', !!line);
   var tt = $('#m2Tt'), card = $('#ttkCard'), linked = !!(card && $('#ttkUnlink', card)), nm = card && $('b', card);
   tt.hidden = !card; tt.parentNode.classList.toggle('one', !card);
   if (card){ $('b', tt).textContent = linked && nm ? nm.textContent : t('pf.ttNo'); $('i', tt).textContent = (linked ? t('pf.ttStats') : t('pf.ttLink')) + ' →'; }
