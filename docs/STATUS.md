@@ -4,6 +4,7 @@
 > Dernière mise à jour : 30/10/2026 à 21 h (offre hybride fusionnée et en ligne : App, Comptes, Juridique, Marketing ; migration 0008 appliquée).
 
 ## Décisions récentes du propriétaire
+- 24/11 06:52 — Chef : carrousels Instagram programmés sur @stalak_app à 18 h (Paris) : galères le 24/11, placard le 27/11, Noël le 1/12.
 - 24/11 06:50 — Chef : 3 carrousels Instagram (placard = studio, Noël, galères du rappeur indé) créés en brouillon dans Zernio sur @stalak_app (images ChatGPT validées, slides variées). Dates de publication à valider par le propriétaire.
 - 24/11 06:08 — Propriétaire : liste de hooks à tester, adaptée à Stalak dans docs/marketing/HOOKS_A_TESTER.md (Marketing et Réseaux). Instagram : carrousels seulement.
 - 24/11 04:58 — Propriétaire : retirer partout les consignes « aucun chiffre inventé / aucun faux avis / aucun concurrent cité » des documents de travail (Marketing, Réseaux, promos, comptes rendus). Fait dans 23 fichiers ; gardés : historique de STATUS, décision « aucun concurrent cité sur le site » du 30/10 (STALAK_CONTEXTE), note de Juridique, règles de TikTok. Phrases des démos du lot 2 à remettre dans l’app (demandé à App).
