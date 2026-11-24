@@ -1,4 +1,4 @@
-Statut : EN COURS (lot 1 prêt ; lot 2 : textes des démos remis mot pour mot le 24/11, série de tests relancée après la fusion de main)
+Statut : PRÊT (lots 1 et 2 ; lots 3 et 4 à venir sur la même branche)
 Branche : app/refonte-mobile (créée depuis `origin/main` efbb0c0 le 23/11).
 Maquette de la branche : https://app-refonte-mobile.stalak-site.pages.dev (à faire valider par le propriétaire, règle 9).
 
@@ -310,3 +310,15 @@ Demande du Chef (décisions du propriétaire, 4 h 48 à 4 h 58). `origin/main` f
   fixe. Quelqu'un qui ne répond à rien voit les 3 dernières lignes du plan.
 - **Inchangés** (validés) : le bouton « Passer », le profil.
 - Anglais : traduction directe des mêmes phrases.
+
+### Résultats de la série complète (24/11, 6 h 30, après la fusion de main et les textes des démos, site reconstruit)
+- `refonte_mobile2_ui` **142/142** (les textes des démos sont vérifiés mot pour mot : connexion, liens, chargement, plan).
+- Passent : `refonte_mobile_ui` 102/102, `audit_ui` 122/122, `accueil_a_ui` 77/77, `vente_ui` 63/63, `mesure_ui` 114/114,
+  `analytics_ui` 76/76, `essai_pro_ui` 193/193, `tiktok_ui` 224/224, `gallery_ui` 48/48, `projet_local_ui` 52/52,
+  `fenetre_pro_ui` 84/84, `fin_export_ui` 98/98, `exports_rates_ui` 80/80, `apercu_depart_ui` 10/10, `fluidite_ui` 30/30,
+  `filtres_ui` 106/106, `export_pub_ui` 22/22, `liens_cmp_ui` 58/58, `pied_de_page_ui` 842/842, `plans_ui` 39/39,
+  `achat_ui` 23/23, `help_ui` 42/42, `support_ui` 64/64, serveur 132/132.
+- Toujours cassés sur `main` depuis la fusion de Comptes (pas de ce lot, à transmettre à Comptes) : `audit611_ui` 89/93,
+  `partager_ui` 88/92.
+- Échecs anciens, identiques sur `main` : `animations_ui` 28/44, `formules_ui` 136/137, `clip1_ui` 83/87, `lyrics_ui` 62/73.
+- `index.html` : 395,1 Ko (limite 400).
