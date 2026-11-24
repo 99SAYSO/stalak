@@ -127,9 +127,9 @@ def phone(b, PW, base, site, lang, dev):
     # (the owner, 23/11) one screen, like an app: the page does not scroll down to the site (reviews, pitch, footer); the snow falls
     app = pg.evaluate('''() => { scrollTo(0, 5000); const y = scrollY, v = s => [...document.querySelectorAll(s)].some(e => e.getClientRects().length), a = getComputedStyle(document.body, '::after');
         return { y, sh: document.documentElement.scrollHeight, ih: innerHeight, site: ['.bands', '.ft', '.proof', '.installtip', '.byalaska'].filter(v), snow: a.display !== 'none' && /^url\\(/.test(a.backgroundImage) && a.animationName !== 'none',
-          ring: /79b4f3/.test(decodeURIComponent(a.backgroundImage)) }; }''')
+          ring: /fill='#ffffff'/.test(decodeURIComponent(a.backgroundImage)) }; }''')
     check(tag + ' : un seul écran, comme une appli : la page ne défile pas vers le site (avis, pied de page)', app['y'] == 0 and app['sh'] <= app['ih'] and not app['site'], app)
-    check(tag + ' : des flocons tombent sur le fond glace (bleus, pour qu’on les voie)', app['snow'] and app['ring'], app)
+    check(tag + ' : des flocons blancs tombent sur le fond dégradé (choix du propriétaire du 24/11)', app['snow'] and app['ring'], app)
     # the formula → the plans (the bar leaves), back
     pg.locator('#mhPill').click(); pg.wait_for_timeout(700)
     st = pg.evaluate('''() => [document.documentElement.className, getComputedStyle(document.querySelector('#tabBar')).display, !document.querySelector('#apPro').hidden]''')

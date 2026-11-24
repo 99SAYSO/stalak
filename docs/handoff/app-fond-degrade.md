@@ -1,4 +1,4 @@
-Statut : EN COURS
+Statut : PRÊT
 
 # Branche `app/fond-degrade` — le fond « A » sur les écrans à barre du bas (24/11)
 
@@ -15,3 +15,14 @@ Demande : `docs/handoff/chef-fond-degrade.md` (choix du propriétaire à 21 h 58
 - Cartes blanches, boutons, pastilles, barre du bas : inchangés. Éditeur, caméra, paywall « Salle », connexion, questionnaire et ordinateur : inchangés.
 
 Maquette : https://app-fond-degrade.stalak-site.pages.dev/fr/ (Stats connecté : `?demo=gratuit` ou `?demo=pro`).
+
+## Tests
+- `refonte_mobile_ui` 102/102 (la vérification des flocons attend maintenant des flocons blancs, choix du propriétaire), `accueil_a_ui` 77/77, `refonte_mobile2_ui` 65/65, `refonte_stats_ui` 72/72, `refonte_mobile4_ui` 69/69.
+- Captures iPhone 13 et iPhone SE de chaque écran à barre du bas : aucun texte foncé posé directement sur le dégradé.
+
+## Ordre de fusion
+`app/stats-analyse` d'abord (cette branche la contient), puis celle-ci.
+
+## Pour les autres
+- **Marketing** : rien dans `build_site.py` ni `site_src`.
+- **Comptes** : rien dans `functions/` ni `account.js` ; seul l'habillage de l'écran Compte change (fond, couleur du nom et de l'e-mail, bouton « Se déconnecter »).
