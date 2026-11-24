@@ -322,3 +322,4 @@ Demande du Chef (décisions du propriétaire, 4 h 48 à 4 h 58). `origin/main` f
   `partager_ui` 88/92.
 - Échecs anciens, identiques sur `main` : `animations_ui` 28/44, `formules_ui` 136/137, `clip1_ui` 83/87, `lyrics_ui` 62/73.
 - `index.html` : 395,1 Ko (limite 400).
+- **Maquette validée par le propriétaire** le 24/11 à 6 h 46 (« oui elle me va ») : lots 1 et 2 prêts à fusionner.
