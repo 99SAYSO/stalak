@@ -42,7 +42,7 @@ Dossier `docs/audit/maquettes/mobile-2026-11-23/` (images et vidéos) et `source
 - La mascotte n'existe qu'en petit (266 px) : floue en grand. Le propriétaire a été prévenu ; s'il envoie le dessin en grande taille, je le transmets.
 - À la fin de chaque lot : tests habituels (serveur, écran 390 px et 1280 px, FR et EN), `docs/STATUS.md`, compte rendu `docs/handoff/app-refonte-mobile.md` avec le lien de la maquette.
 
-## Ajout du 23/11, 23 h : onboarding, paywall, offre à 1 € (en attente du « ok » final du propriétaire sur le paywall et l'offre)
+## Ajout du 23/11, 23 h : onboarding, paywall, offre à 1 € (validés par le propriétaire le 24/11)
 
 | N° | Écran | Fichier | À retenir |
 |---|---|---|---|
