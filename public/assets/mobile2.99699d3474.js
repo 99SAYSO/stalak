@@ -38,7 +38,7 @@ fr: {
   'ob.q8': 'Ton objectif ?', 'ob.o.son': 'Faire décoller un son', 'ob.o.poster': 'Poster plus souvent', 'ob.o.concerts': 'Remplir mes concerts',
   'ob.b0': 'Salut !', 'ob.b1': 'Enchanté, {name} !', 'ob.b1n': 'Enchanté !', 'ob.b2': '{list}, noté !', 'ob.b2n': 'C’est noté !', 'ob.b3': 'Trop bien !', 'ob.b3n': 'Ça viendra !', 'ob.b4': 'Je note tout', 'ob.b5': 'Bien, on part de là',
   'ob.b6': '{list}, top', 'ob.b6n': 'Ça marche', 'ob.b7': 'Merci de me le dire', 'ob.b8': 'Gros objectif, j’aime', 'ob.b9': 'C’est parti !',
-  'ob.load': 'On prépare ton plan…', 'ob.ln.from': 'Tu pars de <b>{v}</b> auditeurs par mois', 'ob.ln.genre': '{list} : coupes calées sur des tempos rapides', 'ob.ln.fmt': 'Format <b>9:16</b> pour {list}', 'ob.ln.goal': 'Objectif : <b>{v}</b> auditeurs par mois', 'ob.ln.none': 'Stalak coupe tes prises sur le rythme de ton son',
+  'ob.load': 'On analyse ton profil…', 'ob.ready': 'Ton analyse est prête', 'ob.readyP': 'Crée ton compte pour voir ton analyse.', 'ob.readyIn': 'Elle t’attend dans « Stats ».', 'ob.create': 'Crée ton compte pour la voir', 'ob.see': 'Voir mon analyse', 'ob.other': 'Dis-nous ce que tu fais', 'ob.need': 'Ton TikTok (et ton Spotify si ta musique est en ligne) : sans eux, « Stats » ne peut pas faire ton analyse.', 'ob.needOne': 'Il faut ton {site} pour faire ton analyse.', 'ob.req': 'obligatoire', 'ob.st.tt': 'On analyse ton TikTok…', 'ob.st.sp': 'On lit tes sorties Spotify…', 'ob.st.style': 'On regarde ton style : <b>{list}</b>', 'ob.st.goal': 'On compare avec ton objectif : <b>{v}</b> auditeurs', 'ob.st.posts': 'On prépare tes conseils pour {list}', 'ob.st.end': 'On écrit ton bilan…', 'ob.ln.from': 'Tu pars de <b>{v}</b> auditeurs par mois', 'ob.ln.genre': '{list} : coupes calées sur des tempos rapides', 'ob.ln.fmt': 'Format <b>9:16</b> pour {list}', 'ob.ln.goal': 'Objectif : <b>{v}</b> auditeurs par mois', 'ob.ln.none': 'Stalak coupe tes prises sur le rythme de ton son',
   'ob.plan': 'Ton plan est prêt, {name} !', 'ob.planN': 'Ton plan est prêt !',
   'ob.pl.who': '{genres}, sur {posts}', 'ob.pl.whoG': '{genres}', 'ob.pl.whoP': 'Sur {posts}', 'ob.pl.path': 'De {from} à {to} auditeurs par mois', 'ob.pl.to': 'Objectif : {to} auditeurs par mois',
   'ob.f.lt100': 'moins de 100', 'ob.f.100_1k': '100-1 000', 'ob.f.1k_10k': '1 000-10 000', 'ob.f.gt10k': 'plus de 10 000',
@@ -66,7 +66,7 @@ en: {
   'ob.q8': 'Your goal?', 'ob.o.son': 'Make a song take off', 'ob.o.poster': 'Post more often', 'ob.o.concerts': 'Fill my shows',
   'ob.b0': 'Hey!', 'ob.b1': 'Nice to meet you, {name}!', 'ob.b1n': 'Nice to meet you!', 'ob.b2': '{list}, noted!', 'ob.b2n': 'Noted!', 'ob.b3': 'Love it!', 'ob.b3n': 'It will come!', 'ob.b4': 'Writing it all down', 'ob.b5': 'Good, we start from there',
   'ob.b6': '{list}, nice', 'ob.b6n': 'Works for me', 'ob.b7': 'Thanks for telling me', 'ob.b8': 'Big goal, I like it', 'ob.b9': 'Let’s go!',
-  'ob.load': 'Getting your plan ready…', 'ob.ln.from': 'You start from <b>{v}</b> monthly listeners', 'ob.ln.genre': '{list}: cuts set to fast tempos', 'ob.ln.fmt': '<b>9:16</b> format for {list}', 'ob.ln.goal': 'Goal: <b>{v}</b> monthly listeners', 'ob.ln.none': 'Stalak cuts your takes to the beat of your song',
+  'ob.load': 'Analysing your profile…', 'ob.ready': 'Your analysis is ready', 'ob.readyP': 'Create your account to see your analysis.', 'ob.readyIn': 'It’s waiting for you in “Stats”.', 'ob.create': 'Create your account to see it', 'ob.see': 'See my analysis', 'ob.other': 'Tell us what you make', 'ob.need': 'Your TikTok (and your Spotify if your music is out): without them, “Stats” can’t make your analysis.', 'ob.needOne': 'We need your {site} to make your analysis.', 'ob.req': 'required', 'ob.st.tt': 'Analysing your TikTok…', 'ob.st.sp': 'Reading your Spotify releases…', 'ob.st.style': 'Looking at your style: <b>{list}</b>', 'ob.st.goal': 'Comparing with your goal: <b>{v}</b> listeners', 'ob.st.posts': 'Preparing your tips for {list}', 'ob.st.end': 'Writing your summary…', 'ob.ln.from': 'You start from <b>{v}</b> monthly listeners', 'ob.ln.genre': '{list}: cuts set to fast tempos', 'ob.ln.fmt': '<b>9:16</b> format for {list}', 'ob.ln.goal': 'Goal: <b>{v}</b> monthly listeners', 'ob.ln.none': 'Stalak cuts your takes to the beat of your song',
   'ob.plan': 'Your plan is ready, {name}!', 'ob.planN': 'Your plan is ready!',
   'ob.pl.who': '{genres}, on {posts}', 'ob.pl.whoG': '{genres}', 'ob.pl.whoP': 'On {posts}', 'ob.pl.path': 'From {from} to {to} monthly listeners', 'ob.pl.to': 'Goal: {to} monthly listeners',
   'ob.f.lt100': 'under 100', 'ob.f.100_1k': '100-1,000', 'ob.f.1k_10k': '1,000-10,000', 'ob.f.gt10k': 'over 10,000',
@@ -181,6 +181,9 @@ var CSS = '@media (max-width:899px){'
 + '.ob-in > i{flex:none;width:30px;height:30px;border-radius:9px;border:2px solid #0a0d14;font:900 15px/26px var(--body);font-style:normal;text-align:center;color:#fff}'
 + '.ob-in label{flex:1;min-width:0;display:block;font:600 12px var(--body);color:#7a8aa6}.ob-in input{display:block;width:100%;min-height:26px;padding:0;border:0;outline:0;background:none;box-shadow:none;font:600 16px var(--body);color:#0a0d14;border-radius:0}'
 + '.ob-in[data-l]{flex-wrap:wrap}.ob-in.bad{border-color:#c62828}.ob-bad{flex:0 0 100%;padding:2px 0 6px 41px;font:600 13px/1.3 var(--body);font-style:normal;color:#b3261e}.ob-bad[hidden]{display:none}'
++ '.ob-other{margin-top:12px}.ob-other[hidden]{display:none}.ob-need{margin:12px 2px 0;font:600 14px/1.4 var(--body);color:#3d4a63}.ob-req{font:800 11px/1 var(--body);color:#b3261e;text-transform:uppercase;letter-spacing:.04em}.ob-req[hidden]{display:none}'
++ '.ob-lock{position:relative;margin:14px 0 6px;padding:16px;border:3px solid #0a0d14;border-radius:22px;background:#fff;box-shadow:0 5px 0 #0a0d14;overflow:hidden}.ob-fake{display:flex;align-items:flex-end;gap:8px;height:110px;filter:blur(7px)}.ob-fake i{flex:1;border-radius:8px 8px 0 0;background:#1f6fd6}.ob-fake i:nth-child(1){height:30%}.ob-fake i:nth-child(2){height:48%}.ob-fake i:nth-child(3){height:40%}.ob-fake i:nth-child(4){height:66%}.ob-fake i:nth-child(5){height:58%}.ob-fake i:nth-child(6){height:82%}.ob-fake i:nth-child(7){height:95%}'
++ '.ob-fl{margin-top:14px;filter:blur(6px)}.ob-fl b{display:block;height:12px;margin:8px 0;border-radius:6px;background:#c9dcf3}.ob-fl b:nth-child(2){width:80%}.ob-fl b:nth-child(3){width:60%}.ob-pad{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:66px;height:66px;border-radius:50%;border:3px solid #0a0d14;background:#ffd23f;box-shadow:0 4px 0 #0a0d14;display:grid;place-items:center;font-size:30px}'
 + '.ob-in.big{min-height:66px}.ob-in.big input{font:700 24px var(--body);text-align:center;min-height:44px}'
 + '.ob-in:focus-within{box-shadow:inset 0 4px 0 #eaf4ff,0 0 0 3px #1f6fd6}'
 + '.ob-in .ok{flex:none;width:24px;height:24px;border-radius:50%;background:#2ecc71;border:2px solid #0a0d14;color:#fff;font:900 14px/20px var(--body);text-align:center;transform:scale(0)}.ob-in.has .ok{transform:scale(1)}'
@@ -391,20 +394,25 @@ var QS = [
   { id: 'artistName', kind: 'text' },
   { id: 'genres', kind: 'multi', grid: true, ops: [['rap', '🎤', 'ob.g.rap'], ['drill', '🔥', 'ob.g.drill'], ['chant', '🎶', 'ob.g.chant'], ['autre', '✨', 'ob.g.autre']] },
   { id: 'onPlatforms', kind: 'one', ops: [['oui', '✅', 'ob.p.oui'], ['non', '⏳', 'ob.p.non']] },
-  { id: 'links', kind: 'links', only: function(a){ return a.onPlatforms === 'oui'; } },
-  { id: 'listenersNow', kind: 'one', hint: 'ob.q4h', only: function(a){ return a.onPlatforms === 'oui'; }, ops: [['lt100', '🌱', 'ob.l.a'], ['100_1k', '🔥', 'ob.l.b'], ['1k_10k', '🚀', 'ob.l.c'], ['gt10k', '👑', 'ob.l.d']] },
+  { id: 'links', kind: 'links' },
+  { id: 'listenersNow', kind: 'one', hint: 'ob.q4h', only: function(a){ return a.onPlatforms === 'oui' && !(a.links && a.links.spotify); }, ops: [['lt100', '🌱', 'ob.l.a'], ['100_1k', '🔥', 'ob.l.b'], ['1k_10k', '🚀', 'ob.l.c'], ['gt10k', '👑', 'ob.l.d']] },
   { id: 'postsOn', kind: 'multi', ops: [['tiktok', '📱', 'ob.s.tiktok'], ['reels', '📸', 'ob.s.reels'], ['shorts', '▶️', 'ob.s.shorts']] },
   { id: 'blockers', kind: 'multi', ops: [['few_views', '👀', 'ob.b.vues'], ['editing_time', '⏳', 'ob.b.temps'], ['no_ideas', '🤷', 'ob.b.idees']] },
   { id: 'listenersGoal', kind: 'one', ops: [['1k', '🌱', 'ob.t.a'], ['10k', '🔥', 'ob.t.b'], ['100k', '🚀', 'ob.t.c'], ['1m', '👑', 'ob.t.d']] },
   { id: 'goals', kind: 'multi', ops: [['song_launch', '💿', 'ob.o.son'], ['post_more', '📅', 'ob.o.poster'], ['fill_concerts', '🎤', 'ob.o.concerts']] }
 ];
 // the sites Comptes accepts for each link (functions/_lib/artist.js); « @name » for Instagram
-var LINKS = [['spotify', 'Spotify', '#1db954', '♫', 'open.spotify.com/artist/…', ['open.spotify.com', 'spotify.link']], ['appleMusic', 'Apple Music', '#fa2d48', '', 'music.apple.com/…', ['music.apple.com']],
-  ['soundcloud', 'SoundCloud', '#ff5500', '☁', 'soundcloud.com/…', ['soundcloud.com', 'm.soundcloud.com', 'on.soundcloud.com']], ['instagram', 'Instagram', 'linear-gradient(45deg,#f9a12e,#e1306c,#833ab4)', '@', '@…', ['instagram.com', 'www.instagram.com']]];
+// (24/11, « Stats ») TikTok for everyone and Spotify when the music is out are needed for the analysis; YouTube added
+var LINKS = [['tiktok', 'TikTok', '#0a0d14', '♪', '@…', ['tiktok.com', 'www.tiktok.com', 'vm.tiktok.com', 'm.tiktok.com']],
+  ['spotify', 'Spotify', '#1db954', '♫', 'open.spotify.com/artist/…', ['open.spotify.com', 'spotify.link']], ['appleMusic', 'Apple Music', '#fa2d48', '', 'music.apple.com/…', ['music.apple.com']],
+  ['soundcloud', 'SoundCloud', '#ff5500', '☁', 'soundcloud.com/…', ['soundcloud.com', 'm.soundcloud.com', 'on.soundcloud.com']], ['youtube', 'YouTube', '#ff0000', '▶', 'youtube.com/@…', ['youtube.com', 'www.youtube.com', 'm.youtube.com', 'youtu.be', 'music.youtube.com']],
+  ['instagram', 'Instagram', 'linear-gradient(45deg,#f9a12e,#e1306c,#833ab4)', '@', '@…', ['instagram.com', 'www.instagram.com']]];
+function linkNeed(kind, a){ return kind === 'tiktok' || (kind === 'spotify' && a.onPlatforms === 'oui'); }
 function linkOk(kind, v){
   v = String(v || '').trim(); if (!v) return true;
   var l = LINKS.filter(function(x){ return x[0] === kind; })[0]; if (!l) return false;
   if (kind === 'instagram' && /^@?[A-Za-z0-9._]{1,30}$/.test(v)) return true;
+  if ((kind === 'tiktok' || kind === 'youtube') && /^@[A-Za-z0-9._-]{1,40}$/.test(v)) return true;
   if (!/^https?:\/\//i.test(v)) v = 'https://' + v;
   try { var u = new URL(v); return l[5].indexOf(u.hostname.toLowerCase()) >= 0 && !u.username && !u.password; } catch(e){ return false; }
 }
@@ -415,6 +423,7 @@ function obSave(st){ store.set(OB_KEY, JSON.stringify(st)); obSend(); }
 function obWire(a){
   var o = {}, k;
   if (a.artistName) o.artistName = a.artistName;
+  if (a.genres && a.genres.indexOf('autre') >= 0 && a.genreOther) o.genreOther = a.genreOther;
   ['genres', 'postsOn', 'blockers', 'goals'].forEach(function(k){ if (a[k] && a[k].length) o[k] = a[k].slice(); });
   if (a.onPlatforms) o.onPlatforms = a.onPlatforms === 'oui';
   if (a.listenersNow) o.listenersNow = a.listenersNow; if (a.listenersGoal) o.listenersGoal = a.listenersGoal;
@@ -440,12 +449,17 @@ function obBubble(i, a){
     case 6: return p.length ? t('ob.b6', { list: list(p) }) : t('ob.b6n'); case 7: return t('ob.b7'); case 8: return t('ob.b8'); default: return t('ob.b9'); } }
 // the lines of the loading screen and of the plan: only what the person answered, or what Stalak really does
 function obLines(a){
-  var g = labels('genres', a.genres), p = labels('postsOn', a.postsOn), L = [], now = labels('listenersNow', [a.listenersNow])[0], to = labels('listenersGoal', [a.listenersGoal])[0];
-  if (a.listenersNow) L.push(['🎧', t('ob.ln.from', { v: esc(now.toLowerCase()) })]);
-  if (g.length) L.push(['🔥', t('ob.ln.genre', { list: esc(list(low(g))) })]);
-  if (p.length) L.push(['📱', t('ob.ln.fmt', { list: esc(list(p)) })]);
-  if (a.listenersGoal) L.push(['🎯', t('ob.ln.goal', { v: esc(to) })]);
-  if (!L.length) L.push(['✂️', esc(t('ob.ln.none'))]);
+  var g = labels('genres', a.genres), p = labels('postsOn', a.postsOn), to = labels('listenersGoal', [a.listenersGoal])[0], L = [];
+  if (a.links && a.links.tiktok) L.push(['📱', esc(t('ob.st.tt')), 2.6]);
+  if (g.length) L.push(['🔥', t('ob.st.style', { list: esc(list(low(g))) }), 0.9]);
+  if (a.links && a.links.spotify) L.push(['🎧', esc(t('ob.st.sp')), 2.3]);
+  if (a.listenersGoal) L.push(['🎯', t('ob.st.goal', { v: esc(to) }), 0.8]);
+  if (p.length) L.push(['✂️', esc(t('ob.st.posts', { list: list(p) })), 0.9]);
+  L.push(['📝', esc(t('ob.st.end')), 1.2]);
+  // about 9 s in all, whatever was answered: the slow steps take the rest
+  var tot = L.reduce(function(x, l){ return x + l[2]; }, 0), slow = L.filter(function(l){ return l[2] > 1.5; });
+  if (!slow.length) slow = [L[L.length - 1]];
+  slow.forEach(function(l){ l[2] += (9 - tot) / slow.length; }); L.forEach(function(l){ l[2] = Math.max(0.6, l[2]); });
   return L; }
 function obPlan(a){
   var g = labels('genres', a.genres), p = labels('postsOn', a.postsOn), go = labels('goals', a.goals), P = [], now = labels('listenersNow', [a.listenersNow])[0], to = labels('listenersGoal', [a.listenersGoal])[0];
@@ -454,10 +468,12 @@ function obPlan(a){
   P.push(t('ob.pl.week')); P.push(t('ob.pl.stats'));
   P.push(t('ob.pl.first')); return P; }
 
-function obOpen(){
-  if (ob) return;
-  var a = { artistName: '', genres: [], onPlatforms: '', links: {}, listenersNow: '', postsOn: [], blockers: [], listenersGoal: '', goals: [] };
+function obOpen(opts){
+  if (ob) return; opts = opts || {};
+  var a = { artistName: '', genres: [], genreOther: '', onPlatforms: '', links: {}, listenersNow: '', postsOn: [], blockers: [], listenersGoal: '', goals: [] };
   var u = M.acct && M.acct.state.user; if (u && u.displayName) a.artistName = u.displayName;
+  var kept = obState(); if (kept && kept.a) for (var kk in a) if (kept.a[kk] != null && kept.a[kk] !== '') a[kk] = kept.a[kk];
+  if (!a.links || typeof a.links !== 'object') a.links = {};
   var box = el('div', 'm2-ob'); box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.id = 'm2Onb';
   var sc = scene('<div class="ob-m">' + POSE.filter(function(p, i){ return POSE.indexOf(p) === i; }).map(function(p){ return '<img alt="" data-p="' + p + '" src="/emoji/' + p + '.webp">'; }).join('') + '</div><div class="m2-bub" aria-live="polite"></div>', 3);
   var back = el('button', 'm2-round', '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7"/></svg>'); back.type = 'button'; back.setAttribute('aria-label', t('ob.back'));
@@ -472,8 +488,11 @@ function obOpen(){
     var s = el('section', 'ob-q'); s.dataset.i = i; var h = '<h1 id="obT' + i + '">' + esc(t('ob.q' + i)) + '</h1>';
     if (q.kind === 'multi') h += '<p class="ob-hint">' + esc(t('ob.multi')) + '</p>'; else if (q.hint) h += '<p class="ob-hint">' + esc(t(q.hint)) + '</p>'; else if (q.kind === 'links') h += '<p class="ob-hint">' + esc(t('ob.q3h')) + '</p>';
     if (q.kind === 'text') h += '<div class="ob-ops"><div class="ob-in big"><label style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)" for="obName">' + esc(t('ob.q0')) + '</label><input id="obName" type="text" maxlength="30" autocomplete="nickname" autocapitalize="words" spellcheck="false" enterkeyhint="next" placeholder="' + esc(t('ob.q0ph')) + '"></div></div>';
-    else if (q.kind === 'links') h += '<div class="ob-ops">' + LINKS.map(function(l){ return '<div class="ob-in" data-l="' + l[0] + '"><i style="background:' + l[2] + '">' + l[3] + '</i><label>' + l[1] + '<input type="text" inputmode="url" autocapitalize="off" autocomplete="off" spellcheck="false" maxlength="200" placeholder="' + esc(l[4]) + '"></label><span class="ok" aria-hidden="true">✓</span><em class="ob-bad" role="alert" hidden></em></div>'; }).join('') + '</div>';
+    else if (q.kind === 'links') h += '<div class="ob-ops">' + LINKS.map(function(l){ return '<div class="ob-in" data-l="' + l[0] + '"><i style="background:' + l[2] + '">' + l[3] + '</i><label>' + l[1] + ' <b class="ob-req" hidden></b><input type="text" inputmode="url" autocapitalize="off" autocomplete="off" spellcheck="false" maxlength="200" placeholder="' + esc(l[4]) + '"></label><span class="ok" aria-hidden="true">✓</span><em class="ob-bad" role="alert" hidden></em></div>'; }).join('') + '</div>';
     else h += '<div class="ob-ops' + (q.grid ? ' grid' : '') + '" role="group" aria-labelledby="obT' + i + '">' + q.ops.map(function(o){ return '<button type="button" class="ob-op" data-v="' + o[0] + '" aria-pressed="false"><i aria-hidden="true">' + o[1] + '</i><span>' + esc(t(o[2])) + '</span>' + (q.kind === 'multi' ? '<span class="ck" aria-hidden="true">✓</span>' : '') + '</button>'; }).join('') + '</div>';
+    // (24/11) « Autre »: a free field, « Dis-nous ce que tu fais »
+    if (q.id === 'genres') h += '<div class="ob-in ob-other" hidden><label style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)" for="obOther">' + esc(t('ob.other')) + '</label><input id="obOther" type="text" maxlength="60" autocomplete="off" placeholder="' + esc(t('ob.other')) + '"></div>';
+    if (q.kind === 'links') h += '<p class="ob-need">' + esc(t('ob.need')) + '</p>';
     s.innerHTML = h; qs.appendChild(s);
   });
   var planS = el('section', 'ob-q'); planS.dataset.i = 9; qs.appendChild(planS);
@@ -481,12 +500,17 @@ function obOpen(){
   var cur = -1, bub = $('.m2-bub', box), bar = $('i', prog), last = D.activeElement, busy = false;
   ob = { box: box };
   var nameIn = $('#obName', box); nameIn.value = a.artistName;
+  // the answers already given are shown as chosen (the questionnaire opened again from « Stats »)
+  QS.forEach(function(q, i){ var sec = $('.ob-q[data-i="' + i + '"]', box); if (!q.ops) return; $$('.ob-op', sec).forEach(function(b){ var v = a[q.id]; b.setAttribute('aria-pressed', String(Array.isArray(v) ? v.indexOf(b.dataset.v) >= 0 : v === b.dataset.v)); }); });
+  $$('.ob-in[data-l]', box).forEach(function(w){ var v = a.links[w.dataset.l]; if (v){ $('input', w).value = v; w.classList.toggle('has', linkOk(w.dataset.l, v)); } });
+  var oth = $('#obOther', box); if (oth){ oth.value = a.genreOther || ''; $('.ob-other', box).hidden = a.genres.indexOf('autre') < 0; }
   function steps(){ return QS.map(function(q, i){ return i; }).filter(function(i){ return !QS[i].only || QS[i].only(a); }); }
   function pose(i){ var p = POSE[i]; $$('.ob-m img', box).forEach(function(im){ im.classList.toggle('on', im.dataset.p === p); });
     play(function(g){ return g.fromTo($('.ob-m', box), { scaleX: 1.15, scaleY: 0.85, y: 8 }, { scaleX: 1, scaleY: 1, y: 0, duration: 0.5, ease: 'elastic.out(1,0.4)', transformOrigin: '50% 100%', clearProps: 'transform' }); }); }
   function say(i){ bub.textContent = obBubble(i, a); play(function(g){ return g.fromTo(bub, { opacity: 0, scale: 0.4, rotation: -8 }, { opacity: 1, scale: 1, rotation: 4, duration: 0.4, ease: 'back.out(2.5)' }); }); }
   function show(i, dir){
     var from = $('.ob-q.on', box), to = $('.ob-q[data-i="' + i + '"]', box), st = steps(), pos = i === 9 ? st.length : st.indexOf(i);
+    if (QS[i] && QS[i].kind === 'links') $$('.ob-in[data-l]', to).forEach(function(w){ var r = $('.ob-req', w); r.hidden = !linkNeed(w.dataset.l, a); r.textContent = t('ob.req'); });
     cur = i; back.hidden = i === 0 || i === 9; skip.hidden = i === 9; cta.textContent = t(i === 9 ? 'ob.go' : 'ob.next');
     var frac = pos / st.length;
     if (!play(function(g){ return g.to(bar, { scaleX: frac, duration: 0.5, ease: 'back.out(1.6)' }); })) bar.style.transform = 'scaleX(' + frac + ')';
@@ -505,50 +529,62 @@ function obOpen(){
   function next(){
     if (busy) return;
     if (cur === 9){ finish(true); return; }
+    if (opts.start === 'links' && QS[cur] && QS[cur].kind === 'links'){ if (!linksCheck()) return; loading(); return; }
     if (cur === 0) a.artistName = nameIn.value.trim().slice(0, 30);
+    if (QS[cur] && QS[cur].id === 'genres') a.genreOther = a.genres.indexOf('autre') >= 0 ? ($('#obOther', box).value || '').trim().slice(0, 60) : '';
     if (QS[cur] && QS[cur].kind === 'links' && !linksCheck()) return;
     var st = steps(), k = st.indexOf(cur);
     if (k < st.length - 1) show(st[k + 1], 1); else loading();
   }
   function linksCheck(){
     var first = null;
-    $$('.ob-in[data-l]', box).forEach(function(w){ var bad = !linkOk(w.dataset.l, a.links[w.dataset.l]), m = $('.ob-bad', w), l = LINKS.filter(function(x){ return x[0] === w.dataset.l; })[0];
-      w.classList.toggle('bad', bad); m.hidden = !bad; m.textContent = bad ? t('ob.badlink', { site: l[1] }) : ''; if (bad && !first) first = w; });
+    $$('.ob-in[data-l]', box).forEach(function(w){ var k = w.dataset.l, v = a.links[k], wrong = !linkOk(k, v), need = !v && linkNeed(k, a), bad = wrong || need, m = $('.ob-bad', w), l = LINKS.filter(function(x){ return x[0] === k; })[0];
+      w.classList.toggle('bad', bad); m.hidden = !bad; m.textContent = wrong ? t('ob.badlink', { site: l[1] }) : need ? t('ob.needOne', { site: l[1] }) : ''; if (bad && !first) first = w; });
     if (first){ try { $('input', first).focus(); } catch(e){} }
     return !first;
   }
   function prev(){ if (busy) return; var st = steps(), k = st.indexOf(cur); if (k > 0) show(st[k - 1], -1); }
+  // (24/11, « Stats ») about 9 s of « analysis », at an uneven pace: quick steps, one or two that drag 2 to 3 s
   function loading(){
     busy = true; var lines = obLines(a), host = $('.ob-lns', load), pct = $('.ob-pct', load), arc = $('.arc', load);
     $('.ob-lt', load).textContent = t('ob.load'); host.innerHTML = lines.map(function(l){ return '<div class="ob-ln"><u aria-hidden="true">' + l[0] + '</u><span>' + l[1] + '</span></div>'; }).join('');
     load.classList.add('on'); bar.style.transform = 'scaleX(1)';
-    var done = function(){ plan(); };
-    var n = lines.length, per = 0.95, dur = Math.max(1.6, n * per + 0.3);
-    var tl = play(function(g){ var tl = g.timeline({ onComplete: done }), P = { v: 0 };
+    obSave({ v: 2, done: Date.now(), a: a });
+    var done = function(){ ready(); };
+    var n = lines.length, tot = lines.reduce(function(x, l){ return x + l[2]; }, 0);
+    var tl = play(function(g){ var tl = g.timeline({ onComplete: done }), P = { v: 0 }, at = 0.4, pc = 0;
       tl.fromTo(load, { yPercent: 100 }, { yPercent: 0, duration: 0.5, ease: 'power3.inOut' }, 0);
-      tl.fromTo(arc, { strokeDashoffset: 1382.3 }, { strokeDashoffset: 0, duration: dur, ease: 'power1.inOut' }, 0.4);
-      tl.to(P, { v: 100, duration: dur, ease: 'power1.inOut', onUpdate: function(){ pct.textContent = Math.round(P.v) + ' %'; } }, 0.4);
-      tl.fromTo($('.ob-ring img', load), { rotation: -6 }, { rotation: 6, duration: 0.5, ease: 'sine.inOut', repeat: Math.max(1, Math.round(dur / 0.5) - 1), yoyo: true }, 0.4);
-      $$('.ob-ln', load).forEach(function(l, k){ var t0 = 0.6 + k * per;
-        tl.fromTo(l, { opacity: 0, y: 40, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.33, ease: 'back.out(2)' }, t0);
-        if (k < n - 1) tl.to(l, { opacity: 0, y: -30, filter: 'blur(6px)', duration: 0.2, ease: 'power2.in' }, t0 + per - 0.15); });
-      tl.to(load, { yPercent: -105, duration: 0.5, ease: 'power3.in' }, 0.4 + dur + 0.35);
+      tl.fromTo($('.ob-ring img', load), { rotation: -6 }, { rotation: 6, duration: 0.5, ease: 'sine.inOut', repeat: Math.max(1, Math.round(tot / 0.5) - 1), yoyo: true }, 0.4);
+      $$('.ob-ln', load).forEach(function(l, k){ var d = lines[k][2], to = Math.round(100 * (pc + d) / tot), from = Math.round(100 * pc / tot); pc += d;
+        tl.fromTo(l, { opacity: 0, y: 40, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.3, ease: 'back.out(2)' }, at);
+        // the ring and the per cent follow each step: fast when it is fast, slow when it drags
+        tl.fromTo(arc, { strokeDashoffset: 1382.3 * (1 - from / 100) }, { strokeDashoffset: 1382.3 * (1 - to / 100), duration: d, ease: d > 1.8 ? 'power2.inOut' : 'power1.out' }, at);
+        tl.fromTo(P, { v: from }, { v: to, duration: d, ease: d > 1.8 ? 'power2.inOut' : 'power1.out', onUpdate: function(){ pct.textContent = Math.round(P.v) + ' %'; } }, at);
+        if (k < n - 1) tl.to(l, { opacity: 0, y: -30, filter: 'blur(6px)', duration: 0.2, ease: 'power2.in' }, at + d - 0.15);
+        at += d; });
+      tl.to(load, { yPercent: -105, duration: 0.5, ease: 'power3.in' }, at + 0.3);
       return tl; });
-    // a touch passes it; with « less motion » the plan comes at once
+    // a touch passes it; with « less motion » the result comes at once
     load.onclick = function(){ if (tl) tl.timeScale(6); };
     if (!tl){ pct.textContent = '100 %'; done(); }
   }
-  function plan(){
+  // « Ton analyse est prête »: a blurred preview with a padlock; signed out → « Crée ton compte pour la voir »
+  function ready(){
     load.classList.remove('on'); busy = false;
-    planS.innerHTML = '<h1>' + esc(a.artistName ? t('ob.plan', { name: a.artistName }) : t('ob.planN')) + '</h1><div class="ob-plan">' + obPlan(a).map(function(p){ return '<div><u aria-hidden="true">✓</u><span>' + esc(p) + '</span></div>'; }).join('') + '</div>';
-    obSave({ v: 2, done: Date.now(), a: a });
+    var signed = !!(M.acct && M.acct.state.user);
+    planS.innerHTML = '<h1>' + esc(t('ob.ready')) + '</h1><div class="ob-lock" aria-hidden="true"><div class="ob-fake"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="ob-fl"><b></b><b></b><b></b></div><span class="ob-pad">🔒</span></div>'
+      + '<p class="ob-hint">' + esc(t(signed ? 'ob.readyIn' : 'ob.readyP')) + '</p>';
     var from = $('.ob-q.on', box); if (from) from.classList.remove('on');
-    show(9, 1);
-    play(function(g){ return g.fromTo(cta, { y: 30, scale: 0.92 }, { y: 0, scale: 1, duration: 0.5, ease: 'back.out(2)', clearProps: 'transform' }, 0.5); });
+    show(9, 1); cta.textContent = t(signed ? 'ob.see' : 'ob.create');
+    play(function(g){ return g.timeline().fromTo($('.ob-lock', planS), { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.45, ease: 'back.out(2)', clearProps: 'transform,opacity' }, 0.2)
+      .fromTo($('.ob-pad', planS), { scale: 0.3, rotation: -20 }, { scale: 1, rotation: 0, duration: 0.5, ease: 'back.out(3)', clearProps: 'transform' }, 0.45)
+      .fromTo(cta, { y: 30, scale: 0.92 }, { y: 0, scale: 1, duration: 0.5, ease: 'back.out(2)', clearProps: 'transform' }, 0.5); });
   }
   function finish(done){
-    if (!done){ for (var k in a.links) if (!linkOk(k, a.links[k])) delete a.links[k]; obSave({ v: 2, skipped: Date.now(), a: a }); }
-    var end = function(){ box.remove(); root.classList.remove('m2-onb'); ob = null; try { last && last.focus && last.focus(); } catch(e){} W.__stalakOnbDone = 1; };
+    if (!done){ for (var k in a.links) if (!linkOk(k, a.links[k])) delete a.links[k]; var was = obState(); obSave({ v: 2, skipped: Date.now(), a: a, done: was && was.done || undefined }); }
+    var end = function(){ box.remove(); root.classList.remove('m2-onb'); ob = null; try { last && last.focus && last.focus(); } catch(e){} W.__stalakOnbDone = 1;
+      // then « Stats »: signed in, the analysis; signed out, the account to create first (Stats opens after it)
+      if (opts.from === 'stats' && W.StalakM5) W.StalakM5.after(!!done); };
     if (!play(function(g){ return g.to(box, { yPercent: -104, duration: 0.42, ease: 'power3.in', onComplete: end }); })) end();
   }
   box.addEventListener('click', function(ev){
@@ -556,6 +592,7 @@ function obOpen(){
     var q = QS[+b.closest('.ob-q').dataset.i], v = b.dataset.v;
     if (q.kind === 'multi'){ var arr = a[q.id], k = arr.indexOf(v); if (k >= 0) arr.splice(k, 1); else arr.push(v); b.setAttribute('aria-pressed', String(k < 0)); }
     else { a[q.id] = a[q.id] === v ? '' : v; $$('.ob-op', b.parentNode).forEach(function(x){ x.setAttribute('aria-pressed', String(x.dataset.v === a[q.id])); }); }
+    if (q.id === 'genres'){ var of = $('.ob-other', box), on = a.genres.indexOf('autre') >= 0; of.hidden = !on; if (on){ try { $('input', of).focus({ preventScroll: true }); } catch(e){} } }
     play(function(g){ return g.timeline().to(b, { scale: 0.96, duration: 0.08 }).to(b, { scale: 1, duration: 0.3, ease: 'back.out(3)', clearProps: 'transform' }); });
   });
   box.addEventListener('input', function(ev){ var w = ev.target.closest && ev.target.closest('.ob-in[data-l]'); if (!w) return; var v = ev.target.value.trim().slice(0, 200); if (v) a.links[w.dataset.l] = v; else delete a.links[w.dataset.l]; w.classList.toggle('has', !!v && linkOk(w.dataset.l, v)); if (w.classList.contains('bad') && linkOk(w.dataset.l, v)){ w.classList.remove('bad'); $('.ob-bad', w).hidden = true; } });
@@ -564,7 +601,7 @@ function obOpen(){
     if (ev.shiftKey && D.activeElement === f[0]){ ev.preventDefault(); f[f.length - 1].focus(); } else if (!ev.shiftKey && D.activeElement === f[f.length - 1]){ ev.preventDefault(); f[0].focus(); } } });
   cta.onclick = next; back.onclick = prev; skip.onclick = function(){ if (!busy) finish(false); };
   if (!play(function(g){ return g.fromTo(box, { yPercent: 100 }, { yPercent: 0, duration: 0.45, ease: 'power3.out', clearProps: 'transform' }); })) { /* shown at once */ }
-  show(0, 1);
+  show(opts.start === 'links' ? QS.map(function(q){ return q.kind; }).indexOf('links') : 0, 1);
 }
 // the first launch on this phone, after the opening; never over an edit, a page of the account or a link to something
 function obMaybe(){
@@ -590,5 +627,5 @@ function sync(){
 }
 M.on(sync); sync();
 W.StalakM2 = { onboarding: obOpen, state: obState };
-setTimeout(obMaybe, 400);
+// (24/11) the first launch shows the tutorial (lot 4); the questionnaire opens from « Stats » (src/mobile5.js)
 })();

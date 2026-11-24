@@ -11692,6 +11692,8 @@ function mobTab(k){
   else if (k === 'gallery') apGo('gallery');
   else if (k === 'account') apGo('account');
   else if (k === 'stats'){
+    // (24/11, « Stats ») the questionnaire, then the analysis of the artist (src/mobile5.js)
+    if (window.StalakM5){ if (ACCT) apHide(); if (window.StalakM5.open()) return; }
     // « Mes stats » TikTok (Réseaux sociaux): its own entry of the account menu does it (link the account first if needed)
     const am = $('#acctMenu [data-am="tiktok"]');
     if (u && am && !am.hidden){ apHide(); am.click(); } else apGo('account');
@@ -11713,7 +11715,7 @@ function mobInit(){
   // lot 2: on a phone of stalak.app, the dressed screens come in their own file, after the app
   window.StalakM = Object.freeze({ lang: () => LANG, t: (k, v) => _t(k, v), acct: ACCT, view: () => (ACCT && isShown($('#acctPage')) ? apView : null), mode: () => apMode, step: () => apStep,
     go: (v, o) => apGo(v, o), hide: () => apHide(), plan: () => acctPlan(), paid: () => acctPaid(), name: u => acctName(u), calm: () => calmMotion(), gsap: () => mobGsap(), play: b => mobPlay(b),
-    phone: () => MOB.matches, home: () => mobHome(), cloud: () => (typeof CL !== 'undefined' ? CL : null), reload: () => clLoadList(), on: f => { mobSubs.push(f); },
+    phone: () => MOB.matches, home: () => mobHome(), ttStats: () => { const am = $('#acctMenu [data-am="tiktok"]'); if (ACCT && ACCT.state.user && am && !am.hidden){ apHide(); am.click(); return true; } return false; }, cloud: () => (typeof CL !== 'undefined' ? CL : null), reload: () => clLoadList(), on: f => { mobSubs.push(f); },
     // (refonte mobile, lot 3) the editor: its step, its takes, the camera; nothing here changes a setting
     ed: Object.freeze({ step: () => S.step, go: n => go(n), done: () => document.body.classList.contains('isdone'), song: () => !!S.song, kind: () => S.kind,
       can: f => can(f), playing: () => !!S.playing, lyr: () => S.lyrics.mode, exporting: () => !!S.exporting,
@@ -11734,6 +11736,9 @@ function mobInit(){
   // (refonte mobile, lot 4) the tutorial, the help, the paywall, the 1 € offer and the « thank you » on a phone
   const m4 = () => { if (!ACCT || !MOB.matches || !window.STALAK_M4 || m4.done) return; m4.done = true; const e = document.createElement('script'); e.src = window.STALAK_M4; e.async = false; document.head.appendChild(e); };
   m4(); try { MOB.addEventListener('change', m4); } catch(e){}
+  // (24/11) « Stats »: the analysis of the artist on a phone
+  const m5 = () => { if (!ACCT || !MOB.matches || !window.STALAK_M5 || m5.done) return; m5.done = true; const e = document.createElement('script'); e.src = window.STALAK_M5; e.async = false; document.head.appendChild(e); };
+  m5(); try { MOB.addEventListener('change', m5); } catch(e){}
 }
 mobInit();
 

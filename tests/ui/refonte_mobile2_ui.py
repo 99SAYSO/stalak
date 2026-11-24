@@ -191,124 +191,7 @@ def pull(b, PW, dev, lang):
     ctx.close()
 
 
-def onboarding(b, PW, dev, lang, calm=False):
-    tag = dev + ' ' + lang + (' (onboarding, moins d’animations)' if calm else ' (onboarding)'); t = T[lang]
-    W = 250 if calm else 1000
-    ctx, pg, errs = page(b, PW, dev, lang, onb=True, calm=calm)
-    pg.wait_for_selector('#m2Onb', timeout=8000); pg.wait_for_timeout(W)
-    check(tag + ' : au premier lancement : « %s », un champ, « %s », la barre du bas cachée' % (t['q0'], t['skip']), pg.locator('.ob-q.on h1').inner_text().strip() == t['q0'] and vis(pg, '#obName')
-          and pg.locator('.ob-skip').inner_text().strip() == t['skip'] and not vis(pg, '#tabBar'))
-    cs = pg.evaluate("() => { const c = getComputedStyle(document.querySelector('.ob-cta')); const r = document.querySelector('.ob-cta').getBoundingClientRect(); return [c.backgroundColor, c.borderTopColor, r.bottom <= innerHeight, r.height]; }")
-    check(tag + ' : un seul bouton principal, en bas, bleu à contour encre', cs[0] == 'rgb(31, 111, 214)' and cs[1] == 'rgb(10, 13, 20)' and cs[2] and cs[3] >= 56 and pg.locator('.ob-cta:visible').count() == 1, cs)
-    shot(pg, 'onboarding-0-%s-%s' % (dev.replace(' ', ''), lang))
-    seen = [0]
-
-    def nxt():
-        pg.tap('.ob-cta'); pg.wait_for_timeout(W); i = int(pg.locator('.ob-q.on').get_attribute('data-i')); seen.append(i); return i
-    pg.fill('#obName', 'T-Crazy'); i = nxt()
-    bub = pg.locator('#m2Onb .m2-bub').inner_text()
-    check(tag + ' : la mascotte répond avec son nom', 'T-Crazy' in bub, bub)
-    pg.tap('.ob-q.on [data-v=rap]'); pg.tap('.ob-q.on [data-v=drill]')
-    check(tag + ' : plusieurs choix possibles (2 cochés)', pg.locator('.ob-q.on .ob-op[aria-pressed=true]').count() == 2)
-    shot(pg, 'onboarding-1-%s-%s' % (dev.replace(' ', ''), lang))
-    i = nxt(); pg.tap('.ob-q.on [data-v=oui]'); i = nxt()
-    check(tag + ' : déjà sur les plateformes : les liens, avec la phrase de la démo validée', i == 3 and pg.locator('.ob-q.on .ob-in').count() == 4
-          and pg.locator('.ob-q.on .ob-hint').inner_text().strip() == t['hint'], pg.locator('.ob-q.on .ob-hint').inner_text())
-    pg.fill('.ob-in[data-l=spotify] input', 'youtube.com/watch?v=abc'); pg.tap('.ob-cta'); pg.wait_for_timeout(500)
-    bad = pg.locator('.ob-in[data-l=spotify] .ob-bad').inner_text().strip() if vis(pg, '.ob-in[data-l=spotify] .ob-bad') else ''
-    check(tag + ' : un lien d’un autre site : on reste sur la question, et c’est écrit sous le champ', int(pg.locator('.ob-q.on').get_attribute('data-i')) == 3 and 'Spotify' in bad, bad)
-    pg.fill('.ob-in[data-l=spotify] input', 'open.spotify.com/artist/abc')
-    check(tag + ' : le lien corrigé : le message s’en va', not vis(pg, '.ob-in[data-l=spotify] .ob-bad'))
-    i = nxt(); check(tag + ' : puis ses auditeurs d’aujourd’hui (c’est lui qui le dit)', i == 4); pg.tap('.ob-q.on [data-v="100_1k"]')
-    i = nxt(); pg.tap('.ob-q.on [data-v=tiktok]'); pg.tap('.ob-q.on [data-v=reels]')
-    i = nxt(); pg.tap('.ob-q.on [data-v=editing_time]')
-    i = nxt(); pg.tap('.ob-q.on [data-v="10k"]')
-    i = nxt(); pg.tap('.ob-q.on [data-v=song_launch]')
-    check(tag + ' : 9 questions, une par écran, dans l’ordre', seen == list(range(9)), seen)
-    check(tag + ' : rien ne dépasse de l’écran', no_hscroll(pg))
-    pg.tap('.ob-cta')
-    lines = []
-    if not calm:
-        pg.wait_for_selector('.ob-load.on', timeout=4000); pg.wait_for_timeout(700)
-        lines = pg.evaluate("() => [...document.querySelectorAll('.ob-ln')].map(l => l.innerText.trim())")
-        check(tag + ' : chargement : 4 phrases, toutes tirées de ses réponses (auditeurs, genres, 9:16 pour ses réseaux, objectif)',
-              len(lines) == 4 and t['from'].lower() in lines[0].lower() and lines[1].split('\n')[-1] == t['ln'] and '9:16' in lines[2] and 'TikTok' in lines[2] and t['to'] in lines[3], lines)
-        shot(pg, 'onboarding-chargement-%s-%s' % (dev.replace(' ', ''), lang))
-    pg.wait_for_selector('.ob-plan', timeout=15000); pg.wait_for_timeout(W + 600)
-    plan = pg.evaluate("() => [...document.querySelectorAll('.ob-plan div > span')].map(l => l.innerText.trim())"); head = pg.locator('.ob-q.on h1').inner_text().replace('\n', ' ').strip()
-    check(tag + ' : « %s » et un plan fait de ses réponses' % t['ready'], head == t['ready'] and plan == t['plan5'], (head, plan))
-    check(tag + ' : un seul bouton : « %s »' % t['go'], pg.locator('.ob-cta').inner_text().strip() == t['go'] and not vis(pg, '.ob-skip'))
-    shot(pg, 'onboarding-plan-%s-%s' % (dev.replace(' ', ''), lang))
-    st = json.loads(pg.evaluate("localStorage.getItem('stalak:onb')"))
-    check(tag + ' : les réponses sont gardées', st.get('done') and st['a'] == {'artistName': 'T-Crazy', 'genres': ['rap', 'drill'], 'onPlatforms': 'oui', 'links': {'spotify': 'open.spotify.com/artist/abc'}, 'listenersNow': '100_1k',
-                                                                          'postsOn': ['tiktok', 'reels'], 'blockers': ['editing_time'], 'listenersGoal': '10k', 'goals': ['song_launch']}, st)
-    check(tag + ' : sans compte, rien n’est envoyé', not st.get('sent'), st)
-    pg.tap('.ob-cta'); pg.wait_for_timeout(W + 400)
-    check(tag + ' : « %s » : l’accueil, sa barre et son gros bouton' % t['go'], pg.locator('#m2Onb').count() == 0 and vis(pg, '#tabBar') and vis(pg, '#heroSong'))
-    pg.reload(wait_until='load'); pg.wait_for_function('window.StalakM2', timeout=20000); pg.wait_for_timeout(1500)
-    check(tag + ' : jamais une 2e fois', pg.locator('#m2Onb').count() == 0)
-    if not calm:
-        # he signs in afterwards: the answers kept on the phone go to his account (Comptes: PUT /api/artist), with Comptes' names
-        mail = 'onb-%s-%s@example.com' % (dev.replace(' ', '').lower(), lang)
-        pg.goto(BASE + '/__test/login?email=%s&pro=0&to=%s' % (mail, '/fr/' if lang == 'fr' else '/'), wait_until='load')
-        pg.wait_for_function('window.StalakM2', timeout=20000)
-        pg.wait_for_function("() => { try { return !!JSON.parse(localStorage.getItem('stalak:onb')).sent; } catch (e) { return false; } }", timeout=8000)
-        pr = pg.evaluate("() => fetch('/api/artist').then(r => r.json()).then(d => d.profile)") or {}
-        want = {'artistName': 'T-Crazy', 'genres': ['rap', 'drill'], 'onPlatforms': True, 'listenersNow': '100_1k', 'postsOn': ['tiktok', 'reels'], 'blockers': ['editing_time'], 'listenersGoal': '10k', 'goals': ['song_launch']}
-        check(tag + ' : à sa connexion, ses réponses sont sur son compte (noms et listes de Comptes)', all(pr.get(k) == v for k, v in want.items()) and pr.get('links', {}).get('spotify') == 'https://open.spotify.com/artist/abc', pr)
-        check(tag + ' : l’onboarding ne revient pas après la connexion', pg.locator('#m2Onb').count() == 0)
-    check(tag + ' : aucune erreur dans la page', not errs, errs)
-    ctx.close()
-
-
-def onboarding_account(b, PW, dev, lang):
-    """Signed in first: what he answered before « Passer » goes to the account at once; another phone does not ask again."""
-    tag = dev + ' ' + lang + ' (onboarding, déjà connecté)'; mail = 'onb2-%s-%s@example.com' % (dev.replace(' ', '').lower(), lang)
-    ctx, pg, errs = page(b, PW, dev, lang, email=mail, onb=True)
-    pg.wait_for_selector('#m2Onb', timeout=8000); pg.wait_for_timeout(900)
-    pg.fill('#obName', 'Nova'); pg.tap('.ob-cta'); pg.wait_for_timeout(900); pg.tap('.ob-q.on [data-v=chant]'); pg.tap('.ob-cta'); pg.wait_for_timeout(900)
-    pg.tap('.ob-skip'); pg.wait_for_timeout(900)
-    pg.wait_for_function("() => { try { return !!JSON.parse(localStorage.getItem('stalak:onb')).sent; } catch (e) { return false; } }", timeout=8000)
-    pr = pg.evaluate("() => fetch('/api/artist').then(r => r.json()).then(d => d.profile)") or {}
-    check(tag + ' : « Passer » après 2 réponses : ces 2 réponses sont sur le compte, le reste est vide', pr.get('artistName') == 'Nova' and pr.get('genres') == ['chant'] and pr.get('onPlatforms') is None
-          and not pr.get('listenersNow') and pr.get('postsOn') == [] and pr.get('goals') == [], pr)
-    check(tag + ' : aucune erreur dans la page', not errs, errs)
-    ctx.close()
-    ctx, pg, errs = page(b, PW, dev, lang, email=mail, onb=True)   # another phone, same account
-    pg.wait_for_function('window.__stalakOnbDone', timeout=8000)
-    check(tag + ' : sur un autre téléphone, le même compte : rien n’est redemandé', pg.locator('#m2Onb').count() == 0)
-    check(tag + ' : aucune erreur dans la page (2e téléphone)', not errs, errs)
-    ctx.close()
-
-
-def onboarding_short(b, PW, dev, lang):
-    """Not on the platforms, nothing ticked, no name: fewer questions, and the plan says nothing it does not know."""
-    tag = dev + ' ' + lang + ' (onboarding, peu de réponses)'; t = T[lang]
-    ctx, pg, errs = page(b, PW, dev, lang, onb=True)
-    pg.wait_for_selector('#m2Onb', timeout=8000); pg.wait_for_timeout(900)
-    seen = [0]
-    for k in range(8):
-        if int(pg.locator('.ob-q.on').get_attribute('data-i')) == 2: pg.tap('.ob-q.on [data-v=non]')
-        pg.tap('.ob-cta'); pg.wait_for_timeout(900)
-        if pg.locator('.ob-load.on').count(): break
-        seen.append(int(pg.locator('.ob-q.on').get_attribute('data-i')))
-    check(tag + ' : « Pas encore » : ni les liens ni les auditeurs d’aujourd’hui ne sont demandés', seen == [0, 1, 2, 5, 6, 7, 8], seen)
-    lines = pg.evaluate("() => [...document.querySelectorAll('.ob-ln')].map(l => l.innerText.trim())")
-    check(tag + ' : chargement : une seule phrase, sur ce que Stalak fait vraiment (aucune réponse à répéter)', len(lines) == 1 and t['aud'] not in lines[0], lines)
-    pg.locator('.ob-load').tap(); pg.wait_for_selector('.ob-plan', timeout=15000); pg.wait_for_timeout(1500)
-    plan = pg.evaluate("() => [...document.querySelectorAll('.ob-plan div > span')].map(l => l.innerText.trim())"); head = pg.locator('.ob-q.on h1').inner_text().strip()
-    check(tag + ' : « %s » (sans nom), et les 3 lignes fixes du plan de la démo' % t['readyN'], head == t['readyN'] and plan == t['plan5'][2:], (head, plan))
-    ctx.close()
-    # « Passer » at the first question: nothing more, and never again
-    ctx, pg, errs2 = page(b, PW, dev, lang, onb=True)
-    pg.wait_for_selector('#m2Onb', timeout=8000); pg.wait_for_timeout(900)
-    pg.tap('.ob-skip'); pg.wait_for_timeout(1100)
-    st = json.loads(pg.evaluate("localStorage.getItem('stalak:onb')"))
-    check(tag + ' : « %s » : l’accueil tout de suite, noté comme passé' % t['skip'], pg.locator('#m2Onb').count() == 0 and vis(pg, '#tabBar') and st.get('skipped') and not st.get('done'), st)
-    pg.reload(wait_until='load'); pg.wait_for_function('window.StalakM2', timeout=20000); pg.wait_for_timeout(1500)
-    check(tag + ' : … et plus jamais proposé', pg.locator('#m2Onb').count() == 0)
-    check(tag + ' : aucune erreur dans la page', not errs and not errs2, errs + errs2)
-    ctx.close()
+# (24/11) the questionnaire no longer opens at the first launch: it opens from « Stats » (tests/ui/refonte_stats_ui.py)
 
 
 def computer(b, PW, lang):
@@ -327,14 +210,14 @@ def quiet(b, PW, lang):
     """An automated visit that does not ask for it, and a second visit: no onboarding."""
     ctx, pg, errs = page(b, PW, 'iPhone 12', lang)
     pg.wait_for_timeout(1500)
-    check('iPhone 12 ' + lang + ' : pas d’onboarding pour un robot (tests, Google)', pg.locator('#m2Onb').count() == 0 and vis(pg, '#heroSong'))
+    check('iPhone 12 ' + lang + ' : pas de questionnaire au premier lancement (24/11 : c’est le tutoriel)', pg.locator('#m2Onb').count() == 0 and vis(pg, '#heroSong'))
     ctx.close()
 
 
 def main():
     jobs = [(login, ('iPhone 12', 'fr')), (login, ('iPhone SE', 'en')), (profile, ('iPhone 12', 'fr')), (profile, ('iPhone SE', 'en')),
-            (pull, ('iPhone 12', 'fr')), (onboarding, ('iPhone 12', 'fr')), (onboarding, ('iPhone SE', 'en')), (onboarding, ('iPhone 12', 'en', True)),
-            (onboarding_account, ('iPhone 12', 'fr')), (onboarding_account, ('iPhone SE', 'en')), (onboarding_short, ('iPhone 12', 'fr')), (onboarding_short, ('iPhone SE', 'en')), (computer, ('fr',)), (computer, ('en',)), (quiet, ('fr',))]
+            (pull, ('iPhone 12', 'fr')),
+            (computer, ('fr',)), (computer, ('en',)), (quiet, ('fr',))]
     with sync_playwright() as p:
         b = p.chromium.launch()
         for fn, a in jobs:

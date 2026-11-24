@@ -373,7 +373,7 @@ def page(lang, body):
     h = meta(lang) + head.replace('<title>Stalak</title>', '<title>' + H.escape(PAGE[lang]['title']) + '</title>')
     # the banner and its script come first in the page: shown or not before the first paint, so nothing moves afterwards
     if lang == 'en': h, body = h + PWA_LANG_JS, FR_HINT_HTML + FR_HINT_JS + body
-    body = '<script>window.STALAK_M2=' + json.dumps('/assets/' + ASSETS['mobile2']) + ';window.STALAK_M3=' + json.dumps('/assets/' + ASSETS['mobile3']) + ';window.STALAK_M4=' + json.dumps('/assets/' + ASSETS['mobile4']) + ';' + SPLASH_BOOT % (json.dumps(GSAP_URL), json.dumps('/assets/' + ASSETS['splash'])) + '</script>\n' + body   # first in <body>: the curtain is there before the first picture
+    body = '<script>window.STALAK_M2=' + json.dumps('/assets/' + ASSETS['mobile2']) + ';window.STALAK_M3=' + json.dumps('/assets/' + ASSETS['mobile3']) + ';window.STALAK_M4=' + json.dumps('/assets/' + ASSETS['mobile4']) + ';window.STALAK_M5=' + json.dumps('/assets/' + ASSETS['mobile5']) + ';' + SPLASH_BOOT % (json.dumps(GSAP_URL), json.dumps('/assets/' + ASSETS['splash'])) + '</script>\n' + body   # first in <body>: the curtain is there before the first picture
     tail = ''
     # App & montage (audit 6/11, n° 10): the app's code is no longer written inside the page (860 KB downloaded again at every
     # visit, the page being « no-cache »): two files whose name carries their version (/assets/…), kept a year by the browser
@@ -413,7 +413,8 @@ ASSETS = {}
 for _k, _code in (('app', js), ('account', ACCOUNT_JS), ('tiktok', TIKTOK_JS), ('splash', (src / 'splash.js').read_text(encoding='utf-8')),
                   ('mobile2', (src / 'mobile2.js').read_text(encoding='utf-8')),   # refonte mobile, lot 2 (phones only, loaded by the app)
                   ('mobile3', (src / 'mobile3.js').read_text(encoding='utf-8')),   # refonte mobile, lot 3: the editor and the camera (phones only)
-                  ('mobile4', (src / 'mobile4.js').read_text(encoding='utf-8'))):   # refonte mobile, lot 4: tutorial, help, paywall, 1 € offer, thanks (phones only)
+                  ('mobile4', (src / 'mobile4.js').read_text(encoding='utf-8')),
+                  ('mobile5', (src / 'mobile5.js').read_text(encoding='utf-8'))):   # « Stats »: the analysis of the artist (phones only)   # refonte mobile, lot 4: tutorial, help, paywall, 1 € offer, thanks (phones only)
     _b = _code.encode('utf-8'); _n = _k + '.' + hashlib.sha1(_b).hexdigest()[:10] + '.js'
     (out / 'assets' / _n).write_bytes(_b); ASSETS[_k] = _n
 (out / 'index.html').write_text(page('en', markup_en), encoding='utf-8')

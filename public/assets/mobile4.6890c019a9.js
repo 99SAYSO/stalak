@@ -201,11 +201,11 @@ function tuOpen(again){
   M.play(function(g){ return g.fromTo(tu, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power2.out', clearProps: 'opacity' }); });
   show(0);
 }
-// the first launch: once the onboarding is answered or passed (lot 2), on the home screen, never over an edit or a page
+// the first launch (24/11: the tutorial takes the questionnaire's place, which now opens from « Stats »), on the home screen,
+// never over an edit or a page
 function tuMaybe(){
   if (tu || store.get('stalak:tuto') || !M.phone() || !M.home() || M.view() || location.hash) return;
   if (root.classList.contains('splash-on') || root.classList.contains('m2-onb') || $('#m2Onb')){ setTimeout(tuMaybe, 500); return; }
-  if (!store.get('stalak:onb')){ setTimeout(tuMaybe, 800); return; }
   tuOpen(false);
 }
 
