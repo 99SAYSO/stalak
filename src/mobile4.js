@@ -23,7 +23,7 @@ fr: { skip: 'Passer', next: 'Suivant', go: 'C’est parti !', t1: 'Choisis ton s
   t2: 'Filme tes prises', p2: 'Le même passage, sous plusieurs angles.', take: 'Prise {n}', t3: 'Stalak coupe', t3b: 'sur le rythme', p3: 'Tout seul. Lèvres synchro.',
   t4: 'Exporte et poste', p4: 'Ta vidéo est prête pour TikTok et Reels.', again: 'Revoir le tutoriel', tuto: 'Tutoriel',
   hT: 'Le glaçon d’aide', hS: 'Répond tout de suite', today: 'Aujourd’hui', back: 'Retour', close: 'Fermer',
-  pwT: 'Fais décoller ton son,', pwTn: 'Fais décoller ton son', best: 'Meilleur prix · -{p} %', year: 'Pro · à l’année', month: 'Pro · au mois', free: '{n} jours gratuits',
+  pwT: 'Fais décoller {ts}', pwTs: 'ton son', or: 'ou', nothing: 'Rien à payer aujourd’hui · Annulable en 1 geste', payY: '{y} par an. Annulable à tout moment.', payM: '{m} par mois. Annulable à tout moment.', best: 'Meilleur prix · -{p} %', year: 'Pro · à l’année', month: 'Pro · au mois', free: '{n} jours gratuits',
   perM: '{m}/mois', perY: '{y} par an', creator: 'Voir Creator Plus (packs, sauvegarde en ligne)', tryF: 'Essayer gratuitement', choose: 'Choisir Pro',
   termsY: 'Rien aujourd’hui. Puis {y} par an dans {n} jours. Annulable à tout moment.', termsM: 'Rien aujourd’hui. Puis {m} par mois dans {n} jours. Annulable à tout moment.',
   reviews: 'Avis clients', ready: 'Ta vidéo est prête', of1T: 'Retire le filigrane pour {p}', of1Go: 'Retirer pour {p}', saveWm: 'Enregistrer avec le filigrane',
@@ -33,7 +33,7 @@ en: { skip: 'Skip', next: 'Next', go: 'Let’s go!', t1: 'Pick your song', p1: '
   t2: 'Film your takes', p2: 'The same part, from several angles.', take: 'Take {n}', t3: 'Stalak cuts', t3b: 'to the beat', p3: 'By itself. Lips in sync.',
   t4: 'Export and post', p4: 'Your video is ready for TikTok and Reels.', again: 'See the tutorial again', tuto: 'Tutorial',
   hT: 'The help ice cube', hS: 'Answers right away', today: 'Today', back: 'Back', close: 'Close',
-  pwT: 'Make your song take off,', pwTn: 'Make your song take off', best: 'Best price · -{p}%', year: 'Pro · yearly', month: 'Pro · monthly', free: '{n} days free',
+  pwT: 'Make {ts} take off', pwTs: 'your song', or: 'or', nothing: 'Nothing to pay today · Cancel in 1 tap', payY: '{y} a year. Cancel anytime.', payM: '{m} a month. Cancel anytime.', best: 'Best price · -{p}%', year: 'Pro · yearly', month: 'Pro · monthly', free: '{n} days free',
   perM: '{m}/mo', perY: '{y} a year', creator: 'See Creator Plus (packs, online saving)', tryF: 'Try it free', choose: 'Choose Pro',
   termsY: 'Nothing today. Then {y} a year in {n} days. Cancel anytime.', termsM: 'Nothing today. Then {m} a month in {n} days. Cancel anytime.',
   reviews: 'Customer reviews', ready: 'Your video is ready', of1T: 'Remove the watermark for {p}', of1Go: 'Remove for {p}', saveWm: 'Save with the watermark',
@@ -82,25 +82,39 @@ var CSS = '@media (max-width:899px){'
 + 'html.m4 #helpSend{flex:none;width:46px;height:46px;min-height:0;margin:0;padding:0;border-radius:50%;border:3px solid ' + INK + ';background:' + BLUE + ';box-shadow:none;color:transparent;font-size:0;position:relative}html.m4 #helpSend::after{content:"↑";position:absolute;inset:0;display:grid;place-items:center;color:#fff;font:800 22px/1 var(--body)}'
 + 'html.m4 #helpSend::before{display:none}html.m4 #helpPanel .hp-human,html.m4 #helpPanel .hp-diag{align-self:center;margin:0 0 6px;min-height:40px}html.m4 #helpPanel .hp-diag{margin-bottom:max(10px,env(safe-area-inset-bottom,0px))}'
 + 'html.m4help .help-cube{display:none !important}'
-/* the paywall */
-+ 'html.m4pw:not(.m4pwall) #apPro > :not(.m4-pw){display:none !important}html.m4pw .m4-pw{display:block;margin:calc(-1 * max(14px,env(safe-area-inset-top,0px))) -16px 0;padding-bottom:max(18px,env(safe-area-inset-bottom,0px))}'
-+ 'html.m4pw:not(.m4pwall) #acctPage .ap-top{display:none}html.m4pw:not(.m4pwall) #acctPage,html.m4pw:not(.m4pwall) #acctPage .ap-in{background:#d6ecff !important;background-image:none !important}'
-+ '.m4-ph{position:relative;height:168px;background:radial-gradient(70% 90% at 50% 40%,#4a93ea,#1f6fd6);border-bottom:3px solid ' + INK + ';border-radius:0 0 50% 50% / 0 0 26px 26px;display:grid;place-items:center}'
-+ '.m4-ph img{width:122px;height:122px;object-fit:contain}.m4-x{position:absolute;right:16px;top:max(14px,env(safe-area-inset-top,0px));width:44px;height:44px;margin:0;padding:0;border-radius:50%;border:0;background:rgba(255,255,255,.25);color:#fff;display:grid;place-items:center;cursor:pointer}.m4-x svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round}'
-+ '.m4-pb{padding:0 18px}.m4-pt{margin:16px 0 14px;text-align:center;font:400 29px/1.1 var(--display);color:' + INK + ';text-shadow:none;-webkit-text-stroke:0}.m4-pt .m4-pn{display:block !important;font-weight:400;color:' + BLUE + ' !important;-webkit-text-fill-color:' + BLUE + ';visibility:visible;opacity:1}'
-+ '.m4-rv{margin:0;padding:0;position:relative;overflow:hidden;border:3px solid ' + INK + ';border-radius:22px;background:#fff;box-shadow:0 5px 0 ' + INK + ';min-height:132px}'
-+ '.m4-rv li{list-style:none;position:absolute;inset:0;padding:14px 16px;visibility:hidden}.m4-rv li.on{visibility:visible;position:relative}'
-+ '.m4-rv .rv-note{display:inline-flex;gap:6px;align-items:center;color:#f2a900;font:800 14px/1 var(--body)}.m4-rv .rv-note b{display:none}'
-+ '.m4-rv .rv-who{display:inline;margin:0 0 0 6px;font:800 14px/1 var(--body);color:' + INK + '}.m4-rv blockquote{margin:8px 0 0;font:500 14.5px/1.42 var(--body);color:#3d4a63;quotes:none}'
-+ '.m4-rv .m4-rh{display:flex;flex-wrap:wrap;align-items:center}.m4-dots{display:flex;justify-content:center;gap:7px;margin:12px 0 16px}.m4-dots i{width:8px;height:8px;border-radius:8px;background:#9cc6f5;transition:width .2s ease}.m4-dots i.on{width:26px;background:' + BLUE + '}'
-+ '.m4-opt{position:relative;display:flex;align-items:center;gap:14px;width:100%;margin:0 0 12px;padding:16px;text-align:left;border:3px solid ' + INK + ';border-radius:20px;background:#fff;box-shadow:0 5px 0 ' + INK + ';color:' + INK + ';cursor:pointer}'
-+ '.m4-opt[aria-checked="true"]{background:#eaf5ff;box-shadow:0 0 0 3px ' + BLUE + ',0 5px 0 ' + INK + '}'
-+ '.m4-opt > i{flex:none;width:26px;height:26px;border-radius:50%;border:3px solid ' + INK + ';background:#fff;box-sizing:border-box}.m4-opt[aria-checked="true"] > i{background:radial-gradient(circle,' + BLUE + ' 0 45%,#fff 50%)}'
-+ '.m4-opt span{flex:1;min-width:0}.m4-opt b{display:block;font:400 19px/1.15 var(--display)}.m4-opt small{display:block;margin-top:4px;font:500 14px/1.3 var(--body);color:#3d4a63}'
-+ '.m4-opt strong{flex:none;text-align:right;font:400 20px/1.1 var(--display)}.m4-opt strong small{font:500 12.5px/1.3 var(--body);color:#7a8aa6}'
-+ '.m4-tag{position:absolute;left:18px;top:-15px;padding:4px 10px;border:2.5px solid ' + INK + ';border-radius:10px;background:#ffd23f;font:700 13px/1.1 var(--body);color:' + INK + '}'
-+ '.m4-link{display:block;margin:4px auto 0;min-height:44px;padding:0 8px;border:0;background:none;color:' + BLUE + ';font:700 15px/1.2 var(--body);cursor:pointer}'
-+ '.m4-terms{margin:10px 0 0;text-align:center;font:500 13.5px/1.4 var(--body);color:#3d4a63}'
+/* the paywall « Salle » (maquette D, owner 24/11 18 h 18): the drawn concert hall, the star sticker, the night blue */
++ 'html.m4pw:not(.m4pwall) #apPro > :not(.m4-pw){display:none !important}html.m4pw .m4-pw{display:block;margin:calc(-1 * max(14px,env(safe-area-inset-top,0px))) -16px 0;padding-bottom:max(18px,env(safe-area-inset-bottom,0px));color:#fff}'
++ 'html.m4pw:not(.m4pwall) #acctPage .ap-top{display:none}html.m4pw:not(.m4pwall) #acctPage,html.m4pw:not(.m4pwall) #acctPage .ap-in{background:#081a45 !important;background-image:none !important}'
++ '.m4-ph{position:relative;height:min(42svh,340px);overflow:hidden;background:#081a45}'
++ '.m4-bg{position:absolute;inset:0;background:#0b2a6b center 30%/cover no-repeat;transform-origin:50% 40%}'
++ '.m4-ph::after{content:"";position:absolute;left:0;right:0;bottom:0;height:42%;background:linear-gradient(rgba(8,26,69,0),#081a45);pointer-events:none}'
++ '.m4-beam{position:absolute;top:-10%;width:34%;height:95%;background:linear-gradient(rgba(180,220,255,.55),rgba(180,220,255,0) 85%);clip-path:polygon(44% 0,56% 0,100% 100%,0 100%);mix-blend-mode:screen;opacity:.7;transform-origin:50% 0}'
++ '.m4-beam.l{left:8%;transform:rotate(18deg)}.m4-beam.r{right:8%;transform:rotate(-18deg)}'
++ '.m4-fl{position:absolute;width:7px;height:7px;border-radius:50%;background:#fff;box-shadow:0 0 10px 4px rgba(255,255,255,.85);opacity:0}'
++ '.m4-cf{position:absolute;top:-14px;width:7px;height:12px;border-radius:2px}'
++ '.m4-star{position:absolute;left:50%;top:14%;width:min(34vw,140px);margin-left:calc(min(34vw,140px) / -2);transform-origin:50% 100%;filter:drop-shadow(0 6px 10px rgba(0,0,0,.4))}'
++ '.m4-x{position:absolute;z-index:3;right:16px;top:max(14px,env(safe-area-inset-top,0px));width:44px;height:44px;margin:0;padding:0;border-radius:50%;border:0;background:rgba(8,26,69,.45);color:#fff;display:grid;place-items:center;cursor:pointer}.m4-x svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round}'
++ '.m4-pb{position:relative;z-index:1;margin-top:-30px;padding:0 16px}'
++ '.m4-pt{margin:0 0 14px;text-align:center;white-space:nowrap;font:900 clamp(22px,7.2vw,30px)/1.1 var(--body);letter-spacing:-.02em;color:#fff;text-shadow:0 3px 0 rgba(0,0,0,.35);-webkit-text-stroke:0}.m4-pt .m4-ts{color:#ffd23f}'
++ '.m4-rv{display:flex;gap:10px;margin:0 -16px;padding:2px 16px 8px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding:0 16px;scrollbar-width:none;overscroll-behavior-x:contain;list-style:none}.m4-rv::-webkit-scrollbar{display:none}'
++ '.m4-rv li{flex:0 0 86%;scroll-snap-align:start;box-sizing:border-box;padding:12px 14px;border:3px solid #0a0d14;border-radius:20px;background:#fff;box-shadow:0 4px 0 #0a0d14;color:#0a0d14}'
++ '.m4-rv .rv-note{display:inline-flex;gap:6px;align-items:center;color:#f2a900;font:800 13.5px/1 var(--body)}.m4-rv .rv-note b{display:none}'
++ '.m4-rv .rv-who{display:inline;margin:0 0 0 6px;font:800 13.5px/1 var(--body);color:#0a0d14}'
++ '.m4-rv blockquote{margin:7px 0 0;font:500 13.5px/1.4 var(--body);color:#3d4a63;quotes:none;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}'
++ '.m4-rv .m4-rh{display:flex;flex-wrap:wrap;align-items:center}.m4-dots{display:flex;justify-content:center;gap:6px;margin:6px 0 18px}.m4-dots i{width:7px;height:7px;border-radius:7px;background:rgba(255,255,255,.35);transition:width .2s ease,background-color .2s ease}.m4-dots i.on{width:22px;background:#ffd23f}'
++ '.m4-opt{position:relative;display:flex;align-items:center;gap:12px;width:100%;margin:0 0 12px;padding:13px 14px;text-align:left;border:3px solid #0a0d14;border-radius:18px;background:#fff;box-shadow:0 4px 0 #0a0d14;color:#0a0d14;cursor:pointer}'
++ '.m4-opt[aria-checked="true"]{background:#eaf5ff;box-shadow:0 0 0 3px #4a93ea,0 4px 0 #0a0d14}'
++ '.m4-opt > i{flex:none;width:24px;height:24px;border-radius:50%;border:3px solid #0a0d14;background:#fff;box-sizing:border-box}.m4-opt[aria-checked="true"] > i{background:radial-gradient(circle,#1f6fd6 0 45%,#fff 50%)}'
++ '.m4-opt span{flex:1;min-width:0}.m4-opt b{display:block;font:800 17px/1.15 var(--body)}.m4-opt small{display:block;margin-top:3px;font:500 13px/1.3 var(--body);color:#3d4a63}'
++ '.m4-opt strong{flex:none;text-align:right;font:900 18px/1.1 var(--body)}.m4-opt strong small{font:500 12px/1.3 var(--body);color:#7a8aa6}'
++ '.m4-tag{position:absolute;left:16px;top:-14px;padding:3px 9px;border:2.5px solid #0a0d14;border-radius:9px;background:#ffd23f;font:700 12.5px/1.1 var(--body);color:#0a0d14}'
++ '.m4-ou{display:block;width:max-content;margin:-4px auto 8px;padding:3px 10px;border:2.5px solid #0a0d14;border-radius:999px;background:#ffd23f;color:#0a0d14;font:900 12px/1.1 var(--body)}'
++ '.m4-go{position:relative;overflow:hidden;margin-top:0}.m4-go::after{content:"";position:absolute;top:0;bottom:0;left:-40%;width:30%;background:linear-gradient(100deg,rgba(255,255,255,0),rgba(255,255,255,.55),rgba(255,255,255,0));transform:skewX(-18deg);animation:m4glint 3.2s ease-in-out 1s infinite;pointer-events:none}'
++ '@keyframes m4glint{0%{transform:translateX(0) skewX(-18deg)}45%,100%{transform:translateX(560%) skewX(-18deg)}}'
++ '.m4-go.pulse{animation:m4pulse 2.4s ease-in-out infinite}@keyframes m4pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}'
++ '.m4-terms{margin:10px 0 0;text-align:center;font:600 13px/1.4 var(--body);color:rgba(255,255,255,.8)}.m4-terms:empty{display:none}'
++ '.m4-link{display:block;margin:4px auto 0;min-height:44px;padding:0 8px;border:0;background:none;color:#9cc6f5;font:700 14px/1.2 var(--body);text-decoration:underline;text-underline-offset:3px;cursor:pointer}'
++ '@media (prefers-reduced-motion:reduce){.m4-go::after,.m4-go.pulse{animation:none}.m4-dots i{transition:none}}'
 + 'html.m4pwall .m4-pw{display:none}'
 /* the end of an export with the 1 € offer */
 + 'html.m4of1 body,html.m4of1:root{background:#0a0d14 !important}html.m4of1 body{background-image:none !important}'
@@ -195,60 +209,90 @@ function tuMaybe(){
   tuOpen(false);
 }
 
-/* ---- the paywall: the plans page of someone without a plan, on a phone ------------------------------------------------------ */
-function pwName(){
-  try { var o = JSON.parse(store.get('stalak:onb') || 'null'); if (o && o.a && o.a.artistName) return o.a.artistName; } catch(e){}
-  var u = M.acct && M.acct.state.user; return u && u.displayName ? M.name(u) : '';
-}
-var rvTimer = 0, rvI = 0;
+/* ---- the paywall « Salle » (demo 14, maquette D chosen on 24/11 at 18 h 18): the plans page of someone without a plan --------- */
+var rvTimer = 0, rvI = 0, pwAnim = null;
 function pwBuild(){
   var ap = $('#apPro'); if (!ap) return;
+  var fresh = !pw;
   if (!pw){
     pw = el('div', 'm4-pw');
-    pw.innerHTML = '<div class="m4-ph"><img src="/emoji/hype.webp" alt=""><button type="button" class="m4-x"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>'
+    pw.innerHTML = '<div class="m4-ph" aria-hidden="true"><div class="m4-bg"></div><i class="m4-beam l"></i><i class="m4-beam r"></i><img class="m4-star" alt=""></div>'
+      + '<button type="button" class="m4-x"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg></button>'
       + '<div class="m4-pb"><h2 class="m4-pt"></h2><ul class="m4-rv" aria-roledescription="carrousel"></ul><div class="m4-dots" aria-hidden="true"></div>'
       + '<button type="button" class="m4-opt" role="radio" data-int="year"><em class="m4-tag"></em><i aria-hidden="true"></i><span><b></b><small></small></span><strong></strong></button>'
       + '<button type="button" class="m4-opt" role="radio" data-int="month"><i aria-hidden="true"></i><span><b></b><small></small></span><strong></strong></button>'
-      + '<button type="button" class="m4-link m4-cr"></button><button type="button" class="m4-cta m4-go"></button><p class="m4-terms"></p></div>';
+      + '<span class="m4-ou" aria-hidden="true"></span><button type="button" class="m4-cta m4-go"></button><p class="m4-terms"></p><button type="button" class="m4-link m4-cr"></button></div>';
     ap.insertBefore(pw, ap.firstChild);
+    // the drawn hall and the sticker: loaded only now, when the paywall opens
+    $('.m4-bg', pw).style.backgroundImage = 'url("/decors/scene-salle.webp")'; $('.m4-star', pw).src = '/emoji/star.webp';
+    var ph = $('.m4-ph', pw);
+    [[14, 72], [28, 84], [47, 78], [63, 88], [79, 74], [90, 86], [36, 92]].forEach(function(p){ var f = el('i', 'm4-fl'); f.style.left = p[0] + '%'; f.style.top = p[1] + '%'; ph.appendChild(f); });
     $('.m4-x', pw).onclick = function(){ var b = $('#apBack'); if (b) b.click(); else M.hide(); };
     $$('.m4-opt', pw).forEach(function(b){ b.onclick = function(){ P.setInt(b.dataset.int); pwUi(); }; });
     $('.m4-cr', pw).onclick = function(){ root.classList.add('m4pwall'); var c = $('#apPro .pl-creator'); try { (c || ap).scrollIntoView({ block: 'start' }); } catch(e){} };
     $('.m4-go', pw).onclick = function(){ P.buy($('.m4-go', pw)); };
-    // the reviews: the real ones of the page (avis.json, word for word), 5 of them, one after the other
-    var rv = $('.m4-rv', pw), src = $$('.rv-list > li').slice(0, 5);
-    src.forEach(function(li, k){ var n = el('li', k ? '' : 'on'); var note = $('.rv-note', li), q = $('blockquote', li), who = $('.rv-who', li);
+    // the reviews: the real ones of the page (avis.json, word for word), moved with the finger; the dots follow
+    var rv = $('.m4-rv', pw), src = $$('.rv-list > li').slice(0, 6);
+    src.forEach(function(li){ var n = el('li'), note = $('.rv-note', li), q = $('blockquote', li), who = $('.rv-who', li);
       n.innerHTML = '<div class="m4-rh">' + (note ? note.outerHTML : '') + (who ? who.outerHTML : '') + '</div>' + (q ? q.outerHTML : ''); rv.appendChild(n); });
     if (!src.length) rv.hidden = true;
     $('.m4-dots', pw).innerHTML = src.map(function(_, k){ return '<i class="' + (k ? '' : 'on') + '"></i>'; }).join('');
+    var rvRaf = 0; rv.addEventListener('scroll', function(){ cancelAnimationFrame(rvRaf); rvRaf = requestAnimationFrame(rvDots); }, { passive: true });
+    rv.addEventListener('pointerdown', function(){ clearInterval(rvTimer); rvTimer = 0; }, { passive: true });
   }
   pwUi();
+  if (fresh || !root.classList.contains('m4pw')) pwIntro();
+}
+function rvDots(){
+  var rv = $('.m4-rv', pw), items = $$('li', rv); if (!items.length) return;
+  var w = items[0].offsetWidth + 10, k = Math.max(0, Math.min(items.length - 1, Math.round(rv.scrollLeft / w))); rvI = k;
+  $$('.m4-dots i', pw).forEach(function(d, i){ d.classList.toggle('on', i === k); });
 }
 function rvShow(i){
-  var items = $$('.m4-rv li', pw); if (!items.length) return; var from = items[rvI]; rvI = (i + items.length) % items.length; var to = items[rvI];
-  if (from === to) return;
-  $$('.m4-dots i', pw).forEach(function(d, k){ d.classList.toggle('on', k === rvI); });
-  to.classList.add('on'); from.classList.remove('on');
-  M.play(function(g){ return g.fromTo(to, { opacity: 0, x: 24 }, { opacity: 1, x: 0, duration: 0.35, ease: 'power3.out', clearProps: 'opacity,transform' }); });
+  var rv = $('.m4-rv', pw), items = $$('li', rv); if (!items.length) return;
+  rvI = (i + items.length) % items.length;
+  try { rv.scrollTo({ left: items[rvI].offsetLeft - 16, behavior: M.calm() ? 'auto' : 'smooth' }); } catch(e){ rv.scrollLeft = items[rvI].offsetLeft - 16; }
+}
+/* the opening: the hall zooms out a little, 2 beams sweep, phones flash in the crowd, confetti, the star falls on the stage and sways */
+function pwIntro(){
+  if (pwAnim){ try { pwAnim.kill(); } catch(e){} pwAnim = null; }
+  var ph = $('.m4-ph', pw);
+  $$('.m4-cf', ph).forEach(function(c){ c.remove(); });
+  pwAnim = M.play(function(g){
+    var tl = g.timeline();
+    tl.fromTo($('.m4-bg', pw), { scale: 1.14 }, { scale: 1, duration: 1.6, ease: 'power2.out' }, 0)
+      .fromTo($('.m4-star', pw), { y: -260, rotation: -14 }, { y: 0, rotation: 0, duration: 0.7, ease: 'bounce.out' }, 0.25)
+      .to($('.m4-star', pw), { rotation: 4, duration: 1.4, ease: 'sine.inOut', yoyo: true, repeat: -1 }, 1.0)
+      .fromTo($('.m4-beam.l', pw), { rotation: 30 }, { rotation: 6, duration: 2.6, ease: 'sine.inOut', yoyo: true, repeat: -1 }, 0)
+      .fromTo($('.m4-beam.r', pw), { rotation: -30 }, { rotation: -6, duration: 2.9, ease: 'sine.inOut', yoyo: true, repeat: -1 }, 0.2)
+      .fromTo($$('.m4-pb > *', pw), { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.4, ease: 'power3.out', stagger: 0.05, clearProps: 'opacity,transform' }, 0.35);
+    $$('.m4-fl', pw).forEach(function(f, i){ tl.to(f, { opacity: 1, duration: 0.08, yoyo: true, repeat: 1, repeatDelay: 0.06 }, 0.6 + i * 0.37 + Math.random() * 0.3);
+      tl.to(f, { opacity: 1, duration: 0.08, yoyo: true, repeat: 1, repeatDelay: 0.06 }, 3.2 + i * 0.53); });
+    var cols = ['#ffd23f', '#ffffff', '#9cc6f5', '#ff5fa2', '#4a93ea'];
+    for (var i = 0; i < 26; i++){ var c = el('i', 'm4-cf'); c.style.left = (Math.random() * 100) + '%'; c.style.background = cols[i % cols.length]; ph.appendChild(c);
+      tl.fromTo(c, { y: 0, rotation: Math.random() * 360 }, { y: ph.offsetHeight + 30, x: (Math.random() - 0.5) * 80, rotation: '+=' + (300 + Math.random() * 300), duration: 1.8 + Math.random() * 1.2, ease: 'power1.in' }, 0.3 + Math.random() * 0.8); }
+    return tl; });
+  var go = $('.m4-go', pw); go.classList.toggle('pulse', !M.calm());
 }
 function pwUi(){
   if (!pw) return;
-  var a = P.amounts(), int = P.int(), tr = P.trial(), days = P.days(), name = pwName();
+  var a = P.amounts(), int = P.int(), tr = P.trial(), days = P.days();
   var m = P.money(a.m, a.cur), y = P.money(a.y, a.cur), ym = P.money(Math.round(a.y / 12 * 100) / 100, a.cur), save = a.m > 0 ? Math.round((1 - a.y / (a.m * 12)) * 100) : 0;
-  $('.m4-pt', pw).innerHTML = name ? esc(t('pwT')) + '<span class="m4-pn">' + esc(name) + '</span>' : esc(t('pwTn'));
+  $('.m4-pt', pw).innerHTML = esc(t('pwT')).replace('{ts}', '<span class="m4-ts">' + esc(t('pwTs')) + '</span>');
   var yb = $('.m4-opt[data-int="year"]', pw), mb = $('.m4-opt[data-int="month"]', pw);
   $('.m4-tag', yb).textContent = t('best', { p: save }); $('.m4-tag', yb).hidden = save <= 0;
   $('b', yb).textContent = t('year'); $('b', mb).textContent = t('month');
   $('span small', yb).textContent = tr ? t('free', { n: days }) : ''; $('span small', mb).textContent = tr ? t('free', { n: days }) : '';
   $('strong', yb).innerHTML = esc(t('perM', { m: ym })) + '<small>' + esc(t('perY', { y: y })) + '</small>'; $('strong', mb).textContent = t('perM', { m: m });
   yb.setAttribute('aria-checked', String(int === 'year')); mb.setAttribute('aria-checked', String(int !== 'year'));
+  $('.m4-ou', pw).textContent = t('or');
   $('.m4-cr', pw).textContent = t('creator');
   $('.m4-go', pw).textContent = tr ? t('tryF') : t('choose');
-  // the terms in clear, under the one button: the app's own sentences (the price then, cancel, the first payment) when there is no trial
-  $('.m4-terms', pw).textContent = tr ? t(int === 'year' ? 'termsY' : 'termsM', { y: y, m: m, n: days }) : '';
+  // under the button: with the free trial, the demo's line; without it, what is paid (the yearly or the monthly amount)
+  $('.m4-terms', pw).textContent = tr ? t('nothing') : t(int === 'year' ? 'payY' : 'payM', { y: y, m: m });
   $('.m4-x', pw).setAttribute('aria-label', t('close'));
   $('.m4-rv', pw).setAttribute('aria-label', t('reviews'));
-  clearInterval(rvTimer); if (!M.calm()) rvTimer = setInterval(function(){ if (root.classList.contains('m4pw')) rvShow(rvI + 1); }, 5200);
+  clearInterval(rvTimer); rvTimer = 0; if (!M.calm()) rvTimer = setInterval(function(){ if (root.classList.contains('m4pw')) rvShow(rvI + 1); }, 5200);
 }
 
 /* ---- the end of an export with the 1 € offer ------------------------------------------------------------------------------- */

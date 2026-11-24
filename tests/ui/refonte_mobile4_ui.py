@@ -16,10 +16,10 @@ results = []
 FAST_EXPORT = ("pickVideoConfig = async () => null, renderRealtime = async () => { await new Promise(r => setTimeout(r, 120)); "
                "return { blob: new Blob([new Uint8Array(4096)], { type: 'video/mp4' }), ext: 'mp4' }; }")
 T = {'fr': {'tt': ['Choisis ton son', 'Filme tes prises', 'Stalak coupe sur le rythme', 'Exporte et poste'], 'next': 'Suivant', 'go': 'C’est parti !', 'skip': 'Passer',
-            'again': 'Revoir le tutoriel', 'hT': 'Le glaçon d’aide', 'hS': 'Répond tout de suite', 'pw': 'Fais décoller ton son,', 'year': 'Pro · à l’année', 'month': 'Pro · au mois',
+            'again': 'Revoir le tutoriel', 'hT': 'Le glaçon d’aide', 'hS': 'Répond tout de suite', 'pw': 'Fais décoller ton son', 'ts': 'ton son', 'or': 'ou', 'year': 'Pro · à l’année', 'month': 'Pro · au mois',
             'cr': 'Voir Creator Plus (packs, sauvegarde en ligne)', 'thx': 'Bienvenue dans Stalak', 'thxGo': 'Faire un montage', 'thxPlan': 'Voir ma formule'},
      'en': {'tt': ['Pick your song', 'Film your takes', 'Stalak cuts to the beat', 'Export and post'], 'next': 'Next', 'go': 'Let’s go!', 'skip': 'Skip',
-            'again': 'See the tutorial again', 'hT': 'The help ice cube', 'hS': 'Answers right away', 'pw': 'Make your song take off,', 'year': 'Pro · yearly', 'month': 'Pro · monthly',
+            'again': 'See the tutorial again', 'hT': 'The help ice cube', 'hS': 'Answers right away', 'pw': 'Make your song take off', 'ts': 'your song', 'or': 'or', 'year': 'Pro · yearly', 'month': 'Pro · monthly',
             'cr': 'See Creator Plus (packs, online saving)', 'thx': 'Welcome to Stalak', 'thxGo': 'Make an edit', 'thxPlan': 'See my plan'}}
 
 
@@ -99,10 +99,19 @@ def run(b, PW, dev, lang):
     # the paywall
     ev(pg, "acctOpen('nowm', { plan: 'pro' })"); pg.wait_for_timeout(1500)
     h = pg.locator('.m4-pt').inner_text().replace('\n', ' ').strip()
-    check(tag + ' : paywall : « %s T-Crazy » (le nom donné à l’onboarding)' % t['pw'], h == t['pw'] + ' T-Crazy', h)
+    st = pg.evaluate("() => { const h = document.querySelector('.m4-pt'), y = h.querySelector('.m4-ts'), c = getComputedStyle(h); return [c.fontFamily.includes('DM Sans'), +c.fontWeight >= 800, y && y.textContent, y && getComputedStyle(y).color, h.getClientRects().length && h.scrollWidth <= h.clientWidth + 1]; }")
+    check(tag + ' : paywall « Salle » : « %s » en DM Sans très gras, « %s » en jaune, sur une ligne' % (t['pw'], t['ts']), h == t['pw'] and st[0] and st[1] and st[2] == t['ts'] and st[3] == 'rgb(255, 210, 63)' and st[4], (h, st))
+    im = pg.evaluate("() => [getComputedStyle(document.querySelector('.m4-bg')).backgroundImage, document.querySelector('.m4-star').getAttribute('src')]")
+    check(tag + ' : paywall : le décor dessiné de la salle et le sticker de la mascotte', 'scene-salle.webp' in im[0] and im[1] == '/emoji/star.webp', im)
+    ok = pg.evaluate("() => Promise.all(['/decors/scene-salle.webp', '/emoji/star.webp'].map(u => fetch(u).then(r => r.ok && r.headers.get('content-type').includes('image'))))")
+    check(tag + ' : paywall : les 2 images sont servies par le site', all(ok), ok)
+    ou = pg.evaluate("() => { const m = document.querySelector('.m4-opt[data-int=month]').getBoundingClientRect(), o = document.querySelector('.m4-ou'), g = document.querySelector('.m4-go').getBoundingClientRect(), r = o.getBoundingClientRect(); return [o.textContent, r.top >= m.bottom - 6 && r.bottom <= g.top + 6]; }")
+    check(tag + ' : paywall : la pastille « %s » entre « au mois » et le bouton' % t['or'], ou == [t['or'], True], ou)
+    sw = pg.evaluate("async () => { const rv = document.querySelector('.m4-rv'); const before = [...document.querySelectorAll('.m4-dots i')].findIndex(i => i.classList.contains('on')); rv.scrollTo({ left: rv.querySelectorAll('li')[2].offsetLeft - 16 }); await new Promise(r => setTimeout(r, 400)); return [getComputedStyle(rv).scrollSnapType.includes('x'), before, [...document.querySelectorAll('.m4-dots i')].findIndex(i => i.classList.contains('on')), rv.querySelectorAll('li')[1].getBoundingClientRect().left < innerWidth]; }")
+    check(tag + ' : paywall : les avis glissent au doigt, la carte suivante dépasse, les points suivent', sw[0] and sw[1] == 0 and sw[2] == 2 and sw[3], sw)
     rv = pg.evaluate("() => [...document.querySelectorAll('.m4-rv li blockquote')].map(q => q.textContent)")
-    src = pg.evaluate("() => [...document.querySelectorAll('.rv-list > li blockquote')].slice(0, 5).map(q => q.textContent)")
-    check(tag + ' : paywall : de vrais avis clients, mot pour mot', len(rv) == 5 and rv == src, (rv[:1], src[:1]))
+    src = pg.evaluate("() => [...document.querySelectorAll('.rv-list > li blockquote')].slice(0, 6).map(q => q.textContent)")
+    check(tag + ' : paywall : de vrais avis clients, mot pour mot', len(rv) == 6 and rv == src, (rv[:1], src[:1]))
     opts = pg.evaluate("() => [...document.querySelectorAll('.m4-opt b')].map(b => b.textContent)")
     check(tag + ' : paywall : l’année mise en avant, le mois', opts == [t['year'], t['month']] and pg.locator('.m4-opt[data-int="year"]').get_attribute('aria-checked') == 'true', opts)
     a = ev(pg, "plAmounts('pro')"); ys = pg.locator('.m4-opt[data-int="year"] strong').inner_text(); ms = pg.locator('.m4-opt[data-int="month"] strong').inner_text()
@@ -115,7 +124,7 @@ def run(b, PW, dev, lang):
     check(tag + ' : rien ne dépasse de l’écran (paywall)', no_hscroll(pg))
     shot(pg, 'm4-paywall-%s-%s' % (dev.replace(' ', ''), lang))
     ev(pg, "__buyAsk = null, plBuy = (p, b) => { window.__buy = [p, plInt]; }")
-    pg.locator('.m4-go').click(); pg.wait_for_timeout(300)
+    pg.locator('.m4-go').click(force=True); pg.wait_for_timeout(300)
     check(tag + ' : paywall : le bouton achète Pro, à l’année, comme la page', pg.evaluate('() => window.__buy') == ['pro', 'year'], pg.evaluate('() => window.__buy'))
     pg.locator('.m4-cr').click(); pg.wait_for_timeout(500)
     check(tag + ' : « %s » : toute la page des formules revient' % t['cr'], vis(pg, '#apBuy') and vis(pg, '.pl-creator'))

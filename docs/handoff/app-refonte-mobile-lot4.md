@@ -56,3 +56,26 @@ le bouton ouvre Paddle directement).
 ## Fichiers
 `src/mobile4.js` (nouveau), `src/app.js` (`StalakM.pw` : prix, essai, facturation, achat, offre, merci ; chargement de
 `mobile4`), `build_site.py`, `tests/ui/refonte_mobile4_ui.py`.
+
+## Paywall « Salle » (demande du Chef du 24/11, 18 h 18 : `docs/handoff/chef-paywall-scene.md`, maquette D)
+Remplace le paywall ci-dessus (n° 14) :
+- **Décor** : le dessin de la salle (`docs/marque/decors/scene-salle.jpg`, compressé en WebP 960 px, 71 Ko :
+  `site_src/decors/scene-salle.webp`), fondu vers le bleu nuit `#081a45` ; chargé seulement à l'ouverture du paywall.
+  À l'ouverture : léger zoom arrière, 2 faisceaux qui balaient, flashs de téléphones dans le public, confettis.
+- **Mascotte** : le sticker `docs/marque/mascotte/sticker-star.png` (détouré, WebP 382 px, 40 Ko : `site_src/emoji/star.webp`),
+  qui tombe sur la scène puis se balance.
+- **Titre** : « Fais décoller **ton son** » en DM Sans très gras, blanc, « ton son » en jaune `#ffd23f`, sur une ligne (le nom
+  d'artiste n'est plus dans le titre, comme la maquette D).
+- **Avis** : 6 vrais avis (`avis.json`, mot pour mot) qu'on fait glisser au doigt, la carte suivante dépasse, les points
+  suivent, 3 lignes au plus ; ils avancent seuls toutes les 5 s jusqu'à ce qu'on les touche.
+- **Formules** : « Pro · à l'année » (« Meilleur prix · −48 % »), « Pro · au mois », la pastille **« ou »**, puis le bouton
+  (« Essayer gratuitement » avec l'essai, « Choisir Pro » sinon) avec un reflet qui passe et une légère pulsation.
+- **Dessous** : « Rien à payer aujourd'hui · Annulable en 1 geste » avec l'essai (texte de la maquette) ; sans essai, le
+  montant (« 49,99 $ par an. Annulable à tout moment. »).
+- « Voir Creator Plus (packs, sauvegarde en ligne) » reste en petit lien sous le bouton (toute la page des formules).
+- « Réduire les animations » : rien ne bouge, tout est là.
+- **Juridique** : les conditions de l'essai (« Puis 49,99 $ par an dans 7 jours ») ne sont plus écrites sous le bouton, comme
+  dans la maquette validée ; le prix est sur les cartes. À relire (et « Annulable en 1 geste »).
+- **Marketing** : 2 images ajoutées dans `site_src/` (`decors/scene-salle.webp`, `emoji/star.webp`).
+- Test `refonte_mobile4_ui` : **69/69** (en plus : police et couleur du titre, une ligne ; décor et sticker servis ; pastille
+  « ou » à sa place ; avis au doigt, points qui suivent).
