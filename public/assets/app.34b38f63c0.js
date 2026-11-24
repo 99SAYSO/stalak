@@ -9761,7 +9761,7 @@ function mobInit(){
   window.StalakM = Object.freeze({ lang: () => LANG, t: (k, v) => _t(k, v), acct: ACCT, view: () => (ACCT && isShown($('#acctPage')) ? apView : null), mode: () => apMode, step: () => apStep,
     go: (v, o) => apGo(v, o), hide: () => apHide(), plan: () => acctPlan(), paid: () => acctPaid(), name: u => acctName(u), calm: () => calmMotion(), gsap: () => mobGsap(), play: b => mobPlay(b),
     phone: () => MOB.matches, home: () => mobHome(), cloud: () => (typeof CL !== 'undefined' ? CL : null), reload: () => clLoadList(), on: f => { mobSubs.push(f); } });
-  const m2 = () => { if (!ACCT || !MOB.matches || !window.STALAK_M2 || m2.done) return; m2.done = true; const e = document.createElement('script'); e.src = window.STALAK_M2; e.async = true; document.head.appendChild(e); };
+  const m2 = () => { if (!ACCT || !MOB.matches || !window.STALAK_M2 || m2.done) return; m2.done = true; const e = document.createElement('script'); e.src = window.STALAK_M2; e.async = false; document.head.appendChild(e); };
   m2(); try { MOB.addEventListener('change', m2); } catch(e){}
 }
 mobInit();
