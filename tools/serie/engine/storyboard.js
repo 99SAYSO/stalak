@@ -1539,6 +1539,96 @@
     ...biTail(STREET, [LI(260, 1846, 1200, 'panique')],
       { t: '0:42', cap: 'La chute', set: STREET, zoom: [540, 1150, 1.3], chars: [LI(540, 2730, 2250, 'panique', P.phone(606, 760), RAISE)] }, 'QUE SUR SPOTIFY'),
   ], 'Lundi 23/11, 21 h. Devant l\'épicerie Reyes.');
+  // ---- the videos of 24/11 (written the same day from the data). No stamp : entries 05 (and 03 of bi8) are spares, never used.
+  const SPARE = { t: '—', cap: '(non utilisé)', plain: true, over: () => '' };
+  // an artist page « à la manière de » Spotify (our drawing, no logo) : the name, the followers, the button, the tracks
+  function artistPage(o = {}) {
+    let s = `<rect width="560" height="1000" fill="#121417"/><rect width="560" height="420" fill="#1d3b5c"/><circle cx="280" cy="190" r="118" fill="${BLUE}" stroke="${SNOW}" stroke-width="6"/>${T(280, 232, 'T', 120, SNOW)}`;
+    s += T(30, 380, 'T-CRAZY', 58, SNOW, { anchor: 'start', stroke: INK, sw: 6 }) + T(30, 470, (o.subs || '4') + ' abonnés', 28, '#b9c2d3', { font: 'Rubik', weight: 700, anchor: 'start' });
+    const btn = (fill, txt, col) => `<rect x="30" y="500" width="230" height="64" rx="32" fill="${fill}" stroke="${SNOW}" stroke-width="4"/>` + T(145, 543, txt, 27, col, { font: 'Rubik', weight: 800 });
+    s += btn('none', "S'abonner", SNOW);
+    if (o.subAt != null) s += K({ in: o.subAt, pop: 0.35 }, btn(SNOW, 'Abonné ✓', INK)) + K({ ripple: [o.subAt, o.subAt + 0.45] }, `<circle cx="130" cy="532" r="60" fill="none" stroke="${SNOW}" stroke-width="10"/>`);
+    if (o.pulse) s += K({ osc: [0.9, 0.06] }, `<rect x="22" y="492" width="216" height="80" rx="40" fill="none" stroke="#ffd84a" stroke-width="7"/>`);
+    s += T(30, 640, 'Populaires', 34, SNOW, { anchor: 'start' });
+    ['Nuit blanche', 'Glaçon', 'Pas le temps'].forEach((n, i) => {
+      const y = 700 + i * 96;
+      s += `<rect x="30" y="${y - 40}" width="70" height="70" rx="8" fill="${BLUE}"/>` + T(124, y + 2, n, 30, SNOW, { font: 'Rubik', weight: 800, anchor: 'start' }) + T(124, y + 34, 'T-Crazy', 22, '#8b93a5', { font: 'Rubik', weight: 700, anchor: 'start' });
+      s += i === 0 && o.heartAt != null ? `<g>${ICON.heart(500, y + 2, '#5b6170')}</g>` + K({ in: o.heartAt, pop: 0.35 }, ICON.heart(500, y + 2, '#1fd760')) : ICON.heart(500, y + 2, '#5b6170');
+    });
+    return s;
+  }
+  // the post of 3 h 04 (video 8) : the time it went out, and its views
+  function lateLate() {
+    let s = feed(clipPic('placard', 'fierte'), { user: 't.crazy', caption: 'Nouveau son, 3 h du mat', sound: 'T-Crazy · son original', likes: 2, comments: 0, shares: 0 });
+    s += `<g transform="rotate(-3 180 200)"><rect x="24" y="150" width="330" height="76" rx="18" fill="${SNOW}" stroke="${INK}" stroke-width="5"/>${T(189, 202, 'Publié à 3 h 04', 38, INK)}</g>`;
+    return s + K({ in: 0.9, pop: 0.35 }, `<g transform="rotate(3 400 300)"><rect x="250" y="250" width="290" height="76" rx="18" fill="#ffd84a" stroke="${INK}" stroke-width="5"/>${T(395, 302, '▶ 12 vues', 40, INK)}</g>`);
+  }
+  // « when your followers are there » : 24 bars, the evening high (an illustration, no figures)
+  function activeHours() {
+    let s = T(450, 26, 'Abonnés actifs, par heure', 26, '#5b6170', { font: 'Rubik', weight: 800 });
+    const H = [3, 2, 1, 1, 1, 1, 2, 4, 5, 5, 6, 7, 9, 8, 7, 8, 10, 13, 16, 19, 20, 17, 11, 6];
+    H.forEach((h, i) => { const x = 66 + i * 32, hh = h * 5.4, hi = i === 3 || i >= 18 && i <= 21;
+      s += K({ in: -2.4 + i * 0.03, pop: 0.25 }, `<rect x="${x}" y="${150 - hh}" width="24" height="${hh}" rx="5" fill="${i === 3 ? RED : hi ? BLUE : '#c3cbd8'}"/>`); });
+    return s + T(66 + 3 * 32 + 12, 184, '3 h', 24, RED, { font: 'Rubik', weight: 800 }) + T(66 + 19.5 * 32 + 12, 184, '19 h – 22 h', 24, BLUE, { font: 'Rubik', weight: 800 });
+  }
+  // an offer page (video 9) : « 1 000 écoutes garanties », a playlist, 50 € (a made-up service, no name)
+  function offerPage(at) {
+    let s = `<rect width="560" height="1000" fill="#f3f6fb"/><rect width="560" height="96" fill="${INK}"/>${T(280, 62, 'promo-son-express', 28, SNOW, { font: 'Rubik', weight: 800 })}`;
+    s += `<rect x="30" y="140" width="500" height="320" rx="26" fill="${SNOW}" stroke="${INK}" stroke-width="5"/>` + T(280, 220, '1 000 ÉCOUTES', 58, INK) + T(280, 290, 'GARANTIES', 58, RED) + T(280, 360, 'dans une playlist', 32, '#5b6170', { font: 'Rubik', weight: 800 }) + T(280, 425, '★★★★★', 36, '#f5b301');
+    s += `<rect x="130" y="500" width="300" height="110" rx="26" fill="#ffd84a" stroke="${INK}" stroke-width="5"/>` + T(280, 578, '50 €', 64, INK);
+    s += `<rect x="30" y="660" width="500" height="96" rx="26" fill="${BLUE}" stroke="${INK}" stroke-width="5"/>` + T(280, 724, 'Je commande', 40, SNOW);
+    ['✓ Résultat en 48 h', '✓ 100 % garanti', '✓ Vrais auditeurs*'].forEach((x, i) => { s += T(54, 816 + i * 52, x, 28, INK, { font: 'Rubik', weight: 800, anchor: 'start' }); });
+    return s + T(530, 980, '* voir conditions', 18, '#8b93a5', { font: 'Rubik', weight: 700, anchor: 'end' }) + (at != null ? K({ in: at, pop: 0.3 }, `<rect x="40" y="250" width="480" height="70" rx="12" fill="none" stroke="${RED}" stroke-width="8"/>`) : '');
+  }
+
+  // ---- n° 7 : FAIRE SUIVRE SA MÈRE (test : le sujet « la mère »), the kitchen in the evening
+  const S7 = 'FAIRE SUIVRE SA MÈRE', H7 = ['P*TAIN, MÊME MA MÈRE ME SUIT PAS !', 'MA MÈRE'];
+  ep('bi7', S7, 7, [
+    { t: '0:00', cap: 'Le hook : Liam crie', set: KITCHEN_N, criY: 640, chars: [CH('nadia', 2, 880, 1800, 1020, 'frime', mug(580, 1150)), LI(450, 2230, 1500, 'colere', P.phone(606, 760), RAISE)],
+      over: () => biBar(S7) + FRAME.cri('liam', H7[0], 640, H7[1]) },
+    { t: '0:03', cap: 'Liam montre sa page d\'artiste : 4 abonnés', set: KITCHEN_N, chars: [CH('nadia', 2, 820, 1846, 1250, 'frime', mug(580, 1150)), LI(260, 1846, 1200, 'colere', P.phone(606, 760), RAISE)],
+      over: () => biBar(S7, true) + K({ in: 0.25, pop: 0.3, gone: [1.4, 1.6] }, tag('LIAM, ALIAS T-CRAZY', 260, 590, -3).replace(' class="tag"', '') + tag('NADIA, SA MÈRE', 820, 500, 3).replace(' class="tag"', '')) + biPhone(artistPage({ pulse: true }), { dl: 1.5 }) },
+    { t: '0:08', cap: 'Nadia met un cœur au lieu de s\'abonner', set: KITCHEN_N, chars: [CH('nadia', 2, 820, 1846, 1250, 'fierte'), LI(260, 1846, 1200, 'panique')], over: () => biBar(S7, true) + biPhone(artistPage({ heartAt: 0.4 })) },
+    { t: '0:14', cap: 'Big Mo entre en marchant : le Radar des sorties', set: KITCHEN_N, chars: [CH('nadia', 2, 130, 1800, 1050, 'frime'), LI(400, 1846, 1200, 'panique'), MO('frime', 800, 1846, 1380, '', MO_IN)],
+      over: () => biBar(S7, true) + BIGMO_TAG(600, 462, 1.3) + biFact([['UN ABONNÉ REÇOIT', INK], ['TES NOUVEAUX SONS', BLUE], ['DANS SON RADAR', INK], ['DES SORTIES', INK]], 'Source : Spotify for Artists, « Release Radar »', 2.4, { fs: 70 }) },
+    SPARE,
+    ...biTail(KITCHEN_N, [LI(260, 1846, 1200, 'panique')],
+      { t: '0:40', cap: 'La chute : Nadia abonnée', set: KITCHEN_N, chars: [CH('nadia', 2, 760, 1846, 1250, 'fierte', P.phone(580, 1130)), LI(280, 1846, 1200, 'frime')], over: () => biPhone(artistPage({ subs: '5', subAt: 0.2 }), { dl: 0 }) }, 'POSTER À 3 H DU MAT'),
+  ], 'Mardi 24/11, 19 h. La cuisine, le soir.');
+
+  // ---- n° 8 : POSTER À 3 H DU MAT (test : la durée, environ 30 s), the bedroom studio
+  const S8 = 'POSTER À 3 H DU MAT', H8 = ["P*TAIN, J'AI POSTÉ ET PERSONNE L'A VU !", "PERSONNE L'A VU"];
+  ep('bi8', S8, 8, [
+    { t: '0:00', cap: 'Le hook : Liam crie', set: ROOM, criY: 640, chars: [CH('deuce', 1, 860, 1800, 1100, 'frime'), LI(450, 2230, 1500, 'colere', P.phone(606, 760), RAISE)],
+      over: () => biBar(S8) + FRAME.cri('liam', H8[0], 640, H8[1]) },
+    { t: '0:03', cap: 'Posté à 3 h 04', set: ROOM, chars: [CH('deuce', 1, 860, 1846, 1280, 'panique'), LI(230, 1846, 1200, 'fierte', P.phone(606, 760), RAISE)],
+      over: () => biBar(S8, true) + K({ in: 0.2, pop: 0.3, gone: [1.2, 1.4] }, tag('LIAM, ALIAS T-CRAZY', 250, 590, -3).replace(' class="tag"', '') + tag('DEUCE, SON MANAGER', 820, 500, 3).replace(' class="tag"', '')) + biPhone(lateLate(), { dl: 1.3 }) },
+    SPARE,
+    { t: '0:07', cap: 'Big Mo entre en marchant : les heures de tes abonnés', set: ROOM, chars: [CH('deuce', 1, 130, 1800, 1100, 'panique'), LI(400, 1846, 1200, 'panique'), MO('frime', 800, 1846, 1380, '', MO_IN)],
+      over: () => biBar(S8, true) + BIGMO_TAG(600, 462, 1.3) + biFact([['TIKTOK TE MONTRE', INK], ['QUAND TES ABONNÉS', BLUE], ['SONT LÀ', INK]], 'Source : TikTok Creator Academy, « Analytics »', 1.4, { extra: activeHours(), extraH: 200, fs: 72 }) },
+    SPARE,
+    ...biTail(ROOM, [LI(260, 1846, 1200, 'panique')],
+      { t: '0:28', cap: 'La chute : Deuce', set: ROOM, zoom: [540, 1150, 1.25], chars: [CH('deuce', 1, 560, 1900, 1500, 'frime'), LI(190, 1846, 1150, 'panique')] }, 'PAYER UNE PLAYLIST'),
+  ], 'Mardi 24/11, 21 h. La chambre-studio.');
+
+  // ---- n° 9 : PAYER UNE PLAYLIST (test : un hook en question), in front of the Reyes shop
+  const S9 = 'PAYER UNE PLAYLIST', H9 = ['P*TAIN, COMMENT ON A SES MILLE PREMIÈRES ÉCOUTES ?!', 'MILLE PREMIÈRES'];
+  ep('bi9', S9, 9, [
+    { t: '0:00', cap: 'Le hook : Liam crie une question', set: STREET, criY: 640, chars: [CH('maya', 1, 880, 1800, 1000, 'frime', P.phone(580, 1130)), LI(450, 2230, 1500, 'colere', P.phone(606, 760), RAISE)],
+      over: () => biBar(S9) + FRAME.cri('liam', H9[0], 640, H9[1]) },
+    { t: '0:03', cap: 'Maya montre l\'offre : 1 000 écoutes garanties, 50 €', set: STREET, chars: [CH('maya', 1, 860, 1846, 1100, 'frime', P.phone(580, 1130)), LI(230, 1846, 1200, 'fierte')],
+      over: () => biBar(S9, true) + K({ in: 0.2, pop: 0.3, gone: [1.3, 1.5] }, tag('LIAM, ALIAS T-CRAZY', 250, 590, -3).replace(' class="tag"', '') + tag('MAYA, LA VOISINE', 840, 520, 3).replace(' class="tag"', '')) + biPhone(offerPage(), { dl: 1.4 }) },
+    { t: '0:08', cap: '« Garanti »', set: STREET, chars: [CH('maya', 1, 860, 1846, 1100, 'frime', P.phone(580, 1130)), LI(230, 1846, 1200, 'frime')], over: () => biBar(S9, true) + biPhone(offerPage(0.5)) },
+    { t: '0:14', cap: 'Big Mo sort de l\'épicerie : interdit, et ça rapporte zéro', set: STREET, chars: [CH('maya', 1, 130, 1800, 1000, 'panique'), LI(400, 1846, 1200, 'panique'), MO('frime', 800, 1846, 1380, P.icebag(590, 1150, 6), MO_IN)],
+      over: () => biBar(S9, true) + BIGMO_TAG(600, 462, 1.3) + biFact([['PAYER DES ÉCOUTES', INK], ['OU UNE PLAYLIST :', INK], ['INTERDIT', RED], ['ET ÇA RAPPORTE 0 €', BLUE]], 'Source : Spotify for Artists, « Artificial streaming »', 2.0, { fs: 70 }) },
+    SPARE,
+    ...biTail(STREET, [LI(260, 1846, 1200, 'panique')],
+      { t: '0:42', cap: 'La chute', set: STREET, zoom: [540, 1150, 1.3], chars: [LI(540, 2730, 2250, 'frime')] }, 'QUE SUR SPOTIFY'),
+  ], 'Mardi 24/11, 22 h 30. Devant l\'épicerie Reyes.');
+  FRAMES['thumb-bi7'] = { set: KITCHEN_N, chars: [CH('nadia', 2, 830, 2900, 2200, 'frime'), LI(330, 3200, 2330, 'colere')], over: () => `<g transform="translate(0 120)">${biBar(S7)}</g>` + FRAME.cri('liam', H7[0], 800, H7[1]) };
+  FRAMES['thumb-bi8'] = { set: ROOM, chars: [CH('deuce', 1, 820, 2950, 2300, 'panique'), LI(330, 3200, 2330, 'colere')], over: () => `<g transform="translate(0 120)">${biBar(S8)}</g>` + FRAME.cri('liam', H8[0], 800, H8[1]) };
+  FRAMES['thumb-bi9'] = { set: STREET, chars: [CH('maya', 1, 820, 2900, 2100, 'frime'), LI(330, 3200, 2330, 'colere')], over: () => `<g transform="translate(0 120)">${biBar(S9)}</g>` + FRAME.cri('liam', H9[0], 800, H9[1]) };
+
   // their thumbnails : the bar, the hook, the faces big
   const biThumb = (set, chars, S, H) => ({ set, chars, over: () => `<g transform="translate(0 120)">${biBar(S)}</g>` + FRAME.cri('liam', H[0], 800, H[1]) });
   FRAMES['thumb-bi1'] = biThumb(KITCHEN_N, [CH('nadia', 2, 830, 2900, 2200, 'frime'), LI(330, 3200, 2330, 'colere')], S1, H1);

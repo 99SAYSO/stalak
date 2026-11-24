@@ -30,10 +30,12 @@ import stalak_part as SP  # noqa: E402
 T, WORK, FPS = C.T, C.WORK, C.FPS
 SET = {'bi1': 1, 'bi2': 2, 'bi3': 3}      # the set of the Stalak part (stalak_part.py : 1 the kitchen in the evening, 2 the bedroom, 3 the street)
 SHARED = (8, 9, 10, 11, 12, 13, 14)       # the same words in every video : recorded once (bi1). (Line 7, the verdict, is no longer used : 23/11.)
-STALAK = (11, 12, 13, 14)
+STALAK = (11, 12, 13, 14)   # in bi1 to bi3 ; the line numbers of each video are found by their words (stalak_nums)
+STALAK_TXT = ("Va sur stalak.app, c'est gratuit.", 'Tu choisis ton son, tu te filmes plusieurs fois,', 'tu colles tes paroles.',
+              'Stalak coupe tes prises sur le rythme, lèvres synchro. Ton snippet est prêt.')
 # Big Mo's words over the Stalak part, 2 to 4 at a time ; [green] : the word that matters. The same words as in the cards.
-PART_SUBS = {11: ["Va sur [stalak.app],", "c'est [gratuit]."], 12: ["Tu choisis ton son,", "tu te filmes", "plusieurs fois,"],
-             13: ["tu colles", "tes paroles."], 14: ["Stalak coupe tes prises", "sur le rythme,", "lèvres [synchro].", "Ton snippet est prêt."]}
+PART_SUBS = {0: ["Va sur [stalak.app],", "c'est [gratuit]."], 1: ["Tu choisis ton son,", "tu te filmes", "plusieurs fois,"],
+             2: ["tu colles", "tes paroles."], 3: ["Stalak coupe tes prises", "sur le rythme,", "lèvres [synchro].", "Ton snippet est prêt."]}
 # the recordings shown during each moment (see stalak_part.py for what each one is) : (recording, from, to, speed or 'fill', sound)
 PIECES = [('A', 'STALAK.APP', [('r1', 0.00, 2.70, 'fill', False)]),            # the home page, down to « Choisis ton son »
           ('B1', '1 · SON', [('r2', 0.00, 5.10, 'fill', False)]),                # step 1 : the song, the passage chosen
@@ -43,6 +45,13 @@ PIECES = [('A', 'STALAK.APP', [('r1', 0.00, 2.70, 'fill', False)]),            #
           ('D1', '4 · MONTAGE', [('r5', 20.50, None, 1.0, True)]),               # step 4 : the montage plays, cut on the beat (its sound)
           ('D2', None, [('r5', 68.00, 68.80, 'fill', False)]),                   # « Ta vidéo est prête ✓ »
           ('FIN', None, [('final', 0.00, None, 1.0, True)])]                     # the finished video (the free export, with its watermark)
+
+
+def stalak_nums(ep):
+    """the numbers of the 4 lines of the Stalak part in this video (the verdict line is gone since 23/11, so they move)"""
+    L = C.script_lines(ep)
+    norm = lambda s: re.sub(r'[^a-zà-ÿ]', '', C.typo(s).lower()).replace('stalakpointapp', 'stalakapp')
+    return tuple(next(l['n'] for l in L if norm(l['text']) == norm(x)) for x in STALAK_TXT)
 
 
 def card_of(ep):
@@ -145,13 +154,15 @@ def part(ep):
     t0, t1 = D['stalak']
     f0, f1 = int(round(t0 * FPS)), int(round(t1 * FPS))
     total = f1 - f0
-    L = {l['n']: l for l in D['lines'] if l['n'] in STALAK}
+    SN = stalak_nums(ep)
+    a, b2, c, d = SN
+    L = {l['n']: l for l in D['lines'] if l['n'] in SN}
     txt = {l['n']: l['text'] for l in C.script_lines(ep)}
     r = lambda n, k: L[n][k] - t0
     cut = lambda n, upto: r(n, 't0') + (r(n, 't1') - r(n, 't0')) * len(upto) / len(txt[n])
-    fin = r(14, 't1') - 0.25
-    b = [0.0, r(12, 't0'), cut(12, 'Tu choisis ton son,'), r(13, 't0'), (r(13, 't0') + r(14, 't0')) / 2, r(14, 't0'),
-         cut(14, 'Stalak coupe tes prises sur le rythme, lèvres synchro.'), fin, total / FPS]
+    fin = r(d, 't1') - 0.25
+    b = [0.0, r(b2, 't0'), cut(b2, 'Tu choisis ton son,'), r(c, 't0'), (r(c, 't0') + r(d, 't0')) / 2, r(d, 't0'),
+         cut(d, 'Stalak coupe tes prises sur le rythme, lèvres synchro.'), fin, total / FPS]
     fb = [int(round(x * FPS)) for x in b]
     fb[-1] = total
     pieces, steps = [], []
@@ -170,8 +181,8 @@ def part(ep):
     for i, s in enumerate(steps):
         s['t1'] = round(steps[i + 1]['t0'] if i + 1 < len(steps) else fin, 3)
     subs = []
-    for n in STALAK:
-        cs = PART_SUBS[n]
+    for k, n in enumerate(SN):
+        cs = PART_SUBS[k]
         plain = [c.replace('[', '').replace(']', '') for c in cs]
         assert ' '.join(plain) == txt[n], (plain, txt[n])  # the words of the card, nothing else
         tot, acc = sum(len(c) for c in plain), 0
@@ -183,7 +194,7 @@ def part(ep):
         if subs[i + 1]['t0'] - subs[i]['t1'] < 0.4:
             subs[i]['t1'] = subs[i + 1]['t0']
     big = round(fin + 0.1, 3)
-    P = dict(fps=FPS, duration=round(total / FPS, 3), frames=total, lines=[dict(n=n, text=txt[n], t0=round(r(n, 't0'), 3), t1=round(r(n, 't1'), 3), real=True) for n in STALAK],
+    P = dict(fps=FPS, duration=round(total / FPS, 3), frames=total, lines=[dict(n=n, text=txt[n], t0=round(r(n, 't0'), 3), t1=round(r(n, 't1'), 3), real=True) for n in SN],
              pieces=pieces, subs=subs, steps=steps, big=big, card=[0.3, big])
     SP.PART = os.path.join(WORK, ep, 'stalak_part')
     os.makedirs(SP.PART, exist_ok=True)

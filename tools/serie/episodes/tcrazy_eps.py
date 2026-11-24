@@ -405,3 +405,25 @@ def _bi(n, card, verdict, chute, hold=2.4):
 EPISODES['bi1'] = _bi(1, 'bonne-idee-01', 'galere', [15])
 EPISODES['bi2'] = _bi(2, 'bonne-idee-02', 'victoire', [15], hold=2.0)  # (« Le feat, oui. » gave the verdict : cut)
 EPISODES['bi3'] = _bi(3, 'bonne-idee-03', 'galere', [15])
+
+
+# ---- the videos of 24/11 (written the same day from the data ; no verdict line any more, so the numbers move)
+def _bi_day(n, card, dispute, fact, end, hold=2.2):
+    """dispute : the groups of lines of the dispute (one shot each) ; fact : Big Mo's line ; the rest follows : « Ce qui marche »,
+    the bridge (2 lines), Stalak (4 lines), then the end lines"""
+    e, k = 'bi%d' % n, fact
+    shots = [(e + '-01', [1], dict(after=0.1)), (e + '-02', dispute[0], dict(music='plan'))]
+    if len(dispute) > 1:
+        shots.append((e + '-03', dispute[1], {}))
+    shots += [(e + '-04', [k], dict(music='hustle', lead=1.0, after=0.4, sfx=[('steps.wav', 0.0, 0.5)])),
+              (e + '-06', [k + 1], dict(lead=0.3, after=0.5)),
+              (e + '-07', [k + 2, k + 3], {}),
+              (e + '-08', [k + 4, k + 5, k + 6, k + 7], dict(music='silence', after=1.5)),
+              (e + '-09', end, dict(music='plan')),
+              (e + '-10', [], dict(hold=hold, sfx=[('whoosh-short.mp3', 0.0, 0.3)]))]
+    return dict(card=card, same={}, direction={}, gap=0.16, cut=0.24, tempo=1.06, shots=shots)
+
+
+EPISODES['bi7'] = _bi_day(7, 'bonne-idee-07', [[2, 3], [4, 5]], 6, [14, 15])
+EPISODES['bi8'] = _bi_day(8, 'bonne-idee-08', [[2, 3]], 4, [12], hold=1.8)
+EPISODES['bi9'] = _bi_day(9, 'bonne-idee-09', [[2, 3], [4, 5]], 6, [14])

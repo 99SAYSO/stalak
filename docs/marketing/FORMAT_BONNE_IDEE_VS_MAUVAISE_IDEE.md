@@ -43,6 +43,7 @@ voient la partie Stalak, qui arrivait vers 55 s. D'où trois règles du proprié
    - Big Mo donne son fait vérifié, puis enchaîne directement sur son snippet (« Ce qui marche, c'est ça. »).
    - Dans le tableau ci-dessous, la ligne « tampon » ne s'applique plus.
 7. **La barre « BONNE IDÉE VS MAUVAISE IDÉE » prend toute la largeur de l'écran**, d'un bord à l'autre (même règle, même heure).
+8. **Les vidéos du jour s'écrivent le jour même, d'après les chiffres** (règle du 24/11, 16 h 12) : les 3 vidéos d'un jour testent 3 choses différentes ; le relevé et les tests sont dans `JOURNAL_DATA.md`.
 
 ## Le squelette (version du 23/11, 40 à 50 s)
 
