@@ -635,6 +635,8 @@ const I18N_EN = /*@EN*/{
   "rec.count": "{n} take filmed",
   "rec.count_p": "{n} takes filmed",
   "rec.goN": "● Start take {n}",
+  "rec.flashOff": "⚡ Flash",
+  "rec.flashOn": "⚡ Flash on",
   "lq.t": "Add the lyrics to your video?",
   "lq.p": "You can always add them later, in the Lyrics tab.",
   "lq.yes": "Yes",
@@ -1619,6 +1621,8 @@ const I18N_FR = /*@FR*/{
   "rec.count": "{n} prise filmée",
   "rec.count_p": "{n} prises filmées",
   "rec.goN": "● Lancer la prise {n}",
+  "rec.flashOff": "⚡ Flash",
+  "rec.flashOn": "⚡ Flash allumé",
   "lq.t": "Tu veux ajouter les paroles à la vidéo ?",
   "lq.p": "Tu pourras toujours les ajouter plus tard, dans l’onglet Paroles.",
   "lq.yes": "Oui",
@@ -6839,6 +6843,17 @@ function finish(){ const hook = !!endHook; stop(true); if (!hook) showFrame(S.se
 /* ---------- recording on the site ---------- */
 let recStream = null, recRec = null, recTimer = 0, recStopReq = false;
 let camFacing = 'user';
+// (23/11, the owner: « un flash dans la caméra : oui ») the torch of the phone when the camera has one (back camera, Android
+// mostly); otherwise (front camera, iPhone) a bright white frame round the picture lights the face. Kept for the next takes
+let camFlash = store.get('stalak:camFlash') === 1;
+function camTorchOk(){ const t = recStream && recStream.getVideoTracks()[0]; try { return !!(t && t.getCapabilities && t.getCapabilities().torch); } catch(e){ return false; } }
+function camFlashApply(){
+  const t = recStream && recStream.getVideoTracks()[0], torch = camTorchOk();
+  if (t && torch) t.applyConstraints({ advanced: [{ torch: camFlash }] }).catch(() => {});
+  $('#recPanel').classList.toggle('flashring', camFlash && !torch);
+  const b = $('#recFlash'); if (b){ b.setAttribute('aria-pressed', String(camFlash)); setT(b, camFlash ? 'rec.flashOn' : 'rec.flashOff'); }
+}
+function camFlashSet(on){ camFlash = !!on; store.set('stalak:camFlash', camFlash ? 1 : 0); camFlashApply(); diag('caméra : flash ' + (camFlash ? (camTorchOk() ? 'torche' : 'cadre blanc') : 'éteint')); }
 // the countdown before a take: 0 (none), 3 or 5 s, kept from one visit to the next
 let recDelay = (() => { const v = store.get('stalak:recTimer'); return [0, 3, 5].includes(v) ? v : 0; })();
 let recCd = null, recShot = 0;   // the countdown running; takes filmed since the page opened
@@ -6874,7 +6889,7 @@ function camSelfie(){
 }
 function camShow(){
   const v = $('#recVideo'); v.srcObject = recStream; v.play().catch(()=>{});
-  v.classList.toggle('mirror', camSelfie()); camZoomOut();
+  v.classList.toggle('mirror', camSelfie()); camZoomOut(); camFlashApply();
   const t = recStream.getVideoTracks()[0], st = t && t.getSettings ? t.getSettings() : {};
   diag('caméra : ' + (camFacing === 'user' ? 'selfie' : 'arrière') + (st.width ? ' · ' + st.width + '×' + st.height : '') + (st.frameRate ? ' · ' + Math.round(st.frameRate) + ' i/s' : '') + (camSelfie() ? ' · miroir' : ''));
 }
@@ -6916,6 +6931,7 @@ function closeCamera(){
 function recUi(state){
   $('#recGo').hidden = state !== 'idle'; $('#recCancel').hidden = state !== 'cd'; $('#recStop').hidden = state !== 'rec';
   $('#recFlip').disabled = state !== 'idle';
+  $('#recPanel').dataset.st = state;
   $('#recTimerSeg').querySelectorAll('button').forEach(b => { b.disabled = state !== 'idle'; b.setAttribute('aria-pressed', String(+b.dataset.v === recDelay)); });
   $('#recPanel').classList.toggle('busy', state !== 'idle');
   if (state !== 'idle') $('#recDone').hidden = true;
@@ -8933,7 +8949,7 @@ function styleChanged(){
 /* ---------- events ---------- */
 $$('#stepper button').forEach(b => b.onclick = () => go(+b.dataset.go));
 $$('[data-back]').forEach(b => b.onclick = () => go(+b.dataset.back));
-$('#next1').onclick = () => go(2); $('#next2').onclick = () => lyAsk(); $('#next3').onclick = () => go(4);
+$('#next1').onclick = () => go(2); $('#next2').onclick = () => { if (window.StalakM3 && StalakM3.on()) go(3); else lyAsk(); }; $('#next3').onclick = () => go(4);   // (refonte mobile, lot 3) on a phone, step 3 is the question itself
 /* « Continuer » after the takes (owner, 06/11): « Tu veux ajouter les paroles à la vidéo ? » Oui: the Lyrics step; Non: straight
    to the edit. Lyrics already there (a project picked up): the Lyrics step, as before. Échap or a tap beside: nothing changes */
 function lyAsk(){
@@ -9127,6 +9143,7 @@ $('#cutLock').onclick = () => { const c = S.cuts[S.sel]; if (!c) return; lockCut
 $('#recOpen').onclick = openCamera;
 $('#recClose').onclick = closeCamera;
 $('#recFlip').onclick = camFlip;
+$('#recFlash').onclick = () => camFlashSet(!camFlash);
 $('#recGo').onclick = recordTake;
 $('#recStop').onclick = () => { recStopReq = true; };
 $('#recCancel').onclick = () => recCancel();
@@ -11687,7 +11704,7 @@ function mobInit(){
   $('#mhPill').onclick = () => { if (S.exporting || askDone || !ACCT) return; if (acctPaid()) apGo('account'); else apGo('pro', { from: 'menu' }); };
   // what changes the state: a step, the song, the end screen, a page of the account, the person signed in
   const mo = new MutationObserver(() => mobUi());
-  for (const id of ['p1', 'songBox', 'doneView', 'acctPage', 'lpOffer', 'apLogin', 'apAccount', 'apGallery', 'apPro']){ const n = document.getElementById(id); if (n) mo.observe(n, { attributes: true, attributeFilter: ['hidden', 'class'] }); }
+  for (const id of ['p1', 'p2', 'p3', 'p4', 'songBox', 'doneView', 'acctPage', 'lpOffer', 'apLogin', 'apAccount', 'apGallery', 'apPro']){ const n = document.getElementById(id); if (n) mo.observe(n, { attributes: true, attributeFilter: ['hidden', 'class'] }); }
   mo.observe(document.body, { attributes: true, attributeFilter: ['class'] });
   if (ACCT) ACCT.onChange(() => mobUi());
   try { MOB.addEventListener('change', () => mobUi()); } catch(e){}
@@ -11696,9 +11713,19 @@ function mobInit(){
   // lot 2: on a phone of stalak.app, the dressed screens come in their own file, after the app
   window.StalakM = Object.freeze({ lang: () => LANG, t: (k, v) => _t(k, v), acct: ACCT, view: () => (ACCT && isShown($('#acctPage')) ? apView : null), mode: () => apMode, step: () => apStep,
     go: (v, o) => apGo(v, o), hide: () => apHide(), plan: () => acctPlan(), paid: () => acctPaid(), name: u => acctName(u), calm: () => calmMotion(), gsap: () => mobGsap(), play: b => mobPlay(b),
-    phone: () => MOB.matches, home: () => mobHome(), cloud: () => (typeof CL !== 'undefined' ? CL : null), reload: () => clLoadList(), on: f => { mobSubs.push(f); } });
+    phone: () => MOB.matches, home: () => mobHome(), cloud: () => (typeof CL !== 'undefined' ? CL : null), reload: () => clLoadList(), on: f => { mobSubs.push(f); },
+    // (refonte mobile, lot 3) the editor: its step, its takes, the camera; nothing here changes a setting
+    ed: Object.freeze({ step: () => S.step, go: n => go(n), done: () => document.body.classList.contains('isdone'), song: () => !!S.song, kind: () => S.kind,
+      can: f => can(f), playing: () => !!S.playing, lyr: () => S.lyrics.mode, exporting: () => !!S.exporting,
+      takes: () => S.takes.filter(t => !t.broll).map(t => ({ el: t.kind === 'video' ? t.el || null : null, demo: t.kind === 'demo', look: t.look || null, stars: t.qual ? qualSummary(t).stars : 0 })),
+      cam: () => !!recStream, rec: () => (recRec && recRec.state !== 'inactive') ? 'rec' : recCd ? 'cd' : 'idle', timer: () => recDelay, timerSet: v => recTimerSet(v),
+      take: () => S.takes.filter(t => !t.broll && t.kind !== 'demo').length + 1,
+      recPos: () => { if (!S.song || !(recRec && recRec.state !== 'inactive')) return 0; const a = recFrom(), b = Math.min(S.song.duration, S.segEnd + 0.3); return Math.max(0, Math.min(1, (player.currentTime - a) / Math.max(0.1, b - a))); } }) });
   const m2 = () => { if (!ACCT || !MOB.matches || !window.STALAK_M2 || m2.done) return; m2.done = true; const e = document.createElement('script'); e.src = window.STALAK_M2; e.async = false; document.head.appendChild(e); };
   m2(); try { MOB.addEventListener('change', m2); } catch(e){}
+  // (refonte mobile, lot 3) the editor and the camera on a phone: one more file, loaded the same way
+  const m3 = () => { if (!ACCT || !MOB.matches || !window.STALAK_M3 || m3.done) return; m3.done = true; const e = document.createElement('script'); e.src = window.STALAK_M3; e.async = false; document.head.appendChild(e); };
+  m3(); try { MOB.addEventListener('change', m3); } catch(e){}
 }
 mobInit();
 
