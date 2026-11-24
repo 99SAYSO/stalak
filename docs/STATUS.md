@@ -4,6 +4,7 @@
 > Dernière mise à jour : 30/10/2026 à 21 h (offre hybride fusionnée et en ligne : App, Comptes, Juridique, Marketing ; migration 0008 appliquée).
 
 ## Décisions récentes du propriétaire
+- 24/11 18:45 — Chef : fusion et mise en ligne de `app/clip-reserve-abonnes` (mode Clip réservé aux abonnés, essai Pro en cours = abonné) après le « oui je valide » du propriétaire. Tests : serveur 132/132, essai_pro 205/205, vente 63/63, refonte_mobile 102/102, refonte_mobile2 142/142, audit611 93/93, clip1 91/95 (les 4 échecs sont déjà sur main, `.band-frost a:hover` de Marketing). Lots 3 et 4 : pas encore PRÊT.
 - 24/11 18:20 — Propriétaire : paywall « D, Salle » validé (foule dessinée, titre en DM Sans, « ou » avant le bouton). Demande mise à jour : docs/handoff/chef-paywall-scene.md.
 - 24/11 18:30 — Propriétaire : paywall « Scène » validé (« ou » entre « Pro · au mois » et « Essayer gratuitement ») ; les avis de avis.json sont de vrais clients. Demande : docs/handoff/chef-paywall-scene.md (App).
 - 24/11 18:15 — Propriétaire : paywall « B, Scène » choisi ; « ou » entre les deux formules ; nouveau sticker de la mascotte (ChatGPT, fond transparent) ; références du chara design rangées dans docs/marque/mascotte/.
