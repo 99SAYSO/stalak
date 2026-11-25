@@ -1,4 +1,4 @@
-Statut : EN COURS
+Statut : PRÊT
 
 # Branche `app/fin-export-belle` — une vraie belle page de fin d'export, et l'igloo pendant l'export
 
@@ -56,7 +56,12 @@ La maquette validée, sans l'ours.
     - le même rendu avec et sans l'offre.
 - Nouveau test `tests/ui/export_igloo_ui.py` : 21/21.
 - `refonte_mobile4_ui` : la vérification « sans l'offre » attend maintenant la vidéo affichée, et toujours pas la comparaison Pro.
-- Série complète : voir le résultat dans STATUS.
+- `refonte_mobile4_ui` : la vérification « sans le droit à l'offre » accepte maintenant la carte blanche sans titre d'offre : 81/81.
+- **Série complète**, tout réussi sauf deux échecs déjà présents sur main :
+  - `refonte_mobile3_ui` 93/93, `refonte_mobile_ui` 102/102, `refonte_mobile2_ui` 65/65 ;
+  - `refonte_stats_ui` 72/72, `fin_export_ui` 98/98, `prises_ui` 24/24 ;
+  - `essai_pro_ui` 205/205, `suite_clarity_ui` 24/24, `projet_local_ui` 76/76, `ou_est_ton_son_ui` 23/23 ;
+  - déjà présents sur main : `formules_ui` 136/137 (le compte du filigrane) et `clip1_ui` (`.band-frost a:hover`, côté Marketing).
 
 ## Captures (avant PRÊT, demandées par le Chef)
 Dans `docs/audit/maquettes/fin-export-belle-2026-11-25/` :
