@@ -152,6 +152,10 @@ def run(b, base, lang, dev):
     for k, sel in (('cuts', '#modeSeg'), ('filt', '#filtRow'), ('ly', '#stPos'), ('fmt', '#fmtSeg')):
         pg.locator('.m3-tools button[data-tool="%s"]' % k).click(); pg.wait_for_timeout(500)
         check(tag + ' : outil « %s » : sa feuille et ses réglages' % k, vis(pg, '#m3Sh_' + k) and vis(pg, sel) and pg.locator('.m3-tools button[data-tool="%s"]' % k).get_attribute('aria-expanded') == 'true')
+        if k == 'filt':
+            # (25/11, owner) the thumbnails are pictures as the sheet opens, never black squares
+            dark = pg.evaluate("() => [...document.querySelectorAll('#filtRow canvas')].filter(c => c.offsetParent).map(c => { const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data; let s = 0; for (let i = 0; i < d.length; i += 4 * 97) s += d[i] + d[i + 1] + d[i + 2]; return s; }).filter(v => v < 30).length")
+            check(tag + ' : Filtres : les vignettes sont des images dès l’ouverture (aucune noire)', dark == 0, dark)
         if k == 'fmt':
             pg.locator('#fmtSeg button[data-v="45"]').click(); pg.wait_for_timeout(400)
             check(tag + ' : Format 4:5 choisi dans la feuille', ev(pg, 'S.fmt') == '45'); pg.locator('#fmtSeg button[data-v="916"]').click(); pg.wait_for_timeout(300)

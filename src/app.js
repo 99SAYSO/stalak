@@ -1268,6 +1268,7 @@ const I18N_EN = /*@EN*/{
   "tr.go": "Try Pro free for {n} days",
   "of1.go": "Remove the watermark for {p}",
   "of1.terms": "{p} today, then {m}/month in 7 days. Cancel anytime.",
+  "of1.no": "This account has already had a trial or the offer: the 1 € offer is no longer possible. You can save your video for free (with the watermark).",
   "tr.thenY": "Then {m}/month, billed {y} a year.",
   "tr.thenM": "Then {m}/month, billed monthly.",
   "tr.cancel": "Cancel anytime before the trial ends.",
@@ -2000,6 +2001,7 @@ const I18N_FR = /*@FR*/{
   "tr.go": "Essayer Pro {n} jours gratuits",
   "of1.go": "Retire le filigrane pour {p}",
   "of1.terms": "{p} aujourd’hui, puis {m}/mois dans 7 jours. Annulable à tout moment.",
+  "of1.no": "Ce compte a déjà eu un essai ou l’offre : l’offre à 1 € n’est plus possible. Tu peux enregistrer ta vidéo gratuitement (avec le filigrane).",
   "tr.thenY": "Puis {m}/mois, facturé {y} par an.",
   "tr.thenM": "Puis {m}/mois, facturé chaque mois.",
   "tr.cancel": "Annulable à tout moment avant la fin de l’essai.",
@@ -5466,6 +5468,9 @@ function thumbGrab(c){
 var thumbJob = 0, stepAt = 0;   // var: go() can run before this line at start-up
 function filtThumbs(){
   if (!thumbOk || S.playing || S.exporting) return;
+  // (25/11, owner: the thumbnails were black until a filter was touched, their sheet being closed when they were drawn)
+  // every thumbnail gets the picture right away, filtered or not; the filtered ones on screen follow
+  $$('#filtRow canvas').forEach(cv => { if (cv.dataset.t !== String(thumbT)){ try { cv.getContext('2d').drawImage(thumbSrc, 0, 0, cv.width, cv.height); cv.dataset.t = thumbT; } catch(e){} } });
   if (!thumbR){ thumbR = filtRunner(); if (!thumbR) return; }
   const list = $$('#filtRow canvas').filter(cv => cv.offsetParent !== null), id = ++thumbJob; let k = 0;
   const one = cv => {
@@ -8349,6 +8354,7 @@ function doneShow(){
   const zip = /\.zip$/i.test(lastName);
   if (S.done) return doneUi();
   S.done = true; document.body.classList.add('isdone');
+  store.set(EXP_KEY, (+store.get(EXP_KEY) || 0) + 1);
   $('#dvSlot').append($('#result')); $('#doneView').hidden = false;
   doneUi(); expFabUi();
   window.scrollTo({ top: 0 });
@@ -10323,11 +10329,16 @@ function trialLeft(){
    does not), 1 € and the Pro monthly price of the config. Once per person (entitlements.offer1Eligible, checked again by the
    server). After paying, the account is Pro and the end screen offers the same video again without the watermark. */
 let of1Prices = null, of1Asked = false, of1Tries = 0;
-function offer1On(){
+function offer1Right(){
   if (!ACCT || acctPaid() || !plCfg || !plCfg.paddle || !plCfg.paddle.prices || !plCfg.paddle.prices.proOffer1) return false;
   // signed out: shown (the right is checked once signed in, as for the free trial)
   const st = ACCT.state; return st.user ? !!(st.entitlements && st.entitlements.offer1Eligible === true) : true;
 }
+/* (25/11, owner's decision) the offer is not shown at every export: at the 1st, then the 10th, the 20th… (exports counted in
+   this browser, stalak:exports) */
+const EXP_KEY = 'stalak:exports';
+const of1Turn = () => { const n = +store.get(EXP_KEY) || 0; return n === 1 || (n > 0 && n % 10 === 0); };
+function offer1On(){ return offer1Right() && of1Turn(); }
 // 24/11: the two amounts come from Paddle, already short (« 1 € », « 7,99 € » ; « 1 $ », « 7,99 $ » in the United States),
 // ACCT.offerPrices. Until then (or if Paddle does not answer) the offer is not shown: never a guessed amount next to a payment
 // button (the end screen keeps its usual button meanwhile).
@@ -10335,9 +10346,22 @@ function offer1Text(){
   if (!of1Prices) return null;
   return { go: _t('of1.go', { p: of1Prices.today }), terms: _t('of1.terms', { p: of1Prices.today, m: of1Prices.then }) };
 }
+/* (25/11, owner: « Retirer pour 1 € » opened the plans: wrong) the button pays the 1 € offer itself, never the plans page.
+   Signed out: the account is created first (the video stays on screen), then the payment of the offer opens; if the account
+   has already had a trial or the offer, the server says no: it is said in one sentence, and the free save stays there. */
+let of1Pending = false;
 function offer1Go(){
-  acctEvent('plans_open', { why: 'wm' });
-  if (!ACCT.state.user){ lockOpen('nowm'); return; }   // sign in first; back on this screen the offer is there if the account has the right
+  acctEvent('plans_open', { why: 'offer1' });
+  if (!ACCT.state.user){ of1Pending = true; apAfter = 'offer1'; apGo('login', { mode: store.get('stalak:hadAcct') ? 'in' : 'up' }); return; }
+  of1Pay();
+}
+function of1Resume(){
+  if (!of1Pending || !ACCT || !ACCT.state.user || !ACCT.state.entitlements) return;
+  of1Pending = false; apHide();
+  if (offer1Right() && of1Prices) of1Pay(); else { say('of1.no'); trialUi(); }
+}
+if (ACCT) ACCT.onChange(() => { if (of1Pending) setTimeout(of1Resume, 0); });
+function of1Pay(){
   apRun(async () => { apSay('acct.paying'); diag('compte : offre 1 € (7 jours de Pro, puis Pro mensuel)'); await ACCT.checkout('pro', 'month', { kind: 'offer1' }); apSay(null); });
 }
 function offer1Ui(cmpGo){
@@ -10532,7 +10556,7 @@ function apResolve(v){
   const u = ACCT.state.user;
   // the Pro offer can be seen signed out (the buy buttons ask to sign in); the account page needs it
   if (!u && (v === 'account' || v === 'gallery')){ apAfter = v; return 'login'; }
-  if (u && v === 'login') return apAfter || 'account';
+  if (u && v === 'login') return apAfter && apAfter !== 'offer1' ? apAfter : 'account';
   return v;
 }
 function apHist(v, replace){
@@ -10760,6 +10784,7 @@ if (ACCT){
     const to = apAfter || 'account';
     apAfter = 'account'; apStep = 'form'; apResetCode = ''; apClearPw(); $('#apUpName').value = '';
     acctSync();
+    if (to === 'offer1'){ of1Resume(); return; }   // (25/11) back to the video, the offer's payment opens
     apGo(to, { replace: true, keepMsg: true });
     apSay(msgK || (acctPaid() ? 'acct.welcomePro' : 'acct.welcome'), acctPlanVars());
     if (to === 'pro') plResume(); else plTake();   // signed in from somewhere else: the old choice is dropped
@@ -11854,6 +11879,7 @@ function mobInit(){
     ed: Object.freeze({ step: () => S.step, go: n => go(n), done: () => document.body.classList.contains('isdone'), song: () => !!S.song, kind: () => S.kind,
       can: f => can(f), playing: () => !!S.playing, lyr: () => S.lyrics.mode, exporting: () => !!S.exporting,
       takes: () => S.takes.filter(t => !t.broll).map(t => ({ el: t.kind === 'video' ? t.el || null : null, thumb: t.thumb || (t.live && t.live.ts != null ? t.live.cv : null) || null, demo: t.kind === 'demo', look: t.look || null, stars: t.qual ? qualSummary(t).stars : 0 })),
+      filtThumbs: () => filtThumbs(),
       desel: () => { S.sel = -1; S.selT = null; S.fxSelT = null; renderTimeline(); renderCutBar(); renderFxBar(); },
       cam: () => !!recStream, rec: () => (recRec && recRec.state !== 'inactive') ? 'rec' : recCd ? 'cd' : 'idle', timer: () => recDelay, timerSet: v => recTimerSet(v),
       take: () => S.takes.filter(t => !t.broll && t.kind !== 'demo').length + 1,

@@ -323,6 +323,7 @@ function cutUi(){
   var x = $('#cutBar .m3-shx'); if (x) x.setAttribute('aria-label', t('close'));
 }
 function sheet(k){
+  if (k === 'filt' && E.filtThumbs) setTimeout(function(){ E.filtThumbs(); }, 0);   // (25/11) the thumbnails ready as the sheet opens
   var was = cur; cur = k;
   Object.keys(sheets).forEach(function(x){ sheets[x].classList.toggle('on', x === k); });
   scrim.classList.toggle('on', !!k);
