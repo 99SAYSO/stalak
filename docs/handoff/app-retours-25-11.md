@@ -39,14 +39,28 @@ Chaque étape a son ciel, dans la famille du dégradé A, avec les flocons blanc
 - « Tes sorties par mois » : le mois sous chaque barre, le nombre au-dessus, et une phrase (« 4 sorties en 6 mois, rien en juillet et en octobre »).
 - « Tes auditeurs, semaine par semaine » : chaque semaine sous son point, chaque chiffre au-dessus, et une phrase (« De 3 900 à 4 812 auditeurs en 7 semaines (+23 %) »).
 
-## Nouveau (analyse Clarity du 25/11) : « Où est ton son ? »
-Maquette à valider : `docs/audit/maquettes/son-2026-11-25/maquette.png`. Pas encore dans l'app.
+## « Où est ton son ? » (analyse Clarity du 25/11, maquette validée « très bien ») — fait
+Sur téléphone, « Choisir mon son » (accueil, « + », étape 1) ouvre d'abord la feuille : Fichiers ; AirDrop / WhatsApp (les étapes pour le retrouver, onglets WhatsApp / AirDrop, « Ouvrir Fichiers ») ; le son d'une vidéo de la galerie (sélecteur de vidéos, le son devient celui du montage) ; une note vocale (étapes Dictaphone) ; le son d'exemple en jaune avec son bouton, visible sans défiler même sur iPhone SE. Sur ordinateur : le sélecteur directement. Test `ou_est_ton_son_ui` 23/23.
+
+## Retours b (aperçu du Chef, 25/11 6 h 31, `docs/handoff/chef-retours-maquettes-25-11-b.md`) — faits
+1. **Filtres** : toutes les vignettes reçoivent l'image tout de suite (même feuille fermée), les filtrées suivent dès l'ouverture : plus de carré noir. Test ajouté dans `refonte_mobile3_ui`.
+2. **Fin d'export sous l'offre** : plus de vide noir ni d'icône perdue ; légende, aide « Dans la liste… », « Recevoir les conseils » chacun dans une carte blanche, texte lisible.
+3. **« Retirer pour 1 € »** ouvre directement le paiement de l'offre (`kind: 'offer1'`), jamais les formules. Sans compte : création du compte d'abord (la vidéo reste à l'écran), puis le paiement de l'offre. Si le serveur dit que le compte a déjà eu un essai ou l'offre : une phrase claire, et l'enregistrement gratuit reste là.
+4. **Quand l'offre apparaît** : au 1er export, puis au 10e, au 20e… (compteur `stalak:exports` dans le navigateur), jamais pour un abonné, en essai ou sans le droit côté serveur (`offer1Eligible`). Les autres fois : « Enregistrer la vidéo » et un petit lien « Retirer le filigrane » vers les formules. **Pour Comptes** : si le compteur doit aussi vivre sur le compte, il faut un champ (ex. `exports` dans `/api/me`) ; sinon rien à changer.
+5. **« Enregistrer gratuitement (avec filigrane) »** : un vrai bouton, contour encre, même largeur que le bouton bleu, juste dessous.
+Tests ajoutés dans `refonte_mobile4_ui` (81/81) : bouton gratuit, pas de vide, paiement direct, offre aux exports 1, 10, 20 et pas de 2 à 9, jamais pour un abonné.
+
+## Export : nouvelle animation (le propriétaire n'a pas aimé la 1re)
+Maquette HyperFrames « igloo » : `docs/audit/maquettes/export-igloo-2026-11-25/export-igloo.mp4` (la mascotte construit l'igloo bloc par bloc sur la banquise, aurores, porte qui s'allume à la fin). **En attente** : 2 images ChatGPT demandées au propriétaire (ours polaire en sticker, décor de banquise) avant de la mettre dans l'app.
 
 Maquettes :
 - Éditeur et caméra : https://app-retours-25-11.stalak-site.pages.dev/fr/ (« Voir un exemple »)
 - Stats : https://app-retours-25-11.stalak-site.pages.dev/fr/?demo=pro et `?demo=gratuit`
 
-## Tests (25/11)
+## Tests (25/11, après les retours b)
+- `refonte_mobile3_ui` 93/93, `refonte_mobile4_ui` 81/81, `ou_est_ton_son_ui` 23/23, `prises_ui` 24/24, `suite_clarity_ui` 24/24, `refonte_mobile_ui` 102/102, `projet_local_ui` 76/76, `fin_export_ui` 98/98, `essai_pro_ui` 205/205, `refonte_stats_ui` 72/72, `refonte_mobile2_ui` 65/65, serveur 137/137 (avec le correctif de date de Comptes). Échecs déjà connus seulement : `clip1_ui` 91/95, `formules_ui` 136/137.
+
+### Avant les retours b
 - Nouveau `prises_ui` 24/24 (12 prises de suite, caméra coupée au milieu, bulle « Prise enregistrée », caméra dans l'écran).
 - `refonte_mobile3_ui` 91/91, `suite_clarity_ui` 24/24, `refonte_mobile_ui` 102/102, `fin_export_ui` 98/98, `essai_pro_ui` 205/205, `refonte_stats_ui` 72/72, `refonte_mobile2_ui` 65/65, `refonte_mobile4_ui` 69/69, `projet_local_ui` 76/76.
 - Échecs déjà présents sur `main` seulement : `clip1_ui` 91/95 (`.band-frost a:hover`, Marketing), `formules_ui` 136/137 (filigrane compté sur un export court).
