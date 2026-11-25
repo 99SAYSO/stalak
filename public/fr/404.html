@@ -33,7 +33,7 @@ footer{max-width:760px;margin:18px auto 0;color:#fff;font-size:13px;text-align:c
 (function () {
   if (!window.matchMedia || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   if ('IntersectionObserver' in window) {
-    var els = document.querySelectorAll('.ba-c, .rv-band > h2, .rv-avg, .about, .p4-plan, .pr-trust, .pr-clip, .pr-compare, .pr-faq, main > section, article > section, .steps > li, .faq');
+    var els = document.querySelectorAll('.ba-c, .rv-band > h2, .rv-avg, .about, .p4-plan, .pr-trust, .pr-compare, .pr-faq, main > section, article > section, .steps > li, .faq');
     var vh = window.innerHeight, io = new IntersectionObserver(function (es) {
       var k = 0;
       es.forEach(function (e) { var el = e.target;
