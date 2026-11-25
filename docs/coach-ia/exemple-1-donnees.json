@@ -1,0 +1,39 @@
+{
+  "langue": "fr",
+  "semaine": "2026-W48",
+  "profil": { "nom": "Kenzo", "styles": ["drill"], "style_autre": null, "objectif_auditeurs": "10k", "objectifs": ["song_launch"], "bloque": ["few_views"], "publie_sur": ["tiktok", "reels"] },
+  "tiktok": {
+    "abonnes": 2310,
+    "videos": [
+      { "id": "v1", "publiee": "2026-11-20", "jour": "vendredi", "heure": 19, "duree_s": 14, "vues": 48200, "likes": 5120, "commentaires": 310, "partages": 880, "legende": "le refrain que personne attendait 🥶 #drill #rapfr" },
+      { "id": "v2", "publiee": "2026-11-17", "jour": "mardi", "heure": 13, "duree_s": 52, "vues": 1900, "likes": 140, "commentaires": 12, "partages": 4, "legende": "freestyle du mardi, dites-moi en com" },
+      { "id": "v3", "publiee": "2026-11-15", "jour": "samedi", "heure": 21, "duree_s": 16, "vues": 6400, "likes": 610, "commentaires": 41, "partages": 52, "legende": "Nuit blanche est dispo 🌙 #rapfr" },
+      { "id": "v4", "publiee": "2026-11-09", "jour": "dimanche", "heure": 21, "duree_s": 12, "vues": 12800, "likes": 1490, "commentaires": 96, "partages": 205, "legende": "Froid en bas de chez moi #drillfr" },
+      { "id": "v5", "publiee": "2026-11-05", "jour": "mercredi", "heure": 15, "duree_s": 58, "vues": 1100, "likes": 70, "commentaires": 5, "partages": 1, "legende": "petite journée au studio" },
+      { "id": "v6", "publiee": "2026-11-19", "jour": "jeudi", "heure": 18, "duree_s": 41, "vues": 2300, "likes": 190, "commentaires": 9, "partages": 11, "legende": "extrait du clip Nuit blanche" },
+      { "id": "v7", "publiee": "2026-11-13", "jour": "vendredi", "heure": 19, "duree_s": 15, "vues": 9700, "likes": 1020, "commentaires": 420, "partages": 130, "legende": "finis la phrase si t'es chaud 👇 #defi" },
+      { "id": "v8", "publiee": "2026-11-02", "jour": "lundi", "heure": 12, "duree_s": 35, "vues": 1500, "likes": 98, "commentaires": 6, "partages": 3, "legende": "coulisses du clip" }
+    ]
+  },
+  "spotify": {
+    "etat": "ok", "semaine": "2026-W48", "auditeurs_mensuels": 1240, "auditeurs_il_y_a_4_semaines": 980, "abonnes": 310,
+    "villes": [{ "ville": "Paris", "auditeurs": 310 }, { "ville": "Lyon", "auditeurs": 95 }],
+    "sons": [
+      { "id": "s1", "sortie_id": "r1", "nom": "Froid", "ecoutes": 18400, "moins_de_1000": false },
+      { "id": "s2", "sortie_id": "r2", "nom": "Nuit blanche", "ecoutes": null, "moins_de_1000": true },
+      { "id": "s3", "sortie_id": "r3", "nom": "Zone", "ecoutes": 3200, "moins_de_1000": false }
+    ]
+  },
+  "sorties": [
+    { "id": "r2", "nom": "Nuit blanche", "type": "single", "date": "2026-11-13" },
+    { "id": "r1", "nom": "Froid", "type": "single", "date": "2026-10-02" },
+    { "id": "r3", "nom": "Zone", "type": "single", "date": "2026-08-21" }
+  ],
+  "montages_stalak": { "ce_mois": 6, "sons": ["Froid", "Nuit blanche"] },
+  "calculs": {
+    "meilleures": ["v1", "v4", "v7"], "vues_mediane": 4350, "meilleures_heures": [19, 21],
+    "duree_meilleures_s": [12, 16], "duree_autres_s": [35, 58],
+    "partages_meilleures": [880, 205, 130], "rythme": { "jours_depuis_derniere": 12, "ecart_moyen_jours": 41 }
+  },
+  "manque": ["le son utilisé dans chaque vidéo (TikTok ne le donne pas)"]
+}

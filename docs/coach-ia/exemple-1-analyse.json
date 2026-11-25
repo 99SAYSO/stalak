@@ -1,0 +1,25 @@
+{
+  "resume": "Tes vidéos courtes sur Froid portent ton compte : la meilleure fait 48200 vues alors que la moitié de tes vidéos restent sous 4350. Nuit blanche, ton dernier son, n'a pas encore pris sur Spotify.",
+  "marche": [
+    { "video_id": "v1", "pourquoi": "Le refrain de Froid tout de suite, 14 s, et une légende qui donne envie (« le refrain que personne attendait »). 880 partages : les gens l'envoient à leurs potes.", "leviers": ["accroche", "duree", "son", "legende"] },
+    { "video_id": "v4", "pourquoi": "Encore Froid, en performance dehors, 12 s, un dimanche à 21 h. Court et direct : 12800 vues et 205 partages.", "leviers": ["son", "format", "duree", "heure"] },
+    { "video_id": "v7", "pourquoi": "Le défi « finis la phrase » fait parler : 420 commentaires, ton record. Les commentaires font tourner la vidéo.", "leviers": ["accroche", "legende"] }
+  ],
+  "marche_pas": [
+    { "constat": "Tes vidéos longues (35 à 58 s : freestyle, studio, coulisses) restent toutes sous 2300 vues.", "a_faire": "Arrête les vidéos longues sans accroche. Si tu montres le studio, coupe à 15 s et commence par le meilleur moment." },
+    { "constat": "Nuit blanche est sorti il y a 12 jours mais Spotify le compte encore sous 1 000 écoutes, et tu l'as montré seulement 2 fois.", "a_faire": "Ne le laisse pas tomber : pousse-le cette semaine avec les formats qui marchent déjà pour Froid." },
+    { "constat": "Tes vidéos postées en journée (12 h, 13 h, 15 h) sont tes plus faibles.", "a_faire": "Garde le soir : tes meilleures sont sorties à 19 h et 21 h." }
+  ],
+  "plan": [
+    { "jour": "mardi", "heure": "19:00", "accroche": "Ce son je l'ai écrit à 4 h du mat 🌙", "format": "performance", "sortie_id": "r2", "passage": "le refrain", "pourquoi": "Même recette que Froid (court, refrain direct), sur Nuit blanche." },
+    { "jour": "jeudi", "heure": "21:00", "accroche": "Finis la phrase : « j'ai pas dormi, j'ai… »", "format": "paroles_ecran", "sortie_id": "r2", "passage": "le premier vers du refrain", "pourquoi": "Ton défi a fait ton record de commentaires : refais-le sur Nuit blanche." },
+    { "jour": "vendredi", "heure": "19:00", "accroche": "Froid ou Nuit blanche ? Dis-moi en com 👇", "format": "avant_apres", "sortie_id": "r2", "passage": "le refrain de chaque son, l'un après l'autre", "pourquoi": "Froid attire déjà : il amène des gens vers Nuit blanche." },
+    { "jour": "dimanche", "heure": "21:00", "accroche": "Froid, version dans le froid 🥶", "format": "performance", "sortie_id": "r1", "passage": "le refrain", "pourquoi": "Ton meilleur son mérite encore des vidéos : c'est lui qui t'amène des abonnés." }
+  ],
+  "rythme": {
+    "conseil": "Tu sors un son tous les 41 jours en moyenne. Avant d'en sortir un autre, pousse Nuit blanche encore 2 à 3 semaines en vidéos.",
+    "pousser_id": "r2",
+    "pourquoi": "C'est ton dernier son et il est encore sous 1 000 écoutes : il a besoin de vidéos pour démarrer."
+  },
+  "manque": ["Le son utilisé dans chaque vidéo : TikTok ne le donne pas, alors je le devine d'après ta légende."]
+}

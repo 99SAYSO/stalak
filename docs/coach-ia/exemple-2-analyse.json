@@ -1,0 +1,22 @@
+{
+  "resume": "Ta maquette du 22 novembre a fait ta meilleure vidéo (2100 vues, 38 commentaires) : les gens ont envie d'entendre tes propres sons. Avec 5 vidéos, c'est encore tôt pour tirer des règles.",
+  "marche": [
+    { "video_id": "w1", "pourquoi": "Une maquette à toi, 18 s, et une question dans la légende : 38 commentaires. Demander l'avis marche bien chez toi.", "leviers": ["son", "legende", "duree"] },
+    { "video_id": "w3", "pourquoi": "Encore une maquette (Sous la pluie), courte (21 s), postée tard le soir comme ta meilleure vidéo.", "leviers": ["son", "heure", "duree"] }
+  ],
+  "marche_pas": [
+    { "constat": "Tes vidéos de 47 et 60 s (cover en voiture, routine) sont tes plus faibles : 390 et 210 vues.", "a_faire": "Fais-les courtes comme tes 2 meilleures (18 et 21 s) et commence directement par ta voix." },
+    { "constat": "Tu as posté 5 vidéos en 6 semaines : c'est trop peu pour que TikTok te montre souvent.", "a_faire": "Vise 3 vidéos cette semaine : c'est rapide avec un seul passage de ta maquette." }
+  ],
+  "plan": [
+    { "jour": "mardi", "heure": "22:00", "accroche": "Je sors ce son ou pas ? 🎤", "format": "face_camera", "sortie_id": null, "passage": "le refrain de Sous la pluie", "pourquoi": "Ta question a fait ta meilleure vidéo : repose-la sur ta maquette la plus aimée." },
+    { "jour": "jeudi", "heure": "22:00", "accroche": "Les paroles que j'ai écrites un soir de pluie", "format": "paroles_ecran", "sortie_id": null, "passage": "le couplet de Sous la pluie", "pourquoi": "Les paroles à l'écran retiennent ceux qui ne mettent pas le son." },
+    { "jour": "samedi", "heure": "22:00", "accroche": "Avant / après : ma voix seule, puis avec la prod", "format": "avant_apres", "sortie_id": null, "passage": "le refrain de Sous la pluie", "pourquoi": "Montre le travail : ça donne envie d'attendre la sortie." }
+  ],
+  "rythme": {
+    "conseil": "Tu n'as pas encore de son sorti. Choisis la maquette qui fait le plus réagir et prévois sa sortie : les vidéos de cette semaine te diront laquelle.",
+    "pousser_id": null,
+    "pourquoi": "Sous la pluie revient dans tes 2 meilleures vidéos : c'est la candidate pour ta première sortie."
+  },
+  "manque": ["Spotify : tu n'as pas encore de son sorti, donc pas d'écoutes à suivre.", "Seulement 5 vidéos : l'analyse sera plus précise après quelques semaines."]
+}

@@ -1,0 +1,23 @@
+{
+  "langue": "fr",
+  "semaine": "2026-W48",
+  "profil": { "nom": "Lyna", "styles": ["chant"], "style_autre": null, "objectif_auditeurs": "1k", "objectifs": ["first_release"], "bloque": ["no_ideas", "editing_time"], "publie_sur": ["tiktok"] },
+  "tiktok": {
+    "abonnes": 140,
+    "videos": [
+      { "id": "w1", "publiee": "2026-11-22", "jour": "samedi", "heure": 22, "duree_s": 18, "vues": 2100, "likes": 260, "commentaires": 38, "partages": 19, "legende": "une maquette, vous en pensez quoi ? 🎤" },
+      { "id": "w2", "publiee": "2026-11-12", "jour": "jeudi", "heure": 17, "duree_s": 47, "vues": 390, "likes": 31, "commentaires": 2, "partages": 0, "legende": "cover en voiture" },
+      { "id": "w3", "publiee": "2026-11-03", "jour": "lundi", "heure": 22, "duree_s": 21, "vues": 880, "likes": 95, "commentaires": 11, "partages": 4, "legende": "sous la pluie (maquette)" },
+      { "id": "w4", "publiee": "2026-10-20", "jour": "mardi", "heure": 9, "duree_s": 60, "vues": 210, "likes": 14, "commentaires": 1, "partages": 0, "legende": "ma routine chant" },
+      { "id": "w5", "publiee": "2026-10-11", "jour": "samedi", "heure": 23, "duree_s": 15, "vues": 640, "likes": 70, "commentaires": 6, "partages": 2, "legende": "a cappella" }
+    ]
+  },
+  "spotify": { "etat": "pas_encore_sortie" },
+  "sorties": [],
+  "montages_stalak": { "ce_mois": 2, "sons": ["Sous la pluie (maquette)"] },
+  "calculs": {
+    "meilleures": ["w1", "w3"], "vues_mediane": 640, "meilleures_heures": [22],
+    "duree_meilleures_s": [18, 21], "duree_autres_s": [47, 60], "rythme": null
+  },
+  "manque": ["Spotify : pas encore de son sorti", "peu de vidéos (5 en 6 semaines) : l'analyse reste prudente", "le son utilisé dans chaque vidéo (TikTok ne le donne pas)"]
+}
