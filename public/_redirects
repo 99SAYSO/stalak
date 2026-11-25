@@ -2,8 +2,14 @@
 # Chaque ancienne adresse mène directement à sa page finale, jamais à une autre redirection (Cloudflare garde le ?… de l'adresse).
 # Les adresses exactes d'abord, la règle générale /en/* en dernier.
 
-# adresse inventée par ChatGPT (vue dans Clarity le 25/11/2026) -> l'accueil
+# adresses fantômes données par ChatGPT (Clarity et test du 25/11/2026), en 404 -> l'accueil
 /opsh.php                      /                         301
+/ccc.php                       /                         301
+/fling.php                     /                         301
+/asc.php                       /                         301
+/integrations                  /                         301
+/images/                       /                         301
+/images                        /                         301
 
 # anciennes pages anglaises (/en/…) -> la racine
 /en                            /                         301
