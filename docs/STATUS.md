@@ -4,6 +4,7 @@
 > Dernière mise à jour : 30/10/2026 à 21 h (offre hybride fusionnée et en ligne : App, Comptes, Juridique, Marketing ; migration 0008 appliquée).
 
 ## Décisions récentes du propriétaire
+- 25/11 08:10 — Propriétaire : maquette `app-retours-25-11` validée (« sinon tout est nickel »), sauf l’écran de fin d’export, encore tout noir (2e fois) → `docs/handoff/chef-fin-export-belle-page.md`. Mise en ligne d’`app/retours-25-11` en attente du « oui » à la migration 0023 (la branche contient le serveur de Stats).
 - 25/11 07:55 — Chef : les 2 images demandées par App pour l’animation d’export « igloo » sont faites avec ChatGPT : `docs/marque/mascotte/ours-polaire.png` (sticker détouré) et `docs/marque/decors/banquise-nuit.jpg` (9:16). À valider par le propriétaire avant intégration.
 - 25/11 06:40 — Propriétaire : retours sur l’aperçu App (`docs/handoff/chef-retours-maquettes-25-11-b.md`) : filtres noirs à la 1re ouverture, vide noir en fin d’export, « Retirer pour 1 € » qui ouvre les formules au lieu de l’offre (décision : l’offre à 1 € est à part, au 1er export puis au 10e, 20e… pour les non-abonnés), « Enregistrer avec le filigrane » à rendre bien visible.
 - 25/11 05:25 — Chef : les maquettes d’App ne se construisaient plus (test de date de Comptes) ; aperçu fait par le Chef : `chef/apercu-app` = `app/coach-ia` (contient `app/retours-25-11`) + correctif `compte/stats-analyse` + main → https://chef-apercu-app.stalak-site.pages.dev/fr/ (137/137). App doit refusionner `compte/stats-analyse`.
