@@ -207,7 +207,9 @@ export async function stats(env, days = 30, now = Date.now()) {
         clipOpen: ev.ev_clip_open || 0,   // audit of 13/11: « a ouvert le mode Clip » (App)
         // report of 7/11: the funnel per source, the visits per country, where the payment window was closed without buying
         bySource: bySource(ev), visitCountries: visitCountries(ev),
-        checkoutClose: { start: ev.ev_checkout_close_start || 0, details: ev.ev_checkout_close_details || 0, payment: ev.ev_checkout_close_payment || 0 },
+        checkoutClose: { price: ev.ev_checkout_close_price || 0, info: ev.ev_checkout_close_info || 0, method: ev.ev_checkout_close_method || 0, try: ev.ev_checkout_close_try || 0,
+          // before 24/11 (« details » was wrong): kept apart, shown only when the period still has some
+          old: (ev.ev_checkout_close_start || 0) + (ev.ev_checkout_close_details || 0) + (ev.ev_checkout_close_payment || 0) },
         checkoutDone: ev.ev_checkout_done || 0,
         optins: await optinCounts(env, now),
         trial: await trialCounts(env, fromMs),   // 23/11: the 7-day free trial of Stalak Pro (trial.js)

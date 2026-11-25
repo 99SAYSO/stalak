@@ -508,7 +508,7 @@ __DEMO_BANNER__<header class="top"><div class="in">
       <div class="card hq"><div class="hbest"><span>🌍 Pays des visites</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
         <p class="he">D’après Cloudflare, le pays de chaque nouvelle visite sur la période (totaux anonymes).</p><ul class="blist" id="bCountry"></ul></div>
       <div class="card hq"><div class="hbest"><span>💳 Paiement fermé sans acheter</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
-        <p class="he">Quand la fenêtre de paiement Paddle est fermée sans achat, à quel moment : tout de suite, après avoir donné son e-mail (et son pays), ou en payant (carte remplie ou paiement essayé).</p><ul class="blist" id="bClose"></ul><p class="note" id="closeNote"></p></div>
+        <p class="he">Quand la fenêtre de paiement Paddle est fermée sans achat, jusqu’où la personne est allée. « A seulement vu le prix » : elle n’a rien changé (Stalak remplit déjà son e-mail). « A changé ses infos » : e-mail, pays, code postal ou entreprise modifiés. « A choisi un moyen de paiement » : carte, PayPal, Apple Pay… « A essayé de payer » : le paiement a commencé, ou a été refusé. Avant le 24/11, la mesure comptait « après l’e-mail » même sans rien taper : ces anciens chiffres sont à part.</p><ul class="blist" id="bClose"></ul><p class="note" id="closeNote"></p></div>
     </div>
     <div class="card hq" id="trialCard">
       <div class="hbest"><span>🎁 Essai gratuit de Pro (7 jours)</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
@@ -1402,9 +1402,12 @@ __DEMO_BANNER__<header class="top"><div class="in">
         set('#srcNote', (fu.bySource || []).length ? 'Le % sous chaque chiffre : part des visites de cette source.' + (innerWidth < 640 ? ' Fais glisser le tableau pour voir toutes les étapes.' : '') : '');
         var cObj = {}; (fu.visitCountries || []).forEach(function (x) { cObj[(flag(x.country) + ' ' + ((MAP.names || {})[x.country] || x.country)).trim()] = x.n; });
         blist($('#bCountry'), cObj, function (x) { return x; }, { order: Object.keys(cObj) });
-        var cc = fu.checkoutClose || {}, closed = (cc.start || 0) + (cc.details || 0) + (cc.payment || 0);
-        blist($('#bClose'), { 'Tout de suite': cc.start || 0, 'Après l’e-mail': cc.details || 0, 'En payant': cc.payment || 0 }, function (x) { return x; },
-          { order: ['Tout de suite', 'Après l’e-mail', 'En payant'], keepZero: true });
+        // 24/11: Paddle receives the account's e-mail from Stalak, so « after the e-mail » was counted with nothing typed
+        var cc = fu.checkoutClose || {}, closed = (cc.price || 0) + (cc.info || 0) + (cc.method || 0) + (cc['try'] || 0) + (cc.old || 0);
+        var cl = { 'A seulement vu le prix': cc.price || 0, 'A changé ses infos': cc.info || 0, 'A choisi un moyen de paiement': cc.method || 0, 'A essayé de payer': cc['try'] || 0 };
+        var clOrder = Object.keys(cl);
+        if (cc.old) { cl['Ancienne mesure (avant le 24/11, pas fiable)'] = cc.old; clOrder.push('Ancienne mesure (avant le 24/11, pas fiable)'); }
+        blist($('#bClose'), cl, function (x) { return x; }, { order: clOrder, keepZero: true });
         set('#closeNote', (fu.checkoutOpen ? 'Fenêtre ouverte ' + nf.format(fu.checkoutOpen) + ' fois, fermée sans acheter ' + nf.format(closed) + ' fois' + (fu.checkoutDone ? ', achats ' + nf.format(fu.checkoutDone) : '') + '.' : 'Pas encore de fenêtre de paiement ouverte sur la période.'));
         var tr = fu.trial || {};
         set('#trialSum', nf.format(tr.started || 0) + ' essai' + ((tr.started || 0) > 1 ? 's' : '') + ' commencé' + ((tr.started || 0) > 1 ? 's' : '') + ' · ' + nf.format(tr.paid || 0) + ' devenu' + ((tr.paid || 0) > 1 ? 's' : '') + ' payant' + ((tr.paid || 0) > 1 ? 's' : '') + (tr.paidRate != null ? ' (' + String(tr.paidRate).replace('.', ',') + ' % des essais finis)' : ''));

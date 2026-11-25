@@ -92,18 +92,29 @@ async def main():
         p.on('request', lambda r: '/api/event' in r.url and evs.append(json.loads(r.post_data or '{}')))
         await p.goto(BASE + '/__test/login?email=stage@example.com&pro=0&to=' + '/fr/%3Fref%3Dseo-triller%23pro', wait_until='load'); await p.wait_for_timeout(1500)
         check('the visit source is worked out once for the tab (?ref=seo-triller → triller)', await p.evaluate("() => sessionStorage.getItem('stalak:vsrc')") == 'triller')
-        for steps, want in [(['checkout.customer.created'], 'details'), ([], 'start'), (['checkout.customer.created', 'checkout.payment.selected'], 'payment')]:
+        # 24/11 (Chef « suite Clarity »): Stalak gives Paddle the e-mail, so Paddle sends customer.created / updated by itself at
+        # once: that is « only saw the price ». « info » only when the details really change.
+        who = lambda email='stage@example.com', cc='FR', pc=None: {'customer': {'id': 'ctm_1', 'email': email, 'address': {'country_code': cc, 'postal_code': pc}}}
+        cases = [
+            ([('checkout.customer.created', who()), ('checkout.customer.updated', who())], 'price', 'e-mail filled by Stalak, nothing changed'),
+            ([], 'price', 'nothing at all'),
+            ([('checkout.customer.created', who()), ('checkout.customer.updated', who(cc='BE', pc='1000'))], 'info', 'country and postcode changed'),
+            ([('checkout.customer.created', who()), ('checkout.customer.updated', who(email='autre@example.com'))], 'info', 'e-mail changed'),
+            ([('checkout.customer.created', who()), ('checkout.payment.selected', {})], 'method', 'a payment way chosen'),
+            ([('checkout.customer.created', who()), ('checkout.payment.selected', {}), ('checkout.payment.failed', {}), ('checkout.customer.updated', who(cc='BE'))], 'try', 'tried to pay (the furthest step stays)'),
+        ]
+        for steps, want, why in cases:
             await p.click('#apBuy .pl-card[data-plan="pro"] [data-buy]'); await opens(p, n=1); await p.wait_for_timeout(300)
-            for n in steps: await p.evaluate("n => window.__pcb({ name: n })", n)
+            for n, d in steps: await p.evaluate("([n, d]) => window.__pcb({ name: n, data: d })", [n, d])
             await p.evaluate("() => window.__pcb({ name: 'checkout.closed' })"); await p.wait_for_timeout(500)
             got = [e for e in evs if e.get('name') == 'checkout_close']
-            check(f'payment window closed without buying → stage « {want} »', got and got[-1].get('stage') == want and got[-1].get('src') == 'triller', got[-1:] if got else evs[-3:])
+            check(f'payment window closed without buying ({why}) → stage « {want} »', got and got[-1].get('stage') == want and got[-1].get('src') == 'triller', got[-1:] if got else evs[-3:])
             await p.evaluate("() => { window.__opens = []; }")
         await p.click('#apBuy .pl-card[data-plan="pro"] [data-buy]'); await opens(p, n=1); await p.wait_for_timeout(300)
         await p.evaluate("() => { window.__pcb({ name: 'checkout.payment.initiated' }); window.__pcb({ name: 'checkout.completed', data: {} }); window.__pcb({ name: 'checkout.closed' }); }")
         await p.wait_for_timeout(500)
         names = [e.get('name') for e in evs]
-        check('bought: « checkout_done » once, no « closed without buying »', names.count('checkout_done') == 1 and names.count('checkout_close') == 3, names)
+        check('bought: « checkout_done » once, no « closed without buying »', names.count('checkout_done') == 1 and names.count('checkout_close') == len(cases), names)
         check('each step carries the source', all(e.get('src') == 'triller' for e in evs if e.get('name') in ('checkout_open', 'checkout_done', 'checkout_close')), evs)
         await c.close()
         # 7. report of 7/11: the e-mail for tips at the end of a video (free users; box not ticked)
