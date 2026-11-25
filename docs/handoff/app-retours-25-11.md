@@ -1,4 +1,4 @@
-Statut : EN COURS
+Statut : PRÊT
 
 # Branche `app/retours-25-11` — retours du propriétaire du 25/11 (points 1, 2 et 4 à 10)
 
@@ -45,3 +45,15 @@ Maquette à valider : `docs/audit/maquettes/son-2026-11-25/maquette.png`. Pas en
 Maquettes :
 - Éditeur et caméra : https://app-retours-25-11.stalak-site.pages.dev/fr/ (« Voir un exemple »)
 - Stats : https://app-retours-25-11.stalak-site.pages.dev/fr/?demo=pro et `?demo=gratuit`
+
+## Tests (25/11)
+- Nouveau `prises_ui` 24/24 (12 prises de suite, caméra coupée au milieu, bulle « Prise enregistrée », caméra dans l'écran).
+- `refonte_mobile3_ui` 91/91, `suite_clarity_ui` 24/24, `refonte_mobile_ui` 102/102, `fin_export_ui` 98/98, `essai_pro_ui` 205/205, `refonte_stats_ui` 72/72, `refonte_mobile2_ui` 65/65, `refonte_mobile4_ui` 69/69, `projet_local_ui` 76/76.
+- Échecs déjà présents sur `main` seulement : `clip1_ui` 91/95 (`.band-frost a:hover`, Marketing), `formules_ui` 136/137 (filigrane compté sur un export court).
+- Tests mis à jour pour la règle « Clip choisi à l'étape 1 seulement » : `clip1_ui`, `projet_local_ui`, `formules_ui`.
+- `index.html` : 399 Ko (< 400 Ko) ; le CSS ajouté est dans les fichiers du téléphone chargés à part.
+
+## Pour les autres
+- **Marketing** : rien dans `site_src` ; `build_site.py` inchangé.
+- **Comptes** : rien dans `functions/` ni `account.js`.
+- **Juridique** : rien de nouveau.
