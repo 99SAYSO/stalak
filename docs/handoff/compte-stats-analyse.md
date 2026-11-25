@@ -40,7 +40,7 @@ Demandes : `docs/handoff/chef-stats-analyse.md`, `docs/audit/test-apify-spotify-
 Par artiste, environ 4 artistes × 0,004 $ par mois, plus ses sorties une fois par mois (20 au plus × 0,004 $). Cela fait **au plus environ 0,10 $ par mois et par artiste**, plus 0,004 $ par nouvelle sortie. Le relevé est fait pour **tout compte qui a donné un lien d'artiste Spotify**. Si le coût monte, on peut le limiter aux Pro, ou aux comptes actifs du mois : c'est au propriétaire de décider.
 
 ## Tests
-- `node tests/backend/run.mjs` : **136/136**, dont 4 nouveaux :
+- `node tests/backend/run.mjs` : **137/137** (136 + le test des jours du 25/11), dont 4 nouveaux :
   - profil : `genreOther`, liens TikTok / YouTube et refus d'un autre site ;
   - `/api/stats` : non connecté, ce qui manque, lien de son au lieu du profil, robot éteint, chiffre tapé par l'artiste ;
   - réponses du test du Chef (190 auditeurs, 58 abonnés, 2 249 écoutes, 0 → « moins de 1 000 ») :
@@ -54,6 +54,13 @@ Par artiste, environ 4 artistes × 0,004 $ par mois, plus ses sorties une fois p
     - pas de nouvel essai avant 20 h ;
     - alerte au 2e échec, une fois par jour ;
     - 1er relevé raté → `failed`, aucun chiffre.
+
+## Correction du 25/11 : « sorti il y a N jours »
+- **Le problème :** le test « a new Spotify link » échouait avant 12 h UTC (2 jours au lieu de 3). La sortie était placée à 12 h UTC, et on arrondissait le nombre d'heures écoulées vers le bas : le matin, il manquait un jour.
+- **Maintenant :** on compte en **jours de calendrier en France** (Europe/Paris) : le jour d'aujourd'hui moins le jour de sortie, tous les deux à minuit (`daysSince`, `parisDay` dans `stats.js`).
+- **Le test lui-même** date ses fausses sorties au jour de Paris.
+- **Nouveau test :** une sortie du 22/11 vaut 3 jours le 25/11 à 08 h et à 20 h, et aussi à 00 h 30 ; elle vaut 2 jours le 24/11 à 23 h 30. La phrase dit bien « il y a 3 jours ».
+- **Toute la série, l'horloge forcée à 08 h, 20 h, 00 h 30 et 11 h 59 : 137/137 à chaque fois.** L'ancienne version échouait à 08 h, ce qui confirme la cause.
 
 ## Juridique (à relire)
 - Chiffres **publics** du profil Spotify de l'artiste, lus par un robot tiers (Apify, aux États-Unis) **sur demande de l'artiste** (il colle son lien), gardés avec son compte et effacés avec lui.

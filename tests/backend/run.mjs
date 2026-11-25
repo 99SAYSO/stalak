@@ -4803,7 +4803,7 @@ test('clarity: the daily tasks take the snapshot (cron route and the 6-hour task
 import { spotifyWeekly, spotifyResetCache, artistFigures } from '../../functions/_lib/spotify.js';
 const SP_ARTIST = '16DsE2FfUtuGnIBXcBjKuU', SP_REL = ['1AAAAAAAAAAAAAAAAAAAAA', '2BBBBBBBBBBBBBBBBBBBBB', '3CCCCCCCCCCCCCCCCCCCCC'];
 const SP_ENV = { APIFY_TOKEN: 'apify_api_test_0123456789', SPOTIFY_CLIENT_ID: 'cid', SPOTIFY_CLIENT_SECRET: 'csecret' };
-const dayIso = (t) => new Date(t).toISOString().slice(0, 10);
+const dayIso = (t) => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris' }).format(new Date(t));   // release days in France (25/11)
 // the answers of the Chef's test (docs/audit/test-apify-spotify-2026-11-24.md): 190 listeners, 58 followers, 0 = « < 1 000 »
 function spotifyFake(log, { apify = 200, spotify = 200, listeners = 190, now = Date.now() } = {}) {
   const rel = [[SP_REL[0], 'cash only', dayIso(now - 40 * 864e5)], [SP_REL[1], 'backwoods', dayIso(now - 30 * 864e5)], [SP_REL[2], 'neva die', dayIso(now - 3 * 864e5)]];
@@ -4920,6 +4920,22 @@ test('stats 24/11: a new Spotify link → releases (official API) and figures (A
     assert.equal((await call(env, 'DELETE', '/api/account', { cookie: a.cookie, body: { confirm: true } })).status, 200);
     for (const t of ['spotify_snapshots', 'spotify_releases', 'spotify_track_counts', 'spotify_sync']) assert.equal(env.DB.raw.prepare(`SELECT COUNT(*) AS n FROM ${t}`).get().n, 0, t);
   } finally { extraFetch = null; }
+});
+
+test('stats 25/11: « released N days ago » counts calendar days in France, the same in the morning and the evening', async () => {
+  const { statsFor, daysSince, parisDay } = await import('../../functions/_lib/stats.js');
+  // a song out on 22/11: on 25/11 it is « 3 days ago » at 08:00 and at 20:00 (Paris), also just after midnight
+  for (const [at, want] of [['2026-11-25T07:00:00Z', 3], ['2026-11-25T19:00:00Z', 3], ['2026-11-24T23:30:00Z', 3], ['2026-11-24T22:30:00Z', 2], ['2026-11-22T06:00:00Z', 0]])
+    assert.equal(daysSince('2026-11-22', Date.parse(at)), want, at);
+  assert.equal(parisDay(Date.parse('2026-11-24T23:30:00Z')), '2026-11-25');
+  const env = makeEnv(), a = await login(env, 'stats6@example.com');
+  env.DB.raw.prepare(`INSERT INTO spotify_releases (user_id, release_id, name, kind, release_date, date_precision, total_tracks, first_seen_at)
+    VALUES (?, ?, 'neva die', 'single', '2026-11-22', 'day', 1, 0)`).run(a.user.id, SP_REL[2]);
+  for (const at of ['2026-11-25T07:00:00Z', '2026-11-25T19:00:00Z']) {
+    const s = await statsFor(env, a.user, { now: Date.parse(at) });
+    assert.equal(s.summary.facts.lastRelease.daysAgo, 3, at);
+    assert.ok(s.summary.sentences.some((x) => x.includes('il y a 3 jours')), at + ' ' + s.summary.sentences.join(' | '));
+  }
 });
 
 test('stats 24/11: the weekly relevé fails → nothing overwritten, « not updated this week » said, owner alerted after 2 failures (once a day)', async () => {
