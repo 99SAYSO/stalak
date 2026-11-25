@@ -2,8 +2,9 @@
 
     python3 /abs/path/tests/ui/clip1_ui.py <built public/ folder> [folder for screenshots]
 
-n° 2  Free plan: in the Clip's preview the effects (Subtle / Intense) and the lyrics work, with the watermark; only the export
-      of a clip asks for Pro (the question, with its answer counted: clip_ask).
+n° 2  (24/11, owner's decision, replaces the free try of 7/11) the Clip mode is for subscribers: in Free, « Clip » opens the
+      plans page and the edit stays a TikTok. A subscriber gets the effects (Subtle / Intense) and the lyrics; a subscription that
+      ends during the edit: the export of a clip asks (the question, with its answer counted: clip_ask).
 n° 5  The sound at 384 kbit/s (320 when the encoder refuses 384), for everyone.
 n° 6  Clip ↔ TikTok at the Montage step, without going back to step 1.
 n° 3  The real example (« neva die », 3 takes), in TikTok (8 bars) and in Clip; the claude.ai page keeps the drawn one.
@@ -82,9 +83,16 @@ def run(b, base, lang, iphone, PW):
 
     # n° 6: Clip at the Montage step
     check(tag + ' : « %s » : TikTok / Clip à l’étape Montage' % t['kind4'], visible(pg, '#kindSeg4') and ev(pg, "$('#kindSeg4').closest('.card').querySelector('[data-i18n=\"p4.kind\"]').textContent.trim()") == t['kind4'])
+    ev(pg, "S.__lock = [], lockOpen = (f, w) => S.__lock.push(f)")
+    pg.locator('#kindSeg4 button[data-v="clip"]').click(); pg.wait_for_timeout(1200)
+    st = ev(pg, "[S.step, S.kind, S.fmt, $('#kindSeg4 button[data-v=\"clip\"]').getAttribute('aria-pressed'), $('#kindSeg4 button[data-v=\"reel\"]').getAttribute('aria-pressed'), S.__lock]")
+    check(tag + ' : Gratuit : « Clip » ouvre la page des formules (Clip) et le montage reste en TikTok 9:16', st == [4, 'reel', '916', 'false', 'true', ['clip']], st)
+    check(tag + ' : Gratuit : plus d’aperçu du Clip (aucun effet de clip posé)', not ev(pg, 'fxOn()'))
+    # a subscriber (Pro, Creator Plus or a Pro trial running)
+    ev(pg, "acctHas = f => true, planTags()")
     pg.locator('#kindSeg4 button[data-v="clip"]').click(); pg.wait_for_timeout(1500)
     st = ev(pg, "[S.step, S.kind, S.fmt, $('#kindSeg button[data-v=\"clip\"]').getAttribute('aria-pressed'), $('#kindSeg4 button[data-v=\"clip\"]').getAttribute('aria-pressed'), S.cuts.length > 0]")
-    check(tag + ' : passé en Clip sans quitter l’étape 4 (16:9, les deux sélecteurs à jour)', st == [4, 'clip', '169', 'true', 'true', True], st)
+    check(tag + ' : abonné : passé en Clip sans quitter l’étape 4 (16:9, les deux sélecteurs à jour)', st == [4, 'clip', '169', 'true', 'true', True], st)
     co = [e for e in events if e.get('name') == 'clip_open']
     check(tag + ' : « a ouvert le mode Clip » envoyé une fois (un seul nombre, compté par Comptes)', len(co) == 1 and 'cat' not in co[0], co)
 
@@ -92,18 +100,18 @@ def run(b, base, lang, iphone, PW):
     ev(pg, "S.lyrics.lines = [{ text: 'Ligne de test', t: 0.5 }, { text: 'Deuxième ligne', t: 4 }], S.lyrics.mode = 'paste', rebuild(false)")
     pg.wait_for_function('() => __ev("!!(S.song.music || S.song.musicDone || fxItems().length >= 0)")', timeout=60000)
     pg.wait_for_function('() => __ev("fxItems().filter(i => i.ok).length > 0")', timeout=180000)
-    fx = ev(pg, "[fxOn(), fxItems().filter(i => i.ok).length, wmShow(), S.lyrics.mode, lyricsOn(1), can('fx'), can('clip')]")
-    check(tag + ' : Gratuit en Clip : effets posés dans l’aperçu, paroles affichées, filigrane', fx[0] and fx[1] > 0 and fx[2] and fx[3] == 'paste' and fx[4] and not fx[5] and not fx[6], fx)
-    ev(pg, "S.__lock = [], lockOpen = (f, w) => S.__lock.push(f)")
+    fx = ev(pg, "[fxOn(), fxItems().filter(i => i.ok).length, S.lyrics.mode, lyricsOn(1), can('fx'), can('clip')]")
+    check(tag + ' : abonné en Clip : effets posés dans l’aperçu, paroles affichées', fx[0] and fx[1] > 0 and fx[2] == 'paste' and fx[3] and fx[4] and fx[5], fx)
+    ev(pg, "S.__lock = []")
     pg.locator('#fxSeg button[data-v="intense"]').click(); pg.wait_for_timeout(800)
-    check(tag + ' : « Intense » se choisit sans Pro (pas de page de paiement)', ev(pg, "S.fxLevel") == 'intense' and ev(pg, "S.__lock.length") == 0 and ev(pg, "fxItems().filter(i => i.ok).length") > 0)
+    check(tag + ' : abonné : « Intense » se choisit (pas de page de paiement)', ev(pg, "S.fxLevel") == 'intense' and ev(pg, "S.__lock.length") == 0 and ev(pg, "fxItems().filter(i => i.ok).length") > 0)
     pg.locator('#fxSeg button[data-v="sobre"]').click(); pg.wait_for_timeout(500)
 
     # n° 4: the framing
     pg.wait_for_function('() => __ev("!$(\'#frameSeg\').hidden")', timeout=60000)
     labels = ev(pg, "[...document.querySelectorAll('#frameSeg button')].map(b => b.textContent.trim())")
     check(tag + ' : « %s » : %s / %s / %s, « %s » au départ pour l’exemple' % (t['frame'], t['fit'], t['face'], t['zoom'], t['zoom']), labels == [t['fit'], t['face'], t['zoom']] and ev(pg, 'S.frame') == 'zoom', (labels, ev(pg, 'S.frame')))
-    check(tag + ' : PRO sur « Remplir » et « Zoom » en Gratuit', ev(pg, "[...document.querySelectorAll('#frameSeg button')].map(b => b.classList.contains('protag'))") == [False, True, True])
+    check(tag + ' : abonné : pas d’étiquette PRO sur les cadrages', ev(pg, "[...document.querySelectorAll('#frameSeg button')].map(b => b.classList.contains('protag'))") == [False, False, False])
     pg.wait_for_function('() => __ev("S.takes.every(t => t.qual && t.qual.fy)")', timeout=400000)
     fys = ev(pg, "S.takes.map(t => t.qual.fyMed)")
     check(tag + ' : hauteur du visage trouvée dans chaque prise (entre le haut et le milieu)', all(0.15 < y < 0.5 for y in fys), fys)
@@ -119,11 +127,11 @@ def run(b, base, lang, iphone, PW):
     check(tag + ' : en 9:16 le cadrage disparaît (seulement pour un clip 16:9)', not visible(pg, '#frameSeg'))
     pg.locator('#fmtSeg button[data-v="169"]').click(); pg.wait_for_timeout(400)
 
-    # n° 2 + measure: the export of a clip asks for Pro; the answer is counted
+    # n° 2 + measure: the subscription ends during the edit: the export of a clip asks; the answer is counted
     del events[:]
-    ev(pg, "store.set(PP_KEY, 1), " + FAST_EXPORT)
+    ev(pg, "acctHas = f => false, planTags(), store.set(PP_KEY, 1), " + FAST_EXPORT)
     pg.evaluate('() => { __ev("exportOne()"); }'); pg.wait_for_timeout(500)
-    check(tag + ' : l’export du Clip demande Pro : « %s »' % t['ca'], visible(pg, '#clipAsk .card') and pg.locator('#clipAskT').inner_text().strip() == t['ca'])
+    check(tag + ' : abonnement fini pendant le montage : l’export du Clip demande : « %s »' % t['ca'], visible(pg, '#clipAsk .card') and pg.locator('#clipAskT').inner_text().strip() == t['ca'])
     pg.locator('#caReel').click()
     pg.wait_for_function('() => __ev("S.done === true && !S.exporting")', timeout=60000); pg.wait_for_timeout(300)
     ca = [e.get('cat') for e in events if e.get('name') == 'clip_ask']; ks = [(e.get('name'), e.get('cat')) for e in events if e.get('name') in ('export_start', 'export_ok')]
@@ -155,7 +163,7 @@ def run(b, base, lang, iphone, PW):
 
     # n° 6, back: TikTok at the Montage step
     pg.locator('#kindSeg4 button[data-v="reel"]').click(); pg.wait_for_timeout(1200)
-    pg.locator('#kindSeg4 button[data-v="clip"]').click(); pg.wait_for_timeout(600); pg.locator('#kindSeg4 button[data-v="reel"]').click(); pg.wait_for_timeout(1200)
+    pg.locator('#kindSeg4 button[data-v="clip"]').click(); pg.wait_for_timeout(1200); pg.locator('#kindSeg4 button[data-v="reel"]').click(); pg.wait_for_timeout(1200)
     check(tag + ' : une seule fois par visite (rouvert : rien de plus)', [e for e in events if e.get('name') == 'clip_open'] == [])
     check(tag + ' : retour en TikTok depuis l’étape 4 (9:16, 8 mesures)', ev(pg, "[S.step, S.kind, S.fmt, S.nBars]") == [4, 'reel', '916', 8], ev(pg, "[S.step, S.kind, S.fmt, S.nBars]"))
     # (audit 13/11, n° 2) the hovers are for a mouse only: none left outside @media (hover:hover) (except a hover shared with

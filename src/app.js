@@ -635,6 +635,8 @@ const I18N_EN = /*@EN*/{
   "rec.count": "{n} take filmed",
   "rec.count_p": "{n} takes filmed",
   "rec.goN": "● Start take {n}",
+  "rec.flashOff": "⚡ Flash",
+  "rec.flashOn": "⚡ Flash on",
   "lq.t": "Add the lyrics to your video?",
   "lq.p": "You can always add them later, in the Lyrics tab.",
   "lq.yes": "Yes",
@@ -655,9 +657,8 @@ const I18N_EN = /*@EN*/{
   "dv.nowm": "Save without watermark",
   "save.videoWm": "Save this one (with watermark)",
   "ca.t": "Clip mode is a Pro feature",
-  "ca.p": "You can try it in the preview. To export your 16:9 clip, go Pro, or export your video as TikTok / Reels.",
+  "ca.p": "Music video mode (16:9) is for subscribers. Go Pro to export your clip, or export your video as TikTok / Reels.",
   "ca.reel": "Export as TikTok / Reels",
-  "ca.try": "Clip mode: try everything in the preview, effects and lyrics included. Exporting a 16:9 clip is for Pro.",
   "ly.trHint": "Stalak listens to the voice in the part you picked and writes the lyrics, already synced to your voice. You can fix any word afterwards.",
   "ly.trLang": "Sung language",
   "ly.trAuto": "Auto",
@@ -715,7 +716,7 @@ const I18N_EN = /*@EN*/{
   "acct.proRenew": "Stalak {plan} renews on {d}.",
   "acct.proEnds": "Stalak {plan} stays on until {d}, then stops.",
   "acct.proOn": "Stalak {plan} is on.",
-  "acct.why.clip": "Music video mode comes with Pro.",
+  "acct.why.clip": "Music video mode (16:9) is for subscribers.",
   "acct.why.outro": "Videos without the Stalak logo start with Basic.",
   "acct.sending": "Sending…",
   "acct.checking": "Checking…",
@@ -994,7 +995,7 @@ const I18N_EN = /*@EN*/{
   "cl.fetching": "Reading the project…",
   "cl.restoring": "Putting your edit back together…",
   "cl.opened": "“{name}” is open, just as you left it.",
-  "cl.clipNoPro": "“{name}” is a music video: music video mode is part of Stalak Pro, so it opens as a TikTok / Reels.",
+  "cl.clipNoPro": "“{name}” is a music video: music video mode is for subscribers, so it opens as a TikTok / Reels. Your clip is kept: it comes back when you go Pro and pick Clip.",
   "cl.openAskT": "Open this project?",
   "cl.openAskP": "The current project will be replaced. Save it first if you want to keep it.",
   "cl.openYes": "Open",
@@ -1068,7 +1069,7 @@ const I18N_EN = /*@EN*/{
   "hero.vids": "{n} videos made",
   "hero.s": "Film a few takes of your song. Stalak cuts them on the beat, lips in sync: your snippet is ready to post tonight.",
   "hero.v": "Example: a video Stalak edited from three takes",
-  "hero.clip": "Try <b>Music video mode</b>: your whole song in 16:9",
+  "hero.clip": "<b>Music video mode</b>: your whole song in 16:9, for subscribers",
   "hero.song": "Choose my song",
   "hero.demo": "See an example",
   "ap.noacct": "You don’t need an account to make videos. It’s only for subscribing and getting your projects back.",
@@ -1619,6 +1620,8 @@ const I18N_FR = /*@FR*/{
   "rec.count": "{n} prise filmée",
   "rec.count_p": "{n} prises filmées",
   "rec.goN": "● Lancer la prise {n}",
+  "rec.flashOff": "⚡ Flash",
+  "rec.flashOn": "⚡ Flash allumé",
   "lq.t": "Tu veux ajouter les paroles à la vidéo ?",
   "lq.p": "Tu pourras toujours les ajouter plus tard, dans l’onglet Paroles.",
   "lq.yes": "Oui",
@@ -1634,9 +1637,8 @@ const I18N_FR = /*@FR*/{
   "dv.nowm": "Enregistrer sans filigrane",
   "save.videoWm": "Enregistrer celle-ci (avec filigrane)",
   "ca.t": "Le mode Clip est réservé à Pro",
-  "ca.p": "Tu peux l’essayer dans l’aperçu. Pour exporter ton clip en 16:9, passe à Pro, ou exporte ta vidéo au format TikTok / Reels.",
+  "ca.p": "Le mode Clip 16:9 est réservé aux abonnés. Passe à Pro pour exporter ton clip, ou exporte ta vidéo au format TikTok / Reels.",
   "ca.reel": "Exporter en TikTok / Reels",
-  "ca.try": "Mode Clip : essaie tout dans l’aperçu, effets et paroles compris. L’export d’un clip 16:9 est pour Pro.",
   "ly.trGo": "Écrire mes paroles",
   "ly.trAgain": "Les réécrire",
   "lyr.busy": "J’écoute…",
@@ -1673,7 +1675,7 @@ const I18N_FR = /*@FR*/{
   "acct.proRenew": "Stalak {plan} se renouvelle le {d}.",
   "acct.proEnds": "Stalak {plan} reste actif jusqu’au {d}, puis s’arrête.",
   "acct.proOn": "Stalak {plan} est actif.",
-  "acct.why.clip": "Le mode Clip, c’est avec Pro.",
+  "acct.why.clip": "Le mode Clip 16:9 est réservé aux abonnés.",
   "acct.why.outro": "Les vidéos sans le logo Stalak, c’est dès Basic.",
   "acct.sending": "Envoi…",
   "acct.checking": "Vérification…",
@@ -1799,7 +1801,7 @@ const I18N_FR = /*@FR*/{
   "cl.fetching": "Lecture du projet…",
   "cl.restoring": "Remise en place du montage…",
   "cl.opened": "« {name} » est ouvert, comme tu l’avais laissé.",
-  "cl.clipNoPro": "« {name} » est un clip : le mode Clip fait partie de Stalak Pro, il s’ouvre donc en TikTok / Reels.",
+  "cl.clipNoPro": "« {name} » est un clip : le mode Clip est réservé aux abonnés, il s’ouvre donc en TikTok / Reels. Ton clip est gardé : il revient quand tu passes à Pro et choisis Clip.",
   "cl.openAskT": "Ouvrir ce projet ?",
   "cl.openAskP": "Le projet en cours sera remplacé. Sauvegarde-le d’abord si tu veux le garder.",
   "cl.openYes": "Ouvrir",
@@ -3196,7 +3198,7 @@ async function setSong(buffer, name, demo){
   const bt = findBeats(a.on, buffer.duration);
   S.song = { name, demo, buffer, duration: buffer.duration, on: a.on, rms: a.rms, bands: a.bands, beats: bt.beats, down: bt.down, bpm: bt.bpm, lyr: bt.raw || null };
   padGrid(S.song); if (S.song.lyr) padGrid(S.song.lyr);
-  S.locks = []; S.cursor = 0; S.fxUser = []; S.fxSelT = null; S.segA = S.segB = null;
+  S.locks = []; S.cursor = 0; S.fxUser = []; S.fxSelT = null; S.segA = S.segB = null; S.clipKept = null;
   if (demo || !S.nBars) S.startBar = 0;   // « Tout le son » (the default): from the very start
   else {
     const span = S.nBars || 8; let best = 0, bs = -1;
@@ -3729,7 +3731,7 @@ const FX_ICON = {
 };
 const fxSvg = type => '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' + FX_ICON[type] + '</svg>';
 const FX_NONE = [];
-// (7/11, owner's decision on the Clip mode, n° 2) the effects play in the preview for everyone; a clip is exported with Pro (clipGate)
+// the effects of a clip (24/11: the Clip mode is for subscribers; clipGate stays for a subscription that ends during the edit)
 const fxOn = () => isClip() && S.fxLevel !== 'aucun' && !!S.song;
 /* the effect controls are shown: a clip, effects not turned off */
 const fxUi = () => fxOn() && S.cuts.length > 0;
@@ -6839,6 +6841,17 @@ function finish(){ const hook = !!endHook; stop(true); if (!hook) showFrame(S.se
 /* ---------- recording on the site ---------- */
 let recStream = null, recRec = null, recTimer = 0, recStopReq = false;
 let camFacing = 'user';
+// (23/11, the owner: « un flash dans la caméra : oui ») the torch of the phone when the camera has one (back camera, Android
+// mostly); otherwise (front camera, iPhone) a bright white frame round the picture lights the face. Kept for the next takes
+let camFlash = store.get('stalak:camFlash') === 1;
+function camTorchOk(){ const t = recStream && recStream.getVideoTracks()[0]; try { return !!(t && t.getCapabilities && t.getCapabilities().torch); } catch(e){ return false; } }
+function camFlashApply(){
+  const t = recStream && recStream.getVideoTracks()[0], torch = camTorchOk();
+  if (t && torch) t.applyConstraints({ advanced: [{ torch: camFlash }] }).catch(() => {});
+  $('#recPanel').classList.toggle('flashring', camFlash && !torch);
+  const b = $('#recFlash'); if (b){ b.setAttribute('aria-pressed', String(camFlash)); setT(b, camFlash ? 'rec.flashOn' : 'rec.flashOff'); }
+}
+function camFlashSet(on){ camFlash = !!on; store.set('stalak:camFlash', camFlash ? 1 : 0); camFlashApply(); diag('caméra : flash ' + (camFlash ? (camTorchOk() ? 'torche' : 'cadre blanc') : 'éteint')); }
 // the countdown before a take: 0 (none), 3 or 5 s, kept from one visit to the next
 let recDelay = (() => { const v = store.get('stalak:recTimer'); return [0, 3, 5].includes(v) ? v : 0; })();
 let recCd = null, recShot = 0;   // the countdown running; takes filmed since the page opened
@@ -6874,7 +6887,7 @@ function camSelfie(){
 }
 function camShow(){
   const v = $('#recVideo'); v.srcObject = recStream; v.play().catch(()=>{});
-  v.classList.toggle('mirror', camSelfie()); camZoomOut();
+  v.classList.toggle('mirror', camSelfie()); camZoomOut(); camFlashApply();
   const t = recStream.getVideoTracks()[0], st = t && t.getSettings ? t.getSettings() : {};
   diag('caméra : ' + (camFacing === 'user' ? 'selfie' : 'arrière') + (st.width ? ' · ' + st.width + '×' + st.height : '') + (st.frameRate ? ' · ' + Math.round(st.frameRate) + ' i/s' : '') + (camSelfie() ? ' · miroir' : ''));
 }
@@ -6916,6 +6929,7 @@ function closeCamera(){
 function recUi(state){
   $('#recGo').hidden = state !== 'idle'; $('#recCancel').hidden = state !== 'cd'; $('#recStop').hidden = state !== 'rec';
   $('#recFlip').disabled = state !== 'idle';
+  $('#recPanel').dataset.st = state;
   $('#recTimerSeg').querySelectorAll('button').forEach(b => { b.disabled = state !== 'idle'; b.setAttribute('aria-pressed', String(+b.dataset.v === recDelay)); });
   $('#recPanel').classList.toggle('busy', state !== 'idle');
   if (state !== 'idle') $('#recDone').hidden = true;
@@ -8728,6 +8742,7 @@ function setKind(k, quiet){
   kindUI();
   if (S.song) rebuild(false); else updateNav();
   waveOverlay();
+  if (isClip() && S.clipKept && S.song) clipBack();
   if (!quiet) say(isClip() ? 'kind.st.clip' : 'kind.st.reel');
 }
 
@@ -8933,7 +8948,7 @@ function styleChanged(){
 /* ---------- events ---------- */
 $$('#stepper button').forEach(b => b.onclick = () => go(+b.dataset.go));
 $$('[data-back]').forEach(b => b.onclick = () => go(+b.dataset.back));
-$('#next1').onclick = () => go(2); $('#next2').onclick = () => lyAsk(); $('#next3').onclick = () => go(4);
+$('#next1').onclick = () => go(2); $('#next2').onclick = () => { if (window.StalakM3 && StalakM3.on()) go(3); else lyAsk(); }; $('#next3').onclick = () => go(4);   // (refonte mobile, lot 3) on a phone, step 3 is the question itself
 /* « Continuer » after the takes (owner, 06/11): « Tu veux ajouter les paroles à la vidéo ? » Oui: the Lyrics step; Non: straight
    to the edit. Lyrics already there (a project picked up): the Lyrics step, as before. Échap or a tap beside: nothing changes */
 function lyAsk(){
@@ -8953,11 +8968,16 @@ $('#lyAsk').addEventListener('click', e => { if (e.target === e.currentTarget &&
 function togglePlay(){ if (S.exporting) return; if (S.playing) stop(); else play(S.step === 4 ? startPoint() : null); }
 $('#playBtn').onclick = togglePlay;
 $('#songPlay').onclick = listenToggle;
-// (audit 6/11, n° 18) the Clip mode can be tried by everybody, in the preview; only its export asks for Pro (as the filters)
+// (24/11, owner's decision, replaces the free try of 6/11 and 7/11) the Clip mode is for subscribers (Pro, Creator Plus, or a Pro
+// trial running): without one, choosing « Clip » opens the plans page and the edit stays as it is
 // (audit 13/11, n° 3) « opened the Clip mode »: sent once per page (anonymous), when the person chooses Clip herself; counted by
 // Comptes as one number (functions/_lib/metrics.js, ev_clip_open)
 let clipOpened = false;
-const kindPick = k => { setKind(k); if (k === 'clip' && !clipOpened){ clipOpened = true; acctEvent('clip_open'); } if (k === 'clip' && !can('clip')) say('ca.try'); };
+const kindPick = k => {
+  if (k === 'clip' && !clipOpened){ clipOpened = true; acctEvent('clip_open'); }
+  if (k === 'clip' && !can('clip')){ kindUI(); lockOpen('clip'); return; }
+  setKind(k);
+};
 bindSeg('#kindSeg', kindPick);
 bindSeg('#kindSeg4', kindPick);
 bindSeg('#frameSeg', v => { S.frame = v; S.frameUser = true; store.set('stalak:frame', v); stop(true); showFrame(cursorIn()); say('frame.st.' + v); });
@@ -9127,6 +9147,7 @@ $('#cutLock').onclick = () => { const c = S.cuts[S.sel]; if (!c) return; lockCut
 $('#recOpen').onclick = openCamera;
 $('#recClose').onclick = closeCamera;
 $('#recFlip').onclick = camFlip;
+$('#recFlash').onclick = () => camFlashSet(!camFlash);
 $('#recGo').onclick = recordTake;
 $('#recStop').onclick = () => { recStopReq = true; };
 $('#recCancel').onclick = () => recCancel();
@@ -9181,6 +9202,7 @@ async function songFromFile(f){
 }
 /* (22/11, audit mobile n° 1) the first screen's two buttons: the song's file choice, and the example */
 $('#heroSong').onclick = () => $('#songFile').click();
+if ($('#heroClip')) $('#heroClip').onclick = () => kindPick('clip');
 $('#heroDemo').onclick = () => $('#demoBtn').click();
 /* (23/11, maquette A) the pill under them: the average note of the customer reviews (written in the page by build_site.py from
    site_src/avis.json) and the real number of videos made (/api/stats/exports, asked once). The number missing: the note
@@ -10387,7 +10409,6 @@ function acctSync(){
   if (!u) acctMenu(false); else { const tl = trialLeft(); if (tl){ setT('#amProT', null); $('#amProT').textContent = tn('tr.menu', tl.n); } else setT('#amProT', paid ? 'am.manage' : 'am.pro'); }
   planTags();   // the padlocks of the plans (App & montage)
   textGate();
-  // (audit 6/11, n° 18: the Clip mode stays, tried in the preview; only its export asks for Pro)
   if (S.done) doneUi();
   if (pro && !acctWasPro && store.get('stalak:kind') === 'clip' && !isClip() && !S.song && !S.exporting) setKind('clip', true);
   if (pro) apWhyK = null;
@@ -11167,6 +11188,7 @@ async function clCollect(fpOf = clFingerprint){
     lyrics: { mode: S.lyrics.mode, lines: S.lyrics.lines, style: S.lyrics.style },
     cuts: S.cuts.map(cut), locks: S.locks.map(cut), fxUser: S.fxUser, fxAuto: S.fxAuto,
   };
+  if (S.clipKept && !isClip()) state.clipKept = S.clipKept;
   return { state: JSON.parse(JSON.stringify(state)), media };
 }
 /* the Galerie's cover: the middle of the first shot that shows a sung take, with the lyrics, without the take's name; 300 px wide */
@@ -11345,14 +11367,39 @@ async function clOpenRun(p){
     else { const [k, v] = clErr(e, true); clMsg(k, v, true); clBtns('fail'); try { $('#clRetry').focus(); } catch(x){} }
   } finally { CL.busy = false; CL.ctl = null; clSync(); }
 }
+/* the saved shots (take numbers) back to shots of the takes on screen */
+function cutsBack(list){
+  const takeOf = c => { const b = S.takes[c.ti]; if (!b) return null; return c.vo != null && b.broll ? brollView(b, c.vo) : b; };
+  return (Array.isArray(list) ? list : []).map(c => { const tk = takeOf(c); if (!tk) return null;
+    const o = { t0: c.t0, t1: c.t1, take: tk }; if (c.locked) o.locked = true; if (c.broll) o.broll = true; return o; }).filter(Boolean);
+}
+/* (24/11) the kept clip given back: its passage, format, effects and edit (the edit only if the takes are the same) */
+function clipBack(){
+  const k = S.clipKept; if (!k || !isClip()) return; S.clipKept = null;
+  const set = k.set || {};
+  S.startBar = set.startBar || 0; S.nBars = set.nBars || 0; S.clipEnd = set.clipEnd == null ? null : set.clipEnd;
+  if (typeof set.segA === 'number' && typeof set.segB === 'number'){ S.segA = set.segA; S.segB = set.segB; }
+  if (FORMATS[set.fmt]) setFormat(set.fmt);
+  S.fxUser = Array.isArray(k.fxUser) ? k.fxUser : []; barsSync();
+  rebuild(false);
+  const cuts = k.n === S.takes.length ? cutsBack(k.cuts) : [];
+  if (cuts.length){ S.cuts = cuts; S.locks = cutsBack(k.locks); S.fxAuto = Array.isArray(k.fxAuto) ? k.fxAuto : []; S.fxVer++; S.keepEdit = true; }
+  renderWave(); renderTimeline(); renderCutBar(); renderFxBar();
+  try { waveOverlay(); } catch(e){}
+  diag('mode Clip : le clip gardé est revenu');
+}
 /* puts everything back as it was saved; returns true when a clip had to open as a TikTok / Reels (no Pro any more) */
 async function clApply(st, files){
   stop(true);
   const set = st.set || {}, wantClip = set.kind === 'clip', clip = wantClip && can('clip');
+  // (24/11) a clip that opens as a TikTok / Reels (no subscription) is kept as it was, saved with the project, and comes back
+  // when Clip is chosen with a subscription (clipBack); a project already opened that way carries it on
+  const kept = wantClip && !clip ? { set, cuts: st.cuts || [], locks: st.locks || [], fxUser: st.fxUser || [], fxAuto: st.fxAuto || [], n: (st.takes || []).length }
+    : (!wantClip && st.clipKept && typeof st.clipKept === 'object' ? st.clipKept : null);
   // the song (its beat grid as it was, with any change made by hand)
   if (st.song.demo) await setSong(await makeDemoSong(), _t('demo.song'), true);
   else { const f = files.get(st.song.file.id); await setSong(await songFromFile(f), st.song.name, false); S.song.file = f; }
-  const sg = S.song;
+  const sg = S.song; S.clipKept = kept;
   if (Array.isArray(st.song.beats) && st.song.beats.length > 1){ sg.beats = st.song.beats; sg.down = st.song.down | 0; sg.bpm = st.song.bpm || sg.bpm; }
   if ('lyr' in st.song) sg.lyr = st.song.lyr;
   // what is made and its settings
@@ -11398,9 +11445,7 @@ async function clApply(st, files){
   S.locks = []; S.fxUser = Array.isArray(st.fxUser) ? st.fxUser : [];
   rebuild(false);
   if (clip || !wantClip){
-    const takeOf = c => { const b = S.takes[c.ti]; if (!b) return null; return c.vo != null && b.broll ? brollView(b, c.vo) : b; };
-    const back = list => (Array.isArray(list) ? list : []).map(c => { const tk = takeOf(c); if (!tk) return null;
-      const o = { t0: c.t0, t1: c.t1, take: tk }; if (c.locked) o.locked = true; if (c.broll) o.broll = true; return o; }).filter(Boolean);
+    const back = cutsBack;
     const cuts = back(st.cuts);
     if (cuts.length){ S.cuts = cuts; S.locks = back(st.locks); S.fxAuto = isClip() && Array.isArray(st.fxAuto) ? st.fxAuto : []; S.fxVer++; S.keepEdit = true; }
   } else S.fxUser = [];
@@ -11687,7 +11732,7 @@ function mobInit(){
   $('#mhPill').onclick = () => { if (S.exporting || askDone || !ACCT) return; if (acctPaid()) apGo('account'); else apGo('pro', { from: 'menu' }); };
   // what changes the state: a step, the song, the end screen, a page of the account, the person signed in
   const mo = new MutationObserver(() => mobUi());
-  for (const id of ['p1', 'songBox', 'doneView', 'acctPage', 'lpOffer', 'apLogin', 'apAccount', 'apGallery', 'apPro']){ const n = document.getElementById(id); if (n) mo.observe(n, { attributes: true, attributeFilter: ['hidden', 'class'] }); }
+  for (const id of ['p1', 'p2', 'p3', 'p4', 'songBox', 'doneView', 'acctPage', 'lpOffer', 'apLogin', 'apAccount', 'apGallery', 'apPro']){ const n = document.getElementById(id); if (n) mo.observe(n, { attributes: true, attributeFilter: ['hidden', 'class'] }); }
   mo.observe(document.body, { attributes: true, attributeFilter: ['class'] });
   if (ACCT) ACCT.onChange(() => mobUi());
   try { MOB.addEventListener('change', () => mobUi()); } catch(e){}
@@ -11696,9 +11741,27 @@ function mobInit(){
   // lot 2: on a phone of stalak.app, the dressed screens come in their own file, after the app
   window.StalakM = Object.freeze({ lang: () => LANG, t: (k, v) => _t(k, v), acct: ACCT, view: () => (ACCT && isShown($('#acctPage')) ? apView : null), mode: () => apMode, step: () => apStep,
     go: (v, o) => apGo(v, o), hide: () => apHide(), plan: () => acctPlan(), paid: () => acctPaid(), name: u => acctName(u), calm: () => calmMotion(), gsap: () => mobGsap(), play: b => mobPlay(b),
-    phone: () => MOB.matches, home: () => mobHome(), cloud: () => (typeof CL !== 'undefined' ? CL : null), reload: () => clLoadList(), on: f => { mobSubs.push(f); } });
+    phone: () => MOB.matches, home: () => mobHome(), cloud: () => (typeof CL !== 'undefined' ? CL : null), reload: () => clLoadList(), on: f => { mobSubs.push(f); },
+    // (refonte mobile, lot 3) the editor: its step, its takes, the camera; nothing here changes a setting
+    ed: Object.freeze({ step: () => S.step, go: n => go(n), done: () => document.body.classList.contains('isdone'), song: () => !!S.song, kind: () => S.kind,
+      can: f => can(f), playing: () => !!S.playing, lyr: () => S.lyrics.mode, exporting: () => !!S.exporting,
+      takes: () => S.takes.filter(t => !t.broll).map(t => ({ el: t.kind === 'video' ? t.el || null : null, demo: t.kind === 'demo', look: t.look || null, stars: t.qual ? qualSummary(t).stars : 0 })),
+      cam: () => !!recStream, rec: () => (recRec && recRec.state !== 'inactive') ? 'rec' : recCd ? 'cd' : 'idle', timer: () => recDelay, timerSet: v => recTimerSet(v),
+      take: () => S.takes.filter(t => !t.broll && t.kind !== 'demo').length + 1,
+      recPos: () => { if (!S.song || !(recRec && recRec.state !== 'inactive')) return 0; const a = recFrom(), b = Math.min(S.song.duration, S.segEnd + 0.3); return Math.max(0, Math.min(1, (player.currentTime - a) / Math.max(0.1, b - a))); } }),
+    // (refonte mobile, lot 4) the paywall, the 1 € offer and the « thank you » read the same figures and do the same things as the
+    // plans page: nothing here sets a price or a right
+    pw: Object.freeze({ amounts: () => plAmounts('pro'), money: (n, c) => plMoney(n, c), months: () => plMonths(plAmounts('pro')), trial: () => trialOn(), days: () => trialDays(),
+      then: i => trialThen(i), first: i => trialFirst(i), int: () => plInt, setInt: i => { const b = $('#plInt [data-int="' + i + '"]'); if (b) b.click(); },
+      buy: btn => plBuy('pro', btn), of1: () => (offer1On() ? of1Prices : null), thxOpen: () => isShown($('#proThx')), thxClose: () => ptClose(), plan: () => acctPlan() }) });
   const m2 = () => { if (!ACCT || !MOB.matches || !window.STALAK_M2 || m2.done) return; m2.done = true; const e = document.createElement('script'); e.src = window.STALAK_M2; e.async = false; document.head.appendChild(e); };
   m2(); try { MOB.addEventListener('change', m2); } catch(e){}
+  // (refonte mobile, lot 3) the editor and the camera on a phone: one more file, loaded the same way
+  const m3 = () => { if (!ACCT || !MOB.matches || !window.STALAK_M3 || m3.done) return; m3.done = true; const e = document.createElement('script'); e.src = window.STALAK_M3; e.async = false; document.head.appendChild(e); };
+  m3(); try { MOB.addEventListener('change', m3); } catch(e){}
+  // (refonte mobile, lot 4) the tutorial, the help, the paywall, the 1 € offer and the « thank you » on a phone
+  const m4 = () => { if (!ACCT || !MOB.matches || !window.STALAK_M4 || m4.done) return; m4.done = true; const e = document.createElement('script'); e.src = window.STALAK_M4; e.async = false; document.head.appendChild(e); };
+  m4(); try { MOB.addEventListener('change', m4); } catch(e){}
 }
 mobInit();
 
