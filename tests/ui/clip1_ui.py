@@ -82,17 +82,20 @@ def run(b, base, lang, iphone, PW):
     shot(pg, 'exemple-tiktok-%s-%s.png' % (dev, lang))
 
     # n° 6: Clip at the Montage step
-    check(tag + ' : « %s » : TikTok / Clip à l’étape Montage' % t['kind4'], visible(pg, '#kindSeg4') and ev(pg, "$('#kindSeg4').closest('.card').querySelector('[data-i18n=\"p4.kind\"]').textContent.trim()") == t['kind4'])
+    # (25/11, owner's rule) TikTok or Clip is chosen at step 1 only: no choice left at the Montage step
+    check(tag + ' : plus de choix TikTok / Clip à l’étape Montage (choisi à l’étape 1 seulement)', not visible(pg, '#kindSeg4') and ev(pg, "(kindPick('clip'), S.kind)") == 'reel')
     ev(pg, "S.__lock = [], lockOpen = (f, w) => S.__lock.push(f)")
-    pg.locator('#kindSeg4 button[data-v="clip"]').click(); pg.wait_for_timeout(1200)
+    ev(pg, 'go(1)'); pg.wait_for_timeout(800)
+    pg.locator('#kindSeg button[data-v="clip"]').click(); pg.wait_for_timeout(1200); ev(pg, 'go(4)'); pg.wait_for_timeout(1500)
     st = ev(pg, "[S.step, S.kind, S.fmt, $('#kindSeg4 button[data-v=\"clip\"]').getAttribute('aria-pressed'), $('#kindSeg4 button[data-v=\"reel\"]').getAttribute('aria-pressed'), S.__lock]")
     check(tag + ' : Gratuit : « Clip » ouvre la page des formules (Clip) et le montage reste en TikTok 9:16', st == [4, 'reel', '916', 'false', 'true', ['clip']], st)
     check(tag + ' : Gratuit : plus d’aperçu du Clip (aucun effet de clip posé)', not ev(pg, 'fxOn()'))
     # a subscriber (Pro, Creator Plus or a Pro trial running)
     ev(pg, "acctHas = f => true, planTags()")
-    pg.locator('#kindSeg4 button[data-v="clip"]').click(); pg.wait_for_timeout(1500)
+    ev(pg, 'go(1)'); pg.wait_for_timeout(800)
+    pg.locator('#kindSeg button[data-v="clip"]').click(); pg.wait_for_timeout(1200); ev(pg, 'go(4)'); pg.wait_for_timeout(2000)
     st = ev(pg, "[S.step, S.kind, S.fmt, $('#kindSeg button[data-v=\"clip\"]').getAttribute('aria-pressed'), $('#kindSeg4 button[data-v=\"clip\"]').getAttribute('aria-pressed'), S.cuts.length > 0]")
-    check(tag + ' : abonné : passé en Clip sans quitter l’étape 4 (16:9, les deux sélecteurs à jour)', st == [4, 'clip', '169', 'true', 'true', True], st)
+    check(tag + ' : abonné : passé en Clip à l’étape 1, le montage en 16:9 à l’étape 4', st == [4, 'clip', '169', 'true', 'true', True], st)
     co = [e for e in events if e.get('name') == 'clip_open']
     check(tag + ' : « a ouvert le mode Clip » envoyé une fois (un seul nombre, compté par Comptes)', len(co) == 1 and 'cat' not in co[0], co)
 
@@ -162,10 +165,12 @@ def run(b, base, lang, iphone, PW):
     check(tag + ' : son AAC 384 kbit/s (320 si l’encodeur refuse 384)', br == [384000, 320000, 'mp4a.40.2'], br)
 
     # n° 6, back: TikTok at the Montage step
-    pg.locator('#kindSeg4 button[data-v="reel"]').click(); pg.wait_for_timeout(1200)
-    pg.locator('#kindSeg4 button[data-v="clip"]').click(); pg.wait_for_timeout(1200); pg.locator('#kindSeg4 button[data-v="reel"]').click(); pg.wait_for_timeout(1200)
+    ev(pg, 'go(1)'); pg.wait_for_timeout(800)
+    pg.locator('#kindSeg button[data-v="reel"]').click(); pg.wait_for_timeout(1200)
+    pg.locator('#kindSeg button[data-v="clip"]').click(); pg.wait_for_timeout(1200); pg.locator('#kindSeg button[data-v="reel"]').click(); pg.wait_for_timeout(1200)
+    ev(pg, 'go(4)'); pg.wait_for_timeout(1500)
     check(tag + ' : une seule fois par visite (rouvert : rien de plus)', [e for e in events if e.get('name') == 'clip_open'] == [])
-    check(tag + ' : retour en TikTok depuis l’étape 4 (9:16, 8 mesures)', ev(pg, "[S.step, S.kind, S.fmt, S.nBars]") == [4, 'reel', '916', 8], ev(pg, "[S.step, S.kind, S.fmt, S.nBars]"))
+    check(tag + ' : retour en TikTok (à l’étape 1), 9:16, 8 mesures à l’étape 4', ev(pg, "[S.step, S.kind, S.fmt, S.nBars]") == [4, 'reel', '916', 8], ev(pg, "[S.step, S.kind, S.fmt, S.nBars]"))
     # (audit 13/11, n° 2) the hovers are for a mouse only: none left outside @media (hover:hover) (except a hover shared with
     # the keyboard's focus, or one that only shows a tag); on a phone, a touched choice button keeps its colours
     loose = pg.evaluate("""() => { const out = []; const walk = (rules, inHover) => { for (const r of rules){
