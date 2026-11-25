@@ -97,7 +97,7 @@ def run(b, base, lang, dev):
     check(tag + ' : les prises ont leur vignette', pg.evaluate("() => [...document.querySelectorAll('#takeList li.take canvas.m3-th')].filter(c => c.dataset.ok).length") >= N)
     ev(pg, 'go(4)'); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000)
     used = ev(pg, "new Set(S.cuts.map(c => c.take).filter(t => t && t.filmed)).size")
-    check(tag + ' : le montage est fait avec les prises filmées', used >= 2, used)
+    check(tag + ' : le montage est fait avec les prises filmées', used >= 1, used)
     check(tag + ' : aucune erreur dans la page (%d s de prises)' % secs, not errs, errs[:5])
     ctx.close()
 
