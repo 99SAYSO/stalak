@@ -2310,7 +2310,7 @@ html.splash-on #splash{display:block}
 </style>
 </head>
 <body>
-<script>window.STALAK_M2="/assets/mobile2.2821eae52a.js";(function(){var d=document,W=window,G=W.STALAK_GSAP="/vendor/gsap-3.15.0.min.js";try{if(!W.matchMedia||!matchMedia('(max-width:899px)').matches||matchMedia('(prefers-reduced-motion: reduce)').matches)return;if(navigator.webdriver&&!W.__stalakSplash)return;if(location.hash&&location.hash.length>1)return;if(sessionStorage.getItem('stalak:splash')||sessionStorage.getItem('stalak:openProject'))return;sessionStorage.setItem('stalak:splash','1');}catch(e){return;}var sp=d.createElement('div'),r=d.documentElement;sp.id='splash';sp.setAttribute('aria-hidden','true');sp.innerHTML='<div class="sp-curtain"><div class="sp-bg"></div></div>';r.classList.add('splash-on');d.body.insertBefore(sp,d.body.firstChild);W.__stalakSplashT=Date.now();function bye(){if(W.__stalakSplashGo||!sp.parentNode)return;sp.style.transition='opacity .3s ease-out';sp.style.opacity='0';setTimeout(function(){r.classList.remove('splash-on');if(sp.parentNode)sp.parentNode.removeChild(sp);W.__stalakSplashDone=true;},320);}[G,"/assets/splash.5480163793.js"].forEach(function(u){var s=d.createElement('script');s.src=u;s.async=false;s.onerror=bye;d.head.appendChild(s);});setTimeout(bye,3000);})();</script>
+<script>window.STALAK_M2="/assets/mobile2.2821eae52a.js";window.STALAK_M3="/assets/mobile3.4d94ad2048.js";window.STALAK_M4="/assets/mobile4.229f0e68ad.js";(function(){var d=document,W=window,G=W.STALAK_GSAP="/vendor/gsap-3.15.0.min.js";try{if(!W.matchMedia||!matchMedia('(max-width:899px)').matches||matchMedia('(prefers-reduced-motion: reduce)').matches)return;if(navigator.webdriver&&!W.__stalakSplash)return;if(location.hash&&location.hash.length>1)return;if(sessionStorage.getItem('stalak:splash')||sessionStorage.getItem('stalak:openProject'))return;sessionStorage.setItem('stalak:splash','1');}catch(e){return;}var sp=d.createElement('div'),r=d.documentElement;sp.id='splash';sp.setAttribute('aria-hidden','true');sp.innerHTML='<div class="sp-curtain"><div class="sp-bg"></div></div>';r.classList.add('splash-on');d.body.insertBefore(sp,d.body.firstChild);W.__stalakSplashT=Date.now();function bye(){if(W.__stalakSplashGo||!sp.parentNode)return;sp.style.transition='opacity .3s ease-out';sp.style.opacity='0';setTimeout(function(){r.classList.remove('splash-on');if(sp.parentNode)sp.parentNode.removeChild(sp);W.__stalakSplashDone=true;},320);}[G,"/assets/splash.5480163793.js"].forEach(function(u){var s=d.createElement('script');s.src=u;s.async=false;s.onerror=bye;d.head.appendChild(s);});setTimeout(bye,3000);})();</script>
 
 
 <div class="wrap">
@@ -2399,7 +2399,7 @@ html.splash-on #splash{display:block}
         </div>
         <!-- Marketing & croissance (07/11, rapport chiffres : le mode Clip, 1re raison d'ouvrir Pro) : choisit « Clip » à l'étape 1
              (#kindSeg, le choix qui existe déjà) et l'amène sous les yeux ; rien d'autre ne change -->
-        <button type="button" class="hero-clip" id="heroClip" data-i18n="hero.clip">Essaie le <b>mode Clip</b>&nbsp;: tout ton morceau en 16:9</button>
+        <button type="button" class="hero-clip" id="heroClip" data-i18n="hero.clip">Le <b>mode Clip</b>&nbsp;: tout ton morceau en 16:9, pour les abonnés</button>
         <script>(function (b) { if (!b) return;
           b.addEventListener('click', function () {
             var k = document.querySelector('#kindSeg button[data-v="clip"]'); if (!k) return;
@@ -2535,6 +2535,7 @@ html.splash-on #splash{display:block}
           <button class="btn primary big" id="recGo" type="button" data-i18n="rec.go">● Lancer la prise</button>
           <button class="btn big" id="recCancel" type="button" hidden data-i18n="rec.cancel">✕ Annuler</button>
           <button class="btn big" id="recStop" type="button" hidden data-i18n="rec.stop">■ Arrêter</button>
+          <button class="btn" id="recFlash" type="button" aria-pressed="false" data-i18n="rec.flashOff">⚡ Flash</button>
           <button class="btn" id="recFlip" type="button" aria-label="Changer de caméra" data-i18n="rec.flip" data-i18n-attr="aria-label:rec.flip.aria">⇄ Caméra avant / arrière</button>
           <button class="btn" id="recClose" type="button" data-i18n="rec.close">Fermer la caméra</button>
         </div>
@@ -3455,6 +3456,6 @@ html.splash-on #splash{display:block}
   <button class="hp-human" id="helpHuman" type="button" data-i18n="help.human" hidden>Parler à un humain</button>
   <button class="hp-diag" id="helpDiag" type="button" data-i18n="help.diag">Copier les infos pour l’équipe</button>
 </section>
-<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/assets/consent.a66a80ab81.js", "/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.f72968a21b.js", "/assets/app.e60308fbbe.js", "/assets/tiktok.8fcf3f7d25.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v||!v.offsetParent)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
+<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/assets/consent.a66a80ab81.js", "/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.eaed5d7439.js", "/assets/app.1329ce4fe1.js", "/assets/tiktok.8fcf3f7d25.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v||!v.offsetParent)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
 </body>
 </html>

@@ -86,7 +86,7 @@
         </div>
         <!-- Marketing & croissance (07/11, rapport chiffres : le mode Clip, 1re raison d'ouvrir Pro) : choisit « Clip » à l'étape 1
              (#kindSeg, le choix qui existe déjà) et l'amène sous les yeux ; rien d'autre ne change -->
-        <button type="button" class="hero-clip" id="heroClip" data-i18n="hero.clip">Essaie le <b>mode Clip</b>&nbsp;: tout ton morceau en 16:9</button>
+        <button type="button" class="hero-clip" id="heroClip" data-i18n="hero.clip">Le <b>mode Clip</b>&nbsp;: tout ton morceau en 16:9, pour les abonnés</button>
         <script>(function (b) { if (!b) return;
           b.addEventListener('click', function () {
             var k = document.querySelector('#kindSeg button[data-v="clip"]'); if (!k) return;
@@ -222,6 +222,7 @@
           <button class="btn primary big" id="recGo" type="button" data-i18n="rec.go">● Lancer la prise</button>
           <button class="btn big" id="recCancel" type="button" hidden data-i18n="rec.cancel">✕ Annuler</button>
           <button class="btn big" id="recStop" type="button" hidden data-i18n="rec.stop">■ Arrêter</button>
+          <button class="btn" id="recFlash" type="button" aria-pressed="false" data-i18n="rec.flashOff">⚡ Flash</button>
           <button class="btn" id="recFlip" type="button" aria-label="Changer de caméra" data-i18n="rec.flip" data-i18n-attr="aria-label:rec.flip.aria">⇄ Caméra avant / arrière</button>
           <button class="btn" id="recClose" type="button" data-i18n="rec.close">Fermer la caméra</button>
         </div>
