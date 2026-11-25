@@ -1,7 +1,7 @@
 {
   "version": 1,
   "historyId": "658308e1-edc3-4359-9936-aa338d585dc1",
-  "currentRevision": "d2c805c1-dea5-4dc3-8450-082f4752f580",
+  "currentRevision": "2674f89c-b9b8-4118-b663-c8d8da98155f",
   "pendingChanges": false,
   "files": {
     "assets/fonts/dmsans.ttf": {
@@ -29,8 +29,16 @@
       "content": "/root/.cache/hyperframes/history/658308e1-edc3-4359-9936-aa338d585dc1/blobs/6f/6fa3d6adc60357ac4867a2e614f4762dcf65330dfd439e79228d5e84741e11aa"
     },
     "index.html": {
-      "hash": "29c29eee6216db3a811e1c087ced5c256ca663576d69d98147052b3141f05d6f",
-      "content": "/root/.cache/hyperframes/history/658308e1-edc3-4359-9936-aa338d585dc1/blobs/29/29c29eee6216db3a811e1c087ced5c256ca663576d69d98147052b3141f05d6f"
+      "hash": "713d5d4896995917b7dcac1dc133e41c35c02428039447624542fdf4fc901557",
+      "content": "/root/.cache/hyperframes/history/658308e1-edc3-4359-9936-aa338d585dc1/blobs/71/713d5d4896995917b7dcac1dc133e41c35c02428039447624542fdf4fc901557"
+    },
+    "assets/img/banquise.jpg": {
+      "hash": "a53fbf20c7720e27c91e759d50d4916d20f263c0032b525d49c780881dc91f47",
+      "content": "/root/.cache/hyperframes/history/658308e1-edc3-4359-9936-aa338d585dc1/blobs/a5/a53fbf20c7720e27c91e759d50d4916d20f263c0032b525d49c780881dc91f47"
+    },
+    "assets/img/ours.png": {
+      "hash": "f7dc0bb46f2a84da63cb1942a6cb578b588ff8693ffd00989e65af416d726329",
+      "content": "/root/.cache/hyperframes/history/658308e1-edc3-4359-9936-aa338d585dc1/blobs/f7/f7dc0bb46f2a84da63cb1942a6cb578b588ff8693ffd00989e65af416d726329"
     }
   },
   "revisions": {
@@ -48,6 +56,44 @@
           "after": "/root/.cache/hyperframes/history/658308e1-edc3-4359-9936-aa338d585dc1/blobs/29/29c29eee6216db3a811e1c087ced5c256ca663576d69d98147052b3141f05d6f"
         }
       }
+    },
+    "f17c2bce-319c-4709-96a2-b1996e4390e0": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1795589432587,
+      "endedAt": 1795589432594,
+      "files": {
+        "assets/img/banquise.jpg": {
+          "before": null,
+          "after": "/root/.cache/hyperframes/history/658308e1-edc3-4359-9936-aa338d585dc1/blobs/a5/a53fbf20c7720e27c91e759d50d4916d20f263c0032b525d49c780881dc91f47"
+        },
+        "assets/img/ours.png": {
+          "before": null,
+          "after": "/root/.cache/hyperframes/history/658308e1-edc3-4359-9936-aa338d585dc1/blobs/f7/f7dc0bb46f2a84da63cb1942a6cb578b588ff8693ffd00989e65af416d726329"
+        },
+        "index.html": {
+          "before": "/root/.cache/hyperframes/history/658308e1-edc3-4359-9936-aa338d585dc1/blobs/29/29c29eee6216db3a811e1c087ced5c256ca663576d69d98147052b3141f05d6f",
+          "after": "/root/.cache/hyperframes/history/658308e1-edc3-4359-9936-aa338d585dc1/blobs/f2/f2267b121043270e607a0c920447028a981f52f1e9792697ba1a587ba31f0c93"
+        }
+      }
+    },
+    "2674f89c-b9b8-4118-b663-c8d8da98155f": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1795589486764,
+      "endedAt": 1795589486765,
+      "files": {
+        "index.html": {
+          "before": "/root/.cache/hyperframes/history/658308e1-edc3-4359-9936-aa338d585dc1/blobs/f2/f2267b121043270e607a0c920447028a981f52f1e9792697ba1a587ba31f0c93",
+          "after": "/root/.cache/hyperframes/history/658308e1-edc3-4359-9936-aa338d585dc1/blobs/71/713d5d4896995917b7dcac1dc133e41c35c02428039447624542fdf4fc901557"
+        }
+      }
     }
   },
   "checks": {
@@ -62,14 +108,15 @@
   },
   "renders": {
     "latest": {
-      "id": "f29854ce-2fec-4b3a-a8cf-95945039f65c",
-      "completedAt": 1795586078711,
+      "id": "57d58461-2f4e-4a34-98e7-99b5afd8d926",
+      "completedAt": 1795589528444,
       "output": "/home/claude/stalak/docs/audit/maquettes/export-igloo-2026-11-25/export-igloo.mp4",
       "status": "completed",
-      "revision": "d2c805c1-dea5-4dc3-8450-082f4752f580"
+      "revision": "2674f89c-b9b8-4118-b663-c8d8da98155f"
     },
     "retainedRevisions": [
-      "d2c805c1-dea5-4dc3-8450-082f4752f580"
+      "2674f89c-b9b8-4118-b663-c8d8da98155f",
+      "f17c2bce-319c-4709-96a2-b1996e4390e0"
     ]
   },
   "pendingArtifactCleanup": []

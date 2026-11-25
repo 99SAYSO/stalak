@@ -6,45 +6,41 @@
 @font-face{font-family:"DM Sans";src:url('assets/fonts/dmsans.ttf');font-weight:100 1000}
 *{margin:0;padding:0;box-sizing:border-box}html,body{width:1080px;height:1920px;overflow:hidden;background:#061a44}
 #root{position:relative;width:1080px;height:1920px;overflow:hidden;font-family:"DM Sans";color:#0a0d14}
-#sky{position:absolute;inset:0;background:radial-gradient(1100px 520px at 540px 300px,rgba(120,255,214,.22),transparent 70%),radial-gradient(900px 600px at 540px 820px,rgba(160,210,255,.35),transparent 70%),linear-gradient(180deg,#041434 0%,#0b2f73 42%,#1f6fd6 72%,#8fd0ff 100%)}
+#sky{position:absolute;inset:0;background:url(assets/img/banquise.jpg) center top/1080px auto no-repeat,radial-gradient(1100px 520px at 540px 300px,rgba(120,255,214,.22),transparent 70%),radial-gradient(900px 600px at 540px 820px,rgba(160,210,255,.35),transparent 70%),linear-gradient(180deg,#041434 0%,#0b2f73 42%,#1f6fd6 72%,#8fd0ff 100%)}
 #aur{position:absolute;left:-100px;right:-100px;top:150px;height:340px;background:linear-gradient(90deg,transparent,rgba(95,224,160,.35),rgba(143,208,255,.4),rgba(190,150,255,.3),transparent);filter:blur(30px);border-radius:50%}
 .fl{position:absolute;border-radius:50%;background:#fff}
 #title{position:absolute;left:0;right:0;top:120px;text-align:center;font:400 84px/1.05 "Lilita One";color:#fff;-webkit-text-stroke:16px #0a0d14;paint-order:stroke fill;text-shadow:0 8px 0 #0a0d14}
 #title2{position:absolute;left:0;right:0;top:120px;text-align:center;font:400 84px/1.05 "Lilita One";color:#fff;-webkit-text-stroke:16px #0a0d14;paint-order:stroke fill;text-shadow:0 8px 0 #0a0d14;opacity:0}
-svg{position:absolute;left:0;top:0;width:1080px;height:1200px}
+svg{position:absolute;left:0;top:0;width:1080px;height:1300px}
 .floe{fill:#fff;stroke:#0a0d14;stroke-width:9}
 .floe2{fill:#d6ecff}
 .wave{fill:none;stroke:rgba(255,255,255,.75);stroke-width:7;stroke-linecap:round}
 .blk{fill:#fff;stroke:#0a0d14;stroke-width:6;opacity:0}.blk.alt{fill:#d6ecff}
 .door{fill:#0e3f8f;stroke:#0a0d14;stroke-width:7;opacity:0}
 .glow{fill:#ffd23f;opacity:0}
-#m-walk{position:absolute;left:40px;top:690px;width:300px}
-#m-hype{position:absolute;left:-10px;top:660px;width:270px;opacity:0}
-#carry{position:absolute;left:215px;top:880px;width:86px;height:56px;border-radius:14px;background:#fff;border:7px solid #0a0d14}
-#pct{position:absolute;left:0;right:0;top:1230px;text-align:center;font:400 112px/1 "Lilita One";color:#fff;-webkit-text-stroke:18px #0a0d14;paint-order:stroke fill;text-shadow:0 8px 0 #0a0d14}
-#bar{position:absolute;left:120px;right:120px;top:1380px;height:44px;border-radius:24px;border:7px solid #0a0d14;background:#0b2f73;overflow:hidden}#barin{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,#8fd0ff,#fff)}
-#steps{position:absolute;left:90px;right:90px;top:1470px;padding:26px 32px;background:#fff;border:8px solid #0a0d14;border-radius:44px;box-shadow:0 10px 0 #0a0d14}
-.st{display:flex;align-items:center;gap:24px;font:500 38px/1.25 "DM Sans";color:#5b6884;padding:7px 0}.st i{flex:none;width:48px;height:48px;border-radius:50%;border:6px solid #b8cde8;position:relative}.st b{font-weight:800}
+#m-walk{position:absolute;left:10px;top:840px;width:270px}
+#m-hype{position:absolute;left:0px;top:820px;width:260px;opacity:0}
+#carry{position:absolute;left:190px;top:1010px;width:78px;height:50px;border-radius:14px;background:#fff;border:7px solid #0a0d14}
+#pct{position:absolute;left:0;right:0;top:1430px;text-align:center;font:400 112px/1 "Lilita One";color:#fff;-webkit-text-stroke:18px #0a0d14;paint-order:stroke fill;text-shadow:0 8px 0 #0a0d14}
+#bar{position:absolute;left:120px;right:120px;top:1560px;height:44px;border-radius:24px;border:7px solid #0a0d14;background:#0b2f73;overflow:hidden}#barin{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,#8fd0ff,#fff)}
+#steps{position:absolute;left:90px;right:90px;top:1630px;padding:18px 28px;background:#fff;border:8px solid #0a0d14;border-radius:44px;box-shadow:0 10px 0 #0a0d14}
+.st{display:flex;align-items:center;gap:20px;font:500 31px/1.2 "DM Sans";color:#5b6884;padding:4px 0}.st i{flex:none;width:48px;height:48px;border-radius:50%;border:6px solid #b8cde8;position:relative}.st b{font-weight:800}
 .st.now{color:#0a0d14}.st.now i{border-color:#1657b3}.st.now i::after{content:"";position:absolute;left:10px;top:10px;width:16px;height:16px;border-radius:50%;background:#1657b3}
 .st.done{color:#0a0d14}.st.done i{border-color:#1657b3;background:#1657b3}.st.done i::after{content:"";position:absolute;left:11px;top:4px;width:12px;height:22px;border:solid #fff;border-width:0 6px 6px 0;transform:rotate(45deg)}
-#bear{position:absolute;left:720px;top:690px;width:300px;height:300px;border:6px dashed rgba(255,255,255,.7);border-radius:30px;display:grid;place-items:center;text-align:center;font:800 30px/1.2 "DM Sans";color:#fff}
+#bear{position:absolute;left:745px;top:935px;width:300px;transform:scaleX(-1)}
 .conf{position:absolute;width:22px;height:34px;border-radius:5px;opacity:0}
 </style></head><body>
 <div id="root" data-composition-id="main" data-start="0" data-duration="9" data-width="1080" data-height="1920">
  <div id="scene" data-start="0" data-duration="9" data-track-index="0">
-  <div id="sky"></div><div id="aur"></div><div id="snow"></div>
+  <div id="sky"></div><div id="snow"></div>
   <div id="title">Stalak construit<br>ton igloo</div><div id="title2">Igloo terminé !<br>Ta vidéo est prête</div>
-  <svg viewBox="0 0 1080 1200">
-   <path class="wave" id="w1" d="M40 1110 Q90 1092 140 1110 T240 1110 M700 1120 Q750 1102 800 1120 T900 1120"/>
-   <path class="floe" d="M20 1040 Q30 990 120 985 L960 980 Q1060 985 1062 1040 Q1030 1085 540 1090 Q60 1090 20 1040 Z"/>
-   <path class="floe2" d="M60 1035 Q90 1060 540 1066 Q990 1062 1020 1035"/>
-   
-   <g id="ig"><rect class="blk" x="244.4" y="952.0" width="79.3" height="54" rx="12"/><rect class="blk alt" x="329.7" y="952.0" width="79.3" height="54" rx="12"/><rect class="blk" x="415.0" y="952.0" width="79.3" height="54" rx="12"/><rect class="blk alt" x="500.3" y="952.0" width="79.3" height="54" rx="12"/><rect class="blk" x="585.7" y="952.0" width="79.3" height="54" rx="12"/><rect class="blk alt" x="671.0" y="952.0" width="79.3" height="54" rx="12"/><rect class="blk" x="756.3" y="952.0" width="79.3" height="54" rx="12"/><rect class="blk alt" x="255.9" y="894.0" width="76.0" height="54" rx="12"/><rect class="blk" x="337.9" y="894.0" width="76.0" height="54" rx="12"/><rect class="blk alt" x="420.0" y="894.0" width="76.0" height="54" rx="12"/><rect class="blk" x="502.0" y="894.0" width="76.0" height="54" rx="12"/><rect class="blk alt" x="584.0" y="894.0" width="76.0" height="54" rx="12"/><rect class="blk" x="666.0" y="894.0" width="76.0" height="54" rx="12"/><rect class="blk alt" x="748.1" y="894.0" width="76.0" height="54" rx="12"/><rect class="blk" x="280.4" y="836.0" width="81.5" height="54" rx="12"/><rect class="blk alt" x="367.9" y="836.0" width="81.5" height="54" rx="12"/><rect class="blk" x="455.5" y="836.0" width="81.5" height="54" rx="12"/><rect class="blk alt" x="543.0" y="836.0" width="81.5" height="54" rx="12"/><rect class="blk" x="630.5" y="836.0" width="81.5" height="54" rx="12"/><rect class="blk alt" x="718.1" y="836.0" width="81.5" height="54" rx="12"/><rect class="blk alt" x="322.1" y="778.0" width="82.4" height="54" rx="12"/><rect class="blk" x="410.5" y="778.0" width="82.4" height="54" rx="12"/><rect class="blk alt" x="498.8" y="778.0" width="82.4" height="54" rx="12"/><rect class="blk" x="587.2" y="778.0" width="82.4" height="54" rx="12"/><rect class="blk alt" x="675.5" y="778.0" width="82.4" height="54" rx="12"/><rect class="blk" x="395.1" y="720.0" width="92.6" height="54" rx="12"/><rect class="blk alt" x="493.7" y="720.0" width="92.6" height="54" rx="12"/><rect class="blk" x="592.3" y="720.0" width="92.6" height="54" rx="12"/><path class="blk" d="M450 720 Q540 640 630 720 Z"/></g>
-   <path class="door" id="door" d="M478 1008 L478 940 Q540 880 602 940 L602 1008 Z"/>
+  <svg viewBox="0 0 1080 1300">
+   <g id="ig"><rect class="blk" x="314.2" y="1082.0" width="65.1" height="44" rx="10"/><rect class="blk alt" x="385.3" y="1082.0" width="65.1" height="44" rx="10"/><rect class="blk" x="456.4" y="1082.0" width="65.1" height="44" rx="10"/><rect class="blk alt" x="527.5" y="1082.0" width="65.1" height="44" rx="10"/><rect class="blk" x="598.5" y="1082.0" width="65.1" height="44" rx="10"/><rect class="blk alt" x="669.6" y="1082.0" width="65.1" height="44" rx="10"/><rect class="blk" x="740.7" y="1082.0" width="65.1" height="44" rx="10"/><rect class="blk alt" x="323.6" y="1034.0" width="73.8" height="44" rx="10"/><rect class="blk" x="403.4" y="1034.0" width="73.8" height="44" rx="10"/><rect class="blk alt" x="483.2" y="1034.0" width="73.8" height="44" rx="10"/><rect class="blk" x="563.0" y="1034.0" width="73.8" height="44" rx="10"/><rect class="blk alt" x="642.8" y="1034.0" width="73.8" height="44" rx="10"/><rect class="blk" x="722.6" y="1034.0" width="73.8" height="44" rx="10"/><rect class="blk" x="343.7" y="986.0" width="67.1" height="44" rx="10"/><rect class="blk alt" x="416.8" y="986.0" width="67.1" height="44" rx="10"/><rect class="blk" x="489.9" y="986.0" width="67.1" height="44" rx="10"/><rect class="blk alt" x="563.0" y="986.0" width="67.1" height="44" rx="10"/><rect class="blk" x="636.1" y="986.0" width="67.1" height="44" rx="10"/><rect class="blk alt" x="709.2" y="986.0" width="67.1" height="44" rx="10"/><rect class="blk alt" x="377.9" y="938.0" width="68.1" height="44" rx="10"/><rect class="blk" x="451.9" y="938.0" width="68.1" height="44" rx="10"/><rect class="blk alt" x="526.0" y="938.0" width="68.1" height="44" rx="10"/><rect class="blk" x="600.0" y="938.0" width="68.1" height="44" rx="10"/><rect class="blk alt" x="674.1" y="938.0" width="68.1" height="44" rx="10"/><rect class="blk" x="437.1" y="890.0" width="77.9" height="44" rx="10"/><rect class="blk alt" x="521.0" y="890.0" width="77.9" height="44" rx="10"/><rect class="blk" x="605.0" y="890.0" width="77.9" height="44" rx="10"/><path class="blk" d="M484 890 Q560 824 636 890 Z"/></g>
+   <path class="door" id="door" d="M508 1128 L508 1072 Q560 1022 612 1072 L612 1128 Z"/>
   </svg>
   <img id="m-walk" src="assets/img/walk.png" alt=""><div id="carry"></div>
   <img id="m-hype" src="assets/img/hype.png" alt="">
-  <div id="bear">ours polaire<br>(dessin ChatGPT<br>à venir)</div>
+  <img id="bear" src="assets/img/ours.png" alt="">
   <div id="pct">0 %</div><div id="bar"><div id="barin"></div></div>
   <div id="steps">
    <div class="st now" id="t0"><i></i><span><b>Je prépare tes prises</b> en pleine qualité</span></div>
@@ -59,12 +55,12 @@ svg{position:absolute;left:0;top:0;width:1080px;height:1200px}
 const tl = gsap.timeline({ paused: true }); let seed = 11; const R = () => (seed = (seed * 16807) % 2147483647) / 2147483647; const D = 9;
 const snow = document.getElementById("snow");
 for (let i = 0; i < 44; i++){ const f = document.createElement("div"); f.className = "fl"; const z = 7 + R() * 15; f.style.cssText = `left:${R() * 1080}px;top:${-200 + R() * 1700}px;width:${z}px;height:${z}px;opacity:${0.4 + R() * 0.55}`; snow.appendChild(f); tl.to(f, { y: 440 + R() * 260, x: (R() - 0.5) * 80, duration: D, ease: "none" }, 0); }
-tl.to("#aur", { x: 60, scaleY: 1.15, duration: D, ease: "sine.inOut" }, 0);
-tl.to("#w1", { x: 30, duration: D / 3, ease: "sine.inOut", yoyo: true, repeat: 2 }, 0);
 tl.fromTo("#title", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: .45, ease: "power3.out" }, .1);
 tl.fromTo(["#pct", "#bar", "#steps"], { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .4, ease: "power3.out", stagger: .06 }, .3);
 tl.fromTo(["#m-walk", "#carry"], { x: -320 }, { x: 0, duration: .6, ease: "power3.out" }, .3);
-tl.fromTo("#bear", { opacity: 0, scale: .8 }, { opacity: 1, scale: 1, duration: .4, ease: "back.out(2)" }, .5);
+tl.fromTo("#bear", { opacity: 0, x: 200 }, { opacity: 1, x: 0, duration: .5, ease: "power3.out" }, .5);
+tl.to("#bear", { x: -18, duration: .35, ease: "sine.inOut", yoyo: true, repeat: 13 }, 1.1);
+tl.to("#bear", { y: -40, duration: .25, ease: "power2.out", yoyo: true, repeat: 3, immediateRender: false }, 6.9);
 // block by block: each one flies from the mascot's arms to its place on the dome
 const blocks = [...document.querySelectorAll("#ig .blk")], N = blocks.length, T0 = 1.0, T1 = 6.0;
 blocks.forEach((b, i) => {
