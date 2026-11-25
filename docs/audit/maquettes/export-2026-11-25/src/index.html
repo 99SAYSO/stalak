@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1080, height=1920" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<style>
+@font-face{font-family:"Lilita One";src:url('assets/fonts/lilitaone.ttf')}
+@font-face{font-family:"DM Sans";src:url('assets/fonts/dmsans.ttf');font-weight:100 1000}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#061a44}
+#root{position:relative;width:1080px;height:1920px;overflow:hidden;font-family:"DM Sans";color:#0a0d14}
+#sky{position:absolute;inset:0;background:radial-gradient(900px 700px at 540px 640px,rgba(120,190,255,.38),transparent 70%),linear-gradient(180deg,#061a44 0%,#0b2f73 45%,#1f6fd6 100%)}
+.fl{position:absolute;border-radius:50%;background:#fff}
+#title{position:absolute;left:0;right:0;top:170px;text-align:center;font:400 84px/1.05 "Lilita One";color:#fff;-webkit-text-stroke:16px #0a0d14;paint-order:stroke fill;text-shadow:0 8px 0 #0a0d14}
+#title2{position:absolute;left:0;right:0;top:170px;text-align:center;font:400 84px/1.05 "Lilita One";color:#fff;-webkit-text-stroke:16px #0a0d14;paint-order:stroke fill;text-shadow:0 8px 0 #0a0d14;opacity:0}
+#floe{position:absolute;left:150px;width:780px;top:1015px;height:70px;border-radius:50%;background:#fff;border:8px solid #0a0d14}
+#phone{position:absolute;left:400px;top:360px;width:330px;height:640px;border-radius:52px;border:12px solid #0a0d14;background:#0d2a63;overflow:hidden;box-shadow:0 14px 0 #0a0d14}
+#screen{position:absolute;inset:0;background:linear-gradient(160deg,#0e3f8f,#1f6fd6 55%,#8fd0ff)}
+.piece{position:absolute;left:22px;right:22px;height:118px;border-radius:22px;border:7px solid #0a0d14;opacity:0}
+#play{position:absolute;left:50%;top:50%;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:50%;background:#fff;border:9px solid #0a0d14;opacity:0}
+#play::after{content:"";position:absolute;left:56px;top:38px;border-left:50px solid #0a0d14;border-top:30px solid transparent;border-bottom:30px solid transparent}
+#m-focus{position:absolute;left:120px;top:690px;width:300px}
+#m-star{position:absolute;left:96px;top:560px;width:330px;opacity:0}
+.spark{position:absolute;width:26px;height:26px;background:#ffd23f;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);opacity:0}
+#pct{position:absolute;left:0;right:0;top:1140px;text-align:center;font:400 120px/1 "Lilita One";color:#fff;-webkit-text-stroke:18px #0a0d14;paint-order:stroke fill;text-shadow:0 8px 0 #0a0d14}
+#bar{position:absolute;left:120px;right:120px;top:1300px;height:44px;border-radius:24px;border:7px solid #0a0d14;background:#0b2f73;overflow:hidden}
+#barin{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,#8fd0ff,#fff)}
+#steps{position:absolute;left:90px;right:90px;top:1400px;padding:30px 34px;background:#fff;border:8px solid #0a0d14;border-radius:44px;box-shadow:0 10px 0 #0a0d14}
+.st{display:flex;align-items:center;gap:24px;font:500 40px/1.25 "DM Sans";color:#5b6884;padding:9px 0}
+.st i{flex:none;width:50px;height:50px;border-radius:50%;border:6px solid #b8cde8;position:relative}
+.st b{font-weight:800}
+.st.now{color:#0a0d14}.st.now i{border-color:#1657b3}.st.now i::after{content:"";position:absolute;left:11px;top:11px;width:16px;height:16px;border-radius:50%;background:#1657b3}
+.st.done{color:#0a0d14}.st.done i{border-color:#1657b3;background:#1657b3}.st.done i::after{content:"";position:absolute;left:12px;top:5px;width:12px;height:22px;border:solid #fff;border-width:0 6px 6px 0;transform:rotate(45deg)}
+#stay{position:absolute;left:0;right:0;top:1810px;text-align:center;font:600 34px "DM Sans";color:#fff}
+.conf{position:absolute;width:22px;height:34px;border-radius:5px;opacity:0}
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="8" data-width="1080" data-height="1920">
+ <div id="scene" class="clipwrap" data-start="0" data-duration="8" data-track-index="0" data-layout-allow-overflow>
+  <div id="sky"></div><div id="snow"></div>
+  <div id="title">Stalak construit<br>ta vidéo</div>
+  <div id="title2">Ta vidéo<br>est prête ✓</div>
+  <div id="floe"></div>
+  <div id="phone"><div id="screen"></div>
+    <div class="piece" id="c0" style="top:40px;background:#ff6b9a"></div>
+    <div class="piece" id="c1" style="top:184px;background:#ffd23f"></div>
+    <div class="piece" id="c2" style="top:328px;background:#5fe0a0"></div>
+    <div class="piece" id="c3" style="top:472px;background:#8fd0ff"></div>
+    <div id="play"></div>
+  </div>
+  <img id="m-focus" src="assets/img/focus.png" alt="">
+  <img id="m-star" src="assets/img/star.png" alt="">
+  <div class="spark" id="s0" style="left:340px;top:640px"></div><div class="spark" id="s1" style="left:760px;top:420px"></div><div class="spark" id="s2" style="left:770px;top:860px"></div>
+  <div id="pct">0 %</div>
+  <div id="bar"><div id="barin"></div></div>
+  <div id="steps">
+   <div class="st now" id="t0"><i></i><span><b>Je prépare tes prises</b> en pleine qualité</span></div>
+   <div class="st" id="t1"><i></i><span><b>Je fabrique les images</b> : coupes, effets</span></div>
+   <div class="st" id="t2"><i></i><span><b>J'assemble l'image et ton son</b></span></div>
+   <div class="st" id="t3"><i></i><span><b>Je finis ton MP4</b>, prêt pour TikTok</span></div>
+  </div>
+  <div id="stay">Reste sur Stalak jusqu'à la fin.</div>
+  <div id="confs"></div>
+ </div>
+</div>
+<script>
+const tl = gsap.timeline({ paused: true });
+let seed = 7; const R = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const D = 8;
+const snow = document.getElementById("snow");
+for (let i = 0; i < 40; i++){ const f = document.createElement("div"); f.className = "fl"; const z = 7 + R() * 16; f.style.cssText = `left:${R() * 1080}px;top:${-200 + R() * 1700}px;width:${z}px;height:${z}px;opacity:${0.45 + R() * 0.5}`; snow.appendChild(f);
+  tl.to(f, { y: 420 + R() * 260, x: (R() - 0.5) * 80, duration: D, ease: "none" }, 0); }
+// the screen comes in
+tl.fromTo("#title", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 0.1);
+tl.fromTo("#phone", { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.55, ease: "back.out(1.7)" }, 0.2);
+tl.fromTo("#floe", { scaleX: 0.3, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 0.45, ease: "power3.out" }, 0.25);
+tl.fromTo("#m-focus", { y: 260, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "back.out(1.6)" }, 0.45);
+tl.fromTo(["#pct", "#bar", "#steps", "#stay"], { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out", stagger: 0.06 }, 0.5);
+// the mascot works: it bobs while each piece of the video flies into the phone
+tl.to("#m-focus", { y: -18, rotation: -4, duration: 0.25, ease: "sine.inOut", yoyo: true, repeat: 15 }, 1.0);
+const T = [1.2, 2.2, 3.2, 4.2], pc = { v: 0 }, pctEl = document.getElementById("pct");
+T.forEach((t, i) => {
+  tl.fromTo("#c" + i, { x: -520, y: 260 - i * 140, rotation: -25, scale: 0.6, opacity: 0 }, { x: 0, y: 0, rotation: 0, scale: 1, opacity: 1, duration: 0.55, ease: "power3.out" }, t);
+  tl.fromTo("#c" + i, { scaleY: 0.8 }, { scaleY: 1, duration: 0.25, ease: "back.out(3)", immediateRender: false }, t + 0.5);
+  tl.fromTo("#s" + (i % 3), { scale: 0, opacity: 1, rotation: 0 }, { scale: 1.4, opacity: 0, rotation: 90, duration: 0.5, ease: "power2.out" }, t + 0.45);
+  tl.call(() => { for (let k = 0; k < 4; k++){ const e = document.getElementById("t" + k); e.className = "st" + (k < i ? " done" : k === i ? " now" : ""); } }, null, t - 0.05);
+});
+tl.to(pc, { v: 100, duration: 4.2, ease: "none", onUpdate: () => { pctEl.textContent = Math.round(pc.v) + " %"; } }, 1.0);
+tl.fromTo("#barin", { width: "0%" }, { width: "100%", duration: 4.2, ease: "none" }, 1.0);
+tl.call(() => { for (let k = 0; k < 4; k++) document.getElementById("t" + k).className = "st done"; }, null, 5.2);
+// ready: the phone lights up, the mascot jumps
+tl.to(["#c0", "#c1", "#c2", "#c3"], { opacity: 0, scale: 0.9, duration: 0.3, stagger: 0.04, ease: "power2.in" }, 5.3);
+tl.fromTo("#play", { scale: 0.3, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.45, ease: "back.out(2)" }, 5.55);
+tl.to("#title", { opacity: 0, y: -30, duration: 0.25, ease: "power2.in" }, 5.4);
+tl.fromTo("#title2", { opacity: 0, y: 30, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "back.out(2)" }, 5.6);
+tl.to("#m-focus", { opacity: 0, duration: 0.15 }, 5.5);
+tl.fromTo("#m-star", { opacity: 0, y: 120, scale: 0.8 }, { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(2)" }, 5.55);
+tl.to("#m-star", { y: -60, duration: 0.3, ease: "power2.out", yoyo: true, repeat: 3 }, 6.0);
+const confs = document.getElementById("confs"), cols = ["#ffd23f", "#ff6b9a", "#5fe0a0", "#fff", "#8fd0ff"];
+for (let i = 0; i < 36; i++){ const c = document.createElement("div"); c.className = "conf"; c.style.background = cols[i % 5]; c.style.left = (440 + R() * 220) + "px"; c.style.top = "620px"; confs.appendChild(c);
+  tl.fromTo(c, { opacity: 1, x: 0, y: 0, rotation: 0 }, { x: (R() - 0.5) * 900, y: 200 + R() * 700, rotation: R() * 720, opacity: 0, duration: 1.8, ease: "power2.out", immediateRender: false }, 5.65 + R() * 0.15); }
+tl.to({}, { duration: 0.01 }, D - 0.01);
+window.__timelines["main"] = tl;
+tl.seek(0);
+</script>
+</body>
+</html>

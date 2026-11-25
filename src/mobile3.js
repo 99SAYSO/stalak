@@ -196,6 +196,12 @@ var CSS = '@media (max-width:899px){'
 + 'html.m3 #verLbl,html.m3 #tlMeta,html.m3 .m3-tools button,html.m3 #p3 > .hint,html.m3 #p3 .hint{color:#fff !important;text-shadow:0 1px 2px rgba(10,13,20,.6)}html.m3 #verLbl{-webkit-text-stroke:0}'
 + 'html.m3 #songDrop:not(.has){background:rgba(255,255,255,.14);border-color:#fff}html.m3 #songDrop strong,html.m3 #songDrop span{color:#fff !important}'
 + 'html.m3 .m3-bar{background:linear-gradient(#0a2a66 70%,rgba(10,42,102,0)) !important}html.m3 .m3-fade{background:linear-gradient(rgba(207,230,255,0),#d3ebff 42%) !important}'
+// (25/11, owner: « les étapes grises sont illisibles sur le bleu, c'est moche ») the export: the steps in a white card, each one
+// readable (to do: grey on white; now: bold ink with a blue dot; done: ticked); the sentences under it in white
++ 'html.m3 #expScreen{background:radial-gradient(90vw 40vh at 50% 22%,rgba(120,190,255,.35),transparent 70%),linear-gradient(180deg,#061a44 0%,#0b2f73 45%,#1f6fd6 100%)}'
++ 'html.m3 #expScreen .xsteps{margin:16px auto 6px;max-width:420px;padding:12px 14px;background:#fff;border:3px solid ' + INK + ';border-radius:18px;box-shadow:0 4px 0 ' + INK + ';color:' + INK + '}'
++ 'html.m3 #expScreen .xsteps li{font:500 15px/1.35 var(--body);color:' + INK + '}html.m3 #expScreen .xsteps li[data-st="todo"]{color:#5b6884}html.m3 #expScreen .xsteps li[data-st="todo"] i{border-color:#b8cde8}'
++ 'html.m3 #expScreen .xsteps li[data-st="now"] span{font-weight:700}html.m3 #expScreen .expstay,html.m3 #expScreen .expeta{color:#fff;opacity:1;text-shadow:0 1px 2px rgba(10,13,20,.5)}'
 + '@keyframes m3up{from{transform:translateY(100%)}to{transform:none}}'
 + 'html.m3 #cutBar::before,html.m3 #fxBar::before{content:"";position:absolute;top:10px;left:50%;width:44px;height:5px;margin-left:-22px;border-radius:9px;background:#c7d3e3}'
 + 'html.m3 #cutInfo,html.m3 #fxInfo{grid-column:1/-1;padding:0 46px 4px 2px;font:400 21px/1.15 var(--display);color:' + INK + '}html.m3 #fxBar .fxbtns{display:contents}'
