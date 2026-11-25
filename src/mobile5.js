@@ -29,7 +29,9 @@ fr: { title: 'Tes stats', ready: 'Ton analyse est prête', readyP: 'Crée ton co
   city: 'Ta 1re ville', ttStats: 'Mes stats TikTok', ttLink: 'Relier mon TikTok', ttStatsP: 'Tes vues, tes abonnés, tes meilleures vidéos', ttLinkP: 'Pour analyser aussi tes vidéos',
   coachT: 'Ton coach', coachP: 'Analyse de la semaine du {d}, écrite par une IA à partir de tes vrais chiffres.', cWorks: 'Ce qui marche', cStop: 'Ce qui ne marche pas', cPlan: 'Ton plan de la semaine',
   cPace: 'Ton rythme de sortie', cNext: 'Le son à pousser : « {name} »', cWhy: 'Pourquoi', cViews: '{n} vues', cMake: 'Monter cette idée', cMissing: 'Il me manque : {list}.',
-  cNote: 'Analyse écrite par une IA, à partir de tes chiffres. Ce sont des conseils, pas une promesse de résultats.', cFailed: 'Ton analyse n’a pas pu être faite cette semaine.', cOff: 'Ton coach arrive très bientôt.', cNotEnough: 'Ton coach a besoin de tes vidéos TikTok ou de tes sons sur Spotify : relie-les pour ta première analyse.', cNext2: 'Prochaine analyse : {d}.', cOver: 'Ta prochaine analyse arrive le mois prochain.', cTodo: 'À faire',
+  cNote: 'Analyse écrite par une IA (Claude, d’Anthropic) à partir de tes chiffres. Elle peut se tromper : ce sont des conseils, pas des promesses.',
+  cOnT: 'Active ton coach', cOnP: 'Chaque semaine, une analyse de ton compte et des idées de vidéos précises.', cWhat: 'Ce qui part', cWhatP: 'les chiffres de tes vidéos TikTok, de tes sons Spotify et de tes montages Stalak, tes réponses au questionnaire. Pas ton e-mail, ni ton nom, ni tes vidéos.',
+  cWho: 'Vers qui', cWhoP: 'Anthropic (Claude), qui écrit l’analyse pour Stalak, sans entraîner son IA avec.', cMore: 'En savoir plus', cOn: 'Activer mon coach', cOff2: 'Désactiver mon coach', cOffAsk: 'Désactiver ton coach ? Tes analyses seront effacées.', cOnErr: 'Ton coach n’a pas pu être activé. Réessaie dans un moment.', cFailed: 'Ton analyse n’a pas pu être faite cette semaine.', cOff: 'Ton coach arrive très bientôt.', cNotEnough: 'Ton coach a besoin de tes vidéos TikTok ou de tes sons sur Spotify : relie-les pour ta première analyse.', cNext2: 'Prochaine analyse : {d}.', cOver: 'Ta prochaine analyse arrive le mois prochain.', cTodo: 'À faire',
   fmt_face_camera: 'Face caméra', fmt_performance: 'Performance', fmt_coulisses: 'Coulisses', fmt_paroles_ecran: 'Paroles à l’écran', fmt_reaction: 'Réaction', fmt_avant_apres: 'Avant / après', fmt_autre: 'Autre format', cWait: 'Ton coach prépare ta première analyse : elle arrive dans quelques minutes.', cNone: 'Ton coach a besoin de tes vidéos TikTok : relie ton TikTok pour ta première analyse.',
   monSay0: 'Aucune sortie sur ces {m} mois.', monSayAll: '{n} sorties en {m} mois, au moins une chaque mois.', monSay: '{n} sorties en {m} mois, rien en {list}.', monOne: '1 sortie en {m} mois, rien en {list}.', monAnd: ' et en ', monSep: ', en ',
   wkUp: 'De {a} à {b} auditeurs en {n} semaines ({p}).', wkDown: 'De {a} à {b} auditeurs en {n} semaines ({p}) : ton public a besoin de nouveaux sons.', wkFlat: 'Autour de {b} auditeurs depuis {n} semaines.', proT: 'Ton analyse complète', proP: 'Tes courbes semaine par semaine, le classement de tes sons, ton rythme de sortie et ton plan de la semaine.',
@@ -51,7 +53,9 @@ en: { title: 'Your stats', ready: 'Your analysis is ready', readyP: 'Create your
   city: 'Your top city', ttStats: 'My TikTok stats', ttLink: 'Link my TikTok', ttStatsP: 'Your views, followers and best videos', ttLinkP: 'To analyse your videos too',
   coachT: 'Your coach', coachP: 'Analysis of the week of {d}, written by an AI from your real figures.', cWorks: 'What works', cStop: 'What doesn’t work', cPlan: 'Your plan for the week',
   cPace: 'Your release pace', cNext: 'The song to push: “{name}”', cWhy: 'Why', cViews: '{n} views', cMake: 'Make this idea', cMissing: 'I’m missing: {list}.',
-  cNote: 'Analysis written by an AI, from your figures. These are tips, not a promise of results.', cFailed: 'Your analysis couldn’t be made this week.', cOff: 'Your coach is coming very soon.', cNotEnough: 'Your coach needs your TikTok videos or your songs on Spotify: link them for your first analysis.', cNext2: 'Next analysis: {d}.', cOver: 'Your next analysis comes next month.', cTodo: 'To do',
+  cNote: 'Analysis written by an AI (Claude, by Anthropic) from your figures. It can be wrong: it’s advice, not a promise.',
+  cOnT: 'Turn on your coach', cOnP: 'Every week, an analysis of your account and precise video ideas.', cWhat: 'What is sent', cWhatP: 'the figures of your TikTok videos, Spotify songs and Stalak edits, your answers to the questionnaire. Not your e-mail, your name or your videos.',
+  cWho: 'To whom', cWhoP: 'Anthropic (Claude), which writes the analysis for Stalak, without training its AI on it.', cMore: 'Learn more', cOn: 'Turn on my coach', cOff2: 'Turn off my coach', cOffAsk: 'Turn off your coach? Your analyses will be deleted.', cOnErr: 'Your coach could not be turned on. Try again in a moment.', cFailed: 'Your analysis couldn’t be made this week.', cOff: 'Your coach is coming very soon.', cNotEnough: 'Your coach needs your TikTok videos or your songs on Spotify: link them for your first analysis.', cNext2: 'Next analysis: {d}.', cOver: 'Your next analysis comes next month.', cTodo: 'To do',
   fmt_face_camera: 'Facing the camera', fmt_performance: 'Performance', fmt_coulisses: 'Behind the scenes', fmt_paroles_ecran: 'Lyrics on screen', fmt_reaction: 'Reaction', fmt_avant_apres: 'Before / after', fmt_autre: 'Other format',
   jours: { lundi: 'Monday', mardi: 'Tuesday', mercredi: 'Wednesday', jeudi: 'Thursday', vendredi: 'Friday', samedi: 'Saturday', dimanche: 'Sunday' }, cWait: 'Your coach is preparing your first analysis: it arrives in a few minutes.', cNone: 'Your coach needs your TikTok videos: link your TikTok for your first analysis.',
   monSay0: 'No release in these {m} months.', monSayAll: '{n} releases in {m} months, at least one every month.', monSay: '{n} releases in {m} months, nothing in {list}.', monOne: '1 release in {m} months, nothing in {list}.', monAnd: ' and ', monSep: ', ',
@@ -112,6 +116,9 @@ var CSS = '@media (max-width:899px){'
 + '.m5-cx{margin:0;padding:0;list-style:none}.m5-cx li{position:relative;padding:5px 0 5px 26px;font:500 14.5px/1.4 var(--body);color:' + INK + '}.m5-cx li::before{content:"✕";position:absolute;left:2px;top:5px;font:800 14px/1.4 var(--body);color:#c0392b}'
 + '.m5-ci{margin:0 0 10px;padding:12px;border:2.5px solid ' + INK + ';border-radius:16px;background:#fff;box-shadow:0 3px 0 ' + INK + '}.m5-ci .when{display:inline-block;padding:3px 9px;border-radius:999px;background:#ffd23f;border:2px solid ' + INK + ';font:800 12px/1.2 var(--body);color:' + INK + '}'
 + '.m5-ci .hk{display:block;margin:8px 0 4px;font:800 16px/1.3 var(--body);color:' + INK + '}.m5-ci p{margin:0;font:500 13.5px/1.4 var(--body);color:#3d4a63}.m5-ci .m5-btn{margin-top:10px;min-height:46px}'
++ '.m5-ai{display:flex;gap:8px;align-items:flex-start;padding:10px 16px;background:#eef6ff;border-bottom:2.5px solid #d6e6f8;font:600 12.5px/1.4 var(--body);color:' + INK + '}.m5-ai b{flex:none;padding:2px 7px;border-radius:999px;background:' + INK + ';color:#fff;font:800 11px/1.4 var(--body)}'
++ '.m5-act dl{margin:0}.m5-act dt{margin:10px 0 2px;font:800 13px/1.2 var(--body);letter-spacing:.04em;text-transform:uppercase;color:#3d4a63}.m5-act dd{margin:0;font:500 14.5px/1.4 var(--body);color:' + INK + '}.m5-act a{display:inline-block;margin-top:10px;font:700 14px var(--body);color:' + BLUE + '}'
++ '.m5-off{display:block;margin:0 auto 12px;min-height:40px;padding:0 10px;border:0;background:none;font:700 13.5px var(--body);color:#5b6884;text-decoration:underline;cursor:pointer}'
 + '.m5-cn{padding:10px 16px 14px;font:500 12px/1.4 var(--body);color:#5b6884;border-top:2.5px solid #e3ecf8}'
 // (25/11, owner) the TikTok button: in TikTok's colours, at the top of « Stats »
 + '.m5-ttc{display:flex;align-items:center;gap:12px;width:100%;margin:0 0 14px;padding:12px 14px;border:3px solid ' + INK + ';border-radius:18px;background:#000;color:#fff;text-align:left;box-shadow:-4px 4px 0 #25f4ee,4px 4px 0 #fe2c55;cursor:pointer}'
@@ -194,6 +201,14 @@ function coachLoad(d, n){
     .then(function(r){ return r.ok ? r.json() : (r.status === 404 ? { state: 'off' } : null); }).then(function(c){ if (!c || !on || data !== d) return; d.coach = c; render(d);
       if (c.state === 'pending' && (n || 0) < 12) setTimeout(function(){ if (on && data === d) coachLoad(d, (n || 0) + 1); }, 5000); }).catch(function(){});
 }
+/* turned on / off: Comptes' route (proposed in docs/handoff/app-coach-ia.md); in the demo, on the page only */
+function coachSet(d, on, btn){
+  if (btn) btn.disabled = true;
+  if (d.demo){ d.coach = on ? demoCoach() : { state: 'inactive', active: false }; render(d); return; }
+  fetch('/api/coach/activate', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ on: !!on }) })
+    .then(function(r){ if (!r.ok) throw new Error(r.status); d.coach = on ? { state: 'pending' } : { state: 'inactive', active: false }; render(d); if (on) coachLoad(d, 1); })
+    .catch(function(){ if (btn) btn.disabled = false; if (on && btn){ var p = D.createElement('p'); p.className = 'm5-read'; p.style.color = '#b3261e'; p.textContent = t('cOnErr'); btn.after(p); } });
+}
 function render(d){
   var s = d.summary || {}, f = s.facts || {}, sp = d.spotify || {}, h = '';
   var st = W.StalakM2 && W.StalakM2.state(), name = d.demo ? t('demoName') : st && st.a && st.a.artistName;
@@ -227,6 +242,8 @@ function render(d){
   $$('.m5-links', box).forEach(function(b){ b.textContent = t('addLinks'); b.onclick = function(){ show(false); if (W.StalakM2) W.StalakM2.onboarding({ from: 'stats', start: 'links' }); }; });
   var tt = $('.m5-tt', box);
   tt.onclick = function(){ show(false); if (!(M.ttStats && M.ttStats())) M.go('account'); };
+  var con = $('.m5-con', box); if (con) con.onclick = function(){ coachSet(d, true, con); };
+  var cof = $('.m5-off', box); if (cof) cof.onclick = function(){ if (W.confirm && !W.confirm(t('cOffAsk'))) return; coachSet(d, false, cof); };
   $$('.m5-make', box).forEach(function(b){ b.onclick = function(){ var x = d.coach && d.coach.analysis && d.coach.analysis.plan[+b.dataset.i]; show(false);
     if (x && x.projectId && M.openProject && M.openProject(x.projectId)) return;
     var n = D.getElementById('mhNew') || D.getElementById('heroSong'); if (n) n.click(); }; });
@@ -248,6 +265,15 @@ function coachPart(c, f){
   var a = c && c.analysis, when = c && c.createdAt ? dayLong(String(c.createdAt).slice(0, 10)) : '';
   var head = '<div class="m5-ch"><img src="' + COACH_IMG + '" alt=""><div><h2>' + esc(t('coachT')) + '</h2><p>' + esc(when ? t('coachP', { d: when }) : t('cNote')) + '</p></div></div>';
   var st = c ? c.state : null;
+  // (25/11, Juridique: docs/juridique/COACH_IA.md) the coach starts only once turned on: what is sent, to whom, a link
+  if (st === 'inactive' || c.active === false){
+    var priv = M.lang() === 'fr' ? '/fr/confidentialite#coach' : '/privacy#coach';
+    return '<div class="m5-card m5-coach">' + head.replace(esc(t('cNote')), esc(t('cOnP'))) + '<div class="m5-cs m5-act"><dl><dt>' + esc(t('cWhat')) + '</dt><dd>' + esc(t('cWhatP')) + '</dd><dt>' + esc(t('cWho')) + '</dt><dd>' + esc(t('cWhoP')) + '</dd></dl>'
+      + '<a href="' + priv + '" target="_blank" rel="noopener">' + esc(t('cMore')) + ' ›</a><button type="button" class="m5-btn blue m5-con">' + esc(t('cOn')) + '</button></div></div>';
+  }
+  // the label « written by an AI », always seen above the analysis
+  var ai = '<p class="m5-ai"><b>IA</b><span>' + esc(t('cNote')) + '</span></p>';
+  head += ai;
   if (!a){
     var msg = st === 'pending' ? t('cWait') : st === 'failed' ? t('cFailed') : st === 'off' ? t('cOff') : st === 'over_budget' ? t('cOver') : t('cNotEnough');
     return '<div class="m5-card m5-coach">' + head + '<div class="m5-cs"><p class="m5-read" style="margin:0">' + esc(msg) + '</p></div></div>';
@@ -269,7 +295,7 @@ function coachPart(c, f){
   if ((a.manque || []).length) h += '<div class="m5-cs"><p class="m5-read" style="margin:0">' + esc(t('cMissing', { list: a.manque.join(', ') })) + '</p></div>';
   if (st === 'over_budget') h += '<div class="m5-cs"><p class="m5-read" style="margin:0">' + esc(t('cOver')) + '</p></div>';
   else if (c.nextAt) h += '<div class="m5-cs"><p class="m5-read" style="margin:0;color:#3d4a63">' + esc(t('cNext2', { d: dayLong(String(c.nextAt).slice(0, 10)) })) + '</p></div>';
-  return h + '<p class="m5-cn">' + esc(t('cNote')) + '</p></div>';
+  return h + '<button type="button" class="m5-off">' + esc(t('cOff2')) + '</button></div>';
 }
 function dayLong(iso){ try { return new Date(iso + 'T12:00:00').toLocaleDateString(M.lang() === 'fr' ? 'fr-FR' : 'en-US', { day: 'numeric', month: 'long' }); } catch(e){ return iso; } }
 function proPart(p, f, coach){
@@ -317,20 +343,10 @@ function proPart(p, f, coach){
 /* ---- demo of the mock-ups (24/11, owner's feedback): ?demo=gratuit / ?demo=pro shows « Stats » as for a signed-in free / Pro
    account, with example figures said to be examples. Never on stalak.app: only on the previews (*.pages.dev) and the tests ---- */
 var DEMO = (function(){ try { if (/(^|\.)stalak\.app$/i.test(location.hostname)) return null; var m = /[?&]demo=(gratuit|free|pro)(&|$)/i.exec(location.search); return m ? (m[1].toLowerCase() === 'pro' ? 'pro' : 'free') : null; } catch(e){ return null; } })();
-function demoData(){
-  var fr = M.lang() === 'fr', ago = function(n){ return new Date(Date.now() - n * 864e5).toISOString().slice(0, 10); };
-  var d = { demo: true, missing: [], tiktokLinked: true, spotify: { state: 'ok', updatedAt: ago(2) },
-    summary: { sentences: fr ? ['Tu as 4 812 auditeurs ce mois-ci, 6 % de plus que le mois dernier.', 'Ton dernier son, « Neva Die », est sorti il y a 12 jours.', 'Ton public est surtout à Toulouse.']
-                             : ['You have 4,812 listeners this month, 6% more than last month.', 'Your latest song, “Neva Die”, came out 12 days ago.', 'Your audience is mostly in Toulouse.'],
-      facts: { listeners: { n: 4812, source: 'spotify' }, followers: 1930, lastRelease: { name: 'Neva Die', daysAgo: 12 }, topSong: { name: 'Neva Die', streams: 18400 }, topCity: { city: 'Toulouse' } } } };
-  if (DEMO === 'pro') d.pro = { weeks: [3900, 4100, 4050, 4380, 4520, 4700, 4812].map(function(n, i){ return { week: fr ? 'S' + (41 + i) : 'W' + (41 + i), listeners: n }; }),
-      songs: [{ name: 'Neva Die', streams: 18400 }, { name: 'Glaçon', streams: 9200 }, { name: 'Albi Nuit', streams: 3100 }, { name: 'Premier Son', under1000: true }],
-      byMonth: [1, 0, 1, 1, 0, 1].map(function(n, i){ return { month: '2026-' + String(i + 6).padStart(2, '0'), songs: n }; }),
-      rhythm: { daysSinceLast: 12, avgGapDays: 24 }, cities: [{ city: 'Toulouse', country: 'FR', listeners: 1240 }, { city: 'Paris', country: 'FR', listeners: 860 }, { city: 'Lyon', country: 'FR', listeners: 410 }] };
-  else d.locked = true;
-  if (DEMO === 'pro'){
+function demoCoach(){
+  var fr = M.lang() === 'fr';
     var vid = function(id, title, views){ return { id: id, title: title, cover: null, url: null, views: views }; };
-    d.coach = { plan: 'pro', locked: false, state: 'ok', createdAt: '2026-11-23T08:00:00Z', nextAt: '2026-11-30T08:00:00Z', ai: true, analysis: fr ? {
+    return { plan: 'pro', locked: false, state: 'ok', createdAt: '2026-11-23T08:00:00Z', nextAt: '2026-11-30T08:00:00Z', ai: true, analysis: fr ? {
       resume: 'Tes vidéos courtes où tu chantes dès la première seconde font le plus de vues. Pousse « Glaçon » cette semaine.',
       marche: [{ video_id: 'v1', video: vid('v1', 'Le refrain de « Neva Die » en plan fixe', 12400), pourquoi: 'tu chantes dès la 1re seconde, 9 s seulement, posté à 19 h : les gens restent jusqu’au bout.' },
                { video_id: 'v2', video: vid('v2', '« Glaçon » dans la voiture, 3 plans', 8100), pourquoi: 'le son démarre sur le temps fort et la légende pose une question.' },
@@ -350,8 +366,20 @@ function demoData(){
              { jour: 'jeudi', heure: '19:00', accroche: '“Rate this part out of 10”', format: 'performance', sortie: { id: 's2', name: 'Glaçon' }, passage: 'verse 1', pourquoi: 'a question gets comments.', projectId: null },
              { jour: 'samedi', heure: '18:00', accroche: '“My studio cost €40”', format: 'coulisses', sortie: { id: 's1', name: 'Neva Die' }, passage: 'the bridge', pourquoi: 'your behind-the-scenes get shared.', projectId: null }],
       rythme: { conseil: 'Push “Glaçon” this week, then get the next song ready for 2 to 3 weeks from now.', pousser_id: 's2', sortie: { id: 's2', name: 'Glaçon' }, pourquoi: 'your latest song is 12 days old.' },
-      manque: [] } };
-  }
+      manque: [] } };}
+function demoData(){
+  var fr = M.lang() === 'fr', ago = function(n){ return new Date(Date.now() - n * 864e5).toISOString().slice(0, 10); };
+  var d = { demo: true, missing: [], tiktokLinked: true, spotify: { state: 'ok', updatedAt: ago(2) },
+    summary: { sentences: fr ? ['Tu as 4 812 auditeurs ce mois-ci, 6 % de plus que le mois dernier.', 'Ton dernier son, « Neva Die », est sorti il y a 12 jours.', 'Ton public est surtout à Toulouse.']
+                             : ['You have 4,812 listeners this month, 6% more than last month.', 'Your latest song, “Neva Die”, came out 12 days ago.', 'Your audience is mostly in Toulouse.'],
+      facts: { listeners: { n: 4812, source: 'spotify' }, followers: 1930, lastRelease: { name: 'Neva Die', daysAgo: 12 }, topSong: { name: 'Neva Die', streams: 18400 }, topCity: { city: 'Toulouse' } } } };
+  if (DEMO === 'pro') d.pro = { weeks: [3900, 4100, 4050, 4380, 4520, 4700, 4812].map(function(n, i){ return { week: fr ? 'S' + (41 + i) : 'W' + (41 + i), listeners: n }; }),
+      songs: [{ name: 'Neva Die', streams: 18400 }, { name: 'Glaçon', streams: 9200 }, { name: 'Albi Nuit', streams: 3100 }, { name: 'Premier Son', under1000: true }],
+      byMonth: [1, 0, 1, 1, 0, 1].map(function(n, i){ return { month: '2026-' + String(i + 6).padStart(2, '0'), songs: n }; }),
+      rhythm: { daysSinceLast: 12, avgGapDays: 24 }, cities: [{ city: 'Toulouse', country: 'FR', listeners: 1240 }, { city: 'Paris', country: 'FR', listeners: 860 }, { city: 'Lyon', country: 'FR', listeners: 410 }] };
+  else d.locked = true;
+  if (DEMO === 'pro') d.coach = /[?&]coach=off(&|$)/.test(location.search) ? { state: 'inactive', active: false } : demoCoach();
+
   return d;
 }
 function open(){

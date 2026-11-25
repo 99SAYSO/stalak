@@ -23,8 +23,15 @@ L'app suit `docs/contrats/coach-ia.md` (branche `compte/coach-ia`) : `GET /api/c
 - « Monter cette idée » : ouvre le projet `projectId` quand il est dans la liste du compte, sinon un nouveau montage.
 - Mention sous le coach, mot pour mot du contrat : « Analyse écrite par une IA, à partir de tes chiffres. Ce sont des conseils, pas une promesse de résultats. »
 
+## Juridique (25/11, `docs/juridique/COACH_IA.md` sur `legal/coach-ia`) — fait côté App
+- **Étiquette toujours visible au-dessus de l'analyse**, mot pour mot : « Analyse écrite par une IA (Claude, d'Anthropic) à partir de tes chiffres. Elle peut se tromper : ce sont des conseils, pas des promesses. » (EN : “Analysis written by an AI (Claude, by Anthropic) from your figures. It can be wrong: it's advice, not a promise.”)
+- **Écran d'activation** avant le premier envoi : « Active ton coach », **Ce qui part** (chiffres TikTok, Spotify, montages Stalak, réponses au questionnaire ; pas l'e-mail, le nom ni les vidéos), **Vers qui** (Anthropic, sans entraînement), lien « En savoir plus » vers `/fr/confidentialite#coach` (`/privacy#coach`), bouton « Activer mon coach ».
+- **« Désactiver mon coach »** en bas du coach (avec confirmation : « Tes analyses seront effacées »).
+- **À ajouter par Comptes** (proposition) : `GET /api/coach` rend `state: 'inactive'` (ou `active: false`) tant que la personne n'a pas activé, et n'envoie rien à Anthropic avant ; `POST /api/coach/activate` avec `{ "on": true | false }` (désactiver efface les analyses). Après l'activation, l'app redemande `GET /api/coach` (état `pending`, toutes les 5 s, 12 fois au plus).
+- Démo : `?demo=pro&coach=off` montre l'écran d'activation ; « Activer » y montre l'exemple.
+
 ## Tests
-`refonte_stats_ui` 74/74 (dont le coach en démo Pro : 3 vidéos, ce qui ne marche pas, 3 idées avec « Monter cette idée », la mention IA ; « Ton plan de la semaine » et « Ton rythme » remplacés ; l'aperçu flouté a 6 parties).
+`refonte_stats_ui` 77/77 (dont l'étiquette IA au-dessus de l'analyse et l'écran d'activation) (dont le coach en démo Pro : 3 vidéos, ce qui ne marche pas, 3 idées avec « Monter cette idée », la mention IA ; « Ton plan de la semaine » et « Ton rythme » remplacés ; l'aperçu flouté a 6 parties).
 
 Capture de la maquette : `docs/audit/maquettes/coach-ia-2026-11-25.png`.
 
