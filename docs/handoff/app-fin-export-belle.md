@@ -31,6 +31,15 @@ Le même écran pour tous les cas : avec l'offre à 1 €, sans l'offre (exports
 - **Fin de la page** : elle s'arrête à la dernière carte, 18 px plus bas. Plus de grand vide.
 - Le texte « Enregistrer gratuitement (avec filigrane) » ne déborde plus du bouton. La légende se lit en entier.
 
+## 1 bis. Retours du propriétaire sur l'aperçu (25/11, 9 h 13)
+- **« Quand on remonte on voit le fond bleu en bas »** : sur iPhone, quand la barre de Safari change de taille, une bande bleu uni apparaissait en bas. Corrigé :
+  - le ciel a maintenant la hauteur du plus grand écran possible (`100lvh`) ;
+  - derrière, la couleur de la page est le bleu clair du bas du ciel (`#d6ecff`) : plus aucune bande d'une autre couleur.
+- **« Y'a pas le bouton pour upload sur TikTok direct ? »** : le bouton « Publier sur TikTok » existe déjà (Pro, `src/tiktok.js`). Il n'apparaît que là où TikTok est activé : sur stalak.app oui, mais pas sur les aperçus `pages.dev`, qui n'ont pas les clés TikTok.
+  - Il est maintenant dans la carte blanche, juste sous « Enregistrer », à la même largeur, avec et sans l'offre.
+  - Pour le voir sur l'aperçu : ouvrir le lien avec `?ttkdemo` à la fin.
+- En passant, un bug d'avant corrigé dans `src/app.js` : à la fin de l'export, la dernière étape se décochait parfois une fraction de seconde (« ddnt » après « dddd »). Une fois l'export fini, les 4 étapes restent cochées. Le test `vente_ui` échouait pour ça sur ordinateur ; il est maintenant à 63/63.
+
 ## 2. L'igloo pendant l'export (téléphone, `src/mobile3.js`)
 La maquette validée, sans l'ours.
 - Ciel de nuit avec une aurore douce et de la neige qui tombe.
@@ -45,7 +54,7 @@ La maquette validée, sans l'ours.
 - Sur les petits écrans (iPhone SE), tout est un peu plus serré.
 
 ## Tests
-- Nouveau test `tests/ui/fin_export_belle_ui.py` : 39/39.
+- Nouveau test `tests/ui/fin_export_belle_ui.py` : 49/49 (avec le bouton TikTok dans la carte et le ciel qui couvre tout l'écran).
   - Cas testés : iPhone 13 en français et iPhone SE en anglais, avec et sans l'offre, plus « réduire les animations ».
   - Il vérifie qu'aucune bande de plus de 40 px de haut n'a un fond plus sombre que `#0e3f8f`, du haut jusqu'en bas de la page.
   - Il vérifie aussi :
@@ -60,6 +69,7 @@ La maquette validée, sans l'ours.
 - **Série complète**, tout réussi sauf deux échecs déjà présents sur main :
   - `refonte_mobile3_ui` 93/93, `refonte_mobile_ui` 102/102, `refonte_mobile2_ui` 65/65 ;
   - `refonte_stats_ui` 72/72, `fin_export_ui` 98/98, `prises_ui` 24/24 ;
+  - `tiktok_ui` 224/224, `vente_ui` 63/63 ;
   - `essai_pro_ui` 205/205, `suite_clarity_ui` 24/24, `projet_local_ui` 76/76, `ou_est_ton_son_ui` 23/23 ;
   - déjà présents sur main : `formules_ui` 136/137 (le compte du filigrane) et `clip1_ui` (`.band-frost a:hover`, côté Marketing).
 

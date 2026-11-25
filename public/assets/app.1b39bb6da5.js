@@ -6156,7 +6156,8 @@ function expDraw(p){
   // (22/11) the steps: the files ready (the first picture made), the pictures, the sound put with them, the file written;
   // shown from the real progress, not the smoothed one
   p = EXP_SM.target;
-  const xs = S.expX, si = xs && xs.st === 'file' ? 3 : p >= 0.92 ? 2 : p > 0 ? 1 : 0;
+  // (25/11) once the export is finished every step stays ticked: a last frame of the smoothing must not untick the end
+  const xs = S.expX, si = $('#expScreen').classList.contains('done') ? 4 : xs && xs.st === 'file' ? 3 : p >= 0.92 ? 2 : p > 0 ? 1 : 0;
   expSteps(si);
 }
 function expSteps(k){ $$('#xSteps li').forEach(li => { const i = +li.dataset.x, st = i < k ? 'done' : i === k ? 'now' : 'todo'; if (li.dataset.st !== st) li.dataset.st = st; }); }

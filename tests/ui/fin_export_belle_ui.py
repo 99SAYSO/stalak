@@ -83,6 +83,14 @@ def run(b, PW, dev, lang, calm=False):
     opts = dict(PW.devices[dev])
     ctx = b.new_context(**opts, locale='fr-FR' if lang == 'fr' else 'en-US', reduced_motion='reduce' if calm else 'no-preference')
     ctx.add_init_script("window.__stalakM3on = 1; window.__stalakM4on = 1; try { if (!localStorage.getItem('stalak:onb')) localStorage.setItem('stalak:onb', JSON.stringify({ v: 2, done: 1, sent: 1, a: { artistName: 'T-Crazy' } })); localStorage.setItem('stalak:tuto', '1'); } catch (e) {}")
+    # TikTok offered (as on stalak.app): the config says so
+    def cfg(route):
+        r = route.fetch(); import json as J
+        try: d = J.loads(r.text())
+        except Exception: d = {}
+        d.setdefault('features', {})['social'] = ['tiktok']
+        route.fulfill(response=r, body=J.dumps(d), headers={**r.headers, 'content-type': 'application/json'})
+    ctx.route('**/api/config', cfg)
     pg = ctx.new_page(); errs = []
     pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
     to = '/fr/' if lang == 'fr' else '/'
@@ -112,6 +120,10 @@ def run(b, PW, dev, lang, calm=False):
         check(tag + ' : %s : les cartes blanches l’une sous l’autre, espacées pareil (écarts %s)' % (name, L['gaps']), L['cards'] and L['gaps'] and max(L['gaps'][1:] or [0]) <= 24 and min(L['gaps']) >= 0, L)
         check(tag + ' : %s : la page s’arrête à la dernière carte (%d px dessous)' % (name, L['end']), 0 <= L['end'] <= 60, L['end'])
         check(tag + ' : %s : rien ne dépasse sur le côté' % name, not L['hscroll'])
+        tk = pg.evaluate("() => { const b = document.querySelector('#ttkPub'), s = document.querySelector('#saveRow'), c = document.querySelector('#result > .m4-of1s'); if (!b) return null; const r = b.getBoundingClientRect(), q = s.getBoundingClientRect(); return [!!c && c.contains(b), !b.hidden && r.height >= 44, r.top >= q.bottom - 1, Math.abs(r.width - q.width) <= 2]; }")
+        check(tag + ' : %s : « Publier sur TikTok » dans la carte blanche, juste sous « Enregistrer », même largeur' % name, tk == [True, True, True, True], tk)
+        bg = pg.evaluate("() => { const f = document.querySelector('.m4-fbg').getBoundingClientRect(); return [f.top <= 0, f.bottom >= innerHeight, getComputedStyle(document.documentElement).backgroundColor]; }")
+        check(tag + ' : %s : le ciel couvre tout l’écran, et sous la barre de Safari c’est son bleu clair du bas (jamais un bleu uni)' % name, bg == [True, True, 'rgb(214, 236, 255)'], bg)
         three(pg, name + sfx)
         d = dark_bands(pg)
         check(tag + ' : %s : du haut jusqu’en bas, aucune bande de plus de 40 px plus sombre que #0e3f8f (pire : %d px)' % (name, d), d <= 40, d)

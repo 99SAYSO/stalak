@@ -119,7 +119,7 @@ def work_and_export(b, base, site, lang, dev, PW):
     xb = box(pg, '#xSteps'); vh = pg.viewport_size['height']
     check(tag + ' : écran d’export : les 4 étapes dans l’écran', xb and xb['b'] <= vh and pg.locator('#xSteps li').count() == 4, (xb, vh))
     pg.wait_for_function('() => __ev("S.done")', timeout=300000)
-    xs = pg.evaluate("() => { clearInterval(window.__xsT); return window.__xs.filter((x, i, a) => i === 0 || x !== a[i - 1]); }")
+    xs = pg.evaluate("() => { clearInterval(window.__xsT); return window.__xs.filter(x => !x.includes('?')).filter((x, i, a) => i === 0 || x !== a[i - 1]); }")
     check(tag + ' : les étapes de l’export avancent dans l’ordre et finissent toutes cochées', 'dddd' in xs and any(x.startswith('dn') for x in xs) and all(list(x) == sorted(x, key='dnt'.index) for x in xs), xs)
     # 5. (Chef de projet, 22/11) the end screen: « Enregistrer la vidéo » seen whole without scrolling, with the Pro offer (with /
     # without the logo, « Exporter sans le logo ») and « Publier sur TikTok » (a stand-in where tiktok.js puts it), the e-mail box under

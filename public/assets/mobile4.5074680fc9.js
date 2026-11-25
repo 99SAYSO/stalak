@@ -121,8 +121,8 @@ var CSS = '@media (max-width:899px){'
    sky in the family of the gradient A (night blue at the top, royal blue, light blue at the bottom; never darker than #0e3f8f),
    white flakes falling, a golden halo behind the video, the mascot celebrating next to « Ta vidéo est prête », confetti once
    when the screen comes; the white cards one under the other, evenly spaced, and the page ends at the last one */
-+ 'html.m4fe.m4fe,html.m4fe.m4fe body{background:#1f6fd6 !important;background-image:none !important}html.m4fe.m4fe body{background:transparent !important}'
-+ '.m4-fbg{display:none}html.m4fe .m4-fbg{display:block;position:fixed;inset:-2px 0;z-index:-1;pointer-events:none;background:radial-gradient(1.6px 1.6px at 20px 30px,#fff 98%,transparent),radial-gradient(2.4px 2.4px at 90px 110px,rgba(255,255,255,.9) 98%,transparent),radial-gradient(1.8px 1.8px at 150px 60px,rgba(255,255,255,.8) 98%,transparent),radial-gradient(3px 3px at 60px 170px,rgba(255,255,255,.85) 98%,transparent),radial-gradient(2px 2px at 190px 200px,#fff 98%,transparent),linear-gradient(180deg,#0e3f8f 0%,#1a5fc4 38%,#3f8ee6 64%,#8fcaff 86%,#d6ecff 100%);background-size:220px 230px,220px 230px,220px 230px,220px 230px,220px 230px,100% 100%;animation:m4snow 14s linear infinite}'
++ 'html.m4fe.m4fe,html.m4fe.m4fe body{background:#d6ecff !important;background-image:none !important}html.m4fe.m4fe body{background:transparent !important}'
++ '.m4-fbg{display:none}html.m4fe .m4-fbg{display:block;position:fixed;left:0;right:0;top:-2px;bottom:auto;height:calc(100vh + 4px);height:calc(100lvh + 4px);z-index:-1;pointer-events:none;background:radial-gradient(1.6px 1.6px at 20px 30px,#fff 98%,transparent),radial-gradient(2.4px 2.4px at 90px 110px,rgba(255,255,255,.9) 98%,transparent),radial-gradient(1.8px 1.8px at 150px 60px,rgba(255,255,255,.8) 98%,transparent),radial-gradient(3px 3px at 60px 170px,rgba(255,255,255,.85) 98%,transparent),radial-gradient(2px 2px at 190px 200px,#fff 98%,transparent),linear-gradient(180deg,#0e3f8f 0%,#1a5fc4 38%,#3f8ee6 64%,#8fcaff 86%,#d6ecff 100%);background-size:220px 230px,220px 230px,220px 230px,220px 230px,220px 230px,100% 100%;animation:m4snow 14s linear infinite}'
 + '@keyframes m4snow{from{background-position:0 0,0 0,0 0,0 0,0 0,0 0}to{background-position:30px 230px,-20px 230px,10px 230px,-30px 230px,20px 230px,0 0}}'
 + 'html.m4fe #doneView .dv-card{position:relative;overflow:visible;gap:14px;background:none;border:0;box-shadow:none;padding:0;color:#fff}html.m4fe #doneView .dv-card::before,html.m4fe #doneView .dv-card::after{display:none}'
 + 'html.m4fe #dvT,html.m4fe .wrap > header{display:none}'
@@ -154,6 +154,7 @@ var CSS = '@media (max-width:899px){'
 + 'html.m4fe:not(.m4of1) #saveBtn{min-height:60px;padding:8px 12px;border:3.5px solid ' + INK + ';border-radius:20px;background:' + BLUE + ';color:#fff;box-shadow:0 6px 0 ' + INK + ';font:400 21px/1.1 var(--display);text-shadow:none}html.m4fe:not(.m4of1) #saveBtn::before,html.m4fe:not(.m4of1) #saveBtn::after{display:none !important}'
 + 'html.m4wm #dvCmpGo{display:block;width:auto;min-height:44px;margin:8px auto -6px;padding:0 8px;border:0;background:none;box-shadow:none;font-size:0}html.m4wm #dvCmpGo::before,html.m4wm #dvCmpGo::after{display:none}html.m4wm #dvCmpGo > *{display:none}'
 + 'html.m4wm #dvCmpGo > .m4-rw{display:inline;font:700 15px/1.2 var(--body);color:' + BLUE + ';text-decoration:underline;text-underline-offset:3px}'
++ 'html.m4fe .m4-of1s #ttkPub{display:flex;box-sizing:border-box;width:100%;min-height:56px;margin:12px 0 0;border-radius:18px}html.m4fe .m4-of1s #ttkPub[hidden]{display:none}'
 // confetti, once, when the screen comes (GSAP, as in the HyperFrames demos; never with « reduce motion »)
 + '.m4-fx{position:fixed;inset:0;z-index:150;pointer-events:none;overflow:hidden}.m4-fx i{position:absolute;top:-24px;width:10px;height:16px;border-radius:3px;border:1.5px solid rgba(10,13,20,.35)}'
 /* after a purchase */
@@ -323,8 +324,10 @@ function pwUi(){
 /* ---- the end of an export (all cases): the sky, the halo, the mascot, the cards; with the 1 € offer, the offer's card --------- */
 var of1Moved = [], feWas = '', fbg = null, halo = null, fem = null;
 function feBack(){
+  var tk = $('#ttkPub'), tin = !!(tk && of1s && of1s.contains(tk));
   for (var i = of1Moved.length - 1; i >= 0; i--){ var m = of1Moved[i]; try { m[1].insertBefore(m[0], m[2] && m[2].parentNode === m[1] ? m[2] : null); } catch(e){} } of1Moved = [];
   $$('.m4-o1g, .m4-sw').forEach(function(n){ n.remove(); });
+  var sr = $('#saveRow'); if (tin && sr) sr.after(tk);
 }
 // mode: 'of1' (the offer), 'wm' (watermark, no offer this time), 'plain' (nothing to sell), '' (not the end of an export)
 function feOn(mode){
@@ -339,6 +342,9 @@ function feOn(mode){
       // the white card: with the offer, its blue button, its terms and the free save; otherwise the save (and the small link)
       (mode === 'of1' ? ['#dvCmpGo', '#dvOffer1', '#saveRow'] : mode === 'wm' ? ['#saveRow', '#dvCmpGo'] : ['#saveRow']).forEach(function(s){ var n = $(s); if (n){ of1Moved.push([n, n.parentNode, n.nextSibling]); of1s.appendChild(n); } });
     }
+    // (25/11, owner: « y'a pas le bouton pour upload sur TikTok direct ? ») « Publier sur TikTok » (src/tiktok.js, shown where
+    // TikTok is offered) in the same card, right under « Enregistrer »
+    ttkIn();
     $('span', of1h).textContent = t('ready');
     var pr = mode === 'of1' && P.of1();
     $('h3', of1s).innerHTML = pr ? esc(t('of1T', { p: '\u0001' })).replace('\u0001', '<b>' + esc(pr.today) + '</b>') : '';
@@ -354,6 +360,8 @@ function feOn(mode){
   }
   feWas = mode && res ? mode : '';
 }
+function ttkIn(){ var tk = $('#ttkPub'), sr = $('#saveRow'); if (tk && sr && of1s && sr.parentNode === of1s && tk.previousElementSibling !== sr) sr.after(tk); }
+(function(){ var r = $('#result'); if (r) new MutationObserver(function(){ if (feWas) ttkIn(); }).observe(r, { childList: true }); })();
 // the party, once when the screen comes: the mascot jumps in, confetti fall from the top (never with « reduce motion »)
 function feParty(){
   if (M.calm()) return;
