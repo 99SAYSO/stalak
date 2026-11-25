@@ -8,7 +8,7 @@
 
 ## L'offre
 - **50 % de chaque paiement** des abonnés venus de lui (lien `?ref=12k` ou code `12K`), **pendant 12 mois** à partir de leur 1er paiement. Versé chaque mois, sur les paiements encaissés, hors remboursements.
-- **Code `12K`** : **-50 % sur le 1er mois** pour son public.
+- **Code `12K`** : **14 jours d’essai gratuit au lieu de 7** pour son public (Pro, avec carte, une seule fois par compte, comme l’essai normal). Choix du propriétaire, 26/11 0 h 18 (« ok ») : pas de réduction.
 - **Creator Plus gratuit pour lui**, sans limite de durée tant que le partenariat dure.
 - **Bonus de 50 $ au 10e abonné payant.**
 - Plus tard, si ça marche : un style de montage « 12K cut » (à cadrer avec App, pas maintenant).
@@ -22,7 +22,7 @@
 
 ## Comptes
 1. Lui activer un Creator Plus gratuit dès que le propriétaire donne son adresse e-mail (pas de facture Paddle, comme `keep_plan`).
-2. Créer le code `12K` dans Paddle (-50 % sur le 1er paiement mensuel, Pro et Creator Plus). Garder sur le compte la source `ref:12k` ou `code:12K`, jusqu'au paiement.
+2. Le code `12K` (ou le lien `?ref=12k`) donne un essai Pro de 14 jours au lieu de 7 (réglage d’essai dédié dans Paddle, une seule fois par compte). Garder sur le compte la source `ref:12k` ou `code:12K`, jusqu'au paiement.
 3. Tableau de bord : une carte « Partenaires » pour 12k avec les visites, les inscrits, les abonnés, les paiements encaissés, ce qu'on lui doit (50 % sur 12 mois) et le bonus des 10 abonnés.
 4. Ensuite, une page privée pour lui avec les mêmes chiffres (lien secret, sans données personnelles des abonnés).
 
