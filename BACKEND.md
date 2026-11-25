@@ -963,3 +963,8 @@ Demande : `docs/handoff/chef-stats-analyse.md`. Contrat avec App : `docs/contrat
 - **`GET /api/stats?lang=fr|en`** (connecté) : bilan gratuit en 3 phrases à partir de vraies données ; partie Pro (courbes, sons classés, sorties par mois, rythme, villes) envoyée seulement aux Pro / Creator Plus (`pro: null`, `locked: true` sinon).
 - Tables : `spotify_releases`, `spotify_snapshots`, `spotify_track_counts`, `spotify_sync`, `robot_state` ; effacées avec le compte, et à chaque changement d'artiste.
 - Sources : [Spotify, Get Artist's Albums](https://developer.spotify.com/documentation/web-api/reference/get-an-artists-albums), [Apify, run-sync-get-dataset-items](https://docs.apify.com/api/v2/act-run-sync-get-dataset-items-post), [robot Apify](https://apify.com/beatanalytics/spotify-play-count-scraper).
+
+## Sources IA, langues, paiements abandonnés (25/11)
+- Source `ai:chatgpt|perplexity|claude|gemini|copilot|other` (ou `ai`) acceptée pour les visites, l'entonnoir et l'inscription ; points permis dans `ref:` / `utm:` (40 caractères). Tableau de bord : une ligne « Assistants IA » avec son détail ; colonne Source dans « Derniers inscrits ».
+- `GET /api/admin/languages` : anglais / français sur 7 et 30 jours (visites, visites de 5 min ou plus, nouveaux comptes, premiers paiements) et abonnés payants.
+- `GET /api/admin/paddle/abandoned?days=7|30` (`functions/_lib/abandoned.js`) : les paiements ouverts et pas payés, lus chez Paddle (`GET /transactions`, origine web, avec l'adresse) : formule, essai, devise, montant, pays, étape, raison du refus. Aucune donnée personnelle renvoyée.

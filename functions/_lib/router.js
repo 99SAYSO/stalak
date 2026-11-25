@@ -257,7 +257,8 @@ async function deleteAccount(request, env) {
 }
 
 // ref:<code> | utm:<source> | dir:<directory> | site:<domain> | a site kind (tiktok, ig, yt, google…) | direct
-export const SIGNUP_SOURCE = /^(?:(?:ref|utm|dir):[a-z0-9_-]{1,32}|site:[a-z0-9.-]{3,48}|[a-z0-9_-]{1,24})$/;
+// 25/11: « ai:chatgpt »… (AI assistants), and dots in ?ref= / utm codes (« utm:chatgpt.com »)
+export const SIGNUP_SOURCE = /^(?:(?:ref|utm|dir):[a-z0-9._-]{1,40}|site:[a-z0-9.-]{3,48}|ai:(?:chatgpt|perplexity|claude|gemini|copilot|other)|[a-z0-9_-]{1,24})$/;
 // <branch or id>.<project>.pages.dev = a preview deployment of Cloudflare Pages (the bare <project>.pages.dev is production)
 export const isPreviewHost = (h) => /^[^.]+\.[^.]+\.pages\.dev$/i.test(String(h || ''));
 const PREVIEW_BLOCKED = (route, parts, method) => route === 'paddle/webhook' || route.startsWith('cron/') || route === 'paddle/change' ||
