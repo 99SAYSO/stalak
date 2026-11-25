@@ -35,4 +35,18 @@ Dans la bibliothèque, les mots « promote your music » ressortent sur des diza
 3. **La pub en partenariat (« avec »)** : un créateur parle de l'outil depuis son propre compte, l'outil paie la diffusion. C'est le format de nos créateurs-conseillers, et TikTok le permet aussi (« Spark Ads »).
 4. **Pas de stars, pas de promesses de vues.** Les pubs qui durent vendent du concret.
 
-À compléter avec TikTok Creative Center (classement des pubs par secteur, durée et taux de clic) dès que le propriétaire est connecté.
+## TikTok (25/11, 23 h, propriétaire connecté)
+
+**TikTok Creative Center**, meilleures pubs aux États-Unis sur 180 jours, secteur « Apps › Audio & Video Players » :
+- le classement est dominé par les apps de mini-séries (ShortTV, DramaBox, ShortMax) et par CapCut (235 000 likes, objectif portée) ;
+- des générateurs de vidéo par IA, à gros budget, sont dans le top 18 % des taux de clic ;
+- une app de musique par IA (« LyricsPro ») est en bas du classement (top 96-97 % : peu de clics).
+
+Recherche « rapper » : beaucoup de pubs « Culture & Art », c'est-à-dire **des artistes qui paient TikTok pour pousser leur musique**, comme sur Meta.
+
+**Bibliothèque de TikTok** (pubs en Europe, avec première et dernière date d'affichage) : **aucune pub de BandLab ni de DistroKid** depuis le 1/12/2025. Les gros outils pour artistes ne passent pas par les pubs TikTok en Europe : ils grandissent par le produit, la recherche et Meta.
+
+**Conclusion pour le test**
+- Les pubs TikTok pour un outil musical ne sont pas un terrain prouvé : personne dans notre domaine n'y tourne depuis longtemps.
+- On garde le test petit (80 €) et très mesuré, comme prévu.
+- Les créateurs-conseillers et la pub en partenariat restent la meilleure piste.
