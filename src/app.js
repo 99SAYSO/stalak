@@ -3273,11 +3273,13 @@ function barsSync(){
 }
 
 /* ---------- takes ---------- */
+let liveGate = false;
 async function addVideo(file, hint){
   // mirror: filmed here with the selfie camera, drawn as the person saw it while filming (the file itself is left as it is)
   const tk = { id:++takeId, name:file.name, kind:'video', duration:0, offset:0, status:'pending', color:COLORS[S.takes.length % COLORS.length], excl:[], hint, mirror: !!(hint && hint.mirror) };
-  const v = document.createElement('video'); v.muted = true; v.playsInline = true; v.setAttribute('playsinline',''); v.preload = 'auto';
+  const v = document.createElement('video'); v.muted = true; v.playsInline = true; v.setAttribute('playsinline',''); v.preload = hint && hint.filmed && recStream ? 'metadata' : 'auto';
   v.src = URL.createObjectURL(file); tk.el = v; tk.file = file; $('#vpool').append(v); watchSeeks(tk, v);
+  if (hint && hint.thumb) tk.thumb = hint.thumb;
   S.takes.push(tk); renderTakes();
   // the browser's own player is only asked for the size and length; the page reads the file itself anyway
   await new Promise(r => { v.onloadedmetadata = r; v.onerror = r; setTimeout(r, 4000); });
@@ -3291,8 +3293,15 @@ async function addVideo(file, hint){
   if (res && !tk.duration) tk.duration = res.mono.length / res.sr;
   alignTake(tk);
   diagT(tk, tk.status === 'manual' ? 'non calée automatiquement' : 'calée à ' + tk.offset.toFixed(3) + ' s du son' + (tk.conf ? ' (fiabilité ' + tk.conf.toFixed(1) + ')' : ''));
+  // (25/11) a take filmed here: its pictures are decoded once the camera is closed, one take after the other (see proxyWorker)
+  if (hint && hint.filmed){
+    while (recStream || liveGate) await sleep(300);
+    if (!S.takes.includes(tk)) return;
+    liveGate = true; if (v.preload !== 'auto'){ v.preload = 'auto'; try { v.load(); } catch(e){} }
+  }
   // the preview decodes the original itself right away; a light copy follows in the background only if it helps
   let live = false; try { live = await withTimeout(liveOrig(tk), 45000, "préparation de l’aperçu"); } catch(e){ diagT(tk, 'aperçu direct : erreur ' + (e && e.message || e)); }
+  finally { if (hint && hint.filmed) liveGate = false; }
   if (!S.takes.includes(tk)) return;
   if (live){
     if (needProxy(tk.live.src)) queueProxy(tk);
@@ -6183,7 +6192,9 @@ function runProxies(){
 async function proxyWorker(){
   while (proxyQueue.length){
     const tk = proxyQueue.shift(); if (!S.takes.includes(tk)) continue;
-    while (S.exporting) await sleep(500);
+    // (25/11, crash at the 2nd take on an iPhone) nothing heavy while the camera films: its encoder and the decoders of the
+    // light copies together are more than an iPhone gives a page
+    while (S.exporting || recStream) await sleep(500);
     try { await makeProxy(tk); } catch(e){
       if (e && e.message === 'pause'){ tk.proxyState = 'wait'; proxyQueue.unshift(tk); continue; }
       tk.proxyState = 'none'; diagT(tk, 'copie légère impossible (' + (e && e.message || e) + ')' + (tk.live ? ', aperçu depuis l’original' : ', vidéo originale utilisée'));
@@ -6234,7 +6245,7 @@ async function makeProxy(tk){
   try {
     for (let i=0; i<total; i++){
       if (err) throw err;
-      if (S.exporting) throw new Error('pause');
+      if (S.exporting || recStream) throw new Error('pause');
       if (!S.takes.includes(tk)) throw new Error('prise retirée');
       // the preview comes first: nothing is made while it plays
       if (S.playing || liveRecent()){ const w0 = performance.now(); while ((S.playing || liveRecent()) && !S.exporting) await sleep(100); waitMs += performance.now() - w0; if (S.exporting) throw new Error('pause'); }
@@ -6451,7 +6462,7 @@ const QSTEP = 0.1, QBIN = 0.5, QLAP_FLOOR = 0.25;
 const qualQueue = []; let qualBusy = false, faceDet;
 const clamp01 = x => x < 0 ? 0 : x > 1 ? 1 : x;
 function queueQual(tk){ if (!tk.live || tk.qual || qualQueue.includes(tk)) return; tk.qualPct = 0; qualQueue.push(tk); runQual(); }
-function qualIdle(){ return !S.playing && !S.exporting && !preparing && !tapping && !proxyBusy && !liveRecent() && !(recRec && recRec.state !== 'inactive'); }
+function qualIdle(){ return !S.playing && !S.exporting && !preparing && !tapping && !proxyBusy && !liveRecent() && !recStream; }
 function getFaceDet(){
   if (faceDet !== undefined) return faceDet;
   faceDet = null;
@@ -6902,9 +6913,31 @@ function camSelfie(){
 }
 function camShow(){
   const v = $('#recVideo'); v.srcObject = recStream; v.play().catch(()=>{});
-  v.classList.toggle('mirror', camSelfie()); camZoomOut(); camFlashApply();
+  v.classList.toggle('mirror', camSelfie()); camZoomOut(); camFlashApply(); camTracks();
   const t = recStream.getVideoTracks()[0], st = t && t.getSettings ? t.getSettings() : {};
   diag('caméra : ' + (camFacing === 'user' ? 'selfie' : 'arrière') + (st.width ? ' · ' + st.width + '×' + st.height : '') + (st.frameRate ? ' · ' + Math.round(st.frameRate) + ' i/s' : '') + (camSelfie() ? ' · miroir' : ''));
+}
+/* (25/11, the owner: black screen at the 2nd take on an iPhone, nothing answered) the camera is checked after each take and
+   whenever the page comes back: a stream the phone stopped (track ended) is opened again, a picture that froze plays again */
+let camFixing = false;
+async function camCheck(why){
+  if (!recStream || camFixing) return;
+  const v = $('#recVideo'), dead = recStream.getTracks().some(t => t.readyState === 'ended');
+  if (!dead){ if (v.srcObject !== recStream) v.srcObject = recStream; if (v.paused) v.play().catch(() => {}); return; }
+  camFixing = true; diag('caméra : flux arrêté (' + why + '), rouvert');
+  try { recStream.getTracks().forEach(t => t.stop()); } catch(e){}
+  recStream = null;
+  try { recStream = await camStream(camFacing); camShow(); }
+  catch(e){ camFixing = false; closeCamera(); say('cam.dead'); return; }
+  camFixing = false;
+}
+function camTracks(){ if (recStream) recStream.getTracks().forEach(t => { t.onended = () => { if (!recRec || recRec.state === 'inactive') camCheck('piste arrêtée'); }; }); }
+document.addEventListener('visibilitychange', () => { if (!document.hidden && recStream) setTimeout(() => camCheck('retour sur la page'), 300); });
+/* a small picture of the take, from the camera (the take's own pictures are only decoded once the camera is closed) */
+function camThumb(mirror){
+  const v = $('#recVideo'); if (!v || !v.videoWidth) return null;
+  try { const c = document.createElement('canvas'); c.width = 180; c.height = 320; const g = c.getContext('2d'), r = Math.max(c.width / v.videoWidth, c.height / v.videoHeight), w = v.videoWidth * r, h = v.videoHeight * r;
+    if (mirror){ g.translate(c.width, 0); g.scale(-1, 1); } g.drawImage(v, (c.width - w) / 2, (c.height - h) / 2, w, h); return c; } catch(e){ return null; }
 }
 async function camFlip(){
   if (!recStream || recCd || (recRec && recRec.state !== 'inactive')) return;
@@ -7002,7 +7035,8 @@ function recOptions(mime){
   return o;
 }
 function startTake(){
-  if (!recStream || !S.song || !songURL || (recRec && recRec.state !== 'inactive')) return;
+  if (!recStream || camFixing || !S.song || !songURL || (recRec && recRec.state !== 'inactive')) return;
+  if (recStream.getTracks().some(t => t.readyState === 'ended')){ camCheck('avant la prise'); return; }
   // MP4 first (Safari: H.264; Chrome: VP9 in MP4), which the page reads picture by picture; WebM only as a last resort
   const mime = ['video/mp4;codecs=avc1,mp4a.40.2','video/mp4;codecs=avc1,opus','video/mp4;codecs=vp9,opus','video/mp4','video/webm;codecs=vp9,opus','video/webm'].find(m => window.MediaRecorder && MediaRecorder.isTypeSupported(m)) || '';
   const sg = S.song, spb = 60 / sg.bpm, from = recFrom(), endAt = Math.min(sg.duration, S.segEnd + 0.3);
@@ -7035,9 +7069,10 @@ function startTake(){
     }
     if (!recStopReq && !player.ended && !(st != null && st >= endAt)){ recTimer = requestAnimationFrame(tick); return; }
     player.pause(); $('#recCount').textContent = '';
-    const dur = (performance.now() - recT0) / 1000;
+    const dur = (performance.now() - recT0) / 1000, thumb = camThumb(mirror);
     if (recRec.state !== 'inactive') recRec.stop(); await done;
-    $('#recTime').hidden = true; recUi('idle');
+    recRec.ondataavailable = recRec.onstop = recRec.onstart = null; recRec = null;
+    $('#recTime').hidden = true; recUi('idle'); camCheck('après la prise');
     if (!chunks.length || !recStream){ if (recStream) say('rec.none'); return; }
     samples.sort((a, b) => a - b); const est = samples.length ? samples[samples.length >> 1] : from;
     const type = (chunks[0] && chunks[0].type) || mime || 'video/webm', ext = /mp4/.test(type) ? 'mp4' : 'webm';
@@ -7046,7 +7081,7 @@ function startTake(){
     // a plain MP4 made from what the recorder wrote, without encoding again (see remuxTake); the recorder's file if that fails
     try { const r = await withTimeout(remuxTake(file), 20000, 'remise en ordre'); if (r){ file = new File([r.buf], name, { type: 'video/mp4' }); length = r.dur; } }
     catch(e){ diag('tournage : remise en ordre impossible (' + (e && e.message || e) + '), fichier de l’enregistreur gardé'); }
-    const p = addVideo(file, { offset: est, duration: length, mirror });
+    const p = addVideo(file, { offset: est, duration: length, mirror, filmed: true, thumb });
     recSaved(S.takes[S.takes.length - 1]);
     await p; rebuild(false);
   };
@@ -7057,6 +7092,7 @@ function recSaved(tk){
   recShot++; if (tk) tk.filmed = true;
   const n = Math.max(1, S.takes.filter(t => !t.broll).indexOf(tk) + 1);
   setT($('#recDoneT'), 'rec.done', { n, m: n + 1 }); $('#recDone').hidden = false;
+  clearTimeout(recSaved.t); if (window.StalakM3 && window.StalakM3.on()) recSaved.t = setTimeout(() => { $('#recDone').hidden = true; }, 3500);
   recGoUi();
   const b = $('#recGo'); b.classList.remove('again'); void b.offsetWidth; b.classList.add('again');
   // on a phone the button can sit below the screen: brought into view, the least scrolling possible
@@ -11816,7 +11852,7 @@ function mobInit(){
     // (refonte mobile, lot 3) the editor: its step, its takes, the camera; nothing here changes a setting
     ed: Object.freeze({ step: () => S.step, go: n => go(n), done: () => document.body.classList.contains('isdone'), song: () => !!S.song, kind: () => S.kind,
       can: f => can(f), playing: () => !!S.playing, lyr: () => S.lyrics.mode, exporting: () => !!S.exporting,
-      takes: () => S.takes.filter(t => !t.broll).map(t => ({ el: t.kind === 'video' ? t.el || null : null, demo: t.kind === 'demo', look: t.look || null, stars: t.qual ? qualSummary(t).stars : 0 })),
+      takes: () => S.takes.filter(t => !t.broll).map(t => ({ el: t.kind === 'video' ? t.el || null : null, thumb: t.thumb || (t.live && t.live.ts != null ? t.live.cv : null) || null, demo: t.kind === 'demo', look: t.look || null, stars: t.qual ? qualSummary(t).stars : 0 })),
       cam: () => !!recStream, rec: () => (recRec && recRec.state !== 'inactive') ? 'rec' : recCd ? 'cd' : 'idle', timer: () => recDelay, timerSet: v => recTimerSet(v),
       take: () => S.takes.filter(t => !t.broll && t.kind !== 'demo').length + 1,
       recPos: () => { if (!S.song || !(recRec && recRec.state !== 'inactive')) return 0; const a = recFrom(), b = Math.min(S.song.duration, S.segEnd + 0.3); return Math.max(0, Math.min(1, (player.currentTime - a) / Math.max(0.1, b - a))); } }),
