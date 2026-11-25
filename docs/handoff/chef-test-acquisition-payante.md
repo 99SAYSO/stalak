@@ -20,7 +20,7 @@
 **1. La vidéo de pub en anglais (9:16, 15 à 25 s).**
 - Elle montre l'app, pas la série. Un rappeur filme 3 prises, Stalak coupe sur le rythme, on voit le clip fini, et le texte appelle à l'action vers `stalak.app`.
 - Texte à l'écran dès la première seconde, dans la zone visible.
-- Propose 2 accroches, sans aucune promesse inventée (pas de « 1 million de vues »).
+- Propose 2 accroches, sans aucune promesse inventée (pas de « 1 million de vues »). **L'une des deux est la comparaison « Artiste A / Artiste B »** (le propriétaire adore, 25/11 22 h 47) : « Artiste A poste son son avec une photo. Artiste B poste un snippet monté sur le rythme. » ; l'autre peut être l'avant / après (3 prises brutes → clip monté).
 - Règles habituelles : `stalak-da`, Mes goûts, planche contact, validation du propriétaire avant fabrication.
 - Lien de la pub : `https://stalak.app/?ref=ttads`.
 
@@ -34,6 +34,7 @@ Uniquement des comptes publics trouvés à la main : pas de scraping, pas de don
 **3. Le message de contact en anglais** : court, honnête, avec un prix fixe proposé (25 à 35 € la vidéo).
 - Il propose une vidéo où le créateur montre Stalak comme conseil à son public (par ex. « comment teaser ton son en 5 minutes »), avec une vraie démo de l'app.
 - Il demande la mention de partenariat (#ad), obligatoire.
+- Il propose aussi la **pub en partenariat** (Spark Ads de TikTok) : le créateur nous donne le code de sa vidéo et Stalak paie sa diffusion depuis son compte (validé par le propriétaire, 25/11 22 h 47).
 - Chaque influenceur reçoit un lien à son nom : `https://stalak.app/?ref=<nom>`.
 - C'est le propriétaire qui envoie les messages et qui paie.
 
