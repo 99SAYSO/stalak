@@ -742,8 +742,13 @@ annulé), sur iPhone/iPad, et la raison qui a ouvert la page des formules. À aj
   par source** (« fs:<étape>:<source> » : visite → vidéo → formules → paiement ouvert → payé). Tableau de bord → Du visiteur à
   l'abonné → « D'où viennent les gens, et jusqu'où ils vont », « Pays des visites ». La provenance est calculée par la page pour
   l'onglet (`?ref=`, `utm_source`, site d'origine) ; rien n'est relié à une personne. Liste de tous les compteurs : `docs/stats/compteurs.md`.
-- **Paiement fermé sans acheter** : la page compte les fermetures de la fenêtre Paddle sans achat, et à quel moment (tout de suite /
-  après l'e-mail / en payant). Carte « Paiement fermé sans acheter ».
+- **Paiement fermé sans acheter** : la page compte les fermetures de la fenêtre Paddle sans achat, et jusqu'où la personne est
+  allée (24/11) : `price` a seulement vu le prix · `info` a changé ses infos (e-mail, pays, code postal, entreprise) · `method` a
+  choisi un moyen de paiement (`checkout.payment.selected`) · `try` a essayé de payer (`payment.initiated` / `failed` / `error`).
+  Stalak donne l'e-mail du compte à Paddle : Paddle envoie alors `checkout.customer.created` tout seul à l'ouverture. Les
+  premières infos reçues servent donc de point de départ ; seule une info **différente** compte comme « a changé ses infos ».
+  Les anciens noms (`start`, `details`, `payment`, avant le 24/11) restent comptés à part, affichés « ancienne mesure ».
+  Carte « Paiement fermé sans acheter ».
 - **E-mails des gratuits** (migration `0017_email_optins.sql`) : à la fin d'une vidéo, un encadré facultatif « Reçois des conseils
   pour tes prochaines vidéos par e-mail », case **non cochée** ; puis un e-mail « Confirme ton e-mail » avec un bouton (double
   confirmation) et un lien « Me désinscrire » (qui efface l'adresse). Gardé : l'e-mail, la langue, la version du texte accepté et

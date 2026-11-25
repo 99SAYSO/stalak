@@ -102,8 +102,11 @@ export const SRC_PLATFORMS = ['tiktok', 'ig', 'yt', 'google', 'discord', 'trille
 export const VISIT_SRC = /^(?:ref:[a-z0-9_-]{1,32}|site:[a-z0-9.-]{3,48})$/;
 export const srcOf = (v) => (typeof v === 'string' && (SRC_PLATFORMS.includes(v) || VISIT_SRC.test(v)) ? v : null);
 export const FUNNEL_STEPS = ['export_ok', 'plans_open', 'checkout_open', 'checkout_done'];
-// where the payment window was closed without buying: right away / after typing the e-mail or country / after trying to pay
-export const CLOSE_STAGES = ['start', 'details', 'payment'];
+// where the payment window was closed without buying (24/11, account.js onPaddleEvent): only saw the price / changed their
+// details / chose a payment way / tried to pay. The 3 old names (before 24/11: 'details' was wrong, Paddle sends the e-mail
+// Stalak gives as if typed) are still counted apart, for the pages not reloaded yet; the dashboard shows them as « old ».
+export const CLOSE_STAGES = ['price', 'info', 'method', 'try'];
+export const CLOSE_STAGES_OLD = ['start', 'details', 'payment'];
 
 // POST /api/event {name, cat?, ios?, why?}: one step of the funnel. Unknown names are refused (400), so the table holds
 // only the names above. Limited per connection (hashed, like the visits).
@@ -149,7 +152,7 @@ export async function event(request, env, excluded = null) {
   // 7/11: the step of the funnel for its source (anonymous total), and where the payment window was closed without buying
   const src = srcOf(body.src);
   if (src && FUNNEL_STEPS.includes(name)) await bump(env, `fs:${name}:${src}`);
-  if (name === 'checkout_close') await bump(env, 'ev_checkout_close_' + (CLOSE_STAGES.includes(body.stage) ? body.stage : 'start'));
+  if (name === 'checkout_close') await bump(env, 'ev_checkout_close_' + (CLOSE_STAGES.includes(body.stage) || CLOSE_STAGES_OLD.includes(body.stage) ? body.stage : 'price'));
   return json({ ok: true });
 }
 

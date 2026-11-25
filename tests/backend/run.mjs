@@ -4142,8 +4142,9 @@ test('7/11: each new visit counted by source and country, each step by source; a
   await call(env, 'POST', '/api/event', { body: { name: 'export_ok', src: 'x'.repeat(80) } });
   assert.equal(db.prepare("SELECT COUNT(*) AS c FROM daily_counts WHERE name LIKE 'fs:%xxxx%'").get().c, 0, 'an unknown source is not counted');
   // the payment window closed without buying, at which step
-  for (const stage of ['start', 'start', 'details', 'payment', 'nonsense']) await call(env, 'POST', '/api/event', { body: { name: 'checkout_close', stage, src: 'tiktok' } });
-  assert.deepEqual([n('ev_checkout_close_start'), n('ev_checkout_close_details'), n('ev_checkout_close_payment')], [3, 1, 1]);
+  // 24/11: price / info / method / try; the old names (pages not reloaded yet) counted apart; anything else = price
+  for (const stage of ['price', 'price', 'info', 'method', 'try', 'nonsense', 'details', 'start']) await call(env, 'POST', '/api/event', { body: { name: 'checkout_close', stage, src: 'tiktok' } });
+  assert.deepEqual(['price', 'info', 'method', 'try', 'details', 'start', 'payment'].map((k) => n('ev_checkout_close_' + k)), [3, 1, 1, 1, 1, 1, 0]);
   // what the counters hold: names and numbers, no visit number, no account
   assert.ok(db.prepare("SELECT name FROM daily_counts WHERE name LIKE 'vs:%' OR name LIKE 'fs:%'").all().every((r) => !/v_src_test/.test(r.name)));
   // the dashboard: one line per source, the countries, the closes
@@ -4152,7 +4153,7 @@ test('7/11: each new visit counted by source and country, each step by source; a
   assert.deepEqual(fu.bySource.find((x) => x.source === 'tiktok'), { source: 'tiktok', visits: 2, videos: 1, plans: 1, checkout: 1, paid: 1 });
   assert.ok(fu.bySource.find((x) => x.source === 'other' && x.visits === 2), 'the one-visit sources gathered');
   assert.deepEqual(fu.visitCountries[0], { country: 'US', n: 2 });
-  assert.deepEqual(fu.checkoutClose, { start: 3, details: 1, payment: 1 }); assert.equal(fu.checkoutDone, 1);
+  assert.deepEqual(fu.checkoutClose, { price: 3, info: 1, method: 1, try: 1, old: 2 }); assert.equal(fu.checkoutDone, 1);
 });
 
 test('7/11: a free user may leave an e-mail for tips: consent required, confirmed by a link (button), unsubscribe erases it', async () => {

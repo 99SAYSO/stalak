@@ -46,7 +46,7 @@ export function seedDashboard(env, { now = Date.now() } = {}) {
       co += ck - pd;
     }
     co = Math.max(0, Math.round(Math.round(nv * 0.42) * 0.05) - 1);   // about the payment windows opened that day (ev_checkout_open), minus a purchase
-    for (const [stage, part] of [['start', 0.5], ['details', 0.3], ['payment', 0.2]]) { const n = Math.round(co * part); if (n) bump.run(d, 'ev_checkout_close_' + stage, n); }
+    for (const [stage, part] of [['price', 0.45], ['info', 0.2], ['method', 0.25], ['try', 0.1]]) { const n = Math.round(co * part); if (n) bump.run(d, 'ev_checkout_close_' + stage, n); }
     if (i % 3 === 0) insOpt.run('opt_seed' + i, `tips${i}@demo.stalak`, i % 2 ? 'fr' : 'en', 'v1-2026-11-07', 'h' + i, t, i % 9 === 0 ? null : t + 3600e3);
     const ns = Math.round(nv * (0.05 + rnd() * 0.03));
     for (let k = 0; k < ns; k++) {

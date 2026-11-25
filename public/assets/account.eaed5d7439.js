@@ -145,16 +145,34 @@
 
   var loadedWait = null, CHECKOUT_WAIT_MS = 12000;
   /* report of 7/11, n°8: where the payment window is closed without buying. The furthest step reached is kept while the window
-     is open: 'start' (nothing typed), 'details' (e-mail / country given), 'payment' (a payment way chosen or tried); on
-     « closed » without « completed », one anonymous counter (event 'checkout_close' {stage}). « completed » = 'checkout_done'. */
-  var coStage = null, coDone = false;
-  var CO_DETAILS = ['checkout.customer.created', 'checkout.customer.updated'];
-  var CO_PAYMENT = ['checkout.payment.selected', 'checkout.payment.initiated', 'checkout.payment.failed'];
+     is open, and sent once on « closed » without « completed » (anonymous counter, event 'checkout_close' {stage}):
+       'price'  only saw the price (nothing changed);
+       'info'   changed their details (e-mail, country, postcode, company…);
+       'method' chose a payment way (card, PayPal, Apple Pay…);
+       'try'    tried to pay (payment started, failed or refused).
+     (24/11, Chef « suite Clarity ») Stalak gives Paddle the account's e-mail (customer: { email }): Paddle then sends
+     « checkout.customer.created » (and may send « customer.updated ») by itself as soon as the window opens. Before, that
+     counted as « after the e-mail » with nothing typed. Now the first customer data Paddle sends is only the starting point:
+     'info' needs data DIFFERENT from it (the person really changed something). « completed » = 'checkout_done'. */
+  var coStage = null, coDone = false, coWho = null;
+  var CO_RANK = { price: 0, info: 1, method: 2, 'try': 3 };
+  var CO_WHO = ['checkout.customer.created', 'checkout.customer.updated'];
+  var CO_TRY = ['checkout.payment.initiated', 'checkout.payment.failed', 'checkout.payment.error'];
+  function coUp(stage) { if (coStage && CO_RANK[stage] > CO_RANK[coStage]) coStage = stage; }
+  function coSig(d) {   // what the person can change in the first step, without keeping it anywhere
+    var c = (d && d.customer) || {}, a = c.address || {}, b = c.business || {};
+    return [c.email, a.country_code, a.postal_code, a.region, a.city, a.first_line, b.name, b.tax_identifier].map(function (x) { return x == null ? '' : String(x).toLowerCase(); }).join('|');
+  }
   function onPaddleEvent(ev) {
     var n = ev && ev.name;
-    if (n === 'checkout.loaded') { coStage = 'start'; coDone = false; }
-    else if (coStage && CO_DETAILS.indexOf(n) >= 0 && coStage === 'start') coStage = 'details';
-    else if (coStage && CO_PAYMENT.indexOf(n) >= 0) coStage = 'payment';
+    if (n === 'checkout.loaded') { coStage = 'price'; coDone = false; coWho = null; }
+    else if (coStage && CO_WHO.indexOf(n) >= 0) {
+      var sig = coSig(ev.data);
+      if (coWho === null) coWho = sig;              // Paddle filled it in itself: the starting point, not a change
+      else if (sig !== coWho) { coWho = sig; coUp('info'); }
+    }
+    else if (coStage && n === 'checkout.payment.selected') coUp('method');
+    else if (coStage && CO_TRY.indexOf(n) >= 0) coUp('try');
     else if (n === 'checkout.completed' && !coDone) { coDone = true; event('checkout_done'); purchased(ev.data || {}); }
     else if (n === 'checkout.closed' && coStage && !coDone) { event('checkout_close', { stage: coStage }); coStage = null; }
     if (n === 'checkout.closed') coStage = null;
