@@ -116,34 +116,46 @@ var CSS = '@media (max-width:899px){'
 + '.m4-link{display:block;margin:4px auto 0;min-height:44px;padding:0 8px;border:0;background:none;color:#9cc6f5;font:700 14px/1.2 var(--body);text-decoration:underline;text-underline-offset:3px;cursor:pointer}'
 + '@media (prefers-reduced-motion:reduce){.m4-go::after,.m4-go.pulse{animation:none}.m4-dots i{transition:none}}'
 + 'html.m4pwall .m4-pw{display:none}'
-/* the end of an export with the 1 € offer */
-+ 'html.m4of1 body,html.m4of1:root{background:#0a0d14 !important}html.m4of1 body{background-image:none !important}'
-+ 'html.m4of1 #doneView .dv-card{background:none;border:0;box-shadow:none;padding:0;color:#fff}html.m4of1 #doneView .dv-card::before,html.m4of1 #doneView .dv-card::after{display:none}'
-+ 'html.m4of1 #dvT{display:none}html.m4of1 .m4-of1h{display:block;margin:14px 0 14px;text-align:center;font:400 25px/1.1 var(--display);color:#fff;text-shadow:none}html.m4of1 .m4-of1h::before{content:"✓ ";color:#5ee08a}'
-+ 'html.m4of1 #dvCmp .cmp-pro,html.m4of1 #dvCmp .cmp-note,html.m4of1 #dvCmp figcaption{display:none}html.m4of1 #dvCmp{display:block}html.m4of1 #dvCmp .cmp-f{margin:0 auto;max-width:280px}'
-+ 'html.m4of1 #resultVideo,html.m4of1 #dvCmp video{border:3px solid #fff;border-radius:24px;max-height:40svh;width:auto !important;max-width:100%;margin:0 auto;display:block}html.m4of1 #dvCmp .cmp-f,html.m4of1 #dvCmp .cmp-box{max-width:none;width:auto;height:auto;aspect-ratio:auto;background:none;border:0;box-shadow:none}html.m4of1 .wrap > header{display:none}'
-+ 'html.m4of1 #result > .m4-of1s{position:sticky;bottom:0;z-index:3}'
-+ 'html.m4of1 .m4-of1s{display:block;margin:0 -16px;padding:22px 18px max(18px,env(safe-area-inset-bottom,0px));background:#fff;border-radius:28px 28px 0 0;color:' + INK + ';text-align:center}'
-+ '.m4-of1s h3{margin:0 0 16px;font:400 27px/1.1 var(--display);color:' + INK + ';text-shadow:none}.m4-of1s h3 b{font-weight:400;color:' + BLUE + '}'
+/* (25/11, owner, 2nd time: « l'écran pour enregistrer la vidéo est tout noir et moche. Je veux une belle page comme les autres »;
+   Chef: docs/handoff/chef-fin-export-belle-page.md) the end of an export, with or without the 1 € offer, for everyone: a party
+   sky in the family of the gradient A (night blue at the top, royal blue, light blue at the bottom; never darker than #0e3f8f),
+   white flakes falling, a golden halo behind the video, the mascot celebrating next to « Ta vidéo est prête », confetti once
+   when the screen comes; the white cards one under the other, evenly spaced, and the page ends at the last one */
++ 'html.m4fe.m4fe,html.m4fe.m4fe body{background:#1f6fd6 !important;background-image:none !important}html.m4fe.m4fe body{background:transparent !important}'
++ '.m4-fbg{display:none}html.m4fe .m4-fbg{display:block;position:fixed;inset:-2px 0;z-index:-1;pointer-events:none;background:radial-gradient(1.6px 1.6px at 20px 30px,#fff 98%,transparent),radial-gradient(2.4px 2.4px at 90px 110px,rgba(255,255,255,.9) 98%,transparent),radial-gradient(1.8px 1.8px at 150px 60px,rgba(255,255,255,.8) 98%,transparent),radial-gradient(3px 3px at 60px 170px,rgba(255,255,255,.85) 98%,transparent),radial-gradient(2px 2px at 190px 200px,#fff 98%,transparent),linear-gradient(180deg,#0e3f8f 0%,#1a5fc4 38%,#3f8ee6 64%,#8fcaff 86%,#d6ecff 100%);background-size:220px 230px,220px 230px,220px 230px,220px 230px,220px 230px,100% 100%;animation:m4snow 14s linear infinite}'
++ '@keyframes m4snow{from{background-position:0 0,0 0,0 0,0 0,0 0,0 0}to{background-position:30px 230px,-20px 230px,10px 230px,-30px 230px,20px 230px,0 0}}'
++ 'html.m4fe #doneView .dv-card{position:relative;overflow:visible;gap:14px;background:none;border:0;box-shadow:none;padding:0;color:#fff}html.m4fe #doneView .dv-card::before,html.m4fe #doneView .dv-card::after{display:none}'
++ 'html.m4fe #dvT,html.m4fe .wrap > header{display:none}'
++ 'html.m4fe .m4-of1h{display:flex;align-items:center;justify-content:center;gap:8px;margin:0;text-align:center;font:400 27px/1.1 var(--display);color:#fff;-webkit-text-stroke:6px ' + INK + ';paint-order:stroke fill;text-shadow:0 3px 0 ' + INK + '}'
++ 'html.m4fe .m4-of1h span::before{content:"✓ ";color:#5ee08a}.m4-fem{flex:none;width:74px;height:74px;margin:-14px 0 -10px -6px;object-fit:contain;filter:drop-shadow(0 3px 0 rgba(10,13,20,.25))}'
++ 'html.m4fe #dvCmp .cmp-pro,html.m4fe #dvCmp .cmp-note,html.m4fe #dvCmp figcaption{display:none}html.m4of1 #dvCmp{display:block}html.m4fe #dvCmp .cmp-f{margin:0 auto;max-width:280px}'
++ 'html.m4fe #resultVideo,html.m4fe #dvCmp video{position:relative;border:3px solid #fff;border-radius:24px;max-height:40svh;width:auto !important;max-width:100%;margin:0 auto;display:block;box-shadow:0 0 0 3px ' + INK + ',0 0 34px 10px rgba(255,205,70,.75)}html.m4fe #dvCmp .cmp-f,html.m4fe #dvCmp .cmp-box{max-width:none;width:auto;height:auto;aspect-ratio:auto;background:none;border:0;box-shadow:none}'
++ 'html.m4fe #result{position:relative;display:flex !important;flex-direction:column;gap:14px;margin:0;padding:6px 0 0}html.m4fe #result > *{order:6}html.m4fe #result > #dvCmp,html.m4fe #result > #resultVideo{order:1}html.m4fe #result > .m4-of1h{order:2}html.m4fe #result > .m4-of1s{order:3}'
++ '.m4-halo{display:none}html.m4fe #result > .m4-halo{display:block;position:absolute;z-index:-1;left:50%;top:-50px;width:340px;height:min(560px,calc(40svh + 140px));margin-left:-170px;pointer-events:none;background:radial-gradient(closest-side,rgba(255,222,110,.95),rgba(255,204,70,.7) 55%,rgba(255,196,60,0) 100%)}'
+// the cards: all the same, 14 px apart
++ 'html.m4fe #result > .m4-of1s,html.m4fe #result > .sharebox:not([hidden]),html.m4fe #result > .capbox,html.m4fe #result > .optbox:not([hidden]),html.m4fe #result > .post,html.m4fe .dv-foot{position:static;margin:0;padding:14px 16px;background:#fff;border:3px solid ' + INK + ';border-radius:20px;box-shadow:0 4px 0 ' + INK + ';color:' + INK + '}'
++ 'html.m4fe .m4-of1s{display:block;padding:18px 16px 16px;text-align:center}.m4-of1s h3{margin:0 0 14px;font:400 26px/1.1 var(--display);color:' + INK + ';text-shadow:none}.m4-of1s h3 b{font-weight:400;color:' + BLUE + '}html.m4fe .m4-of1s h3:empty{display:none}'
++ 'html.m4fe #result > .capbox,html.m4fe #result > .sharebox:not([hidden]){display:flex !important;flex-direction:column;gap:8px}html.m4fe #result > .capbox > *,html.m4fe #result > .sharebox > *{order:0 !important;margin:0}'
++ 'html.m4fe #result > .optbox::before,html.m4fe #result > .optbox::after,html.m4fe #result > .capbox::before,html.m4fe #result > .capbox::after{display:none !important}'
++ 'html.m4fe #result .hint,html.m4fe #result .note,html.m4fe #result .label,html.m4fe #result .optc{color:#3d4a63 !important;text-shadow:none}html.m4fe #result .label{color:' + INK + ' !important;font-weight:800}'
++ 'html.m4fe .dv-foot{display:flex;flex-direction:row;flex-wrap:wrap;justify-content:center;gap:0 18px;margin:0;padding:4px 12px}html.m4fe .dv-foot .linkbtn{min-height:44px;color:' + BLUE + ';text-shadow:none}html.m4fe .dv-foot .linkbtn[hidden]{display:none}'
++ 'html.m4fe .wrap{padding-bottom:calc(18px + env(safe-area-inset-bottom,0px)) !important}html.m4fe #doneView{margin-bottom:0;padding-bottom:0}'
+// the save, in the white card: a real button (25/11, owner's rule: the free choice is clearly seen)
++ 'html.m4fe #saveRow{display:block;margin:0}html.m4of1 #saveRow{margin:12px 0 0}html.m4fe #saveBtn{display:block;box-sizing:border-box;width:100%;min-height:56px;margin:0;white-space:normal}html.m4fe #capText{min-height:118px}'
++ 'html.m4of1 #saveBtn{padding:8px 12px;border:3px solid ' + INK + ';border-radius:18px;background:#fff;box-shadow:0 4px 0 ' + INK + ';color:' + INK + ';font-size:0}html.m4of1 #saveBtn > .m4-sw{font:700 16.5px/1.25 var(--body);color:' + INK + '}'
++ 'html.m4of1 #saveBtn::before,html.m4of1 #saveBtn::after{display:none}html.m4of1 #saveBtn > *{display:none}html.m4of1 #saveBtn > .m4-sw{display:inline}html.m4fe #saveNote:empty{display:none}'
+// with the offer: the blue « Retirer pour 1 € », the terms, the free save under it
 + 'html.m4of1 #dvCmpGo{display:block;width:100%;min-height:60px;margin:0;border:3.5px solid ' + INK + ';border-radius:20px;background:' + BLUE + ';color:#fff;box-shadow:0 6px 0 ' + INK + ';font:400 21px/1 var(--display)}'
 + 'html.m4of1 #dvCmpGo > span{display:none}html.m4of1 #dvCmpGo > .m4-o1g{display:inline}html.m4of1 #dvCmpGo::before,html.m4of1 #dvCmpGo::after{display:none}'
 + 'html.m4of1 #dvOffer1{margin:12px 0 0;font:500 14px/1.45 var(--body);color:#3d4a63}'
-+ 'html.m4of1 #result{display:flex !important;flex-direction:column}html.m4of1 #result > *{order:6}html.m4of1 #result > #dvCmp,html.m4of1 #result > #resultVideo{order:1}html.m4of1 #result > .m4-of1h{order:2}html.m4of1 #result > .m4-of1s{order:3;margin-bottom:18px}'
-// (25/11, owner's rule: the free choice is clearly seen) « Enregistrer gratuitement (avec filigrane) »: a real button, as wide as the
-// blue one, just under it
-+ 'html.m4of1 #saveRow{display:block;margin:12px 0 0}html.m4of1 #saveBtn{display:block;width:100%;min-height:56px;margin:0;padding:8px 12px;border:3px solid ' + INK + ';border-radius:18px;background:#fff;box-shadow:0 4px 0 ' + INK + ';color:' + INK + ';font-size:0}html.m4of1 #saveBtn > .m4-sw{font:700 16.5px/1.25 var(--body);color:' + INK + '}'
-+ 'html.m4of1 #saveBtn::before,html.m4of1 #saveBtn::after{display:none}html.m4of1 #saveBtn > *{display:none}html.m4of1 #saveBtn > .m4-sw{display:inline}'
-// (25/11, owner: a big black void and icons lost under the sheet) under the sheet, each block is a clean white card; the hint is
-// read on it
-+ 'html.m4of1 #result > .sharebox:not([hidden]),html.m4of1 #result > .capbox,html.m4of1 #result > .optbox:not([hidden]),html.m4of1 #result > .post{margin:0 0 14px;padding:14px 16px;background:#fff;border:3px solid ' + INK + ';border-radius:20px;box-shadow:0 4px 0 ' + INK + ';color:' + INK + '}'
-+ 'html.m4of1 #result > .capbox,html.m4of1 #result > .sharebox:not([hidden]){display:flex !important;flex-direction:column;gap:8px}html.m4of1 #result > .capbox > *,html.m4of1 #result > .sharebox > *{order:0 !important;margin:0}'
-+ 'html.m4of1 #result > .optbox::before,html.m4of1 #result > .optbox::after,html.m4of1 #result > .capbox::before,html.m4of1 #result > .capbox::after{display:none !important}'
-+ 'html.m4of1 #result .hint,html.m4of1 #result .note,html.m4of1 #result .label,html.m4of1 #result .optc{color:#3d4a63 !important;text-shadow:none}html.m4of1 #result .label{color:' + INK + ' !important;font-weight:800}'
-+ 'html.m4of1 #result > .m4-of1s{position:static}'
 // (25/11, owner's decision) the other times (no offer): « Enregistrer » first, and a small link « Retirer le filigrane » to the plans
-+ 'html.m4wm #dvCmp,html.m4wm #dvCmpP,html.m4wm #dvTrial{display:none !important}'
-+ 'html.m4wm #dvCmpGo{display:block;width:auto;min-height:44px;margin:4px auto 10px;padding:0 8px;border:0;background:none;box-shadow:none;font-size:0}html.m4wm #dvCmpGo::before,html.m4wm #dvCmpGo::after{display:none}html.m4wm #dvCmpGo > *{display:none}'
++ 'html.m4wm #dvCmpP,html.m4wm #dvTrial{display:none !important}html.m4fe:not(.m4of1) #dvCmp:not([hidden]){display:block}'
+// without the offer (or for a subscriber), « Enregistrer la vidéo » is the big blue button of the card, like « Retirer pour 1 € »
++ 'html.m4fe:not(.m4of1) #saveBtn{min-height:60px;padding:8px 12px;border:3.5px solid ' + INK + ';border-radius:20px;background:' + BLUE + ';color:#fff;box-shadow:0 6px 0 ' + INK + ';font:400 21px/1.1 var(--display);text-shadow:none}html.m4fe:not(.m4of1) #saveBtn::before,html.m4fe:not(.m4of1) #saveBtn::after{display:none !important}'
++ 'html.m4wm #dvCmpGo{display:block;width:auto;min-height:44px;margin:8px auto -6px;padding:0 8px;border:0;background:none;box-shadow:none;font-size:0}html.m4wm #dvCmpGo::before,html.m4wm #dvCmpGo::after{display:none}html.m4wm #dvCmpGo > *{display:none}'
 + 'html.m4wm #dvCmpGo > .m4-rw{display:inline;font:700 15px/1.2 var(--body);color:' + BLUE + ';text-decoration:underline;text-underline-offset:3px}'
+// confetti, once, when the screen comes (GSAP, as in the HyperFrames demos; never with « reduce motion »)
++ '.m4-fx{position:fixed;inset:0;z-index:150;pointer-events:none;overflow:hidden}.m4-fx i{position:absolute;top:-24px;width:10px;height:16px;border-radius:3px;border:1.5px solid rgba(10,13,20,.35)}'
 /* after a purchase */
 + 'html.m4thx #proThx > :not(.m4-thx){display:none !important}html.m4thx #proThx{background:rgba(10,13,20,.45)}'
 + 'html.m4thx .m4-thx{display:block;position:fixed;left:0;right:0;bottom:0;z-index:2;padding:0 20px max(22px,env(safe-area-inset-bottom,0px));background:#fff;border-top:3px solid ' + INK + ';border-radius:30px 30px 0 0;text-align:center}'
@@ -308,26 +320,54 @@ function pwUi(){
   clearInterval(rvTimer); rvTimer = 0; if (!M.calm()) rvTimer = setInterval(function(){ if (root.classList.contains('m4pw')) rvShow(rvI + 1); }, 5200);
 }
 
-/* ---- the end of an export with the 1 € offer ------------------------------------------------------------------------------- */
-var of1Moved = [];
-function of1On(on){
+/* ---- the end of an export (all cases): the sky, the halo, the mascot, the cards; with the 1 € offer, the offer's card --------- */
+var of1Moved = [], feWas = '', fbg = null, halo = null, fem = null;
+function feBack(){
+  for (var i = of1Moved.length - 1; i >= 0; i--){ var m = of1Moved[i]; try { m[1].insertBefore(m[0], m[2] && m[2].parentNode === m[1] ? m[2] : null); } catch(e){} } of1Moved = [];
+  $$('.m4-o1g, .m4-sw').forEach(function(n){ n.remove(); });
+}
+// mode: 'of1' (the offer), 'wm' (watermark, no offer this time), 'plain' (nothing to sell), '' (not the end of an export)
+function feOn(mode){
   var res = $('#result');
-  if (on){
-    var pr = P.of1(); if (!pr || !res) return;
-    if (!of1s){ of1s = el('div', 'm4-of1s', '<h3></h3>'); of1h = el('p', 'm4-of1h'); }
-    if (!of1s.parentNode){ res.appendChild(of1s); var v = $('#dvCmp') || $('#resultVideo'); if (v) v.parentNode.insertBefore(of1h, v.nextSibling);
-      ['#dvCmpGo', '#dvOffer1', '#saveRow'].forEach(function(s){ var n = $(s); if (n){ of1Moved.push([n, n.parentNode, n.nextSibling]); of1s.appendChild(n); } }); }
-    $('h3', of1s).innerHTML = esc(t('of1T', { p: '\u0001' })).replace('\u0001', '<b>' + esc(pr.today) + '</b>');
-    of1h.textContent = t('ready');
-    var g = $('#dvCmpGo'); if (g){ var s = $('.m4-o1g', g); if (!s){ s = el('span', 'm4-o1g'); g.appendChild(s); } s.textContent = t('of1Go', { p: pr.today }); }
-    var sv = $('#saveBtn'); if (sv){ var w = $('.m4-sw', sv); if (!w){ w = el('span', 'm4-sw'); sv.appendChild(w); } w.textContent = t('saveWm'); }
-    root.classList.add('m4of1');
-  } else if (root.classList.contains('m4of1') || of1Moved.length){
-    root.classList.remove('m4of1');
-    for (var i = of1Moved.length - 1; i >= 0; i--){ var m = of1Moved[i]; try { m[1].insertBefore(m[0], m[2] && m[2].parentNode === m[1] ? m[2] : null); } catch(e){} } of1Moved = [];
-    if (of1s) of1s.remove(); if (of1h) of1h.remove();
-    $$('.m4-o1g, .m4-sw').forEach(function(n){ n.remove(); });
+  if (mode && res){
+    if (!of1s){ of1s = el('div', 'm4-of1s', '<h3></h3>'); of1h = el('p', 'm4-of1h', '<img class="m4-fem" src="/emoji/star.webp" alt="" width="74" height="74"><span></span>'); halo = el('div', 'm4-halo'); halo.setAttribute('aria-hidden', 'true'); fem = $('img', of1h); }
+    if (!fbg){ fbg = el('div', 'm4-fbg'); fbg.setAttribute('aria-hidden', 'true'); D.body.insertBefore(fbg, D.body.firstChild); }
+    if (mode !== feWas){
+      feBack();
+      res.appendChild(of1s); res.insertBefore(halo, res.firstChild);
+      var v = $('#dvCmp') || $('#resultVideo'); if (v && v.parentNode === res) res.insertBefore(of1h, v.nextSibling); else res.appendChild(of1h);
+      // the white card: with the offer, its blue button, its terms and the free save; otherwise the save (and the small link)
+      (mode === 'of1' ? ['#dvCmpGo', '#dvOffer1', '#saveRow'] : mode === 'wm' ? ['#saveRow', '#dvCmpGo'] : ['#saveRow']).forEach(function(s){ var n = $(s); if (n){ of1Moved.push([n, n.parentNode, n.nextSibling]); of1s.appendChild(n); } });
+    }
+    $('span', of1h).textContent = t('ready');
+    var pr = mode === 'of1' && P.of1();
+    $('h3', of1s).innerHTML = pr ? esc(t('of1T', { p: '\u0001' })).replace('\u0001', '<b>' + esc(pr.today) + '</b>') : '';
+    if (pr){
+      var g = $('#dvCmpGo'); if (g){ var s = $('.m4-o1g', g); if (!s){ s = el('span', 'm4-o1g'); g.appendChild(s); } s.textContent = t('of1Go', { p: pr.today }); }
+      var sv = $('#saveBtn'); if (sv){ var w = $('.m4-sw', sv); if (!w){ w = el('span', 'm4-sw'); sv.appendChild(w); } w.textContent = t('saveWm'); }
+    }
+    root.classList.add('m4fe'); root.classList.toggle('m4of1', mode === 'of1');
+    if (!feWas) feParty();
+  } else if (feWas || of1Moved.length){
+    root.classList.remove('m4fe', 'm4of1'); feBack();
+    if (of1s) of1s.remove(); if (of1h) of1h.remove(); if (halo) halo.remove();
   }
+  feWas = mode && res ? mode : '';
+}
+// the party, once when the screen comes: the mascot jumps in, confetti fall from the top (never with « reduce motion »)
+function feParty(){
+  if (M.calm()) return;
+  (M.gsap ? M.gsap() : Promise.resolve()).then(function(){
+    if (!root.classList.contains('m4fe')) return;
+    var fx = el('div', 'm4-fx'); fx.setAttribute('aria-hidden', 'true'); var cols = ['#ffd23f', '#ff6b9a', '#5fe0a0', '#ffffff', '#8fd0ff', '#1f6fd6'];
+    var tl = M.play(function(g){ var tl = g.timeline({ onComplete: function(){ fx.remove(); } });
+      if (fem) tl.fromTo(fem, { scale: 0.3, rotation: -20, y: 30 }, { scale: 1, rotation: 0, y: 0, duration: 0.55, ease: 'back.out(2.4)', clearProps: 'transform' }, 0.1)
+        .to(fem, { y: -12, duration: 0.22, ease: 'power2.out', yoyo: true, repeat: 3 }, 0.7);
+      for (var i = 0; i < 46; i++){ var c = el('i'); c.style.left = (Math.random() * 100) + '%'; c.style.background = cols[i % cols.length]; fx.appendChild(c);
+        tl.fromTo(c, { y: -30, x: 0, rotation: Math.random() * 360 }, { y: innerHeight + 60, x: (Math.random() - 0.5) * 140, rotation: '+=' + (360 + Math.random() * 360), duration: 1.6 + Math.random() * 1.1, ease: 'power1.in' }, Math.random() * 0.5); }
+      return tl; });
+    if (tl) D.body.appendChild(fx);
+  });
 }
 
 /* ---- after a purchase: a sheet, the mascot glad, confetti, one button ------------------------------------------------------- */
@@ -354,7 +394,7 @@ function thxOff(){ if (!thx) return; thx.remove(); thx = null; root.classList.re
 
 /* ---- what is shown ------------------------------------------------------------------------------------------------------- */
 function sync(){
-  if (!M.phone()){ root.classList.remove('m4', 'm4pw', 'm4pwall', 'm4help', 'm4thx'); of1On(false); return; }
+  if (!M.phone()){ root.classList.remove('m4', 'm4pw', 'm4pwall', 'm4help', 'm4thx', 'm4wm'); feOn(''); return; }
   build(); root.classList.add('m4'); addAgain();
   if (hh){ $('b', hh).textContent = t('hT'); $('span', hh).textContent = t('hS'); $('.m4-hb', hh).setAttribute('aria-label', t('back'));
     var lg = $('#helpLog'); if (lg && !lg.dataset.m4d){ var d = new Date(); lg.dataset.m4d = t('today') + ' · ' + d.toLocaleTimeString(M.lang() === 'fr' ? 'fr-FR' : 'en-US', { hour: '2-digit', minute: '2-digit' }); } }
@@ -363,12 +403,11 @@ function sync(){
   // the paywall: the plans page of someone without a plan
   var onPw = M.view() === 'pro' && !M.paid() && !!M.acct;
   if (onPw){ pwBuild(); root.classList.add('m4pw'); } else { root.classList.remove('m4pw', 'm4pwall'); }
-  // the 1 € offer
-  var dv = $('#doneView'), o1 = $('#dvOffer1');
-  var of = !!(dv && !dv.hidden && o1 && (!o1.hidden || of1Moved.length) && P.of1());
-  of1On(of);
-  // no offer this time: the plain save, and the small link to the plans
-  var go = $('#dvCmpGo'), wm = !of && !!(dv && !dv.hidden && go && !go.hidden && !M.paid());
+  // the end of an export: the 1 € offer, or the save with the small link, or the save alone (a subscriber)
+  var dv = $('#doneView'), o1 = $('#dvOffer1'), go = $('#dvCmpGo'), fin = !!(dv && !dv.hidden);
+  var of = fin && !!(o1 && (!o1.hidden || (feWas === 'of1' && of1Moved.length)) && P.of1());
+  var wm = fin && !of && !!(go && !go.hidden && !M.paid());
+  feOn(!fin ? '' : of ? 'of1' : wm ? 'wm' : 'plain');
   root.classList.toggle('m4wm', wm);
   if (go){ var rw = $('.m4-rw', go); if (wm && !rw){ rw = el('span', 'm4-rw'); go.appendChild(rw); } if (rw){ if (wm) rw.textContent = t('rmWm'); else rw.remove(); } }
   // after a purchase

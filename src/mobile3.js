@@ -35,7 +35,7 @@ fr: { kick: 'Étape {n} sur 4', h1: 'Choisis ton passage', h2: 'Tes prises', s2:
   sonWa1: 'Dans la conversation, appuie longtemps sur ton son.', sonWa2: 'Touche « Partager » puis « Enregistrer dans Fichiers ».', sonWa3: 'Reviens ici et touche « Ouvrir Fichiers » : ton son est dans « Récents ».',
   sonAd1: 'Accepte le son reçu par AirDrop : il va dans « Téléchargements », dans Fichiers.', sonAd2: 'Reviens ici et touche « Ouvrir Fichiers ».',
   sonVoT: 'Une note vocale', sonVoH: 'Ta note doit d’abord aller dans Fichiers.', sonVo1: 'Dans Dictaphone, touche ta note, puis « … ».', sonVo2: 'Touche « Enregistrer dans Fichiers ».', sonVo3: 'Reviens ici et touche « Ouvrir Fichiers ».',
-  sonViT: 'On garde le son', sonViH: 'De ta vidéo, seul le son est utilisé.', sonViW: 'On récupère le son…', tabWa: 'WhatsApp', tabAd: 'AirDrop',
+  sonViT: 'On garde le son', sonViH: 'De ta vidéo, seul le son est utilisé.', sonViW: 'On récupère le son…', tabWa: 'WhatsApp', tabAd: 'AirDrop', igT: 'Stalak construit ton igloo', igD: 'Igloo terminé ! Ta vidéo est prête',
   cuts: 'Coupes', fx: 'Effets', filt: 'Filtres', ly: 'Paroles', mix: 'Remixer', fmt: 'Format', exp: 'Exporter ma vidéo',
   lyEdit: 'Modifier les paroles', fxNo: 'Les effets se posent dans un clip 16:9 (mode Clip).', back: 'Retour', help: 'Aide', close: 'Fermer',
   done: 'Terminer', steps: 'Étapes', take: 'Prise {n}', timer: 'Minuteur', timerOff: 'Sans', takes: 'Tes prises', play: 'Lecture' },
@@ -50,7 +50,7 @@ en: { kick: 'Step {n} of 4', h1: 'Pick your part', h2: 'Your takes', s2: 'The mo
   sonWa1: 'In the chat, press and hold your song.', sonWa2: 'Tap “Share”, then “Save to Files”.', sonWa3: 'Come back here and tap “Open Files”: your song is in “Recents”.',
   sonAd1: 'Accept the song sent by AirDrop: it goes to “Downloads”, in Files.', sonAd2: 'Come back here and tap “Open Files”.',
   sonVoT: 'A voice memo', sonVoH: 'Your memo first has to go to Files.', sonVo1: 'In Voice Memos, tap your memo, then “…”.', sonVo2: 'Tap “Save to Files”.', sonVo3: 'Come back here and tap “Open Files”.',
-  sonViT: 'We keep the sound', sonViH: 'From your video, only the sound is used.', sonViW: 'Getting the sound…', tabWa: 'WhatsApp', tabAd: 'AirDrop',
+  sonViT: 'We keep the sound', sonViH: 'From your video, only the sound is used.', sonViW: 'Getting the sound…', tabWa: 'WhatsApp', tabAd: 'AirDrop', igT: 'Stalak is building your igloo', igD: 'Igloo finished! Your video is ready',
   cuts: 'Cuts', fx: 'Effects', filt: 'Filters', ly: 'Lyrics', mix: 'Remix', fmt: 'Format', exp: 'Export my video',
   lyEdit: 'Edit the lyrics', fxNo: 'Effects are added in a 16:9 clip (Music video mode).', back: 'Back', help: 'Help', close: 'Close',
   done: 'Done', steps: 'Steps', take: 'Take {n}', timer: 'Timer', timerOff: 'Off', takes: 'Your takes', play: 'Play' }
@@ -219,6 +219,25 @@ var CSS = '@media (max-width:899px){'
 + 'html.m3 #expScreen .xsteps{margin:16px auto 6px;max-width:420px;padding:12px 14px;background:#fff;border:3px solid ' + INK + ';border-radius:18px;box-shadow:0 4px 0 ' + INK + ';color:' + INK + '}'
 + 'html.m3 #expScreen .xsteps li{font:500 15px/1.35 var(--body);color:' + INK + '}html.m3 #expScreen .xsteps li[data-st="todo"]{color:#5b6884}html.m3 #expScreen .xsteps li[data-st="todo"] i{border-color:#b8cde8}'
 + 'html.m3 #expScreen .xsteps li[data-st="now"] span{font-weight:700}html.m3 #expScreen .expstay,html.m3 #expScreen .expeta{color:#fff;opacity:1;text-shadow:0 1px 2px rgba(10,13,20,.5)}'
+// (25/11, owner: « Vidéo d'export j'aime pas… igloo, banquise » then « oui mais enlève l'ours » on the mock-up
+// docs/audit/maquettes/export-igloo-2026-11-25, HyperFrames source there) the export on a phone: a night sky with a soft aurora
+// and falling snow, the mascot carrying the blocks, the igloo built block by block with the real progress; at the end the door
+// glows gold, the mascot cheers, confetti (GSAP, never with « reduce motion »)
++ 'html.m3 #expScreen{place-items:start center;padding:max(18px,env(safe-area-inset-top,0px)) 16px max(18px,env(safe-area-inset-bottom,0px));background:radial-gradient(110vw 40vh at 50% 46%,rgba(160,210,255,.35),transparent 70%),linear-gradient(180deg,#041434 0%,#0b2f73 42%,#1f6fd6 72%,#8fd0ff 100%)}'
++ '.m3-aur{display:none}html.m3 #expScreen .m3-aur{display:block;position:absolute;left:-30%;right:-30%;top:6%;height:22%;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(95,224,160,.38),rgba(143,208,255,.42),rgba(190,150,255,.32),transparent);filter:blur(22px);border-radius:50%;animation:m3aur 9s ease-in-out infinite alternate}'
++ '@keyframes m3aur{from{transform:translateX(-4%) scaleY(1)}to{transform:translateX(5%) scaleY(1.15)}}'
++ 'html.m3 #expTitle{margin:6px 0 0;font:400 28px/1.08 var(--display);color:#fff;-webkit-text-stroke:7px ' + INK + ';paint-order:stroke fill;text-shadow:0 4px 0 ' + INK + '}'
++ 'html.m3 #expScreen .expscene{aspect-ratio:600/270;margin:4px -8px 0;width:calc(100% + 16px)}html.m3 #expScreen .expscene svg *{stroke-width:3.4}html.m3 #expScreen .ex-flag,html.m3 #expScreen .ex-pile{display:none}'
++ 'html.m3 #expScreen .ex-blk{transform:translateY(-26px) scale(.7);transform-origin:50% 50%;transition:opacity .2s ease-out,transform .34s cubic-bezier(.34,1.7,.64,1)}html.m3 #expScreen .ex-blk.on{transform:none}'
++ 'html.m3 #expScreen .ex-door{transition:opacity .3s ease-out,fill .5s ease-out}html.m3 #expScreen.done .ex-door{fill:#ffd23f;filter:drop-shadow(0 0 8px rgba(255,210,63,.9))}'
++ 'html.m3 #expScreen .ex-mascot{left:7%;bottom:15%;width:20%;transform-origin:50% 100%;animation:m3bob .42s ease-in-out infinite alternate}html.m3 #expScreen.done .ex-mascot{animation:none;background-image:url(/emoji/hype.webp)}'
++ '@keyframes m3bob{from{transform:translateY(0) rotate(-2deg)}to{transform:translateY(-6%) rotate(2deg)}}html.m3 #expScreen .ex-block{left:58%;top:40%;width:44%;animation:none}html.m3 #expScreen.done .ex-block{display:none}'
++ 'html.m3 #expScreen .exppct{margin-top:2px;font-size:52px;color:#fff;-webkit-text-stroke:8px ' + INK + ';paint-order:stroke fill;text-shadow:0 4px 0 ' + INK + '}'
++ 'html.m3 #expScreen .progress{width:min(300px,80%);height:20px;border:3.5px solid ' + INK + ';border-radius:14px;background:#0b2f73;overflow:hidden}html.m3 #expScreen .progress i{background:linear-gradient(90deg,#8fd0ff,#fff)}'
++ 'html.m3 #expScreen .expmsg{display:none}html.m3 #expCancel{margin-top:6px;background:#fff;color:' + INK + '}'
++ '.m3-igfx{position:absolute;inset:0;pointer-events:none;overflow:hidden}.m3-igfx i{position:absolute;width:9px;height:14px;border-radius:3px;border:1.5px solid rgba(10,13,20,.35)}'
++ '@media (max-height:700px){html.m3 #expTitle{font-size:24px}html.m3 #expScreen .exppct{font-size:40px}html.m3 #expScreen .expbox{gap:6px}html.m3 #expScreen .xsteps{margin-top:8px;padding:9px 12px}html.m3 #expScreen .xsteps li{font-size:13.5px;line-height:1.28}html.m3 #expScreen .ws-list{gap:6px}html.m3 #expScreen .expstay{font-size:12.5px;margin:2px 0}}'
++ '@media (prefers-reduced-motion:reduce){html.m3 #expScreen .ex-mascot{animation:none}html.m3 #expScreen .m3-aur{animation:none}html.m3 #expScreen .ex-blk{transition:opacity .2s}}'
 + '@keyframes m3up{from{transform:translateY(100%)}to{transform:none}}'
 + 'html.m3 #cutBar::before,html.m3 #fxBar::before{content:"";position:absolute;top:10px;left:50%;width:44px;height:5px;margin-left:-22px;border-radius:9px;background:#c7d3e3}'
 + 'html.m3 #cutInfo,html.m3 #fxInfo{grid-column:1/-1;padding:0 46px 4px 2px;font:400 21px/1.15 var(--display);color:' + INK + '}html.m3 #fxBar .fxbtns{display:contents}'
@@ -436,6 +455,30 @@ function refresh(){
   if (s !== 4 && cur) sheet(0);
 }
 
+/* ---- the export on a phone: the igloo's words, and the party when it is finished (see the style above) ---- */
+(function(){
+  var sc = $('#expScreen'); if (!sc) return; var aur = null, was = '';
+  function ig(){
+    if (!root.classList.contains('m3') || sc.hidden){ was = ''; return; }
+    if (!aur){ aur = el('div', 'm3-aur'); aur.setAttribute('aria-hidden', 'true'); sc.insertBefore(aur, sc.firstChild); }
+    var done = sc.classList.contains('done'), st = done ? 'done' : 'run', h = $('#expTitle');
+    var many = h && /\d/.test(h.textContent) && !done;   // a pack of videos: the app's own title (« tes 3 vidéos »)
+    if (h && !many){ var w = t(done ? 'igD' : 'igT'); if (h.textContent !== w) h.textContent = w; }
+    if (st === was) return; was = st;
+    if (!done || M.calm()) return;
+    var sv = $('#expSvg'), box = $('#expScene'); if (!sv || !box) return;
+    var fx = el('div', 'm3-igfx'); fx.setAttribute('aria-hidden', 'true'); var cols = ['#ffd23f', '#ff6b9a', '#5fe0a0', '#ffffff', '#8fd0ff'];
+    var tl = M.play(function(g){ var tl = g.timeline({ onComplete: function(){ fx.remove(); } }), m = $('#expMascot');
+      if (m) tl.fromTo(m, { y: 40, scale: .8 }, { y: 0, scale: 1, duration: .4, ease: 'back.out(2)' }, 0).to(m, { y: -22, duration: .22, ease: 'power2.out', yoyo: true, repeat: 3 }, .4);
+      for (var i = 0; i < 36; i++){ var c = el('i'); c.style.left = (64 + Math.random() * 10) + '%'; c.style.top = '28%'; c.style.background = cols[i % 5]; fx.appendChild(c);
+        tl.fromTo(c, { x: 0, y: 0, rotation: 0, opacity: 1 }, { x: (Math.random() - .5) * 320, y: 60 + Math.random() * 260, rotation: Math.random() * 720, opacity: 0, duration: 1.5, ease: 'power2.out' }, .05 + Math.random() * .15); }
+      return tl; });
+    if (tl) box.appendChild(fx);
+  }
+  new MutationObserver(ig).observe(sc, { attributes: true, attributeFilter: ['hidden', 'class'] });
+  new MutationObserver(ig).observe($('#expTitle') || sc, { childList: true, characterData: true, subtree: true });
+  M.on(ig);
+})();
 /* ---- on and off: a phone in the editor (steps 1 to 4, not the end of an export) -------------------------------------------- */
 function sync(){
   var want = M.phone() && root.classList.contains('medit') && !E.done() && !M.view();
