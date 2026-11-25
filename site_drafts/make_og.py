@@ -19,9 +19,9 @@ GUIDES = [   # slug, title on the picture, the mascot
     ('lip-sync-videos-for-singers', 'Performance videos for singers', 'Several takes, one performance', 'love'),
     ('how-to-make-a-lip-sync-video', 'How to make a lip-sync video', 'Song, takes, lyrics, edit: 4 steps', 'hello'),
     ('edit-video-to-the-beat', 'Edit video to the beat', 'Cuts that land on the beat', 'gg'),
-    # Marketing & croissance (07/11): the « Clip » page (Music video mode, a Pro export: « Try it free », not « Free »)
-    ('music-video', 'Music video mode', 'Your whole song as a YouTube music\u00a0video', 'cool', 'Try it free · in your browser · no sign-up'),
-    ('clip', 'Le mode Clip', 'Tout ton morceau en clip YouTube', 'cool', 'Essai gratuit · dans ton navigateur · sans compte'),
+    # Marketing & croissance (07/11): the « Clip » page (Music video mode). 24/11: reserved to subscribers, no free trial any more (owner's decision)
+    ('music-video', 'Music video mode', 'Your whole song as a YouTube music\u00a0video', 'cool', 'Stalak Pro · in your browser'),
+    ('clip', 'Le mode Clip', 'Tout ton morceau en clip YouTube', 'cool', 'Avec Stalak Pro · dans ton navigateur'),
     # Marketing & croissance (13/11, audit point 8): the legal pages, in their own language (the words of each page's description)
     ('terms', 'Terms', 'Plans, renewal, payment and refunds', 'think'),
     ('refunds', 'Refund policy', '14 days to change your mind, full refund', 'money'),
