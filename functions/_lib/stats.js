@@ -10,7 +10,12 @@ import { apifyOn, spotifyApiOn } from './spotify.js';
 const DAY = 864e5;
 const monthKey = (t) => new Date(t).toISOString().slice(0, 7);
 const monthsBack = (n, t) => { const d = new Date(t), out = []; for (let i = n - 1; i >= 0; i--) out.push(new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() - i, 1)).toISOString().slice(0, 7)); return out; };
-const dateOf = (r) => (r.release_date && r.date_precision === 'day' ? Date.parse(r.release_date + 'T12:00:00Z') : null);
+const dateOf = (r) => (r.release_date && r.date_precision === 'day' ? Date.parse(r.release_date + 'T00:00:00Z') : null);
+// 25/11: days are counted as calendar days in France (Europe/Paris): a song out yesterday is « 1 day » ago in the morning
+// as in the evening (before: release at 12:00 UTC and floor() → one day less before noon UTC)
+const PARIS = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris', year: 'numeric', month: '2-digit', day: '2-digit' });
+export const parisDay = (t) => PARIS.format(new Date(t));                  // « 2026-11-25 »
+export const daysSince = (releaseDate, now) => Math.round((Date.parse(parisDay(now) + 'T00:00:00Z') - Date.parse(releaseDate + 'T00:00:00Z')) / DAY);
 const nf = (lang) => new Intl.NumberFormat(lang === 'fr' ? 'fr-FR' : 'en-US');
 
 export async function statsFor(env, user, { lang = 'fr', now = Date.now() } = {}) {
@@ -53,7 +58,7 @@ export async function statsFor(env, user, { lang = 'fr', now = Date.now() } = {}
   const ago4 = snapshots.find((s) => s.week <= isoWeek(now - 28 * DAY) && s.monthly_listeners != null);
   const change4w = listeners && listeners.source === 'spotify' && ago4 ? listeners.n - ago4.monthly_listeners : null;
   const dated = releases.map((r) => ({ ...r, t: dateOf(r) })).filter((r) => r.t).sort((a, b) => b.t - a.t);
-  const lastRelease = dated[0] ? { name: dated[0].name, date: dated[0].release_date, daysAgo: Math.max(0, Math.floor((now - dated[0].t) / DAY)), kind: dated[0].kind } : null;
+  const lastRelease = dated[0] ? { name: dated[0].name, date: dated[0].release_date, daysAgo: Math.max(0, daysSince(dated[0].release_date, now)), kind: dated[0].kind } : null;
   const months12 = monthsBack(12, now);
   const byMonth = months12.map((m) => ({ month: m, releases: dated.filter((r) => monthKey(r.t) === m).length,
     songs: dated.filter((r) => monthKey(r.t) === m).reduce((s, r) => s + (r.total_tracks || 1), 0) }));
