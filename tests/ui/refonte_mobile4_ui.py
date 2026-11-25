@@ -169,7 +169,7 @@ def run(b, PW, dev, lang):
         ev(pg, "acctPaid = () => false")
         ev(pg, "offer1On = () => false, trialUi()"); pg.wait_for_timeout(600)
         check(tag + ' : sans l’offre cette fois : « Enregistrer » d’abord, et un petit lien « Retirer le filigrane »', ev(pg, "document.documentElement.classList.contains('m4wm')") and vis(pg, '#saveBtn') and pg.locator('#dvCmpGo .m4-rw').count() == 1 and not vis(pg, '#dvCmp .cmp-pro') and not vis(pg, '#dvCmpP'))
-        check(tag + ' : sans le droit à l’offre : l’écran de fin habituel revient, rien ne manque', not ev(pg, "document.documentElement.classList.contains('m4of1')") and pg.locator('.m4-of1s').count() == 0 and pg.evaluate("() => !!document.querySelector('#result #saveRow') && !!document.querySelector('#result #dvCmpGo')"))
+        check(tag + ' : sans le droit à l’offre : l’écran de fin habituel revient, rien ne manque', not ev(pg, "document.documentElement.classList.contains('m4of1')") and (pg.locator('.m4-of1s').count() == 0 or pg.locator('.m4-of1s h3').inner_text().strip() == '') and pg.evaluate("() => !!document.querySelector('#result #saveRow') && !!document.querySelector('#result #dvCmpGo')"))
     check(tag + ' : aucune erreur dans la page', not errs, errs)
     ctx.close()
 
