@@ -115,7 +115,7 @@ var CSS = '@media (max-width:899px){'
 + 'html.m3cam body{overflow:hidden}html.m3cam #recPanel{position:fixed;inset:0;z-index:200;margin:0;padding:0;background:#0a0d14;display:block}'
 // (25/11, owner: the bottom of the camera went under Safari's bar and the page showed below) the camera ends where the screen is
 // always visible (Safari's bars shown), black under it; the « take saved » message is a bubble at the top that goes away
-+ 'html.m3cam,html.m3cam body{background:#000 !important}html.m3cam #recPanel{bottom:auto;height:100vh;height:100svh}'
++ ':root.m3.m3cam,html.m3cam body{background:#000 !important}html.m3cam #recPanel{bottom:auto;height:100vh;height:100svh}'
 + 'html.m3cam #recPanel .recdone{top:calc(max(10px,env(safe-area-inset-top,0px)) + 74px);bottom:auto;left:76px;right:76px;margin:0 auto;max-width:300px;padding:9px 14px;z-index:6;background:#fff;color:#0a0d14;border:2.5px solid #0a0d14;border-radius:999px;box-shadow:0 4px 0 rgba(10,13,20,.35);font:800 14px/1.3 var(--body);animation:m3toast .32s cubic-bezier(.165,.84,.44,1) both}'
 + '@keyframes m3toast{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}html.m3cam #recPanel:has(.recdone:not([hidden])) > .hint{display:none}'
 + 'html.m3cam #recPanel .recbox{position:absolute;inset:0;margin:0;max-width:none;width:auto;height:auto;aspect-ratio:auto;border:0;border-radius:0;box-shadow:none;background:#000}'
