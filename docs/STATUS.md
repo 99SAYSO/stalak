@@ -4,6 +4,7 @@
 > Dernière mise à jour : 30/10/2026 à 21 h (offre hybride fusionnée et en ligne : App, Comptes, Juridique, Marketing ; migration 0008 appliquée).
 
 ## Décisions récentes du propriétaire
+- 25/11 (Marketing, branche marketing/clip-reserve-abonnes) : panneau « Music video mode / Mode Clip » retiré de la page Tarifs (EN et FR) à la demande du propriétaire, avec son style et les liens vers son ancre (/music-video et /fr/clip pointent vers la page Tarifs). public/ reconstruit. À publier par le Chef.
 - 25/11 01:20 — Chef : `compte/mesure-paiement` fusionné et en ligne (tests : serveur 132/132, achat 26/26 ; `support_ui` bloque sur « réponse envoyée par e-mail » **aussi sur main avant la fusion** : à regarder par Comptes).
 - 25/11 01:05 — Propriétaire : retours sur les maquettes Stats, fond A, suite Clarity et Tarifs (10 points : `docs/handoff/chef-retours-maquettes-25-11.md`, captures `docs/audit/retours-2026-11-25/`) ; rien de visible n’est fusionné tant que ce n’est pas corrigé. **Décision** : coach IA « blow up » dans Stats, Stalak positionnée aussi comme « la meilleure appli pour aider les rappeurs à percer » (`docs/handoff/chef-coach-ia.md`). Fusionné : `compte/mesure-paiement` (tableau de bord seulement).
 - 24/11 21:58 — Propriétaire : nouveau fond de l’app = **A · Dégradé** (bleu nuit → bleu clair, halo derrière la mascotte, flocons blancs, titres blancs contour noir) parmi 6 maquettes (`docs/audit/maquettes/fonds-2026-11-24/`). Demande à App : `docs/handoff/chef-fond-degrade.md`.
