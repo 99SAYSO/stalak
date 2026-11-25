@@ -173,7 +173,23 @@ var CSS = '@media (max-width:899px){'
 + '.m3-sheet #lyStyle{margin:0;padding:0;border:0;background:none;box-shadow:none}.m3-sheet #lyStyle::before,.m3-sheet #lyStyle::after,.m3-sheet #lyStyle > h2{display:none}'
 + '.m3-sheet #filtBox{margin:0}.m3-sheet .m3-note{margin:6px 0 0;font:500 15px/1.4 var(--body);color:#3d4a63}.m3-sheet .m3-note[hidden]{display:none}'
 + '.m3-go{display:block;width:100%;min-height:52px;margin:18px 0 0;border:3px solid ' + INK + ';border-radius:16px;background:#fff;box-shadow:0 4px 0 ' + INK + ';font:800 16px/1 var(--body);color:' + INK + ';cursor:pointer}'
-+ 'html.m3 #cutBar:not([hidden]),html.m3 #fxBar:not([hidden]){position:fixed;z-index:56;left:12px;right:12px;bottom:calc(max(16px,env(safe-area-inset-bottom,0px)) + 92px);margin:0;padding:12px;background:#fff;border:3px solid ' + INK + ';border-radius:20px;box-shadow:0 5px 0 ' + INK + ';display:flex;flex-wrap:wrap;gap:6px}'
+// (25/11, owner: the panel of a shot never closed and moved everything below) the shot and the effect open in a sheet from the
+// bottom, over a veil: it closes with ✕, by sliding it down or by touching beside it, and nothing under it moves
++ 'html.m3 #cutBar,html.m3 #fxBar{display:none !important}'
++ 'html.m3.m3s4 #cutBar:not([hidden]),html.m3.m3s4 #fxBar:not([hidden]){display:grid !important;grid-template-columns:1fr 1fr;gap:10px;position:fixed;z-index:121;left:0;right:0;bottom:0;margin:0;padding:30px 16px calc(18px + env(safe-area-inset-bottom,0px));background:#fff;border:0;border-top:3.5px solid ' + INK + ';border-radius:26px 26px 0 0;box-shadow:0 -6px 30px rgba(10,13,20,.25);animation:m3up .26s cubic-bezier(.165,.84,.44,1) both;touch-action:pan-x}'
+// (25/11, owner: after the export the screen scrolled down to the site's footer, with bits of the editor on top) the end of the
+// export is a screen of the app: nothing of the site under it, nothing of the editor over it
++ 'html.m3fin .ft,html.m3fin .bands,html.m3fin .proof,html.m3fin .installtip,html.m3fin .byalaska,html.m3fin .about,html.m3fin body > #takeChoices,html.m3fin body > #recPanel,html.m3fin body > #cutBar,html.m3fin body > #fxBar,html.m3fin [data-m3],html.m3fin .m3-bar,html.m3fin .m3-cutveil{display:none !important}'
++ 'html.m3fin body{overscroll-behavior-y:none}html.m3fin .wrap{padding-bottom:calc(28px + env(safe-area-inset-bottom,0px))}'
++ '@keyframes m3up{from{transform:translateY(100%)}to{transform:none}}'
++ 'html.m3 #cutBar::before,html.m3 #fxBar::before{content:"";position:absolute;top:10px;left:50%;width:44px;height:5px;margin-left:-22px;border-radius:9px;background:#c7d3e3}'
++ 'html.m3 #cutInfo,html.m3 #fxInfo{grid-column:1/-1;padding:0 46px 4px 2px;font:400 21px/1.15 var(--display);color:' + INK + '}html.m3 #fxBar .fxbtns{display:contents}'
++ 'html.m3 #cutBar .btn,html.m3 #fxBar .btn{width:100%;min-height:52px;margin:0;padding:8px 10px;border:2.5px solid ' + INK + ';border-radius:14px;background:#fff;box-shadow:0 3px 0 ' + INK + ';font:700 15px/1.2 var(--body);color:' + INK + ';white-space:normal}'
++ 'html.m3 #cutBar .btn:disabled,html.m3 #fxBar .btn:disabled{opacity:.45;box-shadow:none}html.m3 #cutBar [hidden],html.m3 #fxBar [hidden]{display:none !important}html.m3 #cutExcl{color:#b3261e}'
++ 'html.m3 #cutBar .tip::before,html.m3 #cutBar .tip::after,html.m3 #fxBar .tip::before,html.m3 #fxBar .tip::after{display:none !important}'
++ '.m3-shx{display:none}html.m3.m3s4 #cutBar:not([hidden]) .m3-shx,html.m3.m3s4 #fxBar:not([hidden]) .m3-shx{display:grid;place-items:center;position:absolute;top:16px;right:14px;width:40px;height:40px;padding:0;border:2.5px solid ' + INK + ';border-radius:50%;background:#fff;font:800 18px/1 var(--body);color:' + INK + '}'
++ '.m3-cutveil{display:none}html.m3.m3s4.m3cut .m3-cutveil{display:block;position:fixed;inset:0;z-index:120;background:rgba(10,13,20,.4)}'
++ '@media (prefers-reduced-motion:reduce){html.m3 #cutBar,html.m3 #fxBar{animation:none !important}}'
 + 'html.m3.m3s4 .wrap{padding-top:calc(62px + env(safe-area-inset-top,0px))}html.m3.m3s4 #work{margin-top:0;padding-top:0}'
 + '@media (max-height:700px){html.m3.m3s4 #view{max-height:27svh}html.m3.m3s4 .m3-play{top:calc(13.5svh - 28px);width:56px;height:56px}}'
 + '@media (prefers-reduced-motion:reduce){.m3-segs li,.m3-play,.m3-more > summary::after{transition:none}}'
@@ -234,6 +250,16 @@ function build(){
   });
   var tlw = $('#p4 .tlwrap'), th = $('#tlHint'); if (th) th.parentNode.insertBefore(tools, th); else if (tlw) tlw.parentNode.insertBefore(tools, tlw.nextSibling);
   scrim = el('div', 'm3-scrim'); scrim.onclick = function(){ sheet(0); }; D.body.appendChild(scrim);
+  // the sheet of a shot / an effect (step 4): a veil, a ✕, slid down to close
+  var veil = el('div', 'm3-cutveil'); veil.onclick = function(){ E.desel(); }; D.body.appendChild(veil);
+  ['#cutBar', '#fxBar'].forEach(function(q){ var b = $(q); if (!b) return;
+    var x = el('button', 'm3-shx'); x.type = 'button'; x.textContent = '✕'; x.onclick = function(){ E.desel(); }; b.appendChild(x);
+    var y0 = null; b.addEventListener('pointerdown', function(e){ if (e.target.closest('button')) return; y0 = e.clientY; });
+    b.addEventListener('pointermove', function(e){ if (y0 == null) return; var d = Math.max(0, e.clientY - y0); b.style.transform = d ? 'translateY(' + d + 'px)' : ''; });
+    var up = function(e){ if (y0 == null) return; var d = e.clientY - y0; y0 = null; b.style.transform = ''; if (d > 60) E.desel(); };
+    b.addEventListener('pointerup', up); b.addEventListener('pointercancel', up);
+    new MutationObserver(cutUi).observe(b, { attributes: true, attributeFilter: ['hidden'] });
+  });
   ['cuts', 'fx', 'filt', 'ly', 'fmt'].forEach(function(k){
     var s = el('section', 'm3-sheet', '<div class="m3-sh"><h3></h3><button type="button" class="m3-rd">' + SVG_X + '</button></div><div class="m3-rows"></div>');
     s.id = 'm3Sh_' + k; s.setAttribute('role', 'dialog'); s.setAttribute('aria-modal', 'true'); $('.m3-rd', s).onclick = function(){ sheet(0); };
@@ -269,6 +295,12 @@ function unplace(){ if (!placed) return; placed = false; moveBack(); if (addL) a
 function backTap(){ var s = E.step(); if (s > 1) E.go(s - 1); else { var h = $('#homeBtn'); if (h) h.click(); } }
 
 /* a sheet of the Montage step: k, or none (0) */
+function cutUi(){
+  var open = E.step() === 4 && [$('#cutBar'), $('#fxBar')].some(function(b){ return b && !b.hidden; });
+  root.classList.toggle('m3cut', on && open);
+  if (on && E.step() !== 4 && [$('#cutBar'), $('#fxBar')].some(function(b){ return b && !b.hidden; })) E.desel();
+  var x = $('#cutBar .m3-shx'); if (x) x.setAttribute('aria-label', t('close'));
+}
 function sheet(k){
   var was = cur; cur = k;
   Object.keys(sheets).forEach(function(x){ sheets[x].classList.toggle('on', x === k); });
@@ -368,11 +400,14 @@ function sync(){
   if (want && !built) build();
   if (want) place();
   if (want !== on){ on = want; root.classList.toggle('m3', on); if (!on){ sheet(0); root.classList.remove('m3cam', 'm3song', 'm3lyw', 'm3playing'); } }
-  if (on){ ['m3s1', 'm3s2', 'm3s3', 'm3s4'].forEach(function(c, i){ root.classList.toggle(c, E.step() === i + 1); }); refresh(); }
+  if (on){ ['m3s1', 'm3s2', 'm3s3', 'm3s4'].forEach(function(c, i){ root.classList.toggle(c, E.step() === i + 1); }); refresh(); cutUi(); }
+  else root.classList.remove('m3cut');
+  root.classList.toggle('m3fin', M.phone() && built && E.done());
   // a computer again (the window made wider): everything back in its place
   if (!M.phone()) unplace();
 }
 M.on(sync); sync();
+(function(){ var was = E.done(); new MutationObserver(function(){ var d = E.done(); if (d !== was){ was = d; sync(); } }).observe(D.body, { attributes: true, attributeFilter: ['class'] }); })();
 W.addEventListener('pageshow', sync);
 W.StalakM3 = { sheet: sheet, on: function(){ return on; }, sync: sync };
 })();

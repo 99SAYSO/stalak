@@ -11853,6 +11853,7 @@ function mobInit(){
     ed: Object.freeze({ step: () => S.step, go: n => go(n), done: () => document.body.classList.contains('isdone'), song: () => !!S.song, kind: () => S.kind,
       can: f => can(f), playing: () => !!S.playing, lyr: () => S.lyrics.mode, exporting: () => !!S.exporting,
       takes: () => S.takes.filter(t => !t.broll).map(t => ({ el: t.kind === 'video' ? t.el || null : null, thumb: t.thumb || (t.live && t.live.ts != null ? t.live.cv : null) || null, demo: t.kind === 'demo', look: t.look || null, stars: t.qual ? qualSummary(t).stars : 0 })),
+      desel: () => { S.sel = -1; S.selT = null; S.fxSelT = null; renderTimeline(); renderCutBar(); renderFxBar(); },
       cam: () => !!recStream, rec: () => (recRec && recRec.state !== 'inactive') ? 'rec' : recCd ? 'cd' : 'idle', timer: () => recDelay, timerSet: v => recTimerSet(v),
       take: () => S.takes.filter(t => !t.broll && t.kind !== 'demo').length + 1,
       recPos: () => { if (!S.song || !(recRec && recRec.state !== 'inactive')) return 0; const a = recFrom(), b = Math.min(S.song.duration, S.segEnd + 0.3); return Math.max(0, Math.min(1, (player.currentTime - a) / Math.max(0.1, b - a))); } }),
