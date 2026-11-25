@@ -181,6 +181,21 @@ var CSS = '@media (max-width:899px){'
 // export is a screen of the app: nothing of the site under it, nothing of the editor over it
 + 'html.m3fin .ft,html.m3fin .bands,html.m3fin .proof,html.m3fin .installtip,html.m3fin .byalaska,html.m3fin .about,html.m3fin body > #takeChoices,html.m3fin body > #recPanel,html.m3fin body > #cutBar,html.m3fin body > #fxBar,html.m3fin [data-m3],html.m3fin .m3-bar,html.m3fin .m3-cutveil{display:none !important}'
 + 'html.m3fin body{overscroll-behavior-y:none}html.m3fin .wrap{padding-bottom:calc(28px + env(safe-area-inset-bottom,0px))}'
+// (25/11, owner's rule: no screen on a dull background) each step its own sky, in the family of the home's gradient A, with the
+// white flakes falling (set with the home's, mobile.css): night blue at the top, a different light at the bottom
++ 'html.m3,html.m3fin{background-attachment:fixed !important}'
++ 'html.m3.m3s1{background:radial-gradient(80vw 30vh at 50% 0,rgba(255,255,255,.22),transparent 70%) fixed,linear-gradient(180deg,#0b2f73 0%,#1f6fd6 48%,#6fb6ff 80%,#cfe8ff 100%) fixed !important}'
++ 'html.m3.m3s2{background:radial-gradient(80vw 30vh at 50% 0,rgba(140,230,255,.25),transparent 70%) fixed,linear-gradient(180deg,#0a2f5c 0%,#1679c9 46%,#4fc3f0 78%,#d4f3ff 100%) fixed !important}'
++ 'html.m3.m3s3{background:radial-gradient(80vw 30vh at 50% 0,rgba(200,170,255,.28),transparent 70%) fixed,linear-gradient(180deg,#14246b 0%,#3a55d1 46%,#8f9cf5 78%,#e6e6ff 100%) fixed !important}'
++ 'html.m3.m3s4{background:radial-gradient(80vw 30vh at 50% 0,rgba(255,255,255,.2),transparent 70%) fixed,linear-gradient(180deg,#081f52 0%,#1a5bc2 46%,#5aa8f5 78%,#cfe6ff 100%) fixed !important}'
++ 'html.m3fin{background:radial-gradient(90vw 36vh at 50% 18%,rgba(255,210,63,.35),transparent 70%) fixed,linear-gradient(180deg,#0b2f73 0%,#1f6fd6 52%,#7fc4ff 82%,#e0f1ff 100%) fixed !important}'
++ 'html.m3 body,html.m3fin body{background:transparent !important}'
+// the texts set on the sky: white, titles with an ink outline; the status line is a white bubble (never pale on light)
++ 'html.m3 .m3-k{color:#ffd23f !important}html.m3 .m3-h{color:#fff !important;-webkit-text-stroke:6px ' + INK + ';paint-order:stroke fill;text-shadow:0 3px 0 ' + INK + '}html.m3 .m3-s{color:rgba(255,255,255,.92) !important}'
++ 'html.m3 #status:not(:empty),html.m3fin #status:not(:empty){margin:0 16px 10px;padding:10px 14px;background:#fff !important;color:' + INK + ' !important;border:2.5px solid ' + INK + ';border-radius:16px;box-shadow:0 3px 0 ' + INK + ';font:600 14px/1.35 var(--body);text-shadow:none}'
++ 'html.m3 #verLbl,html.m3 #tlMeta,html.m3 .m3-tools button,html.m3 #p3 > .hint,html.m3 #p3 .hint{color:#fff !important;text-shadow:0 1px 2px rgba(10,13,20,.6)}html.m3 #verLbl{-webkit-text-stroke:0}'
++ 'html.m3 #songDrop:not(.has){background:rgba(255,255,255,.14);border-color:#fff}html.m3 #songDrop strong,html.m3 #songDrop span{color:#fff !important}'
++ 'html.m3 .m3-bar{background:linear-gradient(#0a2a66 70%,rgba(10,42,102,0)) !important}html.m3 .m3-fade{background:linear-gradient(rgba(207,230,255,0),#d3ebff 42%) !important}'
 + '@keyframes m3up{from{transform:translateY(100%)}to{transform:none}}'
 + 'html.m3 #cutBar::before,html.m3 #fxBar::before{content:"";position:absolute;top:10px;left:50%;width:44px;height:5px;margin-left:-22px;border-radius:9px;background:#c7d3e3}'
 + 'html.m3 #cutInfo,html.m3 #fxInfo{grid-column:1/-1;padding:0 46px 4px 2px;font:400 21px/1.15 var(--display);color:' + INK + '}html.m3 #fxBar .fxbtns{display:contents}'

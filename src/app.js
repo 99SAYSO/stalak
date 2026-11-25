@@ -9079,12 +9079,13 @@ $('#songPlay').onclick = listenToggle;
 // Comptes as one number (functions/_lib/metrics.js, ev_clip_open)
 let clipOpened = false;
 const kindPick = k => {
+  // (25/11, owner's rule) TikTok or Clip is chosen at step 1 only, never after
+  if (S.step !== 1){ kindUI(); return; }
   if (k === 'clip' && !clipOpened){ clipOpened = true; acctEvent('clip_open'); }
   if (k === 'clip' && !can('clip')){ kindUI(); lockOpen('clip'); return; }
   setKind(k);
 };
 bindSeg('#kindSeg', kindPick);
-bindSeg('#kindSeg4', kindPick);
 bindSeg('#frameSeg', v => { S.frame = v; S.frameUser = true; store.set('stalak:frame', v); stop(true); showFrame(cursorIn()); say('frame.st.' + v); });
 // the end of the passage, one bar earlier or later (both modes: the same as the end handle)
 $('#endPrev').onclick = () => { if (!S.song) return; if (segMove('r', segEndBar() - 1)){ stop(true); rebuild(false); } };

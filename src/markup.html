@@ -399,9 +399,10 @@
         <div class="card">
           <h2 data-i18n="p4.title">Ton montage</h2>
           <div class="grid2">
-            <!-- (7/11, Clip mode n° 6) the kind of video, changed here too without going back to step 1 -->
-            <span class="label" data-i18n="p4.kind">Vidéo</span>
-            <div class="seg kindseg" role="group" aria-label="Ce que tu fais" data-i18n-attr="aria-label:p1.kind.aria" id="kindSeg4">
+            <!-- (7/11, Clip mode n° 6) the kind of video was changed here too; (25/11, owner's rule) snippet or clip is chosen at
+                 step 1 only: this one stays hidden and does nothing -->
+            <span class="label" data-i18n="p4.kind" hidden style="display:none">Vidéo</span>
+            <div class="seg kindseg" role="group" aria-label="Ce que tu fais" data-i18n-attr="aria-label:p1.kind.aria" id="kindSeg4" hidden style="display:none">
               <button type="button" data-v="reel" aria-pressed="true">TikTok / Reels</button>
               <button type="button" data-v="clip" aria-pressed="false" data-i18n="kind.clip">Clip</button>
             </div>
