@@ -4,7 +4,7 @@ Python Playwright (chromium).
 
     python3 /abs/path/tests/ui/pied_de_page_ui.py <built public/ folder> [claude.ai page (shuffle-lab.html)] [folder for screenshots]
 
-On an iPhone (iPhone 15 Pro emulated) and a computer. Checked: one full-width ink band at the very bottom (never fixed), 5 columns
+On an iPhone (iPhone 15 Pro emulated) and a computer. Checked: one full-width ink band at the very bottom (never fixed), 6 columns
 on a computer and stacked on a phone, the same links on every page of a language and only our own sites, every link leads to a
 page that exists, Français / English to the same page, the bottom line; in the app: the help ice cube and the Export button never
 cover a link, the language switch writes the footer again (and still works), « Gérer les cookies » and « Your Privacy Choices » (links to the privacy page)."""
@@ -20,22 +20,26 @@ OURS = ('https://www.instagram.com/stalak_app/', 'https://www.tiktok.com/@stalak
 # the help pages (Marketing, 09/11, A7), in French and English: the list of src/footer.py (AIDE), the footer's one source
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'src')); import footer as FOOT
 AIDE_FR, AIDE_EN = ['/fr/' + a[0] for a in FOOT.AIDE], ['/' + a[1] for a in FOOT.AIDE]
+# (25/11, Marketing, point SEO/AEO) the « percer » pages (src/footer.py, PERCER) and the French guides (GUIDES_FR), in the footer too
+PERCER_FR, PERCER_EN = ['/fr/' + a[0] for a in FOOT.PERCER], ['/' + a[1] for a in FOOT.PERCER]
+GUIDES_FR = ['/fr/' + a[0] for a in FOOT.GUIDES_FR]
+AIDE_FR, AIDE_EN = AIDE_FR + PERCER_FR, AIDE_EN + PERCER_EN
 EN_PAGES = ['/', '/pricing', '/terms', '/refunds', '/privacy', '/legal-notice', '/triller-alternative', '/lip-sync-video-editor',
             '/music-video-maker-for-rappers', '/rap-snippet-video', '/lip-sync-videos-for-singers', '/how-to-make-a-lip-sync-video', '/edit-video-to-the-beat',
             '/music-video'] + AIDE_EN
-FR_PAGES = ['/fr/', '/fr/tarifs', '/fr/conditions', '/fr/remboursement', '/fr/confidentialite', '/fr/mentions-legales', '/fr/alternative-triller', '/fr/clip'] + AIDE_FR
+FR_PAGES = ['/fr/', '/fr/tarifs', '/fr/conditions', '/fr/remboursement', '/fr/confidentialite', '/fr/mentions-legales', '/fr/alternative-triller', '/fr/clip'] + AIDE_FR + GUIDES_FR
 OTHER = dict([('/fr/', '/'), ('/fr/tarifs', '/pricing'), ('/fr/conditions', '/terms'), ('/fr/remboursement', '/refunds'), ('/fr/confidentialite', '/privacy'),
-              ('/fr/mentions-legales', '/legal-notice'), ('/fr/alternative-triller', '/triller-alternative'), ('/fr/clip', '/music-video')] + list(zip(AIDE_FR, AIDE_EN)))
+              ('/fr/mentions-legales', '/legal-notice'), ('/fr/alternative-triller', '/triller-alternative'), ('/fr/clip', '/music-video')] + list(zip(AIDE_FR, AIDE_EN)) + list(zip(GUIDES_FR, ['/' + a[1] for a in FOOT.GUIDES_FR])))
 OTHER.update({v: k for k, v in list(OTHER.items())})
 # (23/11, Marketing) the tutorials are folded under their title, which says how many there are
-HEADS = {'fr': ['Produit', 'Tutos (10)', 'Légal', 'Tes choix'], 'en': ['Product', 'Tutorials (10)', 'Legal', 'Your choices']}
+HEADS = {'fr': ['Produit', 'Percer (4)', 'Tutos (10)', 'Légal', 'Tes choix'], 'en': ['Product', 'Blow up (4)', 'Tutorials (10)', 'Legal', 'Your choices']}
 MUST = {'fr': ['/fr/tarifs', '/fr/clip', '/fr/alternative-triller', '/fr/conditions', '/fr/remboursement', '/fr/confidentialite', '/fr/mentions-legales'] + AIDE_FR,
         'en': ['/pricing', '/music-video', '/triller-alternative', '/terms', '/refunds', '/privacy', '/legal-notice'] + AIDE_EN}
 GUIDES = ['/lip-sync-video-editor', '/music-video-maker-for-rappers', '/rap-snippet-video', '/lip-sync-videos-for-singers',
           '/how-to-make-a-lip-sync-video', '/edit-video-to-the-beat']
-# the 6 guides are English-only pages: in the English footer, never in the French one (13/11 audit)
+# the 6 guides: the English ones in the English footer, their French pages in the French footer (25/11; English-only before)
 def guides_ok(lang, ls):
-    return all(g in ls for g in GUIDES) if lang == 'en' else not any(g in ls for g in GUIDES)
+    return all(g in ls for g in GUIDES) and not any(g in ls for g in GUIDES_FR) if lang == 'en' else all(g in ls for g in GUIDES_FR) and not any(g in ls for g in GUIDES)
 BOTTOM = '© 2026 Stalak · Made by 99Sayso'
 
 
@@ -98,8 +102,8 @@ def static_page(b, base, site, url, lang, iphone, ref):
     check(tag + ' : Français / English vers la même page dans l’autre langue', d['langs'] == list(want), (d['langs'], want))
     if ref is not None: check(tag + ' : mêmes liens que le pied de page de l’app', ls == ref, (ls, ref))
     cols = d['cols']
-    if iphone: check(tag + ' : téléphone : colonnes empilées', len(cols) == 5 and len({c[0] for c in cols}) == 1 and all(cols[i][1] < cols[i + 1][1] for i in range(4)), cols)
-    else: check(tag + ' : ordinateur : 5 colonnes côte à côte', len(cols) == 5 and len({c[1] for c in cols}) == 1 and all(cols[i][0] < cols[i + 1][0] for i in range(4)), cols)
+    if iphone: check(tag + ' : téléphone : colonnes empilées', len(cols) == 6 and len({c[0] for c in cols}) == 1 and all(cols[i][1] < cols[i + 1][1] for i in range(5)), cols)
+    else: check(tag + ' : ordinateur : 6 colonnes côte à côte', len(cols) == 6 and len({c[1] for c in cols}) == 1 and all(cols[i][0] < cols[i + 1][0] for i in range(5)), cols)
     check(tag + ' : pas de défilement horizontal', d['sw'] <= d['vw'], (d['sw'], d['vw']))
     check(tag + ' : aucune erreur dans la page', not errs, errs)
     ctx.close()
@@ -127,7 +131,7 @@ def app(b, base, site, lang, iphone):
     check(tag + ' : seulement nos sites, chaque lien mène à une page qui existe', not bad, bad)
     cols = d['cols']
     if iphone: pass   # measured in the editor, below
-    else: check(tag + ' : ordinateur : 5 colonnes côte à côte', len(cols) == 5 and len({c[1] for c in cols}) == 1, cols)
+    else: check(tag + ' : ordinateur : 6 colonnes côte à côte', len(cols) == 6 and len({c[1] for c in cols}) == 1, cols)
     # the help ice cube and the Export button, at the very bottom of the page (video ready, Export button off the screen)
     pg.locator('#demoBtn:visible, #heroDemo:visible, #mhEx:visible').click(); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000)
     pg.wait_for_timeout(1500)
@@ -135,7 +139,7 @@ def app(b, base, site, lang, iphone):
     if iphone:
         d = pg.evaluate(FOOT_JS); cols = d['cols']
         check(tag + ' : téléphone, dans l’éditeur : le pied de page est là, pleine largeur, tout en bas, colonnes empilées', abs(d['width'] - d['vw']) < 1 and abs(d['bottom'] - d['doc']) < 2
-              and len(cols) == 5 and len({c[0] for c in cols}) == 1 and all(cols[i][1] < cols[i + 1][1] for i in range(4)), (d['width'], d['bottom'], d['doc'], cols))
+              and len(cols) == 6 and len({c[0] for c in cols}) == 1 and all(cols[i][1] < cols[i + 1][1] for i in range(5)), (d['width'], d['bottom'], d['doc'], cols))
     fab = pg.locator('#expFab'); cube = pg.locator('#helpBtn').bounding_box()
     fb = fab.bounding_box() if fab.count() and fab.is_visible() else None
     # (23/11, Marketing) the links of the folded tutorials are not on the screen: only what is displayed counts

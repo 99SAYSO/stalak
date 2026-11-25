@@ -35,7 +35,10 @@ SOCIAL = FOOT.SOCIAL
 # Confidentialité et mentions légales n'y sont pas : elles sont en « noindex » (choix Juridique), Google ne doit pas les recevoir.
 SITEMAP_PAIRS = [('/fr/tarifs', '/pricing'), ('/fr/conditions', '/terms'), ('/fr/remboursement', '/refunds'),
                  ('/fr/alternative-triller', '/triller-alternative'), ('/fr/clip', '/music-video')]
-GUIDES = FOOT.GUIDES   # les 6 guides (anglais seulement) : src/footer.py
+# (25/11, point SEO/AEO) les 6 guides existent aussi en français (src/footer.py, GUIDES_FR) : ils passent dans les paires FR / EN,
+# et GUIDES ne garde que les guides sans page française (aucun aujourd'hui) ; les pages « percer » aussi (src/footer.py, PERCER)
+SITEMAP_PAIRS += [('/fr/' + fr, '/' + en) for fr, en, _ in FOOT.GUIDES_FR] + [('/fr/' + fr, '/' + en) for fr, en, _, _ in FOOT.PERCER]
+GUIDES = [g for g in FOOT.GUIDES if g[0] not in {en for _, en, _ in FOOT.GUIDES_FR}]
 # Marketing & croissance (09/11, A7) : les pages d'aide, en FR et en EN, dans le plan du site avec leurs liens FR / EN (src/footer.py, AIDE)
 SITEMAP_PAIRS += [('/fr/' + fr, '/' + en) for fr, en, _, _ in FOOT.AIDE]
 
@@ -288,9 +291,45 @@ def jdump(d): return json.dumps(d, ensure_ascii=False).replace('</', '<\\/')
 js = js[:block('EN').start(1)] + jdump(EN) + js[block('EN').end(1):]
 js = js[:block('FR').start(1)] + jdump(FR) + js[block('FR').end(1):]
 js = js[:block('STATIC_FR').start(1)] + jdump(SFR) + js[block('STATIC_FR').end(1):]
+# Marketing & croissance (25/11, point SEO/AEO du Chef, docs/audit/seo-aeo-2026-11-25.md): the titles of the app's screens
+# (« Ta vidéo est prête ✓ », « Reprendre ton dernier montage ? », the steps, the windows…) are not the plan of the page for
+# Google and the AIs. On stalak.app only, they become <x-h2 role="heading" aria-level="2">: the same for a screen reader, not
+# a <h2> in the HTML. Kept as <h2>: « Stalak, c'est quoi ? » (aboutT), the reviews (rvT) and the footer. Their style follows:
+# every CSS selector with h2 gets the same one with x-h2 (same weight), and x-h2 starts with a browser's h2 look.
+_H2_KEEP = re.compile(r'\bid="(aboutT|rvT)"|class="ft-h"')
+def _demote_h2(m):
+    attrs = m.group(1) or ''
+    if _H2_KEEP.search(attrs): return m.group(0)
+    return '<x-h2 role="heading" aria-level="2"' + attrs + '>' + m.group(2) + '</x-h2>'
+markup, _n_h2 = re.subn(r'<h2(\s[^>]*)?>(.*?)</h2>', _demote_h2, markup, flags=re.S)
+assert _n_h2 >= 20 and markup.count('<h2') == 2 + markup.count('class="ft-h"'), 'home page: the h2 kept should be aboutT, rvT and the footer'
+def _split_sel(s):
+    parts, depth, cur = [], 0, ''
+    for ch in s:
+        if ch == ',' and depth == 0: parts.append(cur); cur = ''; continue
+        depth += ch == '('; depth -= ch == ')'; cur += ch
+    return parts + [cur]
+_H2_RE = re.compile(r'(?<![\w.#-])h2(?![\w-])')
+def _css_x_h2(c):
+    def fix(m):
+        sel = m.group(0); extra = [_H2_RE.sub('x-h2', p) for p in _split_sel(sel) if _H2_RE.search(p)]
+        return sel if not extra else sel.rstrip() + ',' + ','.join(extra) + ' '
+    return 'x-h2{display:block;font-size:1.5em;font-weight:bold;margin-block:.83em}\n' + re.sub(r'[^{}]+(?=\{)', fix, c)
+css = _css_x_h2(css)
 markup_en, n_en = localize(markup, EN)
 markup_en = markup_en.replace('data-lang="fr" lang="fr" aria-pressed="true"', 'data-lang="fr" lang="fr" aria-pressed="false"').replace('data-lang="en" lang="en" aria-pressed="false"', 'data-lang="en" lang="en" aria-pressed="true"')
 assert n_en == len(TAG.findall(markup)), 'some texts of the English page were not replaced'
+
+# Marketing & croissance (25/11, SEO/AEO): the date the home page last changed (its sources: src/ and this script), for
+# « dateModified » (Google and the AIs prefer pages that say when they were updated): the last commit, or today if not committed
+def _home_modified():
+    import subprocess
+    try:
+        g = lambda *a: subprocess.run(['git', *a, '--', 'src', 'build_site.py'], cwd=root, capture_output=True, text=True, timeout=20).stdout.strip()
+        return datetime.date.today().isoformat() if g('status', '--porcelain') else (g('log', '-1', '--format=%cs') or datetime.date.today().isoformat())
+    except Exception:
+        return datetime.date.today().isoformat()
+HOME_MODIFIED = _home_modified()
 
 def meta(lang):
     P = PAGE[lang]; url = URL + P['path']; other = 'en' if lang == 'fr' else 'fr'
@@ -305,8 +344,8 @@ def meta(lang):
                        **({'priceSpecification': {'@type': 'UnitPriceSpecification', 'price': pr, 'priceCurrency': 'USD', 'billingDuration': d}} if d else {}))
                   for n, pr, d in [('Free', '0', None), ('Stalak Pro (monthly)', '7.99', 'P1M'), ('Stalak Pro (yearly)', '49.99', 'P1Y'),
                                    ('Creator Plus (monthly)', '14.99', 'P1M'), ('Creator Plus (yearly)', '99.99', 'P1Y')]],
-       'description': P['ld'], 'image': og, 'creator': {'@type': 'Organization', 'name': 'Alaska'}, 'publisher': {'@id': URL + '/#organization'}},
-      {'@type': 'WebSite', '@id': URL + '/#website', 'name': 'Stalak', 'alternateName': ['Stalak app', 'stalak.app'], 'url': url, 'inLanguage': lang, 'publisher': {'@id': URL + '/#organization'}},
+       'description': P['ld'], 'image': og, 'creator': {'@type': 'Organization', 'name': 'Alaska'}, 'publisher': {'@id': URL + '/#organization'}, 'dateModified': HOME_MODIFIED},
+      {'@type': 'WebSite', '@id': URL + '/#website', 'name': 'Stalak', 'alternateName': ['Stalak app', 'stalak.app'], 'url': url, 'inLanguage': lang, 'publisher': {'@id': URL + '/#organization'}, 'dateModified': HOME_MODIFIED},
       dict({'@type': 'Organization', '@id': URL + '/#organization', 'name': 'Stalak', 'alternateName': 'stalak.app', 'url': URL + '/',
             'logo': {'@type': 'ImageObject', 'url': URL + '/icons/icon-512.png', 'width': 512, 'height': 512}, 'image': og,
             'description': P['ld'], 'email': EMAIL or None, 'parentOrganization': {'@type': 'Organization', 'name': 'Alaska'}},

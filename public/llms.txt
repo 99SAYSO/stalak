@@ -1,6 +1,8 @@
 # Stalak
 
-> Stalak (https://stalak.app) is a free, browser-based lip-sync video editor for rappers and singers. Upload your song and a few takes of you performing it; Stalak cuts between the takes on the beat, keeps the lip sync tight, adds on-screen lyrics and exports for TikTok, Instagram Reels, YouTube Shorts or a full 16:9 YouTube music video. It runs in the browser on iPhone, Android or desktop. English and French.
+> Stalak (https://stalak.app) is a browser-based app that helps independent rappers and singers get seen on social media. Its core is a lip-sync video editor: upload your song and a few takes of you performing it; Stalak cuts between the takes on the beat, keeps the lip sync tight, adds on-screen lyrics and exports for TikTok, Instagram Reels and YouTube Shorts (free), or a full 16:9 YouTube music video (Stalak Pro and Creator Plus). Because one filming session gives many different edits of the same song, artists can post a song again and again, which is how songs get noticed in 2026. It runs in the browser on iPhone, Android or desktop. English and French.
+
+Stalak does not promise that anyone will blow up: it removes the editing work so artists can post more often, and its guides explain what actually works, with sources.
 
 Stalak is not related to the Dofus game creature of the same name.
 
@@ -9,15 +11,22 @@ Stalak is not related to the Dofus game creature of the same name.
 - [Stalak in French](https://stalak.app/fr/): the same app in French.
 - [Pricing](https://stalak.app/pricing): Free, Stalak Pro and Creator Plus.
 - [Pricing in French](https://stalak.app/fr/tarifs): the same in French.
-- [Music video mode](https://stalak.app/music-video): your whole song as a 16:9 YouTube music video, cut on the beat, with effects on the drops, choruses and breaks (Stalak Pro; try it free in the preview). With a real example. In French: [le mode Clip](https://stalak.app/fr/clip).
+- [Music video mode](https://stalak.app/music-video): your whole song as a 16:9 YouTube music video, cut on the beat, with effects on the drops, choruses and breaks (for Stalak Pro and Creator Plus subscribers). With a real example. In French: [le mode Clip](https://stalak.app/fr/clip).
 
 ## Guides
-- [Lip-sync video editor](https://stalak.app/lip-sync-video-editor): what Stalak does; it edits your real takes (no AI face, no fake mouth).
-- [Music video maker for rappers](https://stalak.app/music-video-maker-for-rappers): from a few phone takes to a rap video cut on the beat, 9:16 or 16:9.
-- [Rap snippet video](https://stalak.app/rap-snippet-video): a 10 to 30 second snippet cut on the beat, with lyrics on screen.
-- [Performance videos for singers](https://stalak.app/lip-sync-videos-for-singers): multi-take edits for covers and originals, cuts on the words or every bar.
-- [How to make a lip-sync video](https://stalak.app/how-to-make-a-lip-sync-video): the 4 steps (song, takes, lyrics, edit), with filming tips.
-- [Edit video to the beat](https://stalak.app/edit-video-to-the-beat): how the automatic cuts on the beat work.
+- [Lip-sync video editor](https://stalak.app/lip-sync-video-editor): what Stalak does; it edits your real takes (no AI face, no fake mouth). In French: [Éditeur vidéo de playback](https://stalak.app/fr/editeur-video-playback).
+- [Music video maker for rappers](https://stalak.app/music-video-maker-for-rappers): from a few phone takes to a rap video cut on the beat, 9:16 or 16:9. In French: [Faire un clip de rap](https://stalak.app/fr/faire-un-clip-de-rap).
+- [Rap snippet video](https://stalak.app/rap-snippet-video): a 10 to 30 second snippet cut on the beat, with lyrics on screen. In French: [Snippet de rap](https://stalak.app/fr/snippet-rap).
+- [Performance videos for singers](https://stalak.app/lip-sync-videos-for-singers): multi-take edits for covers and originals, cuts on the words or every bar. In French: [Vidéos pour chanteurs](https://stalak.app/fr/videos-pour-chanteurs).
+- [How to make a lip-sync video](https://stalak.app/how-to-make-a-lip-sync-video): the 4 steps (song, takes, lyrics, edit), with filming tips. In French: [Faire une vidéo playback](https://stalak.app/fr/comment-faire-une-video-playback).
+- [Edit video to the beat](https://stalak.app/edit-video-to-the-beat): how the automatic cuts on the beat work. In French: [Monter sur le rythme](https://stalak.app/fr/monter-une-video-sur-le-rythme).
+
+## Blowing up as an independent rapper (English and French)
+Each page answers the question in its first lines, cites its sources (TikTok, Spotify for Artists, Luminate via Music Business Worldwide, Wikipedia…) and gives Stalak's own numbers.
+- [How to blow up as a rapper in 2026](https://stalak.app/how-to-blow-up-as-a-rapper): why TikTok matters (94% of 2025 Billboard Global 200 entries went viral on TikTok first, per TikTok’s 2026 Music Impact Report by Luminate), follower count is not a direct ranking factor, what to post, how often, turning views into streams. In French: [Comment percer dans le rap en 2026](https://stalak.app/fr/comment-percer-dans-le-rap).
+- [How to make your song take off on TikTok](https://stalak.app/how-to-make-a-song-go-viral-on-tiktok): how TikTok picks who sees a video (watching to the end weighs most), the first two seconds, which part of the song, several edits of the same part, judging a video by watch time first. In French: [Comment faire décoller un son sur TikTok](https://stalak.app/fr/faire-decoller-un-son-sur-tiktok).
+- [How many snippets should you post before a release?](https://stalak.app/how-many-snippets-before-a-release): no official number; a 3-week plan (10 to 20 snippets of the same part, edited differently), pitching to Spotify at least 7 days before release, what to do if a snippet blows up early. In French: [Combien de snippets poster avant une sortie ?](https://stalak.app/fr/combien-de-snippets-avant-une-sortie).
+- [The story of the “Miss the Rage” snippet](https://stalak.app/miss-the-rage-snippet-story): how Trippie Redd’s “Miss the Rage” spent five months as a snippet (Instagram tease on 21 December 2020), how a TikTok fan edit brought Playboi Carti onto it, the release on 7 May 2021 (Billboard Hot 100 #11) and what independent rappers can take from it. In French: [L’histoire du snippet de « Miss the Rage »](https://stalak.app/fr/histoire-snippet-miss-the-rage).
 
 ## Tutorials (English and French)
 Each one explains how to do it for real, then shows the same in Stalak step by step, with screenshots of the app.
@@ -38,6 +47,9 @@ Each one explains how to do it for real, then shows the same in Stalak step by s
 - Free: unlimited videos; auto cuts that land on the beat (phrase by phrase, on the lines and rhymes of your lyrics, or every bar); on-screen lyrics one line at a time (size M), pasted in and synced by tapping; 3 filters (Frost, 35mm Film, Black & White); vertical 9:16 export. Every free video carries a small watermark (the face of Stalak's mascot and "stalak.app"); only Stalak Pro and Creator Plus export without it.
 - Stalak Pro ($7.99/month or $49.99/year): no watermark, 16:9 music video mode, premium effects, word-by-word and karaoke lyrics in any size, all filters, auto lyrics written and synced from your vocals (20 a day).
 - Creator Plus ($14.99/month or $99.99/year): everything in Pro, plus video packs (5 to 30 differently cut videos from one song, from just 2 takes), auto lyrics 60 a day, automatic cloud saving (100 GB), and "Talk to a human" (live chat, or an email reply within 24 hours).
+- Stalak Pro has a 7-day free trial: a card is required, nothing is charged for 7 days, then the plan's price unless cancelled before the end.
+- Stats (being rolled out): artists can link their TikTok account in Stalak to see their numbers; the free plan shows a preview, the detailed analysis is for Stalak Pro and Creator Plus. Stalak never promises views.
+- Stalak's own numbers (public, 25 November 2026): 293 videos exported with Stalak since launch (live counter on the home page). Stalak's own TikTok account (@stalak_app) posted 15 videos from 19 to 23 November 2026: each got 604 to 860 views, with 6.7 to 17.1 seconds of average watch time.
 - Prices are in US dollars; any sales tax or VAT is added at checkout. Subscribers keep their price.
 - Payments are handled by Paddle. Full refund within 14 days.
 - Made by 99Sayso, a rapper from the Alaska collective, who coded Stalak for his own videos.

@@ -19,6 +19,13 @@ GUIDES = [   # slug, title on the picture, the mascot
     ('lip-sync-videos-for-singers', 'Performance videos for singers', 'Several takes, one performance', 'love'),
     ('how-to-make-a-lip-sync-video', 'How to make a lip-sync video', 'Song, takes, lyrics, edit: 4 steps', 'hello'),
     ('edit-video-to-the-beat', 'Edit video to the beat', 'Cuts that land on the beat', 'gg'),
+    # Marketing & croissance (25/11, point SEO/AEO): the 6 guides in French (site_drafts/make_pages.py)
+    ('editeur-video-playback', 'Éditeur vidéo de playback', 'Tes prises, coupées sur le rythme', 'cool', 'Gratuit · dans ton navigateur · sans compte'),
+    ('faire-un-clip-de-rap', 'Faire un clip de rap', 'Tes prises au téléphone, sur le rythme', 'hype', 'Gratuit · dans ton navigateur · sans compte'),
+    ('snippet-rap', 'Snippet de rap', 'Filme une fois, poste un montage par jour', 'focus', 'Gratuit · dans ton navigateur · sans compte'),
+    ('videos-pour-chanteurs', 'Vidéos pour chanteurs', 'Plusieurs prises, une performance', 'love', 'Gratuit · dans ton navigateur · sans compte'),
+    ('comment-faire-une-video-playback', 'Faire une vidéo playback', 'Son, prises, paroles, montage : 4 étapes', 'hello', 'Gratuit · dans ton navigateur · sans compte'),
+    ('monter-une-video-sur-le-rythme', 'Monter sur le rythme', 'Des coupes qui tombent sur le temps', 'gg', 'Gratuit · dans ton navigateur · sans compte'),
     # Marketing & croissance (07/11): the « Clip » page (Music video mode, a Pro export: « Try it free », not « Free »)
     ('music-video', 'Music video mode', 'Your whole song as a YouTube music\u00a0video', 'cool', 'Try it free · in your browser · no sign-up'),
     ('clip', 'Le mode Clip', 'Tout ton morceau en clip YouTube', 'cool', 'Essai gratuit · dans ton navigateur · sans compte'),

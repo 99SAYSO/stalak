@@ -30,6 +30,22 @@ SOCIAL = {k: v for k, v in SOCIAL.items() if v}
 GUIDES = [('lip-sync-video-editor', 'Lip-sync video editor'), ('music-video-maker-for-rappers', 'Music video maker for rappers'),
           ('rap-snippet-video', 'Rap snippet video'), ('lip-sync-videos-for-singers', 'Performance videos for singers'),
           ('how-to-make-a-lip-sync-video', 'How to make a lip-sync video'), ('edit-video-to-the-beat', 'Edit video to the beat')]
+# Marketing & croissance (25/11, point SEO/AEO) : les 6 guides existent aussi en français (page FR, page EN, nom FR), écrits par
+# site_drafts/make_pages.py ; le pied de page français les liste à son tour, et ils ont leurs liens FR / EN.
+GUIDES_FR = [('editeur-video-playback', 'lip-sync-video-editor', 'Éditeur vidéo de playback'),
+             ('faire-un-clip-de-rap', 'music-video-maker-for-rappers', 'Faire un clip de rap'),
+             ('snippet-rap', 'rap-snippet-video', 'Snippet de rap'),
+             ('videos-pour-chanteurs', 'lip-sync-videos-for-singers', 'Vidéos pour chanteurs'),
+             ('comment-faire-une-video-playback', 'how-to-make-a-lip-sync-video', 'Faire une vidéo playback'),
+             ('monter-une-video-sur-le-rythme', 'edit-video-to-the-beat', 'Monter sur le rythme')]
+assert [g[1] for g in GUIDES_FR] == [g[0] for g in GUIDES]
+# Marketing & croissance (25/11, point SEO/AEO) : les pages « percer » (site_drafts/make_percer.py), en FR et en EN :
+# (page FR, page EN, nom FR, nom EN). Une colonne repliée « Percer » / « Blow up » dans le pied de page.
+PERCER = [
+    ('comment-percer-dans-le-rap', 'how-to-blow-up-as-a-rapper', 'Percer dans le rap', 'Blow up as a rapper'),
+    ('faire-decoller-un-son-sur-tiktok', 'how-to-make-a-song-go-viral-on-tiktok', 'Faire décoller un son sur TikTok', 'Make a song take off on TikTok'),
+    ('combien-de-snippets-avant-une-sortie', 'how-many-snippets-before-a-release', 'Combien de snippets avant une sortie', 'Snippets before a release'),
+    ('histoire-snippet-miss-the-rage', 'miss-the-rage-snippet-story', 'Le snippet de « Miss the Rage »', 'The “Miss the Rage” snippet')]
 # Marketing & croissance (09/11, A7) : les pages d'aide (tutos), en français ET en anglais : (page FR, page EN, nom FR, nom EN).
 # Écrites par site_drafts/make_aide.py ; ici pour le pied de page (colonne « Tutos » / « Tutorials »), le plan du site et FR / EN.
 AIDE = [   # the help pages (site_drafts/make_aide.py): fr slug, en slug, fr label, en label
@@ -46,7 +62,7 @@ AIDE = [   # the help pages (site_drafts/make_aide.py): fr slug, en slug, fr lab
 TXT = {
     'fr': {
         'home': '/fr/', 'tagline': 'Ton playback monté sur le rythme, directement dans ton navigateur.',
-        'product': 'Produit', 'aide': 'Tutos', 'legal': 'Légal', 'choices': 'Tes choix',
+        'product': 'Produit', 'aide': 'Tutos', 'percer': 'Percer', 'legal': 'Légal', 'choices': 'Tes choix',
         'pricing': ('/fr/tarifs', 'Tarifs'), 'triller': ('/fr/alternative-triller', 'Alternative à Triller'),
         'clip': ('/fr/clip', 'Le mode Clip'),   # Marketing & croissance (07/11) : la page « Clip »
         'legal_links': [('/fr/conditions', 'Conditions'), ('/fr/remboursement', 'Remboursement'),
@@ -57,7 +73,7 @@ TXT = {
     },
     'en': {
         'home': '/', 'tagline': 'Lip-sync videos cut to the beat, right in your browser.',
-        'product': 'Product', 'aide': 'Tutorials', 'legal': 'Legal', 'choices': 'Your choices',
+        'product': 'Product', 'aide': 'Tutorials', 'percer': 'Blow up', 'legal': 'Legal', 'choices': 'Your choices',
         'pricing': ('/pricing', 'Pricing'), 'triller': ('/triller-alternative', 'Triller alternative'),
         'clip': ('/music-video', 'Music video mode'),   # Marketing & croissance (07/11): the « Clip » page
         'legal_links': [('/terms', 'Terms'), ('/refunds', 'Refunds'), ('/privacy', 'Privacy'), ('/legal-notice', 'Legal notice')],
@@ -70,6 +86,7 @@ PAIRS = [('/fr/', '/'), ('/fr/tarifs', '/pricing'), ('/fr/conditions', '/terms')
          ('/fr/confidentialite', '/privacy'), ('/fr/mentions-legales', '/legal-notice'), ('/fr/alternative-triller', '/triller-alternative'),
          ('/fr/clip', '/music-video')]
 PAIRS += [('/fr/' + fr, '/' + en) for fr, en, _, _ in AIDE]
+PAIRS += [('/fr/' + fr, '/' + en) for fr, en, _ in GUIDES_FR] + [('/fr/' + fr, '/' + en) for fr, en, _, _ in PERCER]
 BOTTOM = '© 2026 Stalak · Made by 99Sayso'
 FLAG_FR = ('<svg class="flag" viewBox="0 0 3 2" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path fill="#002654" d="M0 0h1v2H0z"/>'
            '<path fill="#fff" d="M1 0h1v2H1z"/><path fill="#ce1126" d="M2 0h1v2H2z"/></svg>')
@@ -120,16 +137,18 @@ def inner(lang, page=None, lite=False):
         brand = brand.replace('<a class="ft-home" href="' + T['home'] + '">', '<span class="ft-home">').replace('</span></a><p', '</span></span><p')
         cols = brand + choices
     else:
-        guides = GUIDES if lang == 'en' else []   # English-only pages: in the English footer only (13/11 audit)
+        guides = GUIDES if lang == 'en' else [('fr/' + fr, n) for fr, _, n in GUIDES_FR]   # (25/11) the guides exist in both languages
         product = ('<div class="ft-col"><h2 class="ft-h">' + T['product'] + '</h2><ul class="ft-list"><li>' + _a(*T['pricing']) + '</li><li>' + _a(*T['clip']) + '</li>'
                    + ''.join('<li>' + _a('/' + s, n) + '</li>' for s, n in guides) + '<li>' + _a(*T['triller']) + '</li></ul></div>')
         # Marketing & croissance (22/11, audit: the footer too long under the editor on a phone): the tutorials folded in one group,
         # opened with a touch (the links stay in the page for search engines)
         aide = ('<div class="ft-col"><details class="ft-fold"><summary><h2 class="ft-h">' + T['aide'] + ' (' + str(len(AIDE)) + ')</h2></summary><ul class="ft-list">'
                 + ''.join('<li>' + (_a('/fr/' + fr, nfr) if lang == 'fr' else _a('/' + en, nen)) + '</li>' for fr, en, nfr, nen in AIDE) + '</ul></details></div>')
+        percer = ('<div class="ft-col"><details class="ft-fold"><summary><h2 class="ft-h">' + T['percer'] + ' (' + str(len(PERCER)) + ')</h2></summary><ul class="ft-list">'
+                  + ''.join('<li>' + (_a('/fr/' + fr, nfr) if lang == 'fr' else _a('/' + en, nen)) + '</li>' for fr, en, nfr, nen in PERCER) + '</ul></details></div>')
         legal = ('<div class="ft-col"><h2 class="ft-h">' + T['legal'] + '</h2><ul class="ft-list">'
                  + ''.join('<li>' + _a(u, n) + '</li>' for u, n in T['legal_links']) + '</ul></div>')
-        cols = brand + product + aide + legal + choices
+        cols = brand + product + percer + aide + legal + choices
     return '<div class="ft-cols' + (' ft-lite' if lite else '') + '">' + cols + '</div><p class="ft-bottom">' + H.escape(BOTTOM) + '</p>'
 
 

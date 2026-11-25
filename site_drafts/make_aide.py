@@ -8,7 +8,7 @@
 import html as H, json, pathlib, sys
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / 'src')); import footer as FOOT
-TODAY = '2026-11-09'
+TODAY = '2026-11-09'   # each page's own date: « modified » (25/11: how-to-lip-sync, comment-faire-un-playback, format-video-clip, Search Console)
 
 CSS = """:root{--sky:#1f6fd6;--ink:#0a0d14;--frost:#eef7ff}
 body{margin:0;background:var(--sky);color:var(--ink);font:400 16px/1.6 Rubik,system-ui,sans-serif;padding:24px 16px 60px}
@@ -290,13 +290,13 @@ PAGES = [
         ('Il faut quelqu’un pour me filmer ?', 'Non. Pose le téléphone sur quelque chose de stable, ou demande à un pote pour les plans en mouvement. Stalak cale chaque prise sur le son, où qu’elle ait été filmée.')],
    more=[('/fr/tarifs', 'Les tarifs de Stalak')]),
  ),
- dict(n=3, en_slug='how-to-lip-sync', fr_slug='comment-faire-un-playback', mascot='cool', rel=[5, 4, 1, 6],
+ dict(n=3, en_slug='how-to-lip-sync', modified='2026-11-25', fr_slug='comment-faire-un-playback', mascot='cool', rel=[5, 4, 1, 6],
   en=dict(
-   title='How to Lip Sync Perfectly to Your Own Song | Stalak',
-   desc='How to lip sync so it looks real: know every word and breath, play the song out loud, perform at full voice and film several takes. Then fix a take that drifts.',
+   title='How to Lip Sync to Rap Songs So It Looks Real | Stalak',
+   desc='Lip syncing a rap song is hard: fast bars, breaths, ad-libs. Learn the verse, rap it out loud as you film, shoot a few takes, fix the one that drifts.',
    og=('How to lip sync perfectly', 'Every word, every breath, in time'),
-   h1='How to lip sync perfectly', crumb='How to lip sync',
-   lead='To lip sync perfectly, know every word and every breath of the song, play it out loud while you film, and perform at full voice instead of mouthing quietly. Film several takes of the same part, then keep each one lined up with the audio. Stalak does that last part for you, down to a single frame.',
+   h1='How to lip sync to rap songs, perfectly', crumb='How to lip sync',
+   lead='To lip sync to a rap song, learn the verse until you can rap it without the track, then film with the song playing out loud and rap at full voice. Fast bars show every slip, so film several takes and keep each one lined up with the audio. Stalak does that last part for you, to the frame.',
    sections=[
     ('How do you do a perfect lip sync?',
      'Perform the song instead of only moving your lips. Rap or sing every word out loud over the track, with the same breaths, pauses and energy as the recording. The camera sees your jaw, your throat and your chest, so a real performance reads as in sync.',
@@ -331,11 +331,11 @@ PAGES = [
         ('Is lip syncing hard?', 'Not when you know the song. Most of it is knowing every word and breathing where the recording breathes. Lining the video up with the audio is the technical part, and Stalak does it for you.')],
    more=[('/how-to-make-a-lip-sync-video', 'How to make a lip-sync video'), ('/lip-sync-video-editor', 'Lip-sync video editor')]),
   fr=dict(
-   title='Comment faire un playback parfait | Stalak',
-   desc='Un playback qui a l’air vrai : connais chaque mot, mets le son en haut-parleur, joue à pleine voix, filme plusieurs prises et recale celle qui décale.',
+   title='Comment faire un playback qui a l’air vrai | Stalak',
+   desc='Comment faire un playback réussi : apprends chaque mot, mets le son fort, rappe à pleine voix, filme plusieurs prises et recale celle qui décale.',
    og=('Faire un playback parfait', 'Chaque mot, chaque souffle, dans le temps'),
    h1='Comment faire un playback parfait', crumb='Faire un playback parfait',
-   lead='Pour un playback parfait, connais chaque mot et chaque souffle du morceau, mets le son en haut-parleur pendant que tu filmes, et joue à pleine voix au lieu de bouger les lèvres en silence. Filme plusieurs prises du même passage, puis garde chacune bien calée sur le son. Stalak fait cette dernière partie pour toi, à l’image près.',
+   lead='Pour faire un playback, apprends le morceau jusqu’à pouvoir le rapper sans le son, puis filme avec le son en haut-parleur et rappe à pleine voix au lieu de bouger les lèvres en silence. Fais plusieurs prises du même passage et garde chacune bien calée sur le son : Stalak le fait pour toi, à l’image près.',
    sections=[
     ('Comment fait-on un playback parfait ?',
      'Interprète le morceau au lieu de seulement bouger les lèvres. Rappe ou chante chaque mot à voix haute sur le son, avec les mêmes souffles, les mêmes pauses et la même énergie que l’enregistrement. La caméra voit ta mâchoire, ta gorge et ta poitrine : une vraie interprétation a l’air calée.',
@@ -804,7 +804,7 @@ PAGES = [
         ('Je peux teaser un son pas encore mixé ?', 'Tu peux, mais c’est cette version que les gens retiendront. Quand c’est possible, attends le mix final pour teaser.')],
    more=[('/fr/tarifs', 'Les tarifs de Stalak')]),
  ),
- dict(n=10, en_slug='music-video-format', fr_slug='format-video-clip', mascot='coffee', rel=[1, 2, 8, 7],
+ dict(n=10, en_slug='music-video-format', modified='2026-11-25', fr_slug='format-video-clip', mascot='coffee', rel=[1, 2, 8, 7],
   en=dict(
    title='Music Video Aspect Ratio, Size and Length | Stalak',
    desc='The right shape, size and length for a music video on YouTube, Shorts, Reels and TikTok: 16:9 or 9:16, 1920 × 1080 or 1080 × 1920, and how long it should run.',
@@ -843,11 +843,11 @@ PAGES = [
         ('What sizes does Stalak export?', 'Vertical 9:16 at 1080 × 1920, 4:5 at 1080 × 1350 and square at 1080 × 1080, all free; the 16:9 music video at 1920 × 1080 with Stalak Pro.')],
    more=[('/music-video-maker-for-rappers', 'Music video maker for rappers'), ('/edit-video-to-the-beat', 'Edit video to the beat')]),
   fr=dict(
-   title='Format d’un clip : taille et durée selon le réseau | Stalak',
-   desc='La bonne forme, la bonne taille et la bonne durée d’un clip pour YouTube, Shorts, Reels et TikTok : 16:9 ou 9:16, 1920 × 1080 ou 1080 × 1920.',
+   title='Taille d’un clip : format et durée par réseau | Stalak',
+   desc='Quelle taille pour un clip ? 1920 × 1080 en 16:9 pour YouTube, 1080 × 1920 en 9:16 pour TikTok, Reels et Shorts, et la bonne durée, réseau par réseau.',
    og=('Format d’un clip', 'Forme, taille et durée selon le réseau'),
-   h1='Format d’un clip : forme, taille et durée', crumb='Format d’un clip',
-   lead='Un clip pour YouTube est à l’horizontale, en 16:9, en 1920 × 1080 pixels, et dure tout le morceau. Pour TikTok, les Reels Instagram et les Shorts YouTube, il est à la verticale, en 9:16, en 1080 × 1920, et un passage court marche le mieux. Stalak fait les deux à partir des mêmes prises (le 16:9 avec Stalak Pro).',
+   h1='Taille et format d’un clip : forme, résolution et durée', crumb='Format d’un clip',
+   lead='La bonne taille d’un clip dépend du réseau : 1920 × 1080 pixels à l’horizontale (16:9) pour YouTube, 1080 × 1920 à la verticale (9:16) pour TikTok, les Reels et les Shorts. Sur YouTube, le clip dure tout le morceau ; sur les réseaux courts, un passage suffit. Stalak fait les deux avec les mêmes prises (16:9 avec Pro).',
    sections=[
     ('Quel format pour un clip ?',
      '16:9, à l’horizontale, pour un clip sur YouTube : c’est la forme du lecteur YouTube sur un ordinateur ou une télé. 9:16, à la verticale, pour TikTok, Reels et Shorts : ces vidéos remplissent un téléphone tenu droit. Les posts carrés (1:1) et portrait (4:5) marchent dans le fil Instagram.',
@@ -899,15 +899,34 @@ def other_tutos(p, lang):
     return [('/' + ('fr/' + by_n[n]['fr_slug'] if lang == 'fr' else by_n[n]['en_slug']), by_n[n][lang]['crumb']) for n in p.get('rel', []) if n in by_n]
 
 
+# the button texts of each page (Marketing audit of 23/11, written in the pages then; kept here since 25/11 so a new run keeps them)
+CTA = {'how-to-make-a-music-video-on-your-phone': ('Make my music video, free', 'Monter mon clip, gratuit'),
+       'music-video-ideas': ('Make my music video, free', 'Monter mon clip, gratuit'),
+       'how-to-lip-sync': ('Make my video, free', 'Monter ma vidéo, gratuit'),
+       'how-to-film-yourself-rapping': ('Make my video, free', 'Monter ma vidéo, gratuit'),
+       'sync-video-to-music': ('Make my video, free', 'Monter ma vidéo, gratuit'),
+       'add-lyrics-to-video': ('Make my video, free', 'Monter ma vidéo, gratuit'),
+       'promote-your-music-on-tiktok': ('Make my snippet, free', 'Monter mon snippet, gratuit'),
+       'promote-your-music-on-instagram': ('Make my snippet, free', 'Monter mon snippet, gratuit'),
+       'how-to-tease-a-song': ('Make my snippet, free', 'Monter mon snippet, gratuit'),
+       'music-video-format': ('Make my music video, free', 'Monter mon clip, gratuit')}
+
+
 def page(p, lang):
-    T, U = p[lang], UI[lang]
+    U0 = UI[lang]; c = CTA[p['en_slug']][lang == 'fr']
+    UI_ = dict(U0, cta=c, cta_end=c)
+    return _page(p, lang, UI_)
+
+
+def _page(p, lang, U):
+    T = p[lang]
     path = ('/fr/' + p['fr_slug']) if lang == 'fr' else ('/' + p['en_slug'])
     en_url, fr_url = '{{URL}}/' + p['en_slug'], '{{URL}}/fr/' + p['fr_slug']
     url = '{{URL}}' + path
     slug = p['fr_slug'] if lang == 'fr' else p['en_slug']
     faq = T['faq'] + COMMON_FAQ[lang]
     ld = {'@context': 'https://schema.org', '@graph': [
-        {'@type': 'WebPage', 'name': T['title'], 'description': T['desc'], 'inLanguage': U['lang'], 'url': url, 'dateModified': TODAY,
+        {'@type': 'WebPage', 'name': T['title'], 'description': T['desc'], 'inLanguage': U['lang'], 'url': url, 'dateModified': p.get('modified', TODAY),
          'about': {'@type': 'SoftwareApplication', 'name': 'Stalak', 'applicationCategory': 'MultimediaApplication', 'operatingSystem': 'Web',
                    'offers': {'@type': 'Offer', 'price': '0', 'priceCurrency': 'USD'}}},
         {'@type': 'BreadcrumbList', 'itemListElement': [{'@type': 'ListItem', 'position': 1, 'name': 'Stalak', 'item': '{{URL}}' + U['home']},
