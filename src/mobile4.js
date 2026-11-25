@@ -136,6 +136,7 @@ var CSS = '@media (max-width:899px){'
 // (25/11, owner: a big black void and icons lost under the sheet) under the sheet, each block is a clean white card; the hint is
 // read on it
 + 'html.m4of1 #result > .sharebox:not([hidden]),html.m4of1 #result > .capbox,html.m4of1 #result > .optbox:not([hidden]),html.m4of1 #result > .post{margin:0 0 14px;padding:14px 16px;background:#fff;border:3px solid ' + INK + ';border-radius:20px;box-shadow:0 4px 0 ' + INK + ';color:' + INK + '}'
++ 'html.m4of1 #result > .capbox,html.m4of1 #result > .sharebox:not([hidden]){display:flex !important;flex-direction:column;gap:8px}html.m4of1 #result > .capbox > *,html.m4of1 #result > .sharebox > *{order:0 !important;margin:0}'
 + 'html.m4of1 #result > .optbox::before,html.m4of1 #result > .optbox::after,html.m4of1 #result > .capbox::before,html.m4of1 #result > .capbox::after{display:none !important}'
 + 'html.m4of1 #result .hint,html.m4of1 #result .note,html.m4of1 #result .label,html.m4of1 #result .optc{color:#3d4a63 !important;text-shadow:none}html.m4of1 #result .label{color:' + INK + ' !important;font-weight:800}'
 + 'html.m4of1 #result > .m4-of1s{position:static}'

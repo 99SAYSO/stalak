@@ -7399,7 +7399,10 @@ async function songFromFile(f){
   return buf;
 }
 /* (22/11, audit mobile n° 1) the first screen's two buttons: the song's file choice, and the example */
-$('#heroSong').onclick = () => $('#songFile').click();
+/* (25/11) on a phone, « Où est ton son ? » first (mobile3.js); elsewhere the file picker */
+const songPick = () => { if (window.StalakM3 && window.StalakM3.son && window.StalakM3.son()) return; $('#songFile').click(); };
+$('#heroSong').onclick = songPick;
+$('#songDrop').addEventListener('click', e => { if (window.StalakM3 && MOB.matches && window.StalakM3.son && window.StalakM3.son()) e.preventDefault(); });
 if ($('#heroClip')) $('#heroClip').onclick = () => kindPick('clip');
 $('#heroDemo').onclick = () => $('#demoBtn').click();
 /* (23/11, maquette A) the pill under them: the average note of the customer reviews (written in the page by build_site.py from
@@ -9932,7 +9935,7 @@ function mobTab(k){
   if (S.exporting || askDone) return;
   const u = ACCT ? ACCT.state.user : null;
   if (k === 'home'){ if (ACCT) apHide(); try { window.scrollTo({ top: 0, behavior: calmMotion() ? 'auto' : 'smooth' }); } catch(e){ window.scrollTo(0, 0); } }
-  else if (k === 'new'){ if (ACCT) apHide(); $('#songFile').click(); }
+  else if (k === 'new'){ if (ACCT) apHide(); songPick(); }
   else if (!ACCT) return;
   else if (k === 'gallery') apGo('gallery');
   else if (k === 'account') apGo('account');
@@ -9946,7 +9949,7 @@ function mobTab(k){
 }
 function mobInit(){
   $('#tabBar').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) mobTab(b.dataset.tab); });
-  $('#mhNew').onclick = () => $('#songFile').click();
+  $('#mhNew').onclick = songPick;
   $('#mhEx').onclick = () => $('#demoBtn').click();
   $('#mhPill').onclick = () => { if (S.exporting || askDone || !ACCT) return; if (acctPaid()) apGo('account'); else apGo('pro', { from: 'menu' }); };
   // what changes the state: a step, the song, the end screen, a page of the account, the person signed in
@@ -9966,6 +9969,7 @@ function mobInit(){
       can: f => can(f), playing: () => !!S.playing, lyr: () => S.lyrics.mode, exporting: () => !!S.exporting,
       takes: () => S.takes.filter(t => !t.broll).map(t => ({ el: t.kind === 'video' ? t.el || null : null, thumb: t.thumb || (t.live && t.live.ts != null ? t.live.cv : null) || null, demo: t.kind === 'demo', look: t.look || null, stars: t.qual ? qualSummary(t).stars : 0 })),
       filtThumbs: () => filtThumbs(),
+      loadSong: f => loadSongFile(f), pickFile: () => $('#songFile').click(), demo: () => $('#demoBtn').click(),
       desel: () => { S.sel = -1; S.selT = null; S.fxSelT = null; renderTimeline(); renderCutBar(); renderFxBar(); },
       cam: () => !!recStream, rec: () => (recRec && recRec.state !== 'inactive') ? 'rec' : recCd ? 'cd' : 'idle', timer: () => recDelay, timerSet: v => recTimerSet(v),
       take: () => S.takes.filter(t => !t.broll && t.kind !== 'demo').length + 1,
