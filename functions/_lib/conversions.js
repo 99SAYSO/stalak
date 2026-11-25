@@ -27,7 +27,9 @@ export async function tiktokPurchase(env, data, { plan = null, userId = null, em
   const body = {
     event_source: 'web', event_source_id: String(env.TIKTOK_PIXEL_ID),
     data: [{
-      event: 'CompletePayment', event_time: Math.floor((Date.parse(data.billed_at || data.updated_at || '') || Date.now()) / 1000),
+      // 25/11: « Purchase » is TikTok's standard name now (Ads Manager help, read 25/11); the page sends the same event with
+      // the same event_id (consent.js), so TikTok counts it once
+      event: 'Purchase', event_time: Math.floor((Date.parse(data.billed_at || data.updated_at || '') || Date.now()) / 1000),
       event_id: String(data.id), user,
       properties: { currency: cur, value: Math.round(totalCents) / 100, content_type: 'product',
         contents: [{ content_id: 'stalak_' + (plan || 'pro'), content_name: plan === 'creator' ? 'Stalak Creator Plus' : 'Stalak Pro', quantity: 1 }] },

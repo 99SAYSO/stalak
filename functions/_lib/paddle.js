@@ -120,12 +120,12 @@ async function applyTransaction(env, data) {
     const item = (data.items || []).find((i) => i && i.price) || null;
     const known = await env.DB.prepare('SELECT 1 FROM payments WHERE id = ?1').bind(data.id).first();
     await env.DB.prepare(
-      `INSERT INTO payments (id, user_id, subscription_id, price_id, origin, currency, total, tax, earnings, billed_at, created_at, env)
-       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)
-       ON CONFLICT(id) DO UPDATE SET user_id = COALESCE(?2, user_id), total = ?7, tax = ?8, earnings = COALESCE(?9, earnings)`
+      `INSERT INTO payments (id, user_id, subscription_id, price_id, origin, currency, total, tax, earnings, billed_at, created_at, env, source)
+       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13)
+       ON CONFLICT(id) DO UPDATE SET user_id = COALESCE(?2, user_id), total = ?7, tax = ?8, earnings = COALESCE(?9, earnings), source = COALESCE(source, ?13)`
     ).bind(data.id, userId, data.subscription_id || null, item ? item.price.id : null, String(data.origin || ''),
       String(totals.currency_code || data.currency_code || 'EUR').toUpperCase().slice(0, 3), total, cents(totals.tax) || 0, cents(totals.earnings),
-      ms(data.billed_at) || ms(data.updated_at) || Date.now(), Date.now(), payEnv(env)).run();
+      ms(data.billed_at) || ms(data.updated_at) || Date.now(), Date.now(), payEnv(env), paySource(data)).run();
     // the last step of the funnel (dashboard): a first payment (not a renewal)
     if (!known && String(data.origin || '') !== 'subscription_recurring') await bump(env, 'paid_first');
     // 23/11: the TikTok conversion (conversions.js, sent after the answer to Paddle): the first real payment of a subscription
@@ -263,6 +263,14 @@ export async function handleWebhook(request, env, ctx) {
     if (event.event_id) await env.DB.prepare('DELETE FROM webhook_events WHERE event_id = ?1').bind(event.event_id).run().catch(() => {});
     throw e;
   }
+}
+
+// 25/11 (test payant): where the browser that paid came from the first time (src/account.js → customData.src, e.g.
+// « ref:ttads »); renewals carry the subscription's custom data too. Same shapes as the sign-up source; anything else → null.
+const PAY_SOURCE = /^(?:(?:ref|utm|dir):[a-z0-9._-]{1,40}|site:[a-z0-9.-]{3,48}|ai:[a-z]{2,12}|[a-z0-9_-]{1,24})$/;
+export function paySource(data) {
+  const v = data && data.custom_data && data.custom_data.src;
+  return typeof v === 'string' && PAY_SOURCE.test(v) ? v : null;
 }
 
 export async function paddleApi(env, method, path, body) {

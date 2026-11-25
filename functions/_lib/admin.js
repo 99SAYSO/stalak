@@ -15,6 +15,7 @@ import { jwksFor } from './oauth.js';
 import { subscriptionGivesPro, intervalOf, planOfSub, planOfPrice, salePrices, payEnv } from './entitlements.js';
 import { getState, setState, isAvailable, messagesOf, deliverReply, catchUpReplies, MESSAGE_MAX, cleanupTickets } from './support.js';
 import { LIVE_MS, today } from './metrics.js';
+import { paidTests, savePaidTest } from './paidtest.js';
 import { notifyOwner, ntfyOn } from './notify.js';
 import { sendThanks, thanksEmail } from './thanks.js';
 import { tgStatus, linkTelegram, unlinkTelegram } from './telegram.js';
@@ -613,6 +614,9 @@ export async function admin(request, env, method, rest) {
     const r = await clarityDaily(env);
     return json({ ...r, view: await clarityView(env) });
   }
+  // 25/11: « Test payant »: each followed ?ref= link against the money spent on it (typed by the owner)
+  if (route === 'paid-tests' && method === 'GET') return json(await paidTests(env));
+  if (route === 'paid-tests' && method === 'POST') return json(await savePaidTest(env, await readJson(request, 1024)));
   if (route === 'available' && method === 'POST') {
     const body = await readJson(request);
     await setState(env, 'available', body.available === true ? '1' : '0');

@@ -44,7 +44,8 @@ BASE_CFG = {'paddle': {'environment': 'sandbox', 'clientToken': 'test_x', 'price
                       'creator': {'month': {'amount': '14.99', 'currency': 'USD'}, 'year': {'amount': '99.99', 'currency': 'USD'}}},
             'features': {'socialConnect': False, 'social': [], 'cloudSave': False}, 'auth': {'providers': [], 'passwordMin': 8, 'turnstile': None},
             'trial': {'days': 7, 'plans': ['pro']}}
-MEASURE = {'clarity': 'tstclar01', 'ga4': 'G-TEST12345', 'tiktok': False}
+MEASURE = {'clarity': 'tstclar01', 'ga4': 'G-TEST12345', 'tiktok': None}
+MEASURE_TT = dict(MEASURE, tiktok='CPIXTEST1234567890AB')   # 25/11: the TikTok pixel's id
 USER = {'id': 'u1', 'email': 'a@example.com', 'createdAt': '2026-01-01T00:00:00Z'}
 T = {'fr': {'yes': 'Accepter', 'no': 'Refuser', 'ck': 'Gérer les cookies', 'go': 'Retire le filigrane pour', 'terms': ['aujourd’hui, puis', '/mois dans 7 jours.', 'Annulable à tout moment.'],
             'trial': 'Essayer Pro 7 jours gratuits'},
@@ -56,7 +57,7 @@ def context(b, PW, lang, dev, measure, me='yes', gpc=False):
     opts = dict(PW.devices[dev]) if dev != 'ordinateur' else {'viewport': {'width': 1280, 'height': 860}}
     ctx = b.new_context(**opts, locale='en-US' if lang == 'en' else 'fr-FR')
     seen = []
-    cfg = dict(BASE_CFG, measure=measure or {'clarity': None, 'ga4': None, 'tiktok': False})
+    cfg = dict(BASE_CFG, measure=measure or {'clarity': None, 'ga4': None, 'tiktok': None})
     def api(r):
         u = r.request.url.split('?')[0]
         if u.endswith('/api/config'): return r.fulfill(status=200, content_type='application/json', body=json.dumps(cfg))
@@ -74,6 +75,7 @@ def context(b, PW, lang, dev, measure, me='yes', gpc=False):
         return r.fulfill(status=200, content_type='application/javascript', body='/* fake */')
     ctx.route('https://www.clarity.ms/**', tool)
     ctx.route('https://www.googletagmanager.com/**', tool)
+    ctx.route('https://analytics.tiktok.com/**', tool)
     ctx.route('https://cdn.paddle.com/**', lambda r: r.fulfill(status=200, content_type='application/javascript', body='/* no paddle */'))
     if gpc: ctx.add_init_script("Object.defineProperty(navigator, 'globalPrivacyControl', { get: () => true })")
     return ctx, seen
@@ -150,6 +152,42 @@ def consent_run(b, PW, base, lang, dev):
     ctx, seen = context(b, PW, lang, dev, MEASURE, gpc=True)
     pg = ctx.new_page(); pg.goto(pricing, wait_until='load'); pg.wait_for_timeout(1500)
     check(tag + ' : GPC (signal de refus du navigateur) : pas de bandeau, rien chargé', not banner(pg) and not tools(seen))
+    ctx.close()
+
+
+def tiktok_run(b, PW, base, lang, dev):
+    """25/11 (test payant): the TikTok pixel, only after « Accepter »: the visit, the export (Download), the payment window
+    (InitiateCheckout), the purchase (Purchase with Paddle's transaction id as event_id, or StartTrial for a free trial)."""
+    t = T[lang]; tag = dev + ' ' + lang + ' (pixel TikTok)'
+    home = base + ('' if lang == 'en' else 'fr/')
+    ctx, seen = context(b, PW, lang, dev, MEASURE_TT, me='yes')
+    pg = ctx.new_page(); errs = []; pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
+    pg.goto(home, wait_until='load'); pg.wait_for_selector('.st-cc', timeout=15000); pg.wait_for_timeout(600)
+    txt = pg.inner_text('.st-cc')
+    check(tag + ' : le bandeau nomme le pixel TikTok', ('pixel TikTok' if lang == 'fr' else 'TikTok pixel') in txt, txt[:200])
+    check(tag + ' : rien de TikTok avant le choix', not [u for u in tools(seen) if 'tiktok' in u] and pg.evaluate('() => !window.ttq'))
+    pg.locator('.st-cc button[data-cc="y"]').click(); pg.wait_for_timeout(1200)
+    tl = [u for u in tools(seen) if 'analytics.tiktok.com' in u]
+    check(tag + ' : « %s » : le pixel est chargé avec son identifiant' % t['yes'], any('sdkid=CPIXTEST1234567890AB' in u for u in tl), tl)
+    pg.wait_for_function('() => !!window.StalakAccount', timeout=30000)
+    pg.evaluate("""() => { StalakAccount.event('export_ok'); StalakAccount.event('checkout_open');
+      StalakConsent.track('achat', { formule: 'pro', value: 7.99, currency: 'USD', transaction_id: 'txn_tt_1' });
+      StalakConsent.track('achat', { formule: 'pro', value: 0, currency: 'USD', transaction_id: 'txn_tt_2' }); }"""); pg.wait_for_timeout(300)
+    q = pg.evaluate('() => (window.ttq || []).filter(a => Array.isArray(a)).map(a => a.slice(0, 4))')
+    names = [a[1] if a[0] == 'track' else a[0] for a in q]
+    check(tag + ' : la visite (page), l’export (Download), le paiement ouvert (InitiateCheckout)', 'page' in names and 'Download' in names and 'InitiateCheckout' in names, names)
+    pur = [a for a in q if a[0] == 'track' and a[1] == 'Purchase']
+    check(tag + ' : l’achat : Purchase, 7,99 USD, même event_id que le serveur (txn_tt_1)', len(pur) == 1 and pur[0][2].get('value') == 7.99 and pur[0][2].get('currency') == 'USD' and pur[0][3] == {'event_id': 'txn_tt_1'}, pur)
+    check(tag + ' : un essai gratuit : StartTrial, pas Purchase', any(a[0] == 'track' and a[1] == 'StartTrial' for a in q), names)
+    # « Refuser » afterwards: consent taken back, its cookies deleted
+    ctx.add_cookies([{'name': '_ttp', 'value': 'x', 'url': base}, {'name': '_tt_enable_cookie', 'value': '1', 'url': base}])
+    pg.evaluate("() => StalakConsent.open()"); pg.wait_for_selector('.st-cc', timeout=5000)
+    pg.locator('.st-cc button[data-cc="n"]').click(); pg.wait_for_timeout(400)
+    q2 = pg.evaluate('() => (window.ttq || []).filter(a => Array.isArray(a)).map(a => a[0])')
+    check(tag + ' : « %s » ensuite : le consentement est retiré à TikTok, ses cookies effacés' % t['no'], 'revokeConsent' in q2 and not [c for c in ckies(ctx) if c in ('_ttp', '_tt_enable_cookie')], (q2[-3:], ckies(ctx)))
+    n = len(q2); pg.evaluate("() => StalakAccount.event('export_ok')"); pg.wait_for_timeout(200)
+    check(tag + ' : plus rien envoyé à TikTok après le refus', pg.evaluate('() => (window.ttq || []).filter(a => Array.isArray(a)).length') == n)
+    check(tag + ' : aucune erreur dans la page', not errs, errs[:3])
     ctx.close()
 
 
@@ -245,6 +283,9 @@ def main():
         for lang, dev in (('fr', 'iPhone 12'), ('en', 'ordinateur'), ('en', 'iPhone 12'), ('fr', 'ordinateur')):
             try: consent_run(b, p, base, lang, dev)
             except Exception as e: check(dev + ' ' + lang + ' : bandeau, déroulé complet', False, str(e)[:400])
+        for lang, dev in (('en', 'iPhone 12'), ('fr', 'ordinateur')):
+            try: tiktok_run(b, p, base, lang, dev)
+            except Exception as e: check(dev + ' ' + lang + ' : pixel TikTok, déroulé complet', False, str(e)[:400])
         for lang, dev, country, me in (('fr', 'iPhone 12', 'FR', 'yes'), ('en', 'ordinateur', 'US', 'yes'), ('fr', 'ordinateur', 'US', 'yes'),
                                        ('en', 'iPhone 12', 'DE', 'yes'), ('fr', 'iPhone 12', None, 'yes'), ('fr', 'iPhone 12', 'FR', 'no')):
             try: offer_run(b, p, base, site, lang, dev, country, me)

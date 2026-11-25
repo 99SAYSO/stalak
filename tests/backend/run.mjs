@@ -752,13 +752,14 @@ test('23/11 free trial: paid after 7 days, or 1st payment failed (Pro stops unti
 test('23/11 measure: config gives the Clarity / GA4 ids (not secrets) and whether TikTok is on, never the TikTok token; the banner answers are counted', async () => {
   let env = makeEnv();
   let r = await call(env, 'GET', '/api/config');
-  assert.deepEqual(r.data.measure, { clarity: null, ga4: null, tiktok: false });
+  assert.deepEqual(r.data.measure, { clarity: null, ga4: null, tiktok: null });
   // the free trial as the app reads it (app/essai-pro): { days, plans }
   assert.deepEqual(r.data.trial, { days: 7, plans: ['pro'] });
   assert.equal((await call(makeEnv({ PADDLE_PRICE_PRO_MONTH_TRIAL: '', PADDLE_PRICE_PRO_YEAR_TRIAL: '' }), 'GET', '/api/config')).data.trial, null);
-  env = makeEnv({ CLARITY_PROJECT_ID: 'abc123def4', GA4_MEASUREMENT_ID: 'G-TEST12345', TIKTOK_PIXEL_ID: 'CPIX123', TIKTOK_EVENTS_TOKEN: 'tt-secret-token-123', ...ADMIN_ENV });
+  env = makeEnv({ CLARITY_PROJECT_ID: 'abc123def4', GA4_MEASUREMENT_ID: 'G-TEST12345', TIKTOK_PIXEL_ID: 'CPIX1234567890ABCDEF', TIKTOK_EVENTS_TOKEN: 'tt-secret-token-123', ...ADMIN_ENV });
   r = await call(env, 'GET', '/api/config');
-  assert.deepEqual(r.data.measure, { clarity: 'abc123def4', ga4: 'G-TEST12345', tiktok: true });
+  // 25/11: the pixel's id itself (public), for the browser pixel after « Accepter »
+  assert.deepEqual(r.data.measure, { clarity: 'abc123def4', ga4: 'G-TEST12345', tiktok: 'CPIX1234567890ABCDEF' });
   assert.ok(!JSON.stringify(r.data).includes('tt-secret-token-123'));
   let n = 0;
   for (const name of ['consent_yes', 'consent_yes', 'consent_no']) assert.equal((await call(env, 'POST', '/api/event', { body: { name }, ip: '10.77.0.' + (++n) })).status, 200);
@@ -786,7 +787,7 @@ test('23/11 TikTok conversion API: a first payment, with consent only, e-mail ha
     assert.equal(sent[0].url, 'https://business-api.tiktok.com/open_api/v1.3/event/track/');
     assert.equal(sent[0].headers['Access-Token'], 'tt-secret-token-123');
     assert.equal(b.event_source, 'web'); assert.equal(b.event_source_id, 'CPIX123');
-    assert.equal(ev.event, 'CompletePayment'); assert.equal(ev.event_id, 'txn_tt0000001');
+    assert.equal(ev.event, 'Purchase'); assert.equal(ev.event_id, 'txn_tt0000001');
     const { sha256Hex } = await import('../../functions/_lib/crypto.js');
     assert.equal(ev.user.email, await sha256Hex('buyer.tt@example.com'));
     assert.equal(ev.user.external_id, await sha256Hex(a.user.id));
@@ -4983,6 +4984,51 @@ test('stats 24/11: the weekly relevé fails → nothing overwritten, « not upda
     assert.equal(r.data.spotify.state, 'failed'); assert.equal(r.data.summary.facts.listeners, null);
     assert.equal(r.data.summary.sentences[0], 'Tes chiffres Spotify n’ont pas pu être mis à jour cette semaine.');
   } finally { extraFetch = null; }
+});
+
+// ---- 25/11: the first paid test (« Test payant »), the source of a payment, TikTok's « Purchase » --------------------------
+test('paid test 25/11: a payment keeps the link it came from (?ref=ttads); « Test payant » gives exports, subscribers, cost per export and per subscriber', async () => {
+  const env = makeEnv(ADMIN_ENV), token = await accessToken(), d = new Date().toISOString().slice(0, 10);
+  // the owner adds the links; a code that looks like a platform is refused with a clear message
+  let r = await adminCall(env, 'POST', '/api/admin/paid-tests', { token, body: { ref: 'ttads', label: 'Pubs TikTok US', spent: '42,50' } });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  r = await adminCall(env, 'POST', '/api/admin/paid-tests', { token, body: { ref: 'igor', label: '@igor' } });
+  assert.equal(r.status, 400); assert.equal(r.data.error, 'ref_like_platform'); assert.ok(r.data.message.includes('inf-igor'));
+  for (const bad of [{ ref: 'a' }, { ref: 'ok-ref', spent: '-3' }, { ref: 'ok-ref', startedOn: '25/11/2026' }]) assert.equal((await adminCall(env, 'POST', '/api/admin/paid-tests', { token, body: bad })).status, 400, JSON.stringify(bad));
+  await adminCall(env, 'POST', '/api/admin/paid-tests', { token, body: { ref: '?ref=inf-lilbeat', label: '@lilbeat', spent: 30 } });
+  // visits and exports from the links (the page sends src « ref:ttads »)
+  let i = 0;
+  for (const [src, n] of [['ref:ttads', 5], ['ref:inf-lilbeat', 2]]) for (let k = 0; k < n; k++)
+    await call(env, 'POST', '/api/presence', { body: { vid: 'v_pt_' + String(i).padStart(18, 'x'), lang: 'en', src }, ip: '10.42.0.' + i++ });
+  for (let k = 0; k < 3; k++) await call(env, 'POST', '/api/event', { body: { name: 'export_ok', src: 'ref:ttads' }, ip: '10.43.0.' + k });
+  await call(env, 'POST', '/api/event', { body: { name: 'checkout_open', src: 'ref:ttads' }, ip: '10.43.1.1' });
+  // 2 payments: one with its source (customData.src), one whose account signed up from the link (signup_source)
+  const a = await login(env, 'pt1@example.com'), b = await login(env, 'pt2@example.com');
+  env.DB.raw.prepare("UPDATE users SET signup_source = 'ref:ttads' WHERE id = ?").run(b.user.id);
+  const tx = (id, user, sub, total, src) => subEvent('transaction.completed', { id, status: 'completed', customer_id: 'ctm_pt', subscription_id: sub, origin: 'web',
+    billed_at: new Date().toISOString(), currency_code: 'USD', custom_data: { user_id: user, ...(src ? { src } : {}) }, items: [{ price: { id: 'pri_pro_m' } }],
+    details: { totals: { total: String(total), tax: '0', grand_total: String(total), currency_code: 'USD' } } });
+  await webhook(env, tx('txn_pt1', a.user.id, 'sub_pt1', 799, 'ref:ttads'));
+  await webhook(env, tx('txn_pt2', b.user.id, 'sub_pt2', 799, null));
+  await webhook(env, tx('txn_pt3', a.user.id, 'sub_pt3', 0, 'ref:ttads'));          // a free trial
+  await webhook(env, tx('txn_pt4', a.user.id, 'sub_pt4', 799, '<script>'));         // a source that is not one: ignored
+  assert.equal(env.DB.raw.prepare("SELECT source FROM payments WHERE id = 'txn_pt1'").get().source, 'ref:ttads');
+  assert.equal(env.DB.raw.prepare("SELECT source FROM payments WHERE id = 'txn_pt4'").get().source, null);
+  r = await adminCall(env, 'GET', '/api/admin/paid-tests', { token });
+  const t = r.data.rows.find((x) => x.ref === 'ttads'), l = r.data.rows.find((x) => x.ref === 'inf-lilbeat');
+  assert.deepEqual([t.visits, t.exports, t.checkouts, t.trials, t.subscribers, t.revenue.USD, t.spentCents], [5, 3, 1, 1, 2, 1598, 4250]);
+  assert.equal(t.costPerExportCents, 1417); assert.equal(t.costPerSubscriberCents, 2125);
+  assert.deepEqual([l.visits, l.exports, l.subscribers, l.costPerSubscriberCents, l.costPerExportCents], [2, 0, 0, null, null]);
+  assert.equal(r.data.spentCents, 7250); assert.equal(r.data.overBudget, false); assert.equal(r.data.budgetCents, 15000);
+  assert.equal(t.startedOn, d);
+  // over the 150 € budget: said
+  r = await adminCall(env, 'POST', '/api/admin/paid-tests', { token, body: { ref: 'ttads', spent: 130 } });
+  assert.equal(r.data.overBudget, true); assert.equal(r.data.rows.find((x) => x.ref === 'ttads').label, 'Pubs TikTok US', 'the name stays');
+  // removed
+  r = await adminCall(env, 'POST', '/api/admin/paid-tests', { token, body: { ref: 'inf-lilbeat', remove: true } });
+  assert.deepEqual(r.data.rows.map((x) => x.ref), ['ttads']);
+  // owner only, and the write needs the JSON CSRF rule like the other admin writes
+  assert.equal((await adminCall(env, 'GET', '/api/admin/paid-tests')).status, 403);
 });
 
 // ---- runner --------------------------------------------------------------------------

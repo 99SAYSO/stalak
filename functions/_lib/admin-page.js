@@ -201,7 +201,14 @@ th{color:var(--text2);font-weight:600}
 @media (max-width:480px){#xfDev th,#xfDev td{padding:6px 4px;font-size:12.5px}}
 .vsum{font-size:17px;font-weight:700;margin:12px 0}.vcol{max-width:640px}.vcol h3{margin:0 0 8px}
 #vppCard{margin-top:16px}#vppCard .hbest{flex-wrap:wrap}
-.srcwrap{overflow-x:auto;margin-top:10px}.srct{border-collapse:collapse;width:100%;min-width:560px;font-variant-numeric:tabular-nums}
+.srcwrap{overflow-x:auto;margin-top:10px}
+/* 25/11: « Test payant » */
+.ptform{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px;align-items:end}
+.ptform label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--text2);font-weight:600}
+.ptform input{font:inherit;font-size:16px;color:var(--text);background:var(--card,#fff);border:2px solid var(--line);border-radius:12px;padding:9px 10px;min-height:44px;width:100%;box-sizing:border-box}
+.ptform input:focus-visible{outline:3px solid var(--sky);outline-offset:1px;border-color:var(--sky)}
+.ptbud{font-weight:700;margin:8px 0 0}.ptbud.over{color:var(--bad)}
+.ptrow-act{display:flex;gap:6px;justify-content:flex-end}.ptrow-act button{min-height:36px}.srct{border-collapse:collapse;width:100%;min-width:560px;font-variant-numeric:tabular-nums}
 .srct th,.srct td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--line)}.srct th{font-size:13px;color:var(--muted);font-weight:600}
 .srct th:first-child,.srct td:first-child{text-align:left;font-weight:700}.srct td small{display:block;color:var(--muted);font-weight:400;font-size:12px}
 #srcCard,#optCard{margin-top:16px}
@@ -504,6 +511,20 @@ __DEMO_BANNER__<header class="top"><div class="in">
       <div class="srcwrap"><table class="srct" id="srcTable"><thead><tr><th scope="col">Source</th><th scope="col">Visites</th><th scope="col">Vidéo faite</th><th scope="col">Formules vues</th><th scope="col">Paiement ouvert</th><th scope="col">Payé</th></tr></thead><tbody></tbody></table></div>
       <p class="note" id="srcNote"></p>
     </div>
+    <div class="card hq" id="ptCard" data-mt>
+      <div class="hbest"><span>💸 Test payant</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
+      <p class="he">Chaque lien suivi (?ref=…) depuis son jour de début : visites, vidéos exportées, paiements ouverts, essais gratuits, abonnés payants et argent reçu, face à l’argent que tu as dépensé pour ce lien (tu le tapes ici). Coût par export = dépensé ÷ exports ; coût par abonné = dépensé ÷ abonnés. Règles fixées le 25/11 : au moins 1 abonné pour 150 € → on continue ; des exports mais aucun paiement → on revoit le prix ou la page de paiement ; aucun export → on revoit le message ou la cible. Seuls ceux qui ont accepté les cookies sont vus par TikTok, mais ces chiffres-ci comptent tout le monde (totaux anonymes).</p>
+      <p class="ptbud" id="ptBud" role="status"></p>
+      <div class="srcwrap"><table class="srct" id="ptTable"><thead><tr><th scope="col">Lien</th><th scope="col">Dépensé</th><th scope="col">Visites</th><th scope="col">Exports</th><th scope="col">Paiements ouverts</th><th scope="col">Essais</th><th scope="col">Abonnés</th><th scope="col">Reçu</th><th scope="col">Coût / export</th><th scope="col">Coût / abonné</th><th scope="col"></th></tr></thead><tbody></tbody></table></div>
+      <form class="ptform" id="ptForm">
+        <label>Code du lien (?ref=)<input name="ref" required maxlength="24" autocomplete="off" placeholder="ttads ou inf-nom" inputmode="latin"></label>
+        <label>Nom (pour toi)<input name="label" maxlength="40" autocomplete="off" placeholder="Pubs TikTok US"></label>
+        <label>Dépensé en tout (€)<input name="spent" inputmode="decimal" autocomplete="off" placeholder="0"></label>
+        <label>Début<input name="startedOn" type="date"></label>
+        <button class="btn" type="submit">Enregistrer</button>
+      </form>
+      <p class="note" id="ptOut" role="status"></p>
+    </div>
     <div class="grid2">
       <div class="card hq"><div class="hbest"><span>🌍 Pays des visites</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
         <p class="he">D’après Cloudflare, le pays de chaque nouvelle visite sur la période (totaux anonymes).</p><ul class="blist" id="bCountry"></ul></div>
@@ -703,7 +724,7 @@ __DEMO_BANNER__<header class="top"><div class="in">
     if (name === 'home') home();
     if (name === 'signups' && !S.signupsLoaded) signups();
     if (name === 'hours') hours();
-    if (name === 'funnel') vpp();
+    if (name === 'funnel') { vpp(); ptLoad(); }
     if (name === 'analytics') analytics();
     if (name === 'users') globeStart(); else globeStop();
     if (!/^#t=/.test(location.hash)) try { history.replaceState(null, '', '#' + name); } catch (e) {}
@@ -1012,6 +1033,37 @@ __DEMO_BANNER__<header class="top"><div class="in">
   var SOURCES = { tiktok: 'TikTok', ig: 'Instagram', instagram: 'Instagram', yt: 'YouTube', youtube: 'YouTube', google: 'Google', bing: 'Bing', x: 'X (Twitter)', twitter: 'X (Twitter)',
     reddit: 'Reddit', discord: 'Discord', triller: 'Triller', facebook: 'Facebook', fb: 'Facebook', snapchat: 'Snapchat', direct: 'Lien direct', other: 'Autre site', unknown: 'Lien direct', wm: 'Filigrane d’une vidéo' };
   var DIRS = { alternativeto: 'AlternativeTo', saashub: 'SaaSHub', producthunt: 'Product Hunt', betalist: 'BetaList', futurepedia: 'Futurepedia', theresanaiforthat: 'There’s An AI For That', contentcreators: 'contentcreators.com', buzzsonic: 'Buzzsonic', toolify: 'Toolify' };
+  // ---- 25/11: « Test payant » ----
+  var eur = function (c) { return c == null ? '–' : new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(c / 100); };
+  function ptRender(d) {
+    var tb = $('#ptTable tbody'); tb.textContent = '';
+    var b = $('#ptBud'); b.textContent = 'Dépensé : ' + eur(d.spentCents) + ' sur ' + eur(d.budgetCents) + ' (budget du test)' + (d.overBudget ? ' — budget dépassé ⚠️' : '');
+    b.className = 'ptbud' + (d.overBudget ? ' over' : '');
+    d.rows.forEach(function (r) {
+      var tr = el('tr'), name = el('td'); name.append(el('b', null, r.label || r.ref), el('small', null, '?ref=' + r.ref + ' · depuis le ' + dateFr(r.startedOn + 'T12:00:00Z')));
+      var rev = Object.keys(r.revenue || {}).map(function (c) { return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: c }).format(r.revenue[c] / 100); }).join(' + ') || '–';
+      tr.append(name);
+      [eur(r.spentCents), nf.format(r.visits), nf.format(r.exports), nf.format(r.checkouts), nf.format(r.trials), nf.format(r.subscribers), rev,
+        r.costPerExportCents == null ? '–' : eur(r.costPerExportCents), r.costPerSubscriberCents == null ? (r.spentCents ? 'aucun abonné' : '–') : eur(r.costPerSubscriberCents)]
+        .forEach(function (v) { tr.append(el('td', null, v)); });
+      var act = el('td'), w = el('div', { class: 'ptrow-act' }), ed = el('button', { class: 'btn small', type: 'button' }, 'Modifier'), rm = el('button', { class: 'btn small', type: 'button' }, 'Retirer');
+      ed.setAttribute('aria-label', 'Modifier ' + r.ref); rm.setAttribute('aria-label', 'Retirer ' + r.ref);
+      ed.onclick = function () { var f = $('#ptForm'); f.ref.value = r.ref; f.label.value = r.label || ''; f.spent.value = String(r.spentCents / 100).replace('.', ','); f.startedOn.value = r.startedOn; f.spent.focus(); };
+      rm.onclick = function () { if (rm.dataset.sure !== '1') { rm.dataset.sure = '1'; rm.textContent = 'Sûr ?'; return; } ptSave({ ref: r.ref, remove: true }); };
+      w.append(ed, rm); act.append(w); tr.append(act); tb.append(tr);
+    });
+    if (!d.rows.length) { var e0 = el('tr'), c0 = el('td', null, 'Aucun lien suivi : ajoute « ttads » (les pubs TikTok) puis un lien par influenceur.'); c0.colSpan = 11; e0.append(c0); tb.append(e0); }
+  }
+  function ptLoad() { api('GET', 'paid-tests').then(ptRender).catch(function (e) { set('#ptOut', 'Impossible de charger : ' + e.message); }); }
+  function ptSave(body) {
+    set('#ptOut', 'Enregistrement…');
+    api('POST', 'paid-tests', body).then(function (d) { ptRender(d); set('#ptOut', body.remove ? 'Lien retiré.' : 'Enregistré.'); if (!body.remove) $('#ptForm').reset(); })
+      .catch(function (e) { set('#ptOut', e.message); });
+  }
+  $('#ptForm').addEventListener('submit', function (e) {
+    e.preventDefault(); var f = e.target;
+    ptSave({ ref: f.ref.value, label: f.label.value, spent: f.spent.value, startedOn: f.startedOn.value });
+  });
   function sourceName(src) {
     if (!src) return 'Inconnue';
     var m = /^(ref|utm|dir|site):(.+)$/.exec(src);
@@ -1641,6 +1693,7 @@ const DEMO_JS = String.raw`var DD = __DEMO_DATA__, DS = { avail: false, tickets:
     else if (p === 'telegram-link') r = { linked: true, name: 'Démo' };
     else if (p === 'telegram-unlink') r = { linked: false };
     else if (p === 'analytics') r = DD.analytics[q.get('days') || '7'] || DD.analytics['7'];
+    else if (p === 'paid-tests') r = DD.paidTests;
     else if (p === 'analytics/live') r = DD.analyticsLive;
     else if (p === 'analytics/tiles') { var sn = DD.analytics['7'].clarity.snapshot; r = { ga4: { state: 'ok', now: DD.analyticsLive.now, top: DD.analyticsLive.countries.slice(0, 3) },
       clarity: { state: 'ok', at: sn.at, sessions: sn.totals.sessions, top: sn.friction[0] || null, stale: false } }; }

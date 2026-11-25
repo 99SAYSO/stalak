@@ -64,7 +64,8 @@ function config(env) {
     // 23/11 (owner): the measuring tools, loaded by src/consent.js only after « Accepter » (ids, not secrets; none = no banner)
     measure: {
       clarity: env.CLARITY_PROJECT_ID || null, ga4: env.GA4_MEASUREMENT_ID || null,
-      tiktok: !!(env.TIKTOK_PIXEL_ID && env.TIKTOK_EVENTS_TOKEN),
+      // 25/11: the TikTok pixel's id (public): the browser pixel after « Accepter » (visit, export, payment window, purchase)
+      tiktok: /^[A-Z0-9]{10,30}$/.test(String(env.TIKTOK_PIXEL_ID || '')) ? String(env.TIKTOK_PIXEL_ID) : null,
     },
     paddle: {
       environment: env.PADDLE_ENV === 'production' ? 'production' : 'sandbox',

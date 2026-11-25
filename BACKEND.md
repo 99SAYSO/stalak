@@ -963,3 +963,9 @@ Demande : `docs/handoff/chef-stats-analyse.md`. Contrat avec App : `docs/contrat
 - **`GET /api/stats?lang=fr|en`** (connecté) : bilan gratuit en 3 phrases à partir de vraies données ; partie Pro (courbes, sons classés, sorties par mois, rythme, villes) envoyée seulement aux Pro / Creator Plus (`pro: null`, `locked: true` sinon).
 - Tables : `spotify_releases`, `spotify_snapshots`, `spotify_track_counts`, `spotify_sync`, `robot_state` ; effacées avec le compte, et à chaque changement d'artiste.
 - Sources : [Spotify, Get Artist's Albums](https://developer.spotify.com/documentation/web-api/reference/get-an-artists-albums), [Apify, run-sync-get-dataset-items](https://docs.apify.com/api/v2/act-run-sync-get-dataset-items-post), [robot Apify](https://apify.com/beatanalytics/spotify-play-count-scraper).
+
+## Test d'acquisition payante (25/11)
+- **Pixel TikTok** (`src/consent.js`), seulement après « Accepter » et si `TIKTOK_PIXEL_ID` est réglé : `page`, `Download` (export), `InitiateCheckout`, `Purchase` (event_id = transaction Paddle, comme le serveur) ou `StartTrial`. « Refuser » ensuite : `revokeConsent` et cookies effacés. `/api/config` → `measure.tiktok` = identifiant du pixel (public).
+- **API de conversion** (`conversions.js`) : évènement `Purchase` (nouveau nom de TikTok).
+- **Source du paiement** : la page envoie `customData.src` (1re source du navigateur, ex. `ref:ttads`) ; gardée dans `payments.source` (migration 0024).
+- **Carte « Test payant »** (`functions/_lib/paidtest.js`) : `GET/POST /api/admin/paid-tests` ; par lien suivi : visites, exports, paiements ouverts, essais, abonnés, reçu, dépensé (saisi), coût par export / par abonné ; budget 150 €. Les codes qui ressemblent à une plateforme sont refusés (proposer `inf-<nom>`).
