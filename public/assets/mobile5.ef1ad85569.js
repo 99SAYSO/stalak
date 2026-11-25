@@ -29,7 +29,8 @@ fr: { title: 'Tes stats', ready: 'Ton analyse est prête', readyP: 'Crée ton co
   city: 'Ta 1re ville', ttStats: 'Mes stats TikTok', ttLink: 'Relier mon TikTok', ttStatsP: 'Tes vues, tes abonnés, tes meilleures vidéos', ttLinkP: 'Pour analyser aussi tes vidéos',
   coachT: 'Ton coach', coachP: 'Analyse de la semaine du {d}, écrite par une IA à partir de tes vrais chiffres.', cWorks: 'Ce qui marche', cStop: 'Ce qui ne marche pas', cPlan: 'Ton plan de la semaine',
   cPace: 'Ton rythme de sortie', cNext: 'Le son à pousser : « {name} »', cWhy: 'Pourquoi', cViews: '{n} vues', cMake: 'Monter cette idée', cMissing: 'Il me manque : {list}.',
-  cNote: 'Ce sont des conseils, pas une promesse de résultats. Analyse écrite par une IA.', cWait: 'Ton coach prépare ta première analyse : elle arrive dans quelques minutes.', cNone: 'Ton coach a besoin de tes vidéos TikTok : relie ton TikTok pour ta première analyse.',
+  cNote: 'Analyse écrite par une IA, à partir de tes chiffres. Ce sont des conseils, pas une promesse de résultats.', cFailed: 'Ton analyse n’a pas pu être faite cette semaine.', cOff: 'Ton coach arrive très bientôt.', cNotEnough: 'Ton coach a besoin de tes vidéos TikTok ou de tes sons sur Spotify : relie-les pour ta première analyse.', cNext2: 'Prochaine analyse : {d}.', cOver: 'Ta prochaine analyse arrive le mois prochain.', cTodo: 'À faire',
+  fmt_face_camera: 'Face caméra', fmt_performance: 'Performance', fmt_coulisses: 'Coulisses', fmt_paroles_ecran: 'Paroles à l’écran', fmt_reaction: 'Réaction', fmt_avant_apres: 'Avant / après', fmt_autre: 'Autre format', cWait: 'Ton coach prépare ta première analyse : elle arrive dans quelques minutes.', cNone: 'Ton coach a besoin de tes vidéos TikTok : relie ton TikTok pour ta première analyse.',
   monSay0: 'Aucune sortie sur ces {m} mois.', monSayAll: '{n} sorties en {m} mois, au moins une chaque mois.', monSay: '{n} sorties en {m} mois, rien en {list}.', monOne: '1 sortie en {m} mois, rien en {list}.', monAnd: ' et en ', monSep: ', en ',
   wkUp: 'De {a} à {b} auditeurs en {n} semaines ({p}).', wkDown: 'De {a} à {b} auditeurs en {n} semaines ({p}) : ton public a besoin de nouveaux sons.', wkFlat: 'Autour de {b} auditeurs depuis {n} semaines.', proT: 'Ton analyse complète', proP: 'Tes courbes semaine par semaine, le classement de tes sons, ton rythme de sortie et ton plan de la semaine.',
   unlock: 'Débloquer avec Pro', weeks: 'Tes auditeurs, semaine par semaine', songs: 'Tes sons, du plus écouté au moins écouté', months: 'Tes sorties par mois',
@@ -50,7 +51,9 @@ en: { title: 'Your stats', ready: 'Your analysis is ready', readyP: 'Create your
   city: 'Your top city', ttStats: 'My TikTok stats', ttLink: 'Link my TikTok', ttStatsP: 'Your views, followers and best videos', ttLinkP: 'To analyse your videos too',
   coachT: 'Your coach', coachP: 'Analysis of the week of {d}, written by an AI from your real figures.', cWorks: 'What works', cStop: 'What doesn’t work', cPlan: 'Your plan for the week',
   cPace: 'Your release pace', cNext: 'The song to push: “{name}”', cWhy: 'Why', cViews: '{n} views', cMake: 'Make this idea', cMissing: 'I’m missing: {list}.',
-  cNote: 'These are tips, not a promise of results. Analysis written by an AI.', cWait: 'Your coach is preparing your first analysis: it arrives in a few minutes.', cNone: 'Your coach needs your TikTok videos: link your TikTok for your first analysis.',
+  cNote: 'Analysis written by an AI, from your figures. These are tips, not a promise of results.', cFailed: 'Your analysis couldn’t be made this week.', cOff: 'Your coach is coming very soon.', cNotEnough: 'Your coach needs your TikTok videos or your songs on Spotify: link them for your first analysis.', cNext2: 'Next analysis: {d}.', cOver: 'Your next analysis comes next month.', cTodo: 'To do',
+  fmt_face_camera: 'Facing the camera', fmt_performance: 'Performance', fmt_coulisses: 'Behind the scenes', fmt_paroles_ecran: 'Lyrics on screen', fmt_reaction: 'Reaction', fmt_avant_apres: 'Before / after', fmt_autre: 'Other format',
+  jours: { lundi: 'Monday', mardi: 'Tuesday', mercredi: 'Wednesday', jeudi: 'Thursday', vendredi: 'Friday', samedi: 'Saturday', dimanche: 'Sunday' }, cWait: 'Your coach is preparing your first analysis: it arrives in a few minutes.', cNone: 'Your coach needs your TikTok videos: link your TikTok for your first analysis.',
   monSay0: 'No release in these {m} months.', monSayAll: '{n} releases in {m} months, at least one every month.', monSay: '{n} releases in {m} months, nothing in {list}.', monOne: '1 release in {m} months, nothing in {list}.', monAnd: ' and ', monSep: ', ',
   wkUp: 'From {a} to {b} listeners in {n} weeks ({p}).', wkDown: 'From {a} to {b} listeners in {n} weeks ({p}): your audience needs new songs.', wkFlat: 'About {b} listeners for {n} weeks.', proT: 'Your full analysis', proP: 'Your curves week by week, your songs ranked, your release pace and your plan for the week.',
   unlock: 'Unlock with Pro', weeks: 'Your listeners, week by week', songs: 'Your songs, most played first', months: 'Your releases per month',
@@ -184,11 +187,12 @@ function load(){
   };
   go();
 }
-function coachLoad(d){
-  if (d.coach !== undefined) return;
-  d.coach = null;
+function coachLoad(d, n){
+  if (d.coach !== undefined && !n) return;
+  if (!n) d.coach = null;
   fetch('/api/coach?lang=' + (M.lang() === 'fr' ? 'fr' : 'en'), { credentials: 'same-origin', cache: 'no-store', headers: { Accept: 'application/json' } })
-    .then(function(r){ return r.ok ? r.json() : null; }).then(function(c){ if (!c || !on || data !== d) return; d.coach = c.coach || (c.pending ? { pending: true } : null); render(d); }).catch(function(){});
+    .then(function(r){ return r.ok ? r.json() : (r.status === 404 ? { state: 'off' } : null); }).then(function(c){ if (!c || !on || data !== d) return; d.coach = c; render(d);
+      if (c.state === 'pending' && (n || 0) < 12) setTimeout(function(){ if (on && data === d) coachLoad(d, (n || 0) + 1); }, 5000); }).catch(function(){});
 }
 function render(d){
   var s = d.summary || {}, f = s.facts || {}, sp = d.spotify || {}, h = '';
@@ -223,7 +227,9 @@ function render(d){
   $$('.m5-links', box).forEach(function(b){ b.textContent = t('addLinks'); b.onclick = function(){ show(false); if (W.StalakM2) W.StalakM2.onboarding({ from: 'stats', start: 'links' }); }; });
   var tt = $('.m5-tt', box);
   tt.onclick = function(){ show(false); if (!(M.ttStats && M.ttStats())) M.go('account'); };
-  $$('.m5-make', box).forEach(function(b){ b.onclick = function(){ show(false); var n = D.getElementById('mhNew') || D.getElementById('heroSong'); if (n) n.click(); }; });
+  $$('.m5-make', box).forEach(function(b){ b.onclick = function(){ var x = d.coach && d.coach.analysis && d.coach.analysis.plan[+b.dataset.i]; show(false);
+    if (x && x.projectId && M.openProject && M.openProject(x.projectId)) return;
+    var n = D.getElementById('mhNew') || D.getElementById('heroSong'); if (n) n.click(); }; });
   var un = $('.m5-unlock', box); if (un){ un.textContent = t('unlock'); un.onclick = function(){ show(false); M.go('pro', { from: 'stats' }); }; }
   var gv = $('.m5-give', box); if (gv) gv.onsubmit = function(e){ e.preventDefault(); var v = Math.round(+$('input', gv).value); if (!(v >= 0) || !M.acct || typeof M.acct.saveListeners !== 'function') return;
     Promise.resolve(M.acct.saveListeners(v)).then(function(){ gv.outerHTML = '<p class="m5-tip">' + esc(t('saved')) + '</p>'; setTimeout(function(){ if (on) load(); }, 600); }).catch(function(){}); };
@@ -237,19 +243,32 @@ var COACH_IMG = '/emoji/cool.webp';
 /* (25/11) « Ton coach »: the analysis of the week, written by an AI from the artist's real figures (Comptes: GET /api/coach, see
    docs/handoff/app-coach-ia.md for the shape asked). Shown as written; nothing here makes up a figure. */
 function coachPart(c, f){
-  var head = '<div class="m5-ch"><img src="' + (COACH_IMG || '') + '" alt=""><div><h2>' + esc(t('coachT')) + '</h2><p>' + esc(c && c.weekOf ? t('coachP', { d: dayLong(c.weekOf) }) : t('coachT')) + '</p></div></div>';
-  if (!c || c.pending || !c.ideas){
-    var msg = c && c.pending ? t('cWait') : t('cNone');
+  // c: the answer of GET /api/coach (docs/contrats/coach-ia.md, Comptes), shown as written: no figure is made up here
+  if (!c) return '';   // asked to the server just now
+  var a = c && c.analysis, when = c && c.createdAt ? dayLong(String(c.createdAt).slice(0, 10)) : '';
+  var head = '<div class="m5-ch"><img src="' + COACH_IMG + '" alt=""><div><h2>' + esc(t('coachT')) + '</h2><p>' + esc(when ? t('coachP', { d: when }) : t('cNote')) + '</p></div></div>';
+  var st = c ? c.state : null;
+  if (!a){
+    var msg = st === 'pending' ? t('cWait') : st === 'failed' ? t('cFailed') : st === 'off' ? t('cOff') : st === 'over_budget' ? t('cOver') : t('cNotEnough');
     return '<div class="m5-card m5-coach">' + head + '<div class="m5-cs"><p class="m5-read" style="margin:0">' + esc(msg) + '</p></div></div>';
   }
+  var day = function(j){ var k = String(j || '').toLowerCase(); return M.lang() === 'fr' ? k.charAt(0).toUpperCase() + k.slice(1) : (t('jours')[k] || k); };
+  var hour = function(hh){ var m = /^(\d{1,2}):(\d{2})$/.exec(hh || ''); if (!m) return hh || ''; return M.lang() === 'fr' ? +m[1] + ' h' + (m[2] !== '00' ? ' ' + m[2] : '') : ((+m[1] % 12) || 12) + (m[2] !== '00' ? ':' + m[2] : '') + ' ' + (+m[1] < 12 ? 'am' : 'pm'); };
   var h = '<div class="m5-card m5-coach">' + head;
-  if ((c.works || []).length) h += '<div class="m5-cs"><h3>' + esc(t('cWorks')) + '</h3>' + c.works.slice(0, 3).map(function(x){
-    return '<div class="m5-cw"><span class="th"' + (x.cover && /^https:/.test(x.cover) ? ' style="background-image:url(\'' + String(x.cover).replace(/['"\\()\s]/g, '') + '\')"' : '') + '></span><div><b>' + esc(x.caption || '') + '</b>' + (x.views != null ? '<em>' + esc(t('cViews', { n: num(x.views) })) + '</em>' : '') + '<p><b style="display:inline;font-size:13px">' + esc(t('cWhy')) + ' :</b> ' + esc(x.why || '') + '</p></div></div>'; }).join('') + '</div>';
-  if ((c.stop || []).length) h += '<div class="m5-cs"><h3>' + esc(t('cStop')) + '</h3><ul class="m5-cx">' + c.stop.slice(0, 4).map(function(x){ return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>';
-  h += '<div class="m5-cs"><h3>' + esc(t('cPlan')) + '</h3>' + c.ideas.slice(0, 5).map(function(x, i){
-    return '<div class="m5-ci"><span class="when">' + esc([x.day, x.time].filter(Boolean).join(' · ')) + '</span><b class="hk">' + esc(x.hook || '') + '</b><p>' + esc([x.format, x.song ? '« ' + x.song + ' »' + (x.part ? ', ' + x.part : '') : ''].filter(Boolean).join(' · ')) + '</p><button type="button" class="m5-btn blue m5-make" data-i="' + i + '">' + esc(t('cMake')) + '</button></div>'; }).join('') + '</div>';
-  if (c.pace && (c.pace.text || c.pace.next)) h += '<div class="m5-cs"><h3>' + esc(t('cPace')) + '</h3>' + (c.pace.next ? '<p class="m5-read" style="margin:0 0 4px"><b>' + esc(t('cNext', { name: c.pace.next })) + '</b></p>' : '') + (c.pace.text ? '<p class="m5-read" style="margin:0">' + esc(c.pace.text) + '</p>' : '') + '</div>';
-  if ((c.missing || []).length) h += '<div class="m5-cs"><p class="m5-read" style="margin:0">' + esc(t('cMissing', { list: c.missing.join(', ') })) + '</p></div>';
+  if (a.resume) h += '<div class="m5-cs"><p class="m5-read" style="margin:0">' + esc(a.resume) + '</p></div>';
+  if ((a.marche || []).length) h += '<div class="m5-cs"><h3>' + esc(t('cWorks')) + '</h3>' + a.marche.slice(0, 3).map(function(x){
+    var v = x.video || {}, cov = v.cover && /^https:/.test(v.cover) ? ' style="background-image:url(\'' + String(v.cover).replace(/['"\\()\s]/g, '') + '\')"' : '';
+    return '<div class="m5-cw"><span class="th"' + cov + '></span><div>' + (v.title ? '<b>' + esc(v.title) + '</b>' : '') + (v.views != null ? '<em>' + esc(t('cViews', { n: num(v.views) })) + '</em>' : '') + '<p><b style="display:inline;font-size:13px">' + esc(t('cWhy')) + ' :</b> ' + esc(x.pourquoi || '') + '</p></div></div>'; }).join('') + '</div>';
+  if ((a.marche_pas || []).length) h += '<div class="m5-cs"><h3>' + esc(t('cStop')) + '</h3><ul class="m5-cx">' + a.marche_pas.slice(0, 3).map(function(x){ return '<li>' + esc(x.constat || '') + (x.a_faire ? '<br><b style="font-weight:700">' + esc(t('cTodo')) + ' :</b> ' + esc(x.a_faire) : '') + '</li>'; }).join('') + '</ul></div>';
+  if ((a.plan || []).length) h += '<div class="m5-cs"><h3>' + esc(t('cPlan')) + '</h3>' + a.plan.slice(0, 5).map(function(x, i){
+    var song = x.sortie && x.sortie.name;
+    return '<div class="m5-ci"><span class="when">' + esc([day(x.jour), hour(x.heure)].filter(Boolean).join(' · ')) + '</span><b class="hk">' + esc(x.accroche || '') + '</b><p>' + esc([x.format ? t('fmt_' + x.format) : '', song ? '« ' + song + ' »' + (x.passage ? ', ' + x.passage : '') : x.passage || ''].filter(Boolean).join(' · ')) + '</p>'
+      + (x.pourquoi ? '<p style="margin-top:4px"><b style="display:inline">' + esc(t('cWhy')) + ' :</b> ' + esc(x.pourquoi) + '</p>' : '') + '<button type="button" class="m5-btn blue m5-make" data-i="' + i + '">' + esc(t('cMake')) + '</button></div>'; }).join('') + '</div>';
+  var r = a.rythme;
+  if (r && (r.conseil || r.sortie)) h += '<div class="m5-cs"><h3>' + esc(t('cPace')) + '</h3>' + (r.sortie && r.sortie.name ? '<p class="m5-read" style="margin:0 0 4px"><b>' + esc(t('cNext', { name: r.sortie.name })) + '</b></p>' : '') + (r.conseil ? '<p class="m5-read" style="margin:0">' + esc(r.conseil) + '</p>' : '') + (r.pourquoi ? '<p class="m5-read" style="margin:4px 0 0;color:#3d4a63">' + esc(r.pourquoi) + '</p>' : '') + '</div>';
+  if ((a.manque || []).length) h += '<div class="m5-cs"><p class="m5-read" style="margin:0">' + esc(t('cMissing', { list: a.manque.join(', ') })) + '</p></div>';
+  if (st === 'over_budget') h += '<div class="m5-cs"><p class="m5-read" style="margin:0">' + esc(t('cOver')) + '</p></div>';
+  else if (c.nextAt) h += '<div class="m5-cs"><p class="m5-read" style="margin:0;color:#3d4a63">' + esc(t('cNext2', { d: dayLong(String(c.nextAt).slice(0, 10)) })) + '</p></div>';
   return h + '<p class="m5-cn">' + esc(t('cNote')) + '</p></div>';
 }
 function dayLong(iso){ try { return new Date(iso + 'T12:00:00').toLocaleDateString(M.lang() === 'fr' ? 'fr-FR' : 'en-US', { day: 'numeric', month: 'long' }); } catch(e){ return iso; } }
@@ -284,7 +303,7 @@ function proPart(p, f, coach){
   }
   // the pace and the plan of the week: advice, said as advice (from rhythm and byMonth)
   var r = p.rhythm || {};
-  if (r.daysSinceLast != null && !(coach && coach.pace && coach.ideas)){
+  if (r.daysSinceLast != null && !(coach && coach.analysis && coach.analysis.rythme)){
     var tip = r.avgGapDays && r.avgGapDays <= 35 ? t('adviceKeep', { w: Math.max(1, Math.round(r.avgGapDays / 7)) }) : t('adviceMore');
     h += '<div class="m5-card"><h2>' + esc(t('rhythm')) + '</h2><p>' + esc(t('rhythmP', { d: r.daysSinceLast, a: r.avgGapDays != null ? Math.round(r.avgGapDays) : '—' })) + '</p><p class="m5-tip"><b>' + esc(t('advice')) + ' :</b> ' + esc(tip) + '</p></div>';
   }
@@ -309,24 +328,30 @@ function demoData(){
       byMonth: [1, 0, 1, 1, 0, 1].map(function(n, i){ return { month: '2026-' + String(i + 6).padStart(2, '0'), songs: n }; }),
       rhythm: { daysSinceLast: 12, avgGapDays: 24 }, cities: [{ city: 'Toulouse', country: 'FR', listeners: 1240 }, { city: 'Paris', country: 'FR', listeners: 860 }, { city: 'Lyon', country: 'FR', listeners: 410 }] };
   else d.locked = true;
-  if (DEMO === 'pro') d.coach = fr ? { weekOf: '2026-11-23',
-      works: [{ caption: 'Le refrain de « Neva Die » en plan fixe, face caméra', views: 12400, why: 'tu chantes dès la 1re seconde, 9 s seulement, posté à 19 h : les gens restent jusqu’au bout.' },
-              { caption: '« Glaçon » dans la voiture, 3 plans', views: 8100, why: 'le son démarre sur le temps fort et la légende pose une question.' },
-              { caption: 'Studio dans le placard, avant / après', views: 5600, why: 'un format « coulisses » que ton public partage.' }],
-      stop: ['Les vidéos de plus de 30 s : elles font 3 fois moins de vues que les autres.', 'Poster à 9 h du matin : tes vues arrivent le soir.', 'Les légendes sans question ni appel : personne ne commente.'],
-      ideas: [{ day: 'Mardi', time: '19 h', hook: '« Ce son, je l’ai écrit en 10 minutes dans le bus »', format: 'Face caméra, 10 s', song: 'Neva Die', part: 'le refrain' },
-              { day: 'Jeudi', time: '19 h', hook: '« Note ce passage sur 10 »', format: '3 plans sur le rythme, 12 s', song: 'Glaçon', part: 'le couplet 1' },
-              { day: 'Samedi', time: '18 h', hook: '« Mon studio coûte 40 € »', format: 'Coulisses, avant / après', song: 'Neva Die', part: 'le pont' }],
-      pace: { next: 'Glaçon', text: 'Ton dernier son a 12 jours : pousse « Glaçon » cette semaine, puis prépare le prochain pour dans 2 à 3 semaines.' } }
-    : { weekOf: '2026-11-23',
-      works: [{ caption: 'The “Neva Die” hook, one shot, facing the camera', views: 12400, why: 'you sing from the very first second, only 9 s, posted at 7 pm: people watch to the end.' },
-              { caption: '“Glaçon” in the car, 3 shots', views: 8100, why: 'the song starts on the beat and the caption asks a question.' },
-              { caption: 'Closet studio, before / after', views: 5600, why: 'a behind-the-scenes format your audience shares.' }],
-      stop: ['Videos over 30 s: they get 3 times fewer views than the others.', 'Posting at 9 am: your views come in the evening.', 'Captions with no question or call: nobody comments.'],
-      ideas: [{ day: 'Tuesday', time: '7 pm', hook: '“I wrote this one in 10 minutes on the bus”', format: 'Facing the camera, 10 s', song: 'Neva Die', part: 'the hook' },
-              { day: 'Thursday', time: '7 pm', hook: '“Rate this part out of 10”', format: '3 shots on the beat, 12 s', song: 'Glaçon', part: 'verse 1' },
-              { day: 'Saturday', time: '6 pm', hook: '“My studio cost €40”', format: 'Behind the scenes, before / after', song: 'Neva Die', part: 'the bridge' }],
-      pace: { next: 'Glaçon', text: 'Your latest song is 12 days old: push “Glaçon” this week, then get the next one ready for 2 to 3 weeks from now.' } };
+  if (DEMO === 'pro'){
+    var vid = function(id, title, views){ return { id: id, title: title, cover: null, url: null, views: views }; };
+    d.coach = { plan: 'pro', locked: false, state: 'ok', createdAt: '2026-11-23T08:00:00Z', nextAt: '2026-11-30T08:00:00Z', ai: true, analysis: fr ? {
+      resume: 'Tes vidéos courtes où tu chantes dès la première seconde font le plus de vues. Pousse « Glaçon » cette semaine.',
+      marche: [{ video_id: 'v1', video: vid('v1', 'Le refrain de « Neva Die » en plan fixe', 12400), pourquoi: 'tu chantes dès la 1re seconde, 9 s seulement, posté à 19 h : les gens restent jusqu’au bout.' },
+               { video_id: 'v2', video: vid('v2', '« Glaçon » dans la voiture, 3 plans', 8100), pourquoi: 'le son démarre sur le temps fort et la légende pose une question.' },
+               { video_id: 'v3', video: vid('v3', 'Studio dans le placard, avant / après', 5600), pourquoi: 'un format « coulisses » que ton public partage.' }],
+      marche_pas: [{ constat: 'Tes vidéos de plus de 30 s font beaucoup moins de vues.', a_faire: 'Garde-les sous 15 s.' }, { constat: 'Tes vidéos postées le matin restent basses.', a_faire: 'Poste entre 18 h et 20 h.' }],
+      plan: [{ jour: 'mardi', heure: '19:00', accroche: '« Ce son, je l’ai écrit en 10 minutes dans le bus »', format: 'face_camera', sortie: { id: 's1', name: 'Neva Die' }, passage: 'le refrain', pourquoi: 'ton format qui marche le mieux.', projectId: null },
+             { jour: 'jeudi', heure: '19:00', accroche: '« Note ce passage sur 10 »', format: 'performance', sortie: { id: 's2', name: 'Glaçon' }, passage: 'le couplet 1', pourquoi: 'une question fait commenter.', projectId: null },
+             { jour: 'samedi', heure: '18:00', accroche: '« Mon studio coûte 40 € »', format: 'coulisses', sortie: { id: 's1', name: 'Neva Die' }, passage: 'le pont', pourquoi: 'tes coulisses sont partagées.', projectId: null }],
+      rythme: { conseil: 'Pousse « Glaçon » cette semaine, puis prépare le prochain son pour dans 2 à 3 semaines.', pousser_id: 's2', sortie: { id: 's2', name: 'Glaçon' }, pourquoi: 'ton dernier son a 12 jours.' },
+      manque: [] } : {
+      resume: 'Your short videos where you sing from the first second get the most views. Push “Glaçon” this week.',
+      marche: [{ video_id: 'v1', video: vid('v1', 'The “Neva Die” hook, one shot', 12400), pourquoi: 'you sing from the very first second, only 9 s, posted at 7 pm: people watch to the end.' },
+               { video_id: 'v2', video: vid('v2', '“Glaçon” in the car, 3 shots', 8100), pourquoi: 'the song starts on the beat and the caption asks a question.' },
+               { video_id: 'v3', video: vid('v3', 'Closet studio, before / after', 5600), pourquoi: 'a behind-the-scenes format your audience shares.' }],
+      marche_pas: [{ constat: 'Your videos over 30 s get far fewer views.', a_faire: 'Keep them under 15 s.' }, { constat: 'Your morning posts stay low.', a_faire: 'Post between 6 and 8 pm.' }],
+      plan: [{ jour: 'mardi', heure: '19:00', accroche: '“I wrote this one in 10 minutes on the bus”', format: 'face_camera', sortie: { id: 's1', name: 'Neva Die' }, passage: 'the hook', pourquoi: 'your best format.', projectId: null },
+             { jour: 'jeudi', heure: '19:00', accroche: '“Rate this part out of 10”', format: 'performance', sortie: { id: 's2', name: 'Glaçon' }, passage: 'verse 1', pourquoi: 'a question gets comments.', projectId: null },
+             { jour: 'samedi', heure: '18:00', accroche: '“My studio cost €40”', format: 'coulisses', sortie: { id: 's1', name: 'Neva Die' }, passage: 'the bridge', pourquoi: 'your behind-the-scenes get shared.', projectId: null }],
+      rythme: { conseil: 'Push “Glaçon” this week, then get the next song ready for 2 to 3 weeks from now.', pousser_id: 's2', sortie: { id: 's2', name: 'Glaçon' }, pourquoi: 'your latest song is 12 days old.' },
+      manque: [] } };
+  }
   return d;
 }
 function open(){

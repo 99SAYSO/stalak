@@ -124,8 +124,8 @@ def run_clip(b, base, site, lang, iphone):
     pg.wait_for_function('() => __ev("!!S.song")', timeout=30000)
     pg.set_input_files('#takeFiles', [os.path.join(site, 'take1.webm'), os.path.join(site, 'take2.webm')])
     pg.wait_for_function('() => __ev("S.takes.length === 2 && S.takes.every(t => t.status !== \'pending\')")', timeout=90000)
+    ev(pg, "go(1)"); pg.wait_for_timeout(300); ev(pg, "kindPick('clip')"); pg.wait_for_timeout(800)   # (25/11) chosen at step 1 only
     ev(pg, "go(4)"); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=30000)
-    ev(pg, "kindPick('clip')"); pg.wait_for_timeout(800)
     ev(pg, "segFree('l', 2.5), updateSegment(), segFree('r', 14.5), updateSegment(), rebuild(false)"); pg.wait_for_timeout(300)
     q = "({ k: S.kind, f: S.fmt, a: +S.segStart.toFixed(3), b: +S.segEnd.toFixed(3), cuts: S.cuts.map(c => [+c.t0.toFixed(3), +c.t1.toFixed(3), S.takes.indexOf(baseOf(c.take))]) })"
     before = ev(pg, q)
@@ -144,10 +144,12 @@ def run_clip(b, base, site, lang, iphone):
     check(tag + ' : gardé de nouveau, rouvert : le clip est toujours là', ev(pg, '!!S.clipKept && S.kind === "reel"'))
     # « Clip » without a subscription: the plans page; with one: the clip as it was
     ev(pg, "S.__lock = [], lockOpen = (f, w) => S.__lock.push(f)")
-    pg.locator('#kindSeg4 button[data-v="clip"]').click(); pg.wait_for_timeout(600)
+    ev(pg, 'go(1)'); pg.wait_for_timeout(600)
+    pg.locator('#kindSeg button[data-v="clip"]').click(); pg.wait_for_timeout(600)
     check(tag + ' : « Clip » sans abonnement : la page des formules, le clip reste gardé', ev(pg, '[S.kind, S.__lock, !!S.clipKept]') == ['reel', ['clip'], True])
     ev(pg, "acctHas = f => true, planTags()")
-    pg.locator('#kindSeg4 button[data-v="clip"]').click(); pg.wait_for_timeout(1500)
+    pg.locator('#kindSeg button[data-v="clip"]').click(); pg.wait_for_timeout(1500)
+    ev(pg, 'go(4)'); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=60000); pg.wait_for_timeout(800)
     after = ev(pg, q)
     check(tag + ' : abonné, « Clip » : le clip revient comme il était (passage, 16:9, montage)', after == before, (before, after))
     check(tag + ' : aucune erreur dans la page', not errs, errs)

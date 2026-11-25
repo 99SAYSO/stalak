@@ -9937,7 +9937,9 @@ function mobInit(){
   // lot 2: on a phone of stalak.app, the dressed screens come in their own file, after the app
   window.StalakM = Object.freeze({ lang: () => LANG, t: (k, v) => _t(k, v), acct: ACCT, view: () => (ACCT && isShown($('#acctPage')) ? apView : null), mode: () => apMode, step: () => apStep,
     go: (v, o) => apGo(v, o), hide: () => apHide(), plan: () => acctPlan(), paid: () => acctPaid(), name: u => acctName(u), calm: () => calmMotion(), gsap: () => mobGsap(), play: b => mobPlay(b),
-    phone: () => MOB.matches, home: () => mobHome(), ttStats: () => { const am = $('#acctMenu [data-am="tiktok"]'); if (ACCT && ACCT.state.user && am && !am.hidden){ apHide(); am.click(); return true; } return false; }, cloud: () => (typeof CL !== 'undefined' ? CL : null), reload: () => clLoadList(), on: f => { mobSubs.push(f); },
+    phone: () => MOB.matches, home: () => mobHome(),
+    // (25/11, coach « Monter cette idée ») opens a saved project of the account by its id; false when it is not in the list
+    openProject: id => { const p = CL && CL.list && CL.list.find(x => x.id === id); if (!p) return false; clOpenAsk(p); return true; }, ttStats: () => { const am = $('#acctMenu [data-am="tiktok"]'); if (ACCT && ACCT.state.user && am && !am.hidden){ apHide(); am.click(); return true; } return false; }, cloud: () => (typeof CL !== 'undefined' ? CL : null), reload: () => clLoadList(), on: f => { mobSubs.push(f); },
     // (refonte mobile, lot 3) the editor: its step, its takes, the camera; nothing here changes a setting
     ed: Object.freeze({ step: () => S.step, go: n => go(n), done: () => document.body.classList.contains('isdone'), song: () => !!S.song, kind: () => S.kind,
       can: f => can(f), playing: () => !!S.playing, lyr: () => S.lyrics.mode, exporting: () => !!S.exporting,
