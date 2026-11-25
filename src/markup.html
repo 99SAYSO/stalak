@@ -145,6 +145,12 @@
           <div class="wgrip r" id="gripR" hidden aria-hidden="true"></div>
           <div class="wph" id="wph" aria-hidden="true"></div>
         </div>
+        <!-- (Clarity 24/11) quick choices of the passage: 15 s, 30 s, the chorus -->
+        <div class="seg segquick" role="group" id="segQuick" aria-label="Choix rapides du passage" data-i18n-attr="aria-label:seg.quick" hidden>
+          <button type="button" data-q="15" aria-pressed="false">15 s</button>
+          <button type="button" data-q="30" aria-pressed="false">30 s</button>
+          <button type="button" data-q="ref" aria-pressed="false" data-i18n="seg.ref">Refrain</button>
+        </div>
         <div class="row" style="margin-top:10px">
           <span class="label" data-i18n="p1.start">Début</span>
           <button class="btn sm" id="barPrev" type="button" aria-label="Une mesure plus tôt" data-i18n-attr="aria-label:p1.barPrev">‹</button>
@@ -596,6 +602,7 @@
     <div class="exppct" id="expPct">0 %</div>
     <p class="expmsg" id="expMsg" hidden></p>
     <div class="progress"><i id="expBar"></i></div>
+    <p class="expeta" id="expEta" aria-live="off" hidden></p>
     <!-- (22/11, audit vente n° 4) what Stalak is doing, the real steps of the export, ticked as they are done -->
     <ol class="ws-list xsteps" id="xSteps">
       <li data-x="0"><i aria-hidden="true"></i><span data-i18n="xs.0"><b>Je prépare tes prises</b> en pleine qualité</span></li>
