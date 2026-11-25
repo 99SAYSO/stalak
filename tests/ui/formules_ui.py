@@ -107,7 +107,7 @@ def run(b, base, lang, iphone):
     check(tag + ' gratuit : taille L → Pro', lock(pg, "document.querySelector('#stSize button[data-v=\"l\"]').click()")[0] == ['text', 'pro'])
     # (24/11, owner's decision) « Clip » is for subscribers: without one it opens the plans page (Clip)
     ev(pg, "S.__kk = { startBar: S.startBar, nBars: S.nBars, fmt: S.fmt }")
-    check(tag + ' gratuit : mode Clip → la page des formules (Clip), le montage reste en TikTok', lock(pg, "document.querySelector('#kindSeg button[data-v=\"clip\"]').click()")[0] == ['clip', 'pro'] and not ev(pg, 'isClip()'))
+    check(tag + ' gratuit : mode Clip → la page des formules (Clip), le montage reste en TikTok', lock(pg, "(S.__st = S.step, S.step = 1, document.querySelector('#kindSeg button[data-v=\"clip\"]').click(), S.step = S.__st)")[0] == ['clip', 'pro'] and not ev(pg, 'isClip()'))
     ev(pg, "setKind('reel', true), S.startBar = S.__kk.startBar, S.nBars = S.__kk.nBars, barsSync(), setFormat(S.__kk.fmt), rebuild(false)")
     ev(pg, "filtAsk = async () => 'pro'")   # (audit 30/10) the question « Pro, or without this filter »: answered Pro here (audit_ui.py tests it)
     check(tag + ' gratuit : filtre Pro à l’export → Pro', lock(pg, "setFilter('demon', true), exportOne()") == [['filters', 'pro'], False])

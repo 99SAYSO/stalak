@@ -124,8 +124,8 @@ def run_clip(b, base, site, lang, iphone):
     pg.wait_for_function('() => __ev("!!S.song")', timeout=30000)
     pg.set_input_files('#takeFiles', [os.path.join(site, 'take1.webm'), os.path.join(site, 'take2.webm')])
     pg.wait_for_function('() => __ev("S.takes.length === 2 && S.takes.every(t => t.status !== \'pending\')")', timeout=90000)
+    ev(pg, "go(1)"); pg.wait_for_timeout(300); ev(pg, "kindPick('clip')"); pg.wait_for_timeout(800)   # (25/11) chosen at step 1 only
     ev(pg, "go(4)"); pg.wait_for_function('() => __ev("S.step === 4 && S.cuts.length > 0")', timeout=30000)
-    ev(pg, "kindPick('clip')"); pg.wait_for_timeout(800)
     ev(pg, "segFree('l', 2.5), updateSegment(), segFree('r', 14.5), updateSegment(), rebuild(false)"); pg.wait_for_timeout(300)
     q = "({ k: S.kind, f: S.fmt, a: +S.segStart.toFixed(3), b: +S.segEnd.toFixed(3), cuts: S.cuts.map(c => [+c.t0.toFixed(3), +c.t1.toFixed(3), S.takes.indexOf(baseOf(c.take))]) })"
     before = ev(pg, q)
