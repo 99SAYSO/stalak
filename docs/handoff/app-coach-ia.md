@@ -1,8 +1,8 @@
-Statut : EN COURS (maquette `?demo=pro` à valider par le propriétaire)
+Statut : PRÊT (côté App ; la maquette `?demo=pro` est à valider par le propriétaire, le serveur est chez Comptes)
 
 # Branche `app/coach-ia` — « Ton coach » dans « Stats » (25/11)
 
-Demande : `docs/handoff/chef-coach-ia.md`. Part de `app/retours-25-11` (Stats retravaillé).
+Demande : `docs/handoff/chef-coach-ia.md`. Contient `app/retours-25-11` (à intégrer avant).
 
 ## Ce qui change (téléphone)
 - Dans « Stats », partie Pro : **« Ton coach »** remplace « Ton plan de la semaine » (et la carte « Ton rythme » quand le coach donne le rythme).
@@ -16,19 +16,17 @@ Demande : `docs/handoff/chef-coach-ia.md`. Part de `app/retours-25-11` (Stats re
 - Sans analyse encore : « Ton coach prépare ta première analyse… » (`pending`) ou « relie ton TikTok » (rien).
 - Maquette avec des chiffres d'exemple (marqués « Exemple ») : https://app-coach-ia.stalak-site.pages.dev/fr/?demo=pro
 
-## Pour Comptes : la forme attendue (proposition, à confirmer dans `docs/contrats/coach-ia.md`)
-`GET /api/coach?lang=fr|en` (Pro / Creator Plus ; 401 déconnecté ; 403 ou `{ locked: true }` sinon) :
-```
-{ "coach": {
-    "weekOf": "2026-11-23",
-    "works": [ { "videoId": "…", "caption": "…", "cover": "https://…", "views": 12400, "why": "…" } ],   // 3 au plus
-    "stop": [ "…" ],                                                                                     // 4 au plus
-    "ideas": [ { "day": "Mardi", "time": "19 h", "hook": "…", "format": "…", "song": "Neva Die", "songId": "…", "part": "le refrain" } ],  // 3 à 5
-    "pace": { "next": "Glaçon", "text": "…" },
-    "missing": [ "tes vidéos TikTok" ]
-  } }
-```
-ou `{ "pending": true }` pendant la première analyse. Les textes arrivent écrits dans la langue demandée ; l'app les montre tels quels (aucun chiffre ajouté par l'app). Si la route n'existe pas encore, l'app ne montre rien de cassé (carte « relie ton TikTok »).
+## Données : le contrat de Comptes
+L'app suit `docs/contrats/coach-ia.md` (branche `compte/coach-ia`) : `GET /api/coach?lang=` → `state`, `createdAt`, `nextAt`, `analysis` (`resume`, `marche[].video` / `pourquoi`, `marche_pas[].constat` / `a_faire`, `plan[].jour` / `heure` / `accroche` / `format` / `sortie` / `passage` / `pourquoi` / `projectId`, `rythme.conseil` / `sortie` / `pourquoi`, `manque`).
+- `pending` : redemandé toutes les 5 s, 12 fois au plus ; `failed`, `off`, `not_enough`, `over_budget` : une phrase claire, rien d'inventé ; route absente (404) : « Ton coach arrive très bientôt ».
+- Les chiffres des vidéos viennent de `video` (joint par le serveur), jamais du texte de l'IA. Les jours sont traduits en anglais par l'app, les formats aussi (`face_camera` → « Face caméra »…).
+- « Monter cette idée » : ouvre le projet `projectId` quand il est dans la liste du compte, sinon un nouveau montage.
+- Mention sous le coach, mot pour mot du contrat : « Analyse écrite par une IA, à partir de tes chiffres. Ce sont des conseils, pas une promesse de résultats. »
+
+## Tests
+`refonte_stats_ui` 74/74 (dont le coach en démo Pro : 3 vidéos, ce qui ne marche pas, 3 idées avec « Monter cette idée », la mention IA ; « Ton plan de la semaine » et « Ton rythme » remplacés ; l'aperçu flouté a 6 parties).
+
+Capture de la maquette : `docs/audit/maquettes/coach-ia-2026-11-25.png`.
 
 ## Pour les autres
 - **Juridique** : mention « Analyse écrite par une IA » et « conseils, pas une promesse de résultats » affichées sous le coach.
