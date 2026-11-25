@@ -26,7 +26,9 @@ fr: { title: 'Tes stats', ready: 'Ton analyse est prête', readyP: 'Crée ton co
   off: 'Les chiffres Spotify arrivent bientôt. En attendant, tu peux donner tes auditeurs du mois toi-même :', notArtist: 'Colle le lien de ton profil d’artiste (open.spotify.com/artist/…).',
   give: 'Auditeurs ce mois-ci', save: 'Enregistrer', saved: 'C’est noté.', listeners: 'Auditeurs par mois', given: 'chiffre que tu as donné', followers: 'Abonnés',
   last: 'Dernier son', daysAgo: 'il y a {n} jours', today: 'aujourd’hui', top: 'Ton son le plus écouté', under: 'moins de 1 000 écoutes', streams: '{n} écoutes',
-  city: 'Ta 1re ville', ttStats: 'Mes stats TikTok', ttLink: 'Relier TikTok', proT: 'Ton analyse complète', proP: 'Tes courbes semaine par semaine, le classement de tes sons, ton rythme de sortie et ton plan de la semaine.',
+  city: 'Ta 1re ville', ttStats: 'Mes stats TikTok', ttLink: 'Relier mon TikTok', ttStatsP: 'Tes vues, tes abonnés, tes meilleures vidéos', ttLinkP: 'Pour analyser aussi tes vidéos',
+  monSay0: 'Aucune sortie sur ces {m} mois.', monSayAll: '{n} sorties en {m} mois, au moins une chaque mois.', monSay: '{n} sorties en {m} mois, rien en {list}.', monOne: '1 sortie en {m} mois, rien en {list}.', monAnd: ' et en ', monSep: ', en ',
+  wkUp: 'De {a} à {b} auditeurs en {n} semaines ({p}).', wkDown: 'De {a} à {b} auditeurs en {n} semaines ({p}) : ton public a besoin de nouveaux sons.', wkFlat: 'Autour de {b} auditeurs depuis {n} semaines.', proT: 'Ton analyse complète', proP: 'Tes courbes semaine par semaine, le classement de tes sons, ton rythme de sortie et ton plan de la semaine.',
   unlock: 'Débloquer avec Pro', weeks: 'Tes auditeurs, semaine par semaine', songs: 'Tes sons, du plus écouté au moins écouté', months: 'Tes sorties par mois',
   rhythm: 'Ton rythme', rhythmP: 'Ton dernier son date de {d} jours ; en moyenne, {a} jours entre deux sorties.', advice: 'Conseil', adviceKeep: 'Garde ce rythme : un son toutes les {w} semaines environ.',
   adviceMore: 'Essaie de sortir un son toutes les 3 à 4 semaines : ton public garde le fil.', plan: 'Ton plan de la semaine', planNew: 'Fais vivre « {name} » : poste 3 extraits de ce son cette semaine.',
@@ -42,7 +44,9 @@ en: { title: 'Your stats', ready: 'Your analysis is ready', readyP: 'Create your
   off: 'Spotify figures are coming soon. Meanwhile, you can give your monthly listeners yourself:', notArtist: 'Paste the link of your artist profile (open.spotify.com/artist/…).',
   give: 'Listeners this month', save: 'Save', saved: 'Saved.', listeners: 'Monthly listeners', given: 'the figure you gave', followers: 'Followers',
   last: 'Latest song', daysAgo: '{n} days ago', today: 'today', top: 'Your most played song', under: 'under 1,000 plays', streams: '{n} plays',
-  city: 'Your top city', ttStats: 'My TikTok stats', ttLink: 'Link TikTok', proT: 'Your full analysis', proP: 'Your curves week by week, your songs ranked, your release pace and your plan for the week.',
+  city: 'Your top city', ttStats: 'My TikTok stats', ttLink: 'Link my TikTok', ttStatsP: 'Your views, followers and best videos', ttLinkP: 'To analyse your videos too',
+  monSay0: 'No release in these {m} months.', monSayAll: '{n} releases in {m} months, at least one every month.', monSay: '{n} releases in {m} months, nothing in {list}.', monOne: '1 release in {m} months, nothing in {list}.', monAnd: ' and ', monSep: ', ',
+  wkUp: 'From {a} to {b} listeners in {n} weeks ({p}).', wkDown: 'From {a} to {b} listeners in {n} weeks ({p}): your audience needs new songs.', wkFlat: 'About {b} listeners for {n} weeks.', proT: 'Your full analysis', proP: 'Your curves week by week, your songs ranked, your release pace and your plan for the week.',
   unlock: 'Unlock with Pro', weeks: 'Your listeners, week by week', songs: 'Your songs, most played first', months: 'Your releases per month',
   rhythm: 'Your pace', rhythmP: 'Your latest song is {d} days old; on average, {a} days between two releases.', advice: 'Tip', adviceKeep: 'Keep this pace: a song about every {w} weeks.',
   adviceMore: 'Try to release a song every 3 to 4 weeks: your audience keeps track.', plan: 'Your plan for the week', planNew: 'Keep “{name}” alive: post 3 clips of it this week.',
@@ -87,7 +91,13 @@ var CSS = '@media (max-width:899px){'
 + '.m5-padbox{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:16px;text-align:center}'
 + '.m5-pad{width:70px;height:70px;border-radius:50%;border:3px solid ' + INK + ';background:#ffd23f;box-shadow:0 4px 0 ' + INK + ';display:grid;place-items:center;font-size:32px}'
 + '.m5-padbox h2{margin:0;font:400 22px/1.15 var(--display);color:' + INK + '}.m5-padbox p{margin:0;font:600 14px/1.4 var(--body);color:#3d4a63;max-width:290px}.m5-padbox .m5-btn{max-width:300px}'
-+ '.m5-chart svg{display:block;width:100%;height:140px}.m5-chart .ax{font:600 10px var(--body);fill:#7a8aa6}'
++ '.m5-chart svg{display:block;width:100%;height:auto}.m5-chart .ax{font:600 10px var(--body);fill:#3d4a63}.m5-chart .vl{font:800 10.5px var(--body);fill:' + INK + '}.m5-read{margin:12px 0 0;font:600 14.5px/1.4 var(--body);color:' + INK + '}'
+// (25/11, owner: « on ne sait pas à quoi correspond chaque barre ») each bar: its month under it, its number above it
++ '.m5-mon2{display:flex;align-items:flex-end;gap:6px;height:118px;margin-top:6px}.m5-mon2 > div{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px}'
++ '.m5-mon2 b{font:800 13px/1 var(--body);color:' + INK + '}.m5-mon2 i{display:block;width:100%;min-height:4px;border-radius:6px 6px 0 0;background:' + BLUE + ';border:2px solid ' + INK + ';border-bottom:0}.m5-mon2 .z i{background:#e3ecf8;border-color:#b8cde8}.m5-mon2 small{font:700 11.5px/1 var(--body);color:#3d4a63;white-space:nowrap}'
+// (25/11, owner) the TikTok button: in TikTok's colours, at the top of « Stats »
++ '.m5-ttc{display:flex;align-items:center;gap:12px;width:100%;margin:0 0 14px;padding:12px 14px;border:3px solid ' + INK + ';border-radius:18px;background:#000;color:#fff;text-align:left;box-shadow:-4px 4px 0 #25f4ee,4px 4px 0 #fe2c55;cursor:pointer}'
++ '.m5-ttc svg{flex:none;width:40px;height:40px}.m5-ttc b{display:block;font:800 17px/1.2 var(--body)}.m5-ttc small{display:block;margin-top:2px;font:500 13px/1.3 var(--body);color:#d7d7d7}.m5-ttc .ar{margin-left:auto;font:800 22px/1 var(--body);color:#25f4ee}'
 + '.m5-songs{margin:0;padding:0;list-style:none;counter-reset:s}.m5-songs li{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:2px solid #eaf1fb;font:600 14.5px/1.3 var(--body);color:' + INK + '}.m5-songs li::before{counter-increment:s;content:counter(s);flex:none;width:24px;font-weight:900;color:' + BLUE + '}.m5-songs li span{flex:1;min-width:0}.m5-songs li b{flex:none;font-weight:800}'
 + '.m5-mon{display:flex;align-items:flex-end;gap:5px;height:90px}.m5-mon i{flex:1;min-height:3px;border-radius:5px 5px 0 0;background:' + BLUE + '}.m5-mon i.z{background:#c9dcf3}'
 + '.m5-tip{margin-top:10px;padding:10px 12px;border-radius:14px;background:#eaf5ff;font:600 14.5px/1.4 var(--body);color:' + INK + '}.m5-tip b{color:' + BLUE + '}'
@@ -163,6 +173,7 @@ function render(d){
   var st = W.StalakM2 && W.StalakM2.state(), name = d.demo ? t('demoName') : st && st.a && st.a.artistName;
   if (d.demo) h += '<div class="m5-note m5-demo" role="note">' + esc(t('demo')) + '</div>';
   h += '<h1>' + esc(t('title')) + '</h1>' + (name ? '<p class="m5-who">' + esc(name) + '</p>' : '');
+  h += '<button type="button" class="m5-ttc m5-tt">' + TT_LOGO + '<span><b>' + esc(t(d.tiktokLinked ? 'ttStats' : 'ttLink')) + '</b><small>' + esc(t(d.tiktokLinked ? 'ttStatsP' : 'ttLinkP')) + '</small></span><span class="ar" aria-hidden="true">›</span></button>';
   // the links the analysis needs
   var miss = (d.missing || []).map(function(k){ return t(k === 'tiktok' ? 'tt' : 'sp'); });
   if (miss.length){ var lst = miss.join(t('and')); lst = lst.charAt(0).toUpperCase() + lst.slice(1);
@@ -183,36 +194,51 @@ function render(d){
   if (f.topSong) fx.push([t('top'), f.topSong.name, f.topSong.under1000 ? t('under') : f.topSong.streams != null ? t('streams', { n: num(f.topSong.streams) }) : '']);
   if (f.topCity) fx.push([t('city'), f.topCity.city, '']);
   if (fx.length) h += '<div class="m5-facts">' + fx.map(function(x){ return '<div class="m5-fact"><small>' + esc(x[0]) + '</small><b>' + esc(x[1]) + '</b>' + (x[2] ? '<em>' + esc(x[2]) + '</em>' : '') + '</div>'; }).join('') + '</div>';
-  // TikTok: the stats that already exist (Réseaux sociaux)
-  h += '<button type="button" class="m5-btn m5-tt"></button>';
   // the Pro part: real for Pro / Creator Plus, a blurred generic drawing with a padlock otherwise
   if (d.locked || !d.pro) h += '<div class="m5-card m5-pro m5-lock" style="margin-top:14px">' + lockHead() + fakePro() + '<button type="button" class="m5-btn blue m5-unlock"></button></div>';
   else h += proPart(d.pro, f);
   box.innerHTML = h;
   $$('.m5-links', box).forEach(function(b){ b.textContent = t('addLinks'); b.onclick = function(){ show(false); if (W.StalakM2) W.StalakM2.onboarding({ from: 'stats', start: 'links' }); }; });
-  var tt = $('.m5-tt', box); tt.textContent = t(d.tiktokLinked ? 'ttStats' : 'ttLink');
+  var tt = $('.m5-tt', box);
   tt.onclick = function(){ show(false); if (!(M.ttStats && M.ttStats())) M.go('account'); };
   var un = $('.m5-unlock', box); if (un){ un.textContent = t('unlock'); un.onclick = function(){ show(false); M.go('pro', { from: 'stats' }); }; }
   var gv = $('.m5-give', box); if (gv) gv.onsubmit = function(e){ e.preventDefault(); var v = Math.round(+$('input', gv).value); if (!(v >= 0) || !M.acct || typeof M.acct.saveListeners !== 'function') return;
     Promise.resolve(M.acct.saveListeners(v)).then(function(){ gv.outerHTML = '<p class="m5-tip">' + esc(t('saved')) + '</p>'; setTimeout(function(){ if (on) load(); }, 600); }).catch(function(){}); };
   enter();
 }
+var TT_LOGO = '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M33.5 8c.6 4.6 3.4 7.6 7.5 8v5.2c-2.9.1-5.3-.8-7.5-2.3v10.6c0 7.1-5 11.5-11 11.5-6.3 0-11-4.7-11-10.6 0-6.6 5.7-11.6 12.5-10.6v5.6c-3.2-.9-6.6 1.3-6.6 4.9 0 2.9 2.3 5.1 5.1 5.1 3.1 0 5.4-2.1 5.4-6.1V8z" fill="#25f4ee" transform="translate(-1.6 -1.6)"/><path d="M33.5 8c.6 4.6 3.4 7.6 7.5 8v5.2c-2.9.1-5.3-.8-7.5-2.3v10.6c0 7.1-5 11.5-11 11.5-6.3 0-11-4.7-11-10.6 0-6.6 5.7-11.6 12.5-10.6v5.6c-3.2-.9-6.6 1.3-6.6 4.9 0 2.9 2.3 5.1 5.1 5.1 3.1 0 5.4-2.1 5.4-6.1V8z" fill="#fe2c55" transform="translate(1.6 1.6)"/><path d="M33.5 8c.6 4.6 3.4 7.6 7.5 8v5.2c-2.9.1-5.3-.8-7.5-2.3v10.6c0 7.1-5 11.5-11 11.5-6.3 0-11-4.7-11-10.6 0-6.6 5.7-11.6 12.5-10.6v5.6c-3.2-.9-6.6 1.3-6.6 4.9 0 2.9 2.3 5.1 5.1 5.1 3.1 0 5.4-2.1 5.4-6.1V8z" fill="#fff"/></svg>';
+/* « 2026-08 » → « août » / « août » (short: « août », « oct. ») in the page's language */
+function monthName(ym, how){ var m = /^(\d{4})-(\d{1,2})$/.exec(String(ym)); if (!m) return String(ym); try { return new Date(+m[1], +m[2] - 1, 15).toLocaleDateString(M.lang() === 'fr' ? 'fr-FR' : 'en-US', { month: how }); } catch(e){ return String(ym); } }
+function short(n){ return n >= 10000 ? (Math.round(n / 100) / 10).toLocaleString(M.lang() === 'fr' ? 'fr-FR' : 'en-US') + ' k' : num(n); }
 function proPart(p, f){
   var h = '';
   // the listeners, week by week (the reading of Spotify, and the figures given by the artist)
   var w = (p.weeks || []).filter(function(x){ return x.listeners != null; });
   if (w.length > 1){
-    var mx = Math.max.apply(null, w.map(function(x){ return x.listeners; })) || 1, n = w.length, pts = w.map(function(x, i){ return (10 + 300 * i / (n - 1)).toFixed(1) + ',' + (120 - 100 * x.listeners / mx).toFixed(1); }).join(' ');
-    h += '<div class="m5-card m5-chart"><h2>' + esc(t('weeks')) + '</h2><svg viewBox="0 0 320 140" role="img" aria-label="' + esc(t('weeks')) + '"><polyline points="' + pts + '" fill="none" stroke="' + BLUE + '" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>'
-      + '<text class="ax" x="10" y="136">' + esc(w[0].week) + '</text><text class="ax" x="310" y="136" text-anchor="end">' + esc(w[n - 1].week) + '</text><text class="ax" x="312" y="16" text-anchor="end">' + esc(num(mx)) + '</text></svg></div>';
+    // (25/11, owner: every chart with its legend) each week under its point, each figure above it, one sentence to read it
+    var vals = w.map(function(x){ return x.listeners; }), mx = Math.max.apply(null, vals), mn = Math.min.apply(null, vals), n = w.length, lo = Math.max(0, mn - (mx - mn) * 0.35), span = (mx - lo) || 1;
+    var X = function(i){ return 26 + 268 * i / (n - 1); }, Y = function(v){ return 128 - 92 * (v - lo) / span; }, every = n > 8 ? 2 : 1;
+    var g = '<line x1="14" y1="134" x2="306" y2="134" stroke="#c9dcf3" stroke-width="2"/><polyline points="' + w.map(function(x, i){ return X(i).toFixed(1) + ',' + Y(x.listeners).toFixed(1); }).join(' ') + '" fill="none" stroke="' + BLUE + '" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>';
+    w.forEach(function(x, i){ g += '<circle cx="' + X(i).toFixed(1) + '" cy="' + Y(x.listeners).toFixed(1) + '" r="4.5" fill="#fff" stroke="' + INK + '" stroke-width="2.5"/>';
+      if (i % every === 0 || i === n - 1) g += '<text class="vl" x="' + X(i).toFixed(1) + '" y="' + (Y(x.listeners) - 9).toFixed(1) + '" text-anchor="middle">' + esc(short(x.listeners)) + '</text><text class="ax" x="' + X(i).toFixed(1) + '" y="150" text-anchor="middle">' + esc(x.week) + '</text>'; });
+    var a = vals[0], b = vals[n - 1], pc = a ? Math.round((b - a) / a * 100) : 0, ps = (pc > 0 ? '+' : '') + pc + ' %';
+    var say = Math.abs(pc) < 3 ? t('wkFlat', { b: num(b), n: n }) : t(pc > 0 ? 'wkUp' : 'wkDown', { a: num(a), b: num(b), n: n, p: ps });
+    h += '<div class="m5-card m5-chart"><h2>' + esc(t('weeks')) + '</h2><svg viewBox="0 0 320 158" role="img" aria-label="' + esc(t('weeks') + ' : ' + w.map(function(x){ return x.week + ' ' + num(x.listeners); }).join(', ')) + '">' + g + '</svg><p class="m5-read">' + esc(say) + '</p></div>';
   }
   // the songs, most played first (« moins de 1 000 écoutes », never 0)
   var so = p.songs || [];
   if (so.length) h += '<div class="m5-card"><h2>' + esc(t('songs')) + '</h2><ol class="m5-songs">' + so.slice(0, 10).map(function(x){ return '<li><span>' + esc(x.name) + '</span><b>' + esc(x.under1000 ? t('under') : x.streams != null ? t('streams', { n: num(x.streams) }) : '') + '</b></li>'; }).join('') + '</ol></div>';
   // releases per month
-  var bm = p.byMonth || [];
-  if (bm.length){ var mm = Math.max.apply(null, bm.map(function(x){ return x.songs || 0; })) || 1;
-    h += '<div class="m5-card"><h2>' + esc(t('months')) + '</h2><div class="m5-mon" role="img" aria-label="' + esc(bm.map(function(x){ return x.month + ' : ' + (x.songs || 0); }).join(', ')) + '">' + bm.map(function(x){ var v = x.songs || 0; return '<i class="' + (v ? '' : 'z') + '" style="height:' + Math.max(4, Math.round(100 * v / mm)) + '%"></i>'; }).join('') + '</div></div>'; }
+  var bm = (p.byMonth || []).slice(-6);
+  if (bm.length){
+    var mm = Math.max.apply(null, bm.map(function(x){ return x.songs || 0; })) || 1, tot = bm.reduce(function(a, x){ return a + (x.songs || 0); }, 0);
+    var none = bm.filter(function(x){ return !(x.songs > 0); }).map(function(x){ return monthName(x.month, 'long'); });
+    var list = none.length > 1 ? none.slice(0, -1).join(t('monSep')) + t('monAnd') + none[none.length - 1] : none[0];
+    var read = !tot ? t('monSay0', { m: bm.length }) : !none.length ? t('monSayAll', { n: tot, m: bm.length }) : t(tot === 1 ? 'monOne' : 'monSay', { n: tot, m: bm.length, list: list });
+    h += '<div class="m5-card"><h2>' + esc(t('months')) + '</h2><div class="m5-mon2" role="img" aria-label="' + esc(bm.map(function(x){ return monthName(x.month, 'long') + ' : ' + (x.songs || 0); }).join(', ')) + '">'
+      + bm.map(function(x){ var v = x.songs || 0; return '<div class="' + (v ? '' : 'z') + '"><b>' + v + '</b><i style="height:' + Math.max(4, Math.round(78 * v / mm)) + 'px"></i><small>' + esc(monthName(x.month, 'short')) + '</small></div>'; }).join('')
+      + '</div><p class="m5-read">' + esc(read) + '</p></div>';
+  }
   // the pace and the plan of the week: advice, said as advice (from rhythm and byMonth)
   var r = p.rhythm || {};
   if (r.daysSinceLast != null){
@@ -238,7 +264,7 @@ function demoData(){
       facts: { listeners: { n: 4812, source: 'spotify' }, followers: 1930, lastRelease: { name: 'Neva Die', daysAgo: 12 }, topSong: { name: 'Neva Die', streams: 18400 }, topCity: { city: 'Toulouse' } } } };
   if (DEMO === 'pro') d.pro = { weeks: [3900, 4100, 4050, 4380, 4520, 4700, 4812].map(function(n, i){ return { week: fr ? 'S' + (41 + i) : 'W' + (41 + i), listeners: n }; }),
       songs: [{ name: 'Neva Die', streams: 18400 }, { name: 'Glaçon', streams: 9200 }, { name: 'Albi Nuit', streams: 3100 }, { name: 'Premier Son', under1000: true }],
-      byMonth: [1, 0, 1, 1, 0, 1].map(function(n, i){ return { month: String(i + 6), songs: n }; }),
+      byMonth: [1, 0, 1, 1, 0, 1].map(function(n, i){ return { month: '2026-' + String(i + 6).padStart(2, '0'), songs: n }; }),
       rhythm: { daysSinceLast: 12, avgGapDays: 24 }, cities: [{ city: 'Toulouse', country: 'FR', listeners: 1240 }, { city: 'Paris', country: 'FR', listeners: 860 }, { city: 'Lyon', country: 'FR', listeners: 410 }] };
   else d.locked = true;
   return d;
