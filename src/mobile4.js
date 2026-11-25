@@ -26,7 +26,7 @@ fr: { skip: 'Passer', next: 'Suivant', go: 'C’est parti !', t1: 'Choisis ton s
   pwT: 'Fais décoller {ts}', pwTs: 'ton son', or: 'ou', nothing: 'Rien à payer aujourd’hui · Annulable en 1 geste', payY: '{y} par an. Annulable à tout moment.', payM: '{m} par mois. Annulable à tout moment.', best: 'Meilleur prix · -{p} %', year: 'Pro · à l’année', month: 'Pro · au mois', free: '{n} jours gratuits',
   perM: '{m}/mois', perY: '{y} par an', creator: 'Voir Creator Plus (packs, sauvegarde en ligne)', tryF: 'Essayer gratuitement', choose: 'Choisir Pro',
   termsY: 'Rien aujourd’hui. Puis {y} par an dans {n} jours. Annulable à tout moment.', termsM: 'Rien aujourd’hui. Puis {m} par mois dans {n} jours. Annulable à tout moment.',
-  reviews: 'Avis clients', ready: 'Ta vidéo est prête', of1T: 'Retire le filigrane pour {p}', of1Go: 'Retirer pour {p}', saveWm: 'Enregistrer avec le filigrane',
+  reviews: 'Avis clients', ready: 'Ta vidéo est prête', of1T: 'Retire le filigrane pour {p}', of1Go: 'Retirer pour {p}', saveWm: 'Enregistrer gratuitement (avec filigrane)', rmWm: 'Retirer le filigrane',
   thxT: 'Bienvenue dans Stalak {plan} !', thxP: 'Plus de filigrane. Tous les effets et les paroles automatiques sont débloqués.',
   thxPc: 'Plus de filigrane. Les effets, les paroles automatiques, les packs et la sauvegarde en ligne sont débloqués.', thxGo: 'Faire un montage', thxPlan: 'Voir ma formule' },
 en: { skip: 'Skip', next: 'Next', go: 'Let’s go!', t1: 'Pick your song', p1: 'Keep the part you want to post.', bpm: '144 BPM', sec: '24 seconds picked',
@@ -36,7 +36,7 @@ en: { skip: 'Skip', next: 'Next', go: 'Let’s go!', t1: 'Pick your song', p1: '
   pwT: 'Make {ts} take off', pwTs: 'your song', or: 'or', nothing: 'Nothing to pay today · Cancel in 1 tap', payY: '{y} a year. Cancel anytime.', payM: '{m} a month. Cancel anytime.', best: 'Best price · -{p}%', year: 'Pro · yearly', month: 'Pro · monthly', free: '{n} days free',
   perM: '{m}/mo', perY: '{y} a year', creator: 'See Creator Plus (packs, online saving)', tryF: 'Try it free', choose: 'Choose Pro',
   termsY: 'Nothing today. Then {y} a year in {n} days. Cancel anytime.', termsM: 'Nothing today. Then {m} a month in {n} days. Cancel anytime.',
-  reviews: 'Customer reviews', ready: 'Your video is ready', of1T: 'Remove the watermark for {p}', of1Go: 'Remove for {p}', saveWm: 'Save with the watermark',
+  reviews: 'Customer reviews', ready: 'Your video is ready', of1T: 'Remove the watermark for {p}', of1Go: 'Remove for {p}', saveWm: 'Save for free (with watermark)', rmWm: 'Remove the watermark',
   thxT: 'Welcome to Stalak {plan}!', thxP: 'No more watermark. All the effects and the automatic lyrics are unlocked.',
   thxPc: 'No more watermark. The effects, the automatic lyrics, the packs and online saving are unlocked.', thxGo: 'Make an edit', thxPlan: 'See my plan' }
 };
@@ -129,8 +129,21 @@ var CSS = '@media (max-width:899px){'
 + 'html.m4of1 #dvCmpGo > span{display:none}html.m4of1 #dvCmpGo > .m4-o1g{display:inline}html.m4of1 #dvCmpGo::before,html.m4of1 #dvCmpGo::after{display:none}'
 + 'html.m4of1 #dvOffer1{margin:12px 0 0;font:500 14px/1.45 var(--body);color:#3d4a63}'
 + 'html.m4of1 #result{display:flex !important;flex-direction:column}html.m4of1 #result > *{order:6}html.m4of1 #result > #dvCmp,html.m4of1 #result > #resultVideo{order:1}html.m4of1 #result > .m4-of1h{order:2}html.m4of1 #result > .m4-of1s{order:3;margin-bottom:18px}'
-+ 'html.m4of1 #saveRow{display:block;margin:6px 0 0}html.m4of1 #saveBtn{display:inline;min-height:44px;margin:0;padding:0 8px;border:0;background:none;box-shadow:none;color:#7a8aa6;font-size:0}html.m4of1 #saveBtn > .m4-sw{font:600 15px/1.2 var(--body);color:#7a8aa6}'
+// (25/11, owner's rule: the free choice is clearly seen) « Enregistrer gratuitement (avec filigrane) »: a real button, as wide as the
+// blue one, just under it
++ 'html.m4of1 #saveRow{display:block;margin:12px 0 0}html.m4of1 #saveBtn{display:block;width:100%;min-height:56px;margin:0;padding:8px 12px;border:3px solid ' + INK + ';border-radius:18px;background:#fff;box-shadow:0 4px 0 ' + INK + ';color:' + INK + ';font-size:0}html.m4of1 #saveBtn > .m4-sw{font:700 16.5px/1.25 var(--body);color:' + INK + '}'
 + 'html.m4of1 #saveBtn::before,html.m4of1 #saveBtn::after{display:none}html.m4of1 #saveBtn > *{display:none}html.m4of1 #saveBtn > .m4-sw{display:inline}'
+// (25/11, owner: a big black void and icons lost under the sheet) under the sheet, each block is a clean white card; the hint is
+// read on it
++ 'html.m4of1 #result > .sharebox:not([hidden]),html.m4of1 #result > .capbox,html.m4of1 #result > .optbox:not([hidden]),html.m4of1 #result > .post{margin:0 0 14px;padding:14px 16px;background:#fff;border:3px solid ' + INK + ';border-radius:20px;box-shadow:0 4px 0 ' + INK + ';color:' + INK + '}'
++ 'html.m4of1 #result > .capbox,html.m4of1 #result > .sharebox:not([hidden]){display:flex !important;flex-direction:column;gap:8px}html.m4of1 #result > .capbox > *,html.m4of1 #result > .sharebox > *{order:0 !important;margin:0}'
++ 'html.m4of1 #result > .optbox::before,html.m4of1 #result > .optbox::after,html.m4of1 #result > .capbox::before,html.m4of1 #result > .capbox::after{display:none !important}'
++ 'html.m4of1 #result .hint,html.m4of1 #result .note,html.m4of1 #result .label,html.m4of1 #result .optc{color:#3d4a63 !important;text-shadow:none}html.m4of1 #result .label{color:' + INK + ' !important;font-weight:800}'
++ 'html.m4of1 #result > .m4-of1s{position:static}'
+// (25/11, owner's decision) the other times (no offer): « Enregistrer » first, and a small link « Retirer le filigrane » to the plans
++ 'html.m4wm #dvCmp,html.m4wm #dvCmpP,html.m4wm #dvTrial{display:none !important}'
++ 'html.m4wm #dvCmpGo{display:block;width:auto;min-height:44px;margin:4px auto 10px;padding:0 8px;border:0;background:none;box-shadow:none;font-size:0}html.m4wm #dvCmpGo::before,html.m4wm #dvCmpGo::after{display:none}html.m4wm #dvCmpGo > *{display:none}'
++ 'html.m4wm #dvCmpGo > .m4-rw{display:inline;font:700 15px/1.2 var(--body);color:' + BLUE + ';text-decoration:underline;text-underline-offset:3px}'
 /* after a purchase */
 + 'html.m4thx #proThx > :not(.m4-thx){display:none !important}html.m4thx #proThx{background:rgba(10,13,20,.45)}'
 + 'html.m4thx .m4-thx{display:block;position:fixed;left:0;right:0;bottom:0;z-index:2;padding:0 20px max(22px,env(safe-area-inset-bottom,0px));background:#fff;border-top:3px solid ' + INK + ';border-radius:30px 30px 0 0;text-align:center}'
@@ -352,7 +365,12 @@ function sync(){
   if (onPw){ pwBuild(); root.classList.add('m4pw'); } else { root.classList.remove('m4pw', 'm4pwall'); }
   // the 1 € offer
   var dv = $('#doneView'), o1 = $('#dvOffer1');
-  of1On(!!(dv && !dv.hidden && o1 && (!o1.hidden || of1Moved.length) && P.of1()));
+  var of = !!(dv && !dv.hidden && o1 && (!o1.hidden || of1Moved.length) && P.of1());
+  of1On(of);
+  // no offer this time: the plain save, and the small link to the plans
+  var go = $('#dvCmpGo'), wm = !of && !!(dv && !dv.hidden && go && !go.hidden && !M.paid());
+  root.classList.toggle('m4wm', wm);
+  if (go){ var rw = $('.m4-rw', go); if (wm && !rw){ rw = el('span', 'm4-rw'); go.appendChild(rw); } if (rw){ if (wm) rw.textContent = t('rmWm'); else rw.remove(); } }
   // after a purchase
   if (P.thxOpen()) thxOn(); else thxOff();
 }

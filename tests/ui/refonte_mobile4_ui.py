@@ -148,7 +148,27 @@ def run(b, PW, dev, lang):
     if on:
         check(tag + ' : « Retirer pour 1 € », les conditions en clair, « Enregistrer avec le filigrane » en petit', '1 €' in pg.locator('#dvCmpGo').inner_text() and vis(pg, '#dvOffer1') and '7,99 €' in pg.locator('#dvOffer1').inner_text() and vis(pg, '#saveBtn'))
         shot(pg, 'm4-offre1-%s-%s' % (dev.replace(' ', ''), lang))
+        # (25/11, owner) the free save is a real button, as wide as the blue one, just under it
+        sz = pg.evaluate("() => { const a = document.querySelector('#dvCmpGo').getBoundingClientRect(), b = document.querySelector('#saveBtn').getBoundingClientRect(); return [Math.round(a.width), Math.round(b.width), Math.round(b.height), Math.round(b.top - a.bottom), getComputedStyle(document.querySelector('#saveBtn')).borderTopWidth]; }")
+        check(tag + ' : « Enregistrer gratuitement (avec filigrane) » : un vrai bouton, même largeur que le bleu, juste dessous', abs(sz[0] - sz[1]) <= 2 and sz[2] >= 50 and 0 <= sz[3] <= 120 and sz[4] != '0px'
+              and ('gratuitement' in pg.locator('#saveBtn').inner_text() or 'for free' in pg.locator('#saveBtn').inner_text()), sz)
+        # (25/11, owner) no black void, no lost icon under the sheet: every block after it is a white card, one after the other
+        gap = pg.evaluate("() => { const r = [...document.querySelectorAll('#result > *')].filter(e => e.offsetParent && getComputedStyle(e).display !== 'none' && e.getBoundingClientRect().height > 4).map(e => e.getBoundingClientRect()).sort((a, b) => a.top - b.top); let g = 0; for (let i = 1; i < r.length; i++) g = Math.max(g, r[i].top - r[i - 1].bottom); return Math.round(g); }")
+        cards = pg.evaluate("() => ['.capbox', '.optbox', '.post'].map(q => document.querySelector('#result > ' + q)).filter(e => e && e.offsetParent).every(e => getComputedStyle(e).backgroundColor === 'rgb(255, 255, 255)')")
+        check(tag + ' : sous l’offre, pas de vide noir (plus grand écart %d px), chaque bloc dans une carte blanche' % gap, gap <= 40 and cards, [gap, cards])
+        # (25/11, owner) « Retirer pour 1 € » pays the offer itself, never the plans page
+        ev(pg, "window.__co = null, ACCT.checkout = async (p, i, o) => { window.__co = [p, i, o && o.kind]; }, apRun = f => f()")
+        pg.locator('#dvCmpGo').click(force=True); pg.wait_for_timeout(600)
+        check(tag + ' : « Retirer pour 1 € » ouvre le paiement de l’offre, jamais les formules', pg.evaluate('() => window.__co') == ['pro', 'month', 'offer1'] and ev(pg, 'apView') != 'pro', [pg.evaluate('() => window.__co'), ev(pg, 'apView')])
+        ev(pg, 'apHide()'); pg.wait_for_timeout(300)
+        # (25/11, owner's decision) the offer at the 1st export, then the 10th, the 20th… never in between
+        turns = ev(pg, "[1,2,5,9,10,11,19,20].map(n => (store.set(EXP_KEY, n), of1Turn()))")
+        check(tag + ' : l’offre au 1er export, au 10e, au 20e, jamais du 2e au 9e', turns == [True, False, False, False, True, False, False, True], turns)
+        paid = ev(pg, "(acctPaid = () => true, offer1Right())")
+        check(tag + ' : jamais pour un abonné', paid is False)
+        ev(pg, "acctPaid = () => false")
         ev(pg, "offer1On = () => false, trialUi()"); pg.wait_for_timeout(600)
+        check(tag + ' : sans l’offre cette fois : « Enregistrer » d’abord, et un petit lien « Retirer le filigrane »', ev(pg, "document.documentElement.classList.contains('m4wm')") and vis(pg, '#saveBtn') and pg.locator('#dvCmpGo .m4-rw').count() == 1 and not vis(pg, '#dvCmp'))
         check(tag + ' : sans le droit à l’offre : l’écran de fin habituel revient, rien ne manque', not ev(pg, "document.documentElement.classList.contains('m4of1')") and pg.locator('.m4-of1s').count() == 0 and pg.evaluate("() => !!document.querySelector('#result #saveRow') && !!document.querySelector('#result #dvCmpGo')"))
     check(tag + ' : aucune erreur dans la page', not errs, errs)
     ctx.close()

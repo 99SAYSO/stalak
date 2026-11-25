@@ -28,6 +28,14 @@ fr: { kick: 'Étape {n} sur 4', h1: 'Choisis ton passage', h2: 'Tes prises', s2:
   tip1: 'Glisse les deux poignées pour garder ton meilleur passage.', tip2: 'Filme le même passage sous plusieurs angles.',
   lyA: 'Automatiques', lyAs: 'Stalak écoute ton son et écrit tout.', lyP: 'Je colle mon texte', lyPs: 'Puis tu tapes le rythme avec ton pouce.',
   lyN: 'Sans paroles', lyNs: 'Tu pourras en ajouter plus tard.', rec: 'Filmer une prise', add: 'Importer des vidéos', more: 'Début, durée et rythme',
+  sonT: 'Où est ton son ?', sonP: 'Choisis où il se trouve, on t’aide à le retrouver.', sonFi: 'Dans Fichiers', sonFiP: 'MP3, WAV, M4A… sur ton iPhone ou iCloud',
+  sonWa: 'Reçu par AirDrop ou WhatsApp', sonWaP: 'On te montre où le retrouver', sonVi: 'Le son d’une vidéo', sonViP: 'Une vidéo de ta galerie : on garde le son',
+  sonVo: 'Une note vocale', sonVoP: 'Enregistrée dans Dictaphone', sonOr: 'ou', sonDemoT: 'Pas ton son sous la main ?', sonDemoP: 'Essaie tout de suite avec notre son d’exemple.',
+  sonDemo: 'Essayer avec le son d’exemple', sonBack: 'Où est ton son ?', sonOpen: 'Ouvrir Fichiers', sonWaT: 'AirDrop ou WhatsApp', sonWaH: 'Ton son doit d’abord aller dans Fichiers.',
+  sonWa1: 'Dans la conversation, appuie longtemps sur ton son.', sonWa2: 'Touche « Partager » puis « Enregistrer dans Fichiers ».', sonWa3: 'Reviens ici et touche « Ouvrir Fichiers » : ton son est dans « Récents ».',
+  sonAd1: 'Accepte le son reçu par AirDrop : il va dans « Téléchargements », dans Fichiers.', sonAd2: 'Reviens ici et touche « Ouvrir Fichiers ».',
+  sonVoT: 'Une note vocale', sonVoH: 'Ta note doit d’abord aller dans Fichiers.', sonVo1: 'Dans Dictaphone, touche ta note, puis « … ».', sonVo2: 'Touche « Enregistrer dans Fichiers ».', sonVo3: 'Reviens ici et touche « Ouvrir Fichiers ».',
+  sonViT: 'On garde le son', sonViH: 'De ta vidéo, seul le son est utilisé.', sonViW: 'On récupère le son…', tabWa: 'WhatsApp', tabAd: 'AirDrop',
   cuts: 'Coupes', fx: 'Effets', filt: 'Filtres', ly: 'Paroles', mix: 'Remixer', fmt: 'Format', exp: 'Exporter ma vidéo',
   lyEdit: 'Modifier les paroles', fxNo: 'Les effets se posent dans un clip 16:9 (mode Clip).', back: 'Retour', help: 'Aide', close: 'Fermer',
   done: 'Terminer', steps: 'Étapes', take: 'Prise {n}', timer: 'Minuteur', timerOff: 'Sans', takes: 'Tes prises', play: 'Lecture' },
@@ -35,10 +43,19 @@ en: { kick: 'Step {n} of 4', h1: 'Pick your part', h2: 'Your takes', s2: 'The mo
   tip1: 'Drag the two handles to keep your best part.', tip2: 'Film the same part from several angles.',
   lyA: 'Automatic', lyAs: 'Stalak listens to your song and writes it all.', lyP: 'I paste my lyrics', lyPs: 'Then you tap the rhythm with your thumb.',
   lyN: 'No lyrics', lyNs: 'You can add some later.', rec: 'Film a take', add: 'Import videos', more: 'Start, length and beat',
+  sonT: 'Where is your song?', sonP: 'Pick where it is, we’ll help you find it.', sonFi: 'In Files', sonFiP: 'MP3, WAV, M4A… on your iPhone or iCloud',
+  sonWa: 'Received by AirDrop or WhatsApp', sonWaP: 'We show you where to find it', sonVi: 'The sound of a video', sonViP: 'A video from your gallery: we keep the sound',
+  sonVo: 'A voice memo', sonVoP: 'Recorded in Voice Memos', sonOr: 'or', sonDemoT: 'Song not at hand?', sonDemoP: 'Try right now with our example song.',
+  sonDemo: 'Try with the example song', sonBack: 'Where is your song?', sonOpen: 'Open Files', sonWaT: 'AirDrop or WhatsApp', sonWaH: 'Your song first has to go to Files.',
+  sonWa1: 'In the chat, press and hold your song.', sonWa2: 'Tap “Share”, then “Save to Files”.', sonWa3: 'Come back here and tap “Open Files”: your song is in “Recents”.',
+  sonAd1: 'Accept the song sent by AirDrop: it goes to “Downloads”, in Files.', sonAd2: 'Come back here and tap “Open Files”.',
+  sonVoT: 'A voice memo', sonVoH: 'Your memo first has to go to Files.', sonVo1: 'In Voice Memos, tap your memo, then “…”.', sonVo2: 'Tap “Save to Files”.', sonVo3: 'Come back here and tap “Open Files”.',
+  sonViT: 'We keep the sound', sonViH: 'From your video, only the sound is used.', sonViW: 'Getting the sound…', tabWa: 'WhatsApp', tabAd: 'AirDrop',
   cuts: 'Cuts', fx: 'Effects', filt: 'Filters', ly: 'Lyrics', mix: 'Remix', fmt: 'Format', exp: 'Export my video',
   lyEdit: 'Edit the lyrics', fxNo: 'Effects are added in a 16:9 clip (Music video mode).', back: 'Back', help: 'Help', close: 'Close',
   done: 'Done', steps: 'Steps', take: 'Take {n}', timer: 'Timer', timerOff: 'Off', takes: 'Your takes', play: 'Play' }
 };
+function esc(x){ return String(x == null ? '' : x).replace(/[&<>"']/g, function(c){ return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 function t(k, v){ var s = (TX[M.lang()] || TX.en)[k] || TX.en[k] || k; if (v) for (var x in v) s = s.split('{' + x + '}').join(v[x]); return s; }
 
 /* ---- style: phones only, and only while this editor is on (html.m3) ---------------------------------------------------- */
@@ -270,6 +287,9 @@ function build(){
     tools.appendChild(b);
   });
   var tlw = $('#p4 .tlwrap'), th = $('#tlHint'); if (th) th.parentNode.insertBefore(tools, th); else if (tlw) tlw.parentNode.insertBefore(tools, tlw.nextSibling);
+  // (25/11) « Stalak monte ta vidéo » under the tools at the Montage step: while it shows, the preview, the shots and the tools stay
+  // where they are (nothing pushed down)
+  var ws4 = $('#wsSlot4'); if (ws4) move(ws4, tools.parentNode, tools.nextSibling);
   scrim = el('div', 'm3-scrim'); scrim.onclick = function(){ sheet(0); }; D.body.appendChild(scrim);
   // the sheet of a shot / an effect (step 4): a veil, a ✕, slid down to close
   var veil = el('div', 'm3-cutveil'); veil.onclick = function(){ E.desel(); }; D.body.appendChild(veil);
@@ -323,6 +343,7 @@ function cutUi(){
   var x = $('#cutBar .m3-shx'); if (x) x.setAttribute('aria-label', t('close'));
 }
 function sheet(k){
+  if (k === 'filt' && E.filtThumbs) setTimeout(function(){ E.filtThumbs(); }, 0);   // (25/11) the thumbnails ready as the sheet opens
   var was = cur; cur = k;
   Object.keys(sheets).forEach(function(x){ sheets[x].classList.toggle('on', x === k); });
   scrim.classList.toggle('on', !!k);
@@ -430,5 +451,81 @@ function sync(){
 M.on(sync); sync();
 (function(){ var was = E.done(); new MutationObserver(function(){ var d = E.done(); if (d !== was){ was = d; sync(); } }).observe(D.body, { attributes: true, attributeFilter: ['class'] }); })();
 W.addEventListener('pageshow', sync);
-W.StalakM3 = { sheet: sheet, on: function(){ return on; }, sync: sync };
+/* ---- (25/11, Clarity: on an iPhone « Choisir mon son » was tapped 4 times then dropped: the file picker opened and people
+   do not have their song as a file; owner: « très bien » on the mock-up docs/audit/maquettes/son-2026-11-25) before the picker,
+   « Où est ton son ? »: Files, AirDrop / WhatsApp (where to find it), the sound of a video from the gallery, a voice memo; the
+   example song in yellow to try at once. The pickers open from the person's own tap (iOS asks for it). ---- */
+var son = null, sonVid = null;
+var SON_CSS = '@media (max-width:899px){'
++ '.m3-son{position:fixed;inset:0;z-index:300;display:none}.m3-son.on{display:block}.m3-son .sv{position:absolute;inset:0;background:rgba(10,13,20,.45);animation:m3fade .2s ease both}'
++ '@keyframes m3fade{from{opacity:0}to{opacity:1}}'
++ '.m3-son .sh{position:absolute;left:0;right:0;bottom:0;max-height:92svh;overflow:auto;padding:10px 18px calc(22px + env(safe-area-inset-bottom,0px));background:#fff;border-top:3.5px solid ' + INK + ';border-radius:28px 28px 0 0;animation:m3up .28s cubic-bezier(.165,.84,.44,1) both;color:' + INK + '}'
++ '.m3-son .gr{width:44px;height:5px;border-radius:9px;background:#c7d3e3;margin:0 auto 12px}.m3-son .tp{display:flex;align-items:center;gap:12px;margin:0 0 12px}.m3-son .tp img{width:54px;height:54px;flex:none}'
++ '.m3-son h2{margin:0;font:400 27px/1.05 var(--display);color:' + INK + ';text-shadow:none}.m3-son .tp p{margin:3px 0 0;font:500 14px/1.3 var(--body);color:#3d4a63}'
++ '.m3-son .op{display:flex;align-items:center;gap:12px;width:100%;min-height:64px;margin:0 0 9px;padding:8px 12px;border:3px solid ' + INK + ';border-radius:18px;background:#fff;box-shadow:0 4px 0 ' + INK + ';text-align:left;font:inherit;color:inherit;cursor:pointer}'
++ '.m3-son .ic{flex:none;width:44px;height:44px;border-radius:13px;border:2.5px solid ' + INK + ';display:grid;place-items:center;font-size:22px}.m3-son .op b{display:block;font:800 16.5px/1.2 var(--body)}.m3-son .op small{display:block;margin-top:2px;font:500 13px/1.3 var(--body);color:#3d4a63}.m3-son .op .ch{margin-left:auto;font:800 20px var(--body)}'
++ '.m3-son .or{display:flex;align-items:center;gap:10px;margin:12px 0;font:800 12px var(--body);letter-spacing:.08em;color:#7a8aa6;text-transform:uppercase}.m3-son .or::before,.m3-son .or::after{content:"";flex:1;height:2px;background:#e3ecf8}'
++ '.m3-son .dm{display:flex;align-items:center;gap:12px;padding:12px;border-radius:20px;background:#ffd23f;border:3px solid ' + INK + ';box-shadow:0 4px 0 ' + INK + '}.m3-son .dm img{width:58px;height:58px;flex:none}.m3-son .dm b{display:block;font:400 19px/1.1 var(--display)}.m3-son .dm small{display:block;margin-top:2px;font:600 13px/1.3 var(--body)}'
++ '.m3-son .go{display:block;width:100%;min-height:58px;margin:12px 0 0;border:3px solid ' + INK + ';border-radius:18px;background:' + BLUE + ';color:#fff;font:400 21px/1 var(--display);box-shadow:0 5px 0 ' + INK + ';cursor:pointer}'
++ '.m3-son .bk{display:inline-block;min-height:40px;margin:0 0 4px;padding:0;border:0;background:none;font:800 15px var(--body);color:' + BLUE + ';cursor:pointer}'
++ '.m3-son .tb{display:flex;gap:6px;margin:4px 0 6px}.m3-son .tb button{min-height:36px;padding:6px 12px;border-radius:999px;border:2.5px solid ' + INK + ';background:#fff;font:800 13px var(--body);color:' + INK + ';cursor:pointer}.m3-son .tb button[aria-pressed=true]{background:' + INK + ';color:#fff}'
++ '.m3-son ol{margin:6px 0 0;padding:0;list-style:none;counter-reset:s}.m3-son ol li{position:relative;padding:10px 0 10px 46px;border-top:2px solid #eef3fa;font:600 15px/1.35 var(--body)}.m3-son ol li:first-child{border-top:0}'
++ '.m3-son ol li::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:8px;width:32px;height:32px;border-radius:50%;background:' + BLUE + ';color:#fff;border:2.5px solid ' + INK + ';display:grid;place-items:center;font:400 17px var(--display)}'
++ '.m3-son .pg{margin:18px 0 6px;height:14px;border-radius:9px;border:2.5px solid ' + INK + ';overflow:hidden;background:#eef6ff}.m3-son .pg i{display:block;height:100%;width:30%;background:' + BLUE + ';animation:m3pg 1.2s ease-in-out infinite alternate}'
++ '@keyframes m3pg{from{margin-left:0}to{margin-left:70%}}.m3-son .fn{margin:8px 0 0;font:700 15px/1.3 var(--body);overflow-wrap:anywhere}'
++ '@media (max-height:700px){.m3-son .tp img{width:44px;height:44px}.m3-son h2{font-size:23px}.m3-son .tp p,.m3-son .op small{display:none}.m3-son .op{min-height:52px;margin-bottom:8px}.m3-son .ic{width:38px;height:38px;font-size:19px}.m3-son .or{margin:8px 0}.m3-son .dm{padding:8px 10px}.m3-son .dm img{width:44px;height:44px}.m3-son .gr{margin-bottom:8px}.m3-son .go{min-height:52px;margin-top:8px}}'
++ '@media (prefers-reduced-motion:reduce){.m3-son .sh,.m3-son .sv{animation:none}.m3-son .pg i{animation:none;width:100%}}'
++ '}';
+function sonPick(accept){
+  // an input of its own: the video one shows the gallery right away on an iPhone
+  var i = D.createElement('input'); i.type = 'file'; i.accept = accept; i.style.display = 'none'; D.body.appendChild(i);
+  i.onchange = function(){ var f = i.files && i.files[0]; i.remove(); if (!f) return;
+    if (/^video\//.test(f.type) || /\.(mp4|mov|m4v)$/i.test(f.name)) sonVideo(f); else { sonClose(); E.loadSong(f); } };
+  i.click();
+}
+function sonVideo(f){
+  sonPage('<div class="tp"><span class="ic" style="background:#efe3ff;width:54px;height:54px;font-size:26px">🎬</span><div><h2></h2><p></p></div></div><p class="fn"></p><div class="pg"><i></i></div><p class="wt" style="margin:4px 0 0;font:600 14px var(--body);color:#3d4a63"></p>');
+  $('h2', son).textContent = t('sonViT'); $('.tp p', son).textContent = t('sonViH'); $('.fn', son).textContent = f.name; $('.wt', son).textContent = t('sonViW');
+  Promise.resolve(E.loadSong(f)).then(sonClose, sonClose);
+}
+function sonPage(html){ var sh = $('.sh', son); sh.innerHTML = '<div class="gr"></div>' + html; sh.scrollTop = 0; }
+function sonHome(){
+  sonPage('<div class="tp"><img src="/emoji/think.webp" alt=""><div><h2></h2><p></p></div></div>'
+    + '<button type="button" class="op" data-k="fi"><span class="ic" style="background:#d6ecff">📁</span><span><b></b><small></small></span><span class="ch" aria-hidden="true">›</span></button>'
+    + '<button type="button" class="op" data-k="wa"><span class="ic" style="background:#d9f7e4">💬</span><span><b></b><small></small></span><span class="ch" aria-hidden="true">›</span></button>'
+    + '<button type="button" class="op" data-k="vi"><span class="ic" style="background:#efe3ff">🎬</span><span><b></b><small></small></span><span class="ch" aria-hidden="true">›</span></button>'
+    + '<button type="button" class="op" data-k="vo"><span class="ic" style="background:#ffe1e1">🎙️</span><span><b></b><small></small></span><span class="ch" aria-hidden="true">›</span></button>'
+    + '<div class="or"></div><div class="dm"><img src="/emoji/hello.webp" alt=""><div><b></b><small></small></div></div><button type="button" class="go"></button>');
+  $('h2', son).textContent = t('sonT'); $('.tp p', son).textContent = t('sonP');
+  [['fi', 'sonFi', 'sonFiP'], ['wa', 'sonWa', 'sonWaP'], ['vi', 'sonVi', 'sonViP'], ['vo', 'sonVo', 'sonVoP']].forEach(function(x){ var b = $('.op[data-k="' + x[0] + '"]', son); $('b', b).textContent = t(x[1]); $('small', b).textContent = t(x[2]); });
+  $('.or', son).textContent = t('sonOr'); $('.dm b', son).textContent = t('sonDemoT'); $('.dm small', son).textContent = t('sonDemoP'); $('.go', son).textContent = t('sonDemo');
+  $('.op[data-k="fi"]', son).onclick = function(){ sonClose(); E.pickFile(); };
+  $('.op[data-k="vi"]', son).onclick = function(){ sonPick('video/*'); };
+  $('.op[data-k="wa"]', son).onclick = function(){ sonHelp('wa'); };
+  $('.op[data-k="vo"]', son).onclick = function(){ sonHelp('vo'); };
+  $('.go', son).onclick = function(){ sonClose(); E.demo(); };
+  var f = $('.op', son); if (f) try { f.focus({ preventScroll: true }); } catch(e){}
+}
+function sonHelp(k, tab){
+  tab = tab || 'wa';
+  var steps = k === 'vo' ? ['sonVo1', 'sonVo2', 'sonVo3'] : tab === 'ad' ? ['sonAd1', 'sonAd2'] : ['sonWa1', 'sonWa2', 'sonWa3'];
+  sonPage('<button type="button" class="bk"></button><div class="tp" style="margin-bottom:4px"><span class="ic" style="background:' + (k === 'vo' ? '#ffe1e1' : '#d9f7e4') + ';width:54px;height:54px;font-size:26px">' + (k === 'vo' ? '🎙️' : '💬') + '</span><div><h2></h2><p></p></div></div>'
+    + (k === 'wa' ? '<div class="tb" role="group"><button type="button" data-t="wa"></button><button type="button" data-t="ad"></button></div>' : '')
+    + '<ol>' + steps.map(function(s){ return '<li>' + esc(t(s)) + '</li>'; }).join('') + '</ol><button type="button" class="go"></button>');
+  $('.bk', son).textContent = '‹ ' + t('sonBack'); $('.bk', son).onclick = sonHome;
+  $('h2', son).textContent = t(k === 'vo' ? 'sonVoT' : 'sonWaT'); $('.tp p', son).textContent = t(k === 'vo' ? 'sonVoH' : 'sonWaH');
+  $$('.tb button', son).forEach(function(b){ b.textContent = t(b.dataset.t === 'wa' ? 'tabWa' : 'tabAd'); b.setAttribute('aria-pressed', String(b.dataset.t === tab)); b.onclick = function(){ sonHelp(k, b.dataset.t); }; });
+  $('.go', son).textContent = t('sonOpen'); $('.go', son).onclick = function(){ sonClose(); E.pickFile(); };
+}
+function sonOpen(){
+  if (!son){ var st = D.createElement('style'); st.textContent = SON_CSS; D.head.appendChild(st);
+    son = el('div', 'm3-son'); son.setAttribute('role', 'dialog'); son.setAttribute('aria-modal', 'true');
+    son.innerHTML = '<div class="sv"></div><div class="sh"></div>'; D.body.appendChild(son);
+    $('.sv', son).onclick = sonClose;
+    D.addEventListener('keydown', function(e){ if (e.key === 'Escape' && son.classList.contains('on')) sonClose(); }); }
+  sonHome(); son.classList.add('on'); son.setAttribute('aria-label', t('sonT'));
+  return true;
+}
+function sonClose(){ if (son) son.classList.remove('on'); }
+W.StalakM3 = { son: function(){ return M.phone() ? sonOpen() : false; }, sheet: sheet, on: function(){ return on; }, sync: sync };
 })();
