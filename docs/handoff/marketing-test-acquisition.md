@@ -3,11 +3,11 @@
 Réponse à `docs/handoff/chef-test-acquisition-payante.md`, branche `marketing/test-acquisition`.
 Tout est dans Studio Stalak pour validation par le propriétaire :
 - `videos/pub-us-01` (statut `script`) : le script de la pub ;
-- `videos/influenceurs-us-01` (statut `script`) : la liste des 10 et le message.
+- `videos/createurs-us-01` (statut `script`) : la liste des 10 créateurs-conseillers et le message (refait le 26/11 ; l'ancienne fiche `influenceurs-us-01` de rappeurs est remplacée).
 
 **Rien n'est payé ni envoyé** : c'est le propriétaire qui valide, envoie les messages et paie, et seulement après les 3 conditions du Chef (exports iPhone, paiements abandonnés, pixel).
 
-Skills : `stalak-da` (goûts relus), `ad-creative`, `reels-scripting`, `hook-generator`, `influencer-marketing`, `prospecting`.
+Skills : `stalak-da` (goûts relus), `ad-creative`, `reels-scripting`, `hook-generator`, `influencer-marketing`, `prospecting`, `co-marketing` (26/11).
 
 ## 1. La pub TikTok en anglais (9:16, 20 s)
 
@@ -46,56 +46,78 @@ Bouton : « Learn more » (ou « Try it free », si TikTok le propose dans la li
 
 **Fabrication** : après validation du script, avec les règles habituelles (planche contact, version HD pour TikTok). Aucune voix ni image générée, donc **0 € de crédits**.
 
-## 2. Les 10 micro-influenceurs rap anglophones (TikTok)
+## 2. Les 10 créateurs-conseillers (refait le 26/11)
 
-Trouvés à la main le 25/11 sur les pages publiques de TikTok (#upcomingrapper, #indierapper, #unsignedartist, #houstonrapper). Pour chacun :
-- abonnés relevés sur la page publique ;
-- vues : moyenne et médiane des 10 dernières vidéos non épinglées (la médiane dit mieux ce qu'une vidéo fait d'habitude) ;
-- prix probable : estimation à environ 10 à 20 $ pour 1 000 vues habituelles, arrondi. **Ce n'est pas leur tarif** : ils le diront.
+**Pourquoi refait** : décision du propriétaire du 25/11 à 22 h 38. On ne vise plus les rappeurs, qui gardent leur image d'artiste et ne font pas de pub pour des applis. On vise des créateurs comme 12Thousand (@TwelveThous), qui donnent des conseils aux rappeurs indépendants.
 
-| # | Compte | Où (d'après la bio) | Abonnés | Vues des 10 dernières (moy. / médiane) | Pourquoi il colle à Stalak | Prix probable |
+**Méthode** : comptes trouvés à la main le 26/11, sur YouTube :
+- recherches « how to blow up as an underground rapper », « rollout strategy for rappers », « music marketing tips for independent rappers », « how to sell beats to rappers » ;
+- abonnés et vues relevés sur leurs pages publiques ;
+- vues = moyenne et médiane des 10 dernières vidéos longues de l'onglet « Vidéos » (la médiane dit mieux ce qu'une vidéo fait d'habitude) ;
+- communauté = liens affichés sur leur page « À propos ».
+
+**Le pays n'est pas affiché par YouTube** : tous parlent anglais, et c'est au propriétaire de confirmer qu'ils sont aux États-Unis.
+
+Repère, 12Thousand mesuré de la même façon : 6 040 abonnés, 14 280 vues en moyenne, médiane 5 600, communauté Skool.
+
+| # | Créateur | Abonnés | Vues des 10 dernières (moy. / médiane) | Communauté | Ce qu'il fait | Pourquoi il colle à « Make your snippet look like a music video » |
 |---|---|---|---|---|---|---|
-| 1 | [@calebcolossus](https://www.tiktok.com/@calebcolossus) | Atlanta | 33 800 | 4 216 / 766 | Rappeur indé qui donne son avis aux autres rappeurs : un tuto Stalak entre dans son contenu | 30 à 60 $ |
-| 2 | [@doubledee2x](https://www.tiktok.com/@doubledee2x) | pas dit | 18 400 | 2 702 / 2 611 | Poste ses sons avec des vues très régulières (1 900 à 4 300) : résultat prévisible | 30 à 50 $ |
-| 3 | [@joe.lovett](https://www.tiktok.com/@joe.lovett) | pas dit | 18 000 | 2 635 / 2 642 | « I make music » : performances de ses sons, vues régulières | 30 à 50 $ |
-| 4 | [@racksranitup](https://www.tiktok.com/@racksranitup) | pas dit | 24 300 | 2 172 / 1 561 | Rappeur qui poste beaucoup (814 vidéos) : exactement l'usage « un snippet par jour » | 25 à 40 $ |
-| 5 | [@dontaevega](https://www.tiktok.com/@dontaevega) | Minnesota | 10 600 | 5 901 / 1 586 | Rappeur qui se met en scène, avec de bons pics (13 000 et 33 000 vues) | 25 à 40 $ |
-| 6 | [@damzzonline](https://www.tiktok.com/@damzzonline) | pas dit (peut-être UK) | 12 500 | 1 418 / 1 315 | Artiste aux vues régulières, petit prix | 20 à 30 $ |
-| 7 | [@lilbullet_mb](https://www.tiktok.com/@lilbullet_mb) | Houston | 5 400 | 1 359 / 914 | Rappeur de Houston qui poste ses clips : le public visé | 15 à 25 $ |
-| 8 | [@jaiton1000](https://www.tiktok.com/@jaiton1000) | Detroit | 11 600 | 501 / 480 | Artiste indé qui vient de sortir un projet ; petit public, mais très proche de notre cible | 15 à 20 $ |
-| 9 | [@musicwithybp](https://www.tiktok.com/@musicwithybp) | Arizona | 41 500 | 25 142 / 7 809 | Grosse portée pour sa taille (une vidéo à 128 000) : le plus de vues possibles | 80 à 150 $ (sans doute hors budget) |
-| 10 | [@taylormichaels](https://www.tiktok.com/@taylormichaels) | Canada | 15 600 | 43 157 / 36 200 | « Music related content » : contenu musique, vues très fortes pour 15 000 abonnés | 100 à 250 $ (hors budget, à garder pour plus tard) |
+| 1 | [cashfunds333](https://www.youtube.com/@cashfunds333) | 13 600 | 19 370 / 7 950 | **Skool « The Vault »** | « artist management & marketing », série « underground rapper advice » (« ranking every method to blow up as an underground rapper », « the tiktok algorithm explained ») | Le plus proche de 12Thousand : même public de rappeurs underground, parle déjà de TikTok. Un avant / après de snippet entre naturellement dans ses classements de méthodes. |
+| 2 | [sunlight](https://www.youtube.com/@sunlight04) | 44 300 | 5 524 / 4 050 | **Whop « Fanbase Accelerator »** + **Skool « Sound School »** | Marketing musical (« how to blow up so fast, people will call you an industry plant », « exposing Fakemink's marketing strategy ») | Décortique comment les artistes se démarquent visuellement : la promesse « se démarquer » est son sujet. Deux communautés pour le défi snippet. |
+| 3 | [FRDi for Artists](https://www.youtube.com/@frdiforartists) | 31 200 | 21 960 / 23 500 | pas de lien trouvé | Nic D, artiste indépendant (« Is TikTok dead for musicians? », « the exact equipment I used to get 1 billion streams ») | Vues très régulières (la meilleure médiane de la liste). Il parle matériel et TikTok : Stalak comme « l'outil » pour faire des snippets qui ressemblent à des clips. |
+| 4 | [glxsten2](https://www.youtube.com/@glxstennnn) | 26 600 | 43 920 / 18 000 | **Discord** (+ Twitch) | Culture du rap underground et streamers, plus des vidéos promo (« The BEST ways to promote your music in 2026 ») | Le plus de vues, public underground. Moins « conseils » pur : à tester sur une seule vidéo « promote your music ». |
+| 5 | [Nanamin](https://www.youtube.com/@Nanamin_TV) | 10 500 | 6 709 / 1 850 | Adhésions de chaîne (« Join ») | « Every artist's brand strategist » (« why no one listens to you even with good music ») | Parle d'image et de marque d'artiste : un snippet qui ressemble à un clip, c'est de la marque. |
+| 6 | [JensTheGuru](https://www.youtube.com/@JensTheGuru) | 12 300 | 2 547 / 1 143 | pas de lien trouvé | Carrière musicale (« why your music gets ignored (it's not the algorithm) », « everyone stops promoting their music in December ») | Message « ta musique est ignorée » : la réponse visuelle, c'est se démarquer. Petit prix, vues plus faibles. |
+| 7 | [Saint Klout](https://www.youtube.com/@SaintKlout) | 27 400 | 5 161 / 6 250 | onglet Communauté | Actualité et analyse du rap underground (SoundCloud, concerts underground) | Public exact (fans et artistes underground), mais commentaire plus que conseils : à garder en 2e vague. |
+| 8 | [Diego Torres](https://www.youtube.com/@diegotorresbiz) | 20 000 | 7 290 / 5 150 | **formation / défi « sellbeats »** | Vendre des prods en ligne (« How to start selling beats in 2026 ») | Ses beatmakers vendent à des rappeurs : un snippet en mode clip sur leur prod aide à vendre et à montrer la prod portée par un artiste. |
+| 9 | [JB Sauced Up](https://www.youtube.com/@jbsaucedup) | 41 000 | 5 000 / 4 000 | **Discord** + **mentorat Whop** | Producteur platine (« how I get placements with any artist », « rating my subscribers' beats ») | Producteur crédible, audience de producteurs et d'artistes. Idée : un « snippet en mode clip » de l'artiste qu'il produit. |
+| 10 | [Cyfal](https://www.youtube.com/@cyfalii) | 6 750 | 2 632 / 813 | **Discord** + formation (Thinkific) | Producteur qui vend des prods (« how to sell beats on Instagram for $3k ») | Petit compte comme 12Thousand ; vend sur Instagram, où un snippet en mode clip se voit. |
 
-**Mon conseil pour les 70 €** : écrire d'abord aux n° 2, 3, 4 et 5. Ils ont des vues régulières, des prix probables dans le budget et postent leurs propres sons. Garder les n° 1, 6 et 7 en réserve.
+**Mon conseil pour commencer** : n° 1 (cashfunds333), n° 2 (sunlight) et n° 3 (FRDi). C'est le public de 12Thousand, avec des vues solides. Les n° 1 et 2 ont aussi une communauté pour le défi snippet.
 
-**À vérifier par le propriétaire avant de payer** :
-- qu'ils sont bien aux États-Unis (ou au Royaume-Uni et au Canada en 2e choix) ;
-- que leurs dernières vidéos sont des performances de leurs propres sons, pas des repartages ;
-- que leurs vues ne sont pas gonflées : beaucoup de vues avec très peu de commentaires est mauvais signe.
+**Vus mais écartés** :
+- hors tranche : BkOnWhatt (64 600), Viral Vision (92 800), And The Writer Is… (87 200), Joey Dean / Artist Alignment Academy (1 800) ;
+- vues trop faibles : Music Makin Cents (5 000 abonnés, moins de 1 000 vues par vidéo) ;
+- pas le bon sujet : Nikita Cheldiev (TikTok pour créateurs en général), Robert Santerre (e-commerce).
 
-## 3. Le message de contact (anglais)
+**À vérifier par le propriétaire avant d'écrire** :
+- le pays ;
+- que la vidéo choisie pour le compliment est bien d'eux ;
+- qu'aucun n'a déjà un partenariat avec une appli de montage concurrente (regarder leurs descriptions).
 
-> Hey [name], love your stuff, especially [one real video of theirs].
+## 3. Le message de contact (anglais, refait le 26/11)
+
+L'offre est celle de 12Thousand (`docs/handoff/chef-partenariat-12k.md`), mêmes conditions :
+- 50 % de chaque paiement des abonnés venus d'eux, pendant 12 mois ;
+- un code à leur nom avec 14 jours d'essai au lieu de 7 ;
+- Creator Plus gratuit pour eux.
+
+> Subject: Partnership idea: 50% of every sale, for 12 months
 >
-> I'm 99Sayso. I came up as an independent rapper and built Stalak (stalak.app) for my own videos: a free tool that takes a few takes of you performing your song and edits them on the beat, lip sync locked, ready for TikTok.
+> Hey [name], your video "[one real video title]" is exactly what underground artists need to hear.
 >
-> I'd like to pay you $[30] for one TikTok where you use Stalak on one of YOUR songs: film 2 or 3 takes, let Stalak cut it, post the result (and show a few seconds of the app if you can). Your music, your style, no script.
+> I'm 99Sayso. I built Stalak (stalak.app) because every snippet on TikTok looks the same: one take, facing the camera. With Stalak you film a few takes, and it cuts them on the beat, lip sync locked. Your snippet looks like a music video, and you stand out.
 >
-> A few things:
-> - It has to be marked as a paid partnership (TikTok's "Paid partnership" label, or #ad).
-> - I'll give you a link with your name on it: stalak.app/?ref=[name]
-> - Payment by PayPal once the video is up.
+> I'd love to partner with you, same deal as my first partner:
+> - 50% of every payment from the people you bring, for 12 months
+> - your own code ([CODE]) that gives your audience a 14-day free trial instead of 7
+> - Creator Plus free for you, for as long as we work together
 >
-> Interested? Happy to answer any questions.
+> What I'd ask: a 60–90 s segment in one video a month (your own track, one take first, then the Stalak version), your link in the description, and if you have a community, one post about it. Marked as #ad, of course.
+>
+> Want me to set up your code so you can try it first?
 > 99Sayso
 
-**Pourquoi il est écrit comme ça** :
-- Un compliment précis (une vraie vidéo à citer) pour qu'on ne le prenne pas pour un robot.
-- Un prix fixe : 30 $ pour rester dans 25 à 35 €.
-- Leur propre son, donc la vidéo leur sert aussi.
-- La mention de partenariat, obligatoire.
-- Un lien à leur nom.
+**Pourquoi ce message** :
+- Il commence par une de leurs vraies vidéos.
+- Il explique la promesse en une phrase (« your snippet looks like a music video »).
+- Les mêmes conditions que 12Thousand, sans promesse de vues ni de « percer ».
+- Une demande légère : un passage par mois, et un essai avant tout engagement.
 
-Le propriétaire remplace `[name]` par le pseudo (en minuscules et sans point dans le lien, par ex. `stalak.app/?ref=doubledee2x`) et paie après la mise en ligne.
+**Ce que le propriétaire remplace avant d'envoyer** :
+- `[name]` et `[one real video title]` ;
+- `[CODE]` : un code par créateur, par exemple `CASH`, `SUN`, `FRDI` ; le lien sera `stalak.app/?ref=<nom>`.
 
-**Rappel juridique** : la mention de partenariat est obligatoire (règles de TikTok et de la FTC aux États-Unis). Ne pas payer une vidéo publiée sans elle.
+**À préparer par Comptes** : un code et un `ref` par créateur, comme `12K`.
+
+**Rappel juridique** : la mention de partenariat (#ad, FTC) est obligatoire, et les conditions de partenariat de 12Thousand servent pour tous.

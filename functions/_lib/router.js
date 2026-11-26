@@ -12,7 +12,7 @@ import { getArtist, putArtist, putListeners, spotifyArtistId } from './artist.js
 import { statsFor } from './stats.js';
 import { spotifyNow, spotifyWeekly } from './spotify.js';
 import { trialPrices, trialMarkOnDelete, cancelTrial, cancelPage, trialReminders, TRIAL_DAYS } from './trial.js';
-import { social, socialWebhook, isSocialWebhook, socialProviders, deleteSocialAccounts } from './social.js';
+import { social, socialWebhook, isSocialWebhook, socialProviders, socialVisible, deleteSocialAccounts } from './social.js';
 import { tiktok } from './tiktok.js';   // Réseaux sociaux: « Publier sur TikTok », « Mes stats »
 import { clarityDaily } from './clarity.js';
 import { projectCover, coverUrl, COVER_TYPES, projectFiles, storageInfo, checkProjectFiles, dropUnusedFiles, readyFiles, deleteProjectMedia, deleteUserMedia, maybeCleanup, cleanupCloud, cloudAvailable } from './cloud.js';
@@ -57,7 +57,7 @@ async function meResponse(env, user, headers) {
   return json({ user: publicUser(user), session: publicSession(user), entitlements, subscription }, 200, headers);
 }
 
-function config(env) {
+function config(env, social) {
   return {
     // 23/11: the free trial as the app reads it (App, app/essai-pro: config.trial = {days, plans}); null without its prices
     trial: (trialPrices(env).month || trialPrices(env).year) ? { days: TRIAL_DAYS, plans: ['pro'] } : null,
@@ -93,7 +93,7 @@ function config(env) {
     planFeatures: FEATURES,
     planLimits: LIMITS,
     // social: the networks a person can link (TikTok / Instagram), only those whose keys are set (social.js)
-    features: { socialConnect: env.SOCIAL_CONNECT_ENABLED === '1', social: socialProviders(env), cloudSave: cloudAvailable(env) },
+    features: { socialConnect: env.SOCIAL_CONNECT_ENABLED === '1', social: social || socialProviders(env), cloudSave: cloudAvailable(env) },
     // sign-in with Google / Apple / Microsoft: only the providers whose keys are set (the buttons show only those)
     auth: { providers: enabledProviders(env), passwordMin: 8, turnstile: turnstileSiteKey(env) },
   };
@@ -257,7 +257,8 @@ async function deleteAccount(request, env) {
 }
 
 // ref:<code> | utm:<source> | dir:<directory> | site:<domain> | a site kind (tiktok, ig, yt, google…) | direct
-export const SIGNUP_SOURCE = /^(?:(?:ref|utm|dir):[a-z0-9_-]{1,32}|site:[a-z0-9.-]{3,48}|[a-z0-9_-]{1,24})$/;
+// 25/11: « ai:chatgpt »… (AI assistants), and dots in ?ref= / utm codes (« utm:chatgpt.com »)
+export const SIGNUP_SOURCE = /^(?:(?:ref|utm|dir):[a-z0-9._-]{1,40}|site:[a-z0-9.-]{3,48}|ai:(?:chatgpt|perplexity|claude|gemini|copilot|other)|[a-z0-9_-]{1,24})$/;
 // <branch or id>.<project>.pages.dev = a preview deployment of Cloudflare Pages (the bare <project>.pages.dev is production)
 export const isPreviewHost = (h) => /^[^.]+\.[^.]+\.pages\.dev$/i.test(String(h || ''));
 const PREVIEW_BLOCKED = (route, parts, method) => route === 'paddle/webhook' || route.startsWith('cron/') || route === 'paddle/change' ||
@@ -370,7 +371,8 @@ async function dispatch(request, env, ctx) {
         return json(await cancelTrial(env, await readJson(request, 1024), await currentUser(request, env).catch(() => null)));
       case 'config':
         if (method !== 'GET') break;
-        return json(config(env), 200, { 'Cache-Control': 'no-store' });
+        // 26/11: TikTok hidden while the app is in Sandbox, except for the test accounts (social.js, socialVisible)
+        return json(config(env, await socialVisible(env, await currentUser(request, env).catch(() => null))), 200, { 'Cache-Control': 'no-store' });
       case 'me':
         if (method === 'GET') return meResponse(env, await currentUser(request, env));
         if (method !== 'PATCH') break;

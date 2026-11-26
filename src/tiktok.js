@@ -536,7 +536,8 @@ function doneButton() {
 function paint() { try { card(); menu(); doneButton(); } catch (e) {} }
 
 // follow the app: the account state, the end of the export, the account page and menu opening, the language
-ACC.onChange(() => refresh());
+// (26/11) TikTok is offered per account while the app is in Sandbox (only the test accounts): asked again when the account changes
+ACC.onChange(() => { const id = (ACC.state && ACC.state.user && ACC.state.user.id) || ''; if (id !== TT.uid){ TT.uid = id; TT.offered = null; } refresh(); });
 new MutationObserver(() => doneButton()).observe(document.body, { attributes: true, attributeFilter: ['class'] });
 const watch = (id, f) => { const n = document.getElementById(id); if (n) new MutationObserver(f).observe(n, { attributes: true, attributeFilter: ['hidden'] }); };
 watch('apAccount', () => { if (!$('#apAccount').hidden) refresh(); });

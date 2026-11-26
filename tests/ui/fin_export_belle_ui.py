@@ -109,7 +109,11 @@ def run(b, PW, dev, lang, calm=False):
         if i: ev(pg, "$('#dvEdit').click()"); pg.wait_for_timeout(600)
         pg.evaluate('() => { __ev("exportOne()"); }'); pg.wait_for_function('() => __ev("S.done === true && !S.exporting")', timeout=90000)
         pg.wait_for_function("() => document.documentElement.classList.contains('m4fe')", timeout=8000)
-        pg.wait_for_timeout(350)
+        # (26/11, Chef point 10: missed once on the iPhone SE) the confetti come once the animation library is there: up to 2.5 s
+        if not calm:
+            try: pg.wait_for_function("() => document.querySelectorAll('.m4-fx i').length >= 20", timeout=2500)
+            except Exception: pass
+        else: pg.wait_for_timeout(350)
         conf = pg.evaluate("() => document.querySelectorAll('.m4-fx i').length")
         if calm: check(tag + ' : avec « réduire les animations », pas de confettis', conf == 0, conf)
         else: check(tag + ' : %s : des confettis à l’arrivée sur l’écran' % name, conf >= 20, conf)

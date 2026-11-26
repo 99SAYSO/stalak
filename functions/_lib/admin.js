@@ -20,6 +20,7 @@ import { sendThanks, thanksEmail } from './thanks.js';
 import { tgStatus, linkTelegram, unlinkTelegram } from './telegram.js';
 import { limit } from './ratelimit.js';
 import { ga4Report, ga4Live } from './ga4.js';
+import { abandoned } from './abandoned.js';
 import { clarityView, clarityDaily, clarityOn } from './clarity.js';
 
 const TEAM = /^https:\/\/[a-z0-9][a-z0-9-]{0,62}\.cloudflareaccess\.com$/;
@@ -114,7 +115,7 @@ export async function stats(env, days = 30, now = Date.now()) {
     q('SELECT day AS d, name, n FROM daily_counts WHERE day >= ?1', from),
     q('SELECT COUNT(*) AS projects, COUNT(DISTINCT user_id) AS users, SUM(media_bytes) AS bytes FROM projects'),
     q("SELECT date(created_at / 1000, 'unixepoch') AS d, COUNT(*) AS n FROM tickets WHERE created_at >= ?1 GROUP BY d", fromMs),
-    q('SELECT id, email, display_name, created_at, email_verified_at FROM users ORDER BY created_at DESC LIMIT 20'),
+    q('SELECT id, email, display_name, created_at, email_verified_at, signup_source FROM users ORDER BY created_at DESC LIMIT 20'),
     // revenue per plan: payments by price (the plan comes from the price, entitlements.js)
     q('SELECT price_id, currency, SUM(total) AS total, SUM(billed_at >= ?1) AS n30, SUM(CASE WHEN billed_at >= ?1 THEN total ELSE 0 END) AS total30, COUNT(*) AS n FROM payments WHERE env = ?2 GROUP BY price_id, currency', since30, pe),
   ]);
@@ -225,7 +226,7 @@ export async function stats(env, days = 30, now = Date.now()) {
     env: pe,
     ...(await insights(env, list, fromMs, now)),
     recentUsers: R(recent).map((r) => ({ email: r.email, name: r.display_name || null, createdAt: new Date(r.created_at).toISOString(),
-      verified: !!r.email_verified_at, pro: proUsers.has(r.id), plan: proUsers.get(r.id) || null })),
+      verified: !!r.email_verified_at, pro: proUsers.has(r.id), plan: proUsers.get(r.id) || null, source: r.signup_source || null })),
   };
 }
 
@@ -240,6 +241,16 @@ export function bySource(ev) {
     r[{ visit: 'visits', export_ok: 'videos', plans_open: 'plans', checkout_open: 'checkout', checkout_done: 'paid' }[m[1]]] += ev[k];
   }
   const out = [], other = { source: 'other', visits: 0, videos: 0, plans: 0, checkout: 0, paid: 0 };
+  // 25/11: the AI assistants in one line « ai », with the detail of each (ChatGPT, Perplexity…), never sent to « other »
+  const K = ['visits', 'videos', 'plans', 'checkout', 'paid'];
+  const ai = { source: 'ai', visits: 0, videos: 0, plans: 0, checkout: 0, paid: 0, detail: [] };
+  for (const key of Object.keys(rows)) {
+    if (key !== 'ai' && !key.startsWith('ai:')) continue;
+    const r = rows[key]; delete rows[key];
+    for (const k of K) ai[k] += r[k];
+    ai.detail.push({ ...r, source: key === 'ai' ? 'ai:other' : key });
+  }
+  if (ai.visits || ai.paid) { ai.detail.sort((a, b) => b.visits - a.visits); out.push(ai); }
   for (const r of Object.values(rows)) {
     if (r.visits < 2 && !r.paid && r.source !== 'direct' && r.source !== 'other') { for (const k of ['visits', 'videos', 'plans', 'checkout', 'paid']) other[k] += r[k]; }
     else if (r.source === 'other') { for (const k of ['visits', 'videos', 'plans', 'checkout', 'paid']) other[k] += r[k]; }
@@ -253,6 +264,32 @@ export function visitCountries(ev) {
   const c = {};
   for (const k in ev) { const m = /^vs:.+:([A-Z]{2})$/.exec(k); if (m) c[m[1]] = (c[m[1]] || 0) + ev[k]; }
   return Object.entries(c).map(([country, n]) => ({ country, n })).sort((a, b) => b.n - a.n).slice(0, 10);
+}
+// 25/11 (Chef « sources et paiements »): « Langue des visiteurs et des abonnés », English / French, over 7 and 30 days, in
+// totals: visits (and those that stayed 5 min or more), new accounts, first payments, and the paying subscribers today
+export async function languages(env, now = Date.now()) {
+  const pe = payEnv(env), q = (sql, ...b) => env.DB.prepare(sql).bind(...b);
+  const L = (v) => (v === 'fr' ? 'fr' : v === 'en' ? 'en' : 'unknown');
+  const out = {};
+  for (const d of [7, 30]) {
+    const fromDay = today(now - (d - 1) * 864e5), fromMs = Date.parse(fromDay + 'T00:00:00Z');
+    const [v, a, p] = await env.DB.batch([
+      q('SELECT lang AS k, COUNT(*) AS n, SUM(last_at - first_at >= 300000) AS long5 FROM visits WHERE day >= ?1 GROUP BY lang', fromDay),
+      q('SELECT lang AS k, COUNT(*) AS n FROM users WHERE created_at >= ?1 GROUP BY lang', fromMs),
+      q(`SELECT u.lang AS k, COUNT(*) AS n FROM payments p JOIN users u ON u.id = p.user_id
+         WHERE p.env = ?1 AND p.billed_at >= ?2 AND p.origin <> 'subscription_recurring' GROUP BY u.lang`, pe, fromMs),
+    ]);
+    const o = { visits: {}, visits5: {}, accounts: {}, payments: {} };
+    for (const r of v.results || []) { o.visits[L(r.k)] = (o.visits[L(r.k)] || 0) + r.n; o.visits5[L(r.k)] = (o.visits5[L(r.k)] || 0) + (r.long5 || 0); }
+    for (const r of a.results || []) o.accounts[L(r.k)] = (o.accounts[L(r.k)] || 0) + r.n;
+    for (const r of p.results || []) o.payments[L(r.k)] = (o.payments[L(r.k)] || 0) + r.n;
+    out['d' + d] = o;
+  }
+  const subs = await q(`SELECT u.lang AS k, COUNT(DISTINCT s.user_id) AS n FROM subscriptions s JOIN users u ON u.id = s.user_id
+      WHERE s.env = ?1 AND s.status IN ('active','trialing','past_due') GROUP BY u.lang`, pe).all();
+  out.subscribers = {};
+  for (const r of subs.results || []) out.subscribers[L(r.k)] = (out.subscribers[L(r.k)] || 0) + r.n;
+  return out;
 }
 // n°8 (the owner's numbering): the e-mails given by free users at the end of a video, with their consent (optin.js)
 export async function optinCounts(env, now = Date.now()) {
@@ -590,6 +627,12 @@ export async function admin(request, env, method, rest) {
   // « 🔍 Clarity et Google Analytics » (24/11): GA4 asked live (kept 10 min / 1 min in memory), Clarity read from the daily
   // snapshot in D1 (never from Clarity's API here, except « Relever maintenant »). Our own visit counter of the same days,
   // to show which share of the visitors accepted the cookies.
+  // 25/11: « Langue des visiteurs et des abonnés » (7 and 30 days) and « Paiements abandonnés » (Paddle, read-only, no person)
+  if (route === 'languages' && method === 'GET') return json(await languages(env));
+  if (route === 'paddle/abandoned' && method === 'GET') {
+    const d = Number.parseInt(url.searchParams.get('days') || '7', 10);
+    return json(await abandoned(env, d));
+  }
   if (route === 'analytics' && method === 'GET') {
     const d = Number.parseInt(url.searchParams.get('days') || '7', 10), days = [1, 7, 30].includes(d) ? d : 7;
     const from = new Date(Date.now() - (days - 1) * 864e5).toISOString().slice(0, 10);

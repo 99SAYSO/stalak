@@ -47,6 +47,11 @@ SPOTIFY_MARKET = "FR"                 # the country used to list releases (Spoti
 # Basic and Pro in euros → pro, Max → creator. Format: id:plan:interval, comma between them.
 PADDLE_PRICES_OLD = ""
 SOCIAL_CONNECT_ENABLED = "1"
+# 26/11 (owner): « Publier sur TikTok » hidden from everyone until TikTok validates the app (Sandbox). Put "1" to show it to
+# everyone again. The test accounts still see it: the Stalak accounts whose e-mail is listed in TIKTOK_TESTERS (comma between
+# them; the owner types it here or in Cloudflare → Pages → Settings → Variables) and those that already linked TikTok.
+TIKTOK_PUBLIC = "0"
+TIKTOK_TESTERS = ""
 # Audit of 30/10. All the code e-mails of a day together (sign-up, new device, forgotten password): above it they wait until
 # midnight UTC and the owner gets an e-mail (at 80 % too). Set it to the Resend plan's daily allowance (BACKEND.md, step 3).
 EMAIL_DAILY_MAX = "1000"
