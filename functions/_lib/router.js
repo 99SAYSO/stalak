@@ -15,6 +15,8 @@ import { trialPrices, trialMarkOnDelete, cancelTrial, cancelPage, trialReminders
 import { social, socialWebhook, isSocialWebhook, socialProviders, socialVisible, deleteSocialAccounts } from './social.js';
 import { tiktok } from './tiktok.js';   // Réseaux sociaux: « Publier sur TikTok », « Mes stats »
 import { clarityDaily } from './clarity.js';
+import { saveHeard } from './heard.js';
+import { saveTips, emailsStop, projectNudges } from './activation.js';
 import { projectCover, coverUrl, COVER_TYPES, projectFiles, storageInfo, checkProjectFiles, dropUnusedFiles, readyFiles, deleteProjectMedia, deleteUserMedia, maybeCleanup, cleanupCloud, cloudAvailable } from './cloud.js';
 import { timingSafeEqual, sha256Hex } from './crypto.js';
 import { limit } from './ratelimit.js';
@@ -24,7 +26,7 @@ import { admin } from './admin.js';
 import { support } from './support.js';
 import { cancelThanks } from './thanks.js';
 import { optinAsk, optinLink } from './optin.js';
-import { presence, bump, event, exportTotal } from './metrics.js';
+import { presence, bump, event, exportTotal, bumpUserDay } from './metrics.js';
 
 const PROJECT_MAX_BYTES = 256 * 1024; // ~200 KB of project JSON + envelope
 const PROJECT_MAX_COUNT = 200;
@@ -34,6 +36,8 @@ const STATE_CHANGING = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 function publicUser(u) {
   return u ? {
     id: u.id, email: u.email, lang: u.lang, createdAt: new Date(u.created_at).toISOString(),
+    // 26/11: « Where did you hear about Stalak? » already answered (or skipped): never asked again; the tips e-mails box
+    heardAsked: !!u.heard_at, emailTips: u.email_tips == null ? null : u.email_tips === 1,
     displayName: u.display_name || null,
     avatarUrl: avatarUrl(u),
     hasPassword: !!u.password_hash,
@@ -187,7 +191,7 @@ function cronAuth(request, env) {
 }
 async function cronCleanup(request, env) {
   cronAuth(request, env);
-  return json({ ok: true, ...(await cleanupCloud(env)), ...(await yearlyReminders(env)), ...(await trialReminders(env)), ...(await clarityDaily(env)), ...(await spotifyWeekly(env)) });
+  return json({ ok: true, ...(await cleanupCloud(env)), ...(await yearlyReminders(env)), ...(await trialReminders(env)), ...(await clarityDaily(env)), ...(await spotifyWeekly(env)), ...(await projectNudges(env)) });
 }
 
 // Signed in: the session cookie (and the trusted-device cookie), then the same answer as GET /api/me.
@@ -243,6 +247,7 @@ async function deleteAccount(request, env) {
     // 23/11: the onboarding answers and the listeners given in « Stats »
     env.DB.prepare('DELETE FROM artist_profiles WHERE user_id = ?1').bind(user.id),
     env.DB.prepare('DELETE FROM listener_counts WHERE user_id = ?1').bind(user.id),
+    env.DB.prepare('DELETE FROM user_day_counts WHERE user_id = ?1').bind(user.id),
     ...['spotify_snapshots', 'spotify_releases', 'spotify_track_counts', 'spotify_sync'].map((t) => env.DB.prepare(`DELETE FROM ${t} WHERE user_id = ?1`).bind(user.id)),
     env.DB.prepare('DELETE FROM identities WHERE user_id = ?1').bind(user.id),
     env.DB.prepare('DELETE FROM rate_limits WHERE key = ?1').bind(await failKey(user.email)),
@@ -314,6 +319,12 @@ async function dispatch(request, env, ctx) {
     if (isSocialWebhook(parts)) return socialWebhook(request, env, parts[1], parts[2], method);
     // the owner's dashboard (admin.js): admin host + Cloudflare Access token, its own Origin check; 404 anywhere else
     if (parts[0] === 'admin') return admin(request, env, method, parts.slice(1));
+    // 26/11: « Me désinscrire » of the reminder e-mails: the link is signed (HMAC), and mail apps send their one-click
+    // unsubscribe (List-Unsubscribe-Post) from their own servers, without Origin: no CSRF rule here, the signature is the check
+    if (route === 'emails/stop') {
+      if (method !== 'GET' && method !== 'POST') throw new HttpError(405, 'method_not_allowed', 'Method not allowed.');
+      return emailsStop(request, env);
+    }
     if (route === 'cron/cloud-cleanup') {
       if (method !== 'POST') throw new HttpError(405, 'method_not_allowed', 'Method not allowed.');
       return cronCleanup(request, env);
@@ -323,7 +334,10 @@ async function dispatch(request, env, ctx) {
     const coverUpload = method === 'PUT' && parts[0] === 'projects' && parts[2] === 'cover' && parts.length === 3;
     // Réseaux sociaux: a piece of a video sent to TikTok (/api/tiktok/publish/:id/chunk/:n), raw bytes too
     const ttChunk = method === 'PUT' && parts[0] === 'tiktok' && parts[1] === 'publish' && parts[3] === 'chunk' && parts.length === 5;
-    if (STATE_CHANGING.has(method)) checkCsrf(request, env, route === 'me/avatar' && method === 'PUT' ? AVATAR_TYPES : rawUpload || ttChunk ? ['application/octet-stream'] : coverUpload ? COVER_TYPES : []);
+    // (26/11) the buttons of the e-mail pages (optin.js: « Oui, je confirme », « Me désinscrire ») are plain HTML forms: they send
+    // application/x-www-form-urlencoded (they were refused before, 415); the Origin check stays
+    const formPage = method === 'POST' && (route === 'optin/confirm' || route === 'optin/stop');
+    if (STATE_CHANGING.has(method)) checkCsrf(request, env, route === 'me/avatar' && method === 'PUT' ? AVATAR_TYPES : rawUpload || ttChunk ? ['application/octet-stream'] : coverUpload ? COVER_TYPES : formPage ? ['application/x-www-form-urlencoded'] : []);
 
     switch (route) {
       case 'stats/exports':   // public: the total of videos exported (home page counter), cached 5 minutes
@@ -375,7 +389,12 @@ async function dispatch(request, env, ctx) {
         // 26/11: TikTok hidden while the app is in Sandbox, except for the test accounts (social.js, socialVisible)
         return json(config(env, await socialVisible(env, await currentUser(request, env).catch(() => null))), 200, { 'Cache-Control': 'no-store' });
       case 'me':
-        if (method === 'GET') return meResponse(env, await currentUser(request, env));
+        if (method === 'GET') {
+          const u = await currentUser(request, env);
+          // 26/11 (« Essais Pro »): the app opened while signed in, once more today for this account (a counter, nothing else)
+          if (u) await bumpUserDay(env, u.id, 'open');
+          return meResponse(env, u);
+        }
         if (method !== 'PATCH') break;
         return meResponse(env, await updateProfile(env, await requireUser(request, env), await readJson(request)));
       case 'me/avatar':
@@ -428,6 +447,20 @@ async function dispatch(request, env, ctx) {
       case 'account':
         if (method !== 'DELETE') break;
         return deleteAccount(request, env);
+      // 26/11 (docs/handoff/chef-question-source.md): « Where did you hear about Stalak? », once per account
+      case 'account/heard': {
+        if (method !== 'POST') break;
+        const u = await requireUser(request, env);
+        await limit(env, `heard:${u.id}`, 20, 3600e3, 'Too many requests, try again later.');
+        return json(await saveHeard(env, u, await readJson(request, 512)));
+      }
+      // 26/11 (docs/handoff/chef-activation-rapide.md n°7): the tips / reminder e-mails box (never ticked beforehand)
+      case 'account/emails': {
+        if (method !== 'PUT') break;
+        const u = await requireUser(request, env);
+        await limit(env, `tips:${u.id}`, 30, 3600e3, 'Too many requests, try again later.');
+        return json(await saveTips(env, u, await readJson(request, 256)));
+      }
       case 'account/source': {
         // where a new account comes from (the page's first visit: ?ref=, utm, the site that sent it), for the owner's dashboard.
         // Written once, within the hour after sign-up (e-mail or Google alike); later calls change nothing.
@@ -456,12 +489,22 @@ async function dispatch(request, env, ctx) {
         // a step of the funnel (export, ad, plans page, payment window): anonymous counters for the dashboard
         if (method !== 'POST') break;
         // left out of « vidéos par personne »: the owner (ADMIN_EMAILS) and the test agents (STATS_EXCLUDE_EMAILS), by the session
-        return event(request, env, async () => {
-          const list = `${env.ADMIN_EMAILS || ''},${env.STATS_EXCLUDE_EMAILS || ''}`.split(',').map((e) => e.trim().toLowerCase()).filter(Boolean);
-          if (!list.length) return false;
-          const u = await currentUser(request, env).catch(() => null);
-          return !!(u && list.includes(String(u.email).toLowerCase()));
-        });
+        {
+          let me;   // the session is read once
+          const cur = () => (me === undefined ? (me = currentUser(request, env).catch(() => null)) : me);
+          return event(request, env, async () => {
+            const list = `${env.ADMIN_EMAILS || ''},${env.STATS_EXCLUDE_EMAILS || ''}`.split(',').map((e) => e.trim().toLowerCase()).filter(Boolean);
+            if (!list.length) return false;
+            const u = await cur();
+            return !!(u && list.includes(String(u.email).toLowerCase()));
+          }, async () => {
+            // 26/11 (« Essais Pro »): the signed-in account of a finished video, and whether it exports without the watermark
+            const u = await cur();
+            if (!u) return null;
+            const r = await entitlementsFor(env, u).catch(() => null);
+            return { id: u.id, nowm: !!(r && r.entitlements && Array.isArray(r.entitlements.features) && r.entitlements.features.includes('nowm')) };
+          });
+        }
       // report of 7/11: e-mails given freely by free users at the end of a video (optin.js)
       case 'optin':
         if (method !== 'POST') break;

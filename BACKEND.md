@@ -974,3 +974,17 @@ Demande : `docs/handoff/chef-stats-analyse.md`. Contrat avec App : `docs/contrat
 - **API de conversion** (`conversions.js`) : évènement `Purchase` (nouveau nom de TikTok).
 - **Source du paiement** : la page envoie `customData.src` (1re source du navigateur, ex. `ref:ttads`) ; gardée dans `payments.source` (migration 0024).
 - **Carte « Test payant »** (`functions/_lib/paidtest.js`) : `GET/POST /api/admin/paid-tests` ; par lien suivi : visites, exports, paiements ouverts, essais, abonnés, reçu, dépensé (saisi), coût par export / par abonné ; budget 150 €. Les codes qui ressemblent à une plateforme sont refusés (proposer `inf-<nom>`).
+
+## Essais Pro (26/11)
+- **`user_day_counts`** (migration 0025) : par compte et par jour, `open` (GET /api/me connecté), `export_ok`, `export_nowm` (la page envoie `wm`, sinon déduit des droits du compte), avec `first_at` / `last_at`. Aucun contenu. Effacé avec le compte et après 120 jours (`retention.js`).
+- **`GET /api/admin/trials`** (`functions/_lib/trialstats.js`) : activation J1 (vidéo sans filigrane dans les 24 h), conversion des essais terminés (payé / résilié / échoué), encore payants au 2e mois (2e paiement, 32 jours après la fin), actifs (3 derniers jours, 2 jours différents, vidéos par essai), par semaine de début, et la liste des essais en cours (e-mail masqué, source, `heard_from` si la colonne existe).
+
+## Le « wow », la relance et « heard » (26/11)
+- **Migration 0026** : `users.heard_from` / `heard_text` / `heard_at`, `users.email_tips` / `email_tips_at` / `email_tips_text` / `nudged_at` ; tables anonymes `step_visits (day, vid, step)` et `wow_times (day, device, secs)`, effacées après 90 jours (`retention.js`).
+- **Étapes** (`metrics.js`, `STEPS`) : `POST /api/event` `step_*` → dédoublé par visite (`step_visits`), compteur `st:<étape>:<ios|android|desktop>` ; `step_preview` + `ms` → `wow_times` (0 à 6 h) ; `step_take1` / `step_take3` d'un compte connecté → `user_day_counts` `takes` / `takes3`.
+- **`GET /api/admin/steps?days=&device=`** (`activation.js stepsStats`) : visites puis étapes, part de l'étape d'avant (export lancé / montage vu), `worst`, `wow {count, median, p25, p75, under60}`.
+- **Consentement** : `PUT /api/account/emails {tips, lang}` (`TIPS_TEXT`, version `TIPS_CONSENT`) ; `/api/me` → `emailTips`.
+- **Relance** (`projectNudges`, tâches du jour : `cloud.js`, route cron, Worker) : seulement si `NUDGE_EMAIL = "1"` ; comptes `email_tips = 1` (ou `NULL` + `email_optins` confirmé), dernières prises entre 72 h et 24 h, pas d'`export_ok` depuis, `nudged_at` vide (réservé avant l'envoi, remis à vide si Resend échoue) ; 20 par passage ; lien `?resume=1&utm_campaign=relance-projet` ; `List-Unsubscribe` + `List-Unsubscribe-Post`.
+- **`GET|POST /api/emails/stop?u=&t=`** : t = HMAC(`AUTH_SECRET`, `nudge-stop:<id>`) 40 hex ; GET = page avec bouton, POST = `email_tips = 0` ; hors contrôle CSRF (les messageries postent sans Origin), la signature fait foi.
+- **« heard »** (`heard.js`) : `POST /api/account/heard {answer, text?}` une fois (`heard_at IS NULL`) ; `/api/me` → `heardAsked` ; `GET /api/admin/heard` (comptes / essais / premiers paiements par réponse, 7 et 30 j, textes « Autre ») ; `recentUsers` → `heard`, `heardText`.
+- **Formulaires e-mail** : `POST /api/optin/confirm|stop` acceptent `application/x-www-form-urlencoded` (Origin toujours vérifié).

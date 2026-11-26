@@ -24,5 +24,12 @@ export async function dailyRetention(env, now = Date.now()) {
   out.rateLimits = await cleanup(env, now).then(() => true, () => false);
   // 7/11: e-mails given at the end of a video: not confirmed after 7 days, or confirmed 3 years ago → erased
   out.optins = await purgeOptins(env, now).catch(() => null);
+  // 26/11: the per-account day counters of « Essais Pro » (user_day_counts) after 120 days
+  const r2 = await env.DB.prepare('DELETE FROM user_day_counts WHERE day < ?1').bind(new Date(now - 120 * 864e5).toISOString().slice(0, 10)).run().catch(() => null);
+  out.userDays = r2 && r2.meta ? r2.meta.changes || 0 : null;
+  // 26/11: the step funnel's anonymous rows (step_visits, wow_times) after 90 days
+  const d90 = new Date(now - 90 * 864e5).toISOString().slice(0, 10);
+  await env.DB.prepare('DELETE FROM step_visits WHERE day < ?1').bind(d90).run().catch(() => null);
+  await env.DB.prepare('DELETE FROM wow_times WHERE day < ?1').bind(d90).run().catch(() => null);
   return out;
 }

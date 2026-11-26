@@ -553,6 +553,7 @@ import { trialReminders } from './trial.js';
 import { dailyRetention } from './retention.js';
 import { clarityDaily } from './clarity.js';
 import { spotifyWeekly } from './spotify.js';
+import { projectNudges } from './activation.js';
 export async function maybeCleanup(env, ctx, now = Date.now()) {
   try {
     const r = await hit(env, 'cron:cloud-cleanup', CLEANUP_EVERY_MS, now);
@@ -567,7 +568,9 @@ export async function maybeCleanup(env, ctx, now = Date.now()) {
       // 24/11: the daily snapshot of Microsoft Clarity for the dashboard (clarity.js; once per UTC day, 3 calls of the 10 allowed)
       .then(() => clarityDaily(env, now)).catch((e) => console.error('[stalak] clarity', e && e.message ? e.message : e))
       // 24/11 (« Stats »): the weekly Spotify figures of the artists (spotify.js; 10 artists per run at most)
-      .then(() => spotifyWeekly(env, now)).catch((e) => console.error('[stalak] spotify', e && e.message ? e.message : e));
+      .then(() => spotifyWeekly(env, now)).catch((e) => console.error('[stalak] spotify', e && e.message ? e.message : e))
+      // 26/11: the reminder of an unfinished project (activation.js; off until NUDGE_EMAIL = "1")
+      .then(() => projectNudges(env, now)).catch((e) => console.error('[stalak] nudges', e && e.message ? e.message : e));
     if (ctx && typeof ctx.waitUntil === 'function') ctx.waitUntil(p); else await p;
     return true;
   } catch (e) {

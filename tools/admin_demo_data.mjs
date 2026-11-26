@@ -9,6 +9,11 @@ import { createD1 } from '../tests/backend/fake-d1.mjs';
 import { seedDashboard } from '../tests/fixtures/dashboard-seed.mjs';
 import { stats, home, signupList, hourly, videosPerPerson } from '../functions/_lib/admin.js';
 import { paidTests } from '../functions/_lib/paidtest.js';
+import { trialStats } from '../functions/_lib/trialstats.js';
+import { seedTrials } from '../tests/fixtures/trials-seed.mjs';
+import { seedActivation } from '../tests/fixtures/activation-seed.mjs';
+import { stepsStats } from '../functions/_lib/activation.js';
+import { heardStats } from '../functions/_lib/heard.js';
 import { ga4Report, ga4Live } from '../functions/_lib/ga4.js';
 import { clarityDaily, clarityView } from '../functions/_lib/clarity.js';
 import { fakeAnalyticsFetch } from '../tests/fixtures/analytics-fake.mjs';
@@ -60,7 +65,7 @@ out.languages = await languages(env, now);
 // « Test payant » (25/11): 2 made-up links, their funnel counters and payments
 {
   const db = env.DB.raw, d0 = new Date(now - 6 * 864e5).toISOString().slice(0, 10);
-  db.prepare("INSERT INTO paid_tests (ref, label, spent_cents, started_on, updated_at) VALUES ('ttads', 'Pubs TikTok US', 4200, ?, ?), ('inf-demo', '@influenceur_demo', 3000, ?, ?)").run(d0, now, d0, now);
+  db.prepare("INSERT INTO paid_tests (ref, label, spent_cents, started_on, updated_at) VALUES ('ttads', 'Publicités TikTok US', 4200, ?, ?), ('inf-demo', '@influenceur_demo', 3000, ?, ?)").run(d0, now, d0, now);
   const b = db.prepare('INSERT INTO daily_counts (day, name, n) VALUES (?, ?, ?) ON CONFLICT(day, name) DO UPDATE SET n = n + excluded.n');
   for (let k = 0; k < 6; k++) {
     const d = new Date(now - k * 864e5).toISOString().slice(0, 10);
@@ -70,6 +75,15 @@ out.languages = await languages(env, now);
   pay.run('txn_demo_pt1', 799, now - 2 * 864e5, now, 'ref:ttads', 'sub_demo_1'); pay.run('txn_demo_pt2', 0, now - 864e5, now, 'ref:ttads', 'sub_demo_2');
   out.paidTests = await paidTests(env, now);
 }
+// « Essais Pro » (26/11): made-up trials (tests/fixtures/trials-seed.mjs), the real code
+seedTrials(env.DB.raw, now, 'production');
+out.trials = await trialStats({ ...env, PADDLE_ENV: 'production' }, now);
+// « Du son au wow » and « Comment ils nous ont connus » (26/11): made-up steps and answers, the real code
+seedActivation(env.DB.raw, now);
+out.steps = {};
+for (const d of [7, 30]) for (const dev of ['all', 'ios', 'android', 'desktop']) out.steps[d + ':' + dev] = await stepsStats(env, d, dev, now);
+out.heard = await heardStats(env, now);
+for (const [k, d] of [['7', 7], ['30', 30], ['90', 90], ['all', 45]]) out.stats[k] = scrub(await stats(env, d, now));
 const js = `// MADE-UP figures for the dashboard demo on previews (tools/admin_demo_data.mjs, ${out.generatedAt.slice(0, 10)}). Not real data.\nexport const DEMO_DATA = ${JSON.stringify(out)};\n`;
 writeFileSync(join(root, 'functions/_lib/admin-demo-data.js'), js);
 console.log('demo data', js.length, 'bytes');
