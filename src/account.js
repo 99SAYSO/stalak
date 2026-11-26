@@ -208,6 +208,7 @@
       try { if (window.StalakConsent) window.StalakConsent.counter(String(name), extra); } catch (e) {}
       var b = { name: String(name) }; if (IOS) b.ios = true; if (visitSrc) b.src = visitSrc;
       if (extra && typeof extra === 'object') { if (extra.cat) b.cat = String(extra.cat); if (extra.why) b.why = String(extra.why); if (extra.vid) b.vid = String(extra.vid); if (extra.stage) b.stage = String(extra.stage);
+        if (typeof extra.wm === 'boolean') b.wm = extra.wm;   // 26/11: the finished video has the watermark or not (« Essais Pro »)
         // (7/11) the details of a failed export: short words only (the server keeps the ones of its closed lists)
         if (extra.x && typeof extra.x === 'object') { b.x = {}; for (var k in extra.x) if (typeof extra.x[k] === 'string' && extra.x[k].length <= 12 && /^[a-z0-9]+$/.test(k)) b.x[k] = extra.x[k]; } }
       // a finished video (with the visit number): the session goes along so that the owner's and the test accounts are left out

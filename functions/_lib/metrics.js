@@ -112,9 +112,19 @@ export const FUNNEL_STEPS = ['export_ok', 'plans_open', 'checkout_open', 'checko
 export const CLOSE_STAGES = ['price', 'info', 'method', 'try'];
 export const CLOSE_STAGES_OLD = ['start', 'details', 'payment'];
 
+// 26/11 (« Essais Pro »): one counter per account and per day, no content (migration 0025): « open » (the app opened while
+// signed in, from GET /api/me), « export_ok » and « export_nowm » (a finished video, without the watermark). Never fails.
+export const USER_DAY = ['open', 'export_ok', 'export_nowm'];
+export async function bumpUserDay(env, userId, name, now = Date.now()) {
+  if (!userId || !USER_DAY.includes(name)) return;
+  await env.DB.prepare(`INSERT INTO user_day_counts (user_id, day, name, n, first_at, last_at) VALUES (?1, ?2, ?3, 1, ?4, ?4)
+    ON CONFLICT(user_id, day, name) DO UPDATE SET n = n + 1, last_at = ?4`).bind(userId, today(now), name, now).run()
+    .catch((e) => console.error('[stalak] user day', e && e.message ? String(e.message).slice(0, 120) : 'error'));
+}
+
 // POST /api/event {name, cat?, ios?, why?}: one step of the funnel. Unknown names are refused (400), so the table holds
 // only the names above. Limited per connection (hashed, like the visits).
-export async function event(request, env, excluded = null) {
+export async function event(request, env, excluded = null, who = null) {
   const body = await readJson(request, 512);
   const name = typeof body.name === 'string' && EVENTS.includes(body.name) ? body.name : null;
   if (!name) throw new HttpError(400, 'invalid_event', 'Unknown event name.');
@@ -122,6 +132,15 @@ export async function event(request, env, excluded = null) {
   await limit(env, `event:ip:${ipKey}`, EVENTS_PER_IP_HOUR, 3600e3);
   await bump(env, 'ev_' + name);
   if (name === 'export_ok') await bumpHour(env, 'export_ok');   // the hour of the export (« Heure par heure »)
+  // 26/11 (« Essais Pro »): a finished video of a signed-in account (the session goes with it, account.js), per account and day.
+  // Without the watermark: what the page says (wm: false), else what the account may do (no watermark for Pro and the trial).
+  if (name === 'export_ok' && who) {
+    const u = await who().catch(() => null);
+    if (u && u.id) {
+      await bumpUserDay(env, u.id, 'export_ok');
+      if (body.wm === false || (body.wm !== true && u.nowm)) await bumpUserDay(env, u.id, 'export_nowm');
+    }
+  }
   if (body.ios === true) await bump(env, 'ios_' + name);   // the same step on an iPhone / iPad
   // « Combien de vidéos par personne » (5/11): the page's random visit number (vid) with the finished videos, per day; never
   // the account. The owner's and the test agents' accounts are left out (excluded(): read from the session, nothing kept).

@@ -4106,7 +4106,7 @@ test('audit 6/11 n°12: lyrics use 90 days and with the account, thank-you hashe
   db.prepare('INSERT INTO webhook_events (event_id, event_type, received_at) VALUES (?, ?, ?)').run('thanks:old', 'thanks', now - 3 * 365 * 864e5 - 864e5);
   db.prepare('INSERT INTO rate_limits (key, window_start, count) VALUES (?, ?, 1)').run('visit:ip:abc', now - 2 * 864e5);
   const r = await dailyRetention(env, now);
-  assert.deepEqual(r, { thanks: 1, trialMarks: 0, lyricsUsage: 1, rateLimits: true, optins: 0 });
+  assert.deepEqual(r, { thanks: 1, trialMarks: 0, lyricsUsage: 1, rateLimits: true, optins: 0, userDays: 0 });
   assert.deepEqual(db.prepare('SELECT day FROM lyrics_usage').all().map((x) => x.day), [day(10)]);
   assert.equal(db.prepare("SELECT COUNT(*) AS n FROM rate_limits WHERE key = 'visit:ip:abc'").get().n, 0);
   assert.match(readFileSync(join(root, 'functions/_lib/cloud.js'), 'utf8'), /dailyRetention\(env, now\)/);
@@ -5129,6 +5129,69 @@ test('paid test 25/11: a payment keeps the link it came from (?ref=ttads); « Te
   assert.deepEqual(r.data.rows.map((x) => x.ref), ['ttads']);
   // owner only, and the write needs the JSON CSRF rule like the other admin writes
   assert.equal((await adminCall(env, 'GET', '/api/admin/paid-tests')).status, 403);
+});
+
+// ---- 26/11: « Essais Pro » — exports and app openings per account and day, the 3 figures ---------------------------------
+import { seedTrials } from '../fixtures/trials-seed.mjs';
+import { trialStats } from '../../functions/_lib/trialstats.js';
+test('trials 26/11: a signed-in account\'s videos (with / without watermark) and app openings are counted per day; gone with the account', async () => {
+  const env = makeEnv(), a = await login(env, 'udc@example.com'), d = new Date().toISOString().slice(0, 10);
+  const get = (name) => env.DB.raw.prepare('SELECT n, first_at, last_at FROM user_day_counts WHERE user_id = ? AND day = ? AND name = ?').get(a.user.id, d, name);
+  await call(env, 'GET', '/api/me', { cookie: a.cookie }); await call(env, 'GET', '/api/me', { cookie: a.cookie });
+  assert.equal(get('open').n, 2);
+  // free account: a video with the watermark; the page says wm: true or nothing
+  await call(env, 'POST', '/api/event', { cookie: a.cookie, body: { name: 'export_ok', vid: 'v_' + 'u'.repeat(20) } });
+  await call(env, 'POST', '/api/event', { cookie: a.cookie, body: { name: 'export_ok', vid: 'v_' + 'u'.repeat(20), wm: true } });
+  assert.equal(get('export_ok').n, 2); assert.equal(get('export_nowm'), undefined);
+  // the page says it had no watermark
+  await call(env, 'POST', '/api/event', { cookie: a.cookie, body: { name: 'export_ok', vid: 'v_' + 'u'.repeat(20), wm: false } });
+  assert.equal(get('export_nowm').n, 1);
+  // a Pro account (the trial): without the watermark even if the page says nothing
+  const p = await proUser(env, 'udc-pro@example.com', 'pro');
+  await call(env, 'POST', '/api/event', { cookie: p.cookie, body: { name: 'export_ok', vid: 'v_' + 'p'.repeat(20) } });
+  assert.equal(env.DB.raw.prepare("SELECT n FROM user_day_counts WHERE user_id = ? AND name = 'export_nowm'").get(p.user.id).n, 1);
+  // signed out: nothing per account; another event: nothing
+  await call(env, 'POST', '/api/event', { body: { name: 'export_ok', vid: 'v_' + 'z'.repeat(20) } });
+  await call(env, 'POST', '/api/event', { cookie: a.cookie, body: { name: 'plans_open' } });
+  assert.equal(env.DB.raw.prepare("SELECT COUNT(*) AS c FROM user_day_counts WHERE name LIKE 'export%'").get().c, 4);   // 2 accounts × (export_ok, export_nowm); nothing for the signed-out one
+  // nothing but counters: the table has no other column
+  assert.deepEqual(env.DB.raw.prepare('PRAGMA table_info(user_day_counts)').all().map((c) => c.name), ['user_id', 'day', 'name', 'n', 'first_at', 'last_at']);
+  assert.equal((await call(env, 'DELETE', '/api/account', { cookie: a.cookie, body: { confirm: true } })).status, 200);
+  assert.equal(env.DB.raw.prepare('SELECT COUNT(*) AS c FROM user_day_counts WHERE user_id = ?').get(a.user.id).c, 0);
+});
+
+test('trials 26/11: « Essais Pro » — activation J1, conversion at the end (and 2nd month), active during the trial, trials running', async () => {
+  const env = makeEnv(ADMIN_ENV), now = Date.now();
+  seedTrials(env.DB.raw, now, 'sandbox');
+  const r = await adminCall(env, 'GET', '/api/admin/trials', { token: await accessToken() });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  const { d7, d30, now: n, running, weeks } = r.data;
+  // 7 days: 5 running trials + 1 ended 6.4… (the seed: 0.3, 2.2, 3.5, 5.1, 6.4 days ago)
+  assert.equal(d7.started, 5);
+  assert.deepEqual([d7.activation.measured, d7.activation.nowm, d7.activation.any], [4, 2, 3], JSON.stringify(d7.activation));   // the 0.3-day one: not measured yet
+  assert.equal(d7.activation.nowmPct, 50);
+  // 30 days: ended 9, 10, 12, 13, 20, 24 days ago → paid 3, canceled 2, failed 1 (ended in the period)
+  assert.deepEqual([d30.conversion.ended, d30.conversion.paid, d30.conversion.canceled, d30.conversion.failed], [6, 3, 2, 1], JSON.stringify(d30.conversion));
+  assert.equal(d30.conversion.paidPct, 50);
+  // 2nd month: the 45 and 50 days ago (paid) are measurable; 1 paid twice
+  assert.deepEqual([d30.conversion.month2.measured, d30.conversion.month2.still], [2, 1]);
+  assert.equal(n.running, 5); assert.ok(n.active3 >= 3 && n.active3 <= 5, String(n.active3));
+  assert.deepEqual(running.map((t) => t.day), [1, 3, 4, 6, 7]);
+  assert.equal(running[3].canceled, true);
+  assert.deepEqual(running.map((t) => t.source), [null, 'ai:chatgpt', 'ref:ttads', null, 'tiktok']);
+  assert.ok(running.every((t) => /^t•••@demo\.stalak$/.test(t.email)), 'e-mails masked');
+  assert.ok(d30.usage.twoDays >= 1 && d30.usage.exportsAvg > 0);
+  assert.ok(weeks.length >= 3 && weeks[0].started >= 1);
+  assert.equal((await adminCall(env, 'GET', '/api/admin/trials')).status, 403);
+  // the J1 figure: a video without watermark in the 24 h, not after
+  const e2 = makeEnv(), t0 = now - 3 * 864e5, db = e2.DB.raw;
+  db.prepare("INSERT INTO users (id, email, created_at) VALUES ('u1', 'a@x.io', 0), ('u2', 'b@x.io', 0)").run();
+  db.prepare("INSERT INTO subscriptions (id, user_id, customer_id, status, env, trial_started_at, trial_ends_at, updated_at, last_event_at) VALUES ('s1', 'u1', 'c', 'trialing', 'sandbox', ?, ?, 0, 0), ('s2', 'u2', 'c', 'trialing', 'sandbox', ?, ?, 0, 0)").run(t0, t0 + 7 * 864e5, t0, t0 + 7 * 864e5);
+  const ins = db.prepare('INSERT INTO user_day_counts (user_id, day, name, n, first_at, last_at) VALUES (?, ?, ?, 1, ?, ?)'), dd = (t) => new Date(t).toISOString().slice(0, 10);
+  ins.run('u1', dd(t0 + 23 * 3600e3), 'export_nowm', t0 + 23 * 3600e3, t0 + 23 * 3600e3);
+  ins.run('u2', dd(t0 + 25 * 3600e3), 'export_nowm', t0 + 25 * 3600e3, t0 + 25 * 3600e3);
+  const s2 = await trialStats(e2, now);
+  assert.deepEqual([s2.d7.activation.measured, s2.d7.activation.nowm], [2, 1]);
 });
 
 // ---- runner --------------------------------------------------------------------------

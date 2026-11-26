@@ -974,3 +974,7 @@ Demande : `docs/handoff/chef-stats-analyse.md`. Contrat avec App : `docs/contrat
 - **API de conversion** (`conversions.js`) : évènement `Purchase` (nouveau nom de TikTok).
 - **Source du paiement** : la page envoie `customData.src` (1re source du navigateur, ex. `ref:ttads`) ; gardée dans `payments.source` (migration 0024).
 - **Carte « Test payant »** (`functions/_lib/paidtest.js`) : `GET/POST /api/admin/paid-tests` ; par lien suivi : visites, exports, paiements ouverts, essais, abonnés, reçu, dépensé (saisi), coût par export / par abonné ; budget 150 €. Les codes qui ressemblent à une plateforme sont refusés (proposer `inf-<nom>`).
+
+## Essais Pro (26/11)
+- **`user_day_counts`** (migration 0025) : par compte et par jour, `open` (GET /api/me connecté), `export_ok`, `export_nowm` (la page envoie `wm`, sinon déduit des droits du compte), avec `first_at` / `last_at`. Aucun contenu. Effacé avec le compte et après 120 jours (`retention.js`).
+- **`GET /api/admin/trials`** (`functions/_lib/trialstats.js`) : activation J1 (vidéo sans filigrane dans les 24 h), conversion des essais terminés (payé / résilié / échoué), encore payants au 2e mois (2e paiement, 32 jours après la fin), actifs (3 derniers jours, 2 jours différents, vidéos par essai), par semaine de début, et la liste des essais en cours (e-mail masqué, source, `heard_from` si la colonne existe).

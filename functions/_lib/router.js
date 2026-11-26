@@ -24,7 +24,7 @@ import { admin } from './admin.js';
 import { support } from './support.js';
 import { cancelThanks } from './thanks.js';
 import { optinAsk, optinLink } from './optin.js';
-import { presence, bump, event, exportTotal } from './metrics.js';
+import { presence, bump, event, exportTotal, bumpUserDay } from './metrics.js';
 
 const PROJECT_MAX_BYTES = 256 * 1024; // ~200 KB of project JSON + envelope
 const PROJECT_MAX_COUNT = 200;
@@ -243,6 +243,7 @@ async function deleteAccount(request, env) {
     // 23/11: the onboarding answers and the listeners given in « Stats »
     env.DB.prepare('DELETE FROM artist_profiles WHERE user_id = ?1').bind(user.id),
     env.DB.prepare('DELETE FROM listener_counts WHERE user_id = ?1').bind(user.id),
+    env.DB.prepare('DELETE FROM user_day_counts WHERE user_id = ?1').bind(user.id),
     ...['spotify_snapshots', 'spotify_releases', 'spotify_track_counts', 'spotify_sync'].map((t) => env.DB.prepare(`DELETE FROM ${t} WHERE user_id = ?1`).bind(user.id)),
     env.DB.prepare('DELETE FROM identities WHERE user_id = ?1').bind(user.id),
     env.DB.prepare('DELETE FROM rate_limits WHERE key = ?1').bind(await failKey(user.email)),
@@ -375,7 +376,12 @@ async function dispatch(request, env, ctx) {
         // 26/11: TikTok hidden while the app is in Sandbox, except for the test accounts (social.js, socialVisible)
         return json(config(env, await socialVisible(env, await currentUser(request, env).catch(() => null))), 200, { 'Cache-Control': 'no-store' });
       case 'me':
-        if (method === 'GET') return meResponse(env, await currentUser(request, env));
+        if (method === 'GET') {
+          const u = await currentUser(request, env);
+          // 26/11 (« Essais Pro »): the app opened while signed in, once more today for this account (a counter, nothing else)
+          if (u) await bumpUserDay(env, u.id, 'open');
+          return meResponse(env, u);
+        }
         if (method !== 'PATCH') break;
         return meResponse(env, await updateProfile(env, await requireUser(request, env), await readJson(request)));
       case 'me/avatar':
@@ -456,12 +462,22 @@ async function dispatch(request, env, ctx) {
         // a step of the funnel (export, ad, plans page, payment window): anonymous counters for the dashboard
         if (method !== 'POST') break;
         // left out of « vidéos par personne »: the owner (ADMIN_EMAILS) and the test agents (STATS_EXCLUDE_EMAILS), by the session
-        return event(request, env, async () => {
-          const list = `${env.ADMIN_EMAILS || ''},${env.STATS_EXCLUDE_EMAILS || ''}`.split(',').map((e) => e.trim().toLowerCase()).filter(Boolean);
-          if (!list.length) return false;
-          const u = await currentUser(request, env).catch(() => null);
-          return !!(u && list.includes(String(u.email).toLowerCase()));
-        });
+        {
+          let me;   // the session is read once
+          const cur = () => (me === undefined ? (me = currentUser(request, env).catch(() => null)) : me);
+          return event(request, env, async () => {
+            const list = `${env.ADMIN_EMAILS || ''},${env.STATS_EXCLUDE_EMAILS || ''}`.split(',').map((e) => e.trim().toLowerCase()).filter(Boolean);
+            if (!list.length) return false;
+            const u = await cur();
+            return !!(u && list.includes(String(u.email).toLowerCase()));
+          }, async () => {
+            // 26/11 (« Essais Pro »): the signed-in account of a finished video, and whether it exports without the watermark
+            const u = await cur();
+            if (!u) return null;
+            const r = await entitlementsFor(env, u).catch(() => null);
+            return { id: u.id, nowm: !!(r && r.entitlements && Array.isArray(r.entitlements.features) && r.entitlements.features.includes('nowm')) };
+          });
+        }
       // report of 7/11: e-mails given freely by free users at the end of a video (optin.js)
       case 'optin':
         if (method !== 'POST') break;

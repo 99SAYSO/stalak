@@ -208,7 +208,14 @@ th{color:var(--text2);font-weight:600}
 .ptform input{font:inherit;font-size:16px;color:var(--text);background:var(--card,#fff);border:2px solid var(--line);border-radius:12px;padding:9px 10px;min-height:44px;width:100%;box-sizing:border-box}
 .ptform input:focus-visible{outline:3px solid var(--sky);outline-offset:1px;border-color:var(--sky)}
 .ptbud{font-weight:700;margin:8px 0 0}.ptbud.over{color:var(--bad)}
-.ptrow-act{display:flex;gap:6px;justify-content:flex-end}.ptrow-act button{min-height:36px}.srct{border-collapse:collapse;width:100%;min-width:560px;font-variant-numeric:tabular-nums}
+.ptrow-act{display:flex;gap:6px;justify-content:flex-end}.ptrow-act button{min-height:36px}
+/* 26/11: « Essais Pro » */
+.tk3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:12px}
+.tk3>div{background:var(--sunk);border-radius:14px;padding:12px 14px}
+.tk3 .big{font-family:Lilita,Rubik,sans-serif;font-size:34px;line-height:1.05;font-variant-numeric:tabular-nums}
+.tk3 h3{margin:0 0 4px;font-size:14px}.tk3 p{margin:4px 0 0;font-size:13px;color:var(--text2)}
+.tk3 .wait{font-size:15px;color:var(--text2);font-weight:600}
+.yes{color:var(--good,#1a7f37);font-weight:700}.no{color:var(--text2)}.srct{border-collapse:collapse;width:100%;min-width:560px;font-variant-numeric:tabular-nums}
 .srct th,.srct td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--line)}.srct th{font-size:13px;color:var(--muted);font-weight:600}
 .srct th:first-child,.srct td:first-child{text-align:left;font-weight:700}.srct td small{display:block;color:var(--muted);font-weight:400;font-size:12px}
 #srcCard,#optCard{margin-top:16px}
@@ -475,7 +482,17 @@ __DEMO_BANNER__<header class="top"><div class="in">
   <!-- ===== Entonnoir ===== -->
   <section class="panel" id="p-funnel" aria-labelledby="tab-funnel" hidden>
     <p class="intro">Le chemin d’un visiteur jusqu’au paiement, sur la période. Chaque étape montre combien de fois elle a eu lieu et la part de l’étape d’avant. Ce sont des compteurs anonymes : rien sur la personne.</p>
-    <div class="card"><div class="head"><h2>Du visiteur à l’abonné</h2><p>Une étape faible = l’endroit où les gens s’arrêtent. C’est là qu’il faut agir.</p></div><div class="funnel" id="funnel"></div></div>
+    <div class="card hq" id="trCard">
+      <div class="hbest"><span>🧪 Essais Pro</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
+      <p class="he">Les essais gratuits de 7 jours, sur les 7 ou 30 derniers jours (date de début de l’essai). 1. Activation J1 : la part qui a fini au moins une vidéo sans filigrane dans les 24 h après le début (compté quand les 24 h sont passées). 2. Conversion : parmi les essais terminés, la part devenue un vrai paiement, résiliée pendant l’essai, ou dont le paiement a échoué ; puis la part encore payante au 2e mois (32 jours après la fin). 3. Actifs : essais en cours aujourd’hui, dont ceux venus ces 3 derniers jours (app ouverte connectée ou vidéo finie), la part revenue au moins 2 jours différents, les vidéos par essai. Compté par compte et par jour, sans contenu.</p>
+      <div class="row hctl"><div class="seg" role="group" aria-label="Période" id="trPer"><button type="button" data-d="7" aria-pressed="true">7 j</button><button type="button" data-d="30" aria-pressed="false">30 j</button></div><span class="note" id="trSum" role="status"></span></div>
+      <div class="tk3" id="trK"></div>
+      <h3 data-mt>Essais en cours</h3>
+      <div class="srcwrap"><table class="srct" id="trRun"><thead><tr><th scope="col">Compte</th><th scope="col">Jour</th><th scope="col">Sans filigrane dans les 24 h</th><th scope="col">Vidéos</th><th scope="col">Venu ces 3 jours</th><th scope="col">Source</th><th scope="col">Comment il a connu Stalak</th></tr></thead><tbody></tbody></table></div>
+      <h3 data-mt>Par semaine de début</h3>
+      <div class="srcwrap"><table class="srct" id="trWeeks"><thead><tr><th scope="col">Semaine</th><th scope="col">Essais</th><th scope="col">Terminés</th><th scope="col">Payé</th><th scope="col">Résilié</th><th scope="col">Échec du paiement</th><th scope="col">Payant au 2e mois</th></tr></thead><tbody></tbody></table></div>
+    </div>
+    <div class="card" data-mt><div class="head"><h2>Du visiteur à l’abonné</h2><p>Une étape faible = l’endroit où les gens s’arrêtent. C’est là qu’il faut agir.</p></div><div class="funnel" id="funnel"></div></div>
     <div class="grid2">
       <div class="card"><h3>Vidéos exportées</h3><p class="note">Réussies ou ratées, et pourquoi ça a raté.</p><ul class="blist" id="bExport"></ul></div>
       <div class="card"><h3>Ce qui ouvre la page des formules</h3><p class="note">La fonction payante qui a donné envie (cadenas touché).</p><ul class="blist" id="bWhy"></ul></div>
@@ -525,7 +542,7 @@ __DEMO_BANNER__<header class="top"><div class="in">
       <div class="srcwrap"><table class="srct" id="ptTable"><thead><tr><th scope="col">Lien</th><th scope="col">Dépensé</th><th scope="col">Visites</th><th scope="col">Exports</th><th scope="col">Paiements ouverts</th><th scope="col">Essais</th><th scope="col">Abonnés</th><th scope="col">Reçu</th><th scope="col">Coût / export</th><th scope="col">Coût / abonné</th><th scope="col"></th></tr></thead><tbody></tbody></table></div>
       <form class="ptform" id="ptForm">
         <label>Code du lien (?ref=)<input name="ref" required maxlength="24" autocomplete="off" placeholder="ttads ou inf-nom" inputmode="latin"></label>
-        <label>Nom (pour toi)<input name="label" maxlength="40" autocomplete="off" placeholder="Pubs TikTok US"></label>
+        <label>Nom (pour toi)<input name="label" maxlength="40" autocomplete="off" placeholder="Publicités TikTok US"></label>
         <label>Dépensé en tout (€)<input name="spent" inputmode="decimal" autocomplete="off" placeholder="0"></label>
         <label>Début<input name="startedOn" type="date"></label>
         <button class="btn" type="submit">Enregistrer</button>
@@ -738,7 +755,7 @@ __DEMO_BANNER__<header class="top"><div class="in">
     if (name === 'home') home();
     if (name === 'signups' && !S.signupsLoaded) signups();
     if (name === 'hours') hours();
-    if (name === 'funnel') { vpp(); abLoad(); ptLoad(); }
+    if (name === 'funnel') { vpp(); abLoad(); ptLoad(); trLoad(); }
     if (name === 'users') langLoad();
     if (name === 'analytics') analytics();
     if (name === 'users') globeStart(); else globeStop();
@@ -1051,8 +1068,133 @@ __DEMO_BANNER__<header class="top"><div class="in">
   // 25/11: the AI assistants (« ai:chatgpt »…)
   var AIS = { chatgpt: 'ChatGPT', perplexity: 'Perplexity', claude: 'Claude', gemini: 'Gemini', copilot: 'Copilot', other: 'autre assistant' };
   var DIRS = { alternativeto: 'AlternativeTo', saashub: 'SaaSHub', producthunt: 'Product Hunt', betalist: 'BetaList', futurepedia: 'Futurepedia', theresanaiforthat: 'There’s An AI For That', contentcreators: 'contentcreators.com', buzzsonic: 'Buzzsonic', toolify: 'Toolify' };
-    if (name === 'funnel') { vpp(); abLoad(); ptLoad(); }
-    if (name === 'users') langLoad();
+  // (26/11) restored: these functions were lost in the merge of 25/11 (fe2ebc2); the dashboard broke on 2 pages
+  // ---- 25/11: « Langue des visiteurs et des abonnés » and « Paiements abandonnés : ce que Paddle sait » ----
+  function langLoad() {
+    api('GET', 'languages').then(function (d) {
+      var tb = $('#langTable tbody'); tb.textContent = '';
+      [['visits', 'Visites'], ['visits5', 'Visites restées 5 min ou plus'], ['accounts', 'Nouveaux comptes'], ['payments', 'Premiers paiements']].forEach(function (x) {
+        var tr = el('tr'); tr.append(el('td', null, x[1]));
+        ['d7', 'd30'].forEach(function (p) { var o = (d[p] || {})[x[0]] || {}, t = (o.en || 0) + (o.fr || 0) + (o.unknown || 0);
+          ['en', 'fr'].forEach(function (l) { var td = el('td', null, nf.format(o[l] || 0)); if (t) td.append(el('small', null, pct(o[l] || 0, t) + ' %')); tr.append(td); }); });
+        tb.append(tr);
+      });
+      var s = d.subscribers || {}, st = (s.en || 0) + (s.fr || 0) + (s.unknown || 0);
+      set('#langNote', 'Abonnés payants aujourd’hui : ' + nf.format(s.en || 0) + ' en anglais, ' + nf.format(s.fr || 0) + ' en français' + (st ? ' (' + pct(s.en || 0, st) + ' % en anglais).' : '.'));
+    }).catch(function (e) { set('#langNote', 'Impossible de charger : ' + e.message); });
+  }
+  var AB_STAGE = { price: 'Vu le prix', info: 'Adresse donnée', method: 'Moyen choisi', 'try': 'Paiement essayé' };
+  var AB_KIND = { normal: 'prix normal', trial: 'essai 7 j', offer1: 'offre à 1 €', unknown: '?' };
+  var AB_ERR = { declined: 'Carte refusée par la banque', declined_not_retryable: 'Carte refusée (définitif)', authentication_failed: '3D Secure raté', blocked_card: 'Carte bloquée',
+    expired_card: 'Carte expirée', not_enough_balance: 'Solde insuffisant', invalid_payment_details: 'Coordonnées de carte fausses', fraud: 'Refusé pour risque de fraude', blocked_by_policy: 'Bloqué par les règles de Paddle',
+    prepaid_card_not_supported: 'Carte prépayée refusée', issuer_unavailable: 'Banque injoignable', payment_attempt_expired: 'Paiement expiré', canceled: 'Annulé', psp_error: 'Erreur du prestataire', system_error: 'Erreur de Paddle',
+    transaction_not_permitted: 'Paiement non autorisé', unknown: 'Raison inconnue' };
+  var AB_PLAN = { pro_month: 'Pro mensuel', pro_year: 'Pro annuel', creator_month: 'Creator Plus mensuel', creator_year: 'Creator Plus annuel', pro: 'Pro', unknown: 'Inconnue' };
+  S.abDays = '7';
+  function abLoad() {
+    $$('#abPer button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.d === S.abDays ? 'true' : 'false'); });
+    api('GET', 'paddle/abandoned?days=' + S.abDays).then(function (d) {
+      ['#abStage', '#abPlan', '#abCur', '#abErr'].forEach(function (x) { $(x).textContent = ''; });
+      var tb = $('#abTable tbody'); tb.textContent = '';
+      if (d.state !== 'ok') { set('#abSum', d.state === 'off' ? 'La clé Paddle manque sur ce serveur.' : 'Paddle n’a pas répondu (' + d.error + ').'); return; }
+      set('#abSum', nf.format(d.notPaid) + ' paiement' + (d.notPaid > 1 ? 's' : '') + ' ouvert' + (d.notPaid > 1 ? 's' : '') + ' sans être payé' + (d.notPaid > 1 ? 's' : '') + ', ' + nf.format(d.paid) + ' payé' + (d.paid > 1 ? 's' : '') + ' sur ' + d.days + ' jours.');
+      blist($('#abStage'), d.byStage, AB_STAGE, { order: ['price', 'info', 'method', 'try'], keepZero: true });
+      var pk = {}; Object.keys(d.byPlan || {}).forEach(function (k) { pk[AB_PLAN[k] || k] = d.byPlan[k]; }); Object.keys(d.byKind || {}).forEach(function (k) { pk['dont ' + (AB_KIND[k] || k)] = d.byKind[k]; });
+      blist($('#abPlan'), pk, function (x) { return x; });
+      var cc = {}; Object.keys(d.byCurrency || {}).forEach(function (k) { cc[k] = d.byCurrency[k]; }); Object.keys(d.byCountry || {}).forEach(function (k) { cc[k === 'unknown' ? 'Pays inconnu' : flag(k) + ' ' + COUNTRY(k)] = d.byCountry[k]; });
+      blist($('#abCur'), cc, function (x) { return x; });
+      if (Object.keys(d.byError || {}).length) blist($('#abErr'), d.byError, AB_ERR); else $('#abErr').append(el('li', { class: 'empty' }, 'Aucun paiement refusé : personne n’est allé jusqu’à payer.'));
+      (d.rows || []).forEach(function (r) {
+        var tr = el('tr');
+        var amt = r.total != null && r.currency ? new Intl.NumberFormat('fr-FR', { style: 'currency', currency: r.currency }).format(r.total / 100) : '–';
+        var pay = r.payments.length ? r.payments.map(function (p) { return (p.method || 'paiement') + (p.error ? ' : ' + (AB_ERR[p.error] || p.error) : ' (' + p.status + ')'); }).join(' · ') : '–';
+        [dateFr(r.at, true), (AB_PLAN[(r.plan || 'unknown') + (r.interval ? '_' + r.interval : '')] || r.plan || '?') + ' · ' + (AB_KIND[r.kind] || r.kind), amt, r.country ? flag(r.country) + ' ' + COUNTRY(r.country) : '–', AB_STAGE[r.stage] || r.stage, pay]
+          .forEach(function (v) { tr.append(el('td', null, v)); });
+        tb.append(tr);
+      });
+      if (!tb.children.length) { var e0 = el('tr'), c0 = el('td', null, 'Aucun paiement abandonné sur la période.'); c0.colSpan = 6; e0.append(c0); tb.append(e0); }
+    }).catch(function (e) { set('#abSum', 'Impossible de charger : ' + e.message); });
+  }
+  $('#abPer').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; S.abDays = b.dataset.d; abLoad(); });
+  // ---- 25/11: « Test payant » ----
+  var eur = function (c) { return c == null ? '–' : new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(c / 100); };
+  function ptRender(d) {
+    var tb = $('#ptTable tbody'); tb.textContent = '';
+    var b = $('#ptBud'); b.textContent = 'Dépensé : ' + eur(d.spentCents) + ' sur ' + eur(d.budgetCents) + ' (budget du test)' + (d.overBudget ? ' — budget dépassé ⚠️' : '');
+    b.className = 'ptbud' + (d.overBudget ? ' over' : '');
+    d.rows.forEach(function (r) {
+      var tr = el('tr'), name = el('td'); name.append(el('b', null, r.label || r.ref), el('small', null, '?ref=' + r.ref + ' · depuis le ' + dateFr(r.startedOn + 'T12:00:00Z')));
+      var rev = Object.keys(r.revenue || {}).map(function (c) { return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: c }).format(r.revenue[c] / 100); }).join(' + ') || '–';
+      tr.append(name);
+      [eur(r.spentCents), nf.format(r.visits), nf.format(r.exports), nf.format(r.checkouts), nf.format(r.trials), nf.format(r.subscribers), rev,
+        r.costPerExportCents == null ? '–' : eur(r.costPerExportCents), r.costPerSubscriberCents == null ? (r.spentCents ? 'aucun abonné' : '–') : eur(r.costPerSubscriberCents)]
+        .forEach(function (v) { tr.append(el('td', null, v)); });
+      var act = el('td'), w = el('div', { class: 'ptrow-act' }), ed = el('button', { class: 'btn small', type: 'button' }, 'Modifier'), rm = el('button', { class: 'btn small', type: 'button' }, 'Retirer');
+      ed.setAttribute('aria-label', 'Modifier ' + r.ref); rm.setAttribute('aria-label', 'Retirer ' + r.ref);
+      ed.onclick = function () { var f = $('#ptForm'); f.ref.value = r.ref; f.label.value = r.label || ''; f.spent.value = String(r.spentCents / 100).replace('.', ','); f.startedOn.value = r.startedOn; f.spent.focus(); };
+      rm.onclick = function () { if (rm.dataset.sure !== '1') { rm.dataset.sure = '1'; rm.textContent = 'Sûr ?'; return; } ptSave({ ref: r.ref, remove: true }); };
+      w.append(ed, rm); act.append(w); tr.append(act); tb.append(tr);
+    });
+    if (!d.rows.length) { var e0 = el('tr'), c0 = el('td', null, 'Aucun lien suivi : ajoute « ttads » (les publicités TikTok) puis un lien par influenceur.'); c0.colSpan = 11; e0.append(c0); tb.append(e0); }
+  }
+  function ptLoad() { api('GET', 'paid-tests').then(ptRender).catch(function (e) { set('#ptOut', 'Impossible de charger : ' + e.message); }); }
+  function ptSave(body) {
+    set('#ptOut', 'Enregistrement…');
+    api('POST', 'paid-tests', body).then(function (d) { ptRender(d); set('#ptOut', body.remove ? 'Lien retiré.' : 'Enregistré.'); if (!body.remove) $('#ptForm').reset(); })
+      .catch(function (e) { set('#ptOut', e.message); });
+  }
+  $('#ptForm').addEventListener('submit', function (e) {
+    e.preventDefault(); var f = e.target;
+    ptSave({ ref: f.ref.value, label: f.label.value, spent: f.spent.value, startedOn: f.startedOn.value });
+  });
+  // ---- 26/11: « Essais Pro » ----
+  S.trDays = '7'; var TRD = null;
+  var HEARD = { chatgpt: 'ChatGPT', google: 'Google', other_ai: 'Autre IA', tiktok: 'TikTok', instagram: 'Instagram', youtube: 'YouTube', friend: 'Un ami', other: 'Autre' };
+  function trK(title, big, lines, wait) {
+    var d = el('div'); d.append(el('h3', null, title));
+    d.append(el('div', { class: wait ? 'wait' : 'big' }, big));
+    lines.forEach(function (l) { if (l) d.append(el('p', null, l)); }); return d;
+  }
+  function pc(v) { return v == null ? '–' : String(v).replace('.', ',') + ' %'; }
+  function pl(n, w) { return nf.format(n) + ' ' + w + (n > 1 ? 's' : ''); }
+  function trRender() {
+    var d = TRD, p = d['d' + S.trDays]; if (!p) return;
+    $$('#trPer button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.d === S.trDays ? 'true' : 'false'); });
+    set('#trSum', pl(p.started, 'essai') + ' commencé' + (p.started > 1 ? 's' : '') + ' sur ' + p.days + ' jours · ' + nf.format(d.now.running) + ' en cours aujourd’hui');
+    var k = $('#trK'); k.textContent = '';
+    var a = p.activation, c = p.conversion, u = p.usage;
+    k.append(trK('1. Activation J1', a.measured ? pc(a.nowmPct) : 'Pas encore', [
+      a.measured ? nf.format(a.nowm) + ' sur ' + nf.format(a.measured) + ' ont fini une vidéo sans filigrane dans les 24 h' : 'Aucun essai n’a encore passé ses 24 premières heures.',
+      a.measured ? 'Au moins une vidéo, quelle qu’elle soit : ' + pc(a.anyPct) + ' (' + nf.format(a.any) + ')' : ''], !a.measured));
+    k.append(trK('2. Conversion à la fin de l’essai', c.ended ? pc(c.paidPct) : 'Pas encore', [
+      c.ended ? pl(c.paid, 'payé') + ' · ' + pl(c.canceled, 'résilié') + ' · ' + nf.format(c.failed) + ' paiement' + (c.failed > 1 ? 's' : '') + ' échoué' + (c.failed > 1 ? 's' : '') + (c.pending ? ' · ' + nf.format(c.pending) + ' en attente de Paddle' : '') + ', sur ' + pl(c.ended, 'terminé') : 'Aucun essai terminé sur la période.',
+      c.month2.measured ? 'Encore payants au 2e mois : ' + pc(c.month2.pct) + ' (' + nf.format(c.month2.still) + ' sur ' + nf.format(c.month2.measured) + ')' : '2e mois : pas encore mesurable (32 jours après la fin).'], !c.ended));
+    k.append(trK('3. Actifs pendant l’essai', nf.format(d.now.active3) + ' / ' + nf.format(d.now.running), [
+      'essais en cours venus ces 3 derniers jours',
+      p.started ? 'Revenus au moins 2 jours différents : ' + pc(u.twoDaysPct) + ' (' + nf.format(u.twoDays) + ' sur ' + nf.format(p.started) + ')' : '',
+      p.started ? 'Vidéos par essai, en moyenne : ' + String(u.exportsAvg).replace('.', ',') : ''], false));
+    var tb = $('#trRun tbody'); tb.textContent = '';
+    function yn(v, notYet) { return el('span', { class: v ? 'yes' : 'no' }, v ? 'oui' : notYet ? 'pas encore' : 'non'); }
+    d.running.forEach(function (t) {
+      var tr = el('tr'), c0 = el('td', null, t.email || '–'); if (t.canceled) c0.append(el('small', null, 'résiliation demandée'));
+      var c2 = el('td'), c4 = el('td');
+      c2.append(yn(t.j1Nowm, t.day === 1)); c4.append(yn(t.active3));
+      tr.append(c0, el('td', null, 'J' + t.day), c2, el('td', null, nf.format(t.exports)), c4,
+        el('td', null, t.source ? sourceName(t.source) : 'direct / sans source'), el('td', null, t.heard ? (HEARD[t.heard] || t.heard) : '–'));
+      tb.append(tr);
+    });
+    if (!d.running.length) { var e0 = el('tr'), z = el('td', null, 'Aucun essai en cours.'); z.colSpan = 7; e0.append(z); tb.append(e0); }
+    var wb = $('#trWeeks tbody'); wb.textContent = '';
+    d.weeks.forEach(function (w) {
+      var tr = el('tr');
+      [w.week.replace('-W', ' · semaine '), nf.format(w.started), nf.format(w.ended), nf.format(w.paid), nf.format(w.canceled), nf.format(w.failed), w.month2Measured ? w.month2 + ' sur ' + w.month2Measured : '–']
+        .forEach(function (v) { tr.append(el('td', null, v)); });
+      wb.append(tr);
+    });
+    if (!d.weeks.length) { var e1 = el('tr'), z1 = el('td', null, 'Aucun essai pour l’instant.'); z1.colSpan = 7; e1.append(z1); wb.append(e1); }
+  }
+  function trLoad() { api('GET', 'trials').then(function (d) { TRD = d; trRender(); }).catch(function (e) { set('#trSum', 'Impossible de charger : ' + e.message); }); }
+  $('#trPer').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; S.trDays = b.dataset.d; if (TRD) trRender(); });
   function sourceName(src) {
     if (!src) return 'Inconnue';
     var m = /^(ref|utm|dir|site|ai):(.+)$/.exec(src);
@@ -1693,6 +1835,7 @@ const DEMO_JS = String.raw`var DD = __DEMO_DATA__, DS = { avail: false, tickets:
     else if (p === 'languages') r = DD.languages;
     else if (p === 'paddle/abandoned') r = DD.abandoned[q.get('days') || '7'] || DD.abandoned['7'];
     else if (p === 'paid-tests') r = DD.paidTests;
+    else if (p === 'trials') r = DD.trials;
     else if (p === 'analytics/live') r = DD.analyticsLive;
     else if (p === 'analytics/tiles') { var sn = DD.analytics['7'].clarity.snapshot; r = { ga4: { state: 'ok', now: DD.analyticsLive.now, top: DD.analyticsLive.countries.slice(0, 3) },
       clarity: { state: 'ok', at: sn.at, sessions: sn.totals.sessions, top: sn.friction[0] || null, stale: false } }; }
