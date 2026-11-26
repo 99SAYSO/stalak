@@ -12,3 +12,7 @@ Probablement un style d'onglet ou de bouton d'une autre partie de l'app (fusions
 - capture iPhone 390 px FR et EN, ouvert et fermé ;
 - vérifier `help_ui` ;
 - maquette au propriétaire, puis branche `app/aide-glacon` et compte rendu.
+
+## Ajout du Chef de projet (Clarity du 26/11, `docs/audit/clarity-2026-11-26.md`)
+- **Clic mort sur « Stats »** dans la barre du bas, sur iPhone, pour un visiteur non connecté : vérifier que le tap ouvre bien le quiz ou la connexion.
+- **Projet perdu après un retour en arrière ?** Un visiteur (navigateur de l'app Google) quitte le montage vers une page du site et recommence tout. Vérifier qu'en revenant sur l'app, le projet en cours est retrouvé (prises, son, montage).
