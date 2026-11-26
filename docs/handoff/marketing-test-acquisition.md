@@ -121,3 +121,44 @@ L'offre est celle de 12Thousand (`docs/handoff/chef-partenariat-12k.md`), mêmes
 **À préparer par Comptes** : un code et un `ref` par créateur, comme `12K`.
 
 **Rappel juridique** : la mention de partenariat (#ad, FTC) est obligatoire, et les conditions de partenariat de 12Thousand servent pour tous.
+
+## 4. Le même type de créateurs sur TikTok (26/11, 6 h)
+
+**Comment je les ai trouvés** (à la main, pages publiques) :
+- les hashtags #musicmarketingtips, #musicindustrytips, #musicpromotiontips, #producertips et #rapadvice ;
+- la recherche de comptes TikTok ;
+- abonnés, j'aime et nombre de vidéos lus sur la page publique de chaque profil.
+
+J'ai écarté les comptes en allemand, en français et en espagnol (independentartist.io, noe_strat, jovionly, iam_producertips, growingproducer, music.hacking).
+
+**Les vues des 10 dernières vidéos ne sont pas encore relevées.** TikTok a affiché un puzzle anti-robot sur les profils, et ce n'est pas à moi de le résoudre. Quand le propriétaire l'a passé dans le navigateur, je relève les vues et je complète le tableau. En attendant, les **j'aime par vidéo** (total des j'aime ÷ nombre de vidéos) servent de repère.
+
+**Les créateurs YouTube de la liste au § 2 ont-ils un TikTok actif ?**
+- JB Sauced Up : oui, 29 500 abonnés.
+- cashfunds333, FRDi, Diego Torres, 12Thousand : pas de compte actif à ce nom.
+
+| # | Créateur | Abonnés | J'aime par vidéo (repère) | Vues des 10 dernières | Communauté (bio) | Ce qu'il fait | Pourquoi il colle à « Make your snippet look like a music video » |
+|---|---|---|---|---|---|---|---|
+| 1 | [@artistacad](https://www.tiktok.com/@artistacad) | 26 500 | 723 | à relever | **Skool « Artists Academy »** | Marketing musical et développement d'artistes (« i've helped grow artists fanbases (30M+ streams) ») | Le plus proche de 12Thousand : il conseille les artistes et a une communauté Skool pour le défi snippet. |
+| 2 | [@indieamplify](https://www.tiktok.com/@indieamplify) | 49 800 | 818 | à relever | **groupe privé « thagroupchat »** (Nero) | « For Artists. By Artists. », conseils et mise en avant d'indés | Gros public d'artistes indés et un groupe de discussion pour lancer le défi. |
+| 3 | [@brand__development](https://www.tiktok.com/@brand__development) | 45 200 | 3 418 | à relever | appel stratégie gratuit (agence 12amcreative) | Stratégie créative pour marques et artistes | Parle du visuel et du contenu des artistes : un snippet qui ressemble à un clip, c'est son sujet. Très bons j'aime par vidéo. |
+| 4 | [@themonicacoates](https://www.tiktok.com/@themonicacoates) | 24 900 | 521 | à relever | consultations (linktree) | « Music industry strategist », développement d'artistes indés | Conseils de carrière concrets, public d'artistes qui veulent se démarquer. |
+| 5 | [@producerbigbro](https://www.tiktok.com/@producerbigbro) | 46 500 | 1 743 | à relever | linktree | Producteur à Miami, conseils de prod (« your producer big bro ») | Public de producteurs et de rappeurs : le snippet en mode clip sur une prod. |
+| 6 | [@jbsaucedup](https://www.tiktok.com/@jbsaucedup) | 29 500 | 7 143 | à relever | **Discord** + **mentorat Whop** (vus sur son YouTube) | Producteur multi-platine | Déjà au § 2 (YouTube) : un seul partenariat pour deux plateformes. Les meilleurs j'aime par vidéo. |
+| 7 | [@protheeproducer](https://www.tiktok.com/@protheeproducer) | 13 900 | 3 194 | à relever | — | Producteur platine et manager, « helping artists grow » | Très bon public. **Attention** : sa bio met déjà en avant une autre appli de création de contenu. À vérifier avant d'écrire. |
+| 8 | [@flossytheboss007](https://www.tiktok.com/@flossytheboss007) | 28 300 | 399 | à relever | — | « Music industry mogul », conseils business musique | Public d'artistes indés ; contenu à regarder avant d'écrire. |
+| 9 | [@markit.zero](https://www.tiktok.com/@markit.zero) | 6 704 | 324 | à relever | linktree | « Empowering indie artists, marketing + promotion » | Petit compte comme 12Thousand, 100 % marketing pour indés. |
+| 10 | [@ghost_writeher](https://www.tiktok.com/@ghost_writeher) | 6 140 | 166 | à relever | linktree | Social media manager à Atlanta, conseils réseaux pour artistes | Elle gère les réseaux d'artistes : Stalak est un outil qu'elle peut recommander à ses clients. |
+
+**En réserve** :
+- [@tiffanyericawilliams](https://www.tiktok.com/@tiffanyericawilliams) (35 900, productrice et ingénieure du son) ;
+- [@christheaimusicpreneur](https://www.tiktok.com/@christheaimusicpreneur) (10 000, outils IA pour la musique, newsletter de 50 000 lecteurs) ;
+- [@iam_slimkiss](https://www.tiktok.com/@iam_slimkiss) (3 300, marketing musical).
+
+**Juste au-dessus de 50 000 mais très proches** :
+- [@joeydeanofficial](https://www.tiktok.com/@joeydeanofficial) (52 800, « signature marketing system » pour indés) ;
+- [@troytittley](https://www.tiktok.com/@troytittley) (57 900, « Music First »).
+
+**Mon conseil pour commencer** : n° 1 (artistacad, Skool), n° 2 (indieamplify, groupe) et n° 3 (brand__development, visuel). Ensuite n° 6 (JB Sauced Up), à proposer en même temps sur YouTube et TikTok.
+
+**Le message** : le même qu'au § 3. Pour TikTok, remplacer « a 60–90 s segment in one video a month » par « one TikTok a month showing your one-take snippet vs the Stalak version ».
