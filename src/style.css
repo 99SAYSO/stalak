@@ -171,6 +171,7 @@ body.lite .tl .cut{box-shadow:none!important;text-shadow:none!important}
 .st .qual .off{color:inherit;opacity:.25}
 .st .qual.q1{color:var(--warn)}
 .grid2 .chk.best{justify-self:start}
+.chk.best{flex-wrap:wrap}.chk.best .best-why{flex-basis:100%;margin:2px 0 0 30px;font-size:13px;font-weight:500;line-height:1.35;opacity:.85}
 /* paroles : calage automatique et karaoké */
 .autonote{margin:0 0 10px;font-size:13.5px;padding:9px 12px;border-radius:10px;background:color-mix(in srgb, var(--warn) 14%, var(--surface));color:var(--ink);max-width:62ch}
 .autonote .chk,.lines .chk{font:600 11px var(--mono);color:var(--warn);white-space:nowrap}

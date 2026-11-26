@@ -18,8 +18,14 @@ PUBLIC = os.path.abspath(sys.argv[1])
 results = []
 PW = None
 # allowed to last longer: ambient (snow, water, the mascot at work), rare or illustrative (hello, celebration, countdown)
+# (26/11, Chef, point 8) the site's 6 animations chosen by the owner on 22/11 (commit d28e8f4, Marketing): the title on the beat
+# (hw-in, once), the rating that fills (rv-fill, once, on a tiny line), the living import zone (drop-march, drop-eq: ambient), the
+# snow burst of the buttons (fx-burst, rare). Marketing pages may be slower and richer (skill motion-design). The rating's width and
+# the dashed border's offset are the two properties allowed besides transform / opacity, on these two small elements only.
+SITE_KF_OK = {'rv-fill:width', 'drop-march:stroke-dashoffset'}
+SITE_TR_LONG_OK = ('.fx-rise.fx-in opacity 0.5s', '.fx-rise.fx-in transform 0.5s')   # the blocks that arrive on scroll, once
 LONG_OK = {'al-snow-far', 'al-snow-near', 'si-snow', 'ex-wave', 'ex-walk', 'ex-carry', 'al-hello', 'al-bob', 'clAutoPulse',
-           'ad-frost', 'ad-twinkle', 'pp-frost', 'pr-glint', 'pr-drop', 'pt-fly', 'pt-pop', 'mo-flake', 'mo-ripple', 'cam-pop', 'cam-again'}
+           'ad-frost', 'ad-twinkle', 'pp-frost', 'pr-glint', 'pr-drop', 'pt-fly', 'pt-pop', 'mo-flake', 'mo-ripple', 'cam-pop', 'cam-again', 'hw-in', 'rv-fill', 'drop-march', 'drop-eq', 'fx-burst', 'm3trip', 'm3carry'}
 
 
 class Quiet(http.server.SimpleHTTPRequestHandler):
@@ -42,7 +48,7 @@ SCAN = r"""() => {
   const walk = list => { for (const r of list){
     if (r.cssRules && !(r instanceof CSSKeyframesRule)) walk(r.cssRules);
     if (r instanceof CSSKeyframesRule){ const props = new Set(); for (const k of r.cssRules) for (let i = 0; i < k.style.length; i++) props.add(k.style[i].replace(/^-webkit-/, ''));
-      const bad = [...props].filter(p => !/^(opacity|transform|translate|scale|rotate)$/.test(p)); if (bad.length) out.kfBad.push(r.name + ':' + bad.join('/')); }
+      const bad = [...props].filter(p => !/^(opacity|transform|translate|scale|rotate)$/.test(p)); if (bad.length && !window.__KFOK.includes(r.name + ':' + bad.join('/'))) out.kfBad.push(r.name + ':' + bad.join('/')); }
     if (r instanceof CSSStyleRule){
       const st = r.style, an = st.getPropertyValue('animation'), tr = st.getPropertyValue('transition');
       for (const [kind, val] of [['animation', an], ['transition', tr]]){
@@ -52,7 +58,7 @@ SCAN = r"""() => {
           const toks = part.trim().split(/\s+(?![^(]*\))/), times = toks.filter(t => /^-?[\d.]+m?s$/.test(t)).map(ms), dur = times[0];
           const bez = (part.match(/cubic-bezier\(([^)]*)\)/) || [])[1];
           if (bez){ const n = bez.split(',').map(Number); if (n[1] < 0 || n[1] > 1 || n[3] < 0 || n[3] > 1) out.bounce.push(r.selectorText + ' ' + part.trim()); }
-          if (kind === 'transition'){ const prop = toks[0]; if (!/^(transform|opacity|none)$/.test(prop)) out.trBad.push(r.selectorText + ' ' + part.trim()); if (dur > 300) out.long.push(r.selectorText + ' ' + part.trim()); }
+          if (kind === 'transition'){ const prop = toks[0]; if (!/^(transform|opacity|none)$/.test(prop)) out.trBad.push(r.selectorText + ' ' + part.trim()); if (dur > 300 && !window.__TRLONG.some(s => (r.selectorText + ' ' + part.trim()).startsWith(s))) out.long.push(r.selectorText + ' ' + part.trim()); }
           else { const name = toks.find(t => /^[a-zA-Z][\w-]*$/.test(t) && !/^(linear|ease|ease-in|ease-out|ease-in-out|both|forwards|backwards|infinite|alternate|normal|reverse|none|running|paused)$/.test(t));
             if (name){ out.names.add(name); if (dur > 300 && !window.__LONG.includes(name)) out.long.push(r.selectorText + ' ' + part.trim()); } }
         }
@@ -83,7 +89,7 @@ def run(b, base, lang, iphone, calm):
     ctx.route('**/tag/js/gpt.js', lambda r: r.fulfill(status=404, body=''))
     pg = ctx.new_page(); errs = []
     pg.on('pageerror', lambda e: errs.append(str(e)[:200]))
-    pg.add_init_script('window.__LONG = ' + json.dumps(sorted(LONG_OK)))
+    pg.add_init_script('window.__LONG = ' + json.dumps(sorted(LONG_OK)) + '; window.__KFOK = ' + json.dumps(sorted(SITE_KF_OK)) + '; window.__TRLONG = ' + json.dumps(SITE_TR_LONG_OK) + ';')
     pg.goto(base + ('' if lang == 'en' else 'fr/'), wait_until='load'); pg.wait_for_function('typeof window.__ev === "function"', timeout=20000)
     if not calm:
         r = pg.evaluate(SCAN)

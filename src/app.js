@@ -20,7 +20,7 @@ const S = {
   step:1, song:null, takes:[], startBar:0, nBars:0, pace:'normal', mode:'auto', brollAmt:'peu', fmt:'916', seed:1, version:1,
   kind:'reel', clipEnd:null, listenAt:null, tlZoom:false,
   segA:null, segB:null,   // the passage chosen freely with the handles (seconds); null: the passage follows the bars
-  bestTake:true, cuts:[], locks:[], sel:-1, segStart:0, segEnd:0, playing:false, exporting:false, cancel:false, cursor:0, click:false,
+  bestTake:false, cuts:[], locks:[], sel:-1, segStart:0, segEnd:0, playing:false, exporting:false, cancel:false, cursor:0, click:false,
   lyrics:{ mode:'paste', lines:[], style:{ pos:'mid', font:'tiktok', color:'#ffffff', deco:'outline', size:'m', anim:'line', hl:'auto' } },
   // effects and transitions (Clip only): level, effects placed by the site, the user's own choices, the one selected
   fxLevel:'sobre', fxAuto:[], fxUser:[], fxSelT:null, fxVer:0, fxMusic:null, fx:[], frame:'fit', frameUser:false,
@@ -410,6 +410,9 @@ const I18N_EN = /*@EN*/{
   "filt.th.retro": "Retro",
   "filt.th.esth": "Aesthetic",
   "filt.th.col": "Colors",
+  "filt.th.tt": "Trending",
+  "filt.braise": "Ember", "filt.brume": "Mist", "filt.lilas": "Lilac", "filt.craie": "Chalk", "filt.minuit": "Midnight", "filt.rubis": "Ruby",
+  "filt.charbon": "Coal", "filt.webcam": "Webcam", "filt.ecran": "Screen", "filt.camescope": "Camcorder", "filt.coton": "Cotton", "filt.clarte": "Clarity",
   "filt.velours": "Velvet",
   "filt.soleil": "Sunny",
   "filt.cocon": "Cozy",
@@ -579,6 +582,7 @@ const I18N_EN = /*@EN*/{
   "click.fail": "The click couldn’t be prepared.",
   "best.busy": "Auto best take: your takes are still being analyzed, the edit will adapt by itself.",
   "best.on": "Auto best take on.",
+  "best.why": "(picks your best-looking takes; can mean fewer cuts and less room for your other takes)",
   "best.off": "Auto best take off: all takes get the same chance.",
   "song.extract": "Getting the sound out of the video…",
   "song.analyse": "Analyzing the sound…",
@@ -1404,6 +1408,9 @@ const I18N_FR = /*@FR*/{
   "filt.th.retro": "Rétro",
   "filt.th.esth": "Esthétique",
   "filt.th.col": "Couleurs",
+  "filt.th.tt": "Tendance",
+  "filt.braise": "Braise", "filt.brume": "Brume", "filt.lilas": "Lilas", "filt.craie": "Craie", "filt.minuit": "Minuit", "filt.rubis": "Rubis",
+  "filt.charbon": "Charbon", "filt.webcam": "Webcam", "filt.ecran": "Écran", "filt.camescope": "Caméscope", "filt.coton": "Coton", "filt.clarte": "Clarté",
   "filt.velours": "Velours",
   "filt.soleil": "Soleil",
   "filt.cocon": "Cocon",
@@ -1573,6 +1580,7 @@ const I18N_FR = /*@FR*/{
   "click.fail": "Le clic n’a pas pu être préparé.",
   "best.busy": "Meilleure prise auto : les prises sont encore en cours d’analyse, le montage s’adaptera tout seul.",
   "best.on": "Meilleure prise auto activée.",
+  "best.why": "(choisit tes prises les plus réussies ; peut faire moins de coupes et laisser moins de place à tes autres prises)",
   "best.off": "Meilleure prise auto désactivée : toutes les prises ont la même chance.",
   "song.extract": "Extraction du son de la vidéo…",
   "song.analyse": "Analyse du son…",
@@ -5040,35 +5048,51 @@ function placeImg(c, img, sw, sh, rot, sc, mir, dy){
      the lyrics. This block uses nothing else from the app: the comparison page (tests/ui/filtres_comparaison.py) runs it as it is. */
 const FILTERS = [
   { id: 'none',     th: null,   free: true },
-  { id: 'givre',    th: 'cam',  free: true },
-  { id: 'la',       th: 'cam',  free: false },
-  { id: 'nuit',     th: 'cam',  free: false },
+  { id: 'givre',    th: 'cam',  free: true, old: true },
+  { id: 'la',       th: 'cam',  free: false, old: true },
+  { id: 'nuit',     th: 'cam',  free: false, old: true },
   { id: 'demon',    th: 'cam',  free: false },
   { id: 'hallo',    th: 'cam',  free: false },
   { id: 'vhs',      th: 'retro', free: false },
-  { id: 'film35',   th: 'retro', free: true },
-  { id: 'super8',   th: 'retro', free: false },
-  { id: 'nb',       th: 'retro', free: true },
+  { id: 'film35',   th: 'retro', free: true, old: true },
+  { id: 'super8',   th: 'retro', free: false, old: true },
+  { id: 'nb',       th: 'retro', free: true, old: true },
   { id: 'golden',   th: 'esth', free: false },
-  { id: 'reve',     th: 'esth', free: false },
-  { id: 'y2k',      th: 'esth', free: false },
-  { id: 'pastel',   th: 'esth', free: false },
+  { id: 'reve',     th: 'esth', free: false, old: true },
+  { id: 'y2k',      th: 'esth', free: false, old: true },
+  { id: 'pastel',   th: 'esth', free: false, old: true },
   // « Couleurs »: light colour retouches, in the spirit of the stories' colour filters (own names)
-  { id: 'velours',  th: 'col', free: false },
-  { id: 'soleil',   th: 'col', free: false },
-  { id: 'cocon',    th: 'col', free: false },
-  { id: 'lagon',    th: 'col', free: false },
-  { id: 'eclat',    th: 'col', free: false },
-  { id: 'miel',     th: 'col', free: false },
-  { id: 'dune',     th: 'col', free: false },
-  { id: 'souvenir', th: 'col', free: false },
-  { id: 'beton',    th: 'col', free: false },
-  { id: 'fuchsia',  th: 'col', free: false },
-  { id: 'safran',   th: 'col', free: false },
-  { id: 'mono',     th: 'col', free: false },
-  { id: 'tropique', th: 'col', free: false },
+  { id: 'velours',  th: 'col', free: false, old: true },
+  { id: 'soleil',   th: 'col', free: false, old: true },
+  { id: 'cocon',    th: 'col', free: false, old: true },
+  { id: 'lagon',    th: 'col', free: false, old: true },
+  { id: 'eclat',    th: 'col', free: false, old: true },
+  { id: 'miel',     th: 'col', free: false, old: true },
+  { id: 'dune',     th: 'col', free: false, old: true },
+  { id: 'souvenir', th: 'col', free: false, old: true },
+  { id: 'beton',    th: 'col', free: false, old: true },
+  { id: 'fuchsia',  th: 'col', free: false, old: true },
+  { id: 'safran',   th: 'col', free: false, old: true },
+  { id: 'mono',     th: 'col', free: false, old: true },
+  { id: 'tropique', th: 'col', free: false, old: true },
+  // (26/11, owner: « faut vraiment essayer de faire les mêmes ») « Tendance »: the looks of the filters rappers use in the TikTok
+  // camera (docs/audit/retours-2026-11-26/filtres-tiktok), our own names, colour only (no AR effect)
+  { id: 'braise',   th: 'tt', free: true },
+  { id: 'brume',    th: 'tt', free: false },
+  { id: 'lilas',    th: 'tt', free: false },
+  { id: 'craie',    th: 'tt', free: true },
+  { id: 'minuit',   th: 'tt', free: false },
+  { id: 'rubis',    th: 'tt', free: false },
+  { id: 'charbon',  th: 'tt', free: false },
+  { id: 'webcam',   th: 'tt', free: false },
+  { id: 'ecran',    th: 'tt', free: false },
+  { id: 'camescope', th: 'tt', free: false },
+  { id: 'coton',    th: 'tt', free: false },
+  { id: 'clarte',   th: 'tt', free: false },
 ];
-const FILT_THEMES = ['col', 'cam', 'retro', 'esth'];
+// (26/11, owner) only « Tendance » and 4 of the former filters are offered: Démon, Halloween, VHS, Golden hour. The others
+// (old: true) stay in the list so the index of each look in the shader does not move and an older project keeps its look.
+const FILT_THEMES = ['tt', 'cam', 'retro', 'esth'];
 const filtIdx = id => Math.max(0, FILTERS.findIndex(f => f.id === id));
 /* the filters that also draw text or shapes (filtOverlay) */
 const filtHasOverlay = i => { const f = FILTERS[i]; return !!f && (f.id === 'vhs' || f.id === 'y2k'); };
@@ -5271,6 +5295,86 @@ void main(){
     vec3 gr = q.y < 0.5 ? mix(gtop, gmid, q.y * 2.0) : mix(gmid, gbot, (q.y - 0.5) * 2.0);
     vec3 ov = mix(2.0 * c * gr, 1.0 - 2.0 * (1.0 - c) * (1.0 - gr), step(0.5, c));
     c = mix(c, ov, 0.45);
+  } else if (u_f == 27){ // Braise: warm and soft, faded colours, raised blacks, a light glow
+    c = src(q);
+    vec3 g = bright(blur(q, 16.0), 0.40);
+    c = sat(c, 0.78) * vec3(1.06, 1.0, 0.92);
+    c += g * vec3(0.30, 0.22, 0.15);
+    c = mix(vec3(0.08, 0.06, 0.05), vec3(0.97, 0.93, 0.88), clamp(c, 0.0, 1.0));
+    c = con(c, 0.95);
+  } else if (u_f == 28){ // Brume: cold blue-violet, low contrast, soft and dreamy, blue shadows
+    c = mix(src(q), blur(q, 4.0), 0.35);
+    c = sat(c, 0.70) * vec3(0.90, 0.92, 1.12);
+    c += (1.0 - lum(c)) * vec3(0.01, 0.02, 0.07);
+    c = mix(vec3(0.09, 0.09, 0.16), vec3(0.86, 0.86, 0.96), clamp(c, 0.0, 1.0));
+    c = con(c, 0.92);
+  } else if (u_f == 29){ // Lilas: a purple-magenta veil, washed-out picture (very raised blacks), a little blur, 2016 look
+    c = mix(src(q), blur(q, 5.0), 0.45);
+    c = sat(c, 0.65) * vec3(1.03, 0.90, 1.08);
+    c = mix(vec3(0.20, 0.12, 0.24), vec3(0.92, 0.84, 0.94), clamp(c, 0.0, 1.0));
+    c = con(c, 0.90);
+  } else if (u_f == 30){ // Craie: neutral and clean, a little desaturated, lighter greys, natural skin
+    c = src(q);
+    c = sat(c, 0.80);
+    c = pow(clamp(c, 0.0, 1.0), vec3(0.90));
+    c = mix(vec3(0.05), vec3(1.0), c);
+    c = con(c, 0.96);
+  } else if (u_f == 31){ // Minuit: dark and contrasted, crushed blacks, cold shadows, moody
+    c = src(q); float l = lum(c);
+    c = mix(c * vec3(0.84, 0.94, 1.10), c, smoothstep(0.15, 0.6, l)) * 0.97;
+    c = smoothstep(vec3(0.04), vec3(0.95), c);
+    c = sat(c, 0.78);
+    c = scurve(c, 0.35);
+    c *= 1.0 - vig(q) * 0.45;
+  } else if (u_f == 32){ // Rubis: warm, saturated reds, smoothed skin, vignette, fine grain
+    c = mix(src(q), blur(q, 3.0), 0.40);
+    float rr = smoothstep(0.08, 0.30, c.r - max(c.g, c.b) * 1.05);
+    c = sat(c, 1.05 + rr * 0.6) * mix(vec3(1.0, 0.95, 0.92), vec3(1.18, 0.82, 0.82), rr);
+    c = scurve(c * 0.90, 0.45);
+    c *= 1.0 - smoothstep(0.1, 1.0, vig(q) * 1.2) * 0.55;
+    c += grain(q, 1.5) * 0.035;
+  } else if (u_f == 33){ // Charbon: dark, strong grain, vignette
+    c = src(q) * 0.78;
+    c = sat(c, 0.78);
+    c = con(c, 1.12) - 0.02;
+    c += grain(q, 2.2) * 0.12;
+    c *= 1.0 - smoothstep(0.1, 1.0, vig(q) * 1.3) * 0.65;
+  } else if (u_f == 34){ // Webcam: lo-fi, dark, desaturated, a little blurred, vignette
+    c = mix(src(q), blur(q, 3.0), 0.75);
+    c = sat(c, 0.58) * vec3(0.97, 1.0, 1.03);
+    c = pow(clamp(c, 0.0, 1.0), vec3(1.18));
+    c = mix(vec3(0.04), vec3(0.90), c);
+    c *= 1.0 - smoothstep(0.1, 1.0, vig(q) * 1.25) * 0.6;
+    c += grain(q, 2.0) * 0.04;
+  } else if (u_f == 35){ // Écran: dark green, big grain and a screen's lines (VHS / CRT), colours slightly apart, strong contrast
+    vec2 px = vec2(2.6 / u_res.x, 0.0);
+    c = vec3(src(q - px).r, src(q).g, src(q + px).b);
+    float l = lum(c);
+    c = mix(vec3(l), c, 0.40) * vec3(0.86, 1.0, 0.86);
+    c = con(c, 1.30) - 0.02;
+    c *= 0.80 + 0.20 * step(0.5, fract(q.y * u_res.y / 4.0));
+    c += grain(q, 2.6) * 0.12;
+    c *= 1.0 - vig(q) * 0.35;
+  } else if (u_f == 36){ // Caméscope: green monochrome of an old camcorder at night, grain, lines
+    float l = lum(mix(src(q), blur(q, 2.0), 0.5));
+    l = pow(l, 1.05) * 1.05;
+    l *= 0.86 + 0.14 * step(0.5, fract(q.y * u_res.y / 3.0));
+    l += grain(q, 2.0) * 0.09;
+    c = vec3(0.50, 0.86, 0.56) * l + vec3(0.02, 0.05, 0.03);
+    c *= 1.0 - smoothstep(0.1, 1.0, vig(q) * 1.2) * 0.55;
+  } else if (u_f == 37){ // Coton: a soft, dreamy blur, blue shadows, low contrast, the picture « bleeds »
+    c = mix(src(q), blur(q, 9.0), 0.55);
+    c += bright(blur(q, 18.0), 0.45) * 0.35;
+    c = sat(c, 0.82);
+    c += (1.0 - lum(c)) * vec3(0.0, 0.015, 0.06);
+    c = mix(vec3(0.07, 0.07, 0.11), vec3(0.97, 0.97, 1.0), clamp(c, 0.0, 1.0));
+    c = con(c, 0.86);
+  } else if (u_f == 38){ // Clarté: warm and neutral, sharper (clarity), deep blacks, a light vignette
+    c = src(q);
+    c += (c - blur(q, 6.0)) * 0.9;
+    c = sat(scurve(c, 0.25), 0.85) * vec3(1.0, 1.0, 0.97);
+    c = pow(clamp(c, 0.0, 1.0), vec3(0.82));
+    c *= 1.0 - vig(q) * 0.30;
   } else {
     c = src(q);
   }
@@ -5493,10 +5597,10 @@ function filtUI(){
     row.innerHTML = ''; row.dataset.shape = tw + 'x' + th; row.dataset.lang = LANG; row.dataset.pro = String(can('filters'));
     // without Pro (audit 30/10): the free filters first, then one tile « + N filtres PRO » that opens the others, grouped by
     // theme with one PRO tag per theme (instead of one on every filter)
-    const pro = can('filters'), locked = FILTERS.filter(f => !f.free).length;
-    const groups = pro ? [[null, [0]]].concat(FILT_THEMES.map(k => [k, FILTERS.map((f, i) => f.th === k ? i : -1).filter(i => i >= 0)]))
-      : [['free', FILTERS.map((f, i) => f.free || i === 0 ? i : -1).filter(i => i >= 0)], ['more', []]]
-        .concat(FILT_THEMES.map(k => [k, FILTERS.map((f, i) => f.th === k && !f.free && i ? i : -1).filter(i => i >= 0)]));
+    const pro = can('filters'), locked = FILTERS.filter(f => !f.free && !f.old).length;
+    const groups = pro ? [[null, [0]]].concat(FILT_THEMES.map(k => [k, FILTERS.map((f, i) => f.th === k && !f.old ? i : -1).filter(i => i >= 0)]))
+      : [['free', FILTERS.map((f, i) => (f.free && !f.old) || i === 0 ? i : -1).filter(i => i >= 0)], ['more', []]]
+        .concat(FILT_THEMES.map(k => [k, FILTERS.map((f, i) => f.th === k && !f.free && !f.old && i ? i : -1).filter(i => i >= 0)]));
     for (const [k, list] of groups){
       if (k === 'more'){
         const mb = document.createElement('button'); mb.type = 'button'; mb.className = 'filtmore'; mb.id = 'filtMore';
@@ -9236,7 +9340,7 @@ function tlRelease(e){
 $('#tl').addEventListener('pointerup', tlRelease);
 $('#tl').addEventListener('pointercancel', tlRelease);
 { // best take switch (on unless the user turned it off)
-  const saved = store.get('stalak:best'); S.bestTake = saved !== false; $('#bestChk').checked = S.bestTake;
+  const saved = store.get('stalak:best'); S.bestTake = saved === true;   // (26/11, owner) off unless the person turned it on $('#bestChk').checked = S.bestTake;
   $('#bestChk').onchange = e => { S.bestTake = e.target.checked; store.set('stalak:best', S.bestTake); const was = S.playing; stop(true); rebuild(false);
     const busy = S.takes.some(t => t.kind === 'video' && !t.qual && (t.qualPct != null || t.proxyState === 'run' || t.proxyState === 'wait'));
     say(S.bestTake ? (busy ? 'best.busy' : 'best.on') : 'best.off');
@@ -11887,6 +11991,8 @@ function mobInit(){
       can: f => can(f), playing: () => !!S.playing, lyr: () => S.lyrics.mode, exporting: () => !!S.exporting,
       takes: () => S.takes.filter(t => !t.broll).map(t => ({ el: t.kind === 'video' ? t.el || null : null, thumb: t.thumb || (t.live && t.live.ts != null ? t.live.cv : null) || null, demo: t.kind === 'demo', look: t.look || null, stars: t.qual ? qualSummary(t).stars : 0 })),
       filtThumbs: () => filtThumbs(),
+      // (26/11, owner) « Retour au menu principal » after the save: home at once (the video stays in « Montages »)
+      goHome: async () => { if (S.exporting) return; try { await lpSave(true); } catch(e){} homeGo(); },   // kept on the phone first (lpSave), then home
       loadSong: f => loadSongFile(f), pickFile: () => $('#songFile').click(), demo: () => $('#demoBtn').click(),
       desel: () => { S.sel = -1; S.selT = null; S.fxSelT = null; renderTimeline(); renderCutBar(); renderFxBar(); },
       cam: () => !!recStream, rec: () => (recRec && recRec.state !== 'inactive') ? 'rec' : recCd ? 'cd' : 'idle', timer: () => recDelay, timerSet: v => recTimerSet(v),

@@ -21,6 +21,19 @@ FR = json.loads(re.search(r'/\*@FR\*/(.*?)/\*FR@\*/', js, re.S).group(1))
 
 # what each filter does, as the owner asked for it (shown under each picture)
 DESC = {
+    # « Tendance » (26/11): the looks of the TikTok filters of the owner (docs/audit/retours-2026-11-26/filtres-tiktok)
+    'braise': 'Chaud et doux, couleurs un peu délavées, noirs relevés, léger halo (façon « aries »).',
+    'brume': 'Froid bleu-violet, contraste bas, doux et rêveur (façon « HNY »).',
+    'lilas': 'Voile violet-magenta, image délavée, léger flou (façon « 2016 »).',
+    'craie': 'Neutre et propre, un peu désaturé, gris éclaircis (façon « White Shadow »).',
+    'minuit': 'Sombre et contrasté, noirs écrasés, ombres froides (façon « Aurora »).',
+    'rubis': 'Chaud, rouges saturés, peau lissée, vignette, grain fin (façon « Glow »).',
+    'charbon': 'Sombre, grain marqué, vignette (façon « #normalcutegirl », sans les cœurs).',
+    'webcam': 'Lo-fi webcam : sombre, désaturé, un peu flou, vignette (façon « ArCaReOn5 »).',
+    'ecran': 'Vert sombre, gros grain, trame d’écran, couleurs décalées (façon « tokyo »).',
+    'camescope': 'Monochrome vert de caméscope, grain, lignes (façon « Green filter »).',
+    'coton': 'Flou doux et rêveur, ombres bleutées, contraste bas (façon « holuu »).',
+    'clarte': 'Chaud et neutre, plus net, noirs profonds, vignette légère (façon « Brightness »).',
     'givre': 'Bleu froid, blancs éclatants, voile glacé sur les bords.',
     'la': 'Grain, tons chauds délavés, noirs grisés.',
     'nuit': 'Vert monochrome, grain fort, bords flous.',
@@ -290,11 +303,11 @@ with sync_playwright() as p:
         # grain and fine lines differ pixel by pixel between sizes; the look (a quarter-size view) must match
         check(key + ' : même rendu aperçu / export (écart %.1f)' % st['half'], st['half'] < 9, round(st['half'], 2))
     pg.evaluate("__filt.setFmt('v'); __filt.frame()"); pg.wait_for_timeout(300)
-    pg.screenshot(path=os.path.join(SHOTS, 'page-ordi.png'), full_page=True)
+    pg.screenshot(path=os.path.join(SHOTS, 'page-ordi.png'), full_page=True, timeout=180000)
     pg.set_viewport_size({'width': 390, 'height': 844}); pg.wait_for_timeout(300)
     sw = pg.evaluate('document.documentElement.scrollWidth')
     check('page sur téléphone sans défilement horizontal', sw <= 390, sw)
-    pg.screenshot(path=os.path.join(SHOTS, 'page-tel.png'))
+    pg.screenshot(path=os.path.join(SHOTS, 'page-tel.png'), timeout=180000)
     b.close()
 os.remove(test)
 print('%d/%d réussis' % (sum(results), len(results)))
