@@ -6988,8 +6988,7 @@ function renderModeUI(){
 const wordsKey = () => timedLines().map(l => l.t.toFixed(2)).join(',');
 function go(n){
   if (!canGo(n) || S.exporting) return;
-  // the wow (above): from the song to the takes the first time; leaving its preview another way takes its example's takes away
-  if (n === 2 && S.step === 1 && wowShould()){ wowStart(); return; }
+  // leaving the wow's preview another way than its button takes its example's takes away
   if (WOW.on && n !== 4 && S.takes.some(t => t.wow)){ wowClear(); if (n !== 1 && !canGo(n)) n = 2; }
   stop(true); if (tapping){ tapping = false; } if (beatOn) beatTestEnd(); if (n !== 1 && tapT.taps.length) tapReset();
   if (n !== 2 && recStream) closeCamera();
@@ -7289,7 +7288,8 @@ function styleChanged(){
 /* ---------- events ---------- */
 $$('#stepper button').forEach(b => b.onclick = () => go(+b.dataset.go));
 $$('[data-back]').forEach(b => b.onclick = () => go(+b.dataset.back));
-$('#next1').onclick = () => go(2); $('#next2').onclick = () => { if (window.StalakM3 && StalakM3.on()) go(3); else lyAsk(); }; $('#next3').onclick = () => go(4);   // (refonte mobile, lot 3) on a phone, step 3 is the question itself
+// « Continuer » after the song: the wow the first time (26/11)
+$('#next1').onclick = () => { if (S.step === 1 && canGo(2) && !S.exporting && wowShould()) wowStart(); else go(2); }; $('#next2').onclick = () => { if (window.StalakM3 && StalakM3.on()) go(3); else lyAsk(); }; $('#next3').onclick = () => go(4);   // (refonte mobile, lot 3) on a phone, step 3 is the question itself
 /* « Continuer » after the takes (owner, 06/11): « Tu veux ajouter les paroles à la vidéo ? » Oui: the Lyrics step; Non: straight
    to the edit. Lyrics already there (a project picked up): the Lyrics step, as before. Échap or a tap beside: nothing changes */
 function lyAsk(){

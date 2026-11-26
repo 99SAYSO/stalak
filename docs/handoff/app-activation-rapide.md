@@ -1,14 +1,14 @@
-Statut : EN COURS
+Statut : PRÊT
 
 # Branche `app/activation-rapide` — le « wow » en moins d'une minute (partie App)
 
 Demande : `docs/handoff/chef-activation-rapide.md`, validée par le propriétaire le 26/11 à 16 h 16. Partie de main `25c5428`, avec `app/clarity-26-11` dedans : la reprise après un retour en arrière en a besoin. Si `app/clarity-26-11` est fusionnée avant, il ne reste que ce qui est décrit ici.
 
-**Statut** : maquette envoyée au propriétaire, j'attends sa validation. Tout est déjà dans la branche et testé.
+**Validé par le propriétaire** (26/11, 17 h, « oui ») sur la maquette.
 
 ## Ce qui change
 1. **Le wow avant l'effort** (n° 1).
-   - Juste après le choix du son et du passage, « Continuer » montre **10 s de SON son coupé sur le rythme**, avec les 3 prises d'exemple de `demo/example` placées au début du passage. Une carte en bas affiche « Aperçu · 10 s », « Ton son, coupé sur le rythme », un gros bouton « Maintenant, filme les tiennes » et le lien « Revoir l'aperçu ».
+   - Juste après le choix du son et du passage, le bouton « Continuer » de l'étape 1 (et lui seul : pas un saut d'étape par le code) montre **10 s de SON son coupé sur le rythme**, avec les 3 prises d'exemple de `demo/example` placées au début du passage. Une carte en bas affiche « Aperçu · 10 s », « Ton son, coupé sur le rythme », un gros bouton « Maintenant, filme les tiennes » et le lien « Revoir l'aperçu ».
    - Le bouton mène à l'étape des prises, **sans aucune prise d'exemple**. Rien de l'exemple n'est gardé dans le téléphone, et on ne peut pas exporter pendant l'aperçu.
    - Le wow arrive **une fois par son tout juste choisi** : jamais pour un projet repris, jamais pour l'exemple.
    - Les fichiers d'exemple (4 Mo) sont chargés dès que le son est choisi.
@@ -45,7 +45,10 @@ Demande : `docs/handoff/chef-activation-rapide.md`, validée par le propriétair
   - « Reprendre ton snippet ? » avec le son seul, à l'étape des prises.
 - Serveur : nouveau test des évènements d'étape. Résultat : 143/143.
 - `refonte_mobile4_ui` : le tutoriel passe à 3 écrans.
-- La série complète est en cours.
+- **Série complète** : tout est réussi, sauf `formules_ui` 136/137 (le compte du filigrane, échec déjà présent sur main).
+  - `refonte_mobile4_ui` 81/81, `refonte_stats_ui` 72/72, `refonte_mobile2_ui` 65/65, `fin_export_belle_ui` 49/49, `retours_26_11_ui` 29/29, `stats_tap_ui` 15/15 ;
+  - `refonte_mobile3_ui` 93/93, `prises_ui` 24/24, `fin_export_ui` 98/98, `refonte_mobile_ui` 102/102, `projet_local_ui` 76/76, `retour_arriere_ui` 10/10 ;
+  - `clip1_ui` 95/95, `vente_ui` 63/63, `essai_pro_ui` 205/205, `suite_clarity_ui` 24/24, `ou_est_ton_son_ui` 23/23, `son_passage` 86/86, `animations_ui` 44/44.
 
 ## Maquette
 Dans `docs/audit/maquettes/activation-rapide-2026-11-26/` : planches FR et EN, puis les écrans un par un (tutoriel, Montages vide, « Où est ton son ? », passage, wow, prises, caméra avant et après refus, « Reprendre ton snippet ? »).
