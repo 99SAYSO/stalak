@@ -462,6 +462,19 @@ for _f in list(out.glob('*.html')) + list((out / 'fr').glob('*.html')) + list(ou
     # right after its first picture, first of the list (async = false keeps the order: it is there before the app)
     if 'var L=["' in _t: _f.write_text(_t.replace('var L=["', 'var L=["/assets/' + _cn + '", "', 1), encoding='utf-8'); continue
     _f.write_text(_t.replace('</head>', _ctag + '\n</head>', 1), encoding='utf-8')
+# Marketing & croissance (26/11, retour du Chef): the page transitions of the static pages (@view-transition in site.css). Going back
+# fast aborted a transition and the browser logged a « ViewTransition » error. So: no transition on back / forward (the page is
+# often restored as it was, an animation there only gets in the way), and a transition the browser aborts stays silent.
+# In <head> (it must be there before the page's first picture, for « pagereveal »), only on the pages that load site.css.
+VT_JS = ('<script>/* Marketing: page transitions, no animation on back/forward, aborted ones stay silent */'
+         '(function(){function q(t){if(t)["ready","finished","updateCallbackDone"].forEach(function(k){if(t[k])t[k].catch(function(){})})}'
+         'function trav(a){return !!(a&&a.navigationType==="traverse")}'
+         'addEventListener("pageswap",function(e){var t=e.viewTransition;q(t);if(t&&trav(e.activation))t.skipTransition()});'
+         'addEventListener("pagereveal",function(e){var t=e.viewTransition;q(t);if(t&&window.navigation&&trav(navigation.activation))t.skipTransition()})})();</script>')
+for _f in list(out.glob('*.html')) + list((out / 'fr').glob('*.html')) + list(out.glob('aide/**/*.html')) + list((out / 'fr').glob('aide/**/*.html')):
+    _t = _f.read_text(encoding='utf-8')
+    if '/site.css' not in _t or '</head>' not in _t or 'Marketing: page transitions' in _t or 'var L=["' in _t: continue   # not the 2 app pages (no transition there, and their HTML is kept under 400 KB)
+    _f.write_text(_t.replace('</head>', VT_JS + '\n</head>', 1), encoding='utf-8')
 (out / 'robots.txt').write_text(f'User-agent: *\nAllow: /\nSitemap: {URL}/sitemap.xml\n', encoding='utf-8')
 today = datetime.date.today().isoformat()
 # plan du site : l'anglais à la racine, le français dans /fr/ ; chaque page listée doit exister (pas de lien mort envoyé à Google)
