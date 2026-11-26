@@ -8,14 +8,14 @@ export function seedDashboard(env, { now = Date.now() } = {}) {
   let seed = 7; const rnd = () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
   const pick = (arr) => { const t = arr.reduce((a, x) => a + x[1], 0); let r = rnd() * t; for (const [v, w] of arr) { if ((r -= w) <= 0) return v; } return arr[0][0]; };
   const COUNTRIES = [['US', 46], ['FR', 14], ['GB', 7], ['CA', 6], ['DE', 4], ['BR', 4], ['MX', 3], ['NG', 3], ['AU', 2], ['BE', 2], ['IN', 3], ['JP', 1], [null, 3]];
-  const DEV = [['ios', 55], ['android', 25], ['desktop', 20]], SRC = [['tiktok', 34], ['ig', 18], ['google', 16], [null, 22], ['yt', 5], ['reddit', 3], ['other', 2]];
+  const DEV = [['ios', 55], ['android', 25], ['desktop', 20]], SRC = [['tiktok', 34], ['ig', 18], ['google', 16], [null, 22], ['yt', 5], ['reddit', 3], ['other', 2], ['chatgpt', 6], ['perplexity', 2]];
   const insV = db.prepare('INSERT OR IGNORE INTO visits (day, vid, first_at, last_at, lang, country, device, source, came_back) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
   const insU = db.prepare('INSERT OR IGNORE INTO users (id, email, lang, created_at, last_login_at, email_verified_at, country, device, signup_method, signup_source) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
   // made-up pseudos (a few accounts have none: shown « — »); not from rnd(), so the other figures stay the same
   const NAMES = ['lilnova', 'beatsbyjay', 'Mira K', 'drill.fr', 'kaïa', 'yungwave', 'Sami', 'noctis', 'Lou B', 'prodbymax', 'zoé', 'blkcherry'];
   const setName = db.prepare('UPDATE users SET display_name = ? WHERE id = ?');
   // 7/11: sources of the visits (weights) and how well each one goes on to a video and the plans
-  const VSRC = ['tiktok', 'tiktok', 'tiktok', 'tiktok', 'tiktok', 'ig', 'ig', 'yt', 'google', 'google', 'direct', 'direct', 'triller', 'discord', 'ref:wm'];
+  const VSRC = ['tiktok', 'tiktok', 'tiktok', 'tiktok', 'tiktok', 'ig', 'ig', 'yt', 'google', 'google', 'direct', 'direct', 'triller', 'discord', 'ref:wm', 'ai:chatgpt', 'ai:chatgpt', 'ai:perplexity', 'ai:claude'];
   const VQ = { tiktok: 1, ig: 0.8, yt: 1.1, google: 1.3, direct: 0.9, triller: 0.6, discord: 1.4, 'ref:wm': 1.2 };
   const insOpt = db.prepare('INSERT INTO email_optins (id, email, lang, consent, token_hash, created_at, confirmed_at) VALUES (?, ?, ?, ?, ?, ?, ?)');
   const insVc = db.prepare('INSERT INTO video_counts (day, vid, name, n, ios) VALUES (?, ?, ?, ?, ?)');
@@ -52,7 +52,7 @@ export function seedDashboard(env, { now = Date.now() } = {}) {
     for (let k = 0; k < ns; k++) {
       const c = pick(COUNTRIES);
       insU.run('u_seed' + i + '_' + k, `fan${i}_${k}@example.com`, c === 'FR' ? 'fr' : 'en', Math.round(atHour(t, ((i * 37 + k * 101) % 97) / 97)), t, t, c, pick(DEV), rnd() < 0.62 ? 'email' : 'google',
-        pick([['tiktok', 30], ['ig', 14], ['yt', 8], ['google', 12], ['direct', 16], ['ref:tiktok', 6], ['ref:ytshort', 4], ['dir:alternativeto', 3], ['dir:saashub', 2], ['site:reddit.com', 2], [null, 3]]));
+        pick([['tiktok', 30], ['ig', 14], ['yt', 8], ['google', 12], ['direct', 16], ['ref:tiktok', 6], ['ref:ytshort', 4], ['dir:alternativeto', 3], ['dir:saashub', 2], ['site:reddit.com', 2], ['ai:chatgpt', 7], ['ai:perplexity', 2], [null, 3]]));
       if ((i * 7 + k) % 5) setName.run(NAMES[(i * 3 + k) % NAMES.length], 'u_seed' + i + '_' + k);
       // 23/11: about 7 accounts in 10 answered the onboarding (made up, not from rnd(): the other figures stay the same)
       if ((i * 3 + k * 7) % 10 < 7) { const j = i * 3 + k, pick = (l, n) => JSON.stringify(l.filter((_, x) => ((j >> x) + n) % 3 !== 0));

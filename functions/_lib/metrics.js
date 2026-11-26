@@ -91,15 +91,19 @@ export function deviceOf(request) {
   return ua ? 'desktop' : null;
 }
 // where the visit comes from (?ref=…, or the site that sent it, read by the page: src/app.js VISIT_REF)
-export const SOURCE = /^[a-z0-9_-]{1,24}$/;
+export const SOURCE = /^[a-z0-9._-]{1,40}$/;   // 25/11: dots allowed (« chatgpt.com »)
 
 // Report of 7/11, n°1 and 2: where the visits come from and how far each source goes, in ANONYMOUS totals per day
 // (daily_counts, like the other counters): « vs:<source>:<country> » for each new visit, « fs:<step>:<source> » for each
 // step of the funnel (visit, export_ok, plans_open, checkout_open, checkout_done). The source is worked out by the page
 // (src/app.js VISIT_SRC) from ?ref= / utm_source / the site that sent the visit, only for this tab; nothing ties it to a
 // person, an account or a visit number. A known platform, ref:<code>, site:<domain> or direct.
-export const SRC_PLATFORMS = ['tiktok', 'ig', 'yt', 'google', 'discord', 'triller', 'x', 'reddit', 'facebook', 'bing', 'direct', 'other'];
-export const VISIT_SRC = /^(?:ref:[a-z0-9_-]{1,32}|site:[a-z0-9.-]{3,48})$/;
+// 25/11 (Chef « sources et paiements »): the AI assistants. App sends « ai:<which> » (chatgpt.com / chat.openai.com,
+// perplexity.ai, claude.ai, gemini.google.com, copilot.microsoft.com, or utm_source=chatgpt.com…); « ai » alone is accepted too.
+// A ?ref= / utm code may now hold dots (« chatgpt.com »), 40 characters at most.
+export const AI_ASSISTANTS = ['chatgpt', 'perplexity', 'claude', 'gemini', 'copilot', 'other'];
+export const SRC_PLATFORMS = ['tiktok', 'ig', 'yt', 'google', 'discord', 'triller', 'x', 'reddit', 'facebook', 'bing', 'ai', 'direct', 'other'];
+export const VISIT_SRC = new RegExp('^(?:ref:[a-z0-9._-]{1,40}|site:[a-z0-9.-]{3,48}|ai:(?:' + AI_ASSISTANTS.join('|') + '))$');
 export const srcOf = (v) => (typeof v === 'string' && (SRC_PLATFORMS.includes(v) || VISIT_SRC.test(v)) ? v : null);
 export const FUNNEL_STEPS = ['export_ok', 'plans_open', 'checkout_open', 'checkout_done'];
 // where the payment window was closed without buying (24/11, account.js onPaddleEvent): only saw the price / changed their

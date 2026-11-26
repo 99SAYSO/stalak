@@ -5006,6 +5006,85 @@ test('stats 24/11: the weekly relevé fails → nothing overwritten, « not upda
   } finally { extraFetch = null; }
 });
 
+// ---- 25/11: the AI assistants as a source, the visitors' language, the payments not paid (Paddle) -----------------------
+import { fakePaddleTransactions } from '../fixtures/paddle-abandoned-fake.mjs';
+test('sources 25/11: « ai:chatgpt » (and dots in ?ref= / utm) counted for visits, funnel, sign-up; one « ai » line with its detail', async () => {
+  const env = makeEnv(ADMIN_ENV), d = new Date().toISOString().slice(0, 10);
+  const n = (k) => (env.DB.raw.prepare('SELECT n FROM daily_counts WHERE day = ? AND name = ?').get(d, k) || {}).n || 0;
+  let i = 0;
+  for (const src of ['ai:chatgpt', 'ai:chatgpt', 'ai:perplexity', 'ref:chatgpt.com', 'ai:nope', 'ai']) {
+    const r = await call(env, 'POST', '/api/presence', { body: { vid: 'v_ai_' + String(i).padStart(18, 'x'), lang: 'en', src, ref: 'chatgpt.com' }, ip: '10.41.0.' + i++ });
+    assert.equal(r.status, 200, JSON.stringify(r.data));
+  }
+  assert.equal(n('fs:visit:ai:chatgpt'), 2); assert.equal(n('fs:visit:ai:perplexity'), 1); assert.equal(n('fs:visit:ref:chatgpt.com'), 1);
+  assert.equal(n('fs:visit:ai'), 1); assert.equal(n('fs:visit:direct'), 1, 'an unknown assistant → direct, nothing made up');
+  assert.equal(env.DB.raw.prepare("SELECT COUNT(*) AS c FROM visits WHERE source = 'chatgpt.com'").get().c, 6, 'the ref with a dot is kept');
+  await call(env, 'POST', '/api/event', { body: { name: 'checkout_open', src: 'ai:chatgpt' } });
+  assert.equal(n('fs:checkout_open:ai:chatgpt'), 1);
+  // the sign-up source
+  const u = await login(env, 'aisrc@example.com');
+  let r = await call(env, 'POST', '/api/account/source', { cookie: u.cookie, body: { source: 'ai:chatgpt' } });
+  assert.equal(r.data.saved, true);
+  const u2 = await login(env, 'aisrc2@example.com');
+  r = await call(env, 'POST', '/api/account/source', { cookie: u2.cookie, body: { source: 'utm:chatgpt.com' } });
+  assert.equal(r.data.saved, true);
+  r = await call(env, 'POST', '/api/account/source', { cookie: u2.cookie, body: { source: 'ai:evil' } });
+  assert.equal(r.status, 400);
+  // the dashboard: one « ai » line (2 ChatGPT + 1 Perplexity + 1 « ai » alone), its detail, never in « Autres »
+  const s = await adminCall(env, 'GET', '/api/admin/stats?days=7', { token: await accessToken() });
+  const fu = s.data.usage.funnel;
+  const ai = fu.bySource.find((x) => x.source === 'ai');
+  assert.equal(ai.visits, 4); assert.equal(ai.checkout, 1);
+  assert.deepEqual(ai.detail.map((x) => [x.source, x.visits]).sort(), [['ai:chatgpt', 2], ['ai:other', 1], ['ai:perplexity', 1]]);
+  assert.equal(ai.detail[0].source, 'ai:chatgpt', 'the biggest first');
+  assert.ok(!fu.bySource.some((x) => x.source.startsWith('ai:')));
+  assert.equal(s.data.recentUsers.find((x) => x.email === 'aisrc@example.com').source, 'ai:chatgpt');
+});
+
+test('sources 25/11: « Langue des visiteurs et des abonnés » — visits (5 min or more), accounts, first payments, subscribers, over 7 and 30 days', async () => {
+  const env = makeEnv(ADMIN_ENV), now = Date.now(), day = (k) => new Date(now - k * 864e5).toISOString().slice(0, 10);
+  const v = env.DB.raw.prepare('INSERT INTO visits (day, vid, first_at, last_at, lang) VALUES (?, ?, ?, ?, ?)');
+  v.run(day(0), 'a1', now, now + 600e3, 'en'); v.run(day(1), 'a2', now, now + 10e3, 'en'); v.run(day(2), 'a3', now, now + 400e3, 'fr'); v.run(day(20), 'a4', now, now, 'fr');
+  const a = await proUser(env, 'langen@example.com', 'pro');
+  env.DB.raw.prepare("UPDATE users SET lang = 'en' WHERE id = ?").run(a.user.id);
+  env.DB.raw.prepare("INSERT INTO payments (id, env, user_id, origin, currency, total, billed_at, created_at) VALUES ('t1', 'sandbox', ?, 'web', 'USD', 799, ?, ?)").run(a.user.id, now - 864e5, now - 864e5);
+  const r = await adminCall(env, 'GET', '/api/admin/languages', { token: await accessToken() });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.deepEqual(r.data.d7.visits, { en: 2, fr: 1 }); assert.deepEqual(r.data.d7.visits5, { en: 1, fr: 1 });
+  assert.deepEqual(r.data.d30.visits, { en: 2, fr: 2 });
+  assert.equal(r.data.d7.payments.en, 1); assert.equal(r.data.subscribers.en, 1);
+  assert.equal((await adminCall(env, 'GET', '/api/admin/languages')).status, 403);
+});
+
+test('payments 25/11: « Paiements abandonnés » read at Paddle (read-only): plan, trial, currency, country, how far, Paddle\'s reason; no person', async () => {
+  const env = makeEnv({ ...ADMIN_ENV, PADDLE_API_KEY: 'pdl_test_key', PADDLE_PRICE_PRO_MONTH: 'pri_pro_m', PADDLE_PRICE_PRO_YEAR: 'pri_pro_y', PADDLE_PRICE_PRO_MONTH_TRIAL: 'pri_pro_m_t', PADDLE_PRICE_PRO_OFFER1: 'pri_of1', PADDLE_PRICE_CREATOR_MONTH: 'pri_cr_m' });
+  const log = []; extraFetch = fakePaddleTransactions(Date.now(), log);
+  try {
+    let r = await adminCall(env, 'GET', '/api/admin/paddle/abandoned?days=7', { token: await accessToken() });
+    assert.equal(r.status, 200, JSON.stringify(r.data));
+    const d = r.data;
+    assert.equal(d.state, 'ok'); assert.equal(d.notPaid, 4); assert.equal(d.paid, 1);
+    assert.deepEqual(d.byStage, { price: 2, try: 2 });
+    assert.deepEqual(d.byKind, { trial: 2, normal: 1, offer1: 1 });
+    assert.deepEqual(d.byError, { authentication_failed: 1 });
+    assert.deepEqual(d.byCurrency, { USD: 2, EUR: 2 }); assert.deepEqual(d.byCountry, { US: 2, FR: 2 });
+    const of = d.rows.find((x) => x.kind === 'offer1');
+    assert.deepEqual([of.total, of.tax, of.currency, of.payments[0].method], [100, 17, 'EUR', 'apple_pay']);
+    const txt = JSON.stringify(d);
+    assert.ok(!/someone@example\.com|txn_|ctm_|add_|4242/.test(txt), 'no e-mail, no Paddle id, no card number');
+    // read-only, the transactions of the web checkout of the period, with the address
+    const q = new URL(log[0].url).searchParams;
+    assert.equal(log[0].auth, 'Bearer pdl_test_key'); assert.equal(q.get('origin'), 'web'); assert.equal(q.get('include'), 'address');
+    assert.ok(Math.abs(Date.parse(q.get('created_at[GTE]')) - (Date.now() - 7 * 864e5)) < 60e3);
+    r = await adminCall(env, 'GET', '/api/admin/paddle/abandoned?days=30', { token: await accessToken() });
+    assert.equal(r.data.notPaid, 6); assert.equal(r.data.byError.declined, 1);
+    // no key: said, no error
+    r = await adminCall(makeEnv({ ...ADMIN_ENV, PADDLE_API_KEY: '' }), 'GET', '/api/admin/paddle/abandoned', { token: await accessToken() });
+    assert.deepEqual(r.data, { state: 'off' });
+    assert.equal((await adminCall(env, 'GET', '/api/admin/paddle/abandoned')).status, 403);
+  } finally { extraFetch = null; }
+});
+
 // ---- runner --------------------------------------------------------------------------
 let failed = 0;
 for (const t of tests) {

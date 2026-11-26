@@ -11,6 +11,9 @@ import { stats, home, signupList, hourly, videosPerPerson } from '../functions/_
 import { ga4Report, ga4Live } from '../functions/_lib/ga4.js';
 import { clarityDaily, clarityView } from '../functions/_lib/clarity.js';
 import { fakeAnalyticsFetch } from '../tests/fixtures/analytics-fake.mjs';
+import { languages } from '../functions/_lib/admin.js';
+import { abandoned } from '../functions/_lib/abandoned.js';
+import { fakePaddleTransactions } from '../tests/fixtures/paddle-abandoned-fake.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const env = { DB: createD1(join(root, 'migrations')), PADDLE_ENV: 'production', APP_ORIGIN: 'https://stalak.app', EMAIL_DAILY_MAX: '1000',
@@ -42,6 +45,15 @@ for (let i = 0; i < 3; i++) { const p = await signupList(env, before, 40, now); 
   out.analytics = {};
   for (const d of [1, 7, 30]) out.analytics[d] = { days: d, ga4: await ga4Report(aenv, d, now), clarity: await clarityView(aenv, now), visits: visits[d] };
   out.analyticsLive = await ga4Live(aenv, now);
+  globalThis.fetch = realFetch;
+}
+// « Langue des visiteurs et des abonnés » and « Paiements abandonnés » (25/11): the real code, made-up Paddle answers
+out.languages = await languages(env, now);
+{
+  const penv = { ...env, PADDLE_API_KEY: 'demo_not_real', PADDLE_PRICE_PRO_MONTH: 'pri_pro_m', PADDLE_PRICE_PRO_YEAR: 'pri_pro_y', PADDLE_PRICE_PRO_MONTH_TRIAL: 'pri_pro_m_t', PADDLE_PRICE_PRO_OFFER1: 'pri_of1', PADDLE_PRICE_CREATOR_MONTH: 'pri_cr_m' };
+  const realFetch = globalThis.fetch, fake = fakePaddleTransactions(now);
+  globalThis.fetch = async (u, i) => (await fake(u, i)) || new Response('{}', { status: 599 });
+  out.abandoned = { 7: await abandoned(penv, 7, now), 30: await abandoned(penv, 30, now) };
   globalThis.fetch = realFetch;
 }
 const js = `// MADE-UP figures for the dashboard demo on previews (tools/admin_demo_data.mjs, ${out.generatedAt.slice(0, 10)}). Not real data.\nexport const DEMO_DATA = ${JSON.stringify(out)};\n`;
