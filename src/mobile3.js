@@ -178,6 +178,7 @@ var CSS = '@media (max-width:899px){'
 + 'html.m3.m3s4 .m3-play{display:grid;place-items:center;position:absolute;z-index:3;left:50%;top:calc(17svh - 32px);transform:translateX(-50%);width:64px;height:64px;margin:0;padding:0;border-radius:50%;border:3px solid ' + INK + ';background:#fff;box-shadow:0 4px 0 ' + INK + ';cursor:pointer;transition:opacity .2s ease}'
 + '.m3-play svg{width:24px;height:24px;fill:' + INK + '}html.m3.m3playing .m3-play{opacity:0}html.m3.m3playing .m3-play:focus-visible{opacity:1}'
 + 'html.m3 #p4 .grid2:not(:has(> *)){display:none}'
++ 'html.m3 .m3-tools button[hidden]{display:none !important}'
 + 'html.m3 .m3-tools{display:flex;gap:6px;justify-content:space-between;overflow-x:auto;scrollbar-width:none;margin:12px -4px 8px;padding:4px 4px 8px}html.m3 .m3-tools::-webkit-scrollbar{display:none}'
 + '.m3-tools button{flex:1 0 54px;display:flex;flex-direction:column;align-items:center;gap:6px;margin:0;padding:0;background:none;border:0;box-shadow:none;color:' + INK + ';font:700 12px/1.1 var(--body);cursor:pointer}'
 + '.m3-tools i{width:50px;height:50px;border-radius:16px;border:3px solid ' + INK + ';background:#fff;box-shadow:0 3px 0 ' + INK + ';display:grid;place-items:center;font-size:22px;font-style:normal}'
@@ -227,17 +228,24 @@ var CSS = '@media (max-width:899px){'
 + '.m3-aur{display:none}html.m3 #expScreen .m3-aur{display:block;position:absolute;left:-30%;right:-30%;top:6%;height:22%;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(95,224,160,.38),rgba(143,208,255,.42),rgba(190,150,255,.32),transparent);filter:blur(22px);border-radius:50%;animation:m3aur 9s ease-in-out infinite alternate}'
 + '@keyframes m3aur{from{transform:translateX(-4%) scaleY(1)}to{transform:translateX(5%) scaleY(1.15)}}'
 + 'html.m3 #expTitle{margin:6px 0 0;font:400 28px/1.08 var(--display);color:#fff;-webkit-text-stroke:7px ' + INK + ';paint-order:stroke fill;text-shadow:0 4px 0 ' + INK + '}'
-+ 'html.m3 #expScreen .expscene{aspect-ratio:600/270;margin:4px -8px 0;width:calc(100% + 16px)}html.m3 #expScreen .expscene svg *{stroke-width:3.4}html.m3 #expScreen .ex-flag,html.m3 #expScreen .ex-pile{display:none}'
++ 'html.m3 #expScreen .expscene{aspect-ratio:600/270;margin:4px -8px 0;width:calc(100% + 16px)}html.m3 #expScreen .expscene svg *{stroke-width:3.4}html.m3 #expScreen .ex-flag{display:none}'
 + 'html.m3 #expScreen .ex-blk{transform:translateY(-26px) scale(.7);transform-origin:50% 50%;transition:opacity .2s ease-out,transform .34s cubic-bezier(.34,1.7,.64,1)}html.m3 #expScreen .ex-blk.on{transform:none}'
 + 'html.m3 #expScreen .ex-door{transition:opacity .3s ease-out,fill .5s ease-out}html.m3 #expScreen.done .ex-door{fill:#ffd23f;filter:drop-shadow(0 0 8px rgba(255,210,63,.9))}'
-+ 'html.m3 #expScreen .ex-mascot{left:7%;bottom:15%;width:20%;transform-origin:50% 100%;animation:m3bob .42s ease-in-out infinite alternate}html.m3 #expScreen.done .ex-mascot{animation:none;background-image:url(/emoji/hype.webp)}'
-+ '@keyframes m3bob{from{transform:translateY(0) rotate(-2deg)}to{transform:translateY(-6%) rotate(2deg)}}html.m3 #expScreen .ex-block{left:58%;top:40%;width:44%;animation:none}html.m3 #expScreen.done .ex-block{display:none}'
+// (26/11, owner: « la mascotte doit travailler ») round trips: she takes a block from the pile, walks to the igloo with it on her
+// head, puts it down, turns, walks back empty-handed; the igloo itself grows with the real progress. transform and opacity only,
+// no bounce, nothing moves with « reduce motion »
++ 'html.m3 #expScreen .ex-pile{display:inline}html.m3 #expScreen .ex-mascot{left:22%;bottom:15%;width:15%;transform-origin:50% 100%;animation:m3trip 2.6s linear infinite}'
++ '@keyframes m3trip{0%{transform:translateX(0) scaleX(1)}6%{transform:translateX(6%) translateY(-3%) scaleX(1)}12%{transform:translateX(14%) scaleX(1)}18%{transform:translateX(24%) translateY(-3%) scaleX(1)}24%{transform:translateX(36%) scaleX(1)}30%{transform:translateX(50%) translateY(-3%) scaleX(1)}36%{transform:translateX(66%) scaleX(1)}42%{transform:translateX(82%) translateY(-3%) scaleX(1)}48%,52%{transform:translateX(96%) scaleX(1)}52.01%{transform:translateX(96%) scaleX(-1)}58%{transform:translateX(82%) translateY(-3%) scaleX(-1)}64%{transform:translateX(66%) scaleX(-1)}70%{transform:translateX(50%) translateY(-3%) scaleX(-1)}76%{transform:translateX(36%) scaleX(-1)}82%{transform:translateX(24%) translateY(-3%) scaleX(-1)}88%{transform:translateX(14%) scaleX(-1)}94%{transform:translateX(6%) translateY(-3%) scaleX(-1)}97.99%{transform:translateX(0) scaleX(-1)}98%,100%{transform:translateX(0) scaleX(1)}}'
++ 'html.m3 #expScreen .ex-block{left:22%;top:-8%;width:56%;height:22%;animation:m3carry 2.6s linear infinite}@keyframes m3carry{0%,49%{opacity:1}50%,97%{opacity:0}98%,100%{opacity:1}}'
++ 'html.m3 #expScreen.done .ex-mascot{left:24%;animation:none;transform:none;background-image:url(/emoji/hype.webp)}html.m3 #expScreen.done .ex-block{display:none}'
+// (26/11, Chef) « Encore environ 1 s » in white: always readable on the blue
++ 'html.m3 #expScreen .expeta{color:#fff;font-weight:700;text-shadow:0 1px 2px rgba(10,13,20,.55)}'
 + 'html.m3 #expScreen .exppct{margin-top:2px;font-size:52px;color:#fff;-webkit-text-stroke:8px ' + INK + ';paint-order:stroke fill;text-shadow:0 4px 0 ' + INK + '}'
 + 'html.m3 #expScreen .progress{width:min(300px,80%);height:20px;border:3.5px solid ' + INK + ';border-radius:14px;background:#0b2f73;overflow:hidden}html.m3 #expScreen .progress i{background:linear-gradient(90deg,#8fd0ff,#fff)}'
 + 'html.m3 #expScreen .expmsg{display:none}html.m3 #expCancel{margin-top:6px;background:#fff;color:' + INK + '}'
 + '.m3-igfx{position:absolute;inset:0;pointer-events:none;overflow:hidden}.m3-igfx i{position:absolute;width:9px;height:14px;border-radius:3px;border:1.5px solid rgba(10,13,20,.35)}'
 + '@media (max-height:700px){html.m3 #expTitle{font-size:24px}html.m3 #expScreen .exppct{font-size:40px}html.m3 #expScreen .expbox{gap:6px}html.m3 #expScreen .xsteps{margin-top:8px;padding:9px 12px}html.m3 #expScreen .xsteps li{font-size:13.5px;line-height:1.28}html.m3 #expScreen .ws-list{gap:6px}html.m3 #expScreen .expstay{font-size:12.5px;margin:2px 0}}'
-+ '@media (prefers-reduced-motion:reduce){html.m3 #expScreen .ex-mascot{animation:none}html.m3 #expScreen .m3-aur{animation:none}html.m3 #expScreen .ex-blk{transition:opacity .2s}}'
++ '@media (prefers-reduced-motion:reduce){html.m3 #expScreen .ex-mascot,html.m3 #expScreen .ex-block{animation:none}html.m3 #expScreen .m3-aur{animation:none}html.m3 #expScreen .ex-blk{transition:opacity .2s}}'
 + '@keyframes m3up{from{transform:translateY(100%)}to{transform:none}}'
 + 'html.m3 #cutBar::before,html.m3 #fxBar::before{content:"";position:absolute;top:10px;left:50%;width:44px;height:5px;margin-left:-22px;border-radius:9px;background:#c7d3e3}'
 + 'html.m3 #cutInfo,html.m3 #fxInfo{grid-column:1/-1;padding:0 46px 4px 2px;font:400 21px/1.15 var(--display);color:' + INK + '}html.m3 #fxBar .fxbtns{display:contents}'
@@ -424,6 +432,8 @@ function camUi(){
 function camLoop(){ cancelAnimationFrame(camRaf); var go = function(){ if (!root.classList.contains('m3cam')) return; cprog.style.transform = 'scaleX(' + E.recPos() + ')'; camRaf = requestAnimationFrame(go); }; go(); }
 
 function refresh(){
+  // (26/11, owner) « Effets » only in Clip mode: a snippet has no effects button at all
+  var fxb = tools && $('button[data-tool="fx"]', tools), clip = E.kind() === 'clip'; if (fxb && fxb.hidden === clip){ fxb.hidden = !clip; if (!clip && cur === 'fx') sheet(0); }
   var s = E.step();
   root.classList.toggle('m3song', E.song());
   // the bar and the question of the step

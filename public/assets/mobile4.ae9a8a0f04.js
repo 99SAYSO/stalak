@@ -26,7 +26,7 @@ fr: { skip: 'Passer', next: 'Suivant', go: 'C’est parti !', t1: 'Choisis ton s
   pwT: 'Fais décoller {ts}', pwTs: 'ton son', or: 'ou', nothing: 'Rien à payer aujourd’hui · Annulable en 1 geste', payY: '{y} par an. Annulable à tout moment.', payM: '{m} par mois. Annulable à tout moment.', best: 'Meilleur prix · -{p} %', year: 'Pro · à l’année', month: 'Pro · au mois', free: '{n} jours gratuits',
   perM: '{m}/mois', perY: '{y} par an', creator: 'Voir Creator Plus (packs, sauvegarde en ligne)', tryF: 'Essayer gratuitement', choose: 'Choisir Pro',
   termsY: 'Rien aujourd’hui. Puis {y} par an dans {n} jours. Annulable à tout moment.', termsM: 'Rien aujourd’hui. Puis {m} par mois dans {n} jours. Annulable à tout moment.',
-  reviews: 'Avis clients', ready: 'Ta vidéo est prête', of1T: 'Retire le filigrane pour {p}', of1Go: 'Retirer pour {p}', saveWm: 'Enregistrer gratuitement (avec filigrane)', rmWm: 'Retirer le filigrane',
+  reviews: 'Avis clients', home: 'Retour au menu principal', ready: 'Ta vidéo est prête', of1T: 'Retire le filigrane pour {p}', of1Go: 'Retirer pour {p}', saveWm: 'Enregistrer gratuitement (avec filigrane)', rmWm: 'Retirer le filigrane',
   thxT: 'Bienvenue dans Stalak {plan} !', thxP: 'Plus de filigrane. Tous les effets et les paroles automatiques sont débloqués.',
   thxPc: 'Plus de filigrane. Les effets, les paroles automatiques, les packs et la sauvegarde en ligne sont débloqués.', thxGo: 'Faire un montage', thxPlan: 'Voir ma formule' },
 en: { skip: 'Skip', next: 'Next', go: 'Let’s go!', t1: 'Pick your song', p1: 'Keep the part you want to post.', bpm: '144 BPM', sec: '24 seconds picked',
@@ -36,7 +36,7 @@ en: { skip: 'Skip', next: 'Next', go: 'Let’s go!', t1: 'Pick your song', p1: '
   pwT: 'Make {ts} take off', pwTs: 'your song', or: 'or', nothing: 'Nothing to pay today · Cancel in 1 tap', payY: '{y} a year. Cancel anytime.', payM: '{m} a month. Cancel anytime.', best: 'Best price · -{p}%', year: 'Pro · yearly', month: 'Pro · monthly', free: '{n} days free',
   perM: '{m}/mo', perY: '{y} a year', creator: 'See Creator Plus (packs, online saving)', tryF: 'Try it free', choose: 'Choose Pro',
   termsY: 'Nothing today. Then {y} a year in {n} days. Cancel anytime.', termsM: 'Nothing today. Then {m} a month in {n} days. Cancel anytime.',
-  reviews: 'Customer reviews', ready: 'Your video is ready', of1T: 'Remove the watermark for {p}', of1Go: 'Remove for {p}', saveWm: 'Save for free (with watermark)', rmWm: 'Remove the watermark',
+  reviews: 'Customer reviews', home: 'Back to home', ready: 'Your video is ready', of1T: 'Remove the watermark for {p}', of1Go: 'Remove for {p}', saveWm: 'Save for free (with watermark)', rmWm: 'Remove the watermark',
   thxT: 'Welcome to Stalak {plan}!', thxP: 'No more watermark. All the effects and the automatic lyrics are unlocked.',
   thxPc: 'No more watermark. The effects, the automatic lyrics, the packs and online saving are unlocked.', thxGo: 'Make an edit', thxPlan: 'See my plan' }
 };
@@ -155,6 +155,8 @@ var CSS = '@media (max-width:899px){'
 + 'html.m4wm #dvCmpGo{display:block;width:auto;min-height:44px;margin:8px auto -6px;padding:0 8px;border:0;background:none;box-shadow:none;font-size:0}html.m4wm #dvCmpGo::before,html.m4wm #dvCmpGo::after{display:none}html.m4wm #dvCmpGo > *{display:none}'
 + 'html.m4wm #dvCmpGo > .m4-rw{display:inline;font:700 15px/1.2 var(--body);color:' + BLUE + ';text-decoration:underline;text-underline-offset:3px}'
 + 'html.m4fe .m4-of1s #ttkPub{display:flex;box-sizing:border-box;width:100%;min-height:56px;margin:12px 0 0;border-radius:18px}html.m4fe .m4-of1s #ttkPub[hidden]{display:none}'
++ '.m4-home{display:none}html.m4fe .m4-home:not([hidden]){display:flex;align-items:center;justify-content:center;gap:10px;box-sizing:border-box;width:100%;min-height:58px;margin:14px 0 0;padding:8px 14px;border:3.5px solid ' + INK + ';border-radius:20px;background:#ffd23f;color:' + INK + ';box-shadow:0 5px 0 ' + INK + ';font:400 21px/1.1 var(--display);cursor:pointer;animation:m4homeIn .24s cubic-bezier(.165,.84,.44,1) both}'
++ '.m4-home i{font-style:normal;font-size:22px}@keyframes m4homeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}@media (prefers-reduced-motion:reduce){.m4-home{animation:none !important}}'
 // confetti, once, when the screen comes (GSAP, as in the HyperFrames demos; never with « reduce motion »)
 + '.m4-fx{position:fixed;inset:0;z-index:150;pointer-events:none;overflow:hidden}.m4-fx i{position:absolute;top:-24px;width:10px;height:16px;border-radius:3px;border:1.5px solid rgba(10,13,20,.35)}'
 /* after a purchase */
@@ -322,7 +324,8 @@ function pwUi(){
 }
 
 /* ---- the end of an export (all cases): the sky, the halo, the mascot, the cards; with the 1 € offer, the offer's card --------- */
-var of1Moved = [], feWas = '', fbg = null, halo = null, fem = null;
+var of1Moved = [], feWas = '', fbg = null, halo = null, fem = null, feHome = null;
+(function(){ var sb = $('#saveBtn'); if (sb) sb.addEventListener('click', function(){ if (feHome && feWas) feHome.hidden = false; }); })();
 function feBack(){
   var tk = $('#ttkPub'), tin = !!(tk && of1s && of1s.contains(tk));
   for (var i = of1Moved.length - 1; i >= 0; i--){ var m = of1Moved[i]; try { m[1].insertBefore(m[0], m[2] && m[2].parentNode === m[1] ? m[2] : null); } catch(e){} } of1Moved = [];
@@ -333,7 +336,7 @@ function feBack(){
 function feOn(mode){
   var res = $('#result');
   if (mode && res){
-    if (!of1s){ of1s = el('div', 'm4-of1s', '<h3></h3>'); of1h = el('p', 'm4-of1h', '<img class="m4-fem" src="/emoji/star.webp" alt="" width="74" height="74"><span></span>'); halo = el('div', 'm4-halo'); halo.setAttribute('aria-hidden', 'true'); fem = $('img', of1h); }
+    if (!of1s){ of1s = el('div', 'm4-of1s', '<h3></h3>'); feHome = el('button', 'm4-home', '<i aria-hidden="true">🏠</i><span></span>'); feHome.type = 'button'; feHome.hidden = true; feHome.onclick = function(){ if (M.ed && M.ed.goHome) M.ed.goHome(); }; of1h = el('p', 'm4-of1h', '<img class="m4-fem" src="/emoji/star.webp" alt="" width="74" height="74"><span></span>'); halo = el('div', 'm4-halo'); halo.setAttribute('aria-hidden', 'true'); fem = $('img', of1h); }
     if (!fbg){ fbg = el('div', 'm4-fbg'); fbg.setAttribute('aria-hidden', 'true'); D.body.insertBefore(fbg, D.body.firstChild); }
     if (mode !== feWas){
       feBack();
@@ -346,6 +349,8 @@ function feOn(mode){
     // TikTok is offered) in the same card, right under « Enregistrer »
     ttkIn();
     $('span', of1h).textContent = t('ready');
+    // (26/11, owner) after « Enregistrer la vidéo »: « Retour au menu principal », at the end of the white card
+    $('span', feHome).textContent = t('home'); if (feHome.parentNode !== of1s || feHome.nextSibling) of1s.appendChild(feHome);
     var pr = mode === 'of1' && P.of1();
     $('h3', of1s).innerHTML = pr ? esc(t('of1T', { p: '\u0001' })).replace('\u0001', '<b>' + esc(pr.today) + '</b>') : '';
     if (pr){
@@ -355,7 +360,7 @@ function feOn(mode){
     root.classList.add('m4fe'); root.classList.toggle('m4of1', mode === 'of1');
     if (!feWas) feParty();
   } else if (feWas || of1Moved.length){
-    root.classList.remove('m4fe', 'm4of1'); feBack();
+    root.classList.remove('m4fe', 'm4of1'); feBack(); if (feHome) feHome.hidden = true;
     if (of1s) of1s.remove(); if (of1h) of1h.remove(); if (halo) halo.remove();
   }
   feWas = mode && res ? mode : '';
