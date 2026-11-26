@@ -215,7 +215,8 @@ th{color:var(--text2);font-weight:600}
 .tk3 .big{font-family:Lilita,Rubik,sans-serif;font-size:34px;line-height:1.05;font-variant-numeric:tabular-nums}
 .tk3 h3{margin:0 0 4px;font-size:14px}.tk3 p{margin:4px 0 0;font-size:13px;color:var(--text2)}
 .tk3 .wait{font-size:15px;color:var(--text2);font-weight:600}
-.yes{color:var(--good,#1a7f37);font-weight:700}.no{color:var(--text2)}.srct{border-collapse:collapse;width:100%;min-width:560px;font-variant-numeric:tabular-nums}
+.yes{color:var(--good,#1a7f37);font-weight:700}.no{color:var(--text2)}
+.fstep.opt .lab b{font-weight:500;color:var(--text2)}#hdTable{min-width:0}#hdTable th,#hdTable td{white-space:normal}@media (max-width:520px){#hdTable th,#hdTable td{padding:8px 4px}}.srct{border-collapse:collapse;width:100%;min-width:560px;font-variant-numeric:tabular-nums}
 .srct th,.srct td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--line)}.srct th{font-size:13px;color:var(--muted);font-weight:600}
 .srct th:first-child,.srct td:first-child{text-align:left;font-weight:700}.srct td small{display:block;color:var(--muted);font-weight:400;font-size:12px}
 #srcCard,#optCard{margin-top:16px}
@@ -438,6 +439,13 @@ __DEMO_BANNER__<header class="top"><div class="in">
       <div class="srcwrap"><table class="srct" id="langTable"><thead><tr><th scope="col"></th><th scope="col">7 j · 🇬🇧 anglais</th><th scope="col">7 j · 🇫🇷 français</th><th scope="col">30 j · 🇬🇧 anglais</th><th scope="col">30 j · 🇫🇷 français</th></tr></thead><tbody></tbody></table></div>
       <p class="note" id="langNote"></p>
     </div>
+    <div class="card hq" id="hdCard" data-mt>
+      <div class="hbest"><span>👂 Comment ils nous ont connus</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
+      <p class="he">La réponse à « Comment tu as connu Stalak ? », posée une seule fois après la création du compte. Par réponse : les comptes créés sur la période, les essais Pro commencés et les premiers paiements (« Payants ») de ces comptes. Ce que les gens disent, pas ce que mesure le site : ChatGPT arrive souvent sans trace, d’où la question.</p>
+      <div class="row hctl"><div class="seg" role="group" aria-label="Période" id="hdPer"><button type="button" data-d="7" aria-pressed="false">7 j</button><button type="button" data-d="30" aria-pressed="true">30 j</button></div></div>
+      <div class="srcwrap"><table class="srct" id="hdTable"><thead><tr><th scope="col">Réponse</th><th scope="col">Comptes</th><th scope="col">Essais</th><th scope="col">Payants</th></tr></thead><tbody></tbody></table></div>
+      <p class="note" id="hdNote"></p>
+    </div>
     <details class="more-d"><summary>Voir le détail : jour par jour, appareils, langues, provenance</summary>
     <div class="card">
       <div class="head"><h2>Jour par jour</h2><span class="sp"></span><button class="btn small" type="button" id="tableBtn" aria-expanded="false">Voir en tableau</button>
@@ -455,7 +463,7 @@ __DEMO_BANNER__<header class="top"><div class="in">
     </div>
     <div class="card" data-mt>
       <h2>Derniers inscrits</h2>
-      <div class="scroll-x"><table id="users"><thead><tr><th>E-mail</th><th>Pseudo</th><th>Inscrit le</th><th>Vérifié</th><th>Formule</th><th>Source</th></tr></thead><tbody></tbody></table></div>
+      <div class="scroll-x"><table id="users"><thead><tr><th>E-mail</th><th>Pseudo</th><th>Inscrit le</th><th>Vérifié</th><th>Formule</th><th>Source</th><th>Comment il a connu Stalak</th></tr></thead><tbody></tbody></table></div>
     </div>
     </details>
     <p class="note" id="visitsKept">Les visites sont gardées 90 jours ; les comptes, tant qu’ils existent.</p>
@@ -491,6 +499,14 @@ __DEMO_BANNER__<header class="top"><div class="in">
       <div class="srcwrap"><table class="srct" id="trRun"><thead><tr><th scope="col">Compte</th><th scope="col">Jour</th><th scope="col">Sans filigrane dans les 24 h</th><th scope="col">Vidéos</th><th scope="col">Venu ces 3 jours</th><th scope="col">Source</th><th scope="col">Comment il a connu Stalak</th></tr></thead><tbody></tbody></table></div>
       <h3 data-mt>Par semaine de début</h3>
       <div class="srcwrap"><table class="srct" id="trWeeks"><thead><tr><th scope="col">Semaine</th><th scope="col">Essais</th><th scope="col">Terminés</th><th scope="col">Payé</th><th scope="col">Résilié</th><th scope="col">Échec du paiement</th><th scope="col">Payant au 2e mois</th></tr></thead><tbody></tbody></table></div>
+    </div>
+    <div class="card hq" id="stCard" data-mt>
+      <div class="hbest"><span>🪜 Du son au wow</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
+      <p class="he">Les étapes de l’éditeur, chacune comptée une fois par visite (sans rien sur la personne) : arrivée, son choisi, passage, 1re et 3e prise, montage vu (le « wow » : la 1re prévisualisation de son son monté), paroles (facultatif), export lancé, vidéo exportée. Le % compare à l’étape d’avant ; « Export lancé » est comparé à « Montage vu » (les paroles sont facultatives). En rouge : l’étape où l’on perd le plus de monde. Dessous : le temps entre l’arrivée et le wow (objectif : moins de 60 s).</p>
+      <div class="row hctl"><div class="seg" role="group" aria-label="Période" id="stPer"><button type="button" data-d="7" aria-pressed="true">7 j</button><button type="button" data-d="30" aria-pressed="false">30 j</button></div>
+        <div class="seg" role="group" aria-label="Appareil" id="stDev"><button type="button" data-v="all" aria-pressed="true">Tous</button><button type="button" data-v="ios" aria-pressed="false">iPhone</button><button type="button" data-v="android" aria-pressed="false">Android</button><button type="button" data-v="desktop" aria-pressed="false">Ordinateur</button></div></div>
+      <div class="funnel" id="stFunnel"></div>
+      <p class="ptbud" id="stWow" role="status"></p>
     </div>
     <div class="card" data-mt><div class="head"><h2>Du visiteur à l’abonné</h2><p>Une étape faible = l’endroit où les gens s’arrêtent. C’est là qu’il faut agir.</p></div><div class="funnel" id="funnel"></div></div>
     <div class="grid2">
@@ -755,8 +771,8 @@ __DEMO_BANNER__<header class="top"><div class="in">
     if (name === 'home') home();
     if (name === 'signups' && !S.signupsLoaded) signups();
     if (name === 'hours') hours();
-    if (name === 'funnel') { vpp(); abLoad(); ptLoad(); trLoad(); }
-    if (name === 'users') langLoad();
+    if (name === 'funnel') { vpp(); abLoad(); ptLoad(); trLoad(); stLoad(); }
+    if (name === 'users') { langLoad(); hdLoad(); }
     if (name === 'analytics') analytics();
     if (name === 'users') globeStart(); else globeStop();
     if (!/^#t=/.test(location.hash)) try { history.replaceState(null, '', '#' + name); } catch (e) {}
@@ -1147,6 +1163,47 @@ __DEMO_BANNER__<header class="top"><div class="in">
     e.preventDefault(); var f = e.target;
     ptSave({ ref: f.ref.value, label: f.label.value, spent: f.spent.value, startedOn: f.startedOn.value });
   });
+  // ---- 26/11: « Du son au wow » (the editor's steps) and « Comment ils nous ont connus » ----
+  S.stDays = '7'; S.stDev = 'all';
+  var EDSTEP_FR = { visit: 'Arrivée sur Stalak', step_song: 'Son choisi', step_passage: 'Passage choisi', step_take1: '1re prise filmée', step_take3: '3e prise filmée',
+    step_preview: '✨ Montage vu (le wow)', step_lyrics: 'Paroles ajoutées (facultatif)', step_export_start: 'Export lancé', step_export_ok: 'Vidéo exportée' };
+  function secsFr(s) { return s == null ? '–' : s < 60 ? s + ' s' : Math.floor(s / 60) + ' min' + (s % 60 ? ' ' + (s % 60) + ' s' : ''); }
+  function stLoad() {
+    $$('#stPer button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.d === S.stDays ? 'true' : 'false'); });
+    $$('#stDev button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.v === S.stDev ? 'true' : 'false'); });
+    api('GET', 'steps?days=' + S.stDays + '&device=' + S.stDev).then(function (d) {
+      var box = $('#stFunnel'); box.textContent = '';
+      var top = Math.max.apply(null, d.steps.map(function (s) { return s.n; }).concat([1]));
+      if (!d.steps.slice(1).some(function (s) { return s.n; })) box.append(el('p', { class: 'note' }, 'Pas encore d’étape enregistrée : les évènements arrivent avec la prochaine version de l’app.'));
+      d.steps.forEach(function (s, i) {
+        var row = el('div', { class: 'fstep' + (s.worst ? ' worst' : '') + (s.optional ? ' opt' : '') }), lab = el('div', { class: 'lab' }), tr = el('div', { class: 'tr' }), bar = el('i'), rate = el('div', { class: 'rate' });
+        lab.append(el('b', null, EDSTEP_FR[s.step] || s.step));
+        bar.style.width = Math.max(1, s.n / top * 100) + '%'; tr.append(bar, el('span', null, nf.format(s.n)));
+        rate.append(document.createTextNode(i === 0 || s.fromPrev == null ? '—' : String(s.fromPrev).replace('.', ',') + ' %'), el('small', null, i === 0 ? 'départ' : s.step === 'step_export_start' ? 'de « montage vu »' : 'de l’étape d’avant'));
+        row.setAttribute('aria-label', (EDSTEP_FR[s.step] || s.step) + ' : ' + nf.format(s.n) + (s.fromPrev != null && i ? ', ' + s.fromPrev + ' % de l’étape d’avant' : '') + (s.worst ? ', plus grosse perte' : ''));
+        row.append(lab, tr, rate); box.append(row);
+      });
+      var w = d.wow;
+      set('#stWow', w.count ? 'Temps jusqu’au wow (arrivée → montage vu), médiane : ' + secsFr(w.median) + ' (la moitié entre ' + secsFr(w.p25) + ' et ' + secsFr(w.p75) + ') · ' + pct(w.under60, w.count) + ' % en moins d’une minute · sur ' + nf.format(w.count) + ' montage' + (w.count > 1 ? 's' : '') + ' vus. Objectif : moins de 60 s.'
+        : 'Temps jusqu’au wow : pas encore de mesure.');
+    }).catch(function (e) { set('#stWow', 'Impossible de charger : ' + e.message); });
+  }
+  $('#stPer').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; S.stDays = b.dataset.d; stLoad(); });
+  $('#stDev').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; S.stDev = b.dataset.v; stLoad(); });
+  S.hdDays = '30'; var HDD = null;
+  function hdRender() {
+    $$('#hdPer button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.d === S.hdDays ? 'true' : 'false'); });
+    var p = HDD['d' + S.hdDays], tb = $('#hdTable tbody'); tb.textContent = '';
+    p.rows.forEach(function (r) {
+      var tr = el('tr'); tr.append(el('td', null, r.answer === 'skip' ? 'A passé la question' : HEARD[r.answer] || r.answer));
+      [r.accounts, r.trials, r.paying].forEach(function (v) { tr.append(el('td', null, nf.format(v || 0))); }); tb.append(tr);
+    });
+    if (!p.rows.length) { var e0 = el('tr'), z = el('td', null, 'Aucune réponse sur la période.'); z.colSpan = 4; e0.append(z); tb.append(e0); }
+    set('#hdNote', nf.format(p.newAccounts) + ' compte' + (p.newAccounts > 1 ? 's' : '') + ' créé' + (p.newAccounts > 1 ? 's' : '') + ' sur la période, dont ' + nf.format(p.notAnswered) + ' sans réponse (question pas encore vue).'
+      + (HDD.otherTexts.length ? ' « Autre » (30 j) : ' + HDD.otherTexts.map(function (x) { return x.text + (x.n > 1 ? ' ×' + x.n : ''); }).join(' · ') + '.' : ''));
+  }
+  function hdLoad() { api('GET', 'heard').then(function (d) { HDD = d; hdRender(); }).catch(function (e) { set('#hdNote', 'Impossible de charger : ' + e.message); }); }
+  $('#hdPer').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; S.hdDays = b.dataset.d; if (HDD) hdRender(); });
   // ---- 26/11: « Essais Pro » ----
   S.trDays = '7'; var TRD = null;
   var HEARD = { chatgpt: 'ChatGPT', google: 'Google', other_ai: 'Autre IA', tiktok: 'TikTok', instagram: 'Instagram', youtube: 'YouTube', friend: 'Un ami', other: 'Autre' };
@@ -1528,9 +1585,9 @@ __DEMO_BANNER__<header class="top"><div class="in">
       blist($('#bLangV'), A.byLang, NAMES.lang);
       var tb = $('#users tbody'); tb.textContent = '';
       d.recentUsers.forEach(function (r) {
-        var tr = el('tr'); tr.append(el('td', null, r.email), el('td', null, r.name || '–'), el('td', null, dateFr(r.createdAt, true)), el('td', null, r.verified ? 'oui' : 'non'), el('td', null, r.plan ? PLAN_NAME[r.plan] || r.plan : '–'), el('td', null, r.source ? sourceName(r.source) : '–')); tb.append(tr);
+        var tr = el('tr'); tr.append(el('td', null, r.email), el('td', null, r.name || '–'), el('td', null, dateFr(r.createdAt, true)), el('td', null, r.verified ? 'oui' : 'non'), el('td', null, r.plan ? PLAN_NAME[r.plan] || r.plan : '–'), el('td', null, r.source ? sourceName(r.source) : '–'), el('td', null, r.heard ? (r.heard === 'skip' ? 'passé' : (HEARD[r.heard] || r.heard) + (r.heardText ? ' : ' + r.heardText : '')) : '–')); tb.append(tr);
       });
-      if (!d.recentUsers.length) { var tr0 = el('tr'), td0 = el('td', { colspan: '6' }, 'Personne pour l’instant.'); tr0.append(td0); tb.append(tr0); }
+      if (!d.recentUsers.length) { var tr0 = el('tr'), td0 = el('td', { colspan: '7' }, 'Personne pour l’instant.'); tr0.append(td0); tb.append(tr0); }
       set('#visitsKept', 'Les visites sont gardées ' + (d.range.visitsKeptDays || 90) + ' jours ; les comptes, tant qu’ils existent.' + (S.days === 'all' || S.days === '90' ? ' Sur « Tout », les visites ne remontent donc qu’à 90 jours.' : ''));
       // Argent
       var M = d.money || {};
@@ -1836,6 +1893,8 @@ const DEMO_JS = String.raw`var DD = __DEMO_DATA__, DS = { avail: false, tickets:
     else if (p === 'paddle/abandoned') r = DD.abandoned[q.get('days') || '7'] || DD.abandoned['7'];
     else if (p === 'paid-tests') r = DD.paidTests;
     else if (p === 'trials') r = DD.trials;
+    else if (p === 'steps') r = DD.steps[(q.get('days') || '7') + ':' + (q.get('device') || 'all')] || DD.steps['7:all'];
+    else if (p === 'heard') r = DD.heard;
     else if (p === 'analytics/live') r = DD.analyticsLive;
     else if (p === 'analytics/tiles') { var sn = DD.analytics['7'].clarity.snapshot; r = { ga4: { state: 'ok', now: DD.analyticsLive.now, top: DD.analyticsLive.countries.slice(0, 3) },
       clarity: { state: 'ok', at: sn.at, sessions: sn.totals.sessions, top: sn.friction[0] || null, stale: false } }; }

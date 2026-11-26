@@ -5194,6 +5194,166 @@ test('trials 26/11: « Essais Pro » — activation J1, conversion at the end (a
   assert.deepEqual([s2.d7.activation.measured, s2.d7.activation.nowm], [2, 1]);
 });
 
+// ---- 26/11: « le wow en moins d'une minute » — steps, time to the wow, « Comment tu as connu Stalak ? », the reminder ----
+import { stepsStats, projectNudges, nudgeStopLink, TIPS_CONSENT } from '../../functions/_lib/activation.js';
+import { seedActivation } from '../fixtures/activation-seed.mjs';
+const UA = { ios: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)', android: 'Mozilla/5.0 (Linux; Android 15)', desktop: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0)' };
+test('activation 26/11: the editor steps are counted once per visit and per device; the seconds to the wow; nothing about the person', async () => {
+  const env = makeEnv(ADMIN_ENV), vA = 'v_' + 'a'.repeat(20), vB = 'v_' + 'b'.repeat(20), d = new Date().toISOString().slice(0, 10);
+  const ev = (body, dev) => call(env, 'POST', '/api/event', { body, headers: { 'User-Agent': UA[dev] } });
+  for (const n of ['step_song', 'step_passage', 'step_take1']) assert.equal((await ev({ name: n, vid: vA }, 'ios')).status, 200);
+  let r = await ev({ name: 'step_song', vid: vA }, 'ios');
+  assert.equal(r.data.again, true, 'the same step twice in a visit counts once');
+  await ev({ name: 'step_song', vid: vB }, 'desktop');
+  await ev({ name: 'step_preview', vid: vA, ms: 47_400 }, 'ios');
+  await ev({ name: 'step_preview', vid: vA, ms: 10_000 }, 'ios');           // again: neither counted nor timed
+  await ev({ name: 'step_preview', vid: vB, ms: 9e9 }, 'desktop');           // absurd time: counted, not timed
+  await ev({ name: 'step_bogus', vid: vA }, 'ios');
+  const n = (name) => (env.DB.raw.prepare('SELECT n FROM daily_counts WHERE day = ? AND name = ?').get(d, name) || {}).n || 0;
+  assert.deepEqual([n('st:step_song:ios'), n('st:step_song:desktop'), n('st:step_preview:ios'), n('st:step_preview:desktop')], [1, 1, 1, 1]);
+  assert.deepEqual(env.DB.raw.prepare('SELECT device, secs FROM wow_times').all().map((x) => ({ ...x })), [{ device: 'ios', secs: 47 }]);
+  assert.deepEqual(env.DB.raw.prepare('PRAGMA table_info(step_visits)').all().map((c) => c.name), ['day', 'vid', 'step']);
+  // a signed-in account's takes: counted on the account (for the reminder), the steps stay anonymous
+  const a = await login(env, 'takes@example.com');
+  await call(env, 'POST', '/api/event', { cookie: a.cookie, body: { name: 'step_take1', vid: 'v_' + 'c'.repeat(20) } });
+  await call(env, 'POST', '/api/event', { cookie: a.cookie, body: { name: 'step_take3', vid: 'v_' + 'c'.repeat(20) } });
+  assert.deepEqual(env.DB.raw.prepare('SELECT name FROM user_day_counts WHERE user_id = ? ORDER BY name').all(a.user.id).map((x) => x.name).filter((x) => x.startsWith('takes')), ['takes', 'takes3']);
+  // dashboard: 7 / 30 days, per device; the step that loses the most; the median
+  const tok = await accessToken();
+  r = await adminCall(env, 'GET', '/api/admin/steps?days=7&device=ios', { token: tok });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.equal(r.data.device, 'ios'); assert.equal(r.data.steps[0].step, 'visit');
+  assert.deepEqual(r.data.steps.map((s) => s.step).slice(1), ['step_song', 'step_passage', 'step_take1', 'step_take3', 'step_preview', 'step_lyrics', 'step_export_start', 'step_export_ok']);
+  assert.equal(r.data.wow.median, 47);
+  assert.equal((await adminCall(env, 'GET', '/api/admin/steps')).status, 403);
+  // made-up figures: percentages from the step before (exports from the preview), the worst step, quartiles
+  const e2 = makeEnv(), now = Date.now(), db = e2.DB.raw;
+  const vi = db.prepare('INSERT INTO visits (day, vid, first_at, last_at, device) VALUES (?, ?, ?, ?, ?)');
+  for (let i = 0; i < 100; i++) vi.run(d, 'v' + i, now, now, i < 60 ? 'ios' : 'desktop');
+  const b = db.prepare('INSERT INTO daily_counts (day, name, n) VALUES (?, ?, ?)');
+  for (const [s, k] of [['step_song', 50], ['step_passage', 40], ['step_take1', 10], ['step_take3', 8], ['step_preview', 8], ['step_lyrics', 2], ['step_export_start', 6], ['step_export_ok', 6]]) b.run(d, 'st:' + s + ':ios', k);
+  const wt = db.prepare("INSERT INTO wow_times (day, device, secs) VALUES (?, 'ios', ?)");
+  for (const s of [30, 40, 50, 70, 200]) wt.run(d, s);
+  const s7 = await stepsStats(e2, 7, 'ios', now);
+  assert.equal(s7.steps[0].n, 60);
+  const by = Object.fromEntries(s7.steps.map((s) => [s.step, s]));
+  assert.equal(by.step_take1.fromPrev, 25); assert.equal(by.step_take1.worst, true);
+  assert.equal(by.step_export_start.fromPrev, 75, 'compared with « montage vu », not with the optional lyrics');
+  assert.equal(by.step_lyrics.optional, true); assert.ok(!by.step_lyrics.worst);
+  assert.deepEqual(s7.wow, { count: 5, median: 50, p25: 40, p75: 70, under60: 3 });
+  assert.equal((await stepsStats(e2, 7, 'android', now)).steps[0].n, 0);
+  assert.equal((await stepsStats(e2, 30, 'all', now)).steps[0].n, 100);
+  // demo seed: shape only
+  const e3 = makeEnv(); seedActivation(e3.DB.raw); assert.ok((await stepsStats(e3, 30, 'all')).steps.length === 9);
+});
+
+test('activation 26/11: « Comment tu as connu Stalak ? » — once per account, 8 answers or « skip », « Other » text cleaned; card and « Derniers inscrits »', async () => {
+  const env = makeEnv(ADMIN_ENV), a = await login(env, 'heard@example.com');
+  let me = await call(env, 'GET', '/api/me', { cookie: a.cookie });
+  assert.equal(me.data.user.heardAsked, false);
+  assert.equal((await call(env, 'POST', '/api/account/heard', { body: { answer: 'chatgpt' } })).status, 401);
+  let r = await call(env, 'POST', '/api/account/heard', { cookie: a.cookie, body: { answer: 'myspace' } });
+  assert.equal(r.status, 400); assert.equal(r.data.error, 'bad_answer');
+  r = await call(env, 'POST', '/api/account/heard', { cookie: a.cookie, body: { answer: 'Other', text: '  <b>Un  pote</b> sur\nReddit ' + 'x'.repeat(80) } });
+  assert.equal(r.status, 200); assert.equal(r.data.saved, true);
+  const row = env.DB.raw.prepare('SELECT heard_from, heard_text, heard_at FROM users WHERE id = ?').get(a.user.id);
+  assert.equal(row.heard_from, 'other'); assert.ok(row.heard_text.length <= 60 && !/[<>\n]/.test(row.heard_text), row.heard_text);
+  assert.match(row.heard_text, /^b Un pote \/?b sur Reddit x/);
+  // a 2nd answer changes nothing
+  r = await call(env, 'POST', '/api/account/heard', { cookie: a.cookie, body: { answer: 'tiktok' } });
+  assert.equal(r.data.saved, false);
+  me = await call(env, 'GET', '/api/me', { cookie: a.cookie });
+  assert.equal(me.data.user.heardAsked, true);
+  // skip: never asked again, no answer; the text only goes with « Other »
+  const b = await login(env, 'heard2@example.com');
+  await call(env, 'POST', '/api/account/heard', { cookie: b.cookie, body: { answer: 'skip', text: 'ignored' } });
+  assert.deepEqual({ ...env.DB.raw.prepare('SELECT heard_from, heard_text FROM users WHERE id = ?').get(b.user.id) }, { heard_from: 'skip', heard_text: null });
+  const c = await login(env, 'heard3@example.com');
+  await call(env, 'POST', '/api/account/heard', { cookie: c.cookie, body: { answer: 'chatgpt', text: 'ignored too' } });
+  // dashboard
+  const tok = await accessToken();
+  r = await adminCall(env, 'GET', '/api/admin/heard', { token: tok });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.deepEqual(r.data.d7.rows.map((x) => [x.answer, x.accounts]).sort(), [['chatgpt', 1], ['other', 1], ['skip', 1]]);
+  assert.equal(r.data.d30.newAccounts, 3); assert.equal(r.data.d30.notAnswered, 0);
+  assert.equal(r.data.otherTexts.length, 1);
+  const st = await adminCall(env, 'GET', '/api/admin/stats?days=7', { token: tok });
+  const ru = st.data.recentUsers.find((x) => x.email === 'heard@example.com');
+  assert.equal(ru.heard, 'other'); assert.match(ru.heardText, /Reddit/);
+  assert.equal((await adminCall(env, 'GET', '/api/admin/heard')).status, 403);
+});
+
+test('activation 26/11: the reminder of an unfinished project — consent only, 24 h after the takes, no video since, once; unsubscribe signed', async () => {
+  const SECRET = 'n'.repeat(48), env = makeEnv({ ...ADMIN_ENV, AUTH_SECRET: SECRET, NUDGE_EMAIL: '1' }), db = env.DB.raw, now = Date.now(), H = 3600e3;
+  const takes = (id, at, three = false) => {
+    const day = new Date(at).toISOString().slice(0, 10);
+    db.prepare('INSERT INTO user_day_counts (user_id, day, name, n, first_at, last_at) VALUES (?, ?, ?, 1, ?, ?)').run(id, day, 'takes', at, at);
+    if (three) db.prepare('INSERT INTO user_day_counts (user_id, day, name, n, first_at, last_at) VALUES (?, ?, ?, 1, ?, ?)').run(id, day, 'takes3', at, at);
+  };
+  const ok = await login(env, 'nudge-ok@example.com', 'fr'), no = await login(env, 'nudge-no@example.com'), soon = await login(env, 'nudge-soon@example.com');
+  const done = await login(env, 'nudge-done@example.com'), optin = await login(env, 'nudge-optin@example.com', 'en'), old = await login(env, 'nudge-old@example.com');
+  // consent: the box (never ticked beforehand) or a confirmed « tips » e-mail of before
+  let r = await call(env, 'PUT', '/api/account/emails', { cookie: ok.cookie, body: { tips: 'yes' } });
+  assert.equal(r.status, 400);
+  for (const u of [ok, soon, done, old]) assert.equal((await call(env, 'PUT', '/api/account/emails', { cookie: u.cookie, body: { tips: true, lang: 'fr' } })).status, 200);
+  assert.equal(db.prepare('SELECT email_tips_text FROM users WHERE id = ?').get(ok.user.id).email_tips_text, TIPS_CONSENT + ':fr');
+  db.prepare("INSERT INTO email_optins (id, email, lang, consent, token_hash, created_at, confirmed_at) VALUES ('o1', 'nudge-optin@example.com', 'en', 'v1', 'h', 0, 1)").run();
+  takes(ok.user.id, now - 30 * H, true); takes(no.user.id, now - 30 * H); takes(soon.user.id, now - 5 * H);
+  takes(done.user.id, now - 30 * H); takes(optin.user.id, now - 26 * H); takes(old.user.id, now - 80 * H);
+  const dd = new Date(now - 29 * H).toISOString().slice(0, 10);
+  db.prepare("INSERT INTO user_day_counts (user_id, day, name, n, first_at, last_at) VALUES (?, ?, 'export_ok', 1, ?, ?)").run(done.user.id, dd, now - 29 * H, now - 29 * H);
+  // off until the owner turns it on
+  assert.deepEqual(await projectNudges({ ...env, NUDGE_EMAIL: undefined }, now), { nudged: 'off' });
+  const before = outbound.length;
+  r = await projectNudges(env, now);
+  assert.equal(r.nudged, 2, JSON.stringify(r));
+  const mails = outbound.slice(before).filter((o) => o.url === 'https://api.resend.com/emails');
+  assert.deepEqual(mails.map((m) => m.body.to[0]).sort(), ['nudge-ok@example.com', 'nudge-optin@example.com']);
+  const m = mails.find((x) => x.body.to[0] === 'nudge-ok@example.com');
+  assert.match(m.body.subject, /3 prises/); assert.match(m.body.text, /\?resume=1&utm_source=email&utm_medium=email&utm_campaign=relance-projet/);
+  const stop = await nudgeStopLink(env, ok.user.id);
+  assert.equal(m.body.headers['List-Unsubscribe'], '<' + stop + '>'); assert.equal(m.body.headers['List-Unsubscribe-Post'], 'List-Unsubscribe=One-Click');
+  assert.ok(m.body.text.includes(stop));
+  // once only
+  assert.equal((await projectNudges(env, now + H)).nudged, 0);
+  // Resend down: not marked, tried the next day
+  const e2 = makeEnv({ AUTH_SECRET: SECRET, NUDGE_EMAIL: '1' }), x = await login(e2, 'nudge-down@example.com');
+  await call(e2, 'PUT', '/api/account/emails', { cookie: x.cookie, body: { tips: true } });
+  e2.DB.raw.prepare('INSERT INTO user_day_counts (user_id, day, name, n, first_at, last_at) VALUES (?, ?, ?, 1, ?, ?)').run(x.user.id, new Date(now - 30 * H).toISOString().slice(0, 10), 'takes', now - 30 * H, now - 30 * H);
+  extraFetch = (url) => (url === 'https://api.resend.com/emails' ? new Response('down', { status: 500 }) : null);
+  try { assert.equal((await projectNudges(e2, now)).nudged, 0); } finally { extraFetch = null; }
+  assert.equal(e2.DB.raw.prepare('SELECT nudged_at FROM users WHERE id = ?').get(x.user.id).nudged_at, null);
+  // unsubscribe: the page asks (a mail scanner changes nothing), the button / one-click POST stops; a wrong signature does nothing
+  const path = stop.replace(ORIGIN, '');
+  let g = await call(env, 'GET', path, {});
+  assert.equal(g.status, 200); assert.match(g.data, /Me désinscrire/); assert.match(g.headers.get('Content-Security-Policy'), /default-src 'none'/);
+  assert.equal(db.prepare('SELECT email_tips FROM users WHERE id = ?').get(ok.user.id).email_tips, 1);
+  g = await call(env, 'POST', path.replace(/t=[0-9a-f]{40}/, 't=' + '0'.repeat(40)), { origin: null, ct: 'application/x-www-form-urlencoded', raw: 'List-Unsubscribe=One-Click' });
+  assert.match(g.data, /no longer works|ne marche plus/i);
+  assert.equal(db.prepare('SELECT email_tips FROM users WHERE id = ?').get(ok.user.id).email_tips, 1);
+  g = await call(env, 'POST', path, { origin: null, ct: 'application/x-www-form-urlencoded', raw: 'List-Unsubscribe=One-Click' });
+  assert.equal(g.status, 200); assert.match(g.data, /C’est fait/);
+  assert.equal(db.prepare('SELECT email_tips FROM users WHERE id = ?').get(ok.user.id).email_tips, 0);
+  // no secret: no link (the task fails rather than send an e-mail one cannot leave)
+  await assert.rejects(nudgeStopLink({ ...env, AUTH_SECRET: '' }, ok.user.id));
+  // the account and /api/me tell the choice
+  const me = await call(env, 'GET', '/api/me', { cookie: soon.cookie });
+  assert.equal(me.data.user.emailTips, true);
+});
+
+test('activation 26/11: the buttons of the « tips » e-mail pages (plain HTML forms) are accepted again; another site still refused', async () => {
+  const env = makeEnv({ RESEND_API_KEY: 're_test' }), before = outbound.length;
+  await call(env, 'POST', '/api/optin', { body: { email: 'form@example.com', consent: true, lang: 'fr' } });
+  const mail = outbound.slice(before).find((o) => o.url === 'https://api.resend.com/emails');
+  const token = /optin\/confirm\?t=([0-9a-f]{48})/.exec(mail.body.text)[1];
+  let g = await call(env, 'POST', '/api/optin/confirm?t=' + token, { ct: 'application/x-www-form-urlencoded', raw: '' });
+  assert.equal(g.status, 200, String(g.data).slice(0, 200)); assert.match(g.data, /C’est confirmé/);
+  g = await call(env, 'POST', '/api/optin/stop?t=' + token, { ct: 'application/x-www-form-urlencoded', raw: '', origin: 'https://evil.example' });
+  assert.equal(g.status, 403);
+  g = await call(env, 'POST', '/api/optin/stop?t=' + token, { ct: 'text/plain', raw: '' });
+  assert.equal(g.status, 415);
+});
+
 // ---- runner --------------------------------------------------------------------------
 let failed = 0;
 for (const t of tests) {

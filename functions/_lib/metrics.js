@@ -17,7 +17,12 @@ export const METRICS = ['help_q', 'help_fail', 'cloud_save', 'ticket', 'ticket_m
 export const EVENTS = ['export_start', 'export_ok', 'export_fail', 'export_retry', 'export_saved', 'export_refused', 'clip_ask', 'pro_offer', 'ad_offer', 'ad_shown', 'ad_ok', 'plans_open', 'checkout_open',
   'checkout_close', 'checkout_done',   // 7/11: the payment window closed without buying ({stage}), or paid
   'clip_open',    // audit of 13/11: the Clip mode opened (App sends it once per page, when the person chooses Clip)
-  'consent_yes', 'consent_no'];   // 23/11: the cookie banner answered (consent.js): « Accepter » / « Refuser », nothing else
+  'consent_yes', 'consent_no',   // 23/11: the cookie banner answered (consent.js): « Accepter » / « Refuser », nothing else
+  // 26/11 (« le wow en moins d'une minute », docs/handoff/chef-activation-rapide.md n°5-6): the steps of the editor, each once per
+  // visit (vid); step_preview = the « wow » (1st preview of the edit), with the seconds since the arrival ({ms})
+  'step_song', 'step_passage', 'step_take1', 'step_take3', 'step_preview', 'step_lyrics', 'step_export_start', 'step_export_ok'];
+export const STEPS = ['step_song', 'step_passage', 'step_take1', 'step_take3', 'step_preview', 'step_lyrics', 'step_export_start', 'step_export_ok'];
+export const DEVICES = ['ios', 'android', 'desktop'];
 // why an export failed, as a category only (App sends it): nothing about the person or the video
 // (7/11) + encoder; closed: the page closed during the export; crash: an export that never ended, found at the next visit
 // (the browser closed the tab: usually out of memory on a phone)
@@ -114,7 +119,7 @@ export const CLOSE_STAGES_OLD = ['start', 'details', 'payment'];
 
 // 26/11 (« Essais Pro »): one counter per account and per day, no content (migration 0025): « open » (the app opened while
 // signed in, from GET /api/me), « export_ok » and « export_nowm » (a finished video, without the watermark). Never fails.
-export const USER_DAY = ['open', 'export_ok', 'export_nowm'];
+export const USER_DAY = ['open', 'export_ok', 'export_nowm', 'takes', 'takes3'];   // 26/11: takes (step_take1 / step_take3), for the reminder of an unfinished project
 export async function bumpUserDay(env, userId, name, now = Date.now()) {
   if (!userId || !USER_DAY.includes(name)) return;
   await env.DB.prepare(`INSERT INTO user_day_counts (user_id, day, name, n, first_at, last_at) VALUES (?1, ?2, ?3, 1, ?4, ?4)
@@ -132,6 +137,26 @@ export async function event(request, env, excluded = null, who = null) {
   await limit(env, `event:ip:${ipKey}`, EVENTS_PER_IP_HOUR, 3600e3);
   await bump(env, 'ev_' + name);
   if (name === 'export_ok') await bumpHour(env, 'export_ok');   // the hour of the export (« Heure par heure »)
+  // 26/11 (« le wow »): a step of the editor, once per visit (vid) when the page gives it; per device; the seconds to the wow
+  if (STEPS.includes(name)) {
+    const dev = deviceOf(request) || 'desktop';
+    let first = true;
+    if (typeof body.vid === 'string' && VID.test(body.vid)) {
+      const w = await env.DB.prepare('INSERT OR IGNORE INTO step_visits (day, vid, step) VALUES (?1, ?2, ?3)').bind(today(), body.vid, name).run().catch(() => null);
+      first = !!(w && w.meta && w.meta.changes === 1);
+    }
+    if (!first) return json({ ok: true, again: true });
+    await bump(env, 'st:' + name + ':' + dev);
+    const secs = Number(body.ms) / 1000;
+    if (name === 'step_preview' && Number.isFinite(secs) && secs >= 0 && secs <= 6 * 3600) {
+      await env.DB.prepare('INSERT INTO wow_times (day, device, secs) VALUES (?1, ?2, ?3)').bind(today(), dev, Math.round(secs)).run().catch(() => {});
+    }
+    // the takes of a signed-in account (the session goes with the steps, account.js): the reminder of an unfinished project
+    if ((name === 'step_take1' || name === 'step_take3') && who) {
+      const u = await who().catch(() => null);
+      if (u && u.id) await bumpUserDay(env, u.id, name === 'step_take3' ? 'takes3' : 'takes');
+    }
+  }
   // 26/11 (« Essais Pro »): a finished video of a signed-in account (the session goes with it, account.js), per account and day.
   // Without the watermark: what the page says (wm: false), else what the account may do (no watermark for Pro and the trial).
   if (name === 'export_ok' && who) {

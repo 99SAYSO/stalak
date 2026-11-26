@@ -17,6 +17,8 @@ import { getState, setState, isAvailable, messagesOf, deliverReply, catchUpRepli
 import { LIVE_MS, today } from './metrics.js';
 import { paidTests, savePaidTest } from './paidtest.js';
 import { trialStats } from './trialstats.js';
+import { stepsStats } from './activation.js';
+import { heardStats } from './heard.js';
 import { notifyOwner, ntfyOn } from './notify.js';
 import { sendThanks, thanksEmail } from './thanks.js';
 import { tgStatus, linkTelegram, unlinkTelegram } from './telegram.js';
@@ -117,7 +119,7 @@ export async function stats(env, days = 30, now = Date.now()) {
     q('SELECT day AS d, name, n FROM daily_counts WHERE day >= ?1', from),
     q('SELECT COUNT(*) AS projects, COUNT(DISTINCT user_id) AS users, SUM(media_bytes) AS bytes FROM projects'),
     q("SELECT date(created_at / 1000, 'unixepoch') AS d, COUNT(*) AS n FROM tickets WHERE created_at >= ?1 GROUP BY d", fromMs),
-    q('SELECT id, email, display_name, created_at, email_verified_at, signup_source FROM users ORDER BY created_at DESC LIMIT 20'),
+    q('SELECT id, email, display_name, created_at, email_verified_at, signup_source, heard_from, heard_text FROM users ORDER BY created_at DESC LIMIT 20'),
     // revenue per plan: payments by price (the plan comes from the price, entitlements.js)
     q('SELECT price_id, currency, SUM(total) AS total, SUM(billed_at >= ?1) AS n30, SUM(CASE WHEN billed_at >= ?1 THEN total ELSE 0 END) AS total30, COUNT(*) AS n FROM payments WHERE env = ?2 GROUP BY price_id, currency', since30, pe),
   ]);
@@ -228,7 +230,7 @@ export async function stats(env, days = 30, now = Date.now()) {
     env: pe,
     ...(await insights(env, list, fromMs, now)),
     recentUsers: R(recent).map((r) => ({ email: r.email, name: r.display_name || null, createdAt: new Date(r.created_at).toISOString(),
-      verified: !!r.email_verified_at, pro: proUsers.has(r.id), plan: proUsers.get(r.id) || null, source: r.signup_source || null })),
+      verified: !!r.email_verified_at, pro: proUsers.has(r.id), plan: proUsers.get(r.id) || null, source: r.signup_source || null, heard: r.heard_from || null, heardText: r.heard_text || null })),
   };
 }
 
@@ -660,6 +662,9 @@ export async function admin(request, env, method, rest) {
   }
   // 26/11: « Essais Pro » (activation J1, conversion at the end of the trial, active during the trial)
   if (route === 'trials' && method === 'GET') return json(await trialStats(env));
+  // 26/11: « Du son au wow » (the editor's steps, anonymous) and « Comment ils nous ont connus »
+  if (route === 'steps' && method === 'GET') return json(await stepsStats(env, Number.parseInt(url.searchParams.get('days') || '7', 10), url.searchParams.get('device') || 'all'));
+  if (route === 'heard' && method === 'GET') return json(await heardStats(env));
   // 25/11: « Test payant »: each followed ?ref= link against the money spent on it (typed by the owner)
   if (route === 'paid-tests' && method === 'GET') return json(await paidTests(env));
   if (route === 'paid-tests' && method === 'POST') return json(await savePaidTest(env, await readJson(request, 1024)));

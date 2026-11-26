@@ -15,6 +15,8 @@ import { trialPrices, trialMarkOnDelete, cancelTrial, cancelPage, trialReminders
 import { social, socialWebhook, isSocialWebhook, socialProviders, socialVisible, deleteSocialAccounts } from './social.js';
 import { tiktok } from './tiktok.js';   // Réseaux sociaux: « Publier sur TikTok », « Mes stats »
 import { clarityDaily } from './clarity.js';
+import { saveHeard } from './heard.js';
+import { saveTips, emailsStop, projectNudges } from './activation.js';
 import { projectCover, coverUrl, COVER_TYPES, projectFiles, storageInfo, checkProjectFiles, dropUnusedFiles, readyFiles, deleteProjectMedia, deleteUserMedia, maybeCleanup, cleanupCloud, cloudAvailable } from './cloud.js';
 import { timingSafeEqual, sha256Hex } from './crypto.js';
 import { limit } from './ratelimit.js';
@@ -34,6 +36,8 @@ const STATE_CHANGING = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 function publicUser(u) {
   return u ? {
     id: u.id, email: u.email, lang: u.lang, createdAt: new Date(u.created_at).toISOString(),
+    // 26/11: « Where did you hear about Stalak? » already answered (or skipped): never asked again; the tips e-mails box
+    heardAsked: !!u.heard_at, emailTips: u.email_tips == null ? null : u.email_tips === 1,
     displayName: u.display_name || null,
     avatarUrl: avatarUrl(u),
     hasPassword: !!u.password_hash,
@@ -187,7 +191,7 @@ function cronAuth(request, env) {
 }
 async function cronCleanup(request, env) {
   cronAuth(request, env);
-  return json({ ok: true, ...(await cleanupCloud(env)), ...(await yearlyReminders(env)), ...(await trialReminders(env)), ...(await clarityDaily(env)), ...(await spotifyWeekly(env)) });
+  return json({ ok: true, ...(await cleanupCloud(env)), ...(await yearlyReminders(env)), ...(await trialReminders(env)), ...(await clarityDaily(env)), ...(await spotifyWeekly(env)), ...(await projectNudges(env)) });
 }
 
 // Signed in: the session cookie (and the trusted-device cookie), then the same answer as GET /api/me.
@@ -315,6 +319,12 @@ async function dispatch(request, env, ctx) {
     if (isSocialWebhook(parts)) return socialWebhook(request, env, parts[1], parts[2], method);
     // the owner's dashboard (admin.js): admin host + Cloudflare Access token, its own Origin check; 404 anywhere else
     if (parts[0] === 'admin') return admin(request, env, method, parts.slice(1));
+    // 26/11: « Me désinscrire » of the reminder e-mails: the link is signed (HMAC), and mail apps send their one-click
+    // unsubscribe (List-Unsubscribe-Post) from their own servers, without Origin: no CSRF rule here, the signature is the check
+    if (route === 'emails/stop') {
+      if (method !== 'GET' && method !== 'POST') throw new HttpError(405, 'method_not_allowed', 'Method not allowed.');
+      return emailsStop(request, env);
+    }
     if (route === 'cron/cloud-cleanup') {
       if (method !== 'POST') throw new HttpError(405, 'method_not_allowed', 'Method not allowed.');
       return cronCleanup(request, env);
@@ -324,7 +334,10 @@ async function dispatch(request, env, ctx) {
     const coverUpload = method === 'PUT' && parts[0] === 'projects' && parts[2] === 'cover' && parts.length === 3;
     // Réseaux sociaux: a piece of a video sent to TikTok (/api/tiktok/publish/:id/chunk/:n), raw bytes too
     const ttChunk = method === 'PUT' && parts[0] === 'tiktok' && parts[1] === 'publish' && parts[3] === 'chunk' && parts.length === 5;
-    if (STATE_CHANGING.has(method)) checkCsrf(request, env, route === 'me/avatar' && method === 'PUT' ? AVATAR_TYPES : rawUpload || ttChunk ? ['application/octet-stream'] : coverUpload ? COVER_TYPES : []);
+    // (26/11) the buttons of the e-mail pages (optin.js: « Oui, je confirme », « Me désinscrire ») are plain HTML forms: they send
+    // application/x-www-form-urlencoded (they were refused before, 415); the Origin check stays
+    const formPage = method === 'POST' && (route === 'optin/confirm' || route === 'optin/stop');
+    if (STATE_CHANGING.has(method)) checkCsrf(request, env, route === 'me/avatar' && method === 'PUT' ? AVATAR_TYPES : rawUpload || ttChunk ? ['application/octet-stream'] : coverUpload ? COVER_TYPES : formPage ? ['application/x-www-form-urlencoded'] : []);
 
     switch (route) {
       case 'stats/exports':   // public: the total of videos exported (home page counter), cached 5 minutes
@@ -434,6 +447,20 @@ async function dispatch(request, env, ctx) {
       case 'account':
         if (method !== 'DELETE') break;
         return deleteAccount(request, env);
+      // 26/11 (docs/handoff/chef-question-source.md): « Where did you hear about Stalak? », once per account
+      case 'account/heard': {
+        if (method !== 'POST') break;
+        const u = await requireUser(request, env);
+        await limit(env, `heard:${u.id}`, 20, 3600e3, 'Too many requests, try again later.');
+        return json(await saveHeard(env, u, await readJson(request, 512)));
+      }
+      // 26/11 (docs/handoff/chef-activation-rapide.md n°7): the tips / reminder e-mails box (never ticked beforehand)
+      case 'account/emails': {
+        if (method !== 'PUT') break;
+        const u = await requireUser(request, env);
+        await limit(env, `tips:${u.id}`, 30, 3600e3, 'Too many requests, try again later.');
+        return json(await saveTips(env, u, await readJson(request, 256)));
+      }
       case 'account/source': {
         // where a new account comes from (the page's first visit: ?ref=, utm, the site that sent it), for the owner's dashboard.
         // Written once, within the hour after sign-up (e-mail or Google alike); later calls change nothing.
