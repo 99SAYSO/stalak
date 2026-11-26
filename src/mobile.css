@@ -5,6 +5,7 @@
    html.mpage = a page of the account opened from the bar (the bar stays); neither = the home screen.
    Motion: the timelines are GSAP ones, as in the HyperFrames demos (app.js mob*, splash.js); nothing moves with « reduce motion ». ---- */
 .tabbar,.mh-top,.mh-new,.mh-ex,.mh-lastT,.mh-list{display:none}
+.tabbar [aria-busy="true"]{opacity:.55}
 #splash{display:none}
 
 @media (max-width:899px){
