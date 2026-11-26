@@ -15,10 +15,10 @@ SHOTS = sys.argv[2] if len(sys.argv) > 2 else None
 results = []
 FAST_EXPORT = ("pickVideoConfig = async () => null, renderRealtime = async () => { await new Promise(r => setTimeout(r, 120)); "
                "return { blob: new Blob([new Uint8Array(4096)], { type: 'video/mp4' }), ext: 'mp4' }; }")
-T = {'fr': {'tt': ['Choisis ton son', 'Filme tes prises', 'Stalak coupe sur le rythme', 'Exporte et poste'], 'next': 'Suivant', 'go': 'C’est parti !', 'skip': 'Passer',
+T = {'fr': {'tt': ['Choisis ton son', 'Filme tes prises', 'Stalak coupe sur le rythme'], 'next': 'Suivant', 'go': 'C’est parti !', 'skip': 'Passer',
             'again': 'Revoir le tutoriel', 'hT': 'Le glaçon d’aide', 'hS': 'Répond tout de suite', 'pw': 'Fais décoller ton son', 'ts': 'ton son', 'or': 'ou', 'year': 'Pro · à l’année', 'month': 'Pro · au mois',
             'cr': 'Voir Creator Plus (packs, sauvegarde en ligne)', 'thx': 'Bienvenue dans Stalak', 'thxGo': 'Faire un montage', 'thxPlan': 'Voir ma formule'},
-     'en': {'tt': ['Pick your song', 'Film your takes', 'Stalak cuts to the beat', 'Export and post'], 'next': 'Next', 'go': 'Let’s go!', 'skip': 'Skip',
+     'en': {'tt': ['Pick your song', 'Film your takes', 'Stalak cuts to the beat'], 'next': 'Next', 'go': 'Let’s go!', 'skip': 'Skip',
             'again': 'See the tutorial again', 'hT': 'The help ice cube', 'hS': 'Answers right away', 'pw': 'Make your song take off', 'ts': 'your song', 'or': 'or', 'year': 'Pro · yearly', 'month': 'Pro · monthly',
             'cr': 'See Creator Plus (packs, online saving)', 'thx': 'Welcome to Stalak', 'thxGo': 'Make an edit', 'thxPlan': 'See my plan'}}
 
@@ -67,11 +67,11 @@ def run(b, PW, dev, lang):
     # the tutorial, at the first launch (the onboarding answered)
     pg.wait_for_selector('.m4-tu', timeout=10000); pg.wait_for_timeout(700)
     seen = []
-    for i in range(4):
+    for i in range(3):   # (26/11, Chef) 3 screens at most
         seen.append(pg.locator('.m4-s.on h2').inner_text().replace('\n', ' ').strip())
         if i == 0: shot(pg, 'm4-tuto-%s-%s' % (dev.replace(' ', ''), lang)); check(tag + ' : tutoriel : « %s » et « %s »' % (t['skip'], t['next']), pg.locator('.m4-skip').inner_text().strip() == t['skip'] and pg.locator('.m4-tu .m4-cta').inner_text().strip() == t['next'])
-        if i < 3: pg.locator('.m4-tu .m4-cta').click(); pg.wait_for_timeout(600)
-    check(tag + ' : tutoriel : les 4 écrans de la démo, dans l’ordre', seen == t['tt'], seen)
+        if i < 2: pg.locator('.m4-tu .m4-cta').click(); pg.wait_for_timeout(600)
+    check(tag + ' : tutoriel : 3 écrans au plus, dans l’ordre, chacun avec un seul message', seen == t['tt'], seen)
     check(tag + ' : tutoriel : « %s » au dernier, plus de « Passer »' % t['go'], pg.locator('.m4-tu .m4-cta').inner_text().strip() == t['go'] and not vis(pg, '.m4-skip'))
     bars = pg.evaluate("() => [...document.querySelectorAll('.m4-bars b')].map(b => getComputedStyle(b).transform)")
     check(tag + ' : tutoriel : la barre du haut est pleine', all(x in ('none', 'matrix(1, 0, 0, 1, 0, 0)') for x in bars), bars)

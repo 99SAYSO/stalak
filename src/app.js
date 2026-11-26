@@ -484,6 +484,13 @@ const I18N_EN = /*@EN*/{
   "cam.na": "This camera isn’t available.",
   "cam.nosupport": "Your browser can’t film here. Import your videos instead.",
   "cam.claude": "The camera isn’t available in this preview. It works on stalak.app. Meanwhile, film with your phone (song playing out loud) and import the videos.",
+  "cam.prepT": "Your camera and your mic",
+  "cam.prepP": "We need your camera and your microphone to film your takes. They stay on your phone: nothing is sent unless you ask.",
+  "cam.prepGo": "Allow the camera",
+  "cam.prepImport": "Import my videos instead",
+  "cam.prepDeniedT": "The camera is blocked",
+  "cam.prepDeniedP": "No problem: allow it again for Stalak, or import videos you already filmed.",
+  "cam.prepRetry": "Try again",
   "cam.blockedIos": "The camera is blocked for Stalak. In Safari, tap “aA” (or the icon left of the address) → Website Settings → Camera and Microphone: “Allow”, then reload the page.",
   "cam.blocked": "The camera is blocked for Stalak. Allow the camera and the microphone for this site in your browser (icon left of the address), then reload the page.",
   "cam.busy": "The camera is already used by another app. Close it, then try again.",
@@ -1102,6 +1109,10 @@ const I18N_EN = /*@EN*/{
   "gal.lockFree": "With Stalak Creator Plus, every project (song, takes, lyrics, edit) saves itself here automatically, with its cover, and opens again on any device.",
   "gal.lockEx": "Your projects saved online are kept for 6 months after your subscription ends, and come back as soon as you take Creator Plus.",
   "gal.pro": "Discover Creator Plus",
+  "gal.startT": "Your first edit",
+  "gal.startP": "Pick your song: Stalak cuts it to the beat. Your edits show up here.",
+  "gal.startSong": "Choose my song",
+  "gal.startEx": "See an example",
   "gal.empty": "No project yet. Start an edit: it saves itself and shows up here with its cover.",
   "gal.moreA": "More for “{name}”: rename, delete",
   "_bloc.compte.sauvegarde": "Comptes, paiements & serveur : sauvegarde automatique (Creator Plus)",
@@ -1196,14 +1207,20 @@ const I18N_EN = /*@EN*/{
   "acct.e.subscription_ending": "Your subscription is ending: you can take a new plan once it has stopped.",
   "acct.e.change_at_renewal": "Going to monthly (or to a smaller plan billed differently) starts at the end of your current period: turn off the renewal in “Manage my subscription”, then pick the new plan when it ends.",
   "_bloc.app.audit": "App & montage : audit du 30/10 (projet gardé, mémoire, export, partage, offre Pro, erreurs)",
-  "lp.t": "Pick up your last edit?",
+  "wow.prep": "Your song on the beat, one second…",
+  "wow.tag": "Preview · 10 s",
+  "wow.t": "Your song, cut to the beat",
+  "wow.p": "Here with example takes. Now film yours: Stalak cuts them the same way.",
+  "wow.go": "Now film yours",
+  "wow.again": "Watch it again",
+  "lp.t": "Pick up your snippet?",
   "lp.p": "“{name}”, {n} takes, {when}. It’s saved on this phone.",
   "lp.p1": "“{name}”, {when}. It’s saved on this phone.",
   "lp.yes": "Pick it up",
   "lp.no": "No thanks",
   "lp.ok": "OK",
   "lp.restoring": "Bringing your edit back…",
-  "lp.done": "“{name}” is back, just as you left it.",
+  "lp.done": "“{name}” is back, right where you left it.",
   "lp.fail": "This edit can’t come back: one of its files is missing from this phone. Import your song and takes again.",
   "exp.left": "The export stopped because you left Stalak (another app or the screen locked). Try again and stay on this page until the end.",
   "exp.retry": "The export didn’t work the first time: Stalak is making it again with safer settings…",
@@ -1483,6 +1500,13 @@ const I18N_FR = /*@FR*/{
   "cam.na": "Cette caméra n’est pas disponible.",
   "cam.nosupport": "Ton navigateur ne permet pas de filmer ici. Importe tes vidéos à la place.",
   "cam.claude": "La caméra n’est pas accessible dans cet aperçu. Elle marche sur stalak.app. En attendant, filme avec ton téléphone (son en haut-parleur) et importe les vidéos.",
+  "cam.prepT": "Ta caméra et ton micro",
+  "cam.prepP": "On a besoin de ta caméra et de ton micro pour filmer tes prises. Elles restent sur ton téléphone : rien n’est envoyé sans que tu le demandes.",
+  "cam.prepGo": "Autoriser la caméra",
+  "cam.prepImport": "Plutôt importer mes vidéos",
+  "cam.prepDeniedT": "La caméra est bloquée",
+  "cam.prepDeniedP": "Pas de souci : autorise-la à nouveau pour Stalak, ou importe des vidéos que tu as déjà filmées.",
+  "cam.prepRetry": "Réessayer",
   "cam.blockedIos": "La caméra est bloquée pour Stalak. Dans Safari, touche « aA » (ou l’icône à gauche de l’adresse) → Réglages du site web → Caméra et Micro : « Autoriser », puis recharge la page.",
   "cam.blocked": "La caméra est bloquée pour Stalak. Autorise la caméra et le micro pour ce site dans ton navigateur (icône à gauche de l’adresse), puis recharge la page.",
   "cam.busy": "La caméra est déjà utilisée par une autre app. Ferme-la puis réessaie.",
@@ -1900,6 +1924,10 @@ const I18N_FR = /*@FR*/{
   "am.manage": "Gérer mon abonnement",
   "gal.lockFree": "Avec Stalak Creator Plus, chaque projet (son, prises, paroles, montage) s’enregistre tout seul ici, avec sa couverture, et se rouvre sur n’importe quel appareil.",
   "gal.lockEx": "Tes projets sauvegardés en ligne sont gardés 6 mois après la fin de ton abonnement, et reviennent dès que tu reprends Creator Plus.",
+  "gal.startT": "Ton premier montage",
+  "gal.startP": "Choisis ton son : Stalak le coupe sur le rythme. Tes montages s’afficheront ici.",
+  "gal.startSong": "Choisir mon son",
+  "gal.startEx": "Voir un exemple",
   "gal.empty": "Aucun projet pour l’instant. Commence un montage : il s’enregistre tout seul et apparaîtra ici avec sa couverture.",
   "gal.moreA": "Plus pour « {name} » : renommer, supprimer",
   "_bloc.compte.sauvegarde": "Comptes, paiements & serveur : sauvegarde automatique (Creator Plus)",
@@ -1951,14 +1979,20 @@ const I18N_FR = /*@FR*/{
   "acct.e.subscription_ending": "Ton abonnement s’arrête bientôt : tu pourras prendre une nouvelle formule une fois qu’il sera fini.",
   "acct.e.change_at_renewal": "Passer au mensuel (ou à une formule plus petite facturée autrement) commence à la fin de ta période : arrête le renouvellement dans « Gérer mon abonnement », puis choisis la nouvelle formule à la fin.",
   "_bloc.app.audit": "App & montage : audit du 30/10 (projet gardé, mémoire, export, partage, offre Pro, erreurs)",
-  "lp.t": "Reprendre ton dernier montage ?",
+  "wow.prep": "Ton son sur le rythme, une seconde…",
+  "wow.tag": "Aperçu · 10 s",
+  "wow.t": "Ton son, coupé sur le rythme",
+  "wow.p": "Ici avec des prises d’exemple. Maintenant, filme les tiennes : Stalak les coupe pareil.",
+  "wow.go": "Maintenant, filme les tiennes",
+  "wow.again": "Revoir l’aperçu",
+  "lp.t": "Reprendre ton snippet ?",
   "lp.p": "« {name} », {n} prises, {when}. Il est gardé dans ce téléphone.",
   "lp.p1": "« {name} », {when}. Il est gardé dans ce téléphone.",
   "lp.yes": "Reprendre",
   "lp.no": "Non merci",
   "lp.ok": "OK",
   "lp.restoring": "Ton montage revient…",
-  "lp.done": "« {name} » est revenu, comme tu l’avais laissé.",
+  "lp.done": "« {name} » est revenu, là où tu l’avais laissé.",
   "lp.fail": "Ce montage ne peut pas revenir : un de ses fichiers n’est plus dans ce téléphone. Importe à nouveau ton son et tes prises.",
   "exp.left": "L’export s’est arrêté parce que tu as quitté Stalak (autre appli ou écran verrouillé). Réessaie et reste sur cette page jusqu’à la fin.",
   "exp.retry": "L’export n’a pas marché du premier coup : Stalak le refait avec des réglages plus sûrs…",
@@ -3403,6 +3437,7 @@ function wsUi(){
 }
 setInterval(wsUi, 400);
 function renderTakes(){
+  try { stepTakes(); } catch(e){}
   try { frameUI(); } catch(e){}
   const ul = $('#takeList'); ul.innerHTML = '';
   renderBrolls();
@@ -7056,8 +7091,39 @@ async function camFlip(){
   catch(e){ try { recStream = await camStream(camFacing); } catch(e2){ closeCamera(); say('cam.dead'); return; } say('cam.na'); }
   camShow();
 }
-async function openCamera(){
+/* (26/11, « le wow en moins d'une minute », n° 3) before the iPhone's own window: a Stalak screen says why the camera and the
+   microphone are needed and that the takes stay on the phone; « Autoriser » then the system's window. Refused: how to allow it
+   again, and the import of videos instead. Once the camera has worked on this device, never again. */
+const CAM_OK_KEY = 'stalak:camOk';
+async function camGranted(){ try { if (store.get(CAM_OK_KEY)) return true; const q = navigator.permissions && await navigator.permissions.query({ name: 'camera' }); return !!q && q.state === 'granted'; } catch(e){ return false; } }
+function camPrep(denied){
+  return new Promise(res => {
+    let box = $('#camPrep');
+    if (!box){
+      box = document.createElement('div'); box.className = 'askbox camprep'; box.id = 'camPrep'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-labelledby', 'camPrepT');
+      box.innerHTML = '<div class="card"><img class="cp-art" src="/emoji/hello.webp" alt="" width="96" height="96"><h2 id="camPrepT"></h2><p class="cp-p"></p><p class="cp-how hint"></p>'
+        + '<div class="cp-btns"><button class="btn primary" type="button" data-v="go"></button><button class="btn" type="button" data-v="import"></button><button class="linkbtn" type="button" data-v="no"></button></div></div>';
+      const st = document.createElement('style'); st.textContent = '.camprep .card{text-align:center}.camprep .cp-art{display:block;width:96px;height:96px;margin:0 auto 6px;object-fit:contain}.camprep h2{margin:0 0 8px}.camprep .cp-p{margin:0 0 10px;line-height:1.45}.camprep .cp-how{margin:0 0 12px;text-align:left}.camprep .cp-how:empty{display:none}.camprep .cp-btns{display:flex;flex-direction:column;gap:10px}.camprep .cp-btns .btn{width:100%;min-height:52px}.camprep .linkbtn{min-height:44px}';
+      box.appendChild(st); document.body.appendChild(box);
+    }
+    setT($('#camPrepT'), denied ? 'cam.prepDeniedT' : 'cam.prepT');
+    setT($('.cp-p', box), denied ? 'cam.prepDeniedP' : 'cam.prepP');
+    $('.cp-how', box).textContent = denied ? _t(/iPhone|iPad|iPod/.test(navigator.userAgent) ? 'cam.blockedIos' : 'cam.blocked') : '';
+    const [go, imp, no] = $$('.cp-btns button', box);
+    setT(go, denied ? 'cam.prepRetry' : 'cam.prepGo'); setT(imp, 'cam.prepImport'); setT(no, 'cancel');
+    box.hidden = false; modalOn(true); try { go.focus({ preventScroll: true }); } catch(e){}
+    const done = v => { box.hidden = true; modalOn(false); box.onkeydown = null; $$('.cp-btns button', box).forEach(b => b.onclick = null); res(v); };
+    // « Importer » opens the picker within the tap itself (iOS wants the tap for it)
+    $$('.cp-btns button', box).forEach(b => b.onclick = () => { if (b.dataset.v === 'import') $('#takeFiles').click(); done(b.dataset.v); });
+    box.onkeydown = e => { if (e.key === 'Escape'){ e.preventDefault(); done('no'); } };
+  });
+}
+async function openCamera(again){
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ say('cam.nosupport'); return; }
+  if (!window.claude && again !== true && !(await camGranted())){
+    const v = await camPrep(false);
+    if (v !== 'go') return;
+  }
   camWanted = true; soundAlways();
   try {
     recStream = await camStream(camFacing);
@@ -7066,11 +7132,17 @@ async function openCamera(){
     camWanted = false; soundAlways();
     diag('caméra refusée (' + why + ')');
     if (window.claude) say('cam.claude');
-    else if (why === 'NotAllowedError') say(/iPhone|iPad|iPod/.test(navigator.userAgent) ? 'cam.blockedIos' : 'cam.blocked');
+    else if (why === 'NotAllowedError'){
+      try { store.set(CAM_OK_KEY, false); } catch(e){}
+      say(/iPhone|iPad|iPod/.test(navigator.userAgent) ? 'cam.blockedIos' : 'cam.blocked');
+      // refused: how to allow it again, or the videos already on the phone instead
+      camPrep(true).then(v => { if (v === 'go') openCamera(true); });
+    }
     else if (why === 'NotReadableError') say('cam.busy');
     else say('cam.fail', { why });
     return;
   }
+  try { store.set(CAM_OK_KEY, true); } catch(e){}
   camShow(); recUi('idle'); recGoUi();
   // (Clarity 24/11) a camera that is open but shows nothing (used by another app, iPhone in low power): said plainly after 4 s
   clearTimeout(camWatch); camWatch = setTimeout(() => { const v = $('#recVideo'); if (recStream && v && !v.videoWidth){ diag('caméra : aucune image après 4 s'); say('cam.black'); } }, 4000);
@@ -8010,7 +8082,7 @@ function expRunClear(){ S.expMarked = null; try { localStorage.removeItem(EXP_RU
 addEventListener('pagehide', () => { if (!S.exporting || S.cancel) return; acctEvent('export_fail', { cat: 'closed', x: expX() }); expRunClear(); });
 // an export that failed is made again once by itself: for these reasons (a cancel or a browser that cannot export are not)
 function expRetryable(cat, e){ return ['hidden', 'decoder', 'encoder', 'memory', 'other'].includes(cat) && !String(e && e.message || '').includes(_t('exp.nosupport')); }
-function beginExport(again){ clearTimeout(ppTimer); ppTimer = 0; ppClose(); if (!again) acctEvent('export_start', { cat: isClip() ? 'clip' : 'reel' }); S.expP = 0; S.expX = { t0: performance.now(), st: 'start', path: null }; expOpen(); stop(true); S.exporting = true; S.leftDuring = false; wakeOn(); liveTidy(); nearClear('#expNear'); nearClear('#dvSlot'); nearClear('#packBox');   /* the preview's decoders let go: the export gets the graphics chip to itself */
+function beginExport(again){ if (WOW.on) return; clearTimeout(ppTimer); ppTimer = 0; ppClose(); if (!again){ acctEvent('export_start', { cat: isClip() ? 'clip' : 'reel' }); stepEv('step_export_start'); } S.expP = 0; S.expX = { t0: performance.now(), st: 'start', path: null }; expOpen(); stop(true); S.exporting = true; S.leftDuring = false; wakeOn(); liveTidy(); nearClear('#expNear'); nearClear('#dvSlot'); nearClear('#packBox');   /* the preview's decoders let go: the export gets the graphics chip to itself */
   resultPark();
   S.takes.forEach(t => { if (t.orig && !t.orig.parentNode) $('#vpool').append(t.orig); }); S.cancel = false; setBusy(true); progress(0); $('#cancelBtn').hidden = false; $('#result').hidden = true; }
 /* the video already made, during a new export: stopped and let go of (a video playing behind kept its sound going, and on
@@ -8267,7 +8339,7 @@ async function exportOne(again){
     lastName = 'stalak-' + (isClip() ? 'clip-' : '') + 'v' + S.version + '-' + S.fmt + '.' + ext;
     const rv = $('#resultVideo'); rv.src = URL.createObjectURL(lastBlob); rv.hidden = false;
     $('#result').hidden = false; postShow(); setT('#saveNote', ext === 'mp4' ? (isClip() ? 'save.mp4clip' : 'save.mp4reel') : 'save.webm');
-    say('exp.ready', { mb: (lastBlob.size/1048576).toFixed(1) }); acctEvent('export_ok', { cat: isClip() ? 'clip' : 'reel' }); if (again) acctEvent('export_saved', { cat: again });
+    say('exp.ready', { mb: (lastBlob.size/1048576).toFixed(1) }); acctEvent('export_ok', { cat: isClip() ? 'clip' : 'reel' }); stepEv('step_export_ok'); if (again) acctEvent('export_saved', { cat: again });
     wmUI();
     // (the example's videos do not count: the offer is for the first video of the person's own)
     if (!S.lastDemo){ S.okCount = (S.okCount || 0) + 1; if (S.okCount === 1) S.okFirst = lastBlob; } proOfferUi();
@@ -8353,7 +8425,7 @@ async function exportPackRun(){
     diag('pack : ' + N + ' vidéos en ' + ((performance.now() - T0) / 1000).toFixed(1) + ' s');
     if (S.expX) S.expX.st = 'file'; lastBlob = makeZip(files); lastName = 'pack-' + N + '-videos.zip'; resultDone();
     { const rv = $('#resultVideo'); rv.removeAttribute('src'); rv.hidden = true; } $('#result').hidden = false; postShow(); setT('#saveNote', 'pack.zip', { n: N, mb: (lastBlob.size/1048576).toFixed(0) });
-    say('pack.ready', { n: N }); acctEvent('export_ok', { cat: 'reel' }); made = true;
+    say('pack.ready', { n: N }); acctEvent('export_ok', { cat: 'reel' }); stepEv('step_export_ok'); made = true;
   } catch(e){ diag('pack : ' + (e && e.message || e)); resultBack(); acctEvent('export_fail', { cat: expFailCat(e), x: expX() }); expFailSay(e, 'pack.cancelled', 'pack.fail'); }
   renderTimeline(); endExport(made);
 }
@@ -8872,11 +8944,17 @@ function renderModeUI(){
 const wordsKey = () => timedLines().map(l => l.t.toFixed(2)).join(',');
 function go(n){
   if (!canGo(n) || S.exporting) return;
+  // the wow (above): from the song to the takes the first time; leaving its preview another way takes its example's takes away
+  if (n === 2 && S.step === 1 && wowShould()){ wowStart(); return; }
+  if (WOW.on && n !== 4 && S.takes.some(t => t.wow)){ wowClear(); if (n !== 1 && !canGo(n)) n = 2; }
   stop(true); if (tapping){ tapping = false; } if (beatOn) beatTestEnd(); if (n !== 1 && tapT.taps.length) tapReset();
   if (n !== 2 && recStream) closeCamera();
   // which way the steps glide: forward from the right, back from the left (CSS only)
   if (n !== S.step) $('.wrap').dataset.dir = n < S.step ? 'back' : 'fwd';
   if (n !== S.step) stepAt = performance.now();
+  if (n >= 2 && S.step === 1) stepEv('step_passage');
+  if (n === 3) stepEv('step_lyrics');
+  if (n === 4 && S.takes.some(t => !t.broll && !t.demoReal && t.kind !== 'demo')) stepEv('step_preview');
   S.step = n; setTimeout(() => expLookNow(), 0); $('#p1').hidden = n !== 1; $('#p2').hidden = n !== 2; $('#work').hidden = n < 3; $('#p3').hidden = n !== 3; $('#p4').hidden = n !== 4;
   $('#shuffleBtn').hidden = n !== 4;
   if (n === 3) lyricsView();
@@ -9364,7 +9442,7 @@ $('#fxRow').addEventListener('pointerdown', e => {
 });
 $('#fxRow').addEventListener('keydown', e => { const m = e.target.closest && e.target.closest('.fxm'); if (m && e.key === 'Enter'){ e.preventDefault(); selectFx(+m.dataset.t); } });
 $('#cutLock').onclick = () => { const c = S.cuts[S.sel]; if (!c) return; lockCut(c, !c.locked); renderTimeline(); renderCutBar(); };
-$('#recOpen').onclick = openCamera;
+$('#recOpen').onclick = () => openCamera();
 $('#recClose').onclick = closeCamera;
 $('#recFlip').onclick = camFlip;
 $('#recFlash').onclick = () => camFlashSet(!camFlash);
@@ -9457,12 +9535,14 @@ async function loadSongFile(f){
     if (S.song && S.song.demo){ for (const tk of S.takes.slice()) if (tk.demoReal) removeTake(tk); S.takes = []; S.lyrics.lines = []; }
     await setSong(buf, f.name.replace(/\.[^.]+$/, ''), false);
     S.song.file = f;   // kept for the online saving (Pro)
+    S.song.wowFresh = true;   // a song just picked by the person: the wow can show it (never a project brought back)
     S.takes.forEach(alignTake);
     const prevLines = S.lyrics.lines;
     const saved = store.get(lyricsKey()); S.lyrics.lines = Array.isArray(saved) && saved.length ? saved : prevLines.filter(l => l.text && l.text.trim()).map(l => ({ text: l.text, t: null }));
     $('#lyText').value = S.lyrics.lines.map(l => l.text).join('\n');
     $('#songBox').hidden = false; setT($('#songDrop').querySelector('strong'), 'song.change');
-    rebuild(false); say('song.tempo', { bpm: S.song.bpm.toFixed(1) });
+    rebuild(false); say('song.tempo', { bpm: S.song.bpm.toFixed(1) }); stepEv('step_song');
+    if (wowShould()) wowFiles().catch(() => {});   // the example's takes, ready for the wow
   } catch(err){ diag('son : ' + (err && err.message || err)); status(''); sayNear('#songNear', err && err.noSound ? 'song.nosound' : 'song.bad'); }
 }
 /* computer: the file can be dropped on the import square (it turns to ice while a file is over it) */
@@ -9499,6 +9579,61 @@ $('#brollFiles').onchange = async e => {
   { const n = files.length; say(() => tn('broll.added', n)); }
   e.target.value = '';
 };
+/* (26/11, « le wow en moins d'une minute », docs/handoff/chef-activation-rapide.md, n° 1) the wow before the effort: right
+   after the song and its passage, 10 s of HER song cut on the beat with the example's takes (demo/example, the same as the
+   example), then « Maintenant, filme les tiennes ». Once per song; the takes of the example go away before step 2 and are never
+   kept (lpWorth) nor exported. The rest of the way does not change. */
+const WOW = { files: null, done: new WeakSet(), on: false, t: 0, box: null };
+// the buttons of the 3 cards of 26/11 (the wow, the camera, « Montages » empty): Stalak's blue button, a white one, a link
+{ const st = document.createElement('style'); st.textContent = '.wowbox .btn,.camprep .btn,.gal-start .btn{display:flex;align-items:center;justify-content:center;text-align:center;border:3px solid var(--ink);border-radius:18px;box-shadow:0 4px 0 var(--ink);font:800 16px/1.15 var(--body);padding:8px 16px;background:#fff;color:var(--ink)}'
+  + '.wowbox .btn.primary,.camprep .btn.primary,.gal-start .btn.primary{background:#1f6fd6;color:#fff}'
+  + '.wowbox .btn::before,.wowbox .btn::after,.camprep .btn::before,.camprep .btn::after,.gal-start .btn::before,.gal-start .btn::after{display:none !important}'
+  + '.wowbox .linkbtn,.camprep .linkbtn,.gal-start .linkbtn{display:inline-flex;align-items:center;justify-content:center;width:auto;background:none;border:0;box-shadow:none;padding:0 10px;color:#1f6fd6;font:700 14.5px/1 var(--body);text-decoration:underline;text-underline-offset:3px}';
+  document.head.appendChild(st); }
+function wowShould(){ return !!S.song && !S.song.demo && !!S.song.wowFresh && !LP.applying && HELP_SITE && !window.claude && !WOW.on && !WOW.done.has(S.song) && !S.takes.some(t => !t.broll); }
+function wowFiles(){ if (!WOW.files) WOW.files = demoRealFiles().catch(e => { WOW.files = null; throw e; }); return WOW.files; }
+function wowBox(){
+  if (WOW.box) return WOW.box;
+  const b = document.createElement('div'); b.className = 'wowbox'; b.id = 'wowBox'; b.hidden = true; b.setAttribute('role', 'dialog'); b.setAttribute('aria-labelledby', 'wowT');
+  b.innerHTML = '<div class="card"><span class="wow-tag"></span><h2 id="wowT"></h2><p class="wow-p"></p><button class="btn primary" type="button" id="wowGo"></button><button class="linkbtn" type="button" id="wowAgain"></button></div>';
+  const st = document.createElement('style');
+  st.textContent = '.wowbox{position:fixed;left:0;right:0;bottom:0;z-index:70;padding:0 12px max(12px,env(safe-area-inset-bottom,0px));pointer-events:none}.wowbox[hidden]{display:none}'
+    + '.wowbox .card{pointer-events:auto;max-width:520px;margin:0 auto;text-align:center;animation:mo-dialog var(--dur-3) var(--ease-out) both}'
+    + '.wow-tag{display:inline-block;margin:0 0 6px;padding:4px 10px;border:2px solid var(--ink);border-radius:999px;background:#ffd23f;font:800 12.5px/1 var(--body);color:var(--ink)}'
+    + '.wowbox .card{padding:14px 16px 10px}.wowbox h2{margin:0 0 4px;font-size:22px}.wowbox .wow-p{margin:0 0 10px;font-size:14.5px;line-height:1.35}.wowbox .btn{width:100%;min-height:54px}.wowbox .linkbtn{min-height:44px;margin-top:4px}'
+    + 'body.wowon #expFab,body.wowon .m3-bar,body.wowon .m3-tools,body.wowon #m3Bar{visibility:hidden}';
+  b.appendChild(st); document.body.appendChild(b);
+  $('#wowGo', b).onclick = () => wowEnd(true);
+  $('#wowAgain', b).onclick = () => wowPlay();
+  return (WOW.box = b);
+}
+function wowPlay(){ clearTimeout(WOW.t); play(S.segStart); WOW.t = setTimeout(() => { if (WOW.on) stop(true); }, 10000); }
+async function wowStart(){
+  WOW.on = true; const song = S.song; say('wow.prep');
+  let R = null; try { R = await wowFiles(); } catch(e){ diag('aperçu sur l’exemple : indisponible (' + (e && e.message || e) + ')'); }
+  if (!R || S.song !== song || S.takes.some(t => !t.broll)){ WOW.on = false; WOW.done.add(song); status(''); go(2); return; }
+  for (let i = 0; i < R.takes.length; i++){
+    await addVideo(R.takes[i]); const tk = S.takes[S.takes.length - 1]; if (!tk) continue;
+    // the example's take placed at the start of the passage: its picture runs along the person's song
+    tk.demoReal = true; tk.wow = true; tk.name = _t('demo.takeN', { n: i + 1 }); tk.offset = S.segStart; tk.status = 'ok'; tk.cands = null;
+  }
+  if (S.song !== song){ wowClear(); return; }
+  renderTakes(); rebuild(false);
+  if (!canGo(4)){ wowClear(); WOW.done.add(song); go(2); return; }
+  go(4); status('');
+  const b = wowBox(); setT($('.wow-tag', b), 'wow.tag'); setT('#wowT', 'wow.t'); setT($('.wow-p', b), 'wow.p'); setT('#wowGo', 'wow.go'); setT('#wowAgain', 'wow.again');
+  b.hidden = false; document.body.classList.add('wowon'); try { $('#wowGo').focus({ preventScroll: true }); } catch(e){}
+  stepEv('step_preview');
+  wowPlay();
+}
+// the example's takes go away (nothing of them is kept)
+function wowClear(){
+  clearTimeout(WOW.t); try { stop(true); } catch(e){}
+  for (const tk of S.takes.slice()) if (tk.wow) removeTake(tk);
+  if (WOW.box) WOW.box.hidden = true; document.body.classList.remove('wowon');
+  if (S.song) WOW.done.add(S.song); WOW.on = false; rebuild(false); renderTakes();
+}
+function wowEnd(toTakes){ wowClear(); if (toTakes) go(2); }
 let demoLoading = false;
 $('#demoBtn').onclick = async () => {
   if (S.exporting || demoLoading) return;
@@ -10278,6 +10413,18 @@ const WHY_FEATURE = { lyrics: 'lyrics', pack: 'pack5', pack5: 'pack5', pack10: '
    acctEvent('export_ok'), acctEvent('export_fail', {cat: 'memory'|'decoder'|'hidden'|'cancel'|'other'}), acctEvent('pro_offer') (the Pro
    offer after the 1st video, App), acctEvent('ad_offer'), acctEvent('ad_shown') (the ad really on screen, App), acctEvent('ad_ok')…
    Nothing about the person or the video; never fails, works signed out (account.js event()). */
+/* (26/11, « le wow en moins d'une minute », docs/handoff/chef-activation-rapide.md, n° 5) the steps of one visit, each once,
+   anonymous (POST /api/event, closed list of Comptes): step_song, step_passage, step_take1, step_take3, step_preview (the
+   activation: the first time the person sees her song cut on the beat; with the time since she arrived, as a bucket),
+   step_lyrics, step_export_start, step_export_ok. Never with the example alone. */
+const STEP_SENT = new Set();
+function stepEv(name){
+  if (STEP_SENT.has(name) || !S.song || S.song.demo) return; STEP_SENT.add(name);
+  let extra;
+  if (name === 'step_preview'){ const s = performance.now() / 1000; extra = { cat: s < 30 ? 's30' : s < 60 ? 's60' : s < 120 ? 's120' : s < 300 ? 's300' : 'slong' }; }
+  acctEvent(name, extra);
+}
+function stepTakes(){ const n = S.takes.filter(t => !t.broll && !t.demoReal && t.kind !== 'demo').length; if (n >= 1) stepEv('step_take1'); if (n >= 3) stepEv('step_take3'); }
 function acctEvent(name, extra){ try {
   if (VISIT_ID && (name === 'export_ok' || name === 'ad_ok')) extra = Object.assign({}, extra, { vid: VISIT_ID });
   if (ACCT && ACCT.event) ACCT.event(name, extra); } catch(e){} }
@@ -11194,6 +11341,7 @@ function clSync(){
   // the Galerie: the grid for Pro; « Réservé à Stalak Pro » otherwise (an ex-Pro: his projects are kept 6 months)
   const locked = !!u && (!pro || !!CL.locked);
   $('#apProjects').hidden = !u || locked; $('#galLock').hidden = !locked;
+  galStartUi(locked);
   if (locked) setT('#galLockP', st.subscription ? 'gal.lockEx' : 'gal.lockFree');
   $('#clSoon').hidden = !soon; $('#clSoonP').hidden = !soon;
   const stg = CL.storage, q = $('#clQuota');
@@ -11223,13 +11371,33 @@ async function clLoadList(){
   } catch(e){ if (e && e.code === 'pro_required') CL.locked = true; else CL.listErr = true; diag('mes projets : ' + (e && (e.code || e.message))); }
   clSync(); clRenderList();
 }
+/* (26/11, « le wow en moins d'une minute », n° 4) « Montages » with nothing in it guides: the mascot, « Choisir mon son » and
+   the example. Shown when there is no project to show (no online saving, or an empty list). */
+function galStartUi(locked){
+  const gv = $('#apGallery'); if (!gv) return;
+  let c = $('#galStart');
+  if (!c){
+    c = document.createElement('div'); c.className = 'card ap-card gal-start'; c.id = 'galStart'; c.hidden = true;
+    c.innerHTML = '<img class="ap-emo" src="/emoji/hello.webp" alt="" width="104" height="104"><h3 class="gs-t"></h3><p class="hint gs-p"></p><div class="gs-btns"><button class="btn primary" type="button" id="galSong"></button><button class="linkbtn" type="button" id="galEx"></button></div>';
+    const st = document.createElement('style'); st.textContent = '.gal-start{text-align:center}.gal-start .ap-emo{display:block;margin:0 auto 6px}.gal-start .gs-t{margin:0 0 6px}.gal-start .gs-p{margin:0 0 14px}.gal-start .gs-btns{display:flex;flex-direction:column;align-items:center;gap:10px}.gal-start .btn{width:100%;min-height:52px}.gal-start .linkbtn{min-height:44px}';
+    c.appendChild(st);
+    const anchor = $('#galLock'); anchor.parentNode.insertBefore(c, anchor);
+    $('#galSong', c).onclick = () => { if (S.exporting) return; if (ACCT) apHide(); songPick(); };
+    $('#galEx', c).onclick = () => { if (S.exporting) return; if (ACCT) apHide(); $('#demoBtn').click(); };
+  }
+  setT($('.gs-t', c), 'gal.startT'); setT($('.gs-p', c), 'gal.startP'); setT('#galSong', 'gal.startSong'); setT('#galEx', 'gal.startEx');
+  const empty = !!CL && Array.isArray(CL.list) && !CL.list.length;
+  c.hidden = !(locked || empty || !(ACCT && ACCT.state.user));
+}
 function clRenderList(){
   if (!CL) return;
   const ul = $('#clList'), empty = $('#clEmpty'); ul.textContent = ''; galMenuClose();
   if (CL.avail === false){ empty.hidden = true; return; }
   if (CL.locked){ empty.hidden = true; return; }   // the « Réservé à Stalak Pro » card says it (clSync)
   const list = CL.list;
-  if (!list || !list.length){ empty.hidden = false; setT(empty, CL.listErr ? 'cl.listErr' : !list ? 'cl.loading' : 'gal.empty'); return; }
+  galStartUi(CL.locked);
+  // an empty list: the « Ton premier montage » card says it (galStartUi)
+  if (!list || !list.length){ empty.hidden = !!list && !CL.listErr; setT(empty, CL.listErr ? 'cl.listErr' : !list ? 'cl.loading' : 'gal.empty'); return; }
   empty.hidden = true;
   const mk = (tag, cls, key, vars) => { const e = document.createElement(tag); if (cls) e.className = cls; if (key) setT(e, key, vars); return e; };
   // most recent first (the server sorts them by last save)
@@ -11745,10 +11913,12 @@ const lpKeys = st => lpReq(st, 'readonly', o => o.getAllKeys());
 // a file's name in this store: given once per file of this visit (the files read back from the store keep theirs)
 async function lpFp(f){ let id = LP.fp.get(f); if (!id){ id = 'f' + Date.now().toString(36) + (++LP.n).toString(36) + Math.random().toString(36).slice(2, 6); LP.fp.set(f, id); } return id; }
 // worth keeping: a song and at least one take of the person (the example alone is not kept)
-function lpWorth(){ return !!S.song && S.takes.length > 0 && !demoOnly(); }
+// (26/11, « le wow en moins d'une minute », n° 2) a song of the person is worth keeping already, before any take: she finds it
+// again with its passage after a call or a step back
+function lpWorth(){ return !!S.song && !S.song.demo && !demoOnly() && !WOW.on && !S.takes.some(t => t.demoReal || t.wow || t.kind === 'demo'); }   // never during the wow (its example's takes come in one by one)
 // a quick look at what makes the edit (read at once, when the page is about to go)
 function lpQuick(){
-  try { return JSON.stringify([S.kind, S.fmt, S.filter, S.segStart, S.segEnd, S.seed, S.version, S.pace, S.mode, S.brollAmt, S.fxLevel, S.fxUser,
+  try { return JSON.stringify([S.step, S.kind, S.fmt, S.filter, S.segStart, S.segEnd, S.seed, S.version, S.pace, S.mode, S.brollAmt, S.fxLevel, S.fxUser,
     S.cuts.map(c => [c.t0, c.t1, S.takes.indexOf(baseOf(c.take)), !!c.locked]), S.lyrics.mode, S.lyrics.lines, S.lyrics.style,
     S.takes.map(t => [t.name, t.offset, t.excl && t.excl.length, !!t.mirror])]); } catch(e){ return null; }
 }
@@ -11758,7 +11928,7 @@ async function lpSave(now){
   if (S.takes.some(t => t.status === 'pending')) return;
   const quick = lpQuick();
   let col; try { col = await clCollect(lpFp); } catch(e){ return; }
-  const sig = asSig(col.state);
+  const sig = asSig(col.state) + '|' + S.step;   // the step too (26/11): the person comes back where she was
   if (sig === LP.saved){ LP.pending = null; LP.quick = quick; return; }
   // changed: kept once it stays the same for one more look (now: the page is being hidden)
   if (!now && sig !== LP.pending){ LP.pending = sig; return; }
@@ -11767,7 +11937,7 @@ async function lpSave(now){
     const have = new Set(await lpKeys('media')), keep = new Set(col.media.map(m => m.id));
     for (const m of col.media){ if (have.has(m.id)) continue; if (S.exporting) throw new Error('export'); await lpPut('media', m.id, m.file); }
     await lpPut('kv', 'last', { state: col.state, files: col.media.map(m => ({ id: m.id, name: m.file.name || 'video', type: m.file.type || '', lastModified: m.file.lastModified || 0 })),
-      at: Date.now(), name: lpName(), takes: S.takes.filter(t => !t.broll).length });
+      at: Date.now(), name: lpName(), takes: S.takes.filter(t => !t.broll).length, step: S.step });
     for (const k of have) if (!keep.has(k)) await lpDel('media', k);
     LP.saved = sig; LP.pending = null; LP.quick = quick;
   } catch(e){
@@ -11821,8 +11991,10 @@ async function lpResume(){
       LP.fp.set(f, r.id); files.set(r.id, f);
     }
     const gated = await clApply(last.state, files);
+    // back at the step where the person was (26/11): the song, the takes or the edit
+    { const st = [1, 2, 3, 4].includes(last.step) ? last.step : 4; if (S.step !== st && canGo(st)) go(st); else if (!S.cuts.length && S.step === 4) go(S.takes.length ? 2 : 1); }
     LP.offered = null; $('#lpOffer').hidden = true;
-    LP.quick = lpQuick(); LP.saved = asSig((await clCollect(lpFp)).state);
+    LP.quick = lpQuick(); LP.saved = asSig((await clCollect(lpFp)).state) + '|' + S.step;
     say(gated ? 'cl.clipNoPro' : 'lp.done', { name: last.name });
     diag('projet dans le téléphone : repris (' + last.files.length + ' fichier(s))');
   } catch(e){

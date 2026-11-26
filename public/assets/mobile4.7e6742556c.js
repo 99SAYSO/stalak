@@ -20,7 +20,7 @@ function shown(e){ return !!(e && e.getClientRects().length); }
 
 var TX = {
 fr: { skip: 'Passer', next: 'Suivant', go: 'C’est parti !', t1: 'Choisis ton son', p1: 'Garde le passage que tu veux poster.', bpm: '144 BPM', sec: '24 secondes choisies',
-  t2: 'Filme tes prises', p2: 'Le même passage, sous plusieurs angles.', take: 'Prise {n}', t3: 'Stalak coupe', t3b: 'sur le rythme', p3: 'Tout seul. Lèvres synchro.',
+  t2: 'Filme tes prises', p2: 'Le même passage, sous plusieurs angles.', take: 'Prise {n}', t3: 'Stalak coupe', t3b: 'sur le rythme', p3: 'Tout seul, lèvres synchro, prêt pour TikTok et Reels.',
   t4: 'Exporte et poste', p4: 'Ta vidéo est prête pour TikTok et Reels.', again: 'Revoir le tutoriel', tuto: 'Tutoriel',
   hT: 'Le glaçon d’aide', hS: 'Répond tout de suite', today: 'Aujourd’hui', back: 'Retour', close: 'Fermer',
   pwT: 'Fais décoller {ts}', pwTs: 'ton son', or: 'ou', nothing: 'Rien à payer aujourd’hui · Annulable en 1 geste', payY: '{y} par an. Annulable à tout moment.', payM: '{m} par mois. Annulable à tout moment.', best: 'Meilleur prix · -{p} %', year: 'Pro · à l’année', month: 'Pro · au mois', free: '{n} jours gratuits',
@@ -30,7 +30,7 @@ fr: { skip: 'Passer', next: 'Suivant', go: 'C’est parti !', t1: 'Choisis ton s
   thxT: 'Bienvenue dans Stalak {plan} !', thxP: 'Plus de filigrane. Tous les effets et les paroles automatiques sont débloqués.',
   thxPc: 'Plus de filigrane. Les effets, les paroles automatiques, les packs et la sauvegarde en ligne sont débloqués.', thxGo: 'Faire un montage', thxPlan: 'Voir ma formule' },
 en: { skip: 'Skip', next: 'Next', go: 'Let’s go!', t1: 'Pick your song', p1: 'Keep the part you want to post.', bpm: '144 BPM', sec: '24 seconds picked',
-  t2: 'Film your takes', p2: 'The same part, from several angles.', take: 'Take {n}', t3: 'Stalak cuts', t3b: 'to the beat', p3: 'By itself. Lips in sync.',
+  t2: 'Film your takes', p2: 'The same part, from several angles.', take: 'Take {n}', t3: 'Stalak cuts', t3b: 'to the beat', p3: 'By itself, lips in sync, ready for TikTok and Reels.',
   t4: 'Export and post', p4: 'Your video is ready for TikTok and Reels.', again: 'See the tutorial again', tuto: 'Tutorial',
   hT: 'The help ice cube', hS: 'Answers right away', today: 'Today', back: 'Back', close: 'Close',
   pwT: 'Make {ts} take off', pwTs: 'your song', or: 'or', nothing: 'Nothing to pay today · Cancel in 1 tap', payY: '{y} a year. Cancel anytime.', payM: '{m} a month. Cancel anytime.', best: 'Best price · -{p}%', year: 'Pro · yearly', month: 'Pro · monthly', free: '{n} days free',
@@ -193,24 +193,23 @@ function addAgain(){
   h.parentNode.insertBefore(a, h.nextSibling); a.onclick = function(){ tuOpen(true); };
 }
 
-/* ---- the tutorial: 4 screens at the first launch (after the onboarding), and from the profile ---------------------------- */
+/* ---- the tutorial (26/11, Chef: 3 screens at most, one message each, each can be skipped): 3 screens at the first launch (after the onboarding), and from the profile ---------------------------- */
 function tuOpen(again){
   if (tu) return; build();
   var waves = ''; for (var i = 0; i < 34; i++){ var h = 18 + Math.round(Math.abs(Math.sin(i * 1.7) * 60 + Math.sin(i * 0.6) * 18)); waves += '<i class="' + (i >= 10 && i < 24 ? 'in' : '') + '" style="height:' + h + 'px"></i>'; }
   tu = el('div', 'm4-tu'); tu.setAttribute('role', 'dialog'); tu.setAttribute('aria-modal', 'true'); tu.setAttribute('aria-label', t('tuto'));
-  tu.innerHTML = '<div class="m4-tt"><div class="m4-bars"><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i></div><button type="button" class="m4-skip"></button></div>'
+  tu.innerHTML = '<div class="m4-tt"><div class="m4-bars"><i><b></b></i><i><b></b></i><i><b></b></i></div><button type="button" class="m4-skip"></button></div>'
     + '<div class="m4-sl">'
     + '<section class="m4-s" data-i="0"><div class="m4-art"><div class="m4-card"><div class="m4-meta"><span>' + esc(t('bpm')) + '</span><span>' + esc(t('sec')) + '</span></div><div class="m4-wave">' + waves + '<span class="m4-sel"></span></div></div></div><h2>' + esc(t('t1')) + '</h2><p>' + esc(t('p1')) + '</p></section>'
     + '<section class="m4-s" data-i="1"><div class="m4-art"><div class="m4-takes"><div>' + esc(t('take', { n: 1 })) + '</div><div>' + esc(t('take', { n: 2 })) + '</div><div>' + esc(t('take', { n: 3 })) + '</div></div></div><h2>' + esc(t('t2')) + '</h2><p>' + esc(t('p2')) + '</p></section>'
     + '<section class="m4-s" data-i="2"><div class="m4-art"><div class="m4-big" aria-hidden="true">✂️</div></div><h2>' + esc(t('t3')) + ' <b>' + esc(t('t3b')) + '</b></h2><p>' + esc(t('p3')) + '</p></section>'
-    + '<section class="m4-s" data-i="3"><div class="m4-art"><div class="m4-big ok" aria-hidden="true">✓</div></div><h2>' + esc(t('t4')) + '</h2><p>' + esc(t('p4')) + '</p></section>'
     + '</div><button type="button" class="m4-cta"></button>';
   D.body.appendChild(tu); root.classList.add('m4tu');
   var cur = -1, last = D.activeElement;
   $('.m4-skip', tu).textContent = t('skip');
   function show(i){
     var from = cur >= 0 ? $('.m4-s[data-i="' + cur + '"]', tu) : null, to = $('.m4-s[data-i="' + i + '"]', tu); cur = i;
-    $('.m4-cta', tu).textContent = t(i === 3 ? 'go' : 'next'); $('.m4-skip', tu).hidden = i === 3;
+    $('.m4-cta', tu).textContent = t(i === 2 ? 'go' : 'next'); $('.m4-skip', tu).hidden = i === 2;
     $$('.m4-bars b', tu).forEach(function(b, k){ var on = k <= i; if (!M.play(function(g){ return g.to(b, { scaleX: on ? 1 : 0, duration: 0.4, ease: 'power2.out' }); })) b.style.transform = 'scaleX(' + (on ? 1 : 0) + ')'; });
     to.classList.add('on');
     var tl = M.play(function(g){ var tl = g.timeline();
@@ -226,12 +225,12 @@ function tuOpen(again){
   function end(){ store.set('stalak:tuto', '1'); var box = tu; tu = null;
     var fin = function(){ box.remove(); root.classList.remove('m4tu'); try { last && last.focus && last.focus(); } catch(e){} W.__stalakTutoDone = 1; };
     if (!M.play(function(g){ return g.to(box, { opacity: 0, y: 30, duration: 0.25, ease: 'power2.in', onComplete: fin }); })) fin(); }
-  $('.m4-cta', tu).onclick = function(){ if (cur < 3) show(cur + 1); else end(); };
+  $('.m4-cta', tu).onclick = function(){ if (cur < 2) show(cur + 1); else end(); };
   $('.m4-skip', tu).onclick = end;
   tu.addEventListener('keydown', function(e){ if (e.key === 'Escape') end(); });
   // a swipe moves too
   var x0 = null; tu.addEventListener('touchstart', function(e){ x0 = e.touches[0].clientX; }, { passive: true });
-  tu.addEventListener('touchend', function(e){ if (x0 == null) return; var dx = e.changedTouches[0].clientX - x0; x0 = null; if (dx < -50 && cur < 3) show(cur + 1); else if (dx > 50 && cur > 0) show(cur - 1); }, { passive: true });
+  tu.addEventListener('touchend', function(e){ if (x0 == null) return; var dx = e.changedTouches[0].clientX - x0; x0 = null; if (dx < -50 && cur < 2) show(cur + 1); else if (dx > 50 && cur > 0) show(cur - 1); }, { passive: true });
   M.play(function(g){ return g.fromTo(tu, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power2.out', clearProps: 'opacity' }); });
   show(0);
 }

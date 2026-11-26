@@ -3236,6 +3236,21 @@ test('Turnstile: off without keys; with keys, sign-up and forgot password need a
   } finally { extraFetch = null; }
 });
 
+test('steps of a visit (26/11): step_* accepted, per device, the time to the wow as a bucket only', async () => {
+  const env = makeEnv(ADMIN_ENV);
+  const iphone = { 'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Version/17.0 Mobile/15E148 Safari/604.1' };
+  for (const [name, extra, headers] of [['step_song', {}, iphone], ['step_passage', {}, iphone], ['step_take1', {}, {}], ['step_take3', {}, {}],
+    ['step_preview', { cat: 's60' }, iphone], ['step_preview', { cat: 'evil' }, {}], ['step_lyrics', {}, {}], ['step_export_start', {}, {}], ['step_export_ok', {}, iphone]]) {
+    const r = await call(env, 'POST', '/api/event', { body: { name, ...extra }, ip: '10.61.0.1', headers });
+    assert.equal(r.status, 200, name + JSON.stringify(r.data));
+  }
+  const n = (k) => (env.DB.raw.prepare('SELECT SUM(n) AS n FROM daily_counts WHERE name = ?').get(k) || {}).n || 0;
+  assert.equal(n('ev_step_preview'), 2); assert.equal(n('ev_step_preview_s60'), 1, 'a known bucket only');
+  assert.equal(n('ev_st_ios_step_song'), 1); assert.equal(n('ev_st_desktop_step_take1'), 1); assert.equal(n('ev_st_ios_step_export_ok'), 1);
+  const names = env.DB.raw.prepare('SELECT DISTINCT name FROM daily_counts').all().map((x) => x.name);
+  assert.ok(!names.some((x) => /evil/.test(x)), names);
+});
+
 test('funnel: /api/event takes only known names (no cookie needed), counted per day; the dashboard shows the funnel', async () => {
   const env = makeEnv(ADMIN_ENV), token = await accessToken();
   for (const [name, extra] of [['export_start', {}], ['export_ok', { ios: true }], ['export_ok', {}], ['export_fail', { cat: 'memory', ios: true }],

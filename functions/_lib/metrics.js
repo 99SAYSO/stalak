@@ -17,7 +17,12 @@ export const METRICS = ['help_q', 'help_fail', 'cloud_save', 'ticket', 'ticket_m
 export const EVENTS = ['export_start', 'export_ok', 'export_fail', 'export_retry', 'export_saved', 'export_refused', 'clip_ask', 'pro_offer', 'ad_offer', 'ad_shown', 'ad_ok', 'plans_open', 'checkout_open',
   'checkout_close', 'checkout_done',   // 7/11: the payment window closed without buying ({stage}), or paid
   'clip_open',    // audit of 13/11: the Clip mode opened (App sends it once per page, when the person chooses Clip)
-  'consent_yes', 'consent_no'];   // 23/11: the cookie banner answered (consent.js): « Accepter » / « Refuser », nothing else
+  'consent_yes', 'consent_no',
+  // 26/11 (« le wow en moins d'une minute », docs/handoff/chef-activation-rapide.md, n° 5-6): the steps of one visit, each sent
+  // once by the page, never for the example alone. step_preview is the activation: the person sees her song cut on the beat
+  'step_song', 'step_passage', 'step_take1', 'step_take3', 'step_preview', 'step_lyrics', 'step_export_start', 'step_export_ok'];
+// the time from the arrival to step_preview (cat), a bucket only
+export const STEP_TOOK = ['s30', 's60', 's120', 's300', 'slong'];   // 23/11: the cookie banner answered (consent.js): « Accepter » / « Refuser », nothing else
 // why an export failed, as a category only (App sends it): nothing about the person or the video
 // (7/11) + encoder; closed: the page closed during the export; crash: an export that never ended, found at the next visit
 // (the browser closed the tab: usually out of memory on a phone)
@@ -150,6 +155,11 @@ export async function event(request, env, excluded = null) {
     await bump(env, p + (deviceOf(request) || 'desktop'));
     // (7/11, Clip mode) the kind of video: a 16:9 clip or a TikTok / Reels video
     if (body.cat === 'clip' || body.cat === 'reel') await bump(env, p + 'kind_' + body.cat);
+  }
+  // the steps: iPhone / Android / computer apart (ev_st_<device>_<step>), and the time to the activation (ev_step_preview_<bucket>)
+  if (name.startsWith('step_')) {
+    await bump(env, 'ev_st_' + (deviceOf(request) || 'desktop') + '_' + name);
+    if (name === 'step_preview' && STEP_TOOK.includes(body.cat)) await bump(env, 'ev_step_preview_' + body.cat);
   }
   if (name === 'clip_ask') await bump(env, 'ev_clip_ask_' + (['pro', 'reel', 'none'].includes(body.cat) ? body.cat : 'none'));
   if (name === 'plans_open' && typeof body.why === 'string') await bump(env, 'ev_plans_why_' + (EVENT_REASONS.includes(body.why) ? body.why : 'other'));
