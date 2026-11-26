@@ -129,7 +129,7 @@ def signed_out(b, PW, dev, lang):
 def skipped(b, PW, dev, lang):
     """« Passer » at the first question: Stats says what is missing, « Ajouter mes liens » opens the links"""
     tag = dev + ' ' + lang + ' (questionnaire passé)'; t = T[lang]
-    ctx, pg, errs = page(b, PW, dev, lang, email='skip-%s@example.com' % lang, tuto=False)
+    ctx, pg, errs = page(b, PW, dev, lang, email='skip-%s-%d@example.com' % (lang, int(time.time() * 1000)), tuto=False)
     pg.locator('#tabBar [data-tab="stats"]').click(); pg.wait_for_selector('#m2Onb', timeout=8000); pg.wait_for_timeout(800)
     # (26/11, Chef point 10: timed out once in two) the questionnaire slides in: « Passer » is tapped once it stands still, and once
     # more if the tap came during the slide
