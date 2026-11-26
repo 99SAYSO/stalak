@@ -968,3 +968,9 @@ Demande : `docs/handoff/chef-stats-analyse.md`. Contrat avec App : `docs/contrat
 - Source `ai:chatgpt|perplexity|claude|gemini|copilot|other` (ou `ai`) acceptée pour les visites, l'entonnoir et l'inscription ; points permis dans `ref:` / `utm:` (40 caractères). Tableau de bord : une ligne « Assistants IA » avec son détail ; colonne Source dans « Derniers inscrits ».
 - `GET /api/admin/languages` : anglais / français sur 7 et 30 jours (visites, visites de 5 min ou plus, nouveaux comptes, premiers paiements) et abonnés payants.
 - `GET /api/admin/paddle/abandoned?days=7|30` (`functions/_lib/abandoned.js`) : les paiements ouverts et pas payés, lus chez Paddle (`GET /transactions`, origine web, avec l'adresse) : formule, essai, devise, montant, pays, étape, raison du refus. Aucune donnée personnelle renvoyée.
+
+## Test d'acquisition payante (25/11)
+- **Pixel TikTok** (`src/consent.js`), seulement après « Accepter » et si `TIKTOK_PIXEL_ID` est réglé : `page`, `Download` (export), `InitiateCheckout`, `Purchase` (event_id = transaction Paddle, comme le serveur) ou `StartTrial`. « Refuser » ensuite : `revokeConsent` et cookies effacés. `/api/config` → `measure.tiktok` = identifiant du pixel (public).
+- **API de conversion** (`conversions.js`) : évènement `Purchase` (nouveau nom de TikTok).
+- **Source du paiement** : la page envoie `customData.src` (1re source du navigateur, ex. `ref:ttads`) ; gardée dans `payments.source` (migration 0024).
+- **Carte « Test payant »** (`functions/_lib/paidtest.js`) : `GET/POST /api/admin/paid-tests` ; par lien suivi : visites, exports, paiements ouverts, essais, abonnés, reçu, dépensé (saisi), coût par export / par abonné ; budget 150 €. Les codes qui ressemblent à une plateforme sont refusés (proposer `inf-<nom>`).

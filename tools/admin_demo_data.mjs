@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { createD1 } from '../tests/backend/fake-d1.mjs';
 import { seedDashboard } from '../tests/fixtures/dashboard-seed.mjs';
 import { stats, home, signupList, hourly, videosPerPerson } from '../functions/_lib/admin.js';
+import { paidTests } from '../functions/_lib/paidtest.js';
 import { ga4Report, ga4Live } from '../functions/_lib/ga4.js';
 import { clarityDaily, clarityView } from '../functions/_lib/clarity.js';
 import { fakeAnalyticsFetch } from '../tests/fixtures/analytics-fake.mjs';
@@ -55,6 +56,19 @@ out.languages = await languages(env, now);
   globalThis.fetch = async (u, i) => (await fake(u, i)) || new Response('{}', { status: 599 });
   out.abandoned = { 7: await abandoned(penv, 7, now), 30: await abandoned(penv, 30, now) };
   globalThis.fetch = realFetch;
+}
+// « Test payant » (25/11): 2 made-up links, their funnel counters and payments
+{
+  const db = env.DB.raw, d0 = new Date(now - 6 * 864e5).toISOString().slice(0, 10);
+  db.prepare("INSERT INTO paid_tests (ref, label, spent_cents, started_on, updated_at) VALUES ('ttads', 'Pubs TikTok US', 4200, ?, ?), ('inf-demo', '@influenceur_demo', 3000, ?, ?)").run(d0, now, d0, now);
+  const b = db.prepare('INSERT INTO daily_counts (day, name, n) VALUES (?, ?, ?) ON CONFLICT(day, name) DO UPDATE SET n = n + excluded.n');
+  for (let k = 0; k < 6; k++) {
+    const d = new Date(now - k * 864e5).toISOString().slice(0, 10);
+    for (const [step, a, c] of [['visit', 61, 17], ['export_ok', 14, 5], ['plans_open', 6, 2], ['checkout_open', 2, 1]]) { b.run(d, 'fs:' + step + ':ref:ttads', Math.max(0, a - k * (step === 'visit' ? 6 : 1))); b.run(d, 'fs:' + step + ':ref:inf-demo', c); }
+  }
+  const pay = db.prepare("INSERT INTO payments (id, env, user_id, origin, currency, total, tax, billed_at, created_at, source, subscription_id) VALUES (?, 'production', NULL, 'web', 'USD', ?, 0, ?, ?, ?, ?)");
+  pay.run('txn_demo_pt1', 799, now - 2 * 864e5, now, 'ref:ttads', 'sub_demo_1'); pay.run('txn_demo_pt2', 0, now - 864e5, now, 'ref:ttads', 'sub_demo_2');
+  out.paidTests = await paidTests(env, now);
 }
 const js = `// MADE-UP figures for the dashboard demo on previews (tools/admin_demo_data.mjs, ${out.generatedAt.slice(0, 10)}). Not real data.\nexport const DEMO_DATA = ${JSON.stringify(out)};\n`;
 writeFileSync(join(root, 'functions/_lib/admin-demo-data.js'), js);

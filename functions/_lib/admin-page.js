@@ -201,7 +201,14 @@ th{color:var(--text2);font-weight:600}
 @media (max-width:480px){#xfDev th,#xfDev td{padding:6px 4px;font-size:12.5px}}
 .vsum{font-size:17px;font-weight:700;margin:12px 0}.vcol{max-width:640px}.vcol h3{margin:0 0 8px}
 #vppCard{margin-top:16px}#vppCard .hbest{flex-wrap:wrap}
-.srcwrap{overflow-x:auto;margin-top:10px}.srct{border-collapse:collapse;width:100%;min-width:560px;font-variant-numeric:tabular-nums}
+.srcwrap{overflow-x:auto;margin-top:10px}
+/* 25/11: « Test payant » */
+.ptform{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px;align-items:end}
+.ptform label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--text2);font-weight:600}
+.ptform input{font:inherit;font-size:16px;color:var(--text);background:var(--card,#fff);border:2px solid var(--line);border-radius:12px;padding:9px 10px;min-height:44px;width:100%;box-sizing:border-box}
+.ptform input:focus-visible{outline:3px solid var(--sky);outline-offset:1px;border-color:var(--sky)}
+.ptbud{font-weight:700;margin:8px 0 0}.ptbud.over{color:var(--bad)}
+.ptrow-act{display:flex;gap:6px;justify-content:flex-end}.ptrow-act button{min-height:36px}.srct{border-collapse:collapse;width:100%;min-width:560px;font-variant-numeric:tabular-nums}
 .srct th,.srct td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--line)}.srct th{font-size:13px;color:var(--muted);font-weight:600}
 .srct th:first-child,.srct td:first-child{text-align:left;font-weight:700}.srct td small{display:block;color:var(--muted);font-weight:400;font-size:12px}
 #srcCard,#optCard{margin-top:16px}
@@ -511,6 +518,20 @@ __DEMO_BANNER__<header class="top"><div class="in">
       <div class="srcwrap"><table class="srct" id="srcTable"><thead><tr><th scope="col">Source</th><th scope="col">Visites</th><th scope="col">Vidéo faite</th><th scope="col">Formules vues</th><th scope="col">Paiement ouvert</th><th scope="col">Payé</th></tr></thead><tbody></tbody></table></div>
       <p class="note" id="srcNote"></p>
     </div>
+    <div class="card hq" id="ptCard" data-mt>
+      <div class="hbest"><span>💸 Test payant</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
+      <p class="he">Chaque lien suivi (?ref=…) depuis son jour de début : visites, vidéos exportées, paiements ouverts, essais gratuits, abonnés payants et argent reçu, face à l’argent que tu as dépensé pour ce lien (tu le tapes ici). Coût par export = dépensé ÷ exports ; coût par abonné = dépensé ÷ abonnés. Règles fixées le 25/11 : au moins 1 abonné pour 150 € → on continue ; des exports mais aucun paiement → on revoit le prix ou la page de paiement ; aucun export → on revoit le message ou la cible. Seuls ceux qui ont accepté les cookies sont vus par TikTok, mais ces chiffres-ci comptent tout le monde (totaux anonymes).</p>
+      <p class="ptbud" id="ptBud" role="status"></p>
+      <div class="srcwrap"><table class="srct" id="ptTable"><thead><tr><th scope="col">Lien</th><th scope="col">Dépensé</th><th scope="col">Visites</th><th scope="col">Exports</th><th scope="col">Paiements ouverts</th><th scope="col">Essais</th><th scope="col">Abonnés</th><th scope="col">Reçu</th><th scope="col">Coût / export</th><th scope="col">Coût / abonné</th><th scope="col"></th></tr></thead><tbody></tbody></table></div>
+      <form class="ptform" id="ptForm">
+        <label>Code du lien (?ref=)<input name="ref" required maxlength="24" autocomplete="off" placeholder="ttads ou inf-nom" inputmode="latin"></label>
+        <label>Nom (pour toi)<input name="label" maxlength="40" autocomplete="off" placeholder="Pubs TikTok US"></label>
+        <label>Dépensé en tout (€)<input name="spent" inputmode="decimal" autocomplete="off" placeholder="0"></label>
+        <label>Début<input name="startedOn" type="date"></label>
+        <button class="btn" type="submit">Enregistrer</button>
+      </form>
+      <p class="note" id="ptOut" role="status"></p>
+    </div>
     <div class="grid2">
       <div class="card hq"><div class="hbest"><span>🌍 Pays des visites</span><span class="sp"></span><button class="q" type="button" aria-expanded="false" aria-label="Explication">?</button></div>
         <p class="he">D’après Cloudflare, le pays de chaque nouvelle visite sur la période (totaux anonymes).</p><ul class="blist" id="bCountry"></ul></div>
@@ -717,7 +738,7 @@ __DEMO_BANNER__<header class="top"><div class="in">
     if (name === 'home') home();
     if (name === 'signups' && !S.signupsLoaded) signups();
     if (name === 'hours') hours();
-    if (name === 'funnel') { vpp(); abLoad(); }
+    if (name === 'funnel') { vpp(); abLoad(); ptLoad(); }
     if (name === 'users') langLoad();
     if (name === 'analytics') analytics();
     if (name === 'users') globeStart(); else globeStop();
@@ -1030,53 +1051,8 @@ __DEMO_BANNER__<header class="top"><div class="in">
   // 25/11: the AI assistants (« ai:chatgpt »…)
   var AIS = { chatgpt: 'ChatGPT', perplexity: 'Perplexity', claude: 'Claude', gemini: 'Gemini', copilot: 'Copilot', other: 'autre assistant' };
   var DIRS = { alternativeto: 'AlternativeTo', saashub: 'SaaSHub', producthunt: 'Product Hunt', betalist: 'BetaList', futurepedia: 'Futurepedia', theresanaiforthat: 'There’s An AI For That', contentcreators: 'contentcreators.com', buzzsonic: 'Buzzsonic', toolify: 'Toolify' };
-  // ---- 25/11: « Langue des visiteurs et des abonnés » and « Paiements abandonnés : ce que Paddle sait » ----
-  function langLoad() {
-    api('GET', 'languages').then(function (d) {
-      var tb = $('#langTable tbody'); tb.textContent = '';
-      [['visits', 'Visites'], ['visits5', 'Visites restées 5 min ou plus'], ['accounts', 'Nouveaux comptes'], ['payments', 'Premiers paiements']].forEach(function (x) {
-        var tr = el('tr'); tr.append(el('td', null, x[1]));
-        ['d7', 'd30'].forEach(function (p) { var o = (d[p] || {})[x[0]] || {}, t = (o.en || 0) + (o.fr || 0) + (o.unknown || 0);
-          ['en', 'fr'].forEach(function (l) { var td = el('td', null, nf.format(o[l] || 0)); if (t) td.append(el('small', null, pct(o[l] || 0, t) + ' %')); tr.append(td); }); });
-        tb.append(tr);
-      });
-      var s = d.subscribers || {}, st = (s.en || 0) + (s.fr || 0) + (s.unknown || 0);
-      set('#langNote', 'Abonnés payants aujourd’hui : ' + nf.format(s.en || 0) + ' en anglais, ' + nf.format(s.fr || 0) + ' en français' + (st ? ' (' + pct(s.en || 0, st) + ' % en anglais).' : '.'));
-    }).catch(function (e) { set('#langNote', 'Impossible de charger : ' + e.message); });
-  }
-  var AB_STAGE = { price: 'Vu le prix', info: 'Adresse donnée', method: 'Moyen choisi', 'try': 'Paiement essayé' };
-  var AB_KIND = { normal: 'prix normal', trial: 'essai 7 j', offer1: 'offre à 1 €', unknown: '?' };
-  var AB_ERR = { declined: 'Carte refusée par la banque', declined_not_retryable: 'Carte refusée (définitif)', authentication_failed: '3D Secure raté', blocked_card: 'Carte bloquée',
-    expired_card: 'Carte expirée', not_enough_balance: 'Solde insuffisant', invalid_payment_details: 'Coordonnées de carte fausses', fraud: 'Refusé pour risque de fraude', blocked_by_policy: 'Bloqué par les règles de Paddle',
-    prepaid_card_not_supported: 'Carte prépayée refusée', issuer_unavailable: 'Banque injoignable', payment_attempt_expired: 'Paiement expiré', canceled: 'Annulé', psp_error: 'Erreur du prestataire', system_error: 'Erreur de Paddle',
-    transaction_not_permitted: 'Paiement non autorisé', unknown: 'Raison inconnue' };
-  var AB_PLAN = { pro_month: 'Pro mensuel', pro_year: 'Pro annuel', creator_month: 'Creator Plus mensuel', creator_year: 'Creator Plus annuel', pro: 'Pro', unknown: 'Inconnue' };
-  S.abDays = '7';
-  function abLoad() {
-    $$('#abPer button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.d === S.abDays ? 'true' : 'false'); });
-    api('GET', 'paddle/abandoned?days=' + S.abDays).then(function (d) {
-      ['#abStage', '#abPlan', '#abCur', '#abErr'].forEach(function (x) { $(x).textContent = ''; });
-      var tb = $('#abTable tbody'); tb.textContent = '';
-      if (d.state !== 'ok') { set('#abSum', d.state === 'off' ? 'La clé Paddle manque sur ce serveur.' : 'Paddle n’a pas répondu (' + d.error + ').'); return; }
-      set('#abSum', nf.format(d.notPaid) + ' paiement' + (d.notPaid > 1 ? 's' : '') + ' ouvert' + (d.notPaid > 1 ? 's' : '') + ' sans être payé' + (d.notPaid > 1 ? 's' : '') + ', ' + nf.format(d.paid) + ' payé' + (d.paid > 1 ? 's' : '') + ' sur ' + d.days + ' jours.');
-      blist($('#abStage'), d.byStage, AB_STAGE, { order: ['price', 'info', 'method', 'try'], keepZero: true });
-      var pk = {}; Object.keys(d.byPlan || {}).forEach(function (k) { pk[AB_PLAN[k] || k] = d.byPlan[k]; }); Object.keys(d.byKind || {}).forEach(function (k) { pk['dont ' + (AB_KIND[k] || k)] = d.byKind[k]; });
-      blist($('#abPlan'), pk, function (x) { return x; });
-      var cc = {}; Object.keys(d.byCurrency || {}).forEach(function (k) { cc[k] = d.byCurrency[k]; }); Object.keys(d.byCountry || {}).forEach(function (k) { cc[k === 'unknown' ? 'Pays inconnu' : flag(k) + ' ' + COUNTRY(k)] = d.byCountry[k]; });
-      blist($('#abCur'), cc, function (x) { return x; });
-      if (Object.keys(d.byError || {}).length) blist($('#abErr'), d.byError, AB_ERR); else $('#abErr').append(el('li', { class: 'empty' }, 'Aucun paiement refusé : personne n’est allé jusqu’à payer.'));
-      (d.rows || []).forEach(function (r) {
-        var tr = el('tr');
-        var amt = r.total != null && r.currency ? new Intl.NumberFormat('fr-FR', { style: 'currency', currency: r.currency }).format(r.total / 100) : '–';
-        var pay = r.payments.length ? r.payments.map(function (p) { return (p.method || 'paiement') + (p.error ? ' : ' + (AB_ERR[p.error] || p.error) : ' (' + p.status + ')'); }).join(' · ') : '–';
-        [dateFr(r.at, true), (AB_PLAN[(r.plan || 'unknown') + (r.interval ? '_' + r.interval : '')] || r.plan || '?') + ' · ' + (AB_KIND[r.kind] || r.kind), amt, r.country ? flag(r.country) + ' ' + COUNTRY(r.country) : '–', AB_STAGE[r.stage] || r.stage, pay]
-          .forEach(function (v) { tr.append(el('td', null, v)); });
-        tb.append(tr);
-      });
-      if (!tb.children.length) { var e0 = el('tr'), c0 = el('td', null, 'Aucun paiement abandonné sur la période.'); c0.colSpan = 6; e0.append(c0); tb.append(e0); }
-    }).catch(function (e) { set('#abSum', 'Impossible de charger : ' + e.message); });
-  }
-  $('#abPer').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; S.abDays = b.dataset.d; abLoad(); });
+    if (name === 'funnel') { vpp(); abLoad(); ptLoad(); }
+    if (name === 'users') langLoad();
   function sourceName(src) {
     if (!src) return 'Inconnue';
     var m = /^(ref|utm|dir|site|ai):(.+)$/.exec(src);
@@ -1716,6 +1692,7 @@ const DEMO_JS = String.raw`var DD = __DEMO_DATA__, DS = { avail: false, tickets:
     else if (p === 'analytics') r = DD.analytics[q.get('days') || '7'] || DD.analytics['7'];
     else if (p === 'languages') r = DD.languages;
     else if (p === 'paddle/abandoned') r = DD.abandoned[q.get('days') || '7'] || DD.abandoned['7'];
+    else if (p === 'paid-tests') r = DD.paidTests;
     else if (p === 'analytics/live') r = DD.analyticsLive;
     else if (p === 'analytics/tiles') { var sn = DD.analytics['7'].clarity.snapshot; r = { ga4: { state: 'ok', now: DD.analyticsLive.now, top: DD.analyticsLive.countries.slice(0, 3) },
       clarity: { state: 'ok', at: sn.at, sessions: sn.totals.sessions, top: sn.friction[0] || null, stale: false } }; }

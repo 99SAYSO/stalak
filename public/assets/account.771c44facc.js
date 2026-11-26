@@ -288,6 +288,9 @@
         // TikTok conversion only then (functions/_lib/conversions.js)
         var cd = { user_id: st.user.id };
         try { if (window.StalakConsent) { var c = window.StalakConsent.forCheckout(); cd.mc = c.mc; if (c.ttclid) cd.ttclid = c.ttclid; } } catch (e) {}
+        // 25/11 (test payant): where this browser came from the first time (« ref:ttads »…), else this visit's source: the payment
+        // is counted for that link on the dashboard (anonymous total; nothing about the person)
+        try { var fs = localStorage.getItem('stalak:src') || visitSrc; if (fs && fs !== 'direct' && fs.length <= 60) cd.src = fs; } catch (e) { if (visitSrc && visitSrc !== 'direct') cd.src = visitSrc; }
         var settings = { displayMode: 'overlay', locale: lang(), allowLogout: false };   // the page's language, not the one at sign-up
         if (Array.isArray(opts.methods) && opts.methods.length) settings.allowedPaymentMethods = opts.methods.map(String);
         P.Checkout.open({
