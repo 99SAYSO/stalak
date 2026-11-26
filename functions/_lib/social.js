@@ -149,6 +149,24 @@ export function socialProviders(env) {
   return featureOn(env) ? Object.keys(SOCIAL).filter((p) => SOCIAL[p].keys(env)) : [];
 }
 
+// 26/11 (owner): TikTok has not validated the app yet (Sandbox: only the test accounts can link it, posts stay « Only me »), so
+// « Publier sur TikTok » is hidden from everyone while TIKTOK_PUBLIC = "0", except the test accounts: the Stalak accounts whose
+// e-mail is in TIKTOK_TESTERS (comma between them) and those that already linked a TikTok account. TIKTOK_PUBLIC = "1" (or
+// absent) shows it to everyone again, once TikTok has validated the app.
+export async function socialVisible(env, user) {
+  const list = socialProviders(env);
+  if (!list.includes('tiktok') || String(env.TIKTOK_PUBLIC ?? '1') !== '0') return list;
+  let tester = false;
+  if (user) {
+    const mails = String(env.TIKTOK_TESTERS || '').split(',').map((s) => s.trim().toLowerCase()).filter(Boolean);
+    tester = mails.includes(String(user.email || '').toLowerCase());
+    if (!tester && env.DB) {
+      try { tester = !!(await env.DB.prepare("SELECT 1 AS x FROM social_accounts WHERE user_id = ?1 AND provider = 'tiktok'").bind(user.id).first()); } catch (e) { tester = false; }
+    }
+  }
+  return tester ? list : list.filter((p) => p !== 'tiktok');
+}
+
 // ---- tokens at rest: AES-GCM, key from the secret SOCIAL_TOKEN_KEY, tied to (user, network, kind) --------------------
 async function tokenKey(env) {
   const s = String(env.SOCIAL_TOKEN_KEY || '');

@@ -2233,6 +2233,27 @@ async function socialFinish(env, p, b, cookie, extra = {}) {
 const fragOf = (r) => r.headers.get('Location') && new URL(r.headers.get('Location')).hash.slice(1);
 const socialRow = (env, p) => env.DB.raw.prepare('SELECT * FROM social_accounts WHERE provider = ?').get(p);
 
+test('social: TikTok hidden while TIKTOK_PUBLIC = "0", except the test accounts (listed e-mail, or TikTok already linked)', async () => {
+  const env = makeEnv({ ...SOCIAL_ENV, TIKTOK_PUBLIC: '0', TIKTOK_TESTERS: ' Testeur@Example.com , autre@example.com' });
+  let r = await call(env, 'GET', '/api/config');
+  assert.deepEqual(r.data.features.social, ['instagram']);
+  assert.equal(r.headers.get('cache-control'), 'no-store');
+  const someone = await login(env, 'quelquun@example.com');
+  r = await call(env, 'GET', '/api/config', { cookie: someone.cookie });
+  assert.deepEqual(r.data.features.social, ['instagram']);
+  const tester = await login(env, 'testeur@example.com');
+  r = await call(env, 'GET', '/api/config', { cookie: tester.cookie });
+  assert.deepEqual(r.data.features.social, ['tiktok', 'instagram']);
+  // an account that already linked TikTok (a Sandbox test account) keeps it
+  const me = someone.user;
+  await env.DB.prepare("INSERT INTO social_accounts (user_id, provider, account_id, access_token_enc, access_expires_at, created_at, updated_at) VALUES (?1, 'tiktok', 'acc-1', 'x', 1, 1, 1)").bind(me.id).run();
+  r = await call(env, 'GET', '/api/config', { cookie: someone.cookie });
+  assert.deepEqual(r.data.features.social, ['tiktok', 'instagram']);
+  // TIKTOK_PUBLIC = "1" (or absent): everyone again
+  r = await call(makeEnv({ ...SOCIAL_ENV, TIKTOK_PUBLIC: '1' }), 'GET', '/api/config');
+  assert.deepEqual(r.data.features.social, ['tiktok', 'instagram']);
+});
+
 test('social: off by default; /api/config lists only the networks whose keys are set', async () => {
   let r = await call(makeEnv(), 'GET', '/api/connect/tiktok/start');
   assert.equal(r.status, 404); assert.equal(r.data.error, 'not_enabled');
