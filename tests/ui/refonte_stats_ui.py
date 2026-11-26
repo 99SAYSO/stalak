@@ -131,7 +131,14 @@ def skipped(b, PW, dev, lang):
     tag = dev + ' ' + lang + ' (questionnaire passé)'; t = T[lang]
     ctx, pg, errs = page(b, PW, dev, lang, email='skip-%s@example.com' % lang, tuto=False)
     pg.locator('#tabBar [data-tab="stats"]').click(); pg.wait_for_selector('#m2Onb', timeout=8000); pg.wait_for_timeout(800)
-    pg.tap('.ob-skip'); pg.wait_for_selector('#m5Stats .m5-links', timeout=12000); pg.wait_for_timeout(600)
+    # (26/11, Chef point 10: timed out once in two) the questionnaire slides in: « Passer » is tapped once it stands still, and once
+    # more if the tap came during the slide
+    pg.wait_for_selector('.ob-skip', state='visible', timeout=8000); pg.wait_for_timeout(700); pg.tap('.ob-skip')
+    try: pg.wait_for_selector('#m5Stats .m5-links', timeout=6000)
+    except Exception:
+        if pg.locator('.ob-skip').is_visible(): pg.tap('.ob-skip')
+        pg.wait_for_selector('#m5Stats .m5-links', timeout=12000)
+    pg.wait_for_timeout(600)
     note = pg.locator('.m5-warn').first.inner_text()
     check(tag + ' : sans le lien TikTok, « Stats » le dit et ne fait pas l’analyse', 'TikTok' in note and pg.locator('.m5-links').first.inner_text().strip() == t['add'], note)
     pg.locator('.m5-links').first.click(); pg.wait_for_selector('#m2Onb', timeout=6000); pg.wait_for_timeout(900)
