@@ -20,4 +20,11 @@ Le propriétaire a testé la version en ligne (fusion du 25/11 22 h 15). Pour ch
 
    Les corriger ou mettre à jour les tests, en accord avec Marketing pour `bands.css`.
 
+9. **RÉGRESSION trouvée par la vérification complète du 26/11 (urgent, à corriger avec le point 6).** `tests/ui/son_passage.py` passe à **78/86 sur main** (fusion du 25/11 22 h 15), contre **86/86 juste avant** (b20bd6a). Sur **téléphone, FR et EN** :
+   - glisser le curseur **change le passage choisi** (le début passe de 18 s à 10,28 s) ;
+   - « Écouter le passage » et la lecture ne partent plus du début du passage.
+
+   Un rappeur qui choisit son passage puis touche le curseur perd sa sélection. Vient très probablement d'`app/retours-25-11` ou d'`app/fin-export-belle` (puces « 15 s / 30 s / Refrain » ?). Corriger, puis repasser `son_passage` à 86/86.
+10. Autres résultats de la série : `fin_export_belle_ui` 48/49 (les confettis de l'offre, iPhone SE EN) et `refonte_stats_ui` 67/68 une fois sur deux (parcours « skipped », délai dépassé) : à regarder.
+
 Compte rendu : `docs/handoff/app-retours-26-11.md`, Statut PRÊT / EN COURS, et un aperçu `app-retours-26-11`.
