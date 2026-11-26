@@ -2135,6 +2135,7 @@ body.ttk-on{overflow:hidden}
    html.mpage = a page of the account opened from the bar (the bar stays); neither = the home screen.
    Motion: the timelines are GSAP ones, as in the HyperFrames demos (app.js mob*, splash.js); nothing moves with « reduce motion ». ---- */
 .tabbar,.mh-top,.mh-new,.mh-ex,.mh-lastT,.mh-list{display:none}
+.tabbar [aria-busy="true"]{opacity:.55}
 #splash{display:none}
 
 @media (max-width:899px){
@@ -3463,6 +3464,8 @@ html.splash-on #splash{display:block}
   <button type="button" data-tab="stats"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 20V11M10 20V4M16 20v-7M22 20H2"/></svg><span data-i18n="tab.stats">Stats</span></button>
   <button type="button" data-tab="account"><i class="tab-av" id="tabAv" aria-hidden="true"></i><span data-i18n="tab.account">Compte</span></button>
 </nav>
+<script>/* (26/11, Clarity: a tap on « Stats » did nothing) the bar is there before the app has loaded on a slow phone: a tap is kept and done once the app is ready (app.js, mobInit) */
+(function(n){ if (n) n.addEventListener('click', function(e){ var b = !window.__stalakTabs && e.target.closest && e.target.closest('[data-tab]'); if (b){ window.__tabQ = b.dataset.tab; b.setAttribute('aria-busy', 'true'); } }); })(document.getElementById('tabBar'));</script>
 <div class="expbar" id="expFab" hidden><button class="btn expbar-go" type="button"><span data-i18n="exp.fab">Exporter</span> <span aria-hidden="true">↓</span></button><span class="expbar-i" id="expFabI"></span></div>
 <button class="help-cube" id="helpBtn" type="button" aria-label="Aide" data-i18n-attr="aria-label:help.aria" aria-expanded="false" aria-controls="helpPanel">
   <svg viewBox="0 0 64 64" focusable="false" aria-hidden="true">
@@ -3490,6 +3493,6 @@ html.splash-on #splash{display:block}
   <button class="hp-human" id="helpHuman" type="button" data-i18n="help.human" hidden>Parler à un humain</button>
   <button class="hp-diag" id="helpDiag" type="button" data-i18n="help.diag">Copier les infos pour l’équipe</button>
 </section>
-<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/assets/consent.7500ff5c8c.js", "/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.0fbcb7a0e5.js", "/assets/app.a991182623.js", "/assets/tiktok.99701fa28b.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v||!v.offsetParent)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
+<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/assets/consent.7500ff5c8c.js", "/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.771c44facc.js", "/assets/app.382316d23e.js", "/assets/tiktok.99701fa28b.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v||!v.offsetParent)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
 </body>
 </html>

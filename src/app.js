@@ -8526,7 +8526,7 @@ async function cmpShots(){
   proOfferUi();
 }
 /* the logo: a new project, everything cleared (asked first when there is something to lose) */
-function homeGo(){ S.cancel = true; try { stop(true); } catch(e){} location.reload(); }
+function homeGo(){ S.cancel = true; try { LP.home = true; } catch(e){} try { stop(true); } catch(e){} location.reload(); }   // LP.home: going home on purpose, nothing comes back by itself (lpBackMark)
 /* the confirmation box: one question, « Annuler » or the action; resolves true or false */
 let askDone = null, askBack = null;
 function askSure(title, text, yes){
@@ -11788,7 +11788,19 @@ async function lpOffer(){
   let no; try { no = await lpGet('kv', 'declined'); } catch(e){}
   if (no && no === last.at) return;
   LP.offered = last; lpOfferUi();
+  // (26/11, Clarity: a visitor left the edit for a page of the site, came back with « back » and started all over again) the
+  // browser came back to this page with « back » and had to load it again (the Google app, many in-app browsers): the edit
+  // that was on screen when he left this tab comes back by itself, without asking. A reload still asks (decided 30/10).
+  if (lpBackNow(last)) lpResume();
 }
+const LP_BACK_KEY = 'stalak:lpBack';
+function lpBackNow(last){
+  let nav = ''; try { const e = performance.getEntriesByType('navigation')[0]; nav = e ? e.type : ''; } catch(e){}
+  let at = 0; try { at = +sessionStorage.getItem(LP_BACK_KEY) || 0; sessionStorage.removeItem(LP_BACK_KEY); } catch(e){}
+  return nav === 'back_forward' && at > 0 && Date.now() - at < 6 * 3600e3 && !!last && last.at >= at - 120e3;
+}
+// leaving the page with an edit on screen: remembered for this tab (not when going home on purpose, homeGo)
+function lpBackMark(){ try { if (!LP.home && lpWorth()) sessionStorage.setItem(LP_BACK_KEY, String(Date.now())); else sessionStorage.removeItem(LP_BACK_KEY); } catch(e){} }
 function lpOfferUi(){
   const box = $('#lpOffer'), last = LP.offered; if (!box) return;
   box.hidden = !last || !!S.song; if (box.hidden) return;
@@ -11825,7 +11837,7 @@ if (LP.ok){
   setInterval(() => { lpSave(false).catch(() => {}); if (LP.offered && S.song && !LP.applying) lpOfferUi(); }, 3000);
   // going to Photos, TikTok or the camera: kept at once
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') lpSave(true).catch(() => {}); });
-  window.addEventListener('pagehide', () => { lpSave(true).catch(() => {}); });
+  window.addEventListener('pagehide', () => { lpBackMark(); lpSave(true).catch(() => {}); });
   lpOffer();
 }
 // leaving the page: the browser asks first during an export, or while the project on screen is not kept in the phone yet
@@ -11971,6 +11983,9 @@ function mobTab(k){
 }
 function mobInit(){
   $('#tabBar').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) mobTab(b.dataset.tab); });
+  // a tap made while the app was still loading (src/markup.html, right after the bar): done now
+  window.__stalakTabs = 1;
+  if (window.__tabQ){ const k = window.__tabQ; window.__tabQ = null; $$('#tabBar [aria-busy]').forEach(b => b.removeAttribute('aria-busy')); setTimeout(() => mobTab(k), 0); }
   $('#mhNew').onclick = songPick;
   $('#mhEx').onclick = () => $('#demoBtn').click();
   $('#mhPill').onclick = () => { if (S.exporting || askDone || !ACCT) return; if (acctPaid()) apGo('account'); else apGo('pro', { from: 'menu' }); };
