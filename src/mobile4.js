@@ -80,7 +80,13 @@ var CSS = '@media (max-width:899px){'
 + 'html.m4 #helpPanel .hp-form{display:flex;align-items:flex-end;gap:8px;margin:0 16px 8px;padding:6px 6px 6px 16px;border:3px solid ' + INK + ';border-radius:28px;background:#fff;box-shadow:0 4px 0 ' + INK + '}'
 + 'html.m4 #helpIn{flex:1;min-height:40px;max-height:120px;border:0;outline:0;background:none;box-shadow:none;padding:9px 0;font:500 16px/1.35 var(--body);resize:none}'
 + 'html.m4 #helpSend{flex:none;width:46px;height:46px;min-height:0;margin:0;padding:0;border-radius:50%;border:3px solid ' + INK + ';background:' + BLUE + ';box-shadow:none;color:transparent;font-size:0;position:relative}html.m4 #helpSend::after{content:"↑";position:absolute;inset:0;display:grid;place-items:center;color:#fff;font:800 22px/1 var(--body)}'
-+ 'html.m4 #helpSend::before{display:none}html.m4 #helpPanel .hp-human,html.m4 #helpPanel .hp-diag{align-self:center;margin:0 0 6px;min-height:40px}html.m4 #helpPanel .hp-diag{margin-bottom:max(10px,env(safe-area-inset-bottom,0px))}'
++ 'html.m4 #helpSend::before{display:none}'
+// (26/11, owner: the two buttons under the question looked like a stuck tab and a dashed block) two real Stalak buttons: « Parler
+// à un humain » the blue button (ink outline, hard shadow), « Copier les infos pour l'équipe » a quiet link under it
++ 'html.m4 #helpPanel .hp-human:not([hidden]){display:flex;align-items:center;justify-content:center;gap:8px;align-self:stretch;margin:4px 16px 0;min-height:52px;padding:0 18px;border:3px solid ' + INK + ';border-radius:18px;background:' + BLUE + ';color:#fff;box-shadow:0 4px 0 ' + INK + ';font:800 16px/1.1 var(--body);text-shadow:none}'
++ 'html.m4 #helpPanel .hp-human::before{content:"💬";font-size:17px}html.m4 #helpPanel .hp-human:active{transform:translateY(3px);box-shadow:0 1px 0 ' + INK + '}'
++ 'html.m4 #helpPanel .hp-diag{align-self:center;margin:6px 0 max(8px,env(safe-area-inset-bottom,0px));min-height:44px;padding:0 12px;border:0;background:none;color:#3d4a63;font:600 13.5px/1 var(--body);text-decoration:underline;text-underline-offset:3px}'
++ 'html.m4 #helpLog .hp-msg .btn.primary{display:inline-flex;align-items:center;min-height:44px;margin:10px 0 6px;padding:0 18px;border:3px solid ' + INK + ';border-radius:16px;background:' + BLUE + ';color:#fff;box-shadow:0 3px 0 ' + INK + ';font:800 15px/1 var(--body)}html.m4 #helpLog .hp-msg .btn.primary::before,html.m4 #helpLog .hp-msg .btn.primary::after{display:none}'
 + 'html.m4help .help-cube{display:none !important}'
 /* the paywall « Salle » (maquette D, owner 24/11 18 h 18): the drawn concert hall, the star sticker, the night blue */
 + 'html.m4pw:not(.m4pwall) #apPro > :not(.m4-pw){display:none !important}html.m4pw .m4-pw{display:block;margin:calc(-1 * max(14px,env(safe-area-inset-top,0px))) -16px 0;padding-bottom:max(18px,env(safe-area-inset-bottom,0px));color:#fff}'

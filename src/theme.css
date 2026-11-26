@@ -448,11 +448,12 @@ body::after{animation:al-snow-near 13s linear infinite}
 .beatfix .btn.link.beatcheck{color:var(--ink);padding:6px 0;min-height:36px;margin-top:4px}
 
 .diag[hidden]{display:none}
-.hp-diag{border:0;border-top:2px dashed var(--ice-2,#9cc8f5);background:#fff;color:var(--muted);font:600 12.5px var(--body);padding:7px 10px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.hp-diag{align-self:center;border:0;background:none;color:var(--muted);font:600 12.5px var(--body);padding:4px 10px 8px;min-height:36px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 @media (hover:hover){ .hp-diag:hover{color:var(--ink)} }
 /* « Parler à un humain » (domaine Comptes, paiements & serveur) */
-.hp-human{border:0;border-top:var(--stroke) solid var(--ink);background:var(--frost);color:var(--ink);font:700 14px var(--body);padding:10px;cursor:pointer;min-height:44px}
-@media (hover:hover){ .hp-human:hover{background:var(--ice)} }
+/* (26/11) a real Stalak button, not a tab stuck under the question */
+.hp-human{margin:2px 12px 0;border:var(--stroke) solid var(--ink);border-radius:14px;background:var(--blue,#1f6fd6);color:#fff;box-shadow:0 3px 0 var(--ink);font:800 14.5px var(--body);padding:10px 14px;cursor:pointer;min-height:46px}
+@media (hover:hover){ .hp-human:hover{filter:brightness(1.06)} }
 .hp-human[hidden]{display:none}
 .hp-msg.team{align-self:flex-start;background:#fffbea;border-bottom-left-radius:5px}
 .hp-msg.team::before{content:attr(data-who);display:block;font:700 12px var(--body);color:var(--muted);margin-bottom:2px}
