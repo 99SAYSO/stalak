@@ -1,4 +1,4 @@
-Statut : EN COURS
+Statut : PRÊT
 
 # Branche `app/clarity-26-11` — deux points vus dans Clarity le 26/11
 
@@ -29,7 +29,7 @@ Partie de main `e03c8f5`.
 - Nouveau `tests/ui/retour_arriere_ui.py` : 10/10.
   - Cas testés : iPhone et ordinateur, avec une page rechargée au retour ou une page gardée par le navigateur.
   - Il vérifie que le montage revient tout seul, que le rechargement demande toujours, et que rien ne revient si on est parti exprès à l'accueil.
-- Les autres tests : voir STATUS.
+- Les tests voisins sont réussis : `projet_local_ui` 76/76 (le rechargement demande toujours), `refonte_mobile_ui` 102/102, `refonte_mobile2_ui` 65/65, `refonte_stats_ui` 72/72, `help_ui` 42/42.
 
 ## À prévenir
 - **Marketing** : `src/markup.html` (le petit script après la barre, environ 330 octets ; `index.html` est à 399 662 octets, sous la limite de 400 000).
