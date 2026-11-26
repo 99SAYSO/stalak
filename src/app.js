@@ -5048,33 +5048,33 @@ function placeImg(c, img, sw, sh, rot, sc, mir, dy){
      the lyrics. This block uses nothing else from the app: the comparison page (tests/ui/filtres_comparaison.py) runs it as it is. */
 const FILTERS = [
   { id: 'none',     th: null,   free: true },
-  { id: 'givre',    th: 'cam',  free: true },
-  { id: 'la',       th: 'cam',  free: false },
-  { id: 'nuit',     th: 'cam',  free: false },
+  { id: 'givre',    th: 'cam',  free: true, old: true },
+  { id: 'la',       th: 'cam',  free: false, old: true },
+  { id: 'nuit',     th: 'cam',  free: false, old: true },
   { id: 'demon',    th: 'cam',  free: false },
   { id: 'hallo',    th: 'cam',  free: false },
   { id: 'vhs',      th: 'retro', free: false },
-  { id: 'film35',   th: 'retro', free: true },
-  { id: 'super8',   th: 'retro', free: false },
-  { id: 'nb',       th: 'retro', free: true },
+  { id: 'film35',   th: 'retro', free: true, old: true },
+  { id: 'super8',   th: 'retro', free: false, old: true },
+  { id: 'nb',       th: 'retro', free: true, old: true },
   { id: 'golden',   th: 'esth', free: false },
-  { id: 'reve',     th: 'esth', free: false },
-  { id: 'y2k',      th: 'esth', free: false },
-  { id: 'pastel',   th: 'esth', free: false },
+  { id: 'reve',     th: 'esth', free: false, old: true },
+  { id: 'y2k',      th: 'esth', free: false, old: true },
+  { id: 'pastel',   th: 'esth', free: false, old: true },
   // « Couleurs »: light colour retouches, in the spirit of the stories' colour filters (own names)
-  { id: 'velours',  th: 'col', free: false },
-  { id: 'soleil',   th: 'col', free: false },
-  { id: 'cocon',    th: 'col', free: false },
-  { id: 'lagon',    th: 'col', free: false },
-  { id: 'eclat',    th: 'col', free: false },
-  { id: 'miel',     th: 'col', free: false },
-  { id: 'dune',     th: 'col', free: false },
-  { id: 'souvenir', th: 'col', free: false },
-  { id: 'beton',    th: 'col', free: false },
-  { id: 'fuchsia',  th: 'col', free: false },
-  { id: 'safran',   th: 'col', free: false },
-  { id: 'mono',     th: 'col', free: false },
-  { id: 'tropique', th: 'col', free: false },
+  { id: 'velours',  th: 'col', free: false, old: true },
+  { id: 'soleil',   th: 'col', free: false, old: true },
+  { id: 'cocon',    th: 'col', free: false, old: true },
+  { id: 'lagon',    th: 'col', free: false, old: true },
+  { id: 'eclat',    th: 'col', free: false, old: true },
+  { id: 'miel',     th: 'col', free: false, old: true },
+  { id: 'dune',     th: 'col', free: false, old: true },
+  { id: 'souvenir', th: 'col', free: false, old: true },
+  { id: 'beton',    th: 'col', free: false, old: true },
+  { id: 'fuchsia',  th: 'col', free: false, old: true },
+  { id: 'safran',   th: 'col', free: false, old: true },
+  { id: 'mono',     th: 'col', free: false, old: true },
+  { id: 'tropique', th: 'col', free: false, old: true },
   // (26/11, owner: « faut vraiment essayer de faire les mêmes ») « Tendance »: the looks of the filters rappers use in the TikTok
   // camera (docs/audit/retours-2026-11-26/filtres-tiktok), our own names, colour only (no AR effect)
   { id: 'braise',   th: 'tt', free: true },
@@ -5090,7 +5090,9 @@ const FILTERS = [
   { id: 'coton',    th: 'tt', free: false },
   { id: 'clarte',   th: 'tt', free: false },
 ];
-const FILT_THEMES = ['tt', 'col', 'cam', 'retro', 'esth'];
+// (26/11, owner) only « Tendance » and 4 of the former filters are offered: Démon, Halloween, VHS, Golden hour. The others
+// (old: true) stay in the list so the index of each look in the shader does not move and an older project keeps its look.
+const FILT_THEMES = ['tt', 'cam', 'retro', 'esth'];
 const filtIdx = id => Math.max(0, FILTERS.findIndex(f => f.id === id));
 /* the filters that also draw text or shapes (filtOverlay) */
 const filtHasOverlay = i => { const f = FILTERS[i]; return !!f && (f.id === 'vhs' || f.id === 'y2k'); };
@@ -5595,10 +5597,10 @@ function filtUI(){
     row.innerHTML = ''; row.dataset.shape = tw + 'x' + th; row.dataset.lang = LANG; row.dataset.pro = String(can('filters'));
     // without Pro (audit 30/10): the free filters first, then one tile « + N filtres PRO » that opens the others, grouped by
     // theme with one PRO tag per theme (instead of one on every filter)
-    const pro = can('filters'), locked = FILTERS.filter(f => !f.free).length;
-    const groups = pro ? [[null, [0]]].concat(FILT_THEMES.map(k => [k, FILTERS.map((f, i) => f.th === k ? i : -1).filter(i => i >= 0)]))
-      : [['free', FILTERS.map((f, i) => f.free || i === 0 ? i : -1).filter(i => i >= 0)], ['more', []]]
-        .concat(FILT_THEMES.map(k => [k, FILTERS.map((f, i) => f.th === k && !f.free && i ? i : -1).filter(i => i >= 0)]));
+    const pro = can('filters'), locked = FILTERS.filter(f => !f.free && !f.old).length;
+    const groups = pro ? [[null, [0]]].concat(FILT_THEMES.map(k => [k, FILTERS.map((f, i) => f.th === k && !f.old ? i : -1).filter(i => i >= 0)]))
+      : [['free', FILTERS.map((f, i) => (f.free && !f.old) || i === 0 ? i : -1).filter(i => i >= 0)], ['more', []]]
+        .concat(FILT_THEMES.map(k => [k, FILTERS.map((f, i) => f.th === k && !f.free && !f.old && i ? i : -1).filter(i => i >= 0)]));
     for (const [k, list] of groups){
       if (k === 'more'){
         const mb = document.createElement('button'); mb.type = 'button'; mb.className = 'filtmore'; mb.id = 'filtMore';
