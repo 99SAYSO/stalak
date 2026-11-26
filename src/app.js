@@ -8946,7 +8946,10 @@ $('#waveBox').addEventListener('pointerdown', e => {
   const tol = Math.max(e.pointerType === 'touch' ? 26 : 14, r.width * 0.015), g = e.target.closest && e.target.closest('.wgrip');
   const xl = S.segStart / S.song.duration * r.width, xr = S.segEnd / S.song.duration * r.width;
   // the round red button at the top of the playhead is always the playhead, even when it sits on a handle (at the start)
-  const xp = (S.listenAt == null ? S.segStart : S.listenAt) / S.song.duration * r.width, knob = e.clientY - r.top < 12 && Math.abs(x - xp) <= tol;
+  // (26/11, regression of 25/11: since a handle let go plays the passage, the playhead moves while the song plays; its button is
+  // found where it is drawn, not where it was last put, or a finger on it took the start handle and moved the passage)
+  const phL = parseFloat($('#wph').style.left), xp = (isFinite(phL) ? phL / 100 : (S.listenAt == null ? S.segStart : S.listenAt) / S.song.duration) * r.width;
+  const knob = e.clientY - r.top < 12 && Math.abs(x - xp) <= tol;
   const side = knob ? null : g ? (g.id === 'gripL' ? 'l' : 'r') : Math.abs(x - xl) <= tol && Math.abs(x - xl) <= Math.abs(x - xr) ? 'l' : Math.abs(x - xr) <= tol ? 'r' : null;
   // anything else (the red playhead or the waveform): the playhead follows the finger, the song plays from where it is let go
   const ph = side ? null : 'ph';
