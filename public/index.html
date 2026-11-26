@@ -1140,6 +1140,9 @@ header .stepper{margin-left:auto}
 .drop.over::after{content:attr(data-over);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:400 21px/1.15 var(--display);color:var(--ink);animation:al-fade var(--dur-1) var(--ease-out);pointer-events:none}
 .drop.over::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(135deg,transparent 0 14px,rgba(255,255,255,.55) 14px 16px);animation:al-fade var(--dur-1) var(--ease-out);pointer-events:none}
 .listen #segPlay{justify-content:center}
+/* (26/11, regression of 25/11) on a phone the two buttons each take a whole line: their label changes while the song plays
+   (« ❚❚ Stop »), and the waveform under them must not move under the finger */
+@media (max-width:899px){ .listen #songPlay,.listen #segPlay{flex:1 1 100%;min-width:0} }
 .wavebox .wgrip{width:18px;margin-left:-9px;top:-6px;bottom:-6px;border-radius:9px;border-width:var(--stroke);pointer-events:auto;touch-action:none;cursor:ew-resize;z-index:2;transition:transform var(--dur-1) var(--ease-press)}
 /* a finger-sized zone around each handle (44 px), invisible */
 .wavebox .wgrip::before{content:"";position:absolute;top:-8px;bottom:-8px;left:50%;width:44px;margin-left:-22px}
@@ -3502,6 +3505,6 @@ document.getElementById('frHintGo').onclick=function(){set('stalak:lang',JSON.st
   <button class="hp-human" id="helpHuman" type="button" data-i18n="help.human" hidden>Talk to a human</button>
   <button class="hp-diag" id="helpDiag" type="button" data-i18n="help.diag">Copy info for the team</button>
 </section>
-<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/assets/consent.a66a80ab81.js", "/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.eaed5d7439.js", "/assets/app.573df6c0b6.js", "/assets/tiktok.8fcf3f7d25.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v||!v.offsetParent)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
+<script>/* App & montage: the app after the first picture (audit 13/11) */(function(){var L=["/assets/consent.a66a80ab81.js", "/vendor/mp4-muxer.min.js", "/vendor/mp4box.all.min.js", "/assets/account.eaed5d7439.js", "/assets/app.a991182623.js", "/assets/tiktok.99701fa28b.js"];function go(){L.forEach(function(s){var e=document.createElement("script");e.src=s;e.async=false;document.body.appendChild(e);});}requestAnimationFrame(function(){setTimeout(go,0);});function vid(){var v=document.querySelector("video.hero-v");if(!v||!v.offsetParent)return;var calm=false;try{calm=matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}if(calm)return;v.preload="auto";var p=v.play();if(p&&p.catch)p.catch(function(){});}if(document.readyState==="complete")setTimeout(vid,0);else addEventListener("load",function(){setTimeout(vid,0);});})();</script>
 </body>
 </html>
